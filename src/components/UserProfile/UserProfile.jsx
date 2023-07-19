@@ -47,6 +47,11 @@ import { UserStatus } from '../../utils/enums';
 import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
+import {
+  deleteTeamMember,
+  addTeamMember,
+} from '../../actions/allTeamsAction';
+import { useDispatch } from 'react-redux';
 
 function UserProfile(props) {
   /* Constant values */
@@ -56,7 +61,7 @@ function UserProfile(props) {
     email: true,
   };
   const roles = props?.role.roles;
-
+ const dispatch = useDispatch();
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
   const [showSelect, setShowSelect] = useState(false);
@@ -258,16 +263,30 @@ function UserProfile(props) {
     }
   };
 
-  const onDeleteTeam = deletedTeamId => {
+  const onDeleteTeam = async (deletedTeamId) => {
+    ///////////////////
+    console.log('prop',props)
+    
     setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId));
+    let profile = props.userProfile;
+    profile = {...profile, teams: profile.teams.filter(team => team._id !== deletedTeamId)}
+    await deleteTeamMember(deletedTeamId, profile)(dispatch);
+    
   };
 
   const onDeleteProject = deletedProjectId => {
     setProjects(prevProject => prevProject.filter(project => project._id !== deletedProjectId));
   };
 
-  const onAssignTeam = assignedTeam => {
+  const onAssignTeam = async (assignedTeam) => {
+    ///////////////////
+    console.log('prop',props)
+    
     setTeams(prevState => [...prevState, assignedTeam]);
+    let profile = props.userProfile;
+    profile.teams.push(assignedTeam);
+    await addTeamMember(assignedTeam._id, profile)(dispatch);
+    
   };
 
   const onAssignProject = assignedProject => {

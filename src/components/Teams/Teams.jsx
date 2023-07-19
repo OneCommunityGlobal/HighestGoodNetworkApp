@@ -20,6 +20,7 @@ import TeamMembersPopup from './TeamMembersPopup';
 import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
+import { userProfileByIdReducer } from 'reducers/userProfileByIdReducer';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -50,7 +51,6 @@ class Teams extends React.PureComponent {
     const requestorRole = this.props.state.auth.user.role;
     const userPermissions = this.props.state.auth.user?.permissions?.frontPermissions;
     const { roles } = this.props.state.role;
-
     const teamTable = this.teamTableElements(allTeams, requestorRole, roles, userPermissions);
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
@@ -203,7 +203,10 @@ class Teams extends React.PureComponent {
   };
 
   onAddUser = user => {
-    this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName);
+    //console.log('USERPROFILE', this.props.state)
+    this.props.state.userProfile.teams.push({teamName: this.state.selectedTeam ,_id: this.state.selectedTeamId})
+    console.log('this.props.state.userProfile',this.props.state.userProfile)
+    this.props.addTeamMember(this.state.selectedTeamId, this.props.state.userProfile);
   };
 
   /**
@@ -362,7 +365,10 @@ class Teams extends React.PureComponent {
    * callback for deleting a member in a team
    */
   onDeleteTeamMember = deletedUserId => {
-    this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
+    //console.log(this.props.state.userProfile)
+    this.props.state.userProfile = {...this.props.state.userProfile, teams: this.props.state.userProfile.teams.filter(team => team._id !== this.state.selectedTeamId)}
+    console.log('his.props.state.userProfile',this.props.state.userProfile)
+    this.props.deleteTeamMember(this.state.selectedTeamId, this.props.state.userProfile);
     alert(
       'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
     );

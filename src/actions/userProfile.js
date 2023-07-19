@@ -22,6 +22,7 @@ export const getUserProfile = userId => {
     if (!loggedOut) {
       await dispatch(getUserProfileActionCreator(res.data));
     }
+    return res.data
   };
 };
 
@@ -51,6 +52,7 @@ export const updateUserProfile = (userId, userProfile) => {
   return async dispatch => {
     const res = await axios.put(url, userProfile);
     if (res.status === 200) {
+      console.log('success', res.data)
       await dispatch(getUserProfileActionCreator(userProfile));
     }
     return res.status;

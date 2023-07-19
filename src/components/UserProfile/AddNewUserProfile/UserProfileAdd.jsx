@@ -412,6 +412,9 @@ class AddUserProfile extends Component {
     this.setState({
       teams: filteredTeam,
     });
+    let profile = this.props.userProfile
+    profile = {...profile, teams: profile.teams.filter(team => team._id !== deletedTeamId)}
+    deleteTeamMember(deletedTeamId, profile);
   };
 
   onDeleteProject = deletedProjectId => {
@@ -429,6 +432,10 @@ class AddUserProfile extends Component {
     this.setState({
       teams: teams,
     });
+    console.log('adduserprop',this.props)
+    let profile = this.props.userProfile
+    profile.teams.push(assignedTeam);
+    addTeamMember(assignedTeam._id, profile);
   };
 
   onAssignProject = assignedProject => {
@@ -882,6 +889,7 @@ class AddUserProfile extends Component {
 }
 
 const mapStateToProps = state => ({
+  userProfile:state.userProfile,
   auth: state.auth,
   userProjects: state.userProjects,
   allProjects: get(state, 'allProjects'),

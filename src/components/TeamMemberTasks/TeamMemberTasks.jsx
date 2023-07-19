@@ -78,10 +78,17 @@ const TeamMemberTasks = props => {
           setUserRole(user.data.role);
         });
     } else {
+      //getuser(userId);
+      getUserProfile(userId)(dispatch)
       dispatch(fetchTeamMembersTask(userId, null));
       setUserRole(props.auth.user.role);
     }
   }, []);
+  // const getuser = async (userid) =>{
+  //   let res = await getUserProfile(userid)(dispatch)
+  //   console.log('originalprogile',res)
+  //   //setProfile(res)
+  // }
 
   useEffect(() => {
     if (clickedToShowModal) {
@@ -91,8 +98,9 @@ const TeamMemberTasks = props => {
 
   //if user role is core team instead of showing all members show only team members by default.
   useEffect(()=>{
+     console.log('managingTeams',props.managingTeams)
     console.log('PROFILE',props.userProfile)
-    if((props.userProfile.role=== 'Owner' || props.userProfile.role === 'Administrator' || props.userProfile.role === 'Core Team') && props.userProfile.teams.length > 0){
+    if((props.userProfile.role=== 'Owner' || props.userProfile.role === 'Administrator' || props.userProfile.role === 'Core Team') && props.managingTeams.length > 0){
       setisTeamTab(true)
       setisLoadingmember(true)
     }
@@ -101,7 +109,7 @@ const TeamMemberTasks = props => {
   //which data to show depending on user role
   useEffect(()=>{
     if(userRole){
-      if(userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team' && props.userProfile.teams.length > 0){ 
+      if(userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team' && props.managingTeams.length > 0){ 
         getMyTeam();
       }else{
         renderTeamsList();
@@ -381,7 +389,7 @@ const renderTeamsList = async () => {
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
-        {(props.userProfile?.role == 'Owner' || props.userProfile?.role === 'Administrator' || props.userProfile?.role === 'Core Team') &&  props.userProfile.teams.length > 0 &&<button className='circle-border my-team' style={{ 
+        {(props.userProfile?.role == 'Owner' || props.userProfile?.role === 'Administrator' || props.userProfile?.role === 'Core Team') &&  props.managingTeams.length > 0 &&<button className='circle-border my-team' style={{ 
                 backgroundColor: isTeamTab ? skyblue : 'slategray',
                 cursor: isLoadingmember ? 'not-allowed' : 'pointer'
                 }} onClick={toggleTeamView}
