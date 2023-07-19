@@ -161,7 +161,8 @@ const SameFolderTasks = props => {
                                     data-tip={element.name}
                                     className="name"
                                     href={`/userprofile/${element.userID}`}
-                                    target="_blank" rel="noreferrer"
+                                    target="_blank"
+                                    rel="noreferrer"
                                   >
                                     <img className="img-circle" src={element.profilePic} />
                                   </a>
@@ -173,7 +174,8 @@ const SameFolderTasks = props => {
                                     data-tip={element.name}
                                     className="name"
                                     href={`/userprofile/${element.userID}`}
-                                    target="_blank" rel="noreferrer"
+                                    target="_blank"
+                                    rel="noreferrer"
                                   >
                                     <span className="dot">{element.name.substring(0, 2)}</span>
                                   </a>
