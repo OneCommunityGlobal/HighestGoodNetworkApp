@@ -8,7 +8,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { updateDashboardData, getDashboardDataAI } from '../../actions/dashboard';
 
-
 function CurrentPromptModal(props) {
   const current = `Please edit the following summary of my week's work. 
   Make sure it is professionally written in 3rd person format. 
@@ -19,26 +18,27 @@ function CurrentPromptModal(props) {
   Do not add flowery language, keep it simple and factual. 
   Do not add a final summary sentence. 
   Apply all this to the following:`;
-  const dashboardDataAIPrompt = (props.state.dashboardData === '' || props.state.dashboardData === null)
-    ? current : props.state.dashboardData;
+  const dashboardDataAIPrompt =
+    props.state.dashboardData === '' || props.state.dashboardData === null
+      ? current
+      : props.state.dashboardData;
 
   const [modal, setModal] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
-  const [newPrompt, setNewPrompt] = useState(dashboardDataAIPrompt)
+  const [newPrompt, setNewPrompt] = useState(dashboardDataAIPrompt);
 
-
-  const changeNewName = (newName) => {
-    setNewPrompt(newName)
-  }
+  const changeNewName = newName => {
+    setNewPrompt(newName);
+  };
 
   const toggle = () => {
-    setModal(!modal)
+    setModal(!modal);
     getAIPromp();
   };
 
   const getAIPromp = () => {
     props.getDashboardDataAI();
-  }
+  };
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(currentPrompt);
@@ -47,7 +47,7 @@ function CurrentPromptModal(props) {
 
   const saveAIPrompt = () => {
     props.updateDashboardData(newPrompt);
-  }
+  };
 
   const editCurentPrompt = () => {
     setCanEdit(true);
@@ -56,10 +56,14 @@ function CurrentPromptModal(props) {
   const saveCurrentPrompt = () => {
     setCanEdit(false);
     setModal(false);
-    saveAIPrompt()
+    saveAIPrompt();
   };
 
-  const currentPrompt = canEdit ? <textarea defaultValue={newPrompt} onChange={e => changeNewName(e.target.value)}></textarea> : newPrompt;
+  const currentPrompt = canEdit ? (
+    <textarea defaultValue={newPrompt} onChange={e => changeNewName(e.target.value)}></textarea>
+  ) : (
+    newPrompt
+  );
 
   const modalOnClose = () => {
     setCanEdit(false);
@@ -120,5 +124,3 @@ export default connect(mapStateToProps, {
   updateDashboardData,
   getDashboardDataAI,
 })(CurrentPromptModal);
-
-
