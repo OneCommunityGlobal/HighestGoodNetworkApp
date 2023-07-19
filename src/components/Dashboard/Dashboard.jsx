@@ -77,7 +77,7 @@ export const Dashboard = props => {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          {/* <Leaderboard asUser={userId} /> */}
+          <Leaderboard asUser={userId} />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
@@ -89,9 +89,9 @@ export const Dashboard = props => {
           ) : null}
           <div className="my-2">
             <a name="wsummary"></a>
-            {/* <Timelog isDashboard={true} asUser={userId} passSummaryBarData={setSummaryBarData} /> */}
+            <Timelog isDashboard={true} asUser={userId} passSummaryBarData={setSummaryBarData} />
           </div>
-          {/* <Badge userId={userId} role={props.auth.user.role} /> */}
+          <Badge userId={userId} role={props.auth.user.role} />
         </Col>
       </Row>
     </Container>
