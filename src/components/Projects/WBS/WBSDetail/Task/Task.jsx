@@ -54,7 +54,6 @@ function Task(props) {
   const [tableColNum, setTableColNum] = useState(16);
   const tableRowRef = createRef();
 
-
   useEffect(() => {
     if (tableRowRef.current) {
       const spanColNum = tableRowRef.current.cells.length;

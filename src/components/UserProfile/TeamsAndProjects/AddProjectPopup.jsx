@@ -11,12 +11,15 @@ const AddProjectPopup = React.memo(props => {
   const [selectedProject, onSelectProject] = useState(undefined);
   const [isValidProject, onValidation] = useState(true);
 
-  const onAssignProject = () => {
+  const onAssignProject = async () => {
     if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
-      props.onSelectAssignProject(selectedProject);
+      await props.onSelectAssignProject(selectedProject);
       onSelectProject(undefined);
     } else {
       onValidation(false);
+    }
+    if (props.handleSubmit !== undefined) {
+      props.handleSubmit();
     }
   };
 

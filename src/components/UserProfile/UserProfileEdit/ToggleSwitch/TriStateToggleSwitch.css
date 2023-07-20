@@ -4,7 +4,7 @@
   --green: green;
 
   --switch-width: 60px;
-  --switch-height: calc(var(--switch-width) * 0.30);
+  --switch-height: calc(var(--switch-width) * 0.3);
   --knob-width: calc(var(--switch-height) * 0.8);
 }
 
@@ -17,7 +17,7 @@
   transition: all 0.3s ease-in-out;
   -webkit-transition: all 0.3s ease-in-out;
   margin: 5px;
-  }
+}
 
 .knob {
   width: var(--knob-width);
@@ -36,24 +36,16 @@
 }
 
 .default {
-  transform: translateX(
-    calc(var(--switch-width) / 2 - (var(--knob-width) / 2))
-  );
-  -webkit-transform: translateX(
-    calc(var(--switch-width) / 2 - (var(--knob-width) / 2))
-  );
+  transform: translateX(calc(var(--switch-width) / 2 - (var(--knob-width) / 2)));
+  -webkit-transform: translateX(calc(var(--switch-width) / 2 - (var(--knob-width) / 2)));
 }
 
 .requested {
   transform: translateX(
-    calc(
-      var(--switch-width) - (var(--knob-width)) - (0.1 * var(--switch-height))
-    )
+    calc(var(--switch-width) - (var(--knob-width)) - (0.1 * var(--switch-height)))
   );
   -webkit-transform: translateX(
-    calc(
-      var(--switch-width) - (var(--knob-width)) - (0.1 * var(--switch-height))
-    )
+    calc(var(--switch-width) - (var(--knob-width)) - (0.1 * var(--switch-height)))
   );
 }
 

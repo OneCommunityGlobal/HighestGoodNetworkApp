@@ -35,9 +35,9 @@ export const ProjectReport = ({ match }) => {
     }
   }, [projectMembers.members]);
 
-  const handleMemberCount = (elementCount) => {
-    setMemberCount(elementCount)
-  }
+  const handleMemberCount = elementCount => {
+    setMemberCount(elementCount);
+  };
 
   return (
     <ReportPage
@@ -53,7 +53,10 @@ export const ProjectReport = ({ match }) => {
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
           <Paging totalElementsCount={memberCount}>
-            <ProjectMemberTable projectMembers={projectMembers} handleMemberCount={handleMemberCount} />
+            <ProjectMemberTable
+              projectMembers={projectMembers}
+              handleMemberCount={handleMemberCount}
+            />
           </Paging>
         </ReportPage.ReportBlock>
       </div>
@@ -63,4 +66,3 @@ export const ProjectReport = ({ match }) => {
     </ReportPage>
   );
 };
-

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { Table, Progress } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table, Progress } from 'reactstrap';
+
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
@@ -31,7 +31,9 @@ const TeamMemberTask = ({
   let totalHoursRemaining = 0;
   const thisWeekHours = user.totaltangibletime_hrs;
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
+  const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
+  const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
 
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
@@ -198,6 +200,11 @@ const TeamMemberTask = ({
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
+                            {isAllowedToSeeDeadlineCount && (
+                              <span className="deadlineCount" title="Deadline Follow-up Count">
+                                {task.deadlineCount === undefined ? 0 : task.deadlineCount}
+                              </span>
+                            )}
                             <div>
                               <span>
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
