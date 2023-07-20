@@ -1,9 +1,15 @@
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import './ReportLogs.css';
 
-function TeamReportLogs({ title, teamMembers, teamTotalBlueSquares, teamWeeklyCommittedHours, totalTeamWeeklyWorkedHours }) {
+function TeamReportLogs({
+  title,
+  teamMembers,
+  teamTotalBlueSquares,
+  teamWeeklyCommittedHours,
+  totalTeamWeeklyWorkedHours,
+}) {
   return (
     <section>
       <h2 style={{ textAlign: 'center'}} className="teams-report-time-title">{ title }</h2>

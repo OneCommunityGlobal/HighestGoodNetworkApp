@@ -1,1 +1,1 @@
-export { ProjectMemberTable } from "./ProjectMemberTable";
+export { ProjectMemberTable } from './ProjectMemberTable';
