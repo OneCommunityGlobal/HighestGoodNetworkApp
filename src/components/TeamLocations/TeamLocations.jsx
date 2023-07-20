@@ -18,7 +18,7 @@ const TeamLocations = () => {
     }
     async function getUserProfiles() {
       const users = await axios.get(ENDPOINTS.USER_PROFILES);
-      const cachedLocations = JSON.parse(localStorage.getItem('teamLocations', '{}'));
+      const cachedLocations = JSON.parse(localStorage.getItem('teamLocations'));
       for (let i = 0; i < users.data.length; i++) {
         if (users.data[i].location === '' || !users.data[i].location) {
           continue;
