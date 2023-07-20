@@ -15,6 +15,7 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
+import { toast } from 'react-toastify';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
@@ -26,11 +27,13 @@ const EditTaskModal = props => {
 
   // get this task by id
   const [thisTask, setThisTask] = useState();
+  const [oldTask, setOldTask] = useState();
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
+        setOldTask(res?.data || {});
         setCategory(res.data.category);
         setAssigned(res.data.isAssigned);
       } catch (error) {
@@ -231,11 +234,14 @@ const EditTaskModal = props => {
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
+      oldTask,
     );
     await props.fetchAllTasks(props.wbsId);
 
-    if (props.tasks.error === 'none') {
+    if (props.tasks.error === 'none' || Object.keys(props.tasks.error).length === 0) {
       window.location.reload();
+    } else {
+      toast.error('Update failed! Error is ' + props.tasks.error);
     }
   };
 
