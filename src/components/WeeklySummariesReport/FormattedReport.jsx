@@ -264,7 +264,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
             {getTotalValidWeeklySummaries(summary, teamColor)}
             {hoursLogged >= summary.weeklycommittedHours && (
               <p>
-                <b style={{ color: teamColor }}>Hours logged:</b>
+                <b style={{ color: teamColor }}>Hours logged: </b>
                 {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
