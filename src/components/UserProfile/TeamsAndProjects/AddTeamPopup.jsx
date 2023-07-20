@@ -8,6 +8,7 @@ import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAc
 
 const AddTeamPopup = React.memo(props => {
   const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const closePopup = () => {
     props.onClose();
   };
@@ -37,6 +38,7 @@ const AddTeamPopup = React.memo(props => {
     }
   };
 
+
   const selectTeam = team => {
     onSelectTeam(team);
     onValidation(true);
@@ -65,6 +67,7 @@ const AddTeamPopup = React.memo(props => {
   useEffect(() => {
     onValidation(true);
     onNewTeamValidation(true);
+    onNewTeamValidation(true);
   }, [props.open]);
 
   useEffect(() => {
@@ -73,6 +76,7 @@ const AddTeamPopup = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
+      <ModalHeader toggle={closePopup}>Add Team</ModalHeader>
       <ModalHeader toggle={closePopup}>Add Team</ModalHeader>
       <ModalBody style={{ textAlign: 'center' }}>
         <label style={{textAlign: 'left'}}>Add to Team</label>
@@ -106,6 +110,7 @@ const AddTeamPopup = React.memo(props => {
           </Button>
         </div>
         {!isValidNewTeam ? <Alert color="danger">Please enter a team name.</Alert> : null}
+        {!isValidNewTeam ? <Alert color="danger">Please enter a team name.</Alert> : null}
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={closePopup}>
@@ -115,5 +120,6 @@ const AddTeamPopup = React.memo(props => {
     </Modal>
   );
 });
+
 
 export default AddTeamPopup;
