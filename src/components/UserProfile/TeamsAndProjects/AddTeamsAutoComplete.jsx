@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 
 const AddTeamsAutoComplete = React.memo(props => {
-  const [searchText, onInputChange] = useState('');
-  const [isOpen, toggle] = useState(false);
+  const [isOpen, toggle] = React.useState(false);
 
-  useEffect(() => {
-    if (!props.selectedTeam) onInputChange('');
-  }, [props.selectedTeam]);
+  React.useEffect(() => {
+    if (!props.selectedTeam) props.setSearchText('');
+  }, [props.selectedTeam, props.setSearchText]);
 
   return (
     <Dropdown
@@ -20,14 +19,14 @@ const AddTeamsAutoComplete = React.memo(props => {
     >
       <Input
         type="text"
-        value={searchText}
+        value={props.searchText}
         onChange={e => {
-          onInputChange(e.target.value);
+          props.setSearchText(e.target.value);
           toggle(true);
         }}
       />
 
-      {searchText !== '' && props.teamsData && props.teamsData.allTeams.length > 0 ? (
+      {props.searchText !== '' && props.teamsData && props.teamsData.allTeams.length > 0 ? (
         <div
           tabIndex="-1"
           role="menu"
@@ -37,7 +36,7 @@ const AddTeamsAutoComplete = React.memo(props => {
         >
           {props.teamsData.allTeams
             .filter(team => {
-              if (team.teamName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
+              if (team.teamName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1) {
                 return team;
               }
             })
@@ -46,7 +45,7 @@ const AddTeamsAutoComplete = React.memo(props => {
               <div
                 className="team-auto-complete"
                 onClick={() => {
-                  onInputChange(item.teamName);
+                  props.setSearchText(item.teamName);
                   toggle(false);
                   props.onDropDownSelect(item);
                 }}
