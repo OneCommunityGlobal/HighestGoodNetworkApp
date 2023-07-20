@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import { useState } from 'react';
+
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import Infos from 'components/UserProfile/EditableModal/Infos';
 
@@ -57,7 +57,20 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, CanEdit, CanRead}) 
     return googleDocLink;
   };
 
-  const getWeeklySummaryMessage = summary => {
+const getWeeklySummaryMessage = summary => {
+    const textColors = {
+      "Default": "#000000",
+      "Not Required": "#708090",
+      "Team": "#FF00FF",
+      "Team Fabulous": "#FF00FF",
+      "Team Marigold": "#FF7F00",
+      "Team Luminous": "#C4AF18",
+      "Team Lush": "#00FF00",
+      "Team Sky": "#0000FF",
+      "Team Azure": "#4B0082",
+      "Team Amethyst": "#9400D3"
+    }
+
     if (!summary) {
       return (
         <p>
@@ -68,40 +81,31 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, CanEdit, CanRead}) 
 
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
     let summaryDate = moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(weekIndex, 'week')
-      .format('YYYY-MMM-DD');
+                        .tz('America/Los_Angeles')
+                        .endOf('week')
+                        .subtract(weekIndex, 'week')
+                        .format('YYYY-MMM-DD')
     let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
+   
       if (summaryText) {
-        summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
-          .tz('America/Los_Angeles')
-          .format('YYYY-MMM-DD');
-        summaryDateText = `Summary Submitted On (${summaryDate}):`;
-        const style = {};
-        switch (summary?.weeklySummaryOption) {
-          case 'Team':
-            style.color = 'magenta';
-            break;
-          case 'Not Required':
-            style.color = 'green';
-            break;
-          case 'Required':
-            break;
-          default:
-            if (summary.weeklySummaryNotReq) {
-              style.color = 'green';
-            }
-            break;
+       
+        const style = {
+          color: textColors[summary?.weeklySummaryOption] || textColors["Default"]
         }
+
+        summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
+                      .tz('America/Los_Angeles')
+                      .format('YYYY-MMM-DD')
+        summaryDateText =`Summary Submitted On (${summaryDate}):`
+
         return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
       } else {
         if (
           summary?.weeklySummaryOption === 'Not Required' ||
           (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
         ) {
-          return <p style={{ color: 'green' }}>Not required for this user</p>;
+          return <p style={{ color: textColors["Not Required"] }}>Not required for this user</p>;
         } else {
           return <span style={{ color: 'red' }}>Not provided!</span>;
         }
@@ -171,7 +175,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, CanEdit, CanRead}) 
     }
   };
 
-  const bioSwitch = (userId, bioPosted, weeklySummaryOption) => {
+  const BioSwitch = (userId, bioPosted, weeklySummaryOption) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
     return (
       <div>
@@ -194,7 +198,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, CanEdit, CanRead}) 
     );
   };
 
-  const bioLabel = (userId, bioPosted, weeklySummaryOption) => {
+  const BioLabel = (userId, bioPosted, weeklySummaryOption) => {
     return (
       <div>
         <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>Bio announcement:</b>
@@ -207,7 +211,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, CanEdit, CanRead}) 
     );
   };
 
-  const bioFunction = bioCanEdit ? bioSwitch : bioLabel;
+  const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
 
   return (
     <>

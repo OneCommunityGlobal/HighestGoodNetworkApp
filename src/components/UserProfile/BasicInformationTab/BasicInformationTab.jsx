@@ -35,7 +35,7 @@ const Name = props => {
               placeholder="First Name"
               invalid={!formValid.firstName}
             />
-            <FormFeedback>First Name Can't be empty</FormFeedback>
+            <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
           </FormGroup>
         </Col>
         <Col md="3">
@@ -53,7 +53,7 @@ const Name = props => {
               placeholder="Last Name"
               invalid={!formValid.lastName}
             />
-            <FormFeedback>Last Name Can't be empty</FormFeedback>
+            <FormFeedback>Last Name Can&apos;t be empty</FormFeedback>
           </FormGroup>
         </Col>
       </>
@@ -530,8 +530,8 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-                : 'Inactive'}
+                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                  : 'Inactive'}
             </Label>
             &nbsp;
             {canEdit && (
@@ -775,8 +775,8 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-                  : 'Inactive'}
+                    ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                    : 'Inactive'}
               </Label>
               &nbsp;
               {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}

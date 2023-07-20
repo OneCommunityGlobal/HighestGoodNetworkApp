@@ -23,10 +23,10 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
+import hasPermission, { deactivateOwnerPermission, denyPermissionForOthersToUpdateDevAdminDetails, denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
@@ -88,6 +88,8 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
 
+  const userProfileRef = useRef();
+
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
 
@@ -99,6 +101,10 @@ function UserProfile(props) {
   useEffect(() => {
     loadUserProfile();
   }, []);
+
+  useEffect(() => {
+    userProfileRef.current = userProfile;
+  });
 
   useEffect(() => {
     checkIsTeamsEqual();
@@ -120,7 +126,7 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
-    setOriginalTeams(teams)
+    setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -152,7 +158,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects)
+    setOriginalProjects(projects);
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -408,7 +414,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(props.match.params.userId, userProfile);
+      await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -518,7 +524,7 @@ function UserProfile(props) {
     return (
       <Container fluid>
         <Row className="text-center" data-test="loading">
-          <Loading />
+          <SkeletonLoading template="UserProfile" />
         </Row>
       </Container>
     );
@@ -530,12 +536,36 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
+  const authEmail = props.userProfile?.email;
+  const checkHasPermissions = hasPermission(
+    requestorRole,
+    'editUserProfile',
+    roles,
+    userPermissions,
+  )
   const isUserSelf = targetUserId === requestorId;
+
+  const checkCanEditProfile = checkHasPermissions || isUserSelf
+
+  const canEditPermissions = (denyPermissionToSelfUpdateDevAdminDetails(
+    userProfile.email,
+    isUserSelf))
+    || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
+    ? false : checkCanEditProfile;
+
+  const checkVolunteeringTimeTabPermission = (denyPermissionToSelfUpdateDevAdminDetails(
+    userProfile.email,
+    isUserSelf))
+    || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
+    ? false : checkHasPermissions;
+
   const canEditProfile =
     userProfile.role === 'Owner'
       ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
-      : hasPermission(requestorRole, 'editUserProfile', roles, userPermissions);
-  const canEdit = canEditProfile || isUserSelf;
+      : canEditPermissions;
+
+  const canEdit = canEditProfile;
+
   const canChangeUserStatus = hasPermission(
     requestorRole,
     'changeUserStatus',
@@ -625,7 +655,7 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on "Save changes" to save the changes you have made.{' '}
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
             <div className="profile-head">
@@ -829,6 +859,7 @@ function UserProfile(props) {
               </TabPane>
               <TabPane tabId="2">
                 {
+
                   <VolunteeringTimeTab
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
@@ -836,12 +867,7 @@ function UserProfile(props) {
                     role={requestorRole}
                     onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
-                    canEdit={hasPermission(
-                      requestorRole,
-                      'editUserProfile',
-                      roles,
-                      userPermissions,
-                    )}
+                    canEdit={checkVolunteeringTimeTabPermission}
                     onStartDate={handleStartDate}
                   />
                 }
@@ -852,12 +878,17 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
-                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  edit={canEditPermissions}
                   role={requestorRole}
                   roles={roles}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                  handleSubmit={handleSubmit}
+                  disabled={!formValid.firstName ||
+                    !formValid.lastName ||
+                    !formValid.email ||
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -867,11 +898,16 @@ function UserProfile(props) {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  edit={canEditPermissions}
                   role={requestorRole}
                   userPermissions={userPermissions}
                   userId={props.match.params.userId}
                   updateTask={onUpdateTask}
+                  handleSubmit={handleSubmit}
+                  disabled={!formValid.firstName ||
+                    !formValid.lastName ||
+                    !formValid.email ||
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -922,7 +958,7 @@ function UserProfile(props) {
                       ) &&
                         canEdit &&
                         !isUserSelf && (
-                          <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+                          <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} authEmail={authEmail} />
                         )}
                       {isUserSelf &&
                         (activeTab == '1' ||
@@ -931,8 +967,19 @@ function UserProfile(props) {
                             'editUserProfile',
                             roles,
                             userPermissions,
-                          )) && (
-                          <Link to={`/updatepassword/${userProfile._id}`}>
+                          ))
+                        && (
+                          <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
+                            onClick={() => {
+                              if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
+                                alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. " +
+                                  "You shouldn’t even be using this account except to create your own accounts to use. " +
+                                  "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
+                                )
+                                return `#`;
+                              }
+                            }}
+                          >
                             <Button className="mr-1 btn-bottom" color="primary">
                               {' '}
                               Update Password
@@ -992,12 +1039,9 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
-                    canEdit={hasPermission(
-                      requestorRole,
-                      'editUserProfile',
-                      roles,
-                      userPermissions,
-                    )}
+                    onEndDate={handleEndDate}
+                    canEdit={canEditPermissions}
+                    onStartDate={handleStartDate}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1052,12 +1096,17 @@ function UserProfile(props) {
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
-                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    edit={canEditPermissions}
                     role={requestorRole}
                     roles={roles}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
                     canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                    handleSubmit={handleSubmit}
+                    disabled={!formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1113,11 +1162,16 @@ function UserProfile(props) {
                     projectsData={props?.allProjects?.projects || []}
                     onAssignProject={onAssignProject}
                     onDeleteProject={onDeleteProject}
-                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    edit={canEditPermissions}
                     role={requestorRole}
                     userPermissions={userPermissions}
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
+                    handleSubmit={handleSubmit}
+                    disabled={!formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1230,12 +1284,22 @@ function UserProfile(props) {
               {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
                 canEdit &&
                 !isUserSelf && (
-                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} authEmail={authEmail} />
                 )}
               {isUserSelf &&
                 (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                  <Link to={`/updatepassword/${userProfile._id}`}>
+                  <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
+                    onClick={() => {
+                      if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
+                        alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. " +
+                          "You shouldn’t even be using this account except to create your own accounts to use. " +
+                          "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
+                        )
+                        return `#`;
+                      }
+                    }}
+                  >
                     <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
                       {' '}
                       Update Password
@@ -1278,7 +1342,7 @@ function UserProfile(props) {
           </Col>
         </Row>
       </Container>
-    </div>
+    </div >
   );
 }
 

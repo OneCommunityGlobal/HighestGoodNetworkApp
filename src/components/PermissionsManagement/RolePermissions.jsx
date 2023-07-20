@@ -240,7 +240,8 @@ function RolePermissions(props) {
                   onClick={() => {
                     handleModalOpen(permission);
                   }}
-                /> &nbsp;&nbsp;
+                />{' '}
+                &nbsp;&nbsp;
                 <Button
                   color="danger"
                   onClick={() => {
@@ -263,8 +264,9 @@ function RolePermissions(props) {
                   className="fa fa-info-circle"
                   onClick={() => {
                     handleModalOpen(permission);
-                  }} 
-                /> &nbsp;&nbsp;
+                  }}
+                />{' '}
+                &nbsp;&nbsp;
                 <Button
                   color="success"
                   onClick={() => {
@@ -293,21 +295,23 @@ function RolePermissions(props) {
           Are you sure you want to delete <strong>{roleName}</strong> role?
         </ModalBody>
         <ModalFooter>
-          <Button onClick={toggleDeleteRoleModal} style={boxStyle}>Cancel</Button>
+          <Button onClick={toggleDeleteRoleModal} style={boxStyle}>
+            Cancel
+          </Button>
           <Button color="danger" onClick={() => deleteRole()} style={boxStyle}>
             Delete
           </Button>
         </ModalFooter>
       </Modal>
       <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal}>
-      <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
-      <ModalBody>{modalContent}</ModalBody>
-      <ModalFooter>
-        <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
-          {' '}
-          Ok{' '}
-        </Button>
-      </ModalFooter>
+        <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
+        <ModalBody>{modalContent}</ModalBody>
+        <ModalFooter>
+          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+            {' '}
+            Ok{' '}
+          </Button>
+        </ModalFooter>
       </Modal>
     </>
   );

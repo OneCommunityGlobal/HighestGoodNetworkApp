@@ -2,7 +2,6 @@ import axios from 'axios';
 import {
   getUserProfile as getUserProfileActionCreator,
   getUserTask as getUserTaskActionCreator,
-  getUserProject as getUserProjectActionCreator,
   editFirstName as editFirstNameActionCreator,
   editUserProfile as editUserProfileActionCreator,
   CLEAR_USER_PROFILE,
