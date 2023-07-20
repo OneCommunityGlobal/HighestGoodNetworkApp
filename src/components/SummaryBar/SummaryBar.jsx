@@ -640,8 +640,8 @@ const SummaryBar = props => {
                 </FormGroup>
                 <FormGroup>
                   <Label for="severity">Severity/Priority (How Bad is the Bug?) </Label>
-                  <Input type="select" name="severity" id="severity" required>
-                    <option hidden disabled selected>
+                  <Input type="select" name="severity" id="severity" defaultValue={""} required>
+                    <option hidden value="" disabled >
                       {' '}
                       -- select an option --{' '}
                     </option>
