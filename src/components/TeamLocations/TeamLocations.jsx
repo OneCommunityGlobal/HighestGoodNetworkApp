@@ -19,20 +19,22 @@ const TeamLocations = () => {
     async function getUserProfiles() {
       const users = await axios.get(ENDPOINTS.USER_PROFILES);
       const cachedLocations = JSON.parse(localStorage.getItem('teamLocations'));
-      for (let i = 0; i < users.data.length; i++) {
-        if (users.data[i].location === '' || !users.data[i].location) {
+      for (let i = 0; i < 100; i++) {
+        const userLocation = users.data[i].location;
+        if (userLocation === '' || !userLocation) {
           continue;
         }
-        if (users.data[i].location in cachedLocations) {
-          users.data[i].locationLatLng = cachedLocations[users.data[i].location];
+        if (userLocation in cachedLocations) {
+          users.data[i].locationLatLng = cachedLocations[userLocation];
         } else {
-          const response = await getUserTimeZone(users.data[i].location, geocodeAPIKey);
+          const response = await getUserTimeZone(userLocation, geocodeAPIKey);
           if (response.data.total_results) {
-            users.data[i].locationLatLng = response.data.results[0].geometry;
-            cachedLocations[users.data[i].location] = response.data.results[0].geometry;
+            const latlng = response.data.results[0].geometry;
+            users.data[i].locationLatLng = latlng;
+            cachedLocations[userLocation] = latlng;
           } else {
             users.data[i].locationLatLng = null;
-            cachedLocations[users.data[i].location] = null;
+            cachedLocations[userLocation] = null;
           }
         }
       }
