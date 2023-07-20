@@ -61,7 +61,6 @@ function UserProfile(props) {
   const [showLoading, setShowLoading] = useState(true);
   const [showSelect, setShowSelect] = useState(false);
   const [summaries, setSummaries] = useState(undefined);
-  const [infos, setInfos] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
   const [originalTasks, setOriginalTasks] = useState([]);
@@ -204,7 +203,6 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      setInfos(newUserProfile.infoCollections)
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
@@ -241,21 +239,6 @@ function UserProfile(props) {
     } catch (err) {
       setShowLoading(false);
     }
-  };
-  const getInfos = async userId => {
-    try {
-      // setShowInfo(false);
-      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const user = response.data;
-      const userInfos = user.infoCollections;
-      setInfos(userInfos);
-      // setShowInfo(true);
-    } catch (err) {
-      setShowLoading(false);
-    }
-  };
-  const updateInfos = (newInfos) => {
-    setInfos(newInfos);
   };
 
   const getTeamMembersWeeklySummary = async () => {
@@ -842,9 +825,6 @@ function UserProfile(props) {
                   roles={roles}
                   userPermissions={userPermissions}
                   asUser={requestorId}
-                  infos={infos}
-                  getInfos={getInfos}
-                  updateInfos={updateInfos}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -928,8 +908,6 @@ function UserProfile(props) {
                     canEdit={canEdit}
                     canEditRole={canEditProfile}
                     roles={roles}
-                    infos={infos}
-                    getInfos={getInfos}
                     userPermissions={userPermissions}
                   />
                 </ModalBody>

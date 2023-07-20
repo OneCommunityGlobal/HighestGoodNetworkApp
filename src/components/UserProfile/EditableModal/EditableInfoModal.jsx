@@ -10,9 +10,8 @@ import {
  import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { getInfos, updateInfos} from '../../../actions/infoCollections';
+import { getInfoCollections, addInfoCollection, updateInfoCollection} from '../../../actions/information';
 import { getUserProfile } from '../../../actions/userProfile';
-// import { updateAllUserProfilesInfoCollections } from '../../../actions/userManagement';
 
 export class EditableInfoModal extends Component {
   state = {
@@ -20,35 +19,39 @@ export class EditableInfoModal extends Component {
     fetchError: null,
     loading: true,
     editing:false,
-    role: '',
-    areaName:'',
-    areaContent:'',
+    CanRead:false,
+    CanEdit: false,
+    infoName:'',
+    infoContent:'',
   };
   
   async componentDidMount() {
-    await this.props.getInfos(this.props.asUser || this.props.currentUser.userid);
-    const {currentUser, infos } = this.props;
-    let content ='';
-    infos.forEach((index) => {
-      if (index.areaName === this.props.areaName) {
-        content = index.areaContent;
-      }
-    });
+    await this.props.getInfoCollections();
+    const {currentUser, infoCollections} = this.props;
+    let content = '';
+    if (Array.isArray(infoCollections)) {
+      infoCollections.forEach((index) => {
+        if (index.infoName === this.props.areaName) {
+          content = index.infoContent;
+        }
+      });
+    }    
+
     this.setState({
-      infoElements: {
-        ...infos
-      },
+      infoElements: [
+        ...infoCollections],
       fetchError: this.props.fetchError,
       loading: this.props.loading,
-      areaName: this.props.areaName,
-      areaContent: content || '',
-      role: currentUser.role,
+      infoName: this.props.areaName,
+      infoContent: content || '',
+      CanRead: this.props.CanRead,
+      CanEdit: this.props.CanEdit,
     });
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.infos !== prevState.infoElements) {
-      return { infoElements: nextProps.infos };
+    if (nextProps.infoCollections !== prevState.infoElements) {
+      return { infoElements: nextProps.infoCollections };
     } else {
       return null;
     }
@@ -63,7 +66,6 @@ export class EditableInfoModal extends Component {
       pauseOnFocusLoss: false,
       autoClose: 3000,
     });
-    await this.updateUserData(this.props.currentUser.userid);
   }
 
   handleSaveError = () => {
@@ -73,54 +75,54 @@ export class EditableInfoModal extends Component {
     });
   }
   handleInputChange = (content, editor) => {
-    const areaContent = this.state.areaContent;
-    this.setState({areaContent:content});
+    const infoContent = this.state.infoContent;
+    this.setState({infoContent:content});
   }
 
 
-  handleChangeInInfos = () => {
-    const newObject = {
-      areaName: this.state.areaName,
-      areaContent: this.state.areaContent,
-    }
-    let newInfoElements = this.state.infoElements ? Object.values(this.state.infoElements) : [];
-    let findIndex = -1;
+  handleChangeInInfos =  () => {
+
+    let newInfoElements = [...this.state.infoElements]
+    let findIndex = false;
+    let foundInfoId;
     newInfoElements.forEach((index) => {
-      if (index.areaName === this.state.areaName) {
-        index.areaContent=this.state.areaContent;
-        findIndex = 0;
+      if (index.infoName === this.state.infoName) {
+        index.infoContent=this.state.infoContent;
+        findIndex = true;
+        foundInfoId = index._id
       }
     });
-    if(findIndex!==-1){
-      return newInfoElements;
-    }else{
-      newInfoElements = [
-        ...newInfoElements,
-        newObject,
-      ];
-    }  
-    return newInfoElements;
+    return {
+      findIndex,
+      infoId: foundInfoId
+    };
   }
   
+  
     // Updates user profile and weekly summaries 
-  updateUserData = async userId => {
-      await this.props.getUserProfile(userId);
-      await this.props.getInfos(userId);
+  updateUserData = async () => {
+      await this.props.getInfoCollections();
   }
 
   mainSaveHandler = async () => {
-    const updatedInfos = this.handleChangeInInfos();
-    let saveResult;
-    if (updatedInfos) {
-      saveResult = await this.props.updateInfos(this.props.currentUser.userid, { infoCollections: updatedInfos });
+    const { findIndex: updatedInfo, infoId } = this.handleChangeInInfos();
+    const newInfo = {
+      infoName: this.state.infoName,
+      infoContent: this.state.infoContent,
     }
-    if (saveResult === 200) {
+    let saveResult;
+    if (!updatedInfo) {
+      saveResult = await this.props.addInfoCollection(newInfo);
+    }else{
+      saveResult = await this.props.updateInfoCollection(infoId, newInfo);
+    }
+    if (saveResult === 200 || saveResult === 201) {
       await this.handleSaveSuccess();
-      this.props.updateAllUserProfilesInfoCollections(updatedInfos);
     } else {
       this.handleSaveError();
     }
   }
+  
 
   handleSave = async event => {
     if (event) {
@@ -134,8 +136,8 @@ export class EditableInfoModal extends Component {
       loading,
       fetchError,
       infoElements,
-      areaContent,
-      areaName,
+      infoContent,
+      infoName,
      } = this.state;
     return (
         <Modal isOpen={this.props.isOpen} toggle={this.props.toggle} size="lg">
@@ -156,17 +158,17 @@ export class EditableInfoModal extends Component {
           autoresize_bottom_margin: 1,
           }}
           disabled={!this.state.editing}
-          value={this.state.areaContent}
+          value={this.state.infoContent}
           onEditorChange={this.handleInputChange}
           />
         </ModalBody>
         <ModalFooter>
         <Button onClick={this.props.toggle}>Close</Button>
-        {(this.state.role==='Owner' && !this.state.editing)&&
+        {(this.state.CanEdit && !this.state.editing)&&
         (<Button onClick={this.handleEdit}>Edit</Button>)
 
         }
-        {(this.state.role==='Owner' &&this.state.editing)&&
+        {(this.state.CanEdit&&this.state.editing)&&
         (<Button onClick={this.handleSave}>Save</Button>)
         }
         </ModalFooter>
@@ -181,9 +183,11 @@ EditableInfoModal.propTypes = {
     userid: PropTypes.string.isRequired,
   }).isRequired,
   fetchError: PropTypes.any,
-  getInfos: PropTypes.func.isRequired,
-  updateInfos: PropTypes.func.isRequired,
+  getInfoCollections:PropTypes.func.isRequired,
+  addInfoCollection:PropTypes.func.isRequired,
+  updateInfoCollection:PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+
 };
 
   
@@ -196,10 +200,9 @@ const mapStateToProps = ({ auth, infoCollections }) => ({
   
 const mapDispatchToProps = dispatch => {
   return {
-    updateInfos: (userId, infos) => dispatch(updateInfos(userId, infos)),
-    getInfos: userId => dispatch(getInfos(userId)),
-    getUserProfile: userId => dispatch(getUserProfile(userId)),
-    updateAllUserProfilesInfoCollections: (infoCollections) => dispatch(updateAllUserProfilesInfoCollections(infoCollections)),
+    getInfoCollections: ()=> dispatch(getInfoCollections()),
+    updateInfoCollection: (infoId, updatedInfo)=>dispatch(updateInfoCollection(infoId, updatedInfo)),
+    addInfoCollection: (newInfo)=>dispatch(addInfoCollection(newInfo)),
   };
 };
 

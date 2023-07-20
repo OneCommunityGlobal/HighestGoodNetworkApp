@@ -1,4 +1,4 @@
-import * as actions from '../constants/infoCollections';
+import * as actions from '../constants/information';
 
 const initialState = {
   infos: [],
@@ -20,7 +20,7 @@ export const infoCollectionsReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        summaries: action.payload.infoCollectionsData,
+        infos: action.payload.infoCollectionsData,
       };
 
     case actions.FETCH_INFOS_ERROR:
@@ -29,7 +29,12 @@ export const infoCollectionsReducer = (state = initialState, action) => {
         loading: false,
         fetchError: action.payload.error,
       };
-
+    case actions.ADD_INFO_SUCCESS:
+        return {
+          ...state,
+          infoCollections: [...state.infoCollections, action.payload.newInfo],
+        };
+  
     default:
       return state;
   }

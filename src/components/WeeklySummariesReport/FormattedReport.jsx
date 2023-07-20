@@ -12,17 +12,16 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { useState } from 'react';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import Infos from 'components/UserProfile/EditableModal/Infos';
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, CanEdit, CanRead}) => {
   const emails = [];
   //const bioCanEdit = role === 'Owner' || role === 'Administrator';
-
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
       emails.push(summary.email);
     }
   });
-
   //Necessary because our version of node is outdated
   //and doesn't have String.prototype.replaceAll
   let emailString = [...new Set(emails)].toString();
@@ -221,7 +220,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={'summary-' + index}
           >
-            <div>
+            <div className='name-info'>
               <b>Name: </b>
               <Link to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
@@ -230,6 +229,15 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
+                {(CanRead)&&(
+                  <div className='reportInfo'>
+                    <Infos 
+                    CanEdit={CanEdit}
+                    CanRead={CanRead}
+                    areaName={`${summary.firstName+summary.lastName}`+'ReportInfo'+`${index}`}
+                    fontSize={21}/>
+                  </div>
+                )}
               {showStar(hoursLogged, summary.weeklycommittedHours) && (
                 <i
                   className="fa fa-star"

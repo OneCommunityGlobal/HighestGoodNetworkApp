@@ -26,7 +26,7 @@ import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reduc
 import { roleReducer } from './roleReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
-import { infoCollectionsReducer} from './infoCollectionsReducer';
+import { infoCollectionsReducer} from './informationReducer';
 
 export default combineReducers({
   auth: authReducer,

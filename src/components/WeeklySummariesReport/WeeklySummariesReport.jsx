@@ -19,14 +19,26 @@ export class WeeklySummariesReport extends Component {
     loading: true,
     summaries: [],
     activeTab: '2',
+    CanEdit: false,
+    CanRead: false,
   };
 
   async componentDidMount() {
     await this.props.getWeeklySummariesReport();
+    let edit = false;
+    if(this.props.authUser.role==='Owner'){
+      edit = true;
+    }
+    let read = false;
+    if(this.props.authUser.role!=='Volunteer'){
+       read = true;
+    }
     this.setState({
       error: this.props.error,
       loading: this.props.loading,
-      summaries: this.props.summaries,
+      summaries: this.props.summaries, 
+      CanEdit: edit||false,
+      CanRead: read||false,
       activeTab:
         sessionStorage.getItem('tabSelection') === null
           ? '2'
@@ -60,7 +72,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab } = this.state;
+    const { error, loading, summaries, activeTab, CanEdit, CanRead } = this.state;
     const role = this.props.authUser?.role;
     const userPermissions = this.props.authUser?.permissions?.frontPermissions;
     const roles = this.props.roles;
@@ -156,6 +168,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={0}
                       bioCanEdit={bioEditPermission}
+                      CanEdit={CanEdit}
+                      CanRead={CanRead}
                     />
                   </Col>
                 </Row>
@@ -180,6 +194,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={1}
                       bioCanEdit={bioEditPermission}
+                      CanEdit={CanEdit}
+                      CanRead={CanRead}
                     />
                   </Col>
                 </Row>
@@ -195,6 +211,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={2}
                       weekDates={this.getWeekDates(2)}
+                      CanEdit={CanEdit}
+                      CanRead={CanRead}
                     />
                   </Col>
                 </Row>
@@ -204,6 +222,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={2}
                       bioCanEdit={bioEditPermission}
+                      CanEdit={CanEdit}
+                      CanRead={CanRead}
                     />
                   </Col>
                 </Row>
@@ -219,6 +239,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={3}
                       weekDates={this.getWeekDates(3)}
+                      CanEdit={CanEdit}
+                      CanRead={CanRead}
                     />
                   </Col>
                 </Row>
@@ -228,6 +250,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={3}
                       bioCanEdit={bioEditPermission}
+                      CanEdit={CanEdit}
+                      CanRead={CanRead}
                     />
                   </Col>
                 </Row>

@@ -271,14 +271,12 @@ const BasicInformationTab = props => {
     roles,
     userPermissions,
     loadUserProfile,
-    asUser,
-    infos,
-    getInfos,
-    updateInfos,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
+  const CanRead = role !=='Volunteer'? true:false;
+  const CanEdit =  role ==='Owner'? true:false;
   const onClickGetTimeZone = () => {
     if (!location) {
       alert('Please enter valid location');
@@ -451,11 +449,11 @@ const BasicInformationTab = props => {
               `${userProfile.role}`
             )}
             </Col>
-            {(userProfile.role !== 'Volunteer') &&( 
+            {(CanRead) &&( 
             <Infos
-              asUser={asUser}
+              CanEdit={CanEdit}
+              CanRead={CanRead}
               areaName={'roleInfo'}
-              infos={infos}
               fontSize={24}
              />
             )}

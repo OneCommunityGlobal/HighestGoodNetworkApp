@@ -175,20 +175,3 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
     });
   };
 };
-
-// export const updateAllUserProfilesInfoCollections = (infoCollections) => {
-//   return async (dispatch) => {
-//     try {
-//       const response = await axios.patch(ENDPOINTS.UPDATE_ALL_USER_PROFILES_INFO_COLLECTIONS, { infoCollections });
-//       if (response.status === 200) {
-//         dispatch({
-//           type: UPDATE_ALL_USER_PROFILES_INFO_COLLECTIONS,
-//           infoCollections
-//         });
-//       }
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   }
-// }
-

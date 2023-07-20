@@ -15,8 +15,8 @@ import Infos from 'components/UserProfile/EditableModal/Infos';
 const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
-  const asUser = useSelector(state => state.auth.user.userid);
-  const infos = userProfile.infoCollections;
+  const CanEdit = userProfile?.role==='Owner'?true:false;
+  const CanRead= userProfile?.role !=='Volunteer'? true:false;
   
   let history = useHistory();
   const togglePopUpNewRole = () => {
@@ -55,9 +55,9 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
                 {roleName}
                 <div className='infos'>
                 <Infos 
-                asUser={asUser}
+                CanEdit={CanEdit}
+                CanRead={CanRead}
                 areaName={`${roleName}`+'Info'}
-                infos={infos}
                 fontSize={15}
                 /> 
                 </div>
