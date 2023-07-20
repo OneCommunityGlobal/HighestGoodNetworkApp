@@ -451,7 +451,7 @@ const SummaryBar = props => {
           <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal}>
             <ModalHeader>User Suggestion</ModalHeader>
             <ModalBody>
-              {userProfile.role === 'Owner'  && !extraFieldForSuggestionForm &&
+              {userProfile.role === 'Manager'  && !extraFieldForSuggestionForm &&
                 <FormGroup>
                   <Button onClick={()=> setExtraFieldForSuggestionForm('suggestion')} type="button" color="success" size="md">
                     Edit Category
@@ -474,20 +474,20 @@ const SummaryBar = props => {
                       </FormGroup>
                       <FormGroup check>
                         <Label check>
-                           <Input onChange={()=> seteditType('delete')} type="radio" name="action" value={'delete'} required/> Delete 
+                           <Input onChange={()=> seteditType('delete')} type="radio" name="action" value={'delete'} required disabled={extraFieldForSuggestionForm === 'field' && inputFiled.length === 0}/> Delete 
                         </Label>
                       </FormGroup>
                     </FormGroup>
                     {editType !== '' && <FormGroup>
                       <Label for="newField">{extraFieldForSuggestionForm === 'suggestion' ?
-                                             editType === 'delete' ? 'Delete category (Write the suggestion category number from the dropdown to delete it)' : 'Add category' : 
-                                             editType === 'add' ? 'Add Field' : 'Delete field'}
+                                             editType === 'delete' ? 'Delete category (Write the suggestion category number from the dropdown to delete it).' : 'Add category' : 
+                                             editType === 'add' ? 'Add Field' : 'Delete field (Copy the field name to delete it).'}
                       </Label>
                       <Input
                           type="textarea"
                           name="newField"
                           id="newField"
-                          placeholder={extraFieldForSuggestionForm === 'suggestion' ? editType === 'delete'  ? 'write the category number, like 1 or 2 etc': 'write the category name': 'write the filed name'}
+                          placeholder={extraFieldForSuggestionForm === 'suggestion' ? editType === 'delete'  ? 'write the category number, like 1 or 2 etc': 'write the category name': 'write the field name'}
                           required
                         /> 
                     </FormGroup>}
@@ -507,8 +507,8 @@ const SummaryBar = props => {
                 <FormGroup>
                   <Label for="suggestioncate">Please select a category of your suggestion:</Label>
                   
-                  <Input onChange={()=> setTakeInput(true)} type="select" name="suggestioncate" id="suggestioncate" required>
-                    <option disabled  value="none" selected hidden>
+                  <Input onChange={()=> setTakeInput(true)} type="select" name="suggestioncate" id="suggestioncate" defaultValue={""} required>
+                    <option disabled  value=""  hidden>
                       {' '}
                       -- select an option --{' '}
                     </option>
@@ -527,8 +527,8 @@ const SummaryBar = props => {
                     type="textarea"
                     name="suggestion"
                     id="suggestion"
-                    required
                     placeholder="I suggest ..."
+                    required
                   />
                  </FormGroup>}
                 {inputFiled.length > 0 && inputFiled.map((item, index) =>
@@ -538,8 +538,8 @@ const SummaryBar = props => {
                     type="textbox"
                     name={item}
                     id={item}
-                    required
                     placeholder=""
+                    required
                   />
                  </FormGroup>
                 )}
@@ -641,7 +641,7 @@ const SummaryBar = props => {
                 <FormGroup>
                   <Label for="severity">Severity/Priority (How Bad is the Bug?) </Label>
                   <Input type="select" name="severity" id="severity" required>
-                    <option hidden disabled defaultValue value>
+                    <option hidden disabled selected>
                       {' '}
                       -- select an option --{' '}
                     </option>
