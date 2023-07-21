@@ -404,7 +404,7 @@ class AddUserProfile extends Component {
       </StickyContainer>
     );
   }
-
+  
   onDeleteTeam = deletedTeamId => {
     const teams = [...this.state.teams];
     const filteredTeam = teams.filter(team => team._id !== deletedTeamId);
@@ -412,9 +412,9 @@ class AddUserProfile extends Component {
     this.setState({
       teams: filteredTeam,
     });
-    let profile = this.props.userProfile
-    profile = {...profile, teams: profile.teams.filter(team => team._id !== deletedTeamId)}
-    deleteTeamMember(deletedTeamId, profile);
+    // let profile = this.props.userProfile
+    // profile = {...profile, teams: profile.teams.filter(team => team._id !== deletedTeamId)}
+    // deleteTeamMember(deletedTeamId, profile);
   };
 
   onDeleteProject = deletedProjectId => {
@@ -424,7 +424,6 @@ class AddUserProfile extends Component {
       projects: _projects,
     });
   };
-
   onAssignTeam = assignedTeam => {
     const teams = [...this.state.teams];
     teams.push(assignedTeam);
@@ -433,9 +432,9 @@ class AddUserProfile extends Component {
       teams: teams,
     });
     console.log('adduserprop',this.props)
-    let profile = this.props.userProfile
-    profile.teams.push(assignedTeam);
-    addTeamMember(assignedTeam._id, profile);
+    // let profile = this.props.userProfile
+    // profile.teams.push(assignedTeam);
+    // addTeamMember(assignedTeam._id, profile);
   };
 
   onAssignProject = assignedProject => {

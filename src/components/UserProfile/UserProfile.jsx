@@ -264,11 +264,9 @@ function UserProfile(props) {
   };
 
   const onDeleteTeam = async (deletedTeamId) => {
-    ///////////////////
-    console.log('prop',props)
-    
+    let profile =  originalUserProfile
     setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId));
-    let profile = props.userProfile;
+    
     profile = {...profile, teams: profile.teams.filter(team => team._id !== deletedTeamId)}
     await deleteTeamMember(deletedTeamId, profile)(dispatch);
     
@@ -279,11 +277,9 @@ function UserProfile(props) {
   };
 
   const onAssignTeam = async (assignedTeam) => {
-    ///////////////////
-    console.log('prop',props)
-    
+   
     setTeams(prevState => [...prevState, assignedTeam]);
-    let profile = props.userProfile;
+    let profile = originalUserProfile
     profile.teams.push(assignedTeam);
     await addTeamMember(assignedTeam._id, profile)(dispatch);
     

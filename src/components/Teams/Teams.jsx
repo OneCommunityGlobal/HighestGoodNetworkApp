@@ -20,7 +20,8 @@ import TeamMembersPopup from './TeamMembersPopup';
 import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
-import { userProfileByIdReducer } from 'reducers/userProfileByIdReducer';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -202,11 +203,14 @@ class Teams extends React.PureComponent {
     );
   };
 
-  onAddUser = user => {
-    //console.log('USERPROFILE', this.props.state)
-    this.props.state.userProfile.teams.push({teamName: this.state.selectedTeam ,_id: this.state.selectedTeamId})
-    console.log('this.props.state.userProfile',this.props.state.userProfile)
-    this.props.addTeamMember(this.state.selectedTeamId, this.props.state.userProfile);
+  onAddUser = async (user) => {
+    let profile = this.props.state.userProfile;
+    if(user._id !== profile._id){
+     const res = await axios.get(ENDPOINTS.USER_PROFILE(user._id));
+     profile = res.data
+   }
+    profile.teams.push({teamName: this.state.selectedTeam ,_id: this.state.selectedTeamId})
+    this.props.addTeamMember(this.state.selectedTeamId, profile);
   };
 
   /**
@@ -364,11 +368,14 @@ class Teams extends React.PureComponent {
   /**
    * callback for deleting a member in a team
    */
-  onDeleteTeamMember = deletedUserId => {
-    //console.log(this.props.state.userProfile)
-    this.props.state.userProfile = {...this.props.state.userProfile, teams: this.props.state.userProfile.teams.filter(team => team._id !== this.state.selectedTeamId)}
-    console.log('his.props.state.userProfile',this.props.state.userProfile)
-    this.props.deleteTeamMember(this.state.selectedTeamId, this.props.state.userProfile);
+  onDeleteTeamMember = async (deletedUserId) => {
+     let profile = this.props.state.userProfile
+    if(deletedUserId !== profile._id){
+      const res = await axios.get(ENDPOINTS.USER_PROFILE(deletedUserId));
+      profile = res.data
+    }
+    profile = {...profile, teams: profile.teams.filter(team => team._id !== this.state.selectedTeamId)}
+    this.props.deleteTeamMember(this.state.selectedTeamId, profile);
     alert(
       'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
     );

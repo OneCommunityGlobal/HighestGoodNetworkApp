@@ -78,17 +78,11 @@ const TeamMemberTasks = props => {
           setUserRole(user.data.role);
         });
     } else {
-      //getuser(userId);
       getUserProfile(userId)(dispatch)
       dispatch(fetchTeamMembersTask(userId, null));
       setUserRole(props.auth.user.role);
     }
   }, []);
-  // const getuser = async (userid) =>{
-  //   let res = await getUserProfile(userid)(dispatch)
-  //   console.log('originalprogile',res)
-  //   //setProfile(res)
-  // }
 
   useEffect(() => {
     if (clickedToShowModal) {
@@ -98,8 +92,6 @@ const TeamMemberTasks = props => {
 
   //if user role is core team instead of showing all members show only team members by default.
   useEffect(()=>{
-     console.log('managingTeams',props.managingTeams)
-    console.log('PROFILE',props.userProfile)
     if((props.userProfile.role=== 'Owner' || props.userProfile.role === 'Administrator' || props.userProfile.role === 'Core Team') && props.managingTeams.length > 0){
       setisTeamTab(true)
       setisLoadingmember(true)
@@ -109,12 +101,13 @@ const TeamMemberTasks = props => {
   //which data to show depending on user role
   useEffect(()=>{
     if(userRole){
-      if(userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team' && props.managingTeams.length > 0){ 
+      if((userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Manager') && props.managingTeams.length > 0){ 
         getMyTeam();
       }else{
         renderTeamsList();
       }
     }
+
   },[usersWithTasks])
 
   useEffect(() => {  
@@ -273,6 +266,7 @@ const TeamMemberTasks = props => {
 
   //get user's tems member data
   const getMyTeam = async () => { 
+
     let member = []
     let res
     for(let i = 0; i < props.userProfile.teams.length; i++){    
@@ -286,7 +280,7 @@ const TeamMemberTasks = props => {
     }
     const filteredlist = usersWithTasks.filter(user => {
       for(let i = 0; i < member.length; i++){
-        if(user.personId == member[i]._id){
+        if(user.personId === member[i]._id){
           return user
         }
       }
@@ -345,7 +339,7 @@ const TeamMemberTasks = props => {
 
 //set all memmers
 const renderTeamsList = async () => {
-    console.log(userRole)
+    
     setisLoadingmember(true)
     let filteredMembers
     if (usersWithTasks && usersWithTasks.length > 0) {
@@ -353,6 +347,7 @@ const renderTeamsList = async () => {
           return member;
       });  
     }
+    
     arrangeMembers(filteredMembers,setallTeamList, false)
   }
 
