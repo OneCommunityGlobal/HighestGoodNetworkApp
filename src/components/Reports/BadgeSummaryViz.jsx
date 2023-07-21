@@ -10,9 +10,17 @@ const BadgeSummaryViz = (props) => {
   
   const toggle = () => setIsOpen(prev => !prev)
 
-  const {userId, badgeCollection, firstName, lastName, userProfile} = props
-  console.log('userProfile: ', userProfile);
+  const {
+    userId,
+    badgeCollection,
+    role,
+    firstName,
+    lastName,
+    permissions
+  } = props
   
+  const permissionsUser = permissions?.frontPermissions
+
   return (
     <div>
       <Button onClick={toggle} style={boxStyle}>
@@ -20,20 +28,20 @@ const BadgeSummaryViz = (props) => {
       </Button>
       <Modal size="lg" isOpen={isOpen} toggle={toggle}>
         <ModalHeader>Full View of Badge History</ModalHeader>
-        {/* <ModalBody>
+        <ModalBody>
           <BadgeReport
             badgeCollection={badgeCollection}
             userId={userId}
-            // role={props.role}
+            role={role}
             firstName={firstName}
             lastName={lastName}
             close={toggle}
             // setUserProfile={props.setUserProfile}
             // setOriginalUserProfile={props.setOriginalUserProfile}
             // handleSubmit={props.handleSubmit}
-            // permissionsUser={permissionsUser}
+            permissionsUser={permissionsUser}
           />
-        </ModalBody> */}
+        </ModalBody>
       </Modal>
     </div>)
 }
