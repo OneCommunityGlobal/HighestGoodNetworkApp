@@ -58,9 +58,8 @@ class SummaryManagement extends Component {
   }
   async componentDidMount() {
     this.props.getAllSummaryGroup();
-    // const user = await this.props.getUser();
-    // this.setState({ currentUserRole: user.role });
-    // this.setState({ currentUserId: user.userid });
+    await this.props.getWeeklySummariesReport();
+    await this.props.getWeeklySummaries('this.state.selectedSummaryGroupId');
   }
 
   /*Create New SummaryGroup related function */

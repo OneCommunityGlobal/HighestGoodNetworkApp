@@ -68,7 +68,7 @@ const UserTeamsTable = props => {
               marginBottom: '10px',
             }}
           >
-            <span className="teams-span">Teams</span>
+            <span className="teams-span">Summary Teams</span>
           </Col>
           {props.edit && props.role && (
             <Col md="5" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -94,7 +94,7 @@ const UserTeamsTable = props => {
               {props.role && (
                 <tr>
                   <th>#</th>
-                  <th>Team Name</th>
+                  <th>Summary Team Name</th>
                   {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
                     <th style={{ flex: 2 }}>{}</th>
                   ) : null}
@@ -106,30 +106,7 @@ const UserTeamsTable = props => {
                 props.userTeamsById.map((team, index) => (
                   <tr key={index} className="tr">
                     <td>{index + 1}</td>
-                    <td>{`${team.teamName}`}</td>
-                    {props.edit && props.role && (
-                      <td>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <Button
-                            disabled={
-                              !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)
-                            }
-                            color="danger"
-                            onClick={e => {
-                              props.onDeleteClick(team._id);
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </td>
-                    )}
+                    <td>{`${team.summaryGroupName}`}</td>
                   </tr>
                 ))
               ) : (

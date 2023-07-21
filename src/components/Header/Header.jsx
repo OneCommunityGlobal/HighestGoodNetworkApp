@@ -76,8 +76,6 @@ export const Header = props => {
     setLogoutPopup(true);
   };
 
-  // console.log('User roles: ', roles);
-
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">

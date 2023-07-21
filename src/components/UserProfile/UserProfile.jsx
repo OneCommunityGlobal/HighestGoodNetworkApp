@@ -834,7 +834,7 @@ function UserProfile(props) {
                   <NavLink
                     className={classnames({ active: activeTab === '6' }, 'nav-link')}
                     onClick={() => toggleTab('6')}
-                    id="nabLink-teams"
+                    id="nabLink-summaryteams"
                   >
                     Summary Teams
                   </NavLink>
@@ -1251,6 +1251,30 @@ function UserProfile(props) {
                     </div>
                   </Row>
                 </ModalFooter>
+              </Modal>
+              <Button
+                className="list-button"
+                onClick={() => toggle('Summary Teams')}
+                color="secondary"
+              >
+                Summary Teams
+              </Button>
+              <Modal isOpen={menuModalTabletScreen === 'Summary Teams'} toggle={toggle}>
+                <ModalHeader toggle={toggle}>Summary Teams</ModalHeader>
+                <ModalBody>
+                  <SummaryTeamsTab
+                    userTeams={teams || []}
+                    teamsData={props?.allTeams?.allTeamsData || []}
+                    onAssignTeam={onAssignTeam}
+                    onDeleteteam={onDeleteTeam}
+                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    role={requestorRole}
+                    roles={roles}
+                    userId={props.match.params.userId}
+                    fullName={`${userProfile.firstName} ${userProfile.lastName}`}
+                  />
+                </ModalBody>
+                <ModalFooter></ModalFooter>
               </Modal>
             </List>
           </Col>

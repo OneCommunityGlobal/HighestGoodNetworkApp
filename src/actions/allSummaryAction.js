@@ -98,15 +98,11 @@ export const extractSummaryReceivers = id => {
     try {
       if (id) {
         const summarydata = await getState().allSummaryGroups;
-        // console.log('Receiver data is getting here', summarydata);
         const groupObject = summarydata.allSummaryGroups.filter(group => group._id === id)[0]
           .summaryReceivers;
-
-        // const groupObject = summarydata.allSummaryGroups.filter(group => group._id === id);
-        // console.log('Group Object: ', groupObject);
         const result = await Promise.resolve({ summaryReceivers: groupObject });
         const receivers = result.summaryReceivers;
-        // console.log('result: ', receivers);
+
         return receivers;
       }
     } catch (err) {
@@ -121,7 +117,6 @@ export const getUser = () => {
     try {
       const userAll = await getState().auth;
       const user = userAll.user;
-      // console.log('user: ', user);
       return user;
     } catch (err) {
       console.error('user not found:', err);

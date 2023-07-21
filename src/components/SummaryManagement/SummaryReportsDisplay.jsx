@@ -3,7 +3,6 @@ import SummaryComponent from './SummaryReportDisplayComponent';
 
 const SummaryTable = props => {
   const [data, setData] = useState([]);
-  // const [summaryReceiver, setSummaryReceiver] = useState(undefined);
 
   const updateData = async () => {
     const report = await props.teamMembersReports();
@@ -14,28 +13,11 @@ const SummaryTable = props => {
     const fetchData = async () => {
       const result = await updateData();
       setData(result);
-      // getSummaryReceiver();
     };
     if (props.summaryGroupId) {
       fetchData();
     }
   }, [props.summaryGroupId]);
-
-  // useEffect(() => {
-  //   getSummaryReceiverdata();
-  // }, [props.summaryReceiver, props.currentUserId]);
-
-  // useEffect(() => {
-  // console.log('in display receiver value: ', summaryReceiver);
-  // console.log('users data: ', props.usersdata);
-  // }, [summaryReceiver]);
-
-  useEffect(() => {
-    if (props.currentUserRole && props.currentUserId) {
-      // getSummaryReceiverdata();
-      // console.log('use effect is working..');
-    }
-  }, [props.currentUserRole, props.currentUserId, props.summaryReceiver]);
 
   const closeDisplay = () => {
     props.onDisplaySummaryTableFunc('false');

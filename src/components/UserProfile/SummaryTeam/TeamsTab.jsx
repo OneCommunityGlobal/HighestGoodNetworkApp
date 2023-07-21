@@ -57,6 +57,7 @@ const TeamsTab = props => {
     if (summaryGroups.length !== 0) {
       const filteredGroupsInfo = filterGroups(userId, summaryGroups);
       setFilteredGroups(filteredGroupsInfo);
+      console.log('The corrent tab is beeing called');
     }
   }, [summaryGroups]);
 
