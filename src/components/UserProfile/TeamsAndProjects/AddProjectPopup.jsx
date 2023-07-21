@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
+import { boxStyle } from 'styles';
 
 const AddProjectPopup = React.memo(props => {
   const closePopup = () => {
@@ -10,12 +11,15 @@ const AddProjectPopup = React.memo(props => {
   const [selectedProject, onSelectProject] = useState(undefined);
   const [isValidProject, onValidation] = useState(true);
 
-  const onAssignProject = () => {
+  const onAssignProject = async () => {
     if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
-      props.onSelectAssignProject(selectedProject);
+      await props.onSelectAssignProject(selectedProject);
       onSelectProject(undefined);
     } else {
       onValidation(false);
+    }
+    if (props.handleSubmit !== undefined) {
+      props.handleSubmit();
     }
   };
 
@@ -38,7 +42,11 @@ const AddProjectPopup = React.memo(props => {
             onDropDownSelect={selectProject}
             selectedProject={selectedProject}
           />
-          <Button color="primary" style={{ marginLeft: '5px' }} onClick={onAssignProject}>
+          <Button
+            color="primary"
+            style={{ ...boxStyle, marginLeft: '5px' }}
+            onClick={onAssignProject}
+          >
             Confirm
           </Button>
         </div>
@@ -52,7 +60,7 @@ const AddProjectPopup = React.memo(props => {
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={closePopup}>
+        <Button color="secondary" onClick={closePopup} style={boxStyle}>
           Close
         </Button>
       </ModalFooter>

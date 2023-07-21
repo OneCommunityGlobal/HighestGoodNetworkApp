@@ -30,6 +30,7 @@ import { getUserProfile } from '../../actions/userProfile';
 import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
 import './BadgeReport.css';
+import { boxStyle } from 'styles';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -346,7 +347,7 @@ const BadgeReport = props => {
                     <td>
                       {' '}
                       <UncontrolledDropdown className="me-2" direction="down">
-                        <DropdownToggle caret color="primary">
+                        <DropdownToggle caret color="primary" style={boxStyle}>
                           Dates
                         </DropdownToggle>
                         <DropdownMenu>
@@ -411,7 +412,7 @@ const BadgeReport = props => {
         </div>
         <Button
           className="btn--dark-sea-green float-right"
-          style={{ margin: 5 }}
+          style={{ ...boxStyle, margin: 5 }}
           onClick={e => {
             saveChanges();
           }}
@@ -420,14 +421,14 @@ const BadgeReport = props => {
         </Button>
         <Button
           className="btn--dark-sea-green float-right"
-          style={{ margin: 5 }}
+          style={{ ...boxStyle, margin: 5 }}
           onClick={pdfDocGenerator}
         >
           Export All Badges to PDF
         </Button>
         <Button
           className="btn--dark-sea-green float-right"
-          style={{ margin: 5 }}
+          style={{ ...boxStyle, margin: 5 }}
           onClick={pdfFeaturedDocGenerator}
         >
           Export Selected/Featured Badges to PDF
@@ -437,13 +438,15 @@ const BadgeReport = props => {
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
             <br />
             <p>
-              Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
-              "Save Changes" button below.
+              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
+              until you click the &quot;Save Changes&quot; button below.
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={() => handleCancel()}>Cancel</Button>
-            <Button color="danger" onClick={() => deleteBadge()}>
+            <Button onClick={() => handleCancel()} style={boxStyle}>
+              Cancel
+            </Button>
+            <Button color="danger" onClick={() => deleteBadge()} style={boxStyle}>
               Yes, Delete
             </Button>
           </ModalFooter>
@@ -631,13 +634,15 @@ const BadgeReport = props => {
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
             <br />
             <p>
-              Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
-              "Save Changes" button below.
+              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
+              until you click the &quot;Save Changes&quot; button below.
             </p>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={() => handleCancel()}>Cancel</Button>
-            <Button color="danger" onClick={() => deleteBadge()}>
+            <Button onClick={() => handleCancel()} style={boxStyle}>
+              Cancel
+            </Button>
+            <Button color="danger" onClick={() => deleteBadge()} style={boxStyle}>
               Yes, Delete
             </Button>
           </ModalFooter>

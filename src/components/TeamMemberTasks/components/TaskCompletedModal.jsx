@@ -1,10 +1,7 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { boxStyle } from 'styles';
 
-/**
- * Modal popup to delete the user profile
- */
 const TaskCompletedModal = React.memo(props => {
   const [isLoadingTask, setIsLoadingTask] = useState(false);
 
@@ -31,31 +28,49 @@ const TaskCompletedModal = React.memo(props => {
     props.updateTask(task._id, updatedTask);
   };
 
+  const removeUserFromTask = task => {
+    const newResources = task.resources.filter(item => item.userID !== props.userId);
+    const updatedTask = { ...task, resources: newResources };
+    props.updateTask(task._id, updatedTask);
+  };
+
+  let isCheckmark = props.taskModalOption === 'Checkmark';
+  let modalHeader = isCheckmark ? 'Mark as Done' : 'Remove User from Task';
+  let modalBody = isCheckmark
+    ? 'Are you sure you want to mark this task as done?'
+    : 'Are you sure you want to remove this user from the task?';
+
   return (
     <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
-      <ModalHeader toggle={() => props.popupClose()}>Mark as Done</ModalHeader>
+      <ModalHeader toggle={() => props.popupClose()}>{modalHeader}</ModalHeader>
       {isLoadingTask ? (
         <ModalBody>
           <p>Loading...</p>
         </ModalBody>
       ) : (
         <ModalBody>
-          <p>Are you sure you want to mark this task as done?</p>
+          <p>{modalBody}</p>
           <ModalFooter>
             <Button
               color="primary"
               onClick={() => {
                 setIsLoadingTask(true);
-                removeTaskFromUser(props.task);
+                {
+                  props.taskModalOption === 'Checkmark'
+                    ? removeTaskFromUser(props.task)
+                    : removeUserFromTask(props.task);
+                }
               }}
               disabled={isLoadingTask}
+              style={boxStyle}
             >
-              Mark as Done
+              {modalHeader}
             </Button>
             <Button
               onClick={() => {
-                closeFunction()
+                closeFunction();
               }}
+              style={boxStyle}
             >
               Cancel
             </Button>

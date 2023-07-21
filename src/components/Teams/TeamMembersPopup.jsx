@@ -1,9 +1,8 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import MembersAutoComplete from './MembersAutoComplete';
 import hasPermission from 'utils/permissions';
+import { boxStyle } from 'styles';
 
 const TeamMembersPopup = React.memo(props => {
   // debugger;
@@ -49,7 +48,7 @@ const TeamMembersPopup = React.memo(props => {
                 searchText={searchText}
                 setSearchText={setSearchText}
               />
-              <Button color="primary" onClick={onAddUser}>
+              <Button color="primary" onClick={onAddUser} style={boxStyle}>
                 Add
               </Button>
             </div>
@@ -91,6 +90,7 @@ const TeamMembersPopup = React.memo(props => {
                             onClick={() => {
                               props.onDeleteClick(`${user._id}`);
                             }}
+                            style={boxStyle}
                           >
                             Delete
                           </Button>
@@ -106,7 +106,7 @@ const TeamMembersPopup = React.memo(props => {
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={closePopup}>
+          <Button color="secondary" onClick={closePopup} style={boxStyle}>
             Close
           </Button>
         </ModalFooter>

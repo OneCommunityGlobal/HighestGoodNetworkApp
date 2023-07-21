@@ -4,14 +4,20 @@ import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock } from '../mockStates';
+import {
+  authMock,
+  userProfileMock,
+  timeEntryMock,
+  userProjectMock,
+  rolesMock,
+} from '../mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
 import * as actions from '../../actions/timeEntries';
 
 const mockStore = configureStore([thunk]);
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 describe('<TimeEntryForm edit/>', () => {
   let store;
@@ -22,7 +28,7 @@ describe('<TimeEntryForm edit/>', () => {
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock
+      role: rolesMock,
     });
     toggle = jest.fn();
     store.dispatch = jest.fn();
@@ -62,7 +68,9 @@ describe('<TimeEntryForm edit/>', () => {
     //expect(screen.getAllByRole('spinbutton')[0]).toHaveValue(0);
     //expect(screen.getAllByRole('spinbutton')[1]).toHaveValue(0);
     expect(screen.getByLabelText('Date')).toHaveValue(
-      moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+      moment()
+        .tz('America/Los_Angeles')
+        .format('YYYY-MM-DD'),
     );
     expect(screen.getByRole('combobox')).toHaveValue('');
   });

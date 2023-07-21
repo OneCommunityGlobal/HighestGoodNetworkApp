@@ -1,6 +1,5 @@
 .team-member-tasks {
   background-color: white;
-  
 }
 
 .team-member-tasks h1 {
@@ -8,7 +7,7 @@
   font-size: 20px;
 }
 
-.table-container{
+.table-container {
   overflow-x: auto;
 }
 
@@ -21,6 +20,12 @@
 .team-member-tasks-done {
   margin-left: 10px;
   color: green;
+  cursor: pointer;
+}
+
+.team-member-task-remove {
+  margin-left: 10px;
+  color: red;
   cursor: pointer;
 }
 
@@ -38,6 +43,7 @@
 }
 
 .team-task-progress {
+  position: relative;
   width: 35%;
 }
 
@@ -55,6 +61,20 @@
 
 .team-member-tasks-user-name {
   width: 70%;
+}
+
+.deadlineCount {
+  position: absolute;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 40px;
+  color: #fff;
+  height: 25px;
+  font-size: 15px;
+  width: 25px;
+  top: 3px;
+  right: 0;
 }
 
 .team-clocks {
