@@ -14,6 +14,7 @@ import { getcolor, getProgressValue } from '../../utils/effortColors';
 import {faFrown} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
   const prevDeps = useRef(deps);
@@ -59,9 +60,7 @@ const LeaderBoard = ({
 
   //get leaderboard data
   const getdata = async ()=>{
-    // const url = ENDPOINTS.LEADER_BOARD(userId);
-    // const res = await httpService.get(url);
-    // let leaderBoardData = res.data
+
     let leaderBoardData = await getLeaderboardData(userId)(dispatch)
     if (loggedInUser.role !== 'Administrator' && loggedInUser.role !== 'Owner' && loggedInUser.role !== 'Core Team') {
       leaderBoardData = leaderBoardData.filter(element => {
@@ -210,8 +209,8 @@ useEffect(()=>{
     </>,
     <>
       <p>
-        An Admin has made it so you can see your team but they can't see you. We recommend you keep
-        this setting as it is.
+        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you
+        keep this setting as it is.
       </p>
       <p>
         If you want to change this setting so your team/everyone can see and access your time log
@@ -327,23 +326,7 @@ useEffect(()=>{
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr>
-              <td className="align-middle">
-                <Link to={`/dashboard/`}>
-                  <div
-                    title={`Weekly Committed: ${organizationData.weeklycommittedHours} hours`}
-                    style={{
-                      backgroundColor:
-                        organizationData.tangibletime >= organizationData.weeklycommittedHours
-                          ? 'green'
-                          : 'red',
-                      width: 15,
-                      height: 15,
-                      borderRadius: 7.5,
-                      margin: 'auto',
-                    }}
-                  />  
-                </Link>
-              </td>
+              <td />
               <th scope="row">{organizationData.name}</th>
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime}</span>
@@ -364,7 +347,7 @@ useEffect(()=>{
             {isLoadingmember ? <Loading/>: (
             showLeaderboard.map((item, key) => (
               <tr key={key}>
-                <td className="align-middle" onClick={() => dashboardToggle(item)}>
+                <td className="align-middle">
                   <div>
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
                       <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
@@ -381,22 +364,32 @@ useEffect(()=>{
                       </ModalFooter>
                     </Modal>
                   </div>
-
-                  {/* <Link to={`/dashboard/${item.personId}`}> */}
-                  {
-                    hasLeaderboardPermissions(loggedInUser.role) && 
-                    showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: isAdmin ? 'space-between' : 'center',
+                    }}
+                  >
+                    {/* <Link to={`/dashboard/${item.personId}`}> */}
+                    <div onClick={() => dashboardToggle(item)}>
+                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                      showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
-                        className="fa fa-star"
-                        title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                        style={{
-                          color: assignStarDotColors(item.tangibletime, item.weeklycommittedHours),
-                          fontSize: '20px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      />) : (
+                          className="fa fa-star"
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                          style={{
+                            color: assignStarDotColors(
+                              item.tangibletime,
+                              item.weeklycommittedHours,
+                            ),
+                            fontSize: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        />
+                      ) : (
                         <div
                           title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                           style={{
@@ -409,8 +402,20 @@ useEffect(()=>{
                             verticalAlign: 'middle',
                           }}
                         />
-                      )
-                  }
+                      )}
+                    </div>
+                    {isAdmin && item.hasSummary && (
+                      <div
+                        title={`Weekly Summary Submitted`}
+                        style={{
+                          color: '#32a518',
+                          cursor: 'default',
+                        }}
+                      >
+                        <strong>✓</strong>
+                      </div>
+                    )}
+                  </div>
                   {/* </Link> */}
                 </td>
                 <th scope="row">
@@ -418,7 +423,9 @@ useEffect(()=>{
                     {item.name}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
-                  {isAdmin && !item.isVisible && <i className="fa fa-eye-slash" title="User is invisible"></i>}
+                  {isAdmin && !item.isVisible && (
+                    <i className="fa fa-eye-slash" title="User is invisible"></i>
+                  )}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
@@ -432,14 +439,19 @@ useEffect(()=>{
                   </Link>
                 </td>
                 <td className="align-middle">
-                  <span title="Total time">{item.totaltime}</span>
+                  <span
+                    title="Total time"
+                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                  >
+                    {item.totaltime}
+                  </span>
                 </td>
               </tr>
             )))}
           </tbody>
         </Table>
         {isTeamTab && myTeamData?.length === 1 && <p className='noMember'>Great, you are on a team! Unfortunately though, your team has only you in it 
-         <FontAwesomeIcon icon={faFrown} size='lg' style={{color: "#ffd22e", marginLeft:'2px'}} />. Contact an Administrator or your Manager to fix this so you aren't so lonely here!</p>}
+         <FontAwesomeIcon icon={faFrown} size='lg' style={{color: "#ffd22e", marginLeft:'2px'}} />. Contact an Administrator or your Manager to fix this so you are not so lonely here!</p>}
       </div>
     </div>
   );
