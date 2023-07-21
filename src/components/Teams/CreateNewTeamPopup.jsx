@@ -1,6 +1,6 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import { boxStyle } from 'styles';
 
 const CreateNewTeamPopup = React.memo(props => {
   const [newTeam, onNewName] = useState('');
@@ -31,7 +31,7 @@ const CreateNewTeamPopup = React.memo(props => {
         {isValidTeam === false ? <Alert color="danger">Please enter a team name.</Alert> : <></>}
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <Button color="secondary" onClick={closePopup}>
           Close
         </Button>
         <Button
@@ -43,7 +43,6 @@ const CreateNewTeamPopup = React.memo(props => {
               onValidation(false);
             }
           }}
-          style={boxStyle}
         >
           OK
         </Button>

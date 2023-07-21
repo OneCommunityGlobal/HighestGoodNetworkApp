@@ -13,7 +13,6 @@ import {
 } from '../../actions/userManagement';
 import { connect } from 'react-redux';
 import Loading from '../common/Loading';
-import SkeletonLoading from '../common/SkeletonLoading';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
@@ -23,7 +22,6 @@ import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
-import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
@@ -66,7 +64,7 @@ class UserManagement extends React.PureComponent {
     return (
       <Container fluid>
         {fetching ? (
-          <SkeletonLoading template="UserManagement" />
+          <Loading />
         ) : (
           <React.Fragment>
             {this.popupElements()}
@@ -79,9 +77,9 @@ class UserManagement extends React.PureComponent {
             <div className="table-responsive">
               <Table className="table table-bordered noWrap">
                 <thead>
-                  <UserTableHeader
-                    authRole={this.props.state.auth.user.role}
-                    roleSearchText={this.state.roleSearchText}
+                  <UserTableHeader 
+                  authRole={this.props.state.auth.user.role} 
+                  roleSearchText={this.state.roleSearchText}
                   />
                   <UserTableSearchHeader
                     onFirstNameSearch={this.onFirstNameSearch}
@@ -90,7 +88,7 @@ class UserManagement extends React.PureComponent {
                     onEmailSearch={this.onEmailSearch}
                     onWeeklyHrsSearch={this.onWeeklyHrsSearch}
                     roles={roles}
-                    authRole={this.props.state.auth.user.role}
+                    authRole={this.props.state.auth.user.role} 
                     roleSearchText={this.state.roleSearchText}
                   />
                 </thead>
@@ -197,7 +195,6 @@ class UserManagement extends React.PureComponent {
               onDeleteClick={that.onDeleteButtonClick}
               onActiveInactiveClick={that.onActiveInactiveClick}
               onResetClick={that.onResetClick}
-              authEmail={this.props.state.userProfile.email}
               user={user}
               role={this.props.state.auth.user.role}
               userPermissions={this.props.state.auth.user?.permissions?.frontPermisssion}
@@ -268,6 +265,7 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
+    console.log(status);
     if (status === FinalDay.NotSetFinalDay) {
       this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
     } else {
@@ -327,21 +325,6 @@ class UserManagement extends React.PureComponent {
    * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
    */
   onActiveInactiveClick = user => {
-    const authRole = this.props.state.auth.user.role;
-    const userPermissions = this.props.state.auth.user?.permissions?.frontPermisssion;
-    const { roles } = this.props.state.role;
-    const canChangeUserStatus = hasPermission(authRole, 'changeUserStatus', roles, userPermissions);
-    if (!canChangeUserStatus) {
-      //permission to change the status of any user on the user profile page or User Management Page.
-      //By default only Admin and Owner can access the user management page and they have this permission.
-      alert('You are not authorized to change the active status.');
-      return;
-    }
-    if (deactivateOwnerPermission(user, authRole)) {
-      //Owner user cannot be deactivated by another user that is not an Owner.
-      alert('You are not authorized to deactivate an owner.');
-      return;
-    }
     this.setState({
       activeInactivePopupOpen: true,
       selectedUser: user,

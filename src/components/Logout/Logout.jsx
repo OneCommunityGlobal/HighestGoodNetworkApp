@@ -3,7 +3,6 @@ import { Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logoutUser } from '../../actions/authActions';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle } from 'styles';
 
 export const Logout = props => {
   const dispatch = useDispatch();
@@ -23,14 +22,14 @@ export const Logout = props => {
       <ModalHeader toggle={closePopup}>Are you sure you want to logout?</ModalHeader>
       <ModalBody>
         <div>
-          <p>Don&apos;t forget to log your time before logout!</p>
+          <p>Don't forget to log your time before logout!</p>
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={onLogout} style={boxStyle}>
+        <Button color="danger" onClick={onLogout}>
           Logout
         </Button>{' '}
-        <Button color="primary" onClick={closePopup} style={boxStyle}>
+        <Button color="primary" onClick={closePopup}>
           Cancel
         </Button>
       </ModalFooter>

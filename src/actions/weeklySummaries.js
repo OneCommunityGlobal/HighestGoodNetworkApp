@@ -41,15 +41,8 @@ export const getWeeklySummaries = userId => {
     try {
       const response = await axios.get(url);
       // Only pick the fields related to weekly summaries from the userProfile.
-      const { weeklySummariesCount, weeklySummaries, mediaUrl, adminLinks } = response.data;
-      let summaryDocLink;
-      for (let link in adminLinks) {
-        if (adminLinks[link].Name === 'Dropbox Link') {
-          summaryDocLink = adminLinks[link].Link;
-          break; 
-        }
-      }
-      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl:summaryDocLink || mediaUrl}));
+      const { weeklySummariesCount, weeklySummaries, mediaUrl } = response.data;
+      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl }));
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesError(error));
@@ -71,20 +64,11 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       // Get the user's profile from the server.
       let response = await axios.get(url);
       const userProfile = await response.data;
-      const adminLinks = userProfile.adminLinks || [];
 
       // Merge the weekly summaries related changes with the user's profile.
       const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
-      // update the changes on weekly summaries link into admin links
-      for (let link of adminLinks) {
-        if (link.Name === 'Dropbox Link') {
-          link.Link = mediaUrl;
-          break; 
-        }
-      }
       const userProfileUpdated = {
         ...userProfile,
-        adminLinks,
         mediaUrl,
         weeklySummaries,
         weeklySummariesCount,

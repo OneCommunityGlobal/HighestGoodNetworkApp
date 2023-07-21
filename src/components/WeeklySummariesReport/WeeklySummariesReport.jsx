@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -6,7 +7,7 @@ import './WeeklySummariesReport.css';
 import classnames from 'classnames';
 import moment from 'moment';
 import 'moment-timezone';
-import SkeletonLoading from '../common/SkeletonLoading';
+import Loading from '../common/Loading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
@@ -17,7 +18,7 @@ export class WeeklySummariesReport extends Component {
     error: null,
     loading: true,
     summaries: [],
-    activeTab: '2',
+    activeTab: '1',
   };
 
   async componentDidMount() {
@@ -26,15 +27,7 @@ export class WeeklySummariesReport extends Component {
       error: this.props.error,
       loading: this.props.loading,
       summaries: this.props.summaries,
-      activeTab:
-        sessionStorage.getItem('tabSelection') === null
-          ? '2'
-          : sessionStorage.getItem('tabSelection'),
     });
-  }
-
-  componentWillUnmount() {
-    sessionStorage.removeItem('tabSelection');
   }
 
   getWeekDates = weekIndex => ({
@@ -54,7 +47,6 @@ export class WeeklySummariesReport extends Component {
     const activeTab = this.state.activeTab;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });
-      sessionStorage.setItem('tabSelection', tab);
     }
   };
 
@@ -79,9 +71,9 @@ export class WeeklySummariesReport extends Component {
 
     if (loading) {
       return (
-        <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
+        <Container fluid>
           <Row className="text-center" data-testid="loading">
-            <SkeletonLoading template="WeeklySummariesReport" />
+            <Loading />
           </Row>
         </Container>
       );

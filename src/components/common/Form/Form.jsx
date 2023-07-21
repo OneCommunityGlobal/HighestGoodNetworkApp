@@ -9,7 +9,6 @@ import FileUpload from '../FileUpload';
 import { Link } from 'react-router-dom';
 import TinyMCEEditor from '../TinyceEditor/tinymceEditor';
 import CheckboxCollection from '../CheckboxCollection';
-import { boxStyle } from 'styles';
 
 /* const Form = () => {
   const [data, setData] = useState({});
@@ -292,7 +291,6 @@ class Form extends Component {
     let errors = {};
     const options = { abortEarly: false };
     const { error } = Joi.validate(this.state.data, this.schema, options);
-
     if (!error) return null;
     error.details.forEach(element => {
       errors[element.path[0]] = element.message;
@@ -315,7 +313,7 @@ class Form extends Component {
 
   renderButton(label) {
     return (
-      <button disabled={this.validateForm()} className="btn btn-primary" style={boxStyle}>
+      <button disabled={this.validateForm()} className="btn btn-primary">
         {label}
       </button>
     );
@@ -378,6 +376,7 @@ class Form extends Component {
 
   renderFileUpload({ name, ...rest }) {
     let { errors } = { ...this.state };
+
     return (
       <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
     );

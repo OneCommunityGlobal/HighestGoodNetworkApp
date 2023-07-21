@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
-import { boxStyle } from 'styles';
 
 /**
  *
@@ -61,7 +60,6 @@ const SaveButton = props => {
         className="btn btn-outline-primary mr-1"
         onClick={handleSave}
         disabled={disabled}
-        style={boxStyle}
       >
         Save Changes
       </Button>

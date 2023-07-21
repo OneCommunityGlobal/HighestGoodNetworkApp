@@ -5,6 +5,5 @@
   "bracketSpacing": true,
   "jsxBracketSameLine": false,
   "tabWidth": 2,
-  "semi": true,
-  "endOfLine": "auto"
+  "semi": true
 }

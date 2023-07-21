@@ -11,10 +11,6 @@ import {
 import DiffedText from 'components/TeamMemberTasks/components/DiffedText';
 import { useDispatch } from 'react-redux';
 import { rejectTaskEditSuggestion } from '../thunks';
-import { updateTask } from 'actions/task';
-import hasPermission from 'utils/permissions';
-import { useSelector, useStore } from 'react-redux';
-import { useState } from 'react';
 
 export const TaskEditSuggestionsModal = ({
   isTaskEditSuggestionModalOpen,
@@ -22,24 +18,6 @@ export const TaskEditSuggestionsModal = ({
   handleToggleTaskEditSuggestionModal,
 }) => {
   const dispatch = useDispatch();
-
-  const { getState } = useStore();
-  const alldata = getState();
-
-  const [role] = useState(alldata.auth ? alldata.auth.user.role : null);
-  const userPermissions = alldata.auth.user?.permissions?.frontPermissions;
-  const { roles } = alldata.role;
-
-  const approveTask = () => {
-    console.log('mainproblem', taskEditSuggestion);
-    updateTask(
-      taskEditSuggestion.taskId,
-      taskEditSuggestion.newTask,
-      hasPermission(role, 'editTask', roles, userPermissions),
-    )(dispatch, getState);
-    dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
-    handleToggleTaskEditSuggestionModal();
-  };
 
   return (
     <Modal
@@ -231,9 +209,7 @@ export const TaskEditSuggestionsModal = ({
       <ModalFooter>
         <Row>
           <Col>
-            <Button color="success" onClick={approveTask}>
-              Approve
-            </Button>
+            <Button color="success">Approve</Button>
           </Col>
           <Col style={{ display: 'flex' }}>
             <Button

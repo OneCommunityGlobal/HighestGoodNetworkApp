@@ -1,39 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
+import TaskButton from './TaskButton';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table, Progress } from 'reactstrap';
-
+import { Table, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
-import hasPermission from 'utils/permissions';
 import './style.css';
-import ReactTooltip from 'react-tooltip';
-import { boxStyle } from 'styles';
 
 const TeamMemberTask = ({
   user,
   handleMarkAsDoneModal,
-  handleRemoveFromTaskModal,
   handleOpenTaskNotificationModal,
-  handleTaskModalOption,
   userRole,
-  roles,
-  userPermissions,
 }) => {
-  const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
-
-  const infoTaskIconContent = `Red Bell Icon: When clicked, this will show any task changes\n 
-  Green Checkmark Icon: When clicked, this will mark the task as completed\n
-  X Mark Icon: When clicked, this will remove the user from that task`;
-
   let totalHoursLogged = 0;
   let totalHoursRemaining = 0;
   const thisWeekHours = user.totaltangibletime_hrs;
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
-  const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
-  const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
 
   if (user.tasks) {
     user.tasks = user.tasks.map(task => {
@@ -50,16 +35,6 @@ const TeamMemberTask = ({
       }
     }
   }
-
-  const toggleInfoTaskIconModal = () => {
-    setInfoTaskIconModal(!infoTaskIconModal);
-  };
-
-  const handleModalOpen = () => {
-    setInfoTaskIconModal(true);
-  };
-
-  const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles, userPermissions);
 
   return (
     <>
@@ -109,102 +84,41 @@ const TeamMemberTask = ({
                     return (
                       <tr key={`${task._id}${index}`} className="task-break">
                         <td data-label="Task(s)" className="task-align">
-                          <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
-                            <span>{`${task.num} ${task.taskName}`} </span>
-                          </Link>
-                          <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
-                          {task.taskNotifications.length > 0 &&
-                          task.taskNotifications.some(
-                            notification =>
-                              notification.hasOwnProperty('userId') &&
-                              notification.userId === user.personId,
-                          ) ? (
-                            <>
+                          <p>
+                            <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
+                              <span>{`${task.num} ${task.taskName}`} </span>
+                            </Link>
+                            <CopyToClipboard 
+                              writeText={task.taskName} 
+                              message="Task Copied!"
+                            />
+                            {task.taskNotifications.length > 0 && (
                               <FontAwesomeIcon
                                 className="team-member-tasks-bell"
-                                title="Task Info Changes"
                                 icon={faBell}
                                 onClick={() => {
-                                  const taskNotificationId = task.taskNotifications.filter(
-                                    taskNotification => {
-                                      if (taskNotification.userId === user.personId) {
-                                        return taskNotification;
-                                      }
-                                    },
-                                  );
                                   handleOpenTaskNotificationModal(
                                     user.personId,
                                     task,
-                                    taskNotificationId,
+                                    task.taskNotifications,
                                   );
                                 }}
                               />
-                            </>
-                          ) : null}
-                          {isAllowedToResolveTasks && (
-                            <FontAwesomeIcon
-                              className="team-member-tasks-done"
-                              icon={faCheck}
-                              title="Mark as Done"
-                              onClick={() => {
-                                handleMarkAsDoneModal(user.personId, task);
-                                handleTaskModalOption('Checkmark');
-                              }}
-                            />
-                          )}
-                          {hasRemovePermission && (
-                            <FontAwesomeIcon
-                              className="team-member-task-remove"
-                              icon={faTimes}
-                              title="Remove User from Task"
-                              onClick={() => {
-                                handleRemoveFromTaskModal(user.personId, task);
-                                handleTaskModalOption('XMark');
-                              }}
-                            />
-                          )}
-                          <i
-                            className="fa fa-info-circle"
-                            style={{ cursor: 'pointer', marginLeft: '10px' }}
-                            data-tip
-                            data-for="taskIconTip"
-                            aria-hidden="true"
-                            onClick={() => {
-                              handleModalOpen();
-                            }}
-                          />
-                          <ReactTooltip id="taskIconTip" place="bottom" effect="solid">
-                            Click this icon to learn about the task icons
-                          </ReactTooltip>
-                          <Modal isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
-                            <ModalHeader toggle={toggleInfoTaskIconModal}>
-                              Task Icons Info
-                            </ModalHeader>
-                            <ModalBody>
-                              {infoTaskIconContent.split('\n').map((item, i) => (
-                                <p key={i}>{item}</p>
-                              ))}
-                            </ModalBody>
-                            <ModalFooter>
-                              <Button
-                                onClick={toggleInfoTaskIconModal}
-                                color="secondary"
-                                className="float-left"
-                                style={boxStyle}
-                              >
-                                {' '}
-                                Ok{' '}
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
+                            )}
+                            {isAllowedToResolveTasks && (
+                              <FontAwesomeIcon
+                                className="team-member-tasks-done"
+                                icon={faCheck}
+                                title="Mark as Done"
+                                onClick={() => {
+                                  handleMarkAsDoneModal(user.personId, task);
+                                }}
+                              />
+                            )}
+                          </p>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
-                            {isAllowedToSeeDeadlineCount && (
-                              <span className="deadlineCount" title="Deadline Follow-up Count">
-                                {task.deadlineCount === undefined ? 0 : task.deadlineCount}
-                              </span>
-                            )}
                             <div>
                               <span>
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
@@ -222,6 +136,11 @@ const TeamMemberTask = ({
                             </div>
                           </td>
                         )}
+                        {userRole === 'Administrator' ? (
+                          <td data-label="Status">
+                            <TaskButton task={task} key={task._id}></TaskButton>
+                          </td>
+                        ) : null}
                       </tr>
                     );
                   }

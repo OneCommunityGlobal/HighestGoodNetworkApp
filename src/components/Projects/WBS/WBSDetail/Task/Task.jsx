@@ -29,7 +29,7 @@ import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import ReactTooltip from 'react-tooltip';
 
 function Task(props) {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -156,6 +156,7 @@ function Task(props) {
     <>
       {props.id ? (
         <>
+          <ReactTooltip/>
           <tr
             ref={tableRowRef}
             key={props.key}
@@ -172,12 +173,7 @@ function Task(props) {
               } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <Button
-                color="primary"
-                size="sm"
-                onClick={() => setControllerRow(!controllerRow)}
-                style={boxStyle}
-              >
+              <Button color="primary" size="sm" onClick={() => setControllerRow(!controllerRow)}>
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
@@ -467,7 +463,6 @@ function Task(props) {
                       size="sm"
                       className="controlBtn"
                       onClick={() => showUpDeleteModal()}
-                      style={boxStyle}
                     >
                       Remove
                     </Button>
@@ -476,7 +471,7 @@ function Task(props) {
                       direction="up"
                       isOpen={dropdownOpen}
                       toggle={toggle}
-                      style={{ ...boxStyle, float: 'left' }}
+                      style={{ float: 'left' }}
                     >
                       <DropdownToggle caret color="primary" size="sm">
                         Move
@@ -501,7 +496,6 @@ function Task(props) {
                       size="sm"
                       className="margin-left"
                       onClick={() => onCopy(props.id)}
-                      style={boxStyle}
                     >
                       {isCopied ? 'Copied' : 'Copy'}
                     </Button>
@@ -570,7 +564,7 @@ function Task(props) {
       ) : null}
     </>
   );
-}
+};
 
 const mapStateToProps = state => ({ state });
 

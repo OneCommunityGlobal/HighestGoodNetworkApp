@@ -4,10 +4,10 @@ import { connect, useSelector } from 'react-redux';
 
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
-import { NavItem, Button, Modal, ModalBody } from 'reactstrap';
-
+import { NavItem, Button } from 'reactstrap';
+import { Modal, ModalBody } from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
 import { getUserProfile } from 'actions/userProfile';
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
@@ -17,8 +17,7 @@ import { deleteTask } from '../../../../actions/task';
 import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
-
-import { boxStyle } from 'styles';
+import { useHistory } from 'react-router-dom';
 
 const SingleTask = props => {
   const taskId = props.match.params.taskId;
@@ -63,13 +62,11 @@ const SingleTask = props => {
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
-                <Button type="button" className="btn btn-secondary" style={boxStyle}>
+                <Button type="button" className="btn btn-secondary">
                   <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
                 </Button>
               </NavItem>
-              <div id="single_task_name">
-                See tasks in the same folder as &quot;{task.taskName}&quot;
-              </div>
+              <div id="single_task_name">See tasks in the same folder as "{task.taskName}"</div>
             </ol>
           </nav>
         )}
@@ -142,16 +139,13 @@ const SingleTask = props => {
                     mother={task.mother}
                     level={task.level}
                   />
-                  {user.role === 'Volunteer' ? (
-                    ''
-                  ) : (
+                  {user.role === "Volunteer" ? ("") : (
                     <>
                       <Button
                         type="button"
                         size="sm"
                         className="btn btn-danger"
                         onClick={() => showUpDeleteModal()}
-                        style={boxStyle}
                       >
                         Delete <i className="fa fa-trash" aria-hidden="true"></i>
                       </Button>
@@ -159,9 +153,7 @@ const SingleTask = props => {
                         isOpen={modalDelete}
                         closeModal={() => setModalDelete(false)}
                         confirmModal={() => deleteTask(task._id, task.mother)}
-                        modalMessage={
-                          props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
-                        }
+                        modalMessage={props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'}
                         modalTitle={Message.CONFIRM_DELETION}
                       />
                     </>
@@ -182,7 +174,6 @@ const SingleTask = props => {
                               className="name"
                               href={`/userprofile/${elem.userID}`}
                               target="_blank"
-                              rel="noreferrer"
                             >
                               <img className="img-circle" src={elem.profilePic} />
                             </a>
@@ -195,13 +186,12 @@ const SingleTask = props => {
                               className="name"
                               href={`/userprofile/${elem.userID}`}
                               target="_blank"
-                              rel="noreferrer"
                             >
                               <span className="dot">{elem.name.substring(0, 2)}</span>
                             </a>
                           );
                         }
-                      } catch (err) {}
+                      } catch (err) { }
                     })}
                 </td>
                 <td>

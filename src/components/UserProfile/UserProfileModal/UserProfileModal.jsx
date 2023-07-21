@@ -12,7 +12,6 @@ import {
   Card,
   Col,
 } from 'reactstrap';
-import { boxStyle } from 'styles';
 import hasPermission from 'utils/permissions';
 
 const UserProfileModal = props => {
@@ -359,7 +358,6 @@ const UserProfileModal = props => {
             onClick={() => {
               modifyBlueSquares('', dateStamp, summary, 'add');
             }}
-            style={boxStyle}
           >
             Submit
           </Button>
@@ -372,7 +370,6 @@ const UserProfileModal = props => {
               onClick={() => {
                 modifyBlueSquares(id, dateStamp, summary, 'update');
               }}
-              style={boxStyle}
             >
               Update
             </Button>
@@ -381,7 +378,6 @@ const UserProfileModal = props => {
               onClick={() => {
                 modifyBlueSquares(id, dateStamp, summary, 'delete');
               }}
-              style={boxStyle}
             >
               Delete
             </Button>
@@ -422,7 +418,7 @@ const UserProfileModal = props => {
             Close
           </Button>
         ) : (
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
+          <Button color="primary" onClick={closeModal}>
             Cancel
           </Button>
         )}

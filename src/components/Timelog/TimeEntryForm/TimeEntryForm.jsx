@@ -32,7 +32,6 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
-import { boxStyle } from 'styles';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -138,7 +137,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, [props.isTaskUpdated]);
+  }, []);
 
   //grab form data before editing
   useEffect(() => {
@@ -310,12 +309,10 @@ const TimeEntryForm = props => {
       //Get category
       const category = foundProject
         ? foundProject.category.toLowerCase()
-        : foundTask.category.toLowerCase();
+        : foundTask.classification.toLowerCase();
 
       //update hours
-      const isFindCategory = Object.keys(hoursByCategory).find(
-        key => key === category && key !== 'unassigned',
-      );
+      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
       if (isFindCategory) {
         hoursByCategory[category] += volunteerTime;
       } else {
@@ -370,10 +367,8 @@ const TimeEntryForm = props => {
 
     category = foundProject
       ? foundProject.category.toLowerCase()
-      : foundTask?.category.toLowerCase();
-    const isFindCategory = Object.keys(hoursByCategory).find(
-      key => key === category && key !== 'unassigned',
-    );
+      : foundTask?.classification.toLowerCase();
+    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
 
     //if change timeEntry from intangible to tangible, we need add hours on categories
     if (oldIsTangible === 'false' && currIsTangible === 'true') {
@@ -715,7 +710,6 @@ const TimeEntryForm = props => {
                   min_height: 180,
                   max_height: 300,
                   autoresize_bottom_margin: 1,
-                  content_style: 'body { cursor: text !important; }',
                 }}
                 id="notes"
                 name="notes"
@@ -760,11 +754,11 @@ const TimeEntryForm = props => {
         </ModalBody>
         <ModalFooter>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger" style={boxStyle}>
+          <Button onClick={clearForm} color="danger">
             Clear Form
           </Button>
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-          <Button color="primary" onClick={handleSubmit} style={boxStyle}>
+          <Button color="primary" onClick={handleSubmit}>
             {edit ? 'Save' : 'Submit'}
           </Button>
         </ModalFooter>
@@ -778,10 +772,10 @@ TimeEntryForm.propTypes = {
   userId: PropTypes.string.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
-  timer: PropTypes.any,
+  timer: PropTypes.any.isRequired,
   data: PropTypes.any.isRequired,
   userProfile: PropTypes.any.isRequired,
-  resetTimer: PropTypes.func,
+  resetTimer: PropTypes.func.isRequired,
 };
 
 export default TimeEntryForm;

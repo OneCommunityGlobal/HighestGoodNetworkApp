@@ -1,86 +1,87 @@
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 .team-report-chart-wrapper {
-  display: flex;
-  width: 100%;
+    display: flex;
+    width: 100%;
 }
 
 .team-report-chart-teams {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  background-color: #fff;
-  padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #fff;
+    padding: 16px 24px;
 }
 
 .team-report-chart-tasks {
-  display: flex;
-  width: 100%;
-  background-color: #fff;
-  padding: 16px 24px;
+    display: flex;
+    width: 100%;
+    background-color: #fff;
+    padding: 16px 24px;
 }
 
 .team-report-chart-teams h4 {
-  font-weight: 600;
+    font-weight: 600;
 }
 
+
 .team-report-chart-info-wrapper {
-  display: flex;
-  width: 100%;
-  height: auto;
+    display: flex;
+    width: 100%;
+    height: auto;
 }
 
 .pie-chart-info-detail {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-left: -24px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-left: -24px;
 }
 
 .pie-chart-info-detail-title {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .pie-chart-info-detail-container {
-  min-width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+    min-width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .pie-chart-info-detail-item {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  width: 14ch;
-}
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 14ch;
+} 
 
 .pie-chart-info-key {
-  font-size: 16px;
-  align-items: center;
-  width: auto;
-  margin: 4px 0;
+    font-size: 16px;
+    align-items: center;
+    width: auto;
+    margin: 4px 0;
 }
 
 .pie-chart-info-value {
-  display: flex;
-  font-size: 16px;
-  text-align: left;
-  margin-left: 8px;
+    display: flex;
+    font-size: 16px;
+    text-align: left;
+    margin-left: 8px;
 }
 
 .pie-chart-legend-color-square {
-  min-width: 16px;
-  min-height: 16px;
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  margin-right: 8px;
+    min-width: 16px;
+    min-height: 16px;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 8px;
 }

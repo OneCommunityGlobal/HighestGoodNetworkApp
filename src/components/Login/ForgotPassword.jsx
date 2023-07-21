@@ -4,7 +4,6 @@ import { Button, Input, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { forgotPassword } from '../../services/authorizationService';
 import Joi from 'joi';
-import { boxStyle } from 'styles';
 
 const ForgotPassword = React.memo(() => {
   const [message, setMessage] = useState({});
@@ -165,12 +164,12 @@ const ForgotPassword = React.memo(() => {
         {message.lastName && <div className="alert alert-danger">{message.lastName}</div>}
 
         <div style={{ marginTop: '40px' }}>
-          <Button color="primary" onClick={onForgotPassword} style={boxStyle}>
+          <Button color="primary" onClick={onForgotPassword}>
             Submit
           </Button>
           <Link to="login">
             {' '}
-            <Button style={{ ...boxStyle, float: 'right' }}>Cancel</Button>
+            <Button style={{ float: 'right' }}>Cancel</Button>
           </Link>
         </div>
       </form>
