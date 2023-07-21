@@ -25,6 +25,7 @@
   }
 }
 
+
 .circle-border {
   border-radius: 6px;
   width: 42px;
@@ -56,3 +57,9 @@
   padding: 5px 10px;
   border: 1px solid saddlebrown;
 }
+
+.boldClass {
+  color: #007bff;
+  font-weight: bold;
+}
+

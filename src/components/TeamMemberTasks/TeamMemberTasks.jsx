@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
@@ -16,9 +16,11 @@ import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
+
 import { hrsFilterBtnRed, hrsFilterBtnBlue, skyblue} from 'constants/colors';
 import { getTeamMembers, getAllUserTeams} from '../../actions/allTeamsAction';
 import { getUserTeamMembers } from '../../actions/team';
+
 
 const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -70,7 +72,6 @@ const TeamMemberTasks = props => {
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
-  
 
   useEffect(() => {
     const initialFetching = async () => {
@@ -162,7 +163,7 @@ const TeamMemberTasks = props => {
     try {
       await axios.put(url, updatedTasks.updatedTask);
     } catch (error) {
-      toast.error("Failed to update task")
+      toast.error('Failed to update task');
     }
   };
 
@@ -183,11 +184,11 @@ const TeamMemberTasks = props => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  }
+  };
 
-  const handleTaskModalOption = (option) => {
+  const handleTaskModalOption = option => {
     setTaskModalOption(option);
-  }
+  };
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     //if the authentitated user is seeing it's own notification
@@ -213,15 +214,17 @@ const TeamMemberTasks = props => {
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD');
 
+
     const userIds = member.map(user => user.personId);
     
+
     const userListTasksRequest = async userList => {
       const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
       return axios.post(url, { users: userList, fromDate, toDate });
     };
 
     const taskResponse = await userListTasksRequest(userIds);
-    const usersListTasks = taskResponse.data
+    const usersListTasks = taskResponse.data;
 
     //2. Generate array of past 24/48 hrs timelogs
     usersListTasks.map(entry => {
@@ -405,7 +408,7 @@ const renderTeamsList = async () => {
       }
     }
   };
-  
+
   return (
     <div className="container team-member-tasks">
       <header className="header-box">
@@ -417,7 +420,7 @@ const renderTeamsList = async () => {
                 disabled={isLoadingmember}>
                {isTeamTab ? 'View All' : 'My Teams'}
         </button>}
-        {(
+        {finishLoadingTimeData ?(
           <div className="hours-btn-container">
             <button
               type="button"
@@ -461,6 +464,10 @@ const renderTeamsList = async () => {
               72h
             </button>
           </div>
+
+        ) : (
+          <SkeletonLoading template="TimelogFilter" />
+
         )}
       </header>
       <TaskDifferenceModal
@@ -536,28 +543,26 @@ const renderTeamsList = async () => {
           </thead>
 
           <tbody>
-            {isLoading || isLoadingmember ? (
-              <tr>
-                <td>
-                  <Loading />
-                </td>
-              </tr>
+
+            {isLoading ? isLoadingmember (
+              <SkeletonLoading template="TeamMemberTasks" />
+
             ) : (
               teamList.map(user => {
                 if (!isTimeLogActive) {
                   return (
-                      <TeamMemberTask
-                        user={user}
-                        key={user.personId}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                        handleTaskModalOption={handleTaskModalOption}
-                        userRole={userRole}
-                        updateTask={onUpdateTask}
-                        roles={props.roles}
-                        userPermissions={props.userPermissions}
-                      />
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                      handleTaskModalOption={handleTaskModalOption}
+                      userRole={userRole}
+                      updateTask={onUpdateTask}
+                      roles={props.roles}
+                      userPermissions={props.userPermissions}
+                    />
                   );
                 } else {
                   return (

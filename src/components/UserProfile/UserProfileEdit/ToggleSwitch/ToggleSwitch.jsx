@@ -174,13 +174,11 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
     case 'bio':
       return (
         <div className="blueSqare">
-          <div className={style.switchSection} style={{fontSize:fontSize}}>
+          <div className={style.switchSection} style={{ fontSize: fontSize }}>
             <div className={style.switchContainer}>
-            posted
-            <TriStateToggleSwitch  
-            pos={state || 'default'} 
-            onChange={handleUserProfile}/>
-            requested
+              posted
+              <TriStateToggleSwitch pos={state || 'default'} onChange={handleUserProfile} />
+              requested
             </div>
           </div>
         </div>
