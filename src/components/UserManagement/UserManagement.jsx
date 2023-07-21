@@ -13,6 +13,7 @@ import {
 } from '../../actions/userManagement';
 import { connect } from 'react-redux';
 import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
@@ -65,7 +66,7 @@ class UserManagement extends React.PureComponent {
     return (
       <Container fluid>
         {fetching ? (
-          <Loading />
+          <SkeletonLoading template="UserManagement" />
         ) : (
           <React.Fragment>
             {this.popupElements()}
@@ -196,6 +197,7 @@ class UserManagement extends React.PureComponent {
               onDeleteClick={that.onDeleteButtonClick}
               onActiveInactiveClick={that.onActiveInactiveClick}
               onResetClick={that.onResetClick}
+              authEmail={this.props.state.userProfile.email}
               user={user}
               role={this.props.state.auth.user.role}
               userPermissions={this.props.state.auth.user?.permissions?.frontPermisssion}
@@ -266,7 +268,6 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
-    console.log(status);
     if (status === FinalDay.NotSetFinalDay) {
       this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
     } else {
