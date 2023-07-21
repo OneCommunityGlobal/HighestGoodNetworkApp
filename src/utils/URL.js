@@ -92,7 +92,9 @@ export const ENDPOINTS = {
   VALIDATE_TOKEN: () =>
     `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () =>
-    `${APIEndpoint}/ProfileInitialSetup`
+    `${APIEndpoint}/ProfileInitialSetup`,
+  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`
+
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -21,6 +21,7 @@ import { useHistory } from 'react-router-dom';
 const SetupProfileUserEntry = ({ token }) => {
   const history = useHistory();
   const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+  const [APIkey, setAPIkey] = useState('');
   const [userProfile, setUserProfile] = useState({
     firstName: '',
     lastName: '',
@@ -32,6 +33,7 @@ const SetupProfileUserEntry = ({ token }) => {
     jobTitle: '',
     timeZone: '',
     location: '',
+    getTimeZone: '',
     token,
   });
   const [formErrors, setFormErrors] = useState({
@@ -44,7 +46,14 @@ const SetupProfileUserEntry = ({ token }) => {
     jobTitle: '',
     timeZone: '',
     location: '',
+    getTimeZone: '',
   });
+
+  useEffect(() => {
+    httpService.post(ENDPOINTS.TIMEZONE_KEY_BY_TOKEN(), { token }).then(response => {
+      setAPIkey(response.data.userAPIKey);
+    });
+  }, []);
 
   const handleChange = event => {
     const { id, value } = event.target;
@@ -170,6 +179,11 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         weeklyCommittedHours: 'Weekly Committed Hours can not be empty',
       }));
+    } else {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        weeklyCommittedHours: '',
+      }));
     }
 
     // Validate Video Call Preference
@@ -178,6 +192,11 @@ const SetupProfileUserEntry = ({ token }) => {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         collaborationPreference: 'Video Call Preference can not be empty',
+      }));
+    } else {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        collaborationPreference: '',
       }));
     }
 
@@ -189,6 +208,22 @@ const SetupProfileUserEntry = ({ token }) => {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         location: 'Location is required',
+      }));
+    } else {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        location: '',
+      }));
+    }
+
+    // Validate get time zone
+
+    console.log;
+
+    if (userProfile.getTimeZone.trim() === '') {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        getTimeZone: 'Set time zone is required',
       }));
     } else {
       setFormErrors(prevErrors => ({
@@ -388,21 +423,38 @@ const SetupProfileUserEntry = ({ token }) => {
                 <Col md="2" className="text-md-right my-2">
                   <Label>Location</Label>
                 </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <Input
-                      type="text"
-                      name="location"
-                      id="location"
-                      placeholder="Location"
-                      value={userProfile.location}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      invalid={formErrors.location !== ''}
-                    />
-                    <FormFeedback>{formErrors.location}</FormFeedback>
-                  </FormGroup>
+
+                <Col md="6 pr-0">
+                  <Row>
+                    <Col md="6">
+                      <FormGroup>
+                        <Input
+                          type="text"
+                          name="location"
+                          id="location"
+                          placeholder="Location"
+                          value={userProfile.location}
+                          onChange={e => {
+                            handleChange(e);
+                          }}
+                          invalid={formErrors.location !== ''}
+                        />
+                        <FormFeedback>{formErrors.location}</FormFeedback>
+                      </FormGroup>
+                    </Col>
+                    <Col md="6 pr-0">
+                      <Button color="secondary " block size="md">
+                        Get Time Zone
+                      </Button>
+                      <Input
+                        style={{
+                          display: 'none',
+                        }}
+                        invalid={formErrors.getTimeZone !== ''}
+                      />
+                      <FormFeedback>{formErrors.getTimeZone}</FormFeedback>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
               <Row>
