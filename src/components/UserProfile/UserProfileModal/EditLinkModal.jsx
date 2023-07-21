@@ -24,7 +24,7 @@ const EditLinkModal = props => {
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
-    { Name: 'Dropbox Folder', Link: '' },
+    { Name: 'Media Folder', Link: '' },
   ];
   const emptyLink = { Name: '', Link: '' };
 
@@ -37,15 +37,15 @@ const EditLinkModal = props => {
       : initialAdminLinkState[0],
   );
   const [dropboxLink, setDropboxLink] = useState(
-    userProfile.adminLinks.find(link => link.Name === 'Dropbox Folder')
-      ? userProfile.adminLinks.find(link => link.Name === 'Dropbox Folder')
+    userProfile.adminLinks.find(link => link.Name === 'Media Folder')
+      ? userProfile.adminLinks.find(link => link.Name === 'Media Folder')
       : initialAdminLinkState[1],
   );
   const [adminLinks, setAdminLinks] = useState(
     userProfile.adminLinks
       ? userProfile.adminLinks
           .filter(link => link.Name !== 'Google Doc')
-          .filter(link => link.Name !== 'Dropbox Folder')
+          .filter(link => link.Name !== 'Media Folder')
       : [],
   );
   const [personalLinks, setPersonalLinks] = useState(
@@ -112,10 +112,10 @@ const EditLinkModal = props => {
 
   const handleUpdate = () => {
     const updatable =
-    (isValidUrl(googleLink.Link) && isValidUrl(dropboxLink.Link)) ||
-    (googleLink.Link === '' && dropboxLink.Link === '') ||
-    (isValidUrl(googleLink.Link) && dropboxLink.Link === '') ||
-    (isValidUrl(dropboxLink.Link) && googleLink.Link === '');
+      (isValidUrl(googleLink.Link) && isValidUrl(dropboxLink.Link)) ||
+      (googleLink.Link === '' && dropboxLink.Link === '') ||
+      (isValidUrl(googleLink.Link) && dropboxLink.Link === '') ||
+      (isValidUrl(dropboxLink.Link) && googleLink.Link === '');
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
       updateLink(personalLinks, [googleLink, dropboxLink, ...adminLinks]);
