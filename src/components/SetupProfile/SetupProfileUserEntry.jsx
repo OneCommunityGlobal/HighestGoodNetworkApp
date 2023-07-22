@@ -218,7 +218,8 @@ const SetupProfileUserEntry = ({ token }) => {
     ) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
-        password: 'Password must contain special characters and capital letters.',
+        password:
+          'Password must contain special characters [!@#$%^&*(),.?":{}|<>] and capital letters.',
       }));
     } else {
       setFormErrors(prevErrors => ({
@@ -623,22 +624,31 @@ const SetupProfileUserEntry = ({ token }) => {
                   </FormGroup>
                 </Col>
               </Row>
+              <Row>
+                <Col md={{ size: 6, offset: 2 }}>
+                  <div className="alert alert-info text-center">
+                    Clicking the "Submit" button redirects you to your personalized profile
+                    dashboard.
+                  </div>
+                </Col>
+              </Row>
+
+              <Row className="mt-1 mb-3">
+                <Col md="12">
+                  <Row>
+                    <Col md="4" className="pl-4">
+                      <Button
+                        className="btn btn-content p-2 pl-4 pr-4"
+                        color="primary"
+                        onClick={e => handleFormSubmit(e)}
+                      >
+                        Submit
+                      </Button>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
             </Form>
-          </Col>
-        </Row>
-        <Row className="mt-3 mb-3">
-          <Col md="12">
-            <Row>
-              <Col md="4">
-                <Button
-                  className="btn btn-content p-2 pl-4 pr-4"
-                  color="primary"
-                  onClick={e => handleFormSubmit(e)}
-                >
-                  Submit
-                </Button>
-              </Col>
-            </Row>
           </Col>
         </Row>
       </Container>
