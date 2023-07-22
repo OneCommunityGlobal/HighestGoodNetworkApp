@@ -297,6 +297,7 @@ class SummaryManagement extends Component {
     } catch (error) {
       console.log(error);
     }
+    this.props.getAllSummaryGroup();
     this.getTeamMembers(this.state.selectedSummaryGroupId);
 
     alert(
