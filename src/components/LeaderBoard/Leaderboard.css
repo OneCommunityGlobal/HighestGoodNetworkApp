@@ -2,9 +2,7 @@
 @media (max-width: 544px) {
   .leaderboard {
     font-size: 0.7rem;
-  }
-
-  /*1rem = 16px*/
+  } /*1rem = 16px*/
 
   .my-custom-scrollbar {
     height: 300px;
@@ -30,4 +28,8 @@
 .boldClass {
   color: #007bff;
   font-weight: bold;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> development
