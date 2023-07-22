@@ -15,6 +15,7 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
+import { toast } from 'react-toastify';
 
 const EditTaskModal = props => {
   /*
@@ -25,6 +26,7 @@ const EditTaskModal = props => {
   
   // states from hooks
   const [thisTask, setThisTask] = useState();
+  const [oldTask, setOldTask] = useState();
   const [modal, setModal] = useState(false);
   const [taskName, setTaskName] = useState(thisTask?.taskName);
   const [priority, setPriority] = useState(thisTask?.priority);
@@ -35,6 +37,7 @@ const EditTaskModal = props => {
   const [hoursWorst, setHoursWorst] = useState(thisTask?.hoursWorst);
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
+  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
   const [hoursWarning, setHoursWarning] = useState(false);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState(thisTask?.links);
@@ -138,6 +141,12 @@ const EditTaskModal = props => {
 
   // helper for updating task
   const updateTask = async () => {
+    let newDeadlineCount = deadlineCount;
+    if (thisTask?.estimatedHours !== hoursEstimate) {
+      newDeadlineCount = deadlineCount + 1;
+      setDeadlineCount(newDeadlineCount);
+    }
+
     const updatedTask = {
       taskName,
       priority,
@@ -148,6 +157,7 @@ const EditTaskModal = props => {
       hoursWorst: parseFloat(hoursWorst),
       hoursMost: parseFloat(hoursMost),
       estimatedHours: parseFloat(hoursEstimate),
+      deadlineCount: parseFloat(newDeadlineCount),
       startedDatetime: startedDate,
       dueDatetime: dueDate,
       links,
@@ -156,18 +166,20 @@ const EditTaskModal = props => {
       endstateInfo,
       category,
     };
-
     props.setIsLoading(true);
-    props.updateTask(
+    await props.updateTask(
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
+      oldTask,
     );
     await props.load();
     props.setIsLoading(false);
 
-    if (error === 'none') {
+    if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
+    } else {
+      toast.error('Update failed! Error is ' + props.tasks.error);
     }
   };
 
@@ -189,6 +201,22 @@ const EditTaskModal = props => {
     fetchTaskData();
   }, []);
 
+  // from dev
+  useEffect(() => {
+    const fetchTaskData = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
+        setThisTask(res?.data || {});
+        setOldTask(res?.data || {});
+        setCategory(res.data.category);
+        setAssigned(res.data.isAssigned);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTaskData();
+  }, [props.taskId]);
+
   // associate states with thisTask state
   useEffect(() => {
     setTaskName(thisTask?.taskName);
@@ -200,6 +228,27 @@ const EditTaskModal = props => {
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
     setHoursEstimate(thisTask?.estimatedHours);
+    setLinks(thisTask?.links);
+    setCategory(thisTask?.category);
+    setWhyInfo(thisTask?.whyInfo);
+    setIntentInfo(thisTask?.intentInfo);
+    setEndstateInfo(thisTask?.endstateInfo);
+    setStartedDate(thisTask?.startedDatetime);
+    setDueDate(thisTask?.dueDatetime);
+  }, [thisTask]);
+
+  // from dev
+  useEffect(() => {
+    setTaskName(thisTask?.taskName);
+    setPriority(thisTask?.priority);
+    setResourceItems(thisTask?.resources);
+    setAssigned(thisTask?.isAssigned || false);
+    setStatus(thisTask?.status || false);
+    setHoursBest(thisTask?.hoursBest);
+    setHoursWorst(thisTask?.hoursWorst);
+    setHoursMost(thisTask?.hoursMost);
+    setHoursEstimate(thisTask?.estimatedHours);
+    setDeadlineCount(thisTask?.deadlineCount);
     setLinks(thisTask?.links);
     setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
@@ -485,7 +534,7 @@ const EditTaskModal = props => {
                       link.length > 1 ? (
                         <div key={i}>
                           <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)} ></i>
-                          <a href={link} className="task-link" target="_blank" data-tip={link}>
+                          <a href={link} className="task-link" target="_blank" data-tip={link} rel="noreferrer">
                             {link}
                           </a>
                         </div>

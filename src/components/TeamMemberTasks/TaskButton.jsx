@@ -1,8 +1,8 @@
 import React from 'react';
 import { getAllUserProfile } from 'actions/userManagement';
 import { deleteSelectedTask } from './reducer';
-import { fetchAllTasks } from 'actions/task';
-import { updateTask } from 'actions/task';
+import { fetchAllTasks, updateTask } from 'actions/task';
+
 import './style.css';
 import { useDispatch } from 'react-redux';
 

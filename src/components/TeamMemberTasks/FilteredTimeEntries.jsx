@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import ReactHtmlParser from 'react-html-parser';
 import './filteredTimeEntries.css';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { useEffect } from 'react';
+
 import moment from 'moment';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 
@@ -28,11 +28,32 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
       .format('YYYY-MM-DD');
 
     if (moment(dateOfWork).isSameOrAfter(pastTwentyFourHrs)) {
-      return <div className="color-bar" style={{ backgroundColor: hrsFilterBtnRed }}></div>;
+      return (
+        <div
+          className="color-bar"
+          style={{
+            backgroundColor: projectName ? 'white' : hrsFilterBtnRed,
+            border: '5px solid ' + hrsFilterBtnRed,
+          }}
+        ></div>
+      );
     } else if (moment(dateOfWork).isSameOrAfter(pastFortyEightHrs)) {
-      return <div className="color-bar" style={{ backgroundColor: hrsFilterBtnBlue }}></div>;
+      return (
+        <div
+          className="color-bar"
+          style={{
+            backgroundColor: projectName ? 'white' : hrsFilterBtnBlue,
+            border: '5px solid ' + hrsFilterBtnBlue,
+          }}
+        ></div>
+      );
     } else {
-      return <div className="color-bar" style={{ backgroundColor: 'green' }}></div>;
+      return (
+        <div
+          className="color-bar"
+          style={{ backgroundColor: projectName ? 'white' : 'green', border: '5px solid green' }}
+        ></div>
+      );
     }
   };
 
@@ -78,7 +99,9 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
             <h4 className="text-success">
               {data.hours}h {data.minutes}m
             </h4>
-            <div className="text-muted">Project/Task:</div>
+            <div className="text-muted">
+              {projectName ? <b>Project</b> : 'Project'}/{taskName ? <b>Task</b> : 'Task'}:
+            </div>
             <h6> {projectName || taskName} </h6>
             <span className="text-muted">Tangible:&nbsp;</span>
             <h6>{data.isTangible ? 'Tangible' : 'Intangible'}</h6>

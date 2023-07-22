@@ -93,7 +93,6 @@ function AddTaskModal(props) {
     return newNum;
   };
 
-
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
     setResourceItems([

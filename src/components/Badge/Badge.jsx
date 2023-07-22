@@ -83,7 +83,11 @@ const Badge = props => {
                     color: '#285739',
                   }}
                 >
-                  Bravo! You Earned {totalBadge} Badges!{' '}
+                  {totalBadge
+                    ? `Bravo! You have earned ${totalBadge} ${
+                        totalBadge == 1 ? 'badge' : 'badges'
+                      }! `
+                    : 'You have no badges. '}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
                 <Button
@@ -145,8 +149,8 @@ const Badge = props => {
           </p>
           <p className="badge_info_icon_text">
             Hours in Category: As you submit hours to a project of a certain category such as
-            'Food', 'Energy', etc you can earn badges for hitting certain levels of hours worked in
-            each category.
+            &apos;Food&apos;, &apos;Energy&apos;, etc you can earn badges for hitting certain levels
+            of hours worked in each category.
           </p>
           <p className="badge_info_icon_text">
             Hour Multiple: If you earn a multiple of your weekly committed hours you can earn a

@@ -438,8 +438,8 @@ const BadgeReport = props => {
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
             <br />
             <p>
-              Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
-              "Save Changes" button below.
+              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
+              until you click the &quot;Save Changes&quot; button below.
             </p>
           </ModalBody>
           <ModalFooter>
@@ -634,8 +634,8 @@ const BadgeReport = props => {
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
             <br />
             <p>
-              Note: Even if you click "Yes, Delete", this won't be fully deleted until you click the
-              "Save Changes" button below.
+              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
+              until you click the &quot;Save Changes&quot; button below.
             </p>
           </ModalBody>
           <ModalFooter>

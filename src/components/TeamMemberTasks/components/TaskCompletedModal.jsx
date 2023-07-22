@@ -1,7 +1,6 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import React from 'react';
+import React, { useState } from 'react';
 import { boxStyle } from 'styles';
-import { useState } from 'react';
 
 const TaskCompletedModal = React.memo(props => {
   const [isLoadingTask, setIsLoadingTask] = useState(false);

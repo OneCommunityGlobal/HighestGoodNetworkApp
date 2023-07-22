@@ -166,7 +166,7 @@ function WBSTasks(props) {
 
   return (
     <>
-      <ReactTooltip delayShow={300} html={true}/>
+      <ReactTooltip delayShow={300} />
       <div className="container-tasks">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
