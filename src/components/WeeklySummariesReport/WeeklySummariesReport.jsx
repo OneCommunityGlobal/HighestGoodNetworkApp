@@ -33,7 +33,8 @@ export class WeeklySummariesReport extends Component {
       const startDate = moment(response.data.createdDate).tz('America/Los_Angeles')
       const diff = now.diff(startDate, "days")
       summary.daysInTeam = diff
-      summary.totalTangibleHrs = response.data.totalTangibleHrs
+      const totalHours = Object.values(response.data.hoursByCategory).reduce((prev, curr) => prev + curr, 0);
+      summary.totalTangibleHrs = totalHours
     })
 
     await Promise.all(summaryPromise)
