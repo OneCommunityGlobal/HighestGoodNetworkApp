@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
@@ -19,6 +19,7 @@ import { toast } from 'react-toastify';
 
 const EditTaskModal = props => {
   /*
+<<<<<<< HEAD
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
@@ -69,6 +70,41 @@ const EditTaskModal = props => {
 
   /*
   * -------------------------------- functions --------------------------------
+=======
+  * -------------------------------- variable declarations -------------------------------- 
+  */
+  // props from store
+  const { role, userPermissions, roles, allMembers, error } = props;
+  
+  // states from hooks
+  const [thisTask, setThisTask] = useState();
+  const [modal, setModal] = useState(false);
+  const [taskName, setTaskName] = useState(thisTask?.taskName);
+  const [priority, setPriority] = useState(thisTask?.priority);
+  const [resourceItems, setResourceItems] = useState(thisTask?.resources);
+  const [assigned, setAssigned] = useState(false);
+  const [status, setStatus] = useState('false');
+  const [hoursBest, setHoursBest] = useState(thisTask?.hoursBest);
+  const [hoursWorst, setHoursWorst] = useState(thisTask?.hoursWorst);
+  const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
+  const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
+  const [hoursWarning, setHoursWarning] = useState(false);
+  const [link, setLink] = useState('');
+  const [links, setLinks] = useState(thisTask?.links);
+  const [category, setCategory] = useState(thisTask?.category);
+  const [whyInfo, setWhyInfo] = useState(thisTask?.whyInfo);
+  const [intentInfo, setIntentInfo] = useState(thisTask?.intentInfo);
+  const [endstateInfo, setEndstateInfo] = useState(thisTask?.endstateInfo);
+  const [startedDate, setStartedDate] = useState(thisTask?.startedDatetime);
+  const [dueDate, setDueDate] = useState(thisTask?.dueDatetime);
+  const [dateWarning, setDateWarning] = useState(false);
+  
+  const res = [...(resourceItems ? resourceItems : [])];
+  const FORMAT = 'MM/dd/yy';
+  
+  /*
+  * -------------------------------- functions -------------------------------- 
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   */
   const toggle = () => setModal(!modal);
 
@@ -115,6 +151,10 @@ const EditTaskModal = props => {
     }
   };
 
+<<<<<<< HEAD
+=======
+   // helpers for change start/end date
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   const changeDateStart = startDate => {
     setStartedDate(startDate);
     if (dueDate) {
@@ -135,6 +175,10 @@ const EditTaskModal = props => {
       }
     }
   };
+<<<<<<< HEAD
+=======
+  // helper for date picker
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   const parseDate = (str, format, locale) => {
     const parsed = dateFnsParse(str, format, new Date(), { locale });
@@ -144,7 +188,12 @@ const EditTaskModal = props => {
     return undefined;
   };
 
+<<<<<<< HEAD
   const addLink = () => {
+=======
+   // helpers for add/remove links
+   const addLink = () => {
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
     setLinks([...links, link]);
     setLink('');
   };
@@ -152,6 +201,7 @@ const EditTaskModal = props => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
 
+<<<<<<< HEAD
   const updateTask = async () => {
     let newDeadlineCount = deadlineCount;
     if (thisTask?.estimatedHours !== hoursEstimate) {
@@ -159,6 +209,10 @@ const EditTaskModal = props => {
       setDeadlineCount(newDeadlineCount);
     }
 
+=======
+  // helper for updating task
+  const updateTask = async () => {
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
     const updatedTask = {
       ...oldTask,
       taskName,
@@ -179,18 +233,31 @@ const EditTaskModal = props => {
       endstateInfo,
       category,
     };
+<<<<<<< HEAD
     props.setIsLoading?.(true);
     await props.updateTask(
+=======
+
+    props.setIsLoading(true);
+    props.updateTask(
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
       props.taskId,
       updatedTask,
       canUpdateTask,
       oldTask,
     );
+<<<<<<< HEAD
     props.setTask?.(updatedTask);
     await props.load?.();
     props.setIsLoading?.(false);
 
     if (error === 'none' || Object.keys(error).length === 0) {
+=======
+    await props.load();
+    props.setIsLoading(false);
+
+    if (error === 'none') {
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
       toggle();
       toast.success('Update Success!')
     } else {
@@ -199,6 +266,7 @@ const EditTaskModal = props => {
   };
 
   /*
+<<<<<<< HEAD
   * -------------------------------- useEffects --------------------------------
   */
   useEffect(() => {
@@ -214,18 +282,45 @@ const EditTaskModal = props => {
     fetchTaskData();
   }, [props.taskId]);
 
+=======
+  * -------------------------------- useEffects -------------------------------- 
+  */
+
+  useEffect(() => {
+    const fetchTaskData = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
+        setThisTask(res?.data || {});
+        setCategory(res.data.category);
+        setAssigned(res.data.isAssigned);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTaskData();
+  }, []);
+
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   // associate states with thisTask state
   useEffect(() => {
     setTaskName(thisTask?.taskName);
     setPriority(thisTask?.priority);
     setResourceItems(thisTask?.resources);
+<<<<<<< HEAD
     setAssigned(thisTask?.isAssigned);
     setStatus(thisTask?.status);
+=======
+    setAssigned(thisTask?.isAssigned || false);
+    setStatus(thisTask?.status || false);
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
     setHoursBest(thisTask?.hoursBest);
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
     setHoursEstimate(thisTask?.estimatedHours);
+<<<<<<< HEAD
     setDeadlineCount(thisTask?.deadlineCount);
+=======
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
     setLinks(thisTask?.links);
     setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
@@ -234,7 +329,12 @@ const EditTaskModal = props => {
     setStartedDate(thisTask?.startedDatetime);
     setDueDate(thisTask?.dueDatetime);
   }, [thisTask]);
+<<<<<<< HEAD
 
+=======
+  
+  
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   useEffect(() => {
     ReactTooltip.rebuild();
   }, [links]);
@@ -501,7 +601,11 @@ const EditTaskModal = props => {
                       link.length > 1 ? (
                         <div key={i}>
                           <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)} ></i>
+<<<<<<< HEAD
                           <a href={link} className="task-link" target="_blank" data-tip={link} rel="noreferrer">
+=======
+                          <a href={link} className="task-link" target="_blank" data-tip={link}>
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
                             {link}
                           </a>
                         </div>
@@ -648,7 +752,17 @@ const EditTaskModal = props => {
 };
 
 const mapStateToProps = state => ({
+<<<<<<< HEAD
   allMembers: state.projectMembers.members,
   error: state.tasks.error,
 });
 export default connect(mapStateToProps, { updateTask, hasPermission, })(EditTaskModal);
+=======
+  role: state.auth ? state.auth.user.role : null,
+  userPermissions: state.auth.user?.permissions?.frontPermissions,
+  roles: state.role.roles,
+  allMembers: state.projectMembers.members,
+  error: state.tasks.error,
+});
+export default connect(mapStateToProps, { updateTask })(EditTaskModal);
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)

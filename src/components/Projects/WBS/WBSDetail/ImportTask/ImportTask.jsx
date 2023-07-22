@@ -71,7 +71,11 @@ const ImportTask = props => {
       setTaskList(tmpList);
     } catch (error) {
       setImportStatus('importError');
+<<<<<<< HEAD
       setAlert(error.message);
+=======
+      setAlert(`${error}`);
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
     }
   };
 
@@ -81,9 +85,15 @@ const ImportTask = props => {
       name = name.trim();
       const member = members.find(p => `${p.firstName} ${p.lastName}`.toLocaleLowerCase() === name.toLowerCase());
 
+<<<<<<< HEAD
       if (!member) throw new Error(`Error: ${name} is not in the project member list`);
 
       if (nameCache.includes(name)) throw new Error(`Error: There are more than one [${name}] in resources on line ${i + 1}`);
+=======
+      if (!member) throw new Error(`${name} is not in the project member list`);
+
+      if (nameCache.includes(name)) throw new Error(`There are more than one [${name}] in resources on line ${i}`);
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
       nameCache.push(name);
       
       return name + '|' + member._id + '|' + (member.profilePic || '/defaultprofilepic.png');
@@ -194,7 +204,11 @@ const ImportTask = props => {
               {importStatus === 'importError' ? (
                 <tr>
                   <td>
+<<<<<<< HEAD
                     <Alert color='danger'>{alert}</Alert>
+=======
+                    <Alert color='danger'>{`${alert} is not in the project member list`}</Alert>
+>>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
                     <input
                       type="file"
                       id="file"
