@@ -1,8 +1,9 @@
+import { yearsToMonths } from 'date-fns/fp';
 import { useState } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
 import './PeopleTableDetails.css';
-import { NewModal } from '../common/NewModal';
+import { NewModal } from 'components/common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 
 const PeopleTableDetails = props => {
@@ -89,6 +90,7 @@ const PeopleTableDetails = props => {
   let toggleMoreResourcesStatus = true;
   const toggleMoreResources = id => {
     let x = document.getElementById(id);
+    // let hidden = x.getAttribute("hidden");
     if (toggleMoreResourcesStatus) {
       x.style.display = 'table-cell';
     } else {
@@ -113,6 +115,7 @@ const PeopleTableDetails = props => {
                   alt={resource.name}
                   src={resource.profilePic || '/pfp-default.png'}
                   className="img-circle"
+                  auto="format"
                   title={resource.name}
                 />
               );
@@ -126,8 +129,8 @@ const PeopleTableDetails = props => {
             </a>
           ) : null,
         )}
-        <div id={value._id} className="extra">
-          <div className="extra1">
+        <div id={value._id} class="extra">
+          <div class="extra1">
             {value.resources?.map(res =>
               res.map((resource, index) => {
                 if (index >= 2) {
@@ -137,6 +140,7 @@ const PeopleTableDetails = props => {
                       alt={resource.name}
                       src={resource.profilePic || '/pfp-default.png'}
                       className="img-circle"
+                      auto="format"
                       title={resource.name}
                     />
                   );
@@ -197,9 +201,19 @@ const PeopleTableDetails = props => {
             <div>Why This Task is important</div>
             <textarea className="rectangle" type="text" value={value.whyInfo} />
             <div>Design Intent</div>
-            <textarea className="rectangle" type="text" value={value.intentInfo} />
+            <textarea
+              className="rectangle"
+              type="text"
+              value={value.intentInfo}
+              // onChange={this.handleChange}
+            />
             <div>End State</div>
-            <textarea className="rectangle" type="text" value={value.endstateInfo} />
+            <textarea
+              className="rectangle"
+              type="text"
+              value={value.endstateInfo}
+              // onChange={this.handleChange}
+            />
           </NewModal>
         ))}
       </div>

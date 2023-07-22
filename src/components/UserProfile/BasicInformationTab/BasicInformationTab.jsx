@@ -11,7 +11,6 @@ import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
-import { boxStyle } from 'styles';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
@@ -36,7 +35,7 @@ const Name = props => {
               placeholder="First Name"
               invalid={!formValid.firstName}
             />
-            <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
+            <FormFeedback>First Name Can't be empty</FormFeedback>
           </FormGroup>
         </Col>
         <Col md="3">
@@ -54,7 +53,7 @@ const Name = props => {
               placeholder="Last Name"
               invalid={!formValid.lastName}
             />
-            <FormFeedback>Last Name Can&apos;t be empty</FormFeedback>
+            <FormFeedback>Last Name Can't be empty</FormFeedback>
           </FormGroup>
         </Col>
       </>
@@ -268,10 +267,8 @@ const BasicInformationTab = props => {
     setFormValid,
     role,
     canEdit,
-    canEditRole,
     roles,
     userPermissions,
-    loadUserProfile,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
@@ -425,7 +422,7 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-            {canEditRole ? (
+            {canEdit ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
@@ -435,6 +432,8 @@ const BasicInformationTab = props => {
                   id="role"
                   name="role"
                   className="form-control"
+                  disabled={!canEdit}
+                  canEdit={canEdit}
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
@@ -468,13 +467,7 @@ const BasicInformationTab = props => {
                 </Col>
                 <Col md="6">
                   <div className="w-100 pt-1 mb-2 mx-auto">
-                    <Button
-                      color="secondary"
-                      block
-                      size="sm"
-                      onClick={onClickGetTimeZone}
-                      style={boxStyle}
-                    >
+                    <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
                       Get Time Zone
                     </Button>
                   </div>
@@ -521,18 +514,11 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-                  : 'Inactive'}
+                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                : 'Inactive'}
             </Label>
             &nbsp;
-            {canEdit && (
-              <PauseAndResumeButton
-                setUserProfile={setUserProfile}
-                loadUserProfile={loadUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-              />
-            )}
+            {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
           </Col>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
@@ -544,14 +530,7 @@ const BasicInformationTab = props => {
             </Label>
           </Col>
           <Col md="6">
-            {canEdit && (
-              <SetUpFinalDayButton
-                loadUserProfile={loadUserProfile}
-                setUserProfile={setUserProfile}
-                isBigBtn={true}
-                userProfile={userProfile}
-              />
-            )}
+            {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
           </Col>
         </Row>
       </div>
@@ -678,7 +657,7 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-            {canEditRole ? (
+            {canEdit ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
@@ -688,6 +667,8 @@ const BasicInformationTab = props => {
                   id="role"
                   name="role"
                   className="form-control"
+                  disabled={!canEdit}
+                  canEdit={canEdit}
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
@@ -766,8 +747,8 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                    ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-                    : 'Inactive'}
+                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                  : 'Inactive'}
               </Label>
               &nbsp;
               {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}

@@ -4,12 +4,8 @@ import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en
 import { UserStatus, FinalDay } from '../../utils/enums';
 import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
-import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from 'utils/permissions';
+import hasPermission from 'utils/permissions';
 import Table from 'react-bootstrap/Table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
-import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
 
 /**
  * The body row of the user table
@@ -25,19 +21,11 @@ const UserTableData = React.memo(props => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
-  const checkPermissionsOnOwner = () => {
-    return (
-      props.user.role === 'Owner' &&
-      !hasPermission(props.role, 'addDeleteEditOwners', props.roles, props.userPermissions)
-    );
-  };
-
   return (
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
-          canChange={true}
           key={`active_cell${props.index}`}
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
@@ -50,17 +38,7 @@ const UserTableData = React.memo(props => {
         <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
       </td>
       <td>{props.user.role}</td>
-      <td className="email_cell">
-        {props.user.email}
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(props.user.email);
-            toast.success('Email Copied!');
-          }}
-        />
-      </td>
+      <td>{props.user.email}</td>
       <td>{props.user.weeklycommittedHours}</td>
       <td>
         <button
@@ -73,7 +51,6 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={boxStyle}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
@@ -88,7 +65,6 @@ const UserTableData = React.memo(props => {
               props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
             );
           }}
-          style={boxStyle}
         >
           {props.isSet ? CANCEL : SET_FINAL_DAY}
         </button>
@@ -99,25 +75,30 @@ const UserTableData = React.memo(props => {
           : ''}
       </td>
       <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
-      {checkPermissionsOnOwner() ? null : (
-        <td>
-          <span className="usermanagement-actions-cell">
+      <td>
+        <span className="usermanagement-actions-cell">
+          {props.user.role === 'Owner' &&
+          !hasPermission(
+            props.role,
+            'addDeleteEditOwners',
+            props.roles,
+            props.userPermissions,
+          ) ? null : (
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={boxStyle}
             >
               {DELETE}
             </button>
-          </span>
-          <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton />
-          </span>
-        </td>
-      )}
+          )}
+        </span>
+        <span className="usermanagement-actions-cell">
+          <ResetPasswordButton user={props.user} isSmallButton />
+        </span>
+      </td>
     </tr>
   );
 });

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
-import { boxStyle } from 'styles';
 
 const BadgeDevelopment = props => {
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
@@ -12,7 +11,7 @@ const BadgeDevelopment = props => {
 
   return (
     <div>
-      <Button className="btn--dark-sea-green" onClick={toggle} style={{ ...boxStyle, margin: 20 }}>
+      <Button className="btn--dark-sea-green" onClick={toggle} style={{ margin: 20 }}>
         Create New Badge
       </Button>
       <Modal isOpen={isCreateNewBadgePopupOpen} toggle={toggle} backdrop="static">

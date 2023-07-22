@@ -5,7 +5,6 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
-import { boxStyle } from 'styles';
 
 const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   const generateFormattedReport = () => {
@@ -21,7 +20,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
     const weeklySummaryNotProvidedMessage =
       '<div><b>Weekly Summary:</b> <span style="color: red;">Not provided!</span></div>';
     const weeklySummaryNotRequiredMessage =
-      '<div><b>Weekly Summary:</b> <span style="color: green;">Not required for this user</span></div>';
+      '<div><b>Weekly Summary:</b> <span style="color: magenta;">Not required for this user</span></div>';
 
     summaries.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
@@ -36,7 +35,6 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         weeklySummariesCount,
         weeklycommittedHours,
         totalSeconds,
-        weeklySummaryOption,
       } = eachSummary;
 
       const hoursLogged = (totalSeconds[weekIndex] || 0) / 3600;
@@ -50,18 +48,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         : '<span style="color: red;">Not provided!</span>';
 
       const totalValidWeeklySummaries = weeklySummariesCount || 'No valid submissions yet!';
-      const colorStyle = (() => {
-        switch (weeklySummaryOption) {
-          case 'Team':
-            return 'style="color: magenta;"';
-          case 'Not Required':
-            return 'style="color: green"';
-          case 'Required':
-            return '';
-          default:
-            return eachSummary.weeklySummaryNotReq ? 'style="color: green"' : '';
-        }
-      })();
+
       let weeklySummaryMessage = weeklySummaryNotProvidedMessage;
       if (Array.isArray(weeklySummaries) && weeklySummaries[weekIndex]) {
         const { dueDate, summary } = weeklySummaries[weekIndex];
@@ -71,13 +58,10 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
           )
             .tz('America/Los_Angeles')
             .format('YYYY-MMM-DD')}</b>):</div>
-                                  <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}" ${colorStyle}>${summary
-            .replace(styleRegex, '')
-            .replace(styleInlineRegex, '')}</div>`;
-        } else if (
-          weeklySummaryOption === 'Not Required' ||
-          (!weeklySummaryOption && eachSummary.weeklySummaryNotReq)
-        ) {
+                                  <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}">${summary
+                                    .replace(styleRegex, '')
+                                    .replace(styleInlineRegex, '')}</div>`;
+        } else if (eachSummary.weeklySummaryNotReq === true) {
           weeklySummaryMessage = weeklySummaryNotRequiredMessage;
         }
       }
@@ -125,11 +109,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   };
 
   return (
-    <Button
-      className="px-5 btn--dark-sea-green float-right"
-      onClick={generateAndDownloadPdf}
-      style={boxStyle}
-    >
+    <Button className="px-5 btn--dark-sea-green float-right" onClick={generateAndDownloadPdf}>
       Open PDF
     </Button>
   );

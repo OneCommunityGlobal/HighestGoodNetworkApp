@@ -37,6 +37,7 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
   const teamMembersPromises = [];
   const memberTimeEntriesPromises = [];
   managingTeams.forEach(team => {
+    // req = await httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id));
     teamMembersPromises.push(httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id)));
   });
 
@@ -65,6 +66,8 @@ export const fetchAllManagingTeams = (userId, managingTeams) => {
     });
 
     Promise.all(memberTimeEntriesPromises).then(data => {
+      // console.log('After time entries: ', data);
+      // console.log('uniqueMemberTimeEntries: ', uniqueMemberTimeEntries);
       for (let i = 0; i < uniqueMembers.length; i++) {
         uniqueMembers[i] = {
           ...uniqueMembers[i],
@@ -118,6 +121,7 @@ export const getTeamDetail = teamId => {
         loggedOut = true;
       }
     });
+    // console.log('getTeamDetail:', res)
     if (!loggedOut) {
       await dispatch(setTeamDetail(res.data));
     }

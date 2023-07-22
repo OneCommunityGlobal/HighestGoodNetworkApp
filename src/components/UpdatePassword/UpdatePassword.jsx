@@ -14,7 +14,9 @@ class UpdatePassword extends Form {
     errors: {},
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    // document.title = "Update Password";
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.errors.error !== this.props.errors.error) {

@@ -79,6 +79,9 @@ class UserProfileEdit extends Component {
         }
       }
     }
+
+    // console.log('edit profile, component did mount, props: ', this.props);
+    // console.log('edit profile, state:', this.state);
   }
 
   toggleTab = tab => {
@@ -307,6 +310,7 @@ class UserProfileEdit extends Component {
       });
     }
     const filesizeKB = file.size / 1024;
+    // console.log(filesizeKB);
     if (filesizeKB > 50) {
       imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
 														choose a different file, or use an online file compressor.`;
@@ -325,6 +329,8 @@ class UserProfileEdit extends Component {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
+      // console.log(reader, file);
+
       this.setState({
         imageUploadError: '',
         userProfile: {
@@ -359,6 +365,8 @@ class UserProfileEdit extends Component {
   };
 
   handleNullState = kind => {
+    // console.log('before handle def:', this.state.userProfile);
+
     switch (kind) {
       case 'settings':
         this.setState(() => ({
@@ -497,6 +505,28 @@ class UserProfileEdit extends Component {
     }
   };
 
+  /* modLinkButton = (canEditFields, isUserAdmin) => {
+    if (canEditFields) {
+      let user = 'user';
+      if (isUserAdmin) {
+        user = 'admin';
+      }
+      return (
+        <button
+          type="button"
+          className="modLinkButton"
+          onClick={() => {
+            this.handleLinkModel(true, 'updateLink', user);
+          }}
+        >
+          <i className="fa fa-wrench fa-lg" aria-hidden="true">
+            {' '}
+          </i>
+        </button>
+      );
+    }
+  }; */
+
   // render drop down list of teams, or auto-fill team names...
   // fetch and display available teams
   // once team is selected, push userid & teamid with addTeamMember...
@@ -513,11 +543,17 @@ class UserProfileEdit extends Component {
   };
 
   render() {
+    // const { allTeams, fetching } = this.props.allTeams;
+
+    // console.log('allteams...', allTeams)
+
     const { userId: targetUserId } = this.props.match
       ? this.props.match.params
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
     const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
+
+    // console.log(this.props.allTeams);
 
     const {
       userProfile,
@@ -550,8 +586,8 @@ class UserProfileEdit extends Component {
                   zIndex: '9',
                 }}
               >
-                Reminder: You must click &quot;Save Changes&quot; at the bottom of this page. If you
-                don&apos;t, changes to your profile will not be saved.
+                Reminder: You must click "Save Changes" at the bottom of this page. If you don't,
+                changes to your profile will not be saved.
               </h6>
             )}
           </Sticky>
@@ -572,6 +608,7 @@ class UserProfileEdit extends Component {
     } = userProfile;
 
     const isUserSelf = targetUserId === requestorId;
+    // const isUserAdmin = requestorRole === 'Administrator';
     let canEditFields;
     if (userProfile.role !== 'Owner') {
       canEditFields =
@@ -790,7 +827,7 @@ class UserProfileEdit extends Component {
                               placeholder="First Name"
                               invalid={!this.state.formValid.firstName}
                             />
-                            <FormFeedback>First Name Can&apos;t be null</FormFeedback>
+                            <FormFeedback>First Name Can't be null</FormFeedback>
                           </FormGroup>
                         </Col>
                         <Col md="3">
@@ -805,7 +842,7 @@ class UserProfileEdit extends Component {
                               placeholder="Last Name"
                               invalid={!this.state.formValid.lastName}
                             />
-                            <FormFeedback>Last Name Can&apos;t be Null</FormFeedback>
+                            <FormFeedback>Last Name Can't be Null</FormFeedback>
                           </FormGroup>
                         </Col>
                       </Row>
@@ -949,7 +986,7 @@ class UserProfileEdit extends Component {
                       userTeams={this.state ? this.state.userProfile.teams : []}
                       teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                       onAssignTeam={this.onAssignTeam}
-                      onDeleteTeam={this.onDeleteTeam}
+                      onDeleteteam={this.onDeleteTeam}
                       role={requestorRole}
                       edit
                     />

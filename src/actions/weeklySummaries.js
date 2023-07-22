@@ -1,6 +1,8 @@
 import axios from 'axios';
 import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
+import { filter } from 'lodash';
+import { strip } from 'joi/lib/types/lazy';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -41,15 +43,8 @@ export const getWeeklySummaries = userId => {
     try {
       const response = await axios.get(url);
       // Only pick the fields related to weekly summaries from the userProfile.
-      const { weeklySummariesCount, weeklySummaries, mediaUrl, adminLinks } = response.data;
-      let summaryDocLink;
-      for (let link in adminLinks) {
-        if (adminLinks[link].Name === 'Dropbox Link') {
-          summaryDocLink = adminLinks[link].Link;
-          break; 
-        }
-      }
-      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl:summaryDocLink || mediaUrl}));
+      const { weeklySummariesCount, weeklySummaries, mediaUrl } = response.data;
+      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl }));
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesError(error));
@@ -71,20 +66,11 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       // Get the user's profile from the server.
       let response = await axios.get(url);
       const userProfile = await response.data;
-      const adminLinks = userProfile.adminLinks || [];
 
       // Merge the weekly summaries related changes with the user's profile.
       const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
-      // update the changes on weekly summaries link into admin links
-      for (let link of adminLinks) {
-        if (link.Name === 'Dropbox Link') {
-          link.Link = mediaUrl;
-          break; 
-        }
-      }
       const userProfileUpdated = {
         ...userProfile,
-        adminLinks,
         mediaUrl,
         weeklySummaries,
         weeklySummariesCount,
@@ -95,6 +81,29 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       return response.status;
     } catch (error) {
       return error.response.status;
+    }
+  };
+};
+
+export const extractWeeklySummaries = userIds => {
+  return async (dispatch, getState) => {
+    try {
+      const summarydata = getState().weeklySummariesReport;
+      const summaryreports = summarydata.summaries;
+      const filteredmembers = summaryreports.filter(member => userIds.includes(member._id));
+      const filteredSummaries = filteredmembers.map(member => ({
+        _id: member._id,
+        report: member.weeklySummaries[0].summary,
+      }));
+      const strippedSummaries = filteredSummaries.map(member => ({
+        _id: member._id,
+        report: member.report.replace(/<\/?p>/g, ''),
+      }));
+
+      return { finallist: strippedSummaries };
+    } catch (err) {
+      console.error('extractWeeklySummaries:', err);
+      return null;
     }
   };
 };

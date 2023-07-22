@@ -2,6 +2,7 @@ thead {
   background: aliceblue;
 }
 
+
 #new_usermanagement {
   margin-bottom: 10px;
 }
@@ -44,18 +45,6 @@ thead {
 #card_active {
   background: #fbad4c;
   color: white;
-}
-
-.email_cell {
-  position: relative;
-}
-
-.copy_icon {
-  cursor: pointer;
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 2px 2px;
 }
 
 .usermanagement__order--input div {

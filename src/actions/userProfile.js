@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
   getUserProfile as getUserProfileActionCreator,
   getUserTask as getUserTaskActionCreator,
+  getUserProject as getUserProjectActionCreator,
   editFirstName as editFirstNameActionCreator,
   editUserProfile as editUserProfileActionCreator,
   CLEAR_USER_PROFILE,
@@ -18,6 +19,7 @@ export const getUserProfile = userId => {
         loggedOut = true;
       }
     });
+    // console.log('GET user profile: response:', res)
     if (!loggedOut) {
       await dispatch(getUserProfileActionCreator(res.data));
     }
@@ -35,6 +37,17 @@ export const getUserTask = userId => {
   };
 };
 
+// export const getUserProject = (userId) => {
+//   const url = ENDPOINTS.USER_PROJECTS(userId);
+//   return async (dispatch) => {
+//     const res = await axios.get(url).catch((error)=>{
+//       if (error.status === 401) {
+//       }
+//     });
+//     await dispatch(getUserProjectActionCreator(res.data));
+//   };
+// };
+
 export const editFirstName = data => dispatch => {
   dispatch(editFirstNameActionCreator(data));
 };
@@ -49,17 +62,6 @@ export const updateUserProfile = (userId, userProfile) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
   return async dispatch => {
     const res = await axios.put(url, userProfile);
-    if (res.status === 200) {
-      await dispatch(getUserProfileActionCreator(userProfile));
-    }
-    return res.status;
-  };
-};
-
-export const updateUserProfileProperty = (userProfile, key, value) => {
-  const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfile._id);
-  return async dispatch => {
-    const res = await axios.patch(url, {key: key, value: value});
     if (res.status === 200) {
       await dispatch(getUserProfileActionCreator(userProfile));
     }

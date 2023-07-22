@@ -5,7 +5,6 @@ import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { updateUserFinalDayStatus } from 'actions/userManagement';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
 
 /**
  * @param {*} props
@@ -22,14 +21,14 @@ const SetUpFinalDayButton = props => {
     if (props.userProfile?.endDate !== undefined) setIsSet(true);
   }, []);
 
-  const onFinalDayClick = async (user, status) => {
+  const onFinalDayClick = (user, status) => {
     if (isSet) {
-      await updateUserFinalDayStatus(props.userProfile, 'Active', undefined)(dispatch);
+      updateUserFinalDayStatus(props.userProfile, 'Active', undefined)(dispatch);
       setIsSet(!isSet);
-      setTimeout(async () => {
-        await props.loadUserProfile();
-        toast.success("This user's final day has been deleted.");
-      }, 1000);
+      toast.success("This user's final day has been deleted.");
+      setTimeout(function() {
+        window.location.reload();
+      }, 5000);
     } else {
       setFinalDayDateOpen(true);
     }
@@ -39,14 +38,14 @@ const SetUpFinalDayButton = props => {
     setFinalDayDateOpen(false);
   };
 
-  const deactiveUser = async finalDayDate => {
-    await updateUserFinalDayStatus(props.userProfile, 'Active', finalDayDate)(dispatch);
+  const deactiveUser = finalDayDate => {
+    updateUserFinalDayStatus(props.userProfile, 'Active', finalDayDate)(dispatch);
     setIsSet(true);
     setFinalDayDateOpen(false);
-    setTimeout(async () => {
-      await props.loadUserProfile();
-      toast.success("This user's final day has been set.");
-    }, 1000);
+    toast.success("This user's final day has been set.");
+    setTimeout(function() {
+      window.location.reload();
+    }, 5000);
   };
 
   return (
@@ -65,7 +64,6 @@ const SetUpFinalDayButton = props => {
         onClick={e => {
           onFinalDayClick(props.userProfile, isSet);
         }}
-        style={boxStyle}
       >
         {isSet ? CANCEL : SET_FINAL_DAY}
       </Button>

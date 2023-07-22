@@ -13,8 +13,8 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
-  const [summaryBarData, setSummaryBarData] = useState(null);
-  const [userProfile, setUserProfile] = useState(undefined);
+  const [leaderData, setLeaderData] = useState(null);
+  const [submittedSummary, setSubmittedSummary] = useState(false);
   let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
 
   const toggle = () => {
@@ -40,21 +40,15 @@ export const Dashboard = props => {
 
   return (
     <Container fluid>
-      {props.match.params.userId && props.auth.user.userid !== props.match.params.userId ? (
-        <PopUpBar />
-      ) : (
-        ''
-      )}
+      <PopUpBar />
       <SummaryBar
-        userProfile={userProfile}
-        setUserProfile={setUserProfile}
         asUser={userId}
         toggleSubmitForm={toggle}
         role={props.auth.user.role}
-        summaryBarData={summaryBarData}
+        leaderData={leaderData}
       />
 
-      <Row>
+      <Row >
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
           <div className="row justify-content-center">
@@ -65,26 +59,26 @@ export const Dashboard = props => {
               onKeyDown={toggle}
               tabIndex="0"
             >
-              <WeeklySummary isDashboard={true} isPopup={popup} asUser={userId} />
+              <WeeklySummary isPopup asUser={userId} setSubmittedSummary={setSubmittedSummary} />
             </div>
           </div>
         </Col>
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard asUser={userId} />
+          <Leaderboard asUser={userId} setLeaderData={setLeaderData} />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary asUser={userId} setPopup={setPopup} />
+                <WeeklySummary asUser={userId} />
               </div>
             </div>
           ) : null}
           <div className="my-2">
             <a name="wsummary"></a>
-            <Timelog isDashboard={true} asUser={userId} passSummaryBarData={setSummaryBarData} />
+            <Timelog isDashboard asUser={userId} />
           </div>
           <Badge userId={userId} role={props.auth.user.role} />
         </Col>

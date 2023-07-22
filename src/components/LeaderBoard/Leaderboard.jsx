@@ -3,12 +3,6 @@ import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
-import Alert from 'reactstrap/lib/Alert';
-import {
-  hasLeaderboardPermissions,
-  assignStarDotColors,
-  showStar,
-} from 'utils/leaderboardPermissions';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -34,18 +28,18 @@ const LeaderBoard = ({
   loggedInUser,
   organizationData,
   timeEntries,
-  isVisible,
   asUser,
+  setLeaderData,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
-  const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
 
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
   }, [timeEntries]);
 
-  useDeepEffect(() => {
+  useEffect(() => {
+    setLeaderData(leaderBoardData);
     try {
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
@@ -62,67 +56,9 @@ const LeaderBoard = ({
   }, [leaderBoardData]);
 
   const [isOpen, setOpen] = useState(false);
-  const [modalContent, setContent] = useState(null);
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
-  const modalInfos = [
-    <>
-      <p>
-        This is the One Community Leaderboard! It is used to show how much tangible and total time
-        you’ve contributed, whether or not you’ve achieved your total committed hours for the week,
-        and (in the case of teams) where your completed hours for the week rank you compared to
-        other team members. It can also be used to access key areas of this application.
-      </p>
-      <ul>
-        <li>
-          The HGN Totals at the top shows how many volunteers are currently active in the system,
-          how many volunteer hours they are collectively committed to, and how many tangible and
-          total hours they have completed.
-          {/*The color and length of that bar
-          changes based on what percentage of the total committed hours for the week have been
-          completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo, 
-          and Equal or More than 100%: Purple.*/}
-        </li>
-        <li>
-          The red/green dot shows whether or not a person has completed their “tangible” hours
-          commitment for the week. Green = yes (Great job!), Red = no. Clicking this dot will take
-          you to a person’s tasks section on their/your dashboard.{' '}
-        </li>
-        <li>
-          The time bar shows how much tangible and total (tangible + intangible) time you’ve
-          completed so far this week. In the case of teams, it also shows you where your completed
-          hours for the week rank you compared to other people on your team. Clicking a person’s
-          time bar will take you to the time log section on their/your dashboard. This bar also
-          changes color based on how many tangible hours you have completed: 0-5 hrs: Red, 5-10 hrs:
-          Orange, 10-20 hrs: Green, 20-30 hrs: Blue, 30-40 hrs: Indigo, 40-50 hrs: Violet, and 50+
-          hrs: Purple
-        </li>
-        <li>Clicking a person’s name will lead to their/your profile page.</li>
-      </ul>
-      <p>Hovering over any of these areas will tell you how they function too. </p>
-    </>,
-    <>
-      <p>
-        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you
-        keep this setting as it is.
-      </p>
-      <p>
-        If you want to change this setting so your team/everyone can see and access your time log
-        though, you can do so by going to&nbsp;
-        <Link to={`/userprofile/${userId}`} title="View Profile">
-          Your Profile&nbsp;
-        </Link>
-        --&gt; Teams Tab --&gt; toggle the “Visibility” switch to “Visible”.
-      </p>
-      <p>Note: Admins and Core Team can always see all team members. This cannot be changed.</p>
-    </>,
-  ];
-
-  const handleModalOpen = idx => {
-    setContent(modalInfos[idx]);
-    setOpen(true);
-  };
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
@@ -160,31 +96,48 @@ const LeaderBoard = ({
           style={{ fontSize: 24, cursor: 'pointer' }}
           aria-hidden="true"
           className="fa fa-info-circle"
-          onClick={() => {
-            handleModalOpen(0);
-          }}
+          onClick={toggle}
         />
       </h3>
-      {!isVisible && (
-        <Alert color="warning">
-          Note: You are currently invisible to the team(s) you are on.&nbsp;&nbsp;
-          <i
-            data-toggle="tooltip"
-            data-placement="right"
-            title="Click for more information"
-            style={{ fontSize: 20, cursor: 'pointer' }}
-            aria-hidden="true"
-            className="fa fa-info-circle"
-            onClick={() => {
-              handleModalOpen(1);
-            }}
-          />
-        </Alert>
-      )}
       <span className="leaderboard">
         <Modal isOpen={isOpen} toggle={toggle}>
           <ModalHeader toggle={toggle}>Leaderboard Info</ModalHeader>
-          <ModalBody>{modalContent}</ModalBody>
+          <ModalBody>
+            <p>
+              This is the One Community Leaderboard! It is used to show how much tangible and total
+              time you’ve contributed, whether or not you’ve achieved your total committed hours for
+              the week, and (in the case of teams) where your completed hours for the week rank you
+              compared to other team members. It can also be used to access key areas of this
+              application.
+            </p>
+            <ul>
+              <li>
+                The HGN Totals at the top shows how many volunteers are currently active in the
+                system, how many volunteer hours they are collectively committed to, and how many
+                tangible and total hours they have completed.
+                {/*The color and length of that bar
+                changes based on what percentage of the total committed hours for the week have been
+                completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo, 
+                and Equal or More than 100%: Purple.*/}
+              </li>
+              <li>
+                The red/green dot shows whether or not a person has completed their “tangible” hours
+                commitment for the week. Green = yes (Great job!), Red = no. Clicking this dot will
+                take you to a person’s tasks section on their/your dashboard.{' '}
+              </li>
+              <li>
+                The time bar shows how much tangible and total (tangible + intangible) time you’ve
+                completed so far this week. In the case of teams, it also shows you where your
+                completed hours for the week rank you compared to other people on your team.
+                Clicking a person’s time bar will take you to the time log section on their/your
+                dashboard. This bar also changes color based on how many tangible hours you have
+                completed: 0-5 hrs: Red, 5-10 hrs: Orange, 10-20 hrs: Green, 20-30 hrs: Blue, 30-40
+                hrs: Indigo, 40-50 hrs: Violet, and 50+ hrs: Purple
+              </li>
+              <li>Clicking a person’s name will lead to their/your profile page.</li>
+            </ul>
+            <p>Hovering over any of these areas will tell you how they function too. </p>
+          </ModalBody>
           <ModalFooter>
             <Button onClick={toggle} color="secondary" className="float-left">
               {' '}
@@ -212,7 +165,23 @@ const LeaderBoard = ({
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr>
-              <td />
+              <td className="align-middle">
+                <Link to={`/dashboard/`}>
+                  <div
+                    title={`Weekly Committed: ${organizationData.weeklycommittedHours} hours`}
+                    style={{
+                      backgroundColor:
+                        organizationData.tangibletime >= organizationData.weeklycommittedHours
+                          ? 'green'
+                          : 'red',
+                      width: 15,
+                      height: 15,
+                      borderRadius: 7.5,
+                      margin: 'auto',
+                    }}
+                  />
+                </Link>
+              </td>
               <th scope="row">{organizationData.name}</th>
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime}</span>
@@ -232,7 +201,7 @@ const LeaderBoard = ({
             </tr>
             {leaderBoardData.map((item, key) => (
               <tr key={key}>
-                <td className="align-middle">
+                <td className="align-middle" onClick={() => dashboardToggle(item)}>
                   <div>
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
                       <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
@@ -249,68 +218,26 @@ const LeaderBoard = ({
                       </ModalFooter>
                     </Modal>
                   </div>
+
+                  {/* <Link to={`/dashboard/${item.personId}`}> */}
                   <div
+                    title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: isAdmin ? 'space-between' : 'center',
+                      backgroundColor:
+                        item.tangibletime >= item.weeklycommittedHours ? 'green' : 'red',
+                      width: 15,
+                      height: 15,
+                      borderRadius: 7.5,
+                      margin: 'auto',
+                      verticalAlign: 'middle',
                     }}
-                  >
-                    {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div onClick={() => dashboardToggle(item)}>
-                      {hasLeaderboardPermissions(loggedInUser.role) &&
-                      showStar(item.tangibletime, item.weeklycommittedHours) ? (
-                        <i
-                          className="fa fa-star"
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                          style={{
-                            color: assignStarDotColors(
-                              item.tangibletime,
-                              item.weeklycommittedHours,
-                            ),
-                            fontSize: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        />
-                      ) : (
-                        <div
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                          style={{
-                            backgroundColor:
-                              item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',
-                            width: 15,
-                            height: 15,
-                            borderRadius: 7.5,
-                            margin: 'auto',
-                            verticalAlign: 'middle',
-                          }}
-                        />
-                      )}
-                    </div>
-                    {isAdmin && item.hasSummary && (
-                      <div
-                        title={`Weekly Summary Submitted`}
-                        style={{
-                          color: '#32a518',
-                          cursor: 'default',
-                        }}
-                      >
-                        <strong>✓</strong>
-                      </div>
-                    )}
-                  </div>
+                  />
                   {/* </Link> */}
                 </td>
                 <th scope="row">
                   <Link to={`/userprofile/${item.personId}`} title="View Profile">
                     {item.name}
                   </Link>
-                  &nbsp;&nbsp;&nbsp;
-                  {isAdmin && !item.isVisible && (
-                    <i className="fa fa-eye-slash" title="User is invisible"></i>
-                  )}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
@@ -324,12 +251,7 @@ const LeaderBoard = ({
                   </Link>
                 </td>
                 <td className="align-middle">
-                  <span
-                    title="Total time"
-                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
-                  >
-                    {item.totaltime}
-                  </span>
+                  <span title="Total time">{item.totaltime}</span>
                 </td>
               </tr>
             ))}

@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -107,10 +108,9 @@ export const teamMemberAddAction = (member) => ({
 export const getAllUserTeams = () => {
   const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
   return async (dispatch) => {
-    return userTeamsPromise
+    userTeamsPromise
       .then((res) => {
         dispatch(teamMembersFectchACtion(res.data));
-        return res.data;
         // console.log("getAllUserTeams: res:", res.data)
       })
       .catch(() => {
@@ -166,10 +166,9 @@ export const getTeamMembers = (teamId) => {
   const teamMembersPromise = axios.get(ENDPOINTS.TEAM_USERS(teamId));
   return async (dispatch) => {
     await dispatch(teamUsersFetchAction());
-    return teamMembersPromise
+    teamMembersPromise
       .then((res) => {
         dispatch(teamUsersFetchCompleteAction(res.data));
-        return res.data;
       })
       .catch(() => {
         dispatch(teamUsersFetchErrorAction());

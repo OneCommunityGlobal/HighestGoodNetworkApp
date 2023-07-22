@@ -16,7 +16,9 @@ export class MonthlyEffort extends React.Component {
       </div>
     );
   }
-}
+};
+
+// export default MonthlyEffort;
 
 const mapStateToProps = state => ({
   auth: state.auth,

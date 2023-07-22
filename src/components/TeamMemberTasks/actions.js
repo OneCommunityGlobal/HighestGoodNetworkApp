@@ -17,6 +17,3 @@ export const createOrUpdateTaskNotificationError = createAction(
 export const deleteTaskNotificationBegin = createAction('DELETE_TASK_NOTIFICATION_BEGIN');
 export const deleteTaskNotificationSuccess = createAction('DELETE_TASK_NOTIFICATION_SUCCESS');
 export const deleteTaskNotificationError = createAction('DELETE_TASK_NOTIFICATION_ERROR');
-
-export const dataLoading = createAction('DATA_LOADING');
-export const finishLoading = createAction('FINISH_LOADING');

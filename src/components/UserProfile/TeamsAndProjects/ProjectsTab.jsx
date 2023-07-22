@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+//import { Row, Col } from 'reactstrap';
 import AddProjectPopup from './AddProjectPopup';
 import UserProjectsTable from './UserProjectsTable';
 
@@ -13,8 +14,6 @@ const ProjectsTab = props => {
     userTasks,
     userId,
     updateTask,
-    handleSubmit,
-    disabled,
   } = props;
   const [addProjectPopupOpen, setaddProjectPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -44,7 +43,6 @@ const ProjectsTab = props => {
         userProjectsById={userProjects}
         projects={projectsData}
         onSelectAssignProject={onSelectAssignProject}
-        handleSubmit={handleSubmit}
       />
       <UserProjectsTable
         userTasks={userTasks}
@@ -56,7 +54,6 @@ const ProjectsTab = props => {
         role={role}
         updateTask={updateTask}
         userId={userId}
-        disabled={disabled}
       />
     </React.Fragment>
   );

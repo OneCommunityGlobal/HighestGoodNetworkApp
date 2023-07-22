@@ -1,16 +1,11 @@
+/*********************************************************************************
+ * Component: TAK
+ * Author: Henry Ng - 21/03/20
+ ********************************************************************************/
 import React, { createRef, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
-  DropdownMenu,
-} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
 import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
 import AddTaskModal from '../AddTask/AddTaskModal';
 import EditTaskModal from '../EditTask/EditTaskModal';
@@ -29,9 +24,8 @@ import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
 
-function Task(props) {
+const Task = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
   const { roles } = props.state.role;
   const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
@@ -62,11 +56,22 @@ function Task(props) {
   }, []);
   let passCurrentNum = false;
 
-  useEffect(() => {
-    if (isOpen !== props.isOpen) {
-      setIsOpen(props.isOpen);
+  /* let controllerToggle = true;
+  const selectTask = (id) => {
+    if (controllerToggle) {
+      console.log('--------in task.jsx hit----------');
+      console.log('--------mother: ', props.mother);
+      document.getElementById(id).style.background = '#effff2';
+      document.getElementById(`controller_${id}`).style.display = 'contents';
+      controllerToggle = false;
+    } else {
+      document.getElementById(id).style.background = 'white';
+      document.getElementById(`controller_${id}`).style.display = '';
+      controllerToggle = true;
     }
-  }, [props.isOpen]);
+
+    props.selectTask(id);
+  }; */
 
   const toggleGroups = id => {
     if (isOpen) {
@@ -94,7 +99,7 @@ function Task(props) {
   };
 
   const openChild = (num, id) => {
-    const allItems = document.getElementsByClassName('wbsTask');
+    const allItems = document.getElementsByClassName(`wbsTask`);
     for (let i = 0; i < allItems.length; i++) {
       if (
         allItems[i].className.indexOf(
@@ -126,6 +131,7 @@ function Task(props) {
     props.getPopupById(TASK_DELETE_POPUP_ID);
   };
 
+
   const deleteTask = (taskId, mother) => {
     if (mother !== null) {
       props.deleteChildrenTasks(mother);
@@ -135,13 +141,16 @@ function Task(props) {
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId, 0);
     }, 2000);
-  };
+  }
 
   const deleteOneTask = (taskId, mother) => {
     props.deleteWBSTask(taskId, mother);
+
   };
 
   const onMove = (from, to) => {
+    // const fromNum = from.split('.0').join('');
+    // const toNum = to.split('.0').join('');
     props.moveTasks(props.wbsId, from, to);
     setTimeout(() => {
       props.fetchAllTasks(props.wbsId);
@@ -155,7 +164,7 @@ function Task(props) {
   return (
     <>
       {props.id ? (
-        <>
+        <React.Fragment>
           <tr
             ref={tableRowRef}
             key={props.key}
@@ -172,12 +181,7 @@ function Task(props) {
               } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <Button
-                color="primary"
-                size="sm"
-                onClick={() => setControllerRow(!controllerRow)}
-                style={boxStyle}
-              >
+              <Button color="primary" size="sm" onClick={() => setControllerRow(!controllerRow)}>
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
@@ -273,13 +277,13 @@ function Task(props) {
             </td>
             <td>
               {props.priority === 'Primary' ? (
-                <i data-tip="Primary" className="fa fa-star" aria-hidden="true" />
+                <i data-tip="Primary" className="fa fa-star" aria-hidden="true"></i>
               ) : null}
               {props.priority === 'Secondary' ? (
-                <i data-tip="Secondary" className="fa fa-star-half-o" aria-hidden="true" />
+                <i data-tip="Secondary" className="fa fa-star-half-o" aria-hidden="true"></i>
               ) : null}
               {props.priority === 'Tertiary' ? (
-                <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true" />
+                <i data-tip="Tertiary" className="fa fa-star-o" aria-hidden="true"></i>
               ) : null}
             </td>
             <td className="desktop-view">
@@ -295,7 +299,6 @@ function Task(props) {
                               className="name"
                               href={`/userprofile/${elm.userID}`}
                               target="_blank"
-                              rel="noreferrer"
                             >
                               <span className="dot">{elm.name.substring(0, 2)}</span>
                             </a>
@@ -308,7 +311,6 @@ function Task(props) {
                             className="name"
                             href={`/userprofile/${elm.userID}`}
                             target="_blank"
-                            rel="noreferrer"
                           >
                             <img className="img-circle" src={elm.profilePic} />
                           </a>
@@ -339,7 +341,6 @@ function Task(props) {
                               key={i}
                               href={`/userprofile/${elm.userID}`}
                               target="_blank"
-                              rel="noreferrer"
                             >
                               <span className="dot">{elm.name.substring(0, 2)}</span>
                             </a>
@@ -352,7 +353,6 @@ function Task(props) {
                             key={i}
                             href={`/userprofile/${elm.userID}`}
                             target="_blank"
-                            rel="noreferrer"
                           >
                             <img className="img-circle" src={elm.profilePic} />
                           </a>
@@ -364,16 +364,16 @@ function Task(props) {
             </td>
             <td>
               {props.isAssigned ? (
-                <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true" />
+                <i data-tip="Assigned" className="fa fa-check-square" aria-hidden="true"></i>
               ) : (
-                <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true" />
+                <i data-tip="Not Assigned" className="fa fa-square-o" aria-hidden="true"></i>
               )}
             </td>
             <td className="desktop-view">
               {props.status === 'Started' || props.status === 'Active' ? (
-                <i data-tip="Started" className="fa fa-pause" aria-hidden="true" />
+                <i data-tip="Started" className="fa fa-pause" aria-hidden="true"></i>
               ) : (
-                <i data-tip="Not Started" className="fa fa-play" aria-hidden="true" />
+                <i data-tip="Not Started" className="fa fa-play" aria-hidden="true"></i>
               )}
             </td>
             <td
@@ -417,20 +417,21 @@ function Task(props) {
             <td className="desktop-view">
               {props.links.map((link, i) =>
                 link.length > 1 ? (
-                  <a key={i} href={link} target="_blank" data-tip={link} rel="noreferrer">
-                    <i className="fa fa-link" aria-hidden="true" />
+                  <a key={i} href={link} target="_blank" data-tip={link}>
+                    <i className="fa fa-link" aria-hidden="true"></i>
                   </a>
                 ) : null,
               )}
             </td>
             <td className="desktop-view" onClick={toggleModel}>
-              <i className="fa fa-book" aria-hidden="true" />
+              <i className="fa fa-book" aria-hidden="true"></i>
             </td>
           </tr>
+          {/* TODO    */}
           {controllerRow ? (
             <tr className="wbsTaskController desktop-view" id={`controller_${props.id}`}>
-              <td colSpan={tableColNum} className="controlTd">
-                {hasPermission(role, 'addTask', roles, userPermissions) ? (
+              <td colSpan={15} className="controlTd">
+                {hasPermission(role, 'addTask') ? (
                   <AddTaskModal
                     key={`addTask_${props.id}`}
                     parentNum={props.num}
@@ -460,14 +461,13 @@ function Task(props) {
                   level={props.level}
                 />
 
-                {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
+                {hasPermission(role, 'deleteTask') ? (
                   <>
                     <Button
                       color="danger"
                       size="sm"
                       className="controlBtn"
                       onClick={() => showUpDeleteModal()}
-                      style={boxStyle}
                     >
                       Remove
                     </Button>
@@ -476,7 +476,7 @@ function Task(props) {
                       direction="up"
                       isOpen={dropdownOpen}
                       toggle={toggle}
-                      style={{ ...boxStyle, float: 'left' }}
+                      style={{ float: 'left' }}
                     >
                       <DropdownToggle caret color="primary" size="sm">
                         Move
@@ -501,7 +501,6 @@ function Task(props) {
                       size="sm"
                       className="margin-left"
                       onClick={() => onCopy(props.id)}
-                      style={boxStyle}
                     >
                       {isCopied ? 'Copied' : 'Copy'}
                     </Button>
@@ -520,7 +519,7 @@ function Task(props) {
                         max_height: 300,
                         autoresize_bottom_margin: 1,
                       }}
-                      disabled
+                      disabled={true}
                       value={props.whyInfo}
                     />
 
@@ -534,7 +533,7 @@ function Task(props) {
                         max_height: 300,
                         autoresize_bottom_margin: 1,
                       }}
-                      disabled
+                      disabled={true}
                       value={props.intentInfo}
                     />
 
@@ -548,7 +547,7 @@ function Task(props) {
                         max_height: 300,
                         autoresize_bottom_margin: 1,
                       }}
-                      disabled
+                      disabled={true}
                       value={props.endstateInfo}
                     />
                   </ModalBody>
@@ -566,14 +565,14 @@ function Task(props) {
               </td>
             </tr>
           ) : null}
-        </>
+        </React.Fragment>
       ) : null}
     </>
   );
-}
-
-const mapStateToProps = state => ({ state });
-
+};
+const mapStateToProps = state => {
+  return { state };
+};
 export default connect(mapStateToProps, {
   moveTasks,
   fetchAllTasks,

@@ -1,7 +1,6 @@
 import React from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { Button } from 'react-bootstrap';
-import { boxStyle } from 'styles';
 
 const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
   const [show, setShow] = React.useState(false);
@@ -167,6 +166,8 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
         .style('position', 'relative')
         .style('top', `-450px`)
         .style('left', `980px`);
+      // .style("top",`-${height + margin.top + margin.bottom + 10}px`)
+      // .style("left",`${width - 110}px`)
 
       legend.html(legendEl(totalHours));
 
@@ -262,7 +263,7 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
 
   return (
     <div>
-      <Button onClick={() => setShow(!show)} aria-expanded={show} style={boxStyle}>
+      <Button onClick={() => setShow(!show)} aria-expanded={show}>
         Show Time Entries Graph
       </Button>
       <div id="tlplot"></div>

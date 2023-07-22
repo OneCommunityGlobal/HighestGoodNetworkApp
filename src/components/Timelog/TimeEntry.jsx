@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, Row, Col } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
 import moment from 'moment-timezone';
 import './Timelog.css';
@@ -8,17 +8,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
-
+import { useDispatch } from 'react-redux';
 import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
-import { updateUserProfile } from '../../actions/userProfile';
 import hasPermission from 'utils/permissions';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-
-import checkNegativeNumber from 'utils/checkNegativeHours';
+import { useEffect } from 'react';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
   const [modal, setModal] = useState(false);
+  const [projectName, setProjectName] = useState('');
+  const [taskName, setTaskName] = useState('');
 
   const toggle = () => setModal(modal => !modal);
 
@@ -34,25 +34,26 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
       .format('YYYY-MM-DD') === data.dateOfWork;
   const role = user.role;
 
-  const canDelete =
-    //permission to Delete time entry from other user's Dashboard
-    hasPermission(role, 'deleteTimeEntryOthers', roles, userPermissions) ||
-    //permission to delete any time entry on their own time logs tab
-    hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
-    //default permission: delete own sameday tangible entry
-    (!data.isTangible && isOwner && isSameDay);
-
-  const canEdit =
-    //permission to edit any time log entry (from other user's Dashboard
-    hasPermission(role, 'editTimelogInfo', roles, userPermissions) ||
-    //permission to edit any time entry on their own time logs tab
-    hasPermission(role, 'editTimeEntry', roles, userPermissions) ||
-    //default permission: edit own sameday timelog entry
-    (isOwner && isSameDay);
-
-  const projectCategory = data.category?.toLowerCase() || '';
-  const taskClassification = data.classification?.toLowerCase() || '';
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    axios
+      .get(ENDPOINTS.PROJECT_BY_ID(data.projectId))
+      .then(res => {
+        setProjectName(res?.data?.projectName || '');
+      })
+      .catch(err => console.log(err));
+  }, []);
+
+  useEffect(() => {
+    axios
+      // Note: Here taskId is stored in projectId since no taskId field in timeEntry schema
+      .get(ENDPOINTS.GET_TASK(data.projectId))
+      .then(res => {
+        setTaskName(res?.data?.taskName || '');
+      })
+      .catch(err => console.log(err));
+  }, []);
 
   const toggleTangibility = () => {
     const newData = {
@@ -60,44 +61,8 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
       isTangible: !data.isTangible,
       timeSpent: `${data.hours}:${data.minutes}:00`,
     };
-    dispatch(editTimeEntry(data._id, newData));
 
-    //Update intangible hours property in userprofile
-    const formattedHours = parseFloat(data.hours) + parseFloat(data.minutes) / 60;
-    const { hoursByCategory } = userProfile;
-    if (data.projectName) {
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
-      //change tangible to intangible
-      if (data.isTangible) {
-        userProfile.totalIntangibleHrs += formattedHours;
-        isFindCategory
-          ? (hoursByCategory[projectCategory] -= formattedHours)
-          : (hoursByCategory['unassigned'] -= formattedHours);
-      } else {
-        //change intangible to tangible
-        userProfile.totalIntangibleHrs -= formattedHours;
-        isFindCategory
-          ? (hoursByCategory[projectCategory] += formattedHours)
-          : (hoursByCategory['unassigned'] += formattedHours);
-      }
-    } else {
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === taskClassification);
-      //change tangible to intangible
-      if (data.isTangible) {
-        userProfile.totalIntangibleHrs += formattedHours;
-        isFindCategory
-          ? (hoursByCategory[taskClassification] -= formattedHours)
-          : (hoursByCategory['unassigned'] -= formattedHours);
-      } else {
-        //change intangible to tangible
-        userProfile.totalIntangibleHrs -= formattedHours;
-        isFindCategory
-          ? (hoursByCategory[taskClassification] += formattedHours)
-          : (hoursByCategory['unassigned'] += formattedHours);
-      }
-    }
-    checkNegativeNumber(userProfile);
-    dispatch(updateUserProfile(userProfile._id, userProfile));
+    dispatch(editTimeEntry(data._id, newData));
   };
 
   return (
@@ -117,7 +82,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             {data.hours}h {data.minutes}m
           </h4>
           <div className="text-muted">Project/Task:</div>
-          <h6> {data.projectName || data.taskName} </h6>
+          <h6> {projectName || taskName} </h6>
           <span className="text-muted">Tangible:&nbsp;</span>
           <input
             type="checkbox"
@@ -131,7 +96,8 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {canEdit && (
+            {(hasPermission(role, 'editTimeEntry', roles, userPermissions) ||
+              (isOwner && isSameDay)) && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
@@ -140,7 +106,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                   onClick={toggle}
                 />
                 <TimeEntryForm
-                  edit={true}
+                  edit
                   userId={data.personId}
                   data={data}
                   toggle={toggle}
@@ -149,13 +115,9 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                 />
               </span>
             )}
-            {canDelete && (
-              <DeleteModal
-                timeEntry={data}
-                userProfile={userProfile}
-                projectCategory={projectCategory}
-                taskClassification={taskClassification}
-              />
+            {(hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
+              (!data.isTangible && isOwner && isSameDay)) && (
+              <DeleteModal timeEntry={data} userProfile={userProfile} />
             )}
           </div>
         </Col>

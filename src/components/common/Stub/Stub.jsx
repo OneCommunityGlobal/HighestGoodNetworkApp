@@ -4,6 +4,6 @@ import './Stub.css';
 export const Stub = () => (
   <div className="stub-wrapper">
     <GiHollowCat size={72} />
-    <div className="stub-hint">Nothing&apos;s here at the moment</div>
+    <div className="stub-hint">Nothing's here at the moment</div>
   </div>
 );

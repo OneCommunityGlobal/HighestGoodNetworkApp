@@ -11,8 +11,6 @@ describe('WeeklySummariesReport page', () => {
         error: { message: 'SOME ERROR CONNECTING!!!' },
         loading: false,
         summaries: [],
-        authUser: { role: '' },
-        roles: [],
       };
       render(<WeeklySummariesReport {...props} />);
 
@@ -26,8 +24,6 @@ describe('WeeklySummariesReport page', () => {
         getWeeklySummariesReport: jest.fn(),
         loading: true,
         summaries: [],
-        authUser: { role: '' },
-        roles: [],
       };
       render(<WeeklySummariesReport {...props} />);
       expect(screen.getByTestId('loading')).toBeInTheDocument();
@@ -39,19 +35,18 @@ describe('WeeklySummariesReport page', () => {
       getWeeklySummariesReport: jest.fn(),
       loading: false,
       summaries: [],
-      authUser: { role: '' },
-      roles: [],
     };
     beforeEach(() => {
       render(<WeeklySummariesReport {...props} />);
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
+    it('should have 3 tab', () => {
+      const li = screen.getAllByRole('listitem');
+      expect(li.length).toEqual(3);
     });
 
-    it('should have second tab set to "active" by default', () => {
-      expect(screen.getByTestId('tab-2').classList.contains('active')).toBe(true);
+    it('should have first tab set to "active" by default', () => {
+      expect(screen.getByTestId('tab-1').classList.contains('active')).toBe(true);
     });
 
     it('should make 1st tab active when clicked', () => {
@@ -68,11 +63,6 @@ describe('WeeklySummariesReport page', () => {
       // Third tab click.
       fireEvent.click(screen.getByTestId('tab-3'));
       expect(screen.getByTestId('tab-3').classList.contains('active')).toBe(true);
-    });
-    it('should make 4th tab active when clicked', () => {
-      // Fourth tab click.
-      fireEvent.click(screen.getByTestId('tab-4'));
-      expect(screen.getByTestId('tab-4').classList.contains('active')).toBe(true);
     });
   });
 });

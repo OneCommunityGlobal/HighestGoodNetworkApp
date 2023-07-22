@@ -1,11 +1,9 @@
 import React from 'react';
 import { Button, Col } from 'reactstrap';
 import './TeamsAndProjects.css';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './UserTeamsTable.css';
-import { boxStyle } from 'styles';
 
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
@@ -14,20 +12,6 @@ const UserTeamsTable = props => {
     <div>
       <div className="teamtable-container desktop">
         <div className="container">
-          {props.canEditVisibility && (
-            <div className="row">
-              <Col md="7">
-                <span className="teams-span">Visibility</span>
-              </Col>
-              <Col md="5">
-                <ToggleSwitch
-                  switchType="visible"
-                  state={props.isVisible}
-                  handleUserProfile={props.onUserVisibilitySwitch}
-                />
-              </Col>
-            </div>
-          )}
           <div className="row">
             <Col
               md={props.edit ? '7' : '12'}
@@ -42,29 +26,15 @@ const UserTeamsTable = props => {
             {props.edit && props.role && (
               <Col md="5">
                 {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                  props.disabled? (
-                    <div className="div-addteam" title="Please save changes before assign team">
-                      <Button
-                        className="btn-addteam"
-                        color="primary"
-                        style={boxStyle}
-                        disabled
-                      >
-                        Assign Team
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      onClick={() => {
-                        props.onButtonClick();
-                      }}
-                      style={boxStyle}
-                    >
-                      Assign Team
-                    </Button>
-                  )
+                  <Button
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                  >
+                    Assign Team
+                  </Button>
                 ) : (
                   <></>
                 )}
@@ -77,10 +47,10 @@ const UserTeamsTable = props => {
             <thead>
               {props.role && (
                 <tr>
-                  <th style={{ width: '70px' }}>#</th>
+                  <th>#</th>
                   <th>Team Name</th>
                   {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                    <th style={{ width: '100px' }}>{}</th>
+                    <th>{}</th>
                   ) : null}
                 </tr>
               )}
@@ -101,7 +71,6 @@ const UserTeamsTable = props => {
                           onClick={e => {
                             props.onDeleteClick(team._id);
                           }}
-                          style={boxStyle}
                         >
                           Delete
                         </Button>
@@ -117,58 +86,20 @@ const UserTeamsTable = props => {
         </div>
       </div>
       <div className="teamtable-container tablet">
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {props.canEditVisibility && (
-            <>
-              <Col
-                md="12"
-                style={{
-                  backgroundColor: ' #e9ecef',
-                  border: '1px solid #ced4da',
-                  marginBottom: '10px',
-                }}
-              >
-                <span className="teams-span">Visibility</span>
-              </Col>
-              <Col
-                md="12"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                <ToggleSwitch
-                  switchType="visible"
-                  state={props.isVisible}
-                  handleUserProfile={props.onUserVisibilitySwitch}
-                />
-              </Col>
-            </>
-          )}
-          <Col
-            md="12"
-            style={{
-              backgroundColor: ' #e9ecef',
-              border: '1px solid #ced4da',
-              marginBottom: '10px',
-            }}
-          >
-            <span className="teams-span">Teams</span>
-          </Col>
-          {props.edit && props.role && (
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Col
-              md="12"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              md={props.edit ? '7' : '12'}
+              style={{
+                backgroundColor: ' #e9ecef',
+                border: '1px solid #ced4da',
+                marginBottom: '10px',
+              }}
             >
-              {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                props.disabled? (
-                  <div className="div-addteam" title="Please save changes before assign team">
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      disabled
-                    >
-                      Assign Team
-                    </Button>
-                  </div>
-                ) : (
+              <span className="teams-span">Teams</span>
+            </Col>
+            {props.edit && props.role && (
+              <Col md="5" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
                   <Button
                     className="btn-addteam"
                     color="primary"
@@ -178,9 +109,8 @@ const UserTeamsTable = props => {
                   >
                     Assign Team
                   </Button>
-                )
-              ) : (
-                <></>
+                ) : (
+                  <></>
               )}
             </Col>
           )}
@@ -206,13 +136,7 @@ const UserTeamsTable = props => {
                     <td>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
                       <td>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Button
                             disabled={
                               !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)

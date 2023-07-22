@@ -23,13 +23,15 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import hasPermission, { deactivateOwnerPermission, denyPermissionForOthersToUpdateDevAdminDetails, denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
+import parse from 'html-react-parser';
+import hasPermission from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
-import SkeletonLoading from '../common/SkeletonLoading';
+import Loading from '../common/Loading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
+import SummaryTeamsTab from './SummaryTeam/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
 import InfoModal from './InfoModal';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
@@ -44,9 +46,8 @@ import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
+import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
-import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
-import { boxStyle } from 'styles';
 
 function UserProfile(props) {
   /* Constant values */
@@ -88,30 +89,26 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
 
-  const userProfileRef = useRef();
-
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
 
-  const [userStartDate, setUserStartDate] = useState('');
-  const [userEndDate, setUserEndDate] = useState('');
-
   /* useEffect functions */
-
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
-
-  useEffect(() => {
-    userProfileRef.current = userProfile;
-  });
-
   useEffect(() => {
     checkIsTeamsEqual();
     checkIsProjectsEqual();
     setUserProfile({ ...userProfile, teams, projects });
     setOriginalUserProfile({ ...originalUserProfile, teams, projects });
   }, [teams, projects]);
+
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldRefresh) return;
+    setShouldRefresh(false);
+    loadUserProfile();
+  }, [shouldRefresh]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -126,7 +123,6 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
-    setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -158,7 +154,6 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects);
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -226,7 +221,6 @@ function UserProfile(props) {
         phoneNumber: newUserProfile.phoneNumber[0],
         createdDate: newUserProfile?.createdDate.split('T')[0],
       });
-      setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -239,10 +233,23 @@ function UserProfile(props) {
       setShowSummary(false);
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const user = response.data;
-      const userSummaries = user.weeklySummaries;
-
-      setSummarySelected(userSummaries);
-      setShowSummary(true);
+      const summaries = user.weeklySummaries;
+      console.log('summaryName:', summaryName);
+      console.log('summaries:', summaries);
+      if (summaries && Array.isArray(summaries) && summaries.length >= 3) {
+        setSummarySelected([summaries[0].summary, summaries[1].summary, summaries[2].summary]);
+        setShowSummary(true);
+      } else if (summaries && Array.isArray(summaries) && summaries.length === 2) {
+        setSummarySelected([summaries[0].summary, summaries[1].summary, '']);
+        setShowSummary(true);
+      } else if (summaries && Array.isArray(summaries) && summaries.length === 1) {
+        setSummarySelected([summaries[0].summary, '', '']);
+        setShowSummary(true);
+      } else {
+        setSummarySelected(['', '', '']);
+        setShowSummary(true);
+      }
+      console.log('summarySelected', summarySelected);
     } catch (err) {
       setShowLoading(false);
     }
@@ -264,6 +271,7 @@ function UserProfile(props) {
           label: `View ${leaderBoardData[i].name}'s summary.`,
         });
       }
+      // console.log('allSummaries:', allSummaries);
       setSummaries(allSummaries);
       return;
     } catch (err) {
@@ -376,10 +384,7 @@ function UserProfile(props) {
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary };
-      setOriginalUserProfile({
-        ...originalUserProfile,
-        infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
+      setShowModal(false);
       setUserProfile({
         ...userProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
@@ -394,17 +399,16 @@ function UserProfile(props) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
+      setShowModal(false);
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
-      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements !== []) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
-        setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
+        setShowModal(false);
       }
     }
-    setShowModal(false);
     setBlueSquareChanged(true);
   };
 
@@ -415,7 +419,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
+      await props.updateUserProfile(props.match.params.userId, userProfile);
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -425,6 +429,8 @@ function UserProfile(props) {
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
+    setShouldRefresh(true);
+    window.location.reload();
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
@@ -474,6 +480,17 @@ function UserProfile(props) {
     loadUserProfile();
   }, [shouldRefresh]);
 
+  useEffect(() => {
+    setShowLoading(true);
+    loadUserProfile();
+  }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
+    if (!blueSquareChanged) return;
+    setBlueSquareChanged(false);
+    handleSubmit();
+  }, [blueSquareChanged]);
+
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
@@ -514,18 +531,11 @@ function UserProfile(props) {
     }
   };
 
-  const onUserVisibilitySwitch = () => {
-    setUserProfile({
-      ...userProfile,
-      isVisible: !userProfile.isVisible ?? true,
-    });
-  };
-
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
       <Container fluid>
         <Row className="text-center" data-test="loading">
-          <SkeletonLoading template="UserProfile" />
+          <Loading />
         </Row>
       </Container>
     );
@@ -537,42 +547,14 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
-  const authEmail = props.userProfile?.email;
-  const checkHasPermissions = hasPermission(
-    requestorRole,
-    'editUserProfile',
-    roles,
-    userPermissions,
-  )
   const isUserSelf = targetUserId === requestorId;
-
-  const checkCanEditProfile = checkHasPermissions || isUserSelf
-
-  const canEditPermissions = (denyPermissionToSelfUpdateDevAdminDetails(
-    userProfile.email,
-    isUserSelf))
-    || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
-    ? false : checkCanEditProfile;
-
-  const checkVolunteeringTimeTabPermission = (denyPermissionToSelfUpdateDevAdminDetails(
-    userProfile.email,
-    isUserSelf))
-    || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
-    ? false : checkHasPermissions;
-
-  const canEditProfile =
-    userProfile.role === 'Owner'
-      ? hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions)
-      : canEditPermissions;
-
-  const canEdit = canEditProfile;
-
-  const canChangeUserStatus = hasPermission(
-    requestorRole,
-    'changeUserStatus',
-    roles,
-    userPermissions,
-  );
+  let canEdit;
+  if (userProfile.role !== 'Owner') {
+    canEdit = hasPermission(requestorRole, 'editUserProfile', roles, userPermissions) || isUserSelf;
+  } else {
+    canEdit =
+      hasPermission(requestorRole, 'addDeleteEditOwners', roles, userPermissions) || isUserSelf;
+  }
 
   const customStyles = {
     control: (base, state) => ({
@@ -591,14 +573,6 @@ function UserProfile(props) {
       ...base,
       zIndex: 9999,
     }),
-  };
-
-  const handleStartDate = async startDate => {
-    setUserStartDate(startDate);
-  };
-
-  const handleEndDate = async endDate => {
-    setUserEndDate(endDate);
   };
 
   return (
@@ -624,6 +598,7 @@ function UserProfile(props) {
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
           userPermissions={userPermissions}
+          // setIsValid={setIsValid(true)}
         />
       )}
       <TabToolTips />
@@ -655,13 +630,15 @@ function UserProfile(props) {
             </div>
           </Col>
           <Col md="8">
-            {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
-              <Alert color="warning">
-                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
-              </Alert>
-            ) : null}
             <div className="profile-head">
-              <h5>{`${firstName} ${lastName}`}</h5>
+              {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
+                <Alert color="warning">
+                  Please click on "Save changes" to save the changes you have made.{' '}
+                </Alert>
+              ) : null}
+              <h5 style={{ display: 'inline-block', marginRight: 10 }}>
+                {`${firstName} ${lastName}`}
+              </h5>
               <i
                 data-toggle="tooltip"
                 data-placement="right"
@@ -671,19 +648,18 @@ function UserProfile(props) {
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
               />{' '}
-              <ActiveCell
-                isActive={userProfile.isActive}
-                user={userProfile}
-                canChange={canChangeUserStatus}
-                onClick={() => {
-                  if (deactivateOwnerPermission(userProfile, requestorRole)) {
-                    //Owner user cannot be deactivated by another user that is not an Owner.
-                    alert('You are not authorized to deactivate an owner.');
-                    return;
-                  }
-                  setActiveInactivePopupOpen(true);
-                }}
-              />
+              {canEdit && (
+                <>
+                  <ActiveCell
+                    isActive={userProfile.isActive}
+                    user={userProfile}
+                    onClick={() => {
+                      setActiveInactivePopupOpen(true);
+                    }}
+                  />
+                  &nbsp;
+                </>
+              )}
               {canEdit && (
                 <i
                   data-toggle="tooltip"
@@ -691,14 +667,7 @@ function UserProfile(props) {
                   aria-hidden="true"
                   style={{ fontSize: 24, cursor: 'pointer' }}
                   title="Click to see user's timelog"
-                  onClick={e => {
-                    if (e.metaKey || e.ctrlKey) {
-                      window.open(`/timelog/${targetUserId}`, '_blank');
-                    } else {
-                      e.preventDefault();
-                      props.history.push(`/timelog/${targetUserId}`);
-                    }
-                  }}
+                  onClick={() => props.history.push(`/timelog/${targetUserId}`)}
                 />
               )}
               <Button
@@ -709,20 +678,19 @@ function UserProfile(props) {
                 }}
                 color="primary"
                 size="sm"
-                style={boxStyle}
               >
-                {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
+                Team Weekly Summaries
               </Button>
+              <h6>{jobTitle}</h6>
+              <p className="proile-rating">
+                From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
+                {'   '}
+                To:{' '}
+                <span>
+                  {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
+                </span>
+              </p>
             </div>
-            <h6 className="job-title">{jobTitle}</h6>
-            <p className="proile-rating">
-              From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
-              {'   '}
-              To:{' '}
-              <span>
-                {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
-              </span>
-            </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
               <div>
@@ -738,19 +706,47 @@ function UserProfile(props) {
             ) : (
               <div />
             )}
-            {summarySelected &&
-              showSelect &&
-              showSummary &&
-              summarySelected.map((data, i) => {
-                return (
-                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} />
-                );
-              })}
+            {summarySelected && showSelect && showSummary ? (
+              <div>
+                {summarySelected[0] && summarySelected[0].length > 0 ? (
+                  <div>
+                    <h5>{'Viewing ' + summaryName + "'s summary."}</h5>
+                    {typeof summarySelected[0] === 'string'
+                      ? parse(summarySelected[0])
+                      : summarySelected[0]}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary for this week.</h5>
+                )}
+
+                {summarySelected[1] && summarySelected[1].length > 0 ? (
+                  <div>
+                    <h5>{'Viewing ' + summaryName + "'s last week's summary."}</h5>
+                    {typeof summarySelected[1] === 'string'
+                      ? parse(summarySelected[1])
+                      : summarySelected[1]}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary for last week.</h5>
+                )}
+
+                {summarySelected[2] && summarySelected[2].length > 0 ? (
+                  <div>
+                    <h5>{'Viewing ' + summaryName + ' summary from two weeks ago.'}</h5>
+                    {typeof summarySelected[2] === 'string'
+                      ? parse(summarySelected[2])
+                      : summarySelected[2]}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary two weeks ago.</h5>
+                )}
+              </div>
+            ) : (
+              <div />
+            )}
             <Badges
-              isUserSelf={isUserSelf}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
-              setOriginalUserProfile={setOriginalUserProfile}
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleSubmit}
@@ -834,6 +830,15 @@ function UserProfile(props) {
                     Edit History
                   </NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: activeTab === '6' }, 'nav-link')}
+                    onClick={() => toggleTab('6')}
+                    id="nabLink-summaryteams"
+                  >
+                    Summary Teams
+                  </NavLink>
+                </NavItem>
               </Nav>
             </div>
             <TabContent
@@ -847,49 +852,34 @@ function UserProfile(props) {
                   role={requestorRole}
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
-                  loadUserProfile={loadUserProfile}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
                   setFormValid={setFormValid}
                   isUserSelf={isUserSelf}
+                  setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
-                  canEditRole={canEditProfile}
                   roles={roles}
                   userPermissions={userPermissions}
                 />
               </TabPane>
               <TabPane tabId="2">
-                {
-
-                  <VolunteeringTimeTab
-                    userProfile={userProfile}
-                    setUserProfile={setUserProfile}
-                    isUserSelf={isUserSelf}
-                    role={requestorRole}
-                    onEndDate={handleEndDate}
-                    loadUserProfile={loadUserProfile}
-                    canEdit={checkVolunteeringTimeTabPermission}
-                    onStartDate={handleStartDate}
-                  />
-                }
+                <VolunteeringTimeTab
+                  userProfile={userProfile}
+                  setUserProfile={setUserProfile}
+                  isUserSelf={isUserSelf}
+                  role={requestorRole}
+                  canEdit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                />
               </TabPane>
               <TabPane tabId="3">
                 <TeamsTab
                   userTeams={teams || []}
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
-                  onDeleteTeam={onDeleteTeam}
-                  edit={canEditPermissions}
+                  onDeleteteam={onDeleteTeam}
+                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   roles={roles}
-                  onUserVisibilitySwitch={onUserVisibilitySwitch}
-                  isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
-                  handleSubmit={handleSubmit}
-                  disabled={!formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -899,16 +889,11 @@ function UserProfile(props) {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={canEditPermissions}
+                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                   role={requestorRole}
                   userPermissions={userPermissions}
                   userId={props.match.params.userId}
                   updateTask={onUpdateTask}
-                  handleSubmit={handleSubmit}
-                  disabled={!formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -918,6 +903,19 @@ function UserProfile(props) {
                   role={requestorRole}
                   roles={roles}
                   userPermissions={userPermissions}
+                />
+              </TabPane>
+              <TabPane tabId="6">
+                <SummaryTeamsTab
+                  userTeams={teams || []}
+                  teamsData={props?.allTeams?.allTeamsData || []}
+                  onAssignTeam={onAssignTeam}
+                  onDeleteteam={onDeleteTeam}
+                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  role={requestorRole}
+                  roles={roles}
+                  userId={props.match.params.userId}
+                  fullName={`${userProfile.firstName} ${userProfile.lastName}`}
                 />
               </TabPane>
             </TabContent>
@@ -942,8 +940,8 @@ function UserProfile(props) {
                     formValid={formValid}
                     setFormValid={setFormValid}
                     isUserSelf={isUserSelf}
+                    setShouldRefresh={setShouldRefresh}
                     canEdit={canEdit}
-                    canEditRole={canEditProfile}
                     roles={roles}
                     userPermissions={userPermissions}
                   />
@@ -959,7 +957,7 @@ function UserProfile(props) {
                       ) &&
                         canEdit &&
                         !isUserSelf && (
-                          <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} authEmail={authEmail} />
+                          <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
                         )}
                       {isUserSelf &&
                         (activeTab == '1' ||
@@ -968,19 +966,8 @@ function UserProfile(props) {
                             'editUserProfile',
                             roles,
                             userPermissions,
-                          ))
-                        && (
-                          <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
-                            onClick={() => {
-                              if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
-                                alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. " +
-                                  "You shouldn’t even be using this account except to create your own accounts to use. " +
-                                  "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
-                                )
-                                return `#`;
-                              }
-                            }}
-                          >
+                          )) && (
+                          <Link to={`/updatepassword/${userProfile._id}`}>
                             <Button className="mr-1 btn-bottom" color="primary">
                               {' '}
                               Update Password
@@ -1040,9 +1027,12 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
-                    onEndDate={handleEndDate}
-                    canEdit={canEditPermissions}
-                    onStartDate={handleStartDate}
+                    canEdit={hasPermission(
+                      requestorRole,
+                      'editUserProfile',
+                      roles,
+                      userPermissions,
+                    )}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1096,18 +1086,10 @@ function UserProfile(props) {
                     userTeams={userProfile?.teams || []}
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
-                    onDeleteTeam={onDeleteTeam}
-                    edit={canEditPermissions}
+                    onDeleteteam={onDeleteTeam}
+                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     roles={roles}
-                    onUserVisibilitySwitch={onUserVisibilitySwitch}
-                    isVisible={userProfile.isVisible}
-                    canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
-                    handleSubmit={handleSubmit}
-                    disabled={!formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1163,16 +1145,11 @@ function UserProfile(props) {
                     projectsData={props?.allProjects?.projects || []}
                     onAssignProject={onAssignProject}
                     onDeleteProject={onDeleteProject}
-                    edit={canEditPermissions}
+                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
                     role={requestorRole}
                     userPermissions={userPermissions}
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
-                    handleSubmit={handleSubmit}
-                    disabled={!formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1275,6 +1252,30 @@ function UserProfile(props) {
                   </Row>
                 </ModalFooter>
               </Modal>
+              <Button
+                className="list-button"
+                onClick={() => toggle('Summary Teams')}
+                color="secondary"
+              >
+                Summary Teams
+              </Button>
+              <Modal isOpen={menuModalTabletScreen === 'Summary Teams'} toggle={toggle}>
+                <ModalHeader toggle={toggle}>Summary Teams</ModalHeader>
+                <ModalBody>
+                  <SummaryTeamsTab
+                    userTeams={teams || []}
+                    teamsData={props?.allTeams?.allTeamsData || []}
+                    onAssignTeam={onAssignTeam}
+                    onDeleteteam={onDeleteTeam}
+                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    role={requestorRole}
+                    roles={roles}
+                    userId={props.match.params.userId}
+                    fullName={`${userProfile.firstName} ${userProfile.lastName}`}
+                  />
+                </ModalBody>
+                <ModalFooter></ModalFooter>
+              </Modal>
             </List>
           </Col>
         </Row>
@@ -1285,23 +1286,13 @@ function UserProfile(props) {
               {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
                 canEdit &&
                 !isUserSelf && (
-                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} authEmail={authEmail} />
+                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
                 )}
               {isUserSelf &&
                 (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                  <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
-                    onClick={() => {
-                      if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
-                        alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. " +
-                          "You shouldn’t even be using this account except to create your own accounts to use. " +
-                          "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
-                        )
-                        return `#`;
-                      }
-                    }}
-                  >
-                    <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
+                  <Link to={`/updatepassword/${userProfile._id}`}>
+                    <Button className="mr-1 btn-bottom" color="primary">
                       {' '}
                       Update Password
                     </Button>
@@ -1309,7 +1300,6 @@ function UserProfile(props) {
                 )}
               {canEdit &&
                 (activeTab === '1' ||
-                  activeTab === '3' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
                   <>
                     <SaveButton
@@ -1319,31 +1309,30 @@ function UserProfile(props) {
                         !formValid.firstName ||
                         !formValid.lastName ||
                         !formValid.email ||
-                        (userStartDate > userEndDate && userEndDate !== '') ||
                         (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                       }
                       userProfile={userProfile}
                     />
-                    {activeTab !== '3' && (
-                      <span
-                        onClick={() => {
-                          setUserProfile(originalUserProfile);
-                          setTasks(originalTasks);
-                          setTeams(originalTeams);
-                        }}
-                        className="btn btn-outline-danger mr-1 btn-bottom"
-                        style={boxStyle}
-                      >
-                        Cancel
-                      </span>
-                    )}
+                    <span
+                      onClick={() => {
+                        setUserProfile(originalUserProfile);
+                        setTasks(originalTasks);
+                        setTeams(originalTeams);
+                      }}
+                      className="btn btn-outline-danger mr-1 btn-bottom"
+                    >
+                      Cancel
+                    </span>
                   </>
                 )}
+              <Button outline onClick={() => loadUserProfile()}>
+                Refresh
+              </Button>
             </div>
           </Col>
         </Row>
       </Container>
-    </div >
+    </div>
   );
 }
 

@@ -29,7 +29,7 @@ const TimelogNavbar = ({ userId }) => {
       <Navbar className="navbar navbar-expand-sm navbar-light navbar-border bg-light mb-2 col-md-12 nav-fill">
         <NavbarBrand className="navbar-brand pb-3">
           {firstName} {lastName}
-          &apos;s Timelog
+          's Timelog
         </NavbarBrand>
         <NavbarToggler onClick={toggleNavbar} />
         <Collapse isOpen={!collapsed} className="ml-auto flex-column" id="timelogsnapshot" navbar>

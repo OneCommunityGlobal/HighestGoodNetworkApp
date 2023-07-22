@@ -7,8 +7,6 @@ import {
   fetchTeamMembersTaskSuccess,
   fetchTeamMembersTaskBegin,
   fetchTeamMembersTaskError,
-  deleteTaskNotificationSuccess,
-  deleteTaskNotificationBegin
 } from 'components/TeamMemberTasks/actions';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
@@ -20,42 +18,14 @@ const selectUserId = state => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) =>
   state.tasks.taskItems.find(({ _id }) => _id === taskId);
 
-//for those who are not familiarized, this is a arrow function inside a arrow function.
-// It's the same as doing function(currentUserId){async function(dispatch, getState)}
-//Because of the closure, the inside function have access the currentUserId, that it uses and provides to the userId
-//I've also added authentiatedUserId param so, if you are seeing another user's dashboard, it can fetch the authenticated user tasks to make a filter when seeing an owner or another user
-export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldReload = true) => async (
-  dispatch,
-  getState,
-) => {
+export const fetchTeamMembersTask = () => async (dispatch, getState) => {
   try {
     const state = getState();
-    //The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store
-
-    const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
-    const authUserId = authenticatedUserId ? authenticatedUserId : null
-
-    if(shouldReload){
-      dispatch(fetchTeamMembersTaskBegin());
-    }
-
+    const userId = selectFetchTeamMembersTaskData(state);
+    dispatch(fetchTeamMembersTaskBegin());
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
-
-
-    //if you are seeing another user's dashboard, the authenticated user id will be provided so the filter can be made
-    if (authUserId !== null) {
-      const originalTasks = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(authUserId));
-      const authUserTasks = originalTasks.data
-      const userTasks = response.data
-      const correctedTasks = userTasks.filter(task => {
-        return authUserTasks.some(task2 => task2.personId === task.personId)
-      });
-      dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
-    } else {
-      dispatch(fetchTeamMembersTaskSuccess(response.data));
-    }
+    dispatch(fetchTeamMembersTaskSuccess(response.data));
   } catch (error) {
-
     dispatch(fetchTeamMembersTaskError());
   }
 };
@@ -67,11 +37,8 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
 ) => {
   try {
     //dispatch(deleteTaskNotificationBegin());
-    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION_BY_USER_ID(taskId, userId));
-    
-    //const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
+    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
     dispatch(deleteTaskNotificationSuccess({ userId, taskId, taskNotificationId }));
-    //window.location.reload(false);
   } catch (error) {
     //dispatch(deleteTaskNotificationError());
   }
@@ -105,22 +72,16 @@ export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
   await dispatch(postNewTask(task, status));
 };
 
-export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => async (dispatch, getState) => {
+export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatch, getState) => {
   let status = 200;
   try {
     const state = getState();
-    
-    let oldTask 
-    if(prevTask){
-      oldTask = prevTask
-    }else{
-      oldTask = selectUpdateTaskData(state, taskId);
-    }
-    
+    const oldTask = selectUpdateTaskData(state, taskId);
+    //dispatch(fetchTeamMembersTaskBegin());
     if (hasPermission) {
       await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
       const userIds = updatedTask.resources.map(resource => resource.userID);
-      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);   
+      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
     } else {
       await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
     }
@@ -188,18 +149,13 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
     await dispatch(setTasksStart());
     try {
       const request = await axios.get(ENDPOINTS.TASKS(wbsId, level === -1 ? 1 : level + 1, mother));
+      //console.log(request.data);
       dispatch(setTasks(request.data, level, mother));
     } catch (err) {
       dispatch(setTasksError(err));
     }
   };
 };
-
-export const emptyAllTaskItems = () => {
-  return async dispatch => {
-    dispatch(emptyTaskItems());
-  }
-}
 
 export const deleteTask = (taskId, mother) => {
   const url = ENDPOINTS.TASK_DEL(taskId, mother);
@@ -240,12 +196,6 @@ export const setTasks = (taskItems, level, mother) => {
     taskItems,
     level,
     mother,
-  };
-};
-
-export const emptyTaskItems = () => {
-  return {
-    type: types.EMPTY_TASK_ITEMS,
   };
 };
 

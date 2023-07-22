@@ -6,13 +6,6 @@ import { get, round, maxBy } from 'lodash';
 
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
-  let user = get(state, 'userProfile', []);
-
-  if (user.role !== 'Administrator' && user.role !== 'Owner' && user.role !== 'Core Team') {
-    leaderBoardData = leaderBoardData.filter(element => {
-      return element.weeklycommittedHours > 0 || user._id === element.personId;
-    });
-  }
 
   if (leaderBoardData.length) {
     let maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
@@ -32,7 +25,6 @@ const mapStateToProps = state => {
       element.barcolor = getcolor(element.totaltangibletime_hrs);
       element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
       element.totaltime = round(element.totaltime_hrs, 2);
-      element.isVisible = element.role === 'Volunteer' || element.isVisible;
 
       return element;
     });
@@ -58,7 +50,6 @@ const mapStateToProps = state => {
     loggedInUser: get(state, 'auth.user', {}),
     organizationData: orgData,
     timeEntries: get(state, 'timeEntries', {}),
-    isVisible: user.role === 'Volunteer' || user.isVisible,
   };
 };
 export default connect(mapStateToProps, { getLeaderboardData, getOrgData })(Leaderboard);

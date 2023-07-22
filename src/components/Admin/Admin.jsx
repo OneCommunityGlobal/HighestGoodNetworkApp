@@ -21,7 +21,7 @@ const Admin = props => {
 
   return (
     <>
-      <div className="container mt-3">
+      <div className="container">
         <div className="input-group">
           <div className="input-group-prepend">
             <span className="input-group-text">Search</span>

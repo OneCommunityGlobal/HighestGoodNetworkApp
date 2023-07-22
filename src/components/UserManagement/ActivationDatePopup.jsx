@@ -1,7 +1,8 @@
 import moment from 'moment';
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import { boxStyle } from 'styles';
+
 /**
  * Modal popup to show the user profile in create mode
  */
@@ -12,9 +13,13 @@ const ActivationDatePopup = React.memo(props => {
   const closePopup = e => {
     props.onClose();
   };
-  const pauseUser = async () => {
+  const pauseUser = () => {
     if (moment().isBefore(moment(activationDate))) {
-      await props.onPause(activationDate);
+      props.onPause(activationDate);
+      toast.success('Your Changes were saved successfully.');
+      setTimeout(function() {
+        window.location.reload();
+      }, 5000);
     } else {
       setDateError(true);
     }
@@ -38,10 +43,10 @@ const ActivationDatePopup = React.memo(props => {
         {dateError && <Alert color="danger">{'Please choose a future date.'}</Alert>}
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={pauseUser} style={boxStyle}>
+        <Button color="primary" onClick={pauseUser}>
           Pause the user
         </Button>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <Button color="secondary" onClick={closePopup}>
           Close
         </Button>
       </ModalFooter>

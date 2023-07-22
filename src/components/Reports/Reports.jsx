@@ -1,23 +1,20 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import moment from 'moment';
-import { Container } from 'reactstrap';
-import DatePicker from 'react-datepicker';
 import { fetchAllProjects } from '../../actions/projects';
+import { connect } from 'react-redux';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
 import { getAllUserProfile } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
+import moment from 'moment';
+import { Container } from 'reactstrap';
 import ReportTableSearchPanel from './ReportTableSearchPanel';
+import { getUserProfile, getUserTask } from '../../actions/userProfile';
+import httpService from '../../services/httpService';
+import { ENDPOINTS } from '../../utils/URL';
+import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import './reportsPage.css';
-import projectsImage from './images/Projects.svg';
-import peopleImage from './images/People.svg';
-import teamsImage from './images/Teams.svg';
-
-const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
   constructor(props) {
@@ -65,7 +62,7 @@ class ReportsPage extends Component {
       peopleSearchData: [],
       projectSearchData: {},
       users: {},
-      startDate: new Date(DATE_PICKER_MIN_DATE),
+      startDate: new Date('01-01-2010'),
       endDate: new Date(),
     };
     this.showProjectTable = this.showProjectTable.bind(this);
@@ -86,6 +83,20 @@ class ReportsPage extends Component {
       checkActive: '',
     };
     this.props.getAllUserProfile();
+    // let temp=[];
+    //   this.props.state.allUserProfiles.userProfiles.forEach(member=>{
+    //     // console.log(member._id);
+    //     // this.state.peopleSearchData?.push(httpService.get(ENDPOINTS.USER_PROFILE(member._id)).catch(err => { }))
+    //     temp.push(httpService.get(ENDPOINTS.USER_PROFILE(member._id)).catch(err => { }));
+    //   })
+    //   // console.log(this.state.peopleSearchData);
+    //   Promise.all(temp).then(member=>{
+    //     console.log(member.data);
+    //     this.setState({
+    //       peopleSearchData:member,
+    //   })
+    // })
+    // console.log(this.state.peopleSearchData);
   }
 
   /**
@@ -133,7 +144,6 @@ class ReportsPage extends Component {
       }
       return false;
     });
-
     return filteredList;
   };
 
@@ -166,15 +176,19 @@ class ReportsPage extends Component {
   };
 
   setActive() {
-    this.setState(state => ({
-      checkActive: 'true',
-    }));
+    this.setState(state => {
+      return {
+        checkActive: 'true',
+      };
+    });
   }
 
   setAll() {
-    this.setState(state => ({
-      checkActive: '',
-    }));
+    this.setState(state => {
+      return {
+        checkActive: '',
+      };
+    });
   }
 
   setInActive() {
@@ -182,7 +196,6 @@ class ReportsPage extends Component {
       checkActive: 'false',
     }));
   }
-
   showProjectTable() {
     this.setState(prevState => ({
       showProjects: !prevState.showProjects,
@@ -214,11 +227,11 @@ class ReportsPage extends Component {
       showTeams: false,
     }));
   }
-
   render() {
-    const { projects } = this.props.state.allProjects;
-    const { allTeams } = this.props.state.allTeamsData;
-    const { userProfiles } = this.props.state.allUserProfiles;
+    let { projects } = this.props.state.allProjects;
+    let { allTeams } = this.props.state.allTeamsData;
+    let { userProfiles } = this.props.state.allUserProfiles;
+    // console.log(this.props.state.allUserProfiles.userProfiles);
     this.state.teamSearchData = this.filteredTeamList(allTeams);
     this.state.peopleSearchData = this.filteredPeopleList(userProfiles);
     this.state.projectSearchData = this.filteredProjectList(projects);
@@ -241,60 +254,41 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
     return (
-      <Container fluid className="mb-5 container-component-wrapper">
-        <div className="container-component-category">
-          <h2 className="mt-3 mb-5">Reports Page</h2>
+      <Container fluid className="bg--white py-3 mb-5">
+        <div className="container">
+          <h3 className="mt-3 mb-5">Reports Page</h3>
           <div>
-            <p>Select a Category</p>
+            <a>Select a Category</a>
           </div>
-          <div className="category-container">
-            <button
-              className={`card-category-item ${this.state.showProjects ? 'selected' : ''}`}
-              onClick={this.showProjectTable}
-            >
-              <h3 className="card-category-item-title"> Projects</h3>
-              <h3 className="card-category-item-number">{this.state.projectSearchData.length} </h3>
-              <img src={projectsImage} alt="Image that representes the projects" />
-            </button>
-            <button
-              className={`card-category-item ${this.state.showPeople ? 'selected' : ''}`}
-              onClick={this.showPeopleTable}
-            >
-              <h3 className="card-category-item-title"> People </h3>
-              <h3 className="card-category-item-number">{this.state.peopleSearchData.length}</h3>
-              <img src={peopleImage} alt="Image that representes the people" />
-            </button>
-            <button
-              className={`card-category-item ${this.state.showTeams ? 'selected' : ''}`}
-              onClick={this.showTeamsTable}
-            >
-              <h3 className="card-category-item-title"> Teams </h3>
-              <h3 className="card-category-item-number">{this.state.teamSearchData?.length}</h3>
-              <img src={teamsImage} alt="Image that representes the teams" />
-            </button>
-            {/* <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showProjectTable}>
-              <i className="fa fa-folder" aria-hidden="true" />
-              {' '}
-              Projects
-              {' '}
-              {this.state.projectSearchData.length}
-            </button>
-            <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showPeopleTable}>
-              <i className="fa fa-user" aria-hidden="true" />
-              {' '}
-              People
-              {' '}
-              {this.state.peopleSearchData.length}
-            </button>
-            <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showTeamsTable}>
-              <i className="fa fa-users" aria-hidden="true" />
-              {' '}
-              Teams
-              {' '}
-              {this.state.teamSearchData?.length}
-            </button> */}
-          </div>
-          <div className="mt-4 bg-white p-4 rounded-5">
+
+          <button
+            style={{ margin: '5px' }}
+            exact
+            className="btn btn-info btn-bg mt-3"
+            onClick={this.showProjectTable}
+          >
+            <i className="fa fa-folder" aria-hidden="true"></i> Projects{' '}
+            {this.state.projectSearchData.length}
+          </button>
+          <button
+            style={{ margin: '5px' }}
+            exact
+            className="btn btn-info btn-bg mt-3"
+            onClick={this.showPeopleTable}
+          >
+            <i className="fa fa-user" aria-hidden="true"></i> People{' '}
+            {this.state.peopleSearchData.length}
+          </button>
+          <button
+            style={{ margin: '5px' }}
+            exact
+            className="btn btn-info btn-bg mt-3"
+            onClick={this.showTeamsTable}
+          >
+            <i className="fa fa-users" aria-hidden="true"></i> Teams{' '}
+            {this.state.teamSearchData?.length}
+          </button>
+          <div>
             <div>
               <a>Select a Filter</a>
             </div>
@@ -302,7 +296,7 @@ class ReportsPage extends Component {
               <input
                 name="radio"
                 type="radio"
-                style={{ margin: '8px 12px', marginLeft: 0 }}
+                style={{ margin: '8px' }}
                 value="active"
                 onChange={this.setActive}
               />
@@ -310,7 +304,7 @@ class ReportsPage extends Component {
               <input
                 name="radio"
                 type="radio"
-                style={{ margin: '8px 12px' }}
+                style={{ margin: '8px' }}
                 value="inactive"
                 onChange={this.setInActive}
               />
@@ -318,60 +312,52 @@ class ReportsPage extends Component {
               <input
                 name="radio"
                 type="radio"
-                style={{ margin: '8px 12px' }}
+                style={{ margin: '8px' }}
                 value="all"
                 onChange={this.setAll}
                 defaultChecked
               />
               All
             </div>
-            <div className="mt-4">
+            <div>
               <ReportTableSearchPanel
                 onSearch={this.onWildCardSearch}
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
               />
             </div>
-            <div className="date-picker-container">
-              <td id="task_startDate" className="date-picker-item">
-                <label htmlFor="task_startDate" className="date-picker-label">
-                  {' '}
-                  Start Date
-                </label>
+            <div>
+              <td id="task_startDate">
+                Start Date
                 <DatePicker
                   selected={this.state.startDate}
-                  minDate={new Date(DATE_PICKER_MIN_DATE)}
+                  minDate={new Date('01/01/2010')}
                   maxDate={new Date()}
                   onChange={date => this.setState({ startDate: date })}
-                  className="form-control"
                 />
               </td>
-              <td id="task_EndDate" className="date-picker-item">
-                <label htmlFor="task_EndDate" className="date-picker-label">
-                  {' '}
-                  End Date
-                </label>
+              <td id="task_EndDate">
+                End Date
                 <DatePicker
                   selected={this.state.endDate}
                   maxDate={new Date()}
-                  minDate={new Date(DATE_PICKER_MIN_DATE)}
+                  minDate={new Date('01/01/2010')}
                   onChange={date => this.setState({ endDate: date })}
-                  className="form-control"
                 />
               </td>
             </div>
           </div>
         </div>
-        <div className="table-data-container mt-5">
-          {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
-          {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
-          {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
-        </div>
+        {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
+        {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
+        {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
       </Container>
     );
   }
 }
-
-const mapStateToProps = state => ({ state });
+//export default ReportsPage
+const mapStateToProps = state => {
+  return { state };
+};
 
 export default connect(mapStateToProps, {
   fetchAllProjects,

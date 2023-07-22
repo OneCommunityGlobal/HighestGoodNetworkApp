@@ -1,8 +1,7 @@
 import React from 'react';
 import style from './ToggleSwitch.module.scss';
-import TriStateToggleSwitch from './TriStateToggleSwitch';
 
-const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
+const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
   switch (switchType) {
     case 'bluesquares':
       if (state) {
@@ -44,6 +43,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
           </div>
         </div>
       );
+
     case 'email':
       if (state) {
         return (
@@ -129,56 +129,6 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
                 onChange={handleUserProfile}
               />
               private
-            </div>
-          </div>
-        </div>
-      );
-    case 'visible':
-      if (state) {
-        return (
-          <div className="blueSqare">
-            <div className={style.switchSection}>
-              <div className={style.switchContainer}>
-                visible
-                <input
-                  data-testid="visibility-switch"
-                  id="leaderboardVisibility"
-                  type="checkbox"
-                  className={style.toggle}
-                  onChange={handleUserProfile}
-                />
-                invisible
-              </div>
-            </div>
-          </div>
-        );
-      }
-      return (
-        <div className="blueSqare">
-          <div className={style.switchSection}>
-            <div className={style.switchContainer}>
-              visible
-              <input
-                data-testid="visibility-switch"
-                id="leaderboardVisibility"
-                type="checkbox"
-                className={style.toggle}
-                onChange={handleUserProfile}
-                defaultChecked
-              />
-              invisible
-            </div>
-          </div>
-        </div>
-      );
-    case 'bio':
-      return (
-        <div className="blueSqare">
-          <div className={style.switchSection} style={{ fontSize: fontSize }}>
-            <div className={style.switchContainer}>
-              posted
-              <TriStateToggleSwitch pos={state || 'default'} onChange={handleUserProfile} />
-              requested
             </div>
           </div>
         </div>

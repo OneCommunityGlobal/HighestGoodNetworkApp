@@ -4,7 +4,6 @@ exports[`FormattedReport Component Snapshot with mocked data 1`] = `
 <DocumentFragment>
   <button
     class="px-5 btn--dark-sea-green float-right btn btn-secondary"
-    style="box-shadow: 2px 2px 4px 1px lightgray;"
     type="button"
   >
     Open PDF

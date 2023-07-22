@@ -12,7 +12,6 @@ import {
   Card,
   Col,
 } from 'reactstrap';
-import { boxStyle } from 'styles';
 import hasPermission from 'utils/permissions';
 
 const UserProfileModal = props => {
@@ -44,6 +43,8 @@ const UserProfileModal = props => {
     }
   }
 
+  // const [modal, setModal] = useState(false)
+
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
 
@@ -55,6 +56,17 @@ const UserProfileModal = props => {
 
   const [addButton, setAddButton] = useState(true);
   const [summaryFieldView, setSummaryFieldView] = useState(true);
+
+  // console.log('grabed personal links:', personalLinks)
+
+  // let nullProfile = {}
+
+  // if (userProfile == null){
+  // 	nullProfile = {
+  // 		personalLinks: {},
+  // 		adminLinks: {}
+  // 	}
+  // }
 
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
@@ -359,7 +371,6 @@ const UserProfileModal = props => {
             onClick={() => {
               modifyBlueSquares('', dateStamp, summary, 'add');
             }}
-            style={boxStyle}
           >
             Submit
           </Button>
@@ -372,7 +383,6 @@ const UserProfileModal = props => {
               onClick={() => {
                 modifyBlueSquares(id, dateStamp, summary, 'update');
               }}
-              style={boxStyle}
             >
               Update
             </Button>
@@ -381,7 +391,6 @@ const UserProfileModal = props => {
               onClick={() => {
                 modifyBlueSquares(id, dateStamp, summary, 'delete');
               }}
-              style={boxStyle}
             >
               Delete
             </Button>
@@ -422,7 +431,7 @@ const UserProfileModal = props => {
             Close
           </Button>
         ) : (
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
+          <Button color="primary" onClick={closeModal}>
             Cancel
           </Button>
         )}

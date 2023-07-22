@@ -6,7 +6,7 @@ import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { deleteTimeEntry } from '../../actions/timeEntries';
 import { updateUserProfile } from '../../actions/userProfile';
 
-const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassification }) => {
+const DeleteModal = ({ timeEntry, userProfile }) => {
   const [isOpen, setOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -18,27 +18,15 @@ const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassificati
     }
 
     dispatch(deleteTimeEntry(timeEntry));
-    //update hours
-    const formattedHours = parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
-    if (!timeEntry.isTangible) {
-      userProfile.totalIntangibleHrs -= formattedHours;
-    } else {
-      const category = projectCategory ? projectCategory : taskClassification;
-      const { hoursByCategory } = userProfile;
-      hoursByCategory[category] -= formattedHours;
-    }
-
     const newHour = (
       userProfile.totalcommittedHours -
       timeEntry.hours -
       timeEntry.minutes / 60
     ).toFixed(2);
-
     const updatedUserProfile = {
       ...userProfile,
       totalcommittedHours: parseInt(newHour, 10),
     };
-
     dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
   };
   return (

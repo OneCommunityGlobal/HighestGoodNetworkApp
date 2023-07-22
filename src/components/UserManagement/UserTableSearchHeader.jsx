@@ -1,7 +1,6 @@
 import React from 'react';
 import TextSearchBox from './TextSearchBox';
 import DropDownSearchBox from './DropDownSearchBox';
-import userTableDataPermissions from 'utils/userTableDataPermissions';
 
 /**
  * The header row of the user table.
@@ -53,9 +52,7 @@ const UserTableSearchHeader = React.memo(props => {
       <td id="user_finalDay"></td>
       <td id="user_resume_date"></td>
       <td id="user_end_date"></td>
-      {userTableDataPermissions(props.authRole, props.roleSearchText) && (
-        <td id="user__delete"></td>
-      )}
+      <td id="user__delete"></td>
     </tr>
   );
 });

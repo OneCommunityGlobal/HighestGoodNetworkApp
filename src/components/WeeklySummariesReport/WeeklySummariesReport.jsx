@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -6,18 +7,17 @@ import './WeeklySummariesReport.css';
 import classnames from 'classnames';
 import moment from 'moment';
 import 'moment-timezone';
-import SkeletonLoading from '../common/SkeletonLoading';
+import Loading from '../common/Loading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
-import hasPermission from '../../utils/permissions';
 
 export class WeeklySummariesReport extends Component {
   state = {
     error: null,
     loading: true,
     summaries: [],
-    activeTab: '2',
+    activeTab: '1',
   };
 
   async componentDidMount() {
@@ -26,15 +26,7 @@ export class WeeklySummariesReport extends Component {
       error: this.props.error,
       loading: this.props.loading,
       summaries: this.props.summaries,
-      activeTab:
-        sessionStorage.getItem('tabSelection') === null
-          ? '2'
-          : sessionStorage.getItem('tabSelection'),
     });
-  }
-
-  componentWillUnmount() {
-    sessionStorage.removeItem('tabSelection');
   }
 
   getWeekDates = weekIndex => ({
@@ -54,16 +46,11 @@ export class WeeklySummariesReport extends Component {
     const activeTab = this.state.activeTab;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });
-      sessionStorage.setItem('tabSelection', tab);
     }
   };
 
   render() {
     const { error, loading, summaries, activeTab } = this.state;
-    const role = this.props.authUser?.role;
-    const userPermissions = this.props.authUser?.permissions?.frontPermissions;
-    const roles = this.props.roles;
-    const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
 
     if (error) {
       return (
@@ -79,9 +66,9 @@ export class WeeklySummariesReport extends Component {
 
     if (loading) {
       return (
-        <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
+        <Container fluid>
           <Row className="text-center" data-testid="loading">
-            <SkeletonLoading template="WeeklySummariesReport" />
+            <Loading />
           </Row>
         </Container>
       );
@@ -124,15 +111,6 @@ export class WeeklySummariesReport extends Component {
                   Week Before Last
                 </NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTab === '4' })}
-                  data-testid="tab-4"
-                  onClick={() => this.toggleTab('4')}
-                >
-                  Three Weeks Ago
-                </NavLink>
-              </NavItem>
             </Nav>
             <TabContent activeTab={activeTab} className="p-4">
               <TabPane tabId="1">
@@ -151,11 +129,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport
-                      summaries={summaries}
-                      weekIndex={0}
-                      bioCanEdit={bioEditPermission}
-                    />
+                    <FormattedReport summaries={summaries} weekIndex={0} />
                   </Col>
                 </Row>
               </TabPane>
@@ -175,11 +149,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport
-                      summaries={summaries}
-                      weekIndex={1}
-                      bioCanEdit={bioEditPermission}
-                    />
+                    <FormattedReport summaries={summaries} weekIndex={1} />
                   </Col>
                 </Row>
               </TabPane>
@@ -199,35 +169,7 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormattedReport
-                      summaries={summaries}
-                      weekIndex={2}
-                      bioCanEdit={bioEditPermission}
-                    />
-                  </Col>
-                </Row>
-              </TabPane>
-              <TabPane tabId="4">
-                <Row>
-                  <Col sm="12" md="8" className="mb-2">
-                    From <b>{this.getWeekDates(3).fromDate}</b> to{' '}
-                    <b>{this.getWeekDates(3).toDate}</b>
-                  </Col>
-                  <Col sm="12" md="4">
-                    <GeneratePdfReport
-                      summaries={summaries}
-                      weekIndex={3}
-                      weekDates={this.getWeekDates(3)}
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <FormattedReport
-                      summaries={summaries}
-                      weekIndex={3}
-                      bioCanEdit={bioEditPermission}
-                    />
+                    <FormattedReport summaries={summaries} weekIndex={2} />
                   </Col>
                 </Row>
               </TabPane>
@@ -246,12 +188,10 @@ WeeklySummariesReport.propTypes = {
   summaries: PropTypes.array.isRequired,
 };
 
-const mapStateToProps = state => ({
-  authUser: state.auth.user,
-  roles: state.role.roles,
-  error: state.weeklySummariesReport.error,
-  loading: state.weeklySummariesReport.loading,
-  summaries: state.weeklySummariesReport.summaries,
+const mapStateToProps = ({ weeklySummariesReport }) => ({
+  error: weeklySummariesReport.error,
+  loading: weeklySummariesReport.loading,
+  summaries: weeklySummariesReport.summaries,
 });
 
 export default connect(mapStateToProps, { getWeeklySummariesReport })(WeeklySummariesReport);

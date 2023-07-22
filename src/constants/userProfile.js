@@ -15,6 +15,11 @@ export const getUserTask = data => ({
   payload: data,
 });
 
+// export const getUserProject = data => ({
+//   type: GET_USER_PROJECT_BY_ID,
+//   payload: data
+// })
+
 export const editFirstName = data => ({
   type: EDIT_FIRST_NAME,
   payload: data,

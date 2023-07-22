@@ -18,6 +18,7 @@ import {
   BADGE_MANAGEMENT,
   PROJECTS,
   TEAMS,
+  SUMMARY_MANAGEMENT,
   WELCOME,
   VIEW_PROFILE,
   UPDATE_PASSWORD,
@@ -40,26 +41,25 @@ import {
 } from 'reactstrap';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
-import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
-
+import hasPermission from '../../utils/permissions';
+import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
+import SummaryManagement from 'components/SummaryManagement/SummaryManagement';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
+
   const dispatch = useDispatch();
+
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
-      if (props.auth.user.role === 'Administrator') {
-        dispatch(fetchTaskEditSuggestions());
-      }
     }
-  }, [props.auth.isAuthenticated]);
+  }, []);
 
   useEffect(() => {
     if (roles.length === 0) {
@@ -78,7 +78,7 @@ export const Header = props => {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
@@ -114,30 +114,31 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {hasPermission(user.role, 'seeAllReports', roles, userPermissions) ||
-              hasPermission(user.role, 'seeWeeklySummaryReports', roles, userPermissions) ? (
-                <UncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">{REPORTS}</span>
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    {hasPermission(user.role, 'seeAllReports', roles, userPermissions) ? (
-                      <>
-                        <DropdownItem tag={Link} to="/reports">
-                          {REPORTS}
-                        </DropdownItem>
-                        <DropdownItem tag={Link} to="/weeklysummariesreport">
-                          {WEEKLY_SUMMARIES_REPORT}
-                        </DropdownItem>
-                      </>
-                    ) : (
-                      <DropdownItem tag={Link} to="/weeklysummariesreport">
-                        {WEEKLY_SUMMARIES_REPORT}
-                      </DropdownItem>
-                    )}
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              ) : null}
+              {user.role === 'Mentor' ||
+                (user.role === 'Manager' && (
+                  <NavItem>
+                    <NavLink tag={Link} to="/summarymanagement">
+                      <span className="dashboard-text-link">{SUMMARY_MANAGEMENT}</span>
+                    </NavLink>
+                  </NavItem>
+                ))}
+              <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  <span className="dashboard-text-link">{REPORTS}</span>
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem tag={Link} to="/reports">
+                    {REPORTS}
+                  </DropdownItem>
+                  {hasPermission(user.role, 'seeWeeklySummaryReports', roles, userPermissions) ? (
+                    <DropdownItem tag={Link} to="/weeklysummariesreport">
+                      {WEEKLY_SUMMARIES_REPORT}
+                    </DropdownItem>
+                  ) : (
+                    <React.Fragment></React.Fragment>
+                  )}
+                </DropdownMenu>
+              </UncontrolledDropdown>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">
@@ -148,6 +149,7 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
+
               {(hasPermission(user.role, 'seeUserManagement', roles, userPermissions) ||
                 hasPermission(user.role, 'seeBadgeManagement', roles, userPermissions) ||
                 hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) ||
@@ -180,6 +182,11 @@ export const Header = props => {
                     {hasPermission(user.role, 'seeTeamsManagement', roles, userPermissions) && (
                       <DropdownItem tag={Link} to="/teams">
                         {TEAMS}
+                      </DropdownItem>
+                    )}
+                    {hasPermission(user.role, 'seeTeamsManagement', roles, userPermissions) && (
+                      <DropdownItem tag={Link} to="/summarymanagement">
+                        {SUMMARY_MANAGEMENT}
                       </DropdownItem>
                     )}
                     {hasPermission(user.role, 'seePopupManagement', roles, userPermissions) ? (
@@ -225,10 +232,9 @@ export const Header = props => {
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
-                  {!denyPermissionToSelfUpdateDevAdminDetails(props.userProfile.email, true) &&
-                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
-                      {UPDATE_PASSWORD}
-                    </DropdownItem>}
+                  <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                    {UPDATE_PASSWORD}
+                  </DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to="/#" onClick={openModal}>
                     {LOGOUT}

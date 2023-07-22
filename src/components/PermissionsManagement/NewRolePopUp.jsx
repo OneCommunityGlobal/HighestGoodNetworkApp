@@ -6,14 +6,11 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { commonBackEndPermissions, permissionFrontToBack } from 'utils/associatedPermissions';
-import { boxStyle } from 'styles';
 
 const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
-  const noSymbolsRegex = /^([a-zA-Z0-9 ]+)$/;
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -23,35 +20,20 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
 
     permissionsBackEnd = [...permissionsBackEnd, ...commonBackEndPermissions].flat();
 
-    if (!isValidRole) {
-      toast.error('Please enter a valid role name');
+    if (newRoleName === '') {
+      setIsValidRole(false);
+      toast.error('Please enter a role name');
     } else {
       const newRoleObject = {
         roleName: newRoleName,
         permissions: permissionsChecked,
         permissionsBackEnd,
       };
+      console.log(newRoleObject);
       await addNewRole(newRoleObject);
       toast.success('Role created successfully');
-      toggle();
-    }
-  };
 
-  const handleRoleName = e => {
-    const { value } = e.target;
-    const regexTest = noSymbolsRegex.test(value);
-    if (value.trim() === '') {
-      setNewRoleName(value);
-      setErrorMessage('Please enter a role name');
-      setIsValidRole(false);
-    } else {
-      if (regexTest) {
-        setNewRoleName(value);
-        setIsValidRole(true);
-      } else {
-        setErrorMessage('Special character/symbols not allowed');
-        setIsValidRole(false);
-      }
+      toggle();
     }
   };
 
@@ -63,6 +45,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
       const unCheckPermission = previous.filter(perm => perm !== actualValue);
       return isAlreadyChecked ? unCheckPermission : [...previous, actualValue];
     });
+    console.log(permissionsChecked);
   };
 
   return (
@@ -72,11 +55,14 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
         <Input
           placeholder="Please enter a new role name"
           value={newRoleName}
-          onChange={handleRoleName}
+          onChange={e => {
+            setIsValidRole(true);
+            setNewRoleName(e.target.value);
+          }}
         />
         {isValidRole === false ? (
           <Alert className="createRole__alert" color="danger">
-            {errorMessage}
+            Please enter a role name.
           </Alert>
         ) : (
           <></>
@@ -97,7 +83,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
           );
         })}
       </FormGroup>
-      <Button type="submit" id="createRole" color="primary" size="lg" block style={boxStyle}>
+      <Button type="submit" id="createRole" color="primary" size="lg" block>
         Create
       </Button>
     </Form>

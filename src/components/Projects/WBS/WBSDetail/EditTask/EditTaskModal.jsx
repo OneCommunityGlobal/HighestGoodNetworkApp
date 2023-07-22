@@ -13,35 +13,28 @@ import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import TagsSearch from '../components/TagsSearch';
-import { boxStyle } from 'styles';
-import { toast } from 'react-toastify';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
   const { roles } = props.role;
 
-  const [members] = useState(props.projectMembers || props.projectMembers.members);
+  const { members } = props.projectMembers;
   let foundedMembers = [];
 
   // get this task by id
   const [thisTask, setThisTask] = useState();
-  const [oldTask, setOldTask] = useState();
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
-        setOldTask(res?.data || {});
-        setCategory(res.data.category);
-        setAssigned(res.data.isAssigned);
       } catch (error) {
         console.log(error);
       }
     };
     fetchTaskData();
-  }, [props.taskId]);
+  }, []);
 
   // modal
   const [modal, setModal] = useState(false);
@@ -59,10 +52,10 @@ const EditTaskModal = props => {
   const [resourceItems, setResourceItems] = useState(thisTask?.resources);
 
   // assigned
-  const [assigned, setAssigned] = useState(false);
+  const [assigned, setAssigned] = useState(thisTask?.assigned);
 
   // status
-  const [status, setStatus] = useState('false');
+  const [status, setStatus] = useState(thisTask?.status);
 
   // hour best
   const [hoursBest, setHoursBest] = useState(thisTask?.hoursBest);
@@ -72,8 +65,6 @@ const EditTaskModal = props => {
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   // hour estimate
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
-  //deadline count
-  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -102,13 +93,12 @@ const EditTaskModal = props => {
     setTaskName(thisTask?.taskName);
     setPriority(thisTask?.priority);
     setResourceItems(thisTask?.resources);
-    setAssigned(thisTask?.isAssigned || false);
-    setStatus(thisTask?.status || false);
+    setAssigned(thisTask?.assigned);
+    setStatus(thisTask?.status);
     setHoursBest(thisTask?.hoursBest);
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
     setHoursEstimate(thisTask?.estimatedHours);
-    setDeadlineCount(thisTask?.deadlineCount);
     setLinks(thisTask?.links);
     setCategory(thisTask?.category);
     setWhyInfo(thisTask?.whyInfo);
@@ -117,6 +107,33 @@ const EditTaskModal = props => {
     setStartedDate(thisTask?.startedDatetime);
     setDueDate(thisTask?.dueDatetime);
   }, [thisTask]);
+
+  // helpers for editing the resources of task
+  const [foundMembersHTML, setfoundMembersHTML] = useState('');
+  const findMembers = () => {
+    foundedMembers = members.filter(user =>
+      `${user.firstName} ${user.lastName}`.toLowerCase().includes(memberName.toLowerCase()),
+    );
+    const html = foundedMembers.map(elm => (
+      <div>
+        <input
+          type="text"
+          className="task-resouces-input"
+          value={`${elm.firstName} ${elm.lastName}`}
+          disabled
+        />
+        <button
+          data-tip="Add this member"
+          className="task-resouces-btn"
+          type="button"
+          onClick={() => addResources(elm._id, elm.firstName, elm.lastName, elm.profilePic)}
+        >
+          <i className="fa fa-plus" aria-hidden="true" />
+        </button>
+      </div>
+    ));
+    setfoundMembersHTML(html);
+  };
 
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
@@ -170,6 +187,19 @@ const EditTaskModal = props => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
 
+  // // parent Id
+  // let parentId1 = props.parentId1 ? props.parentId1 : null;
+  // let parentId2 = props.parentId2 ? props.parentId2 : null;
+  // let parentId3 = props.parentId3 ? props.parentId3 : null;
+
+  // if (props.parentId1 === null) {
+  //   parentId1 = props.taskId;
+  // } else if (props.parentId2 === null) {
+  //   parentId2 = props.taskId;
+  // } else if (props.parentId3 === null) {
+  //   parentId3 = props.taskId;
+  // }
+
   // helpers for change start/end date
   const changeDateStart = startDate => {
     setStartedDate(startDate);
@@ -203,13 +233,7 @@ const EditTaskModal = props => {
   };
 
   // helper for updating task
-  const updateTask = async () => {
-    let newDeadlineCount = deadlineCount;
-    if (thisTask?.estimatedHours !== hoursEstimate) {
-      newDeadlineCount = deadlineCount + 1;
-      setDeadlineCount(newDeadlineCount);
-    }
-
+  const updateTask = () => {
     const updatedTask = {
       taskName,
       priority,
@@ -220,7 +244,6 @@ const EditTaskModal = props => {
       hoursWorst: parseFloat(hoursWorst),
       hoursMost: parseFloat(hoursMost),
       estimatedHours: parseFloat(hoursEstimate),
-      deadlineCount: parseFloat(newDeadlineCount),
       startedDatetime: startedDate,
       dueDatetime: dueDate,
       links,
@@ -230,27 +253,19 @@ const EditTaskModal = props => {
       category,
     };
 
-    await props.updateTask(
+    props.updateTask(
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
-      oldTask,
     );
-    await props.fetchAllTasks(props.wbsId);
+    setTimeout(() => {
+      props.fetchAllTasks(props.wbsId);
+    }, 4000);
 
-    if (props.tasks.error === 'none' || Object.keys(props.tasks.error).length === 0) {
+    if (props.tasks.error === 'none') {
+      toggle();
       window.location.reload();
-    } else {
-      toast.error('Update failed! Error is ' + props.tasks.error);
     }
-  };
-
-  const handleAssign = value => {
-    setAssigned(value);
-  };
-
-  const handleStatus = value => {
-    setStatus(value);
   };
 
   return (
@@ -266,7 +281,7 @@ const EditTaskModal = props => {
         <ModalBody>
           <ReactTooltip />
           <table
-            className={`table table-bordered responsive
+            className={`table table-bordered 
             ${
               hasPermission(role, 'editTask', roles, userPermissions) ||
               hasPermission(role, 'suggestTask', roles, userPermissions)
@@ -311,164 +326,148 @@ const EditTaskModal = props => {
                 <td scope="col">Resources</td>
                 <td scope="col">
                   <div>
-                    <TagsSearch
-                      placeholder="Add resources"
-                      members={members.members}
-                      addResources={addResources}
-                      removeResource={removeResource}
-                      resourceItems={resourceItems}
+                    <input
+                      type="text"
+                      aria-label="Search user"
+                      placeholder="Name"
+                      className="task-resouces-input"
+                      data-tip="Input a name"
+                      onChange={e => setMemberName(e.target.value)}
+                      onKeyPress={findMembers}
                     />
+                    <button
+                      className="task-resouces-btn"
+                      type="button"
+                      data-tip="All members"
+                      onClick={findMembers}
+                    >
+                      <i className="fa fa-caret-square-o-down" aria-hidden="true" />
+                    </button>
+                  </div>
+                  <div className="task-reousces-list">
+                    <div>{foundMembersHTML}</div>
+                  </div>
+                  <div className="task-reousces-list">
+                    {resourceItems?.map((elm, i) => {
+                      if (!elm.profilePic) {
+                        return (
+                          <a
+                            key={`res_${i}`}
+                            data-tip={elm.name}
+                            onClick={e => removeResource(elm.userID, e.target)}
+                          >
+                            <span className="dot">{elm.name.substring(0, 2)}</span>
+                          </a>
+                        );
+                      }
+                      return (
+                        <a
+                          key={`res_${i}`}
+                          data-tip={elm.name}
+                          onClick={e => removeResource(elm.userID, e.target)}
+                        >
+                          <img className="img-circle" src={elm.profilePic} />
+                        </a>
+                      );
+                    })}
                   </div>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Assigned</td>
                 <td scope="col">
-                  <div className="flex-row d-inline align-items-center">
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="true"
-                        name="Assigned"
-                        value="true"
-                        onChange={e => handleAssign(true)}
-                        checked={assigned}
-                      />
-                      <label className="form-check-label" htmlFor="true">
-                        Yes
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="false"
-                        name="Assigned"
-                        value="false"
-                        onChange={e => handleAssign(false)}
-                        checked={!assigned}
-                      />
-                      <label className="form-check-label" htmlFor="false">
-                        No
-                      </label>
-                    </div>
-                  </div>
+                  <select id="Assigned" onChange={e => setAssigned(e.target.value === 'true')}>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  <div className="flex-row  d-inline align-items-center">
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="started"
-                        name="started"
-                        value="true"
-                        onChange={e => handleStatus('true')}
-                        checked={status === 'true' ? true : false}
-                      />
-                      <label className="form-check-label" htmlFor="started">
-                        Started
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="notStarted"
-                        name="started"
-                        value="false"
-                        onChange={e => handleStatus('false')}
-                        checked={status === 'false' ? true : false}
-                      />
-                      <label className="form-check-label" htmlFor="notStarted">
-                        Not Started
-                      </label>
-                    </div>
+                  <select id="Status" onChange={e => setStatus(e.target.value)}>
+                    <option value="Started">Started</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="Complete">Complete</option>
+                  </select>
+                </td>
+              </tr>
+
+              <tr>
+                <td scope="col" data-tip="Hours - Best-case">
+                  Hours - Best-case
+                </td>
+                <td scope="col" data-tip="Hours - Best-case">
+                  <input
+                    type="number"
+                    min="0"
+                    max="500"
+                    value={hoursBest}
+                    onChange={e => setHoursBest(e.target.value)}
+                    onBlur={() => calHoursEstimate()}
+                  />
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                      : ''}
                   </div>
                 </td>
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours - Best-case">
-                  Hours
+                <td scope="col" data-tip="Hours - Worst-case">
+                  Hours - Worst-case
                 </td>
-                <td scope="col" data-tip="Hours - Best-case" className="w-100">
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
-                      Best-case
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursBest}
-                      onChange={e => setHoursBest(e.target.value)}
-                      onBlur={() => calHoursEstimate()}
-                      id="bestCase"
-                      className="w-25"
-                    />
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
-                      Worst-case
-                    </label>
-                    <input
-                      type="number"
-                      min={hoursBest}
-                      max="500"
-                      value={hoursWorst}
-                      onChange={e => setHoursWorst(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursWorst')}
-                      className="w-25"
-                    />
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
-                      Most-case
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursMost}
-                      onChange={e => setHoursMost(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursMost')}
-                      className="w-25"
-                    />
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
-                      Estimated
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursEstimate}
-                      onChange={e => setHoursEstimate(e.target.value)}
-                      className="w-25"
-                    />
+                <td scope="col" data-tip="Hours - Worst-case">
+                  <input
+                    type="number"
+                    min={hoursBest}
+                    max="500"
+                    value={hoursWorst}
+                    onChange={e => setHoursWorst(e.target.value)}
+                    onBlur={() => calHoursEstimate('hoursWorst')}
+                  />
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                      : ''}
                   </div>
                 </td>
               </tr>
+              <tr>
+                <td scope="col" data-tip="Hours - Most-case">
+                  Hours - Most-case
+                </td>
+                <td scope="col" data-tip="Hours - Most-case">
+                  <input
+                    type="number"
+                    min="0"
+                    max="500"
+                    value={hoursMost}
+                    onChange={e => setHoursMost(e.target.value)}
+                    onBlur={() => calHoursEstimate('hoursMost')}
+                  />
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                      : ''}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td scope="col" data-tip="Estimated Hours">
+                  Estimated Hours
+                </td>
+                <td scope="col" data-tip="Estimated Hours">
+                  <input
+                    type="number"
+                    min="0"
+                    max="500"
+                    value={hoursEstimate}
+                    onChange={e => setHoursEstimate(e.target.value)}
+                  />
+                </td>
+              </tr>
+
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
@@ -494,7 +493,7 @@ const EditTaskModal = props => {
                     {links?.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i} className="task-link">
-                          <a href={link} target="_blank" rel="noreferrer">
+                          <a href={link} target="_blank">
                             {link.slice(-10)}
                           </a>
                           <span className="remove-link" onClick={() => removeLink(i)}>
@@ -509,15 +508,10 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
-                  <select
-                    value={category}
-                    onChange={e => {
-                      setCategory(e.target.value);
-                    }}
-                  >
-                    <option value="Housing">Housing</option>
+                  <select value={category} onChange={e => setCategory(e.target.value)}>
                     <option value="Food">Food</option>
                     <option value="Energy">Energy</option>
+                    <option value="Housing">Housing</option>
                     <option value="Education">Education</option>
                     <option value="Soceity">Society</option>
                     <option value="Economics">Economics</option>
@@ -635,17 +629,17 @@ const EditTaskModal = props => {
         hasPermission(role, 'suggestTask', roles, userPermissions) ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask} style={boxStyle}>
+              <Button color="primary" onClick={updateTask}>
                 Update
               </Button>
             ) : null}
-            <Button color="secondary" onClick={toggle} style={boxStyle}>
+            <Button color="secondary" onClick={toggle}>
               Cancel
             </Button>
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
+      <Button color="primary" size="sm" onClick={toggle}>
         {hasPermission(role, 'editTask', roles, userPermissions)
           ? 'Edit'
           : hasPermission(role, 'suggestTask', roles, userPermissions)

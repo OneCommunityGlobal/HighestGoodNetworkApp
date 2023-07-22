@@ -6,7 +6,6 @@ import ActivationDatePopup from './ActivationDatePopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
 
 /**
  * @param {*} props
@@ -31,27 +30,23 @@ const PauseAndResumeButton = props => {
   /**
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
-  const pauseUser = async reActivationDate => {
-    await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
+  const pauseUser = reActivationDate => {
+    updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
     setIsActive(false);
     setActivationDateOpen(false);
-    setTimeout(async () => {
-      await props.loadUserProfile();
-      toast.success('Your Changes were saved successfully.');
-    }, 1000);
   };
 
   /**
    * Call back on Pause or Resume button click to trigger the action to update user status
    */
-  const onPauseResumeClick = async (user, status) => {
+  const onPauseResumeClick = (user, status) => {
     if (status === UserStatus.Active) {
-      await updateUserStatus(user, status, Date.now())(dispatch);
+      updateUserStatus(user, status, Date.now())(dispatch);
       setIsActive(status);
-      setTimeout(async () => {
-        await props.loadUserProfile();
-        toast.success('Your Changes were saved successfully.');
-      }, 1000);
+      toast.success('Your Changes were saved successfully.');
+      setTimeout(function() {
+        window.location.reload();
+      }, 5000);
     } else {
       setActivationDateOpen(true);
     }
@@ -73,7 +68,6 @@ const PauseAndResumeButton = props => {
         onClick={e => {
           onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
         }}
-        style={boxStyle}
       >
         {isActive ? PAUSE : RESUME}
       </Button>
