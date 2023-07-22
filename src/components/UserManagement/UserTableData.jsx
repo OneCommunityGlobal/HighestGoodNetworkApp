@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 /**
  * The body row of the user table
@@ -17,7 +18,7 @@ import { boxStyle } from 'styles';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
-  const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -120,4 +121,4 @@ const UserTableData = React.memo(props => {
   );
 });
 
-export default UserTableData;
+export default connect(null, { hasPermission })(UserTableData);

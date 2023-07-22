@@ -14,7 +14,7 @@ import hasPermission from 'utils/permissions';
 const WBSItem = props => {
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const canDeleteWBS = hasPermission('deleteWbs');
+  const canDeleteWBS = props.hasPermission('deleteWbs');
 
   const confirmDelete = () => {
     props.deleteWbs(props.wbsId);
@@ -57,4 +57,8 @@ const WBSItem = props => {
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps, { deleteWbs, getPopupById })(WBSItem);
+export default connect(mapStateToProps, {
+  deleteWbs,
+  getPopupById,
+  hasPermission
+})(WBSItem);

@@ -115,7 +115,7 @@ export class Projects extends Component {
 
     let showModalMsg = false;
 
-    const canPostProject = hasPermission('postProject');
+    const canPostProject = this.props.hasPermission('postProject');
 
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
@@ -206,4 +206,5 @@ export default connect(mapStateToProps, {
   deleteProject,
   modifyProject,
   getPopupById,
+  hasPermission,
 })(Projects);

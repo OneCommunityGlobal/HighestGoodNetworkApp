@@ -27,7 +27,7 @@ const SingleTask = props => {
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
-  const canPostProject = hasPermission('postProject');
+  const canPostProject = props.hasPermission('postProject');
 
   const history = useHistory();
   useEffect(() => {
@@ -277,4 +277,5 @@ export default connect(mapStateToProps, {
   getUserProfile,
   deleteTask,
   getPopupById,
+  hasPermission,
 })(SingleTask);

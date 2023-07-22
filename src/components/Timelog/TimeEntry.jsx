@@ -19,6 +19,7 @@ import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
 
+  const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
 
   const toggle = () => setModal(modal => !modal);
@@ -35,23 +36,22 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
 
   const canDelete =
     //permission to Delete time entry from other user's Dashboard
-    hasPermission('deleteTimeEntryOthers') ||
+    dispatch(hasPermission('deleteTimeEntryOthers')) ||
     //permission to delete any time entry on their own time logs tab
-    hasPermission('deleteTimeEntry') ||
+    dispatch(hasPermission('deleteTimeEntry')) ||
     //default permission: delete own sameday tangible entry
     (!data.isTangible && isOwner && isSameDay);
 
   const canEdit =
     //permission to edit any time log entry (from other user's Dashboard
-    hasPermission('editTimelogInfo') ||
+    dispatch(hasPermission('editTimelogInfo')) ||
     //permission to edit any time entry on their own time logs tab
-    hasPermission('editTimeEntry') ||
+    dispatch(hasPermission('editTimeEntry')) ||
     //default permission: edit own sameday timelog entry
     (isOwner && isSameDay);
 
   const projectCategory = data.category?.toLowerCase() || '';
   const taskClassification = data.classification?.toLowerCase() || '';
-  const dispatch = useDispatch();
 
   const toggleTangibility = () => {
     const newData = {

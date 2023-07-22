@@ -15,8 +15,8 @@ const Project = props => {
   const [active, setActive] = useState(props.active);
   const [firstLoad, setFirstLoad] = useState(true);
 
-  const canPutProject = hasPermission('putProject');
-  const canDeleteProject = hasPermission('deleteProject');
+  const canPutProject = props.hasPermission('putProject');
+  const canDeleteProject = props.hasPermission('deleteProject');
 
   const updateActive = () => {
     props.onClickActive(props.projectId, name, category, active);
@@ -132,4 +132,4 @@ const Project = props => {
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps)(Project);
+export default connect(mapStateToProps, { hasPermission })(Project);

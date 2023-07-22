@@ -16,7 +16,7 @@ import {
   Input,
   FormText,
 } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
 import task_icon from './task_icon.png';
@@ -46,7 +46,7 @@ const SummaryBar = props => {
 
   const matchUser = asUser == authenticateUserId ? true : false;
 
-  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   // Similar to UserProfile component function
   // Loads component depending on asUser passed as prop
@@ -457,4 +457,4 @@ const SummaryBar = props => {
   }
 };
 
-export default SummaryBar;
+export default connect(null, { hasPermission })(SummaryBar);

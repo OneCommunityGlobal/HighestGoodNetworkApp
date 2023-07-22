@@ -47,6 +47,7 @@ import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 function UserProfile(props) {
   /* Constant values */
@@ -534,10 +535,10 @@ function UserProfile(props) {
   const canEditProfile = userProfile.role === 'Owner' ? canAddDeleteEditOwners : canPutUserProfile;
   const canEdit = canEditProfile || isUserSelf;
 
-  const canChangeUserStatus = hasPermission('changeUserStatus');
-  const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
-  const canPutUserProfile = hasPermission('putUserProfile');
-  const canUpdatePassword = hasPermission('updatePassword');
+  const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canUpdatePassword = props.hasPermission('updatePassword');
 
   const customStyles = {
     control: (base, state) => ({
@@ -1192,4 +1193,4 @@ function UserProfile(props) {
   );
 }
 
-export default UserProfile;
+export default connect(null, { hasPermission })(UserProfile);

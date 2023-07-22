@@ -32,8 +32,8 @@ import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 
 function Task(props) {
-  const canPostTask = hasPermission('postTask');
-  const canDeleteTask = hasPermission('deleteTask');
+  const canPostTask = props.hasPermission('postTask');
+  const canDeleteTask = props.hasPermission('deleteTask');
 
   useEffect(() => {
     setIsCopied(false);
@@ -582,4 +582,5 @@ export default connect(mapStateToProps, {
   copyTask,
   getPopupById,
   deleteChildrenTasks,
+  hasPermission,
 })(Task);

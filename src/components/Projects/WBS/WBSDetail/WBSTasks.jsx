@@ -37,7 +37,7 @@ function WBSTasks(props) {
   const [loadAll, setLoadAll] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
 
-  const canPostTask = hasPermission('postTask');
+  const canPostTask = props.hasPermission('postTask');
 
   const load = async () => {
     const levelList = [0, 1, 2, 3, 4];
@@ -155,7 +155,7 @@ function WBSTasks(props) {
     }
   };
 
-  const deleteWbsTask = (taskId, mother) => {
+  const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
     setIsDeleted(true);
   };
@@ -412,4 +412,5 @@ export default connect(mapStateToProps, {
   updateNumList,
   deleteTask,
   fetchAllMembers,
+  hasPermission,
 })(WBSTasks);

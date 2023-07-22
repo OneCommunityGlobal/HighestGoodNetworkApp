@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -49,8 +49,8 @@ import { boxStyle } from 'styles';
  */
 const TimeEntryForm = props => {
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
-  const canEditTimeEntry = hasPermission('editTimeEntry');
-  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+  const canEditTimeEntry = props.hasPermission('editTimeEntry');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -771,4 +771,4 @@ TimeEntryForm.propTypes = {
   resetTimer: PropTypes.func,
 };
 
-export default TimeEntryForm;
+export default connect(null, { hasPermission, })(TimeEntryForm);

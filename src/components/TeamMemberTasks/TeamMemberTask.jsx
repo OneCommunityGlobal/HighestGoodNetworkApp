@@ -10,6 +10,7 @@ import hasPermission from 'utils/permissions';
 import './style.css';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
+import { useDispatch } from 'react-redux';
 
 const TeamMemberTask = ({
   user,
@@ -57,7 +58,8 @@ const TeamMemberTask = ({
     setInfoTaskIconModal(true);
   };
 
-  const canUpdateTask = hasPermission('updateTask');
+  const dispatch = useDispatch();
+  const canUpdateTask = dispatch(hasPermission('updateTask'));
 
   return (
     <>

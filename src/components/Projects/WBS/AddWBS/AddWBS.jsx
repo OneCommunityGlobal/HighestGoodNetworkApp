@@ -11,7 +11,7 @@ import hasPermission from 'utils/permissions';
 const AddWBS = props => {
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
-  const canPostWBS = hasPermission('postWBS');
+  const canPostWBS = props.hasPermission('postWBS');
 
   const changeNewName = newName => {
     if (newName.length !== 0) {
@@ -56,4 +56,7 @@ const AddWBS = props => {
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { addNewWBS })(AddWBS);
+export default connect(mapStateToProps, {
+  addNewWBS,
+  hasPermission,
+})(AddWBS);

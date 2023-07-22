@@ -5,6 +5,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } 
 import MembersAutoComplete from './MembersAutoComplete';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 const TeamMembersPopup = React.memo(props => {
   // debugger;
@@ -15,7 +16,7 @@ const TeamMembersPopup = React.memo(props => {
   const [isValidUser, onValidation] = useState(true);
   const [searchText, setSearchText] = useState('');
 
-  const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
+  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
   const onAddUser = () => {
     if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
@@ -104,4 +105,4 @@ const TeamMembersPopup = React.memo(props => {
   );
 });
 
-export default TeamMembersPopup;
+export default connect(null, { hasPermission })(TeamMembersPopup);

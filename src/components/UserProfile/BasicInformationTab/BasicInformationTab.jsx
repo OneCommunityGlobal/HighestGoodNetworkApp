@@ -12,6 +12,7 @@ import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
@@ -275,7 +276,7 @@ const BasicInformationTab = props => {
   const [location, setLocation] = useState('');
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
 
-  const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   const onClickGetTimeZone = () => {
     if (!location) {
@@ -782,4 +783,4 @@ const BasicInformationTab = props => {
     </div>
   );
 };
-export default BasicInformationTab;
+export default connect(null, { hasPermission })(BasicInformationTab);

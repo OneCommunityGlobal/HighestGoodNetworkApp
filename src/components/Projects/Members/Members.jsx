@@ -21,8 +21,8 @@ import hasPermission from '../../../utils/permissions';
 const Members = props => {
   const projectId = props.match.params.projectId;
 
-  const canGetProjectMembers = hasPermission('getProjectMembers');
-  const canAssignProjectToUsers = hasPermission('assignProjectToUsers');
+  const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
 
   useEffect(() => {
     props.fetchAllMembers(projectId);
@@ -152,4 +152,5 @@ export default connect(mapStateToProps, {
   findUserProfiles,
   getAllUserProfiles,
   assignProject,
+  hasPermission,
 })(Members);

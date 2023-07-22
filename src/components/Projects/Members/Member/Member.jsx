@@ -9,8 +9,8 @@ import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
 
 const Member = props => {
-  const canGetUserProfiles = hasPermission('getUserProfiles');
-  const canAssignProjectToUsers = hasPermission('assignProjectToUsers');
+  const canGetUserProfiles = props.hasPermission('getUserProfiles');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   return (
     <React.Fragment>
       <tr className="members__tr">
@@ -50,4 +50,4 @@ const Member = props => {
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { assignProject })(Member);
+export default connect(mapStateToProps, { assignProject, hasPermission })(Member);

@@ -5,10 +5,11 @@ import hasPermission from '../../../utils/permissions';
 import styles from './UserProjectsTable.css';
 import { boxStyle } from 'styles';
 import { useLocation } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 const UserProjectsTable = React.memo(props => {
-  const canAssignProjectToUsers = hasPermission('assignProjectToUsers');
-  const canUpdateTask = hasPermission('updateTask');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
+  const canUpdateTask = props.hasPermission('updateTask');
 
   const userProjects = props.userProjectsById;
   const userTasks = props.userTasks;
@@ -473,4 +474,4 @@ const UserProjectsTable = React.memo(props => {
   );
 });
 
-export default UserProjectsTable;
+export default connect(null, { hasPermission })(UserProjectsTable);

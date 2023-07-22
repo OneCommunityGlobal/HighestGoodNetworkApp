@@ -17,8 +17,8 @@ import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
 
 const EditTaskModal = props => {
-  const canUpdateTask = hasPermission('updateTask');
-  const canSuggestTask = hasPermission('suggestTask');
+  const canUpdateTask = props.hasPermission('updateTask');
+  const canSuggestTask = props.hasPermission('suggestTask');
 
   const [members] = useState(props.projectMembers || props.projectMembers.members);
   let foundedMembers = [];
@@ -639,4 +639,5 @@ const mapStateToProps = state => state;
 export default connect(mapStateToProps, {
   updateTask,
   fetchAllTasks,
+  hasPermission,
 })(EditTaskModal);

@@ -49,25 +49,25 @@ export const Header = props => {
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
   // Reports
-  const canGetWeeklySummaries = hasPermission('getWeeklySummaries');
+  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
-  const canPostUserProfile = hasPermission('postUserProfile');
-  const canDeleteUserProfile = hasPermission('deleteUserProfile');
-  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+  const canPostUserProfile = props.hasPermission('postUserProfile');
+  const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   // Badges
-  const canCreateBadges = hasPermission('createBadges');
+  const canCreateBadges = props.hasPermission('createBadges');
   // Projects
-  const canPostProject = hasPermission('postProject');
+  const canPostProject = props.hasPermission('postProject');
   // Tasks
-  const canUpdateTask = hasPermission('updateTask');
+  const canUpdateTask = props.hasPermission('updateTask');
   // Teams
-  const canDeleteTeam = hasPermission('deleteTeam');
-  const canPutTeam = hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission('deleteTeam');
+  const canPutTeam = props.hasPermission('putTeam');
   // Popups
-  const canCreatePopup = hasPermission('createPopup');
-  const canUpdatePopup = hasPermission('updatePopup');
+  const canCreatePopup = props.hasPermission('createPopup');
+  const canUpdatePopup = props.hasPermission('updatePopup');
   // Roles
-  const canPutRole = hasPermission('putRole');
+  const canPutRole = props.hasPermission('putRole');
 
   const dispatch = useDispatch();
 
@@ -269,4 +269,5 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getTimerData,
   getAllRoles,
+  hasPermission,
 })(Header);

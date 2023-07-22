@@ -100,7 +100,7 @@ class AddUserProfile extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
-    const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
+    const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
     return (
       <StickyContainer>
@@ -930,4 +930,5 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
   fetchAllProjects,
+  hasPermission,
 })(AddUserProfile);

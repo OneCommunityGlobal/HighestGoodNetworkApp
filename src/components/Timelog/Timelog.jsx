@@ -75,8 +75,8 @@ function useDeepEffect(effectFunc, deps) {
 
 const Timelog = props => {
   //Main Function component
-  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
-  const canEditTimeEntry = hasPermission('editTimeEntry');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   //access the store states
@@ -320,7 +320,7 @@ const Timelog = props => {
   const [userId, setUserId] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [data, setData] = useState({
-    disabled: !hasPermission('disabledDataTimelog') ? false : true,
+    disabled: !props.hasPermission('disabledDataTimelog') ? false : true,
     isTangible: false,
   });
   const initialState = {
@@ -760,4 +760,5 @@ export default connect(mapStateToProps, {
   getUserTask,
   updateUserProfile,
   getAllRoles,
+  hasPermission,
 })(Timelog);

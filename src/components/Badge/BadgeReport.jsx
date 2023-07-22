@@ -39,8 +39,8 @@ const BadgeReport = props => {
   let [showModal, setShowModal] = useState(false);
   let [badgesToDelete, setBadgesToDelete] = useState([]);
 
-  const canDeleteBadges = hasPermission('deleteBadges');
-  const canUpdateBadges = hasPermission('updateBadges');
+  const canDeleteBadges = props.hasPermission('deleteBadges');
+  const canUpdateBadges = props.hasPermission('updateBadges');
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
@@ -642,6 +642,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   changeBadgesByUserID: (userId, badges) => dispatch(changeBadgesByUserID(userId, badges)),
   getUserProfile: userId => dispatch(getUserProfile(userId)),
+  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeReport);

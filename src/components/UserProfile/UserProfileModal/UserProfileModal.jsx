@@ -14,6 +14,7 @@ import {
 } from 'reactstrap';
 import { boxStyle } from 'styles';
 import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 
 const UserProfileModal = props => {
   const {
@@ -41,7 +42,7 @@ const UserProfileModal = props => {
     }
   }
 
-  const canPutUserProfile = hasPermission('putUserProfile');
+  const canPutUserProfile = props.hasPermission('putUserProfile');
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -430,4 +431,4 @@ const UserProfileModal = props => {
   );
 };
 
-export default UserProfileModal;
+export default connect(null, { hasPermission })(UserProfileModal);

@@ -4,10 +4,11 @@ import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 const Team = props => {
-  const canDeleteTeam = hasPermission('deleteTeam');
-  const canPutTeam = hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission('deleteTeam');
+  const canPutTeam = props.hasPermission('putTeam');
 
   return (
     <tr className="teams__tr" id={`tr_${props.teamId}`}>
@@ -76,4 +77,4 @@ const Team = props => {
     </tr>
   );
 };
-export default Team;
+export default connect(null, { hasPermission })(Team);

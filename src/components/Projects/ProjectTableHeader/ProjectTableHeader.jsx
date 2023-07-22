@@ -15,9 +15,10 @@ import {
   DELETE,
 } from './../../../languages/en/ui';
 import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 
 const ProjectTableHeader = props => {
-  const canDeleteProject = hasPermission('deleteProject');
+  const canDeleteProject = props.hasPermission('deleteProject');
 
   return (
     <tr>
@@ -49,4 +50,4 @@ const ProjectTableHeader = props => {
   );
 };
 
-export default ProjectTableHeader;
+export default connect(null, { hasPermission })(ProjectTableHeader);

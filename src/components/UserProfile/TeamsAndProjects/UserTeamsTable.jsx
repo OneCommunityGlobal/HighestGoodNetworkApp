@@ -6,9 +6,10 @@ import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle } from 'styles';
 import './UserTeamsTable.css';
+import { connect } from 'react-redux';
 
 const UserTeamsTable = props => {
-  const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
+  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
   return (
     <div>
@@ -206,4 +207,4 @@ const UserTeamsTable = props => {
     </div>
   );
 };
-export default UserTeamsTable;
+export default connect(null, { hasPermission })(UserTeamsTable);

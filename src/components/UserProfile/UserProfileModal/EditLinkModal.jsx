@@ -14,11 +14,12 @@ import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
 import styles from './EditLinkModal.css';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
 
-  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -287,4 +288,4 @@ EditLinkModal.propTypes = {
   userProfile: PropTypes.object.isRequired,
 };
 
-export default EditLinkModal;
+export default connect(null, { hasPermission })(EditLinkModal);

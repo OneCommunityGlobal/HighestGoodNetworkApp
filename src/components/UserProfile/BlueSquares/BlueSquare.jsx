@@ -1,10 +1,11 @@
 import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 
-const BlueSquare = ({ blueSquares, handleBlueSquare }) => {
-  const isInfringementAuthorizer = hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+const BlueSquare = (props, { blueSquares, handleBlueSquare }) => {
+  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   return (
     <div className="blueSquareContainer">
@@ -63,4 +64,4 @@ const BlueSquare = ({ blueSquares, handleBlueSquare }) => {
   );
 };
 
-export default BlueSquare;
+export default connect(null, { hasPermission })(BlueSquare);

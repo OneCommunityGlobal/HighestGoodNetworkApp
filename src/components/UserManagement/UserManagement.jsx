@@ -326,7 +326,7 @@ class UserManagement extends React.PureComponent {
    */
   onActiveInactiveClick = user => {
     const authRole = this.props.state.auth.user.role;
-    const canChangeUserStatus = hasPermission('changeUserStatus');
+    const canChangeUserStatus = props.hasPermission('changeUserStatus');
     if (!canChangeUserStatus) {
       //permission to change the status of any user on the user profile page or User Management Page.
       //By default only Admin and Owner can access the user management page and they have this permission.
@@ -534,4 +534,5 @@ export default connect(mapStateToProps, {
   updateUserStatus,
   updateUserFinalDayStatusIsSet,
   deleteUser,
+  hasPermission,
 })(UserManagement);
