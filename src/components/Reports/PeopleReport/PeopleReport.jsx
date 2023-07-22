@@ -611,7 +611,7 @@ class PeopleReport extends Component {
               <div className='visualizationDiv'>
                 <BadgeSummaryViz 
                   userId={userProfile._id}
-                  badgeCollection={userProfile.badgeCollection}
+                  badges={userProfile.badgeCollection}
                   role={userProfile.role}
                   firstName={userProfile.firstName}
                   lastName={userProfile.lastName}
