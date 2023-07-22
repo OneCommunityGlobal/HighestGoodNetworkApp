@@ -9,6 +9,7 @@ import {
   assignStarDotColors,
   showStar,
 } from 'utils/leaderboardPermissions';
+import { boxStyle } from 'styles';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -104,8 +105,8 @@ const LeaderBoard = ({
     </>,
     <>
       <p>
-        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you keep
-        this setting as it is.
+        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you
+        keep this setting as it is.
       </p>
       <p>
         If you want to change this setting so your team/everyone can see and access your time log
@@ -186,7 +187,7 @@ const LeaderBoard = ({
           <ModalHeader toggle={toggle}>Leaderboard Info</ModalHeader>
           <ModalBody>{modalContent}</ModalBody>
           <ModalFooter>
-            <Button onClick={toggle} color="secondary" className="float-left">
+            <Button onClick={toggle} color="secondary" className="float-left" style={boxStyle}>
               {' '}
               Ok{' '}
             </Button>
@@ -240,10 +241,14 @@ const LeaderBoard = ({
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
                       </ModalBody>
                       <ModalFooter>
-                        <Button variant="primary" onClick={() => showDashboard(item)}>
+                        <Button
+                          variant="primary"
+                          onClick={() => showDashboard(item)}
+                          style={boxStyle}
+                        >
                           Ok
                         </Button>{' '}
-                        <Button variant="secondary" onClick={dashboardToggle}>
+                        <Button variant="secondary" onClick={dashboardToggle} style={boxStyle}>
                           Cancel
                         </Button>
                       </ModalFooter>
@@ -324,10 +329,12 @@ const LeaderBoard = ({
                   </Link>
                 </td>
                 <td className="align-middle">
-                  <span 
-                  title="Total time"
-                  className={ item.totalintangibletime_hrs > 0 ? 'boldClass' : null }
-                  >{item.totaltime}</span>
+                  <span
+                    title="Total time"
+                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                  >
+                    {item.totaltime}
+                  </span>
                 </td>
               </tr>
             ))}

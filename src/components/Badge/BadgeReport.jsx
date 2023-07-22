@@ -438,8 +438,8 @@ const BadgeReport = props => {
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
             <br />
             <p>
-              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted until you click the
-              &quot;Save Changes&quot; button below.
+              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
+              until you click the &quot;Save Changes&quot; button below.
             </p>
           </ModalBody>
           <ModalFooter>
@@ -506,6 +506,7 @@ const BadgeReport = props => {
                               alignItems: 'center',
                               justifyContent: 'center',
                               width: '80px',
+                              ...boxStyle,
                             }}
                           >
                             Options
@@ -588,6 +589,7 @@ const BadgeReport = props => {
                                   type="button"
                                   className="btn btn-danger"
                                   onClick={e => handleDeleteBadge(index)}
+                                  style={boxStyle}
                                 >
                                   Delete
                                 </button>
@@ -607,7 +609,7 @@ const BadgeReport = props => {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <Button
             className="btn--dark-sea-green float-right"
-            style={{ margin: 5 }}
+            style={{ margin: 5, ...boxStyle }}
             onClick={e => {
               saveChanges();
             }}
@@ -616,14 +618,14 @@ const BadgeReport = props => {
           </Button>
           <Button
             className="btn--dark-sea-green float-right"
-            style={{ margin: 5 }}
+            style={{ margin: 5, ...boxStyle }}
             onClick={pdfDocGenerator}
           >
             <span>Export All Badges to PDF</span>
           </Button>
           <Button
             className="btn--dark-sea-green float-right"
-            style={{ margin: 5 }}
+            style={{ margin: 5, ...boxStyle }}
             onClick={pdfFeaturedDocGenerator}
           >
             <span>Export Selected/Featured Badges to PDF</span>
@@ -634,8 +636,8 @@ const BadgeReport = props => {
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
             <br />
             <p>
-              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted until you click the
-              &quot;Save Changes&quot; button below.
+              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
+              until you click the &quot;Save Changes&quot; button below.
             </p>
           </ModalBody>
           <ModalFooter>

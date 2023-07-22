@@ -1,4 +1,5 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { boxStyle } from 'styles';
 
 /**
  * Modal displaying information about how time entry works
@@ -16,13 +17,13 @@ const ReminderModal = props => {
       <ModalHeader>Reminder</ModalHeader>
       <ModalBody>{props.reminder.remind}</ModalBody>
       <ModalFooter>
-        <Button onClick={() => props.setVisible(false)} color="danger">
+        <Button onClick={() => props.setVisible(false)} color="danger" style={boxStyle}>
           Continue
         </Button>
         {props.edit &&
           (props.data.hours !== props.inputs.hours ||
             props.data.minutes !== props.inputs.minutes) && (
-            <Button onClick={props.cancelChange} color="primary">
+            <Button onClick={props.cancelChange} color="primary" style={boxStyle}>
               Cancel
             </Button>
           )}

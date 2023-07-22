@@ -17,6 +17,7 @@ import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';
 import hasPermission from '../../../utils/permissions';
+import { boxStyle } from 'styles';
 
 const Members = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -93,6 +94,7 @@ const Members = props => {
                       className="btn btn-outline-primary"
                       type="button"
                       onClick={() => assignAll()}
+                      style={boxStyle}
                     >
                       +All
                     </button>

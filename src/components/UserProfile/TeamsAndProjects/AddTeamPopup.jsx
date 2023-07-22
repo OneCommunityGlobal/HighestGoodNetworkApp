@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
+import { boxStyle } from 'styles';
 
 const AddTeamPopup = React.memo(props => {
   const closePopup = () => {
@@ -37,7 +38,7 @@ const AddTeamPopup = React.memo(props => {
             onDropDownSelect={selectTeam}
             selectedTeam={selectedTeam}
           />
-          <Button color="primary" style={{ marginLeft: '5px' }} onClick={onAssignTeam}>
+          <Button color="primary" style={{ marginLeft: '5px', ...boxStyle }} onClick={onAssignTeam}>
             Confirm
           </Button>
         </div>
@@ -51,7 +52,7 @@ const AddTeamPopup = React.memo(props => {
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={closePopup}>
+        <Button color="secondary" onClick={closePopup} style={boxStyle}>
           Close
         </Button>
       </ModalFooter>

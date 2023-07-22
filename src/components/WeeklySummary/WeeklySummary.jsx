@@ -313,11 +313,11 @@ export class WeeklySummary extends Component {
       .invalid(false)
       .label('Media Confirm'),
     editorConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Editor Confirm'),
+      .invalid(false)
+      .label('Editor Confirm'),
     proofreadConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Proofread Confirm'),
+      .invalid(false)
+      .label('Proofread Confirm'),
   };
 
   validate = () => {
@@ -604,7 +604,7 @@ export class WeeklySummary extends Component {
             {this.state.summariesCountShowing || this.state.formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
-            <Button className="btn--dark-sea-green" onClick={this.handleClose}>
+            <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyle}>
               Close this window
             </Button>
           </Col>
@@ -642,7 +642,11 @@ export class WeeklySummary extends Component {
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
                           <UncontrolledDropdown>
-                            <DropdownToggle className="px-5 btn--dark-sea-green" caret>
+                            <DropdownToggle
+                              className="px-5 btn--dark-sea-green"
+                              caret
+                              style={boxStyle}
+                            >
                               Move This Summary
                             </DropdownToggle>
                             <DropdownMenu>
@@ -709,8 +713,7 @@ export class WeeklySummary extends Component {
             <Row>
               <Col>
                 <Label for="mediaUrl" className="mt-1">
-                  Dropbox link to your weekly media files. (required){' '}
-                  <MediaURLTooltip />
+                  Dropbox link to your weekly media files. (required) <MediaURLTooltip />
                 </Label>
                 <Row form>
                   <Col md={8}>
@@ -763,8 +766,12 @@ export class WeeklySummary extends Component {
                       <ModalHeader> Warning!</ModalHeader>
                       <ModalBody>Are you SURE you want to move the summary?</ModalBody>
                       <ModalFooter>
-                        <Button onClick={this.handleMoveSave}>Confirm and Save</Button>
-                        <Button onClick={this.toggleMovePopup}>Close</Button>
+                        <Button onClick={this.handleMoveSave} style={boxStyle}>
+                          Confirm and Save
+                        </Button>
+                        <Button onClick={this.toggleMovePopup} style={boxStyle}>
+                          Close
+                        </Button>
                       </ModalFooter>
                     </Modal>
                   }

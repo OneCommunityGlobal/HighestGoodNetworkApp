@@ -721,7 +721,13 @@ const BasicInformationTab = props => {
               />
 
               <div>
-                <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
+                <Button
+                  color="secondary"
+                  block
+                  size="sm"
+                  onClick={onClickGetTimeZone}
+                  style={boxStyle}
+                >
                   Get Time Zone
                 </Button>
               </div>

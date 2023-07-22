@@ -6,6 +6,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
+import { boxStyle } from 'styles';
 
 const FoundUser = props => {
   return (
@@ -32,6 +33,7 @@ const FoundUser = props => {
                   props.lastName,
                 )
               }
+              style={boxStyle}
             >
               <i className="fa fa-plus" aria-hidden="true"></i>
             </button>

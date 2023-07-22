@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { deleteTimeEntry } from '../../actions/timeEntries';
 import { updateUserProfile } from '../../actions/userProfile';
+import { boxStyle } from 'styles';
 
 const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassification }) => {
   const [isOpen, setOpen] = useState(false);
@@ -47,11 +48,11 @@ const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassificati
       <Modal isOpen={isOpen} toggle={toggle}>
         <ModalBody>Are you sure you want to delete this entry?</ModalBody>
         <ModalFooter>
-          <Button onClick={toggle} color="secondary" className="float-left">
+          <Button onClick={toggle} color="secondary" className="float-left" style={boxStyle}>
             {' '}
             Cancel{' '}
           </Button>
-          <Button onClick={deleteEntry} color="danger">
+          <Button onClick={deleteEntry} color="danger" style={boxStyle}>
             {' '}
             Delete{' '}
           </Button>

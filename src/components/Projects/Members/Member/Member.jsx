@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
+import { boxStyle } from 'styles';
 
 const Member = props => {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -39,6 +40,7 @@ const Member = props => {
                   props.lastName,
                 )
               }
+              style={boxStyle}
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>

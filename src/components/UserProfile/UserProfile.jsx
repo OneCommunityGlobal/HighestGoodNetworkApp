@@ -892,6 +892,7 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Basic Information')}
                 color="primary"
+                style={boxStyle}
               >
                 Basic Information
               </Button>
@@ -934,7 +935,7 @@ function UserProfile(props) {
                             userPermissions,
                           )) && (
                           <Link to={`/updatepassword/${userProfile._id}`}>
-                            <Button className="mr-1 btn-bottom" color="primary">
+                            <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
                               {' '}
                               Update Password
                             </Button>
@@ -966,12 +967,13 @@ function UserProfile(props) {
                                 setTasks(originalTasks);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
+                              style={boxStyle}
                             >
                               X
                             </span>
                           </>
                         )}
-                      <Button outline onClick={() => loadUserProfile()}>
+                      <Button outline onClick={() => loadUserProfile()} style={boxStyle}>
                         <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>
@@ -982,6 +984,7 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Volunteering Times')}
                 color="secondary"
+                style={boxStyle}
               >
                 Volunteering Times
               </Button>
@@ -1030,19 +1033,25 @@ function UserProfile(props) {
                                 setTasks(originalTasks);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
+                              style={boxStyle}
                             >
                               X
                             </span>
                           </>
                         )}
-                      <Button outline onClick={() => loadUserProfile()}>
+                      <Button outline onClick={() => loadUserProfile()} style={boxStyle}>
                         <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary">
+              <Button
+                className="list-button"
+                onClick={() => toggle('Teams')}
+                color="secondary"
+                style={boxStyle}
+              >
                 Teams
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle}>
@@ -1090,19 +1099,25 @@ function UserProfile(props) {
                                 setTasks(originalTasks);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
+                              style={boxStyle}
                             >
                               X
                             </span>
                           </>
                         )}
-                      <Button outline onClick={() => loadUserProfile()}>
+                      <Button outline onClick={() => loadUserProfile()} style={boxStyle}>
                         <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary">
+              <Button
+                className="list-button"
+                onClick={() => toggle('Projects')}
+                color="secondary"
+                style={boxStyle}
+              >
                 Projects
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle}>
@@ -1150,12 +1165,13 @@ function UserProfile(props) {
                                 setTasks(originalTasks);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
+                              style={boxStyle}
                             >
                               X
                             </span>
                           </>
                         )}
-                      <Button outline onClick={() => loadUserProfile()}>
+                      <Button outline onClick={() => loadUserProfile()} style={boxStyle}>
                         <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>
@@ -1166,6 +1182,7 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Edit History')}
                 color="secondary"
+                style={boxStyle}
               >
                 Edit History
               </Button>
@@ -1209,12 +1226,13 @@ function UserProfile(props) {
                                 setTasks(originalTasks);
                               }}
                               className="btn btn-outline-danger mr-1 btn-bottom"
+                              style={boxStyle}
                             >
                               X
                             </span>
                           </>
                         )}
-                      <Button outline onClick={() => loadUserProfile()}>
+                      <Button outline onClick={() => loadUserProfile()} style={boxStyle}>
                         <i className="fa fa-refresh" aria-hidden="true"></i>
                       </Button>
                     </div>

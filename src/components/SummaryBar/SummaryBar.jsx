@@ -24,9 +24,9 @@ import badges_icon from './badges_icon.png';
 import bluesquare_icon from './bluesquare_icon.png';
 import report_icon from './report_icon.png';
 import httpService from '../../services/httpService';
-import { ENDPOINTS , ApiEndpoint } from 'utils/URL';
+import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
-
+import { boxStyle } from 'styles';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 
@@ -453,11 +453,11 @@ const SummaryBar = props => {
                   </Input>
                 </FormGroup>
                 <FormGroup>
-                  <Button type="submit" color="primary" size="lg">
+                  <Button type="submit" color="primary" size="lg" style={boxStyle}>
                     Submit
                   </Button>{' '}
                   &nbsp;&nbsp;&nbsp;
-                  <Button onClick={openReport} color="danger" size="lg">
+                  <Button onClick={openReport} color="danger" size="lg" style={boxStyle}>
                     Close
                   </Button>
                 </FormGroup>

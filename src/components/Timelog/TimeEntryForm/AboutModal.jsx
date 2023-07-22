@@ -1,4 +1,5 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { boxStyle } from 'styles';
 
 /**
  * Modal displaying information about how time entry works
@@ -66,7 +67,7 @@ const AboutModal = props => {
         </p>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={() => props.setVisible(false)} color="primary">
+        <Button onClick={() => props.setVisible(false)} color="primary" style={boxStyle}>
           Close
         </Button>
       </ModalFooter>

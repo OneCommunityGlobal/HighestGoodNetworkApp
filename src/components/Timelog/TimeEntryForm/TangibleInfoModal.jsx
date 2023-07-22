@@ -1,4 +1,5 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { boxStyle } from 'styles';
 
 /**
  * Modal displaying information about the differences between tangible and intangible time
@@ -19,7 +20,7 @@ const TangibleInfoModal = props => {
         </p>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={() => props.setVisible(false)} color="primary">
+        <Button onClick={() => props.setVisible(false)} color="primary" style={boxStyle}>
           Close
         </Button>
       </ModalFooter>

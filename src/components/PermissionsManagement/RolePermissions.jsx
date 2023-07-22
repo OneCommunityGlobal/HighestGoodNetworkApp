@@ -222,10 +222,15 @@ function RolePermissions(props) {
           </div>
           {props?.userRole === 'Owner' && (
             <div className="name-container__btns">
-              <Button className="btn_save" color="success" onClick={() => updateInfo()}>
+              <Button
+                className="btn_save"
+                color="success"
+                onClick={() => updateInfo()}
+                style={boxStyle}
+              >
                 Save
               </Button>
-              <Button color="danger" onClick={toggleDeleteRoleModal}>
+              <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
                 Delete Role
               </Button>
             </div>
@@ -243,7 +248,9 @@ function RolePermissions(props) {
               />
             </ModalBody>
             <ModalFooter>
-              <Button onClick={toggleEditRoleNameModal}>Cancel</Button>
+              <Button onClick={toggleEditRoleNameModal} style={boxStyle}>
+                Cancel
+              </Button>
               <Button
                 color="success"
                 disabled={disabled}
@@ -251,6 +258,7 @@ function RolePermissions(props) {
                   toggleEditRoleNameModal();
                   setChanged(true);
                 }}
+                style={boxStyle}
               >
                 Confirm
               </Button>
@@ -344,7 +352,12 @@ function RolePermissions(props) {
         <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
         <ModalBody>{modalContent}</ModalBody>
         <ModalFooter>
-          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+          <Button
+            onClick={toggleInfoRoleModal}
+            color="secondary"
+            className="float-left"
+            style={boxStyle}
+          >
             {' '}
             Ok{' '}
           </Button>
