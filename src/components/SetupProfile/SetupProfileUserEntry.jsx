@@ -9,6 +9,9 @@ import {
   Form,
   Label,
   Button,
+  InputGroupAddon,
+  InputGroup,
+  InputGroupText,
 } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
 import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
@@ -18,13 +21,23 @@ import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
+import { getUserTimeZone } from '../../services/timezoneApiService';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 const SetupProfileUserEntry = ({ token }) => {
   const history = useHistory();
   const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+  const containSpecialCar = RegExp(/[!@#$%^&*(),.?":{}|<>]/);
+  const containCap = RegExp(/[A-Z]/);
   const [APIkey, setAPIkey] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userProfile, setUserProfile] = useState({
     firstName: '',
     lastName: '',
+    password: '',
+    confirmPassword: '',
     email: '',
     phoneNumber: null,
     weeklyCommittedHours: 10,
@@ -33,12 +46,14 @@ const SetupProfileUserEntry = ({ token }) => {
     jobTitle: '',
     timeZone: '',
     location: '',
-    getTimeZone: '',
+    timeZoneFilter: '',
     token,
   });
   const [formErrors, setFormErrors] = useState({
     firstName: '',
     lastName: '',
+    password: '',
+    confirmPassword: '',
     email: '',
     phoneNumber: '',
     weeklyCommittedHours: '',
@@ -46,7 +61,7 @@ const SetupProfileUserEntry = ({ token }) => {
     jobTitle: '',
     timeZone: '',
     location: '',
-    getTimeZone: '',
+    timeZoneFilter: '',
   });
 
   useEffect(() => {
@@ -54,6 +69,14 @@ const SetupProfileUserEntry = ({ token }) => {
       setAPIkey(response.data.userAPIKey);
     });
   }, []);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   const handleChange = event => {
     const { id, value } = event.target;
@@ -79,20 +102,39 @@ const SetupProfileUserEntry = ({ token }) => {
     }));
   };
 
+  const getTimeZone = () => {
+    if (!userProfile.location) {
+      alert('Please enter valid location');
+      return;
+    }
+    if (!APIkey) {
+      console.log('Geocoding API missing');
+      return;
+    }
+
+    getUserTimeZone(userProfile.location, APIkey)
+      .then(response => {
+        if (
+          response.data.status.code === 200 &&
+          response.data.results &&
+          response.data.results.length
+        ) {
+          let timezone = response.data.results[0].annotations.timezone.name;
+
+          setUserProfile(prevProfile => ({
+            ...prevProfile,
+            timeZoneFilter: timezone,
+            timeZone: timezone,
+          }));
+        } else {
+          alert('Invalid location or ' + response.data.status.message);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+
   const handleFormSubmit = e => {
     e.preventDefault();
-    // Validate firstName
-    if (userProfile.firstName.trim() === '') {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        firstName: 'First Name is required',
-      }));
-    } else {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        firstName: '',
-      }));
-    }
 
     // jobtitle firstName
     if (userProfile.firstName.trim() === '') {
@@ -158,6 +200,52 @@ const SetupProfileUserEntry = ({ token }) => {
       }));
     }
 
+    // Validate password
+
+    if (userProfile.password.trim() === '') {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        password: 'Password is required',
+      }));
+    } else if (userProfile.password.trim().length < 8) {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        password: 'Password must be at least 8 characters long',
+      }));
+    } else if (
+      !containCap.test(userProfile.password.trim()) &&
+      !containSpecialCar.test(userProfile.password.trim())
+    ) {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        password: 'Password must contain special characters and capital letters.',
+      }));
+    } else {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        password: '',
+      }));
+    }
+
+    // Validate confirm password
+
+    if (userProfile.confirmPassword.trim() === '') {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        confirmPassword: 'Confirm password is required',
+      }));
+    } else if (userProfile.password.trim() !== userProfile.confirmPassword.trim()) {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        confirmPassword: 'Password confirmation does not match',
+      }));
+    } else {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        confirmPassword: '',
+      }));
+    }
+
     // Validate jobtitle
 
     if (userProfile.jobTitle.trim() === '') {
@@ -218,22 +306,20 @@ const SetupProfileUserEntry = ({ token }) => {
 
     // Validate get time zone
 
-    console.log;
-
-    if (userProfile.getTimeZone.trim() === '') {
+    if (userProfile.timeZoneFilter.trim() === '') {
       setFormErrors(prevErrors => ({
         ...prevErrors,
-        getTimeZone: 'Set time zone is required',
+        timeZoneFilter: 'Set time zone is required',
       }));
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
-        location: '',
+        timeZoneFilter: '',
       }));
     }
 
     // Submit the form if there are no errors
-    if (Object.values(formErrors).every(error => error === '')) {
+    if (Object.values(formErrors).some(err => err !== '')) {
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), userProfile)
         .then(response => {
@@ -296,6 +382,71 @@ const SetupProfileUserEntry = ({ token }) => {
                     />
                     <FormFeedback>{formErrors.lastName}</FormFeedback>
                   </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md="2" className="text-md-right my-2">
+                  <Label>Password</Label>
+                </Col>
+                <Col md="3">
+                  <InputGroup>
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={userProfile.password}
+                      onChange={e => {
+                        handleChange(e);
+                      }}
+                      placeholder="Enter your password"
+                      autoComplete="off"
+                      invalid={formErrors.password !== ''}
+                    />
+
+                    <InputGroupAddon addonType="append">
+                      <InputGroupText
+                        id="showPassword"
+                        onClick={togglePasswordVisibility}
+                        style={{ backgroundColor: '#f5f5f5' }}
+                      >
+                        {showPassword ? (
+                          <FontAwesomeIcon icon={faEyeSlash} />
+                        ) : (
+                          <FontAwesomeIcon icon={faEye} />
+                        )}
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <FormFeedback>{formErrors.password}</FormFeedback>
+                  </InputGroup>
+                </Col>
+                <Col md="3">
+                  <InputGroup>
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={userProfile.confirmPassword}
+                      onChange={e => {
+                        handleChange(e);
+                      }}
+                      placeholder="Confirm your password"
+                      autoComplete="off"
+                      invalid={formErrors.confirmPassword !== ''}
+                    />
+
+                    <InputGroupAddon addonType="append">
+                      <InputGroupText
+                        id="showConfirmPassword"
+                        onClick={toggleConfirmPasswordVisibility}
+                        style={{ backgroundColor: '#f5f5f5' }}
+                      >
+                        {showConfirmPassword ? (
+                          <FontAwesomeIcon icon={faEyeSlash} />
+                        ) : (
+                          <FontAwesomeIcon icon={faEye} />
+                        )}
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <FormFeedback>{formErrors.confirmPassword}</FormFeedback>
+                  </InputGroup>
                 </Col>
               </Row>
               <Row>
@@ -443,16 +594,16 @@ const SetupProfileUserEntry = ({ token }) => {
                       </FormGroup>
                     </Col>
                     <Col md="6 pr-0">
-                      <Button color="secondary " block size="md">
+                      <Button color="secondary " block size="md" onClick={getTimeZone}>
                         Get Time Zone
                       </Button>
                       <Input
                         style={{
                           display: 'none',
                         }}
-                        invalid={formErrors.getTimeZone !== ''}
+                        invalid={formErrors.timeZoneFilter !== ''}
                       />
-                      <FormFeedback>{formErrors.getTimeZone}</FormFeedback>
+                      <FormFeedback>{formErrors.timeZoneFilter}</FormFeedback>
                     </Col>
                   </Row>
                 </Col>
@@ -467,6 +618,7 @@ const SetupProfileUserEntry = ({ token }) => {
                       selected={'America/Los_Angeles'}
                       id="timeZone"
                       onChange={e => handleChange(e)}
+                      filter={userProfile.timeZoneFilter}
                     />
                   </FormGroup>
                 </Col>
@@ -474,7 +626,7 @@ const SetupProfileUserEntry = ({ token }) => {
             </Form>
           </Col>
         </Row>
-        <Row className="mt-3">
+        <Row className="mt-3 mb-3">
           <Col md="12">
             <Row>
               <Col md="4">
