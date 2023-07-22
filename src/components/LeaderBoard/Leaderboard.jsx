@@ -212,9 +212,6 @@ const LeaderBoard = ({
                 <span className="d-none d-sm-block">Tangible Time</span>
               </th>
               <th>Progress</th>
-              {/* <th>
-                <span className="d-sm-none">Tot. Time</span>
-                <span className="d-none d-sm-block">Total Time</span> */}
               <th style={{ textAlign: 'right' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ textAlign: 'left' }}>
