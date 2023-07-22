@@ -30,7 +30,7 @@ function AddTaskModal(props) {
   const setToggle = () => {
     try {
       props.openChild();
-    } catch { }
+    } catch {}
     toggle();
   };
 
@@ -706,7 +706,12 @@ function AddTaskModal(props) {
             isLoading ? (
               ' Adding...'
             ) : (
-              <Button color="primary" onClick={toggle && addNewTask} disabled={hoursWarning}>
+              <Button
+                color="primary"
+                onClick={toggle && addNewTask}
+                disabled={hoursWarning}
+                style={boxStyle}
+              >
                 Save
               </Button>
             )

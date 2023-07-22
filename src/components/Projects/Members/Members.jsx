@@ -42,7 +42,7 @@ const Members = props => {
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <NavItem tag={Link} to={`/projects/`}>
-              <button type="button" className="btn btn-secondary">
+              <button type="button" className="btn btn-secondary" style={boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
               </button>
             </NavItem>
