@@ -14,6 +14,7 @@ import UpdatePassword from './components/UpdatePassword';
 import Header from './components/Header';
 import Projects from './components/Projects';
 import Teams from './components/Teams/Teams';
+import SummaryManagement from 'components/SummaryManagement/SummaryManagement';
 import UserManagement from './components/UserManagement';
 import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
@@ -36,6 +37,7 @@ import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 
+
 export default (
   <React.Fragment>
     <Header />
@@ -49,6 +51,7 @@ export default (
       <ProtectedRoute path="/admin" component={Admin} />
       <ProtectedRoute path="/timelog/" exact component={Timelog} />
       <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
+      <ProtectedRoute path="/reports" exact component={Reports} />
       <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
       <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
       <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
@@ -76,13 +79,6 @@ export default (
           UserRole.Owner,
           UserRole.Mentor,
         ]}
-        routePermissions={[RoutePermissions.weeklySummariesReport, RoutePermissions.reports]}
-      />
-      <ProtectedRoute
-        path="/reports"
-        exact
-        component={Reports}
-        routePermissions={RoutePermissions.reports}
       />
       <ProtectedRoute
         path="/projects"
@@ -136,6 +132,12 @@ export default (
         exact
         component={Teams}
         routePermissions={RoutePermissions.teams}
+      />
+      <ProtectedRoute
+        path="/summarymanagement"
+        exact
+        component={SummaryManagement}
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
       />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
 

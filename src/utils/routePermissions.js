@@ -10,5 +10,5 @@ export const RoutePermissions = {
   permissionsManagement: 'seePermissionsManagement',
   permissionsManagementRole: 'seePermissionsManagement',
   teams: 'seeTeamsManagement',
-  reports: 'seeAllReports',
+  summaryGroups: 'seeSummaryGroup',
 };
