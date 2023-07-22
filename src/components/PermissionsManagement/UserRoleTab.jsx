@@ -52,6 +52,7 @@ export const permissionLabel = {
   changeBioAnnouncement: 'Change the Bio Announcement Status',
   seeAllReports: 'See All the Reports Tab',
   removeUserFromTask: 'View and Interact with Task “X”',
+  editWeeklySummaryOptions: 'Edit Weekly Summary Options',
 };
 
 const UserRoleTab = props => {

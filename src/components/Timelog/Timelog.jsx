@@ -41,7 +41,7 @@ import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import Loading from '../common/Loading';
+import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
@@ -427,9 +427,9 @@ const Timelog = props => {
         ''
       )}
       {state.isTimeEntriesLoading ? (
-        <Loading />
+        <LoadingSkeleton template="Timelog" />
       ) : (
-        <Container className="right-padding-temp-fix">
+        <Container fluid="md" className="right-padding-temp-fix">
           {state.summary ? (
             <div className="my-2">
               <div id="weeklySum">

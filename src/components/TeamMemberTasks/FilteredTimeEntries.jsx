@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import ReactHtmlParser from 'react-html-parser';
 import './filteredTimeEntries.css';
