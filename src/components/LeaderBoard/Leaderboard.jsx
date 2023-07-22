@@ -346,6 +346,7 @@ const LeaderBoard = ({
                 <td className="align-middle">
                   <span
                     title={mouseoverText}
+                    id="Total time"
                     className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
                   >
                     {item.totaltime}

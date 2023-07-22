@@ -42,7 +42,7 @@ describe('Leaderboard page structure', () => {
       expect(
         leaderBoardItems.containsMatchingElement(
           <td>
-            <span title="Total time">{lbData[i].totaltime}</span>
+            <span id="Total time">{lbData[i].totaltime}</span>
           </td>,
         ),
       ).toBeTruthy();
