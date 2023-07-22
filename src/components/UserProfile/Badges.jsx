@@ -22,7 +22,7 @@ import { boxStyle } from 'styles';
 export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
-  const canAssignBadges = hasPermission('assignBadges');
+  const canAssignBadges = props.hasPermission('assignBadges');
 
   const toggle = () => setOpen(!isOpen);
 
@@ -162,6 +162,7 @@ export const Badges = props => {
 
 const mapDispatchToProps = dispatch => ({
   clearSelected: () => dispatch(clearSelected()),
+  hasPermission: (permission) => dispatch(hasPermission(permission)),
 });
 
 const mapStateToProps = state => ({

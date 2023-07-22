@@ -27,13 +27,12 @@ describe('<TimeEntryForm />', () => {
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock.role
+      role: rolesMock.role,
     });
     userProfile = jest.fn();
     role = jest.fn();
 
     toggle = jest.fn();
-    store.dispatch = jest.fn();
     renderWithProvider(
       <TimeEntryForm
         userId={data.personId}

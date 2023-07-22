@@ -23,6 +23,7 @@ export class WeeklySummariesReport extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummariesReport();
+    this.bioEditPermission = this.props.hasPermission('putuserprofileImportantinfo');
     this.setState({
       error: this.props.error,
       loading: this.props.loading,
@@ -61,7 +62,6 @@ export class WeeklySummariesReport extends Component {
 
   render() {
     const { error, loading, summaries, activeTab } = this.state;
-    const bioEditPermission = hasPermission('putuserprofileImportantinfo');
 
     if (error) {
       return (
@@ -152,7 +152,7 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={0}
-                      bioCanEdit={bioEditPermission}
+                      bioCanEdit={this.bioEditPermission}
                     />
                   </Col>
                 </Row>
@@ -176,7 +176,7 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={1}
-                      bioCanEdit={bioEditPermission}
+                      bioCanEdit={this.bioEditPermission}
                     />
                   </Col>
                 </Row>
@@ -200,7 +200,7 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={2}
-                      bioCanEdit={bioEditPermission}
+                      bioCanEdit={this.bioEditPermission}
                     />
                   </Col>
                 </Row>
@@ -224,7 +224,7 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={3}
-                      bioCanEdit={bioEditPermission}
+                      bioCanEdit={this.bioEditPermission}
                     />
                   </Col>
                 </Row>
@@ -245,10 +245,9 @@ WeeklySummariesReport.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  authUser: state.auth.user,
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
 });
 
-export default connect(mapStateToProps, { getWeeklySummariesReport })(WeeklySummariesReport);
+export default connect(mapStateToProps, { getWeeklySummariesReport, hasPermission })(WeeklySummariesReport);
