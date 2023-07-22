@@ -1,44 +1,19 @@
 import React from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import { getUserTimeZone } from 'services/timezoneApiService';
-import { useSelector } from 'react-redux';
+import mockAPIResponse from './mockData';
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
 import './TeamLocations.css';
+
 const TeamLocations = () => {
   const [userProfiles, setUserProfiles] = useState([]);
-  const geocodeAPIKey = useSelector(state => state.timeZoneAPI.userAPIKey);
 
   useEffect(() => {
-    if (!localStorage.getItem('teamLocations')) {
-      localStorage.setItem('teamLocations', '{}');
-    }
     async function getUserProfiles() {
-      const users = await axios.get(ENDPOINTS.USER_PROFILES);
-      const cachedLocations = JSON.parse(localStorage.getItem('teamLocations'));
-      for (let i = 0; i < 100; i++) {
-        const userLocation = users.data[i].location;
-        if (userLocation === '' || !userLocation) {
-          continue;
-        }
-        if (userLocation in cachedLocations) {
-          users.data[i].locationLatLng = cachedLocations[userLocation];
-        } else {
-          const response = await getUserTimeZone(userLocation, geocodeAPIKey);
-          if (response.data.total_results) {
-            const latlng = response.data.results[0].geometry;
-            users.data[i].locationLatLng = latlng;
-            cachedLocations[userLocation] = latlng;
-          } else {
-            users.data[i].locationLatLng = null;
-            cachedLocations[userLocation] = null;
-          }
-        }
-      }
-      localStorage.setItem('teamLocations', JSON.stringify(cachedLocations));
+      const users = mockAPIResponse; // await axios.get(ENDPOINTS.USER_PROFILES);
       setUserProfiles(users.data);
     }
     getUserProfiles();
@@ -72,17 +47,17 @@ const TeamLocations = () => {
       />
       <MarkerClusterGroup chunkedLoading>
         {userProfiles.map(profile => {
-          if (profile.locationLatLng) {
+          if (profile.location.raw) {
             return (
               <CircleMarker
-                center={[profile.locationLatLng.lat, profile.locationLatLng.lng]}
+                center={[profile.location.coords.lat, profile.location.coords.lng]}
                 key={profile._id}
               >
                 <Popup>
                   <div>
                     <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
                     <div>{`Title: ${profile.jobTitle}`}</div>
-                    <div>{`Location: ${profile.location}`}</div>
+                    <div>{`Location: ${profile.location.raw}`}</div>
                   </div>
                 </Popup>
               </CircleMarker>
