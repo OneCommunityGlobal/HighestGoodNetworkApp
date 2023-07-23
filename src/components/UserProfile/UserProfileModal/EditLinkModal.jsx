@@ -118,10 +118,10 @@ const EditLinkModal = props => {
 
   const handleUpdate = () => {
     const updatable =
-    (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
-    (googleLink.Link === '' && mediaFolderLink.Link === '') ||
-    (isValidUrl(googleLink.Link) && mediaFolderLink.Link === '') ||
-    (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
+      (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
+      (googleLink.Link === '' && mediaFolderLink.Link === '') ||
+      (isValidUrl(googleLink.Link) && mediaFolderLink.Link === '') ||
+      (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
       updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
