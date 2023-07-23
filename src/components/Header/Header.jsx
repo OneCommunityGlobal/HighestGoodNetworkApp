@@ -40,8 +40,9 @@ import {
 } from 'reactstrap';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
-import hasPermission from '../../utils/permissions';
+import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +55,7 @@ export const Header = props => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
-      if(props.auth.user.role === "Administrator"){
+      if (props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
     }
@@ -224,9 +225,10 @@ export const Header = props => {
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
-                  <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
-                    {UPDATE_PASSWORD}
-                  </DropdownItem>
+                  {!denyPermissionToSelfUpdateDevAdminDetails(props.userProfile.email, true) &&
+                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                      {UPDATE_PASSWORD}
+                    </DropdownItem>}
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to="/#" onClick={openModal}>
                     {LOGOUT}

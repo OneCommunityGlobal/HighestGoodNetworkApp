@@ -1,4 +1,4 @@
-import React, { useEffect , useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import CreateNewRolePopup from './NewRolePopUp';
