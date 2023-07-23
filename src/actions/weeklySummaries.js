@@ -91,10 +91,15 @@ export const extractWeeklySummaries = userIds => {
       const summarydata = getState().weeklySummariesReport;
       const summaryreports = summarydata.summaries;
       const filteredmembers = summaryreports.filter(member => userIds.includes(member._id));
-      const filteredSummaries = filteredmembers.map(member => ({
+      // console.log("filteredMembers: ", filteredmembers)
+      
+      const filteredSummaries = filteredmembers.map((member) => ({
         _id: member._id,
-        report: member.weeklySummaries[0].summary,
+        report: member.weeklySummaries[0]?.summary ?? "No summary available",
       }));
+      
+      // console.log (
+      //   "filterdsummaries", filteredSummaries);
       const strippedSummaries = filteredSummaries.map(member => ({
         _id: member._id,
         report: member.report.replace(/<\/?p>/g, ''),

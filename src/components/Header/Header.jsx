@@ -114,14 +114,13 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {user.role === 'Mentor' ||
-                (user.role === 'Manager' && (
-                  <NavItem>
-                    <NavLink tag={Link} to="/summarymanagement">
-                      <span className="dashboard-text-link">{SUMMARY_MANAGEMENT}</span>
-                    </NavLink>
-                  </NavItem>
-                ))}
+              {(user.role === 'Mentor' || user.role === 'Manager') && (
+                <NavItem>
+                  <NavLink tag={Link} to="/summarymanagement">
+                    <span className="dashboard-text-link">{SUMMARY_MANAGEMENT}</span>
+                  </NavLink>
+                </NavItem>
+              )}
               <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   <span className="dashboard-text-link">{REPORTS}</span>

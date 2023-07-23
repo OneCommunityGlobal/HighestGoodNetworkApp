@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react';
 import './summarygroup.css';
 import { DELETE, EDIT, VIEW_SUMMARY } from '../../languages/en/ui';

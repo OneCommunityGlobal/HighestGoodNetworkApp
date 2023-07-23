@@ -10,9 +10,18 @@ const SummaryTable = props => {
   };
 
   useEffect(() => {
+    const errorMessage = {
+      fullname: 'Oops',
+      report: 'I could not retrieve this record at this time!',
+    };
+
     const fetchData = async () => {
       const result = await updateData();
-      setData(result);
+      if (result === 'errorMessage') {
+        errorMessage;
+      } else {
+        setData(result);
+      }
     };
     if (props.summaryGroupId) {
       fetchData();

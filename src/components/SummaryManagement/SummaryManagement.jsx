@@ -181,6 +181,8 @@ class SummaryManagement extends Component {
         report: '',
       }));
 
+      // const errorList: {error: "Cannot pull records at the moment"}
+
       const extractedIds = reportsList.map(member => member._id);
 
       //Getting the 1st week summary reports of each member
@@ -189,11 +191,15 @@ class SummaryManagement extends Component {
       // const summary = await this.props.getWeeklySummaries('this.state.selectedSummaryGroupId');
 
       const summaries = await this.props.extractWeeklySummaries(extractedIds);
-      const finalReportsList = reportsList.map(member => ({
-        ...member,
-        report: summaries.finallist.find(summary => summary._id === member._id)?.report || '',
-      }));
-      return finalReportsList;
+      if (summaries) {
+        const finalReportsList = reportsList.map(member => ({
+          ...member,
+          report: summaries.finallist.find(summary => summary._id === member._id)?.report || '',
+        }));
+        // console.log(finalReportsList);
+        return finalReportsList;
+      }
+      return 'errorMessage';
     } catch (error) {
       console.log(error);
     }
