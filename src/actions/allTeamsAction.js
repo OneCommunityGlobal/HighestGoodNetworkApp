@@ -185,15 +185,11 @@ export const getTeamMembers = (teamId) => {
  */
 export const deleteTeamMember =  (teamId,  userProfile) => {
   const requestData = { users: [{ userId: userProfile._id, operation: 'UnAssign' }] };
-  
   return async (dispatch) => {
     const teamMemberDeletePromise = await axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
-    
       await dispatch(teamMemberDeleteAction( userProfile._id));
       //update user team
      await updateUserProfile( userProfile._id, userProfile)(dispatch);
-      
- 
   };
 };
 
@@ -203,13 +199,10 @@ export const deleteTeamMember =  (teamId,  userProfile) => {
 export const addTeamMember = (teamId,  userProfile) => {
   console.log('userIDDDD', userProfile._id)
   const requestData = { users: [{ userId : userProfile._id, operation: 'Assign' }] };
-  
   return async (dispatch) => {
     const teamMemberAddPromise = await axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
-  
       await dispatch(teamMemberAddAction({ _id:userProfile._id , firstName: userProfile.firstName, lastName: userProfile.lastName }));
       //update user team
-      console.log('fromaddteam',userProfile)
       await updateUserProfile(userProfile._id, userProfile)(dispatch);
     
   };
