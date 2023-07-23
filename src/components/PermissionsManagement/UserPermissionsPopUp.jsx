@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { getAllUserProfile } from 'actions/userManagement';
 import { permissionLabel } from './UserRoleTab';
-import { useRef } from 'react';
 
 import './PermissionsManagement.css';
 import axios from 'axios';

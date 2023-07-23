@@ -4,10 +4,10 @@ import { connect, useSelector } from 'react-redux';
 
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
-import { NavItem, Button } from 'reactstrap';
-import { Modal, ModalBody } from 'reactstrap';
+import { NavItem, Button, Modal, ModalBody } from 'reactstrap';
+
 import { Editor } from '@tinymce/tinymce-react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
 import { getUserProfile } from 'actions/userProfile';
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
@@ -17,7 +17,7 @@ import { deleteTask } from '../../../../actions/task';
 import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
-import { useHistory } from 'react-router-dom';
+
 import { boxStyle } from 'styles';
 
 const SingleTask = props => {
@@ -66,7 +66,9 @@ const SingleTask = props => {
                   <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
                 </Button>
               </NavItem>
-              <div id="single_task_name">See tasks in the same folder as "{task.taskName}"</div>
+              <div id="single_task_name">
+                See tasks in the same folder as &quot;{task.taskName}&quot;
+              </div>
             </ol>
           </nav>
         )}
@@ -179,6 +181,7 @@ const SingleTask = props => {
                               className="name"
                               href={`/userprofile/${elem.userID}`}
                               target="_blank"
+                              rel="noreferrer"
                             >
                               <img className="img-circle" src={elem.profilePic} />
                             </a>
@@ -191,6 +194,7 @@ const SingleTask = props => {
                               className="name"
                               href={`/userprofile/${elem.userID}`}
                               target="_blank"
+                              rel="noreferrer"
                             >
                               <span className="dot">{elem.name.substring(0, 2)}</span>
                             </a>

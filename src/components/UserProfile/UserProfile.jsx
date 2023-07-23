@@ -23,10 +23,13 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
+import hasPermission, {
+  cantDeactivateOwner,
+  cantUpdateDevAdminDetails,
+} from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
@@ -89,6 +92,8 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
 
+  const userProfileRef = useRef();
+
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
 
@@ -100,6 +105,10 @@ function UserProfile(props) {
   useEffect(() => {
     loadUserProfile();
   }, []);
+
+  useEffect(() => {
+    userProfileRef.current = userProfile;
+  });
 
   useEffect(() => {
     checkIsTeamsEqual();
@@ -121,7 +130,7 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
-    setOriginalTeams(teams)
+    setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -153,7 +162,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects)
+    setOriginalProjects(projects);
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -410,7 +419,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(props.match.params.userId, userProfile);
+      await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -520,7 +529,7 @@ function UserProfile(props) {
     return (
       <Container fluid>
         <Row className="text-center" data-test="loading">
-          <Loading />
+          <SkeletonLoading template="UserProfile" />
         </Row>
       </Container>
     );
@@ -531,14 +540,20 @@ function UserProfile(props) {
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
+  const authEmail = props.userProfile?.email;
   const isUserSelf = targetUserId === requestorId;
-  const canEditProfile = userProfile.role === 'Owner' ? canAddDeleteEditOwners : canPutUserProfile;
-  const canEdit = canEditProfile || isUserSelf;
 
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
+
+  const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
+  const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
+
+  const canEditUserProfile = targetIsDevAdminUneditable ? false : canPutUserProfile || isUserSelf;
+
+  const canEdit = userProfile.role === 'Owner' ? canAddDeleteEditOwners : canEditUserProfile;
 
   const customStyles = {
     control: (base, state) => ({
@@ -622,7 +637,7 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on "Save changes" to save the changes you have made.{' '}
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
             <div className="profile-head">
@@ -641,7 +656,7 @@ function UserProfile(props) {
                 user={userProfile}
                 canChange={canChangeUserStatus}
                 onClick={() => {
-                  if (deactivateOwnerPermission(userProfile, requestorRole)) {
+                  if (cantDeactivateOwner(userProfile, requestorRole)) {
                     //Owner user cannot be deactivated by another user that is not an Owner.
                     alert('You are not authorized to deactivate an owner.');
                     return;
@@ -813,7 +828,7 @@ function UserProfile(props) {
                   setFormValid={setFormValid}
                   isUserSelf={isUserSelf}
                   canEdit={canEdit}
-                  canEditRole={canEditProfile}
+                  canEditRole={canEdit}
                   roles={roles}
                 />
               </TabPane>
@@ -827,6 +842,7 @@ function UserProfile(props) {
                     onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
                     canEdit={canPutUserProfile}
+                    // canEdit={checkVolunteeringTimeTabPermission}
                     onStartDate={handleStartDate}
                   />
                 }
@@ -837,11 +853,18 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
-                  edit={canPutUserProfile}
+                  edit={canEdit}
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                  handleSubmit={handleSubmit}
+                  disabled={
+                    !formValid.firstName ||
+                    !formValid.lastName ||
+                    !formValid.email ||
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                  }
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -851,10 +874,17 @@ function UserProfile(props) {
                   projectsData={props?.allProjects?.projects || []}
                   onAssignProject={onAssignProject}
                   onDeleteProject={onDeleteProject}
-                  edit={canPutUserProfile}
+                  edit={canEdit}
                   role={requestorRole}
                   userId={props.match.params.userId}
                   updateTask={onUpdateTask}
+                  handleSubmit={handleSubmit}
+                  disabled={
+                    !formValid.firstName ||
+                    !formValid.lastName ||
+                    !formValid.email ||
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                  }
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -887,7 +917,7 @@ function UserProfile(props) {
                     setFormValid={setFormValid}
                     isUserSelf={isUserSelf}
                     canEdit={canEdit}
-                    canEditRole={canEditProfile}
+                    canEditRole={canEdit}
                     roles={roles}
                   />
                 </ModalBody>
@@ -895,10 +925,26 @@ function UserProfile(props) {
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canUpdatePassword && canEdit && !isUserSelf && (
-                        <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+                        <ResetPasswordButton
+                          className="mr-1 btn-bottom"
+                          user={userProfile}
+                          authEmail={authEmail}
+                        />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
-                        <Link to={`/updatepassword/${userProfile._id}`}>
+                        <Link
+                          to={selfIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
+                          onClick={() => {
+                            if (selfIsDevAdminUneditable) {
+                              alert(
+                                'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
+                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                                  'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                              );
+                              return `#`;
+                            }
+                          }}
+                        >
                           <Button className="mr-1 btn-bottom" color="primary">
                             {' '}
                             Update Password
@@ -951,7 +997,9 @@ function UserProfile(props) {
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
                     role={requestorRole}
-                    canEdit={canPutUserProfile}
+                    onEndDate={handleEndDate}
+                    canEdit={canEdit}
+                    onStartDate={handleStartDate}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -999,11 +1047,18 @@ function UserProfile(props) {
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
-                    edit={canPutUserProfile}
+                    edit={canEdit}
                     role={requestorRole}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
                     canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                    handleSubmit={handleSubmit}
+                    disabled={
+                      !formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                    }
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1056,6 +1111,13 @@ function UserProfile(props) {
                     role={requestorRole}
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
+                    handleSubmit={handleSubmit}
+                    disabled={
+                      !formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                    }
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1146,10 +1208,26 @@ function UserProfile(props) {
           <Col md="8" className="desktop-panel">
             <div className="profileEditButtonContainer">
               {canUpdatePassword && canEdit && !isUserSelf && (
-                <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} />
+                <ResetPasswordButton
+                  className="mr-1 btn-bottom"
+                  user={userProfile}
+                  authEmail={authEmail}
+                />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
-                <Link to={`/updatepassword/${userProfile._id}`}>
+                <Link
+                  to={selfIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
+                  onClick={() => {
+                    if (selfIsDevAdminUneditable) {
+                      alert(
+                        'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
+                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                      );
+                      return `#`;
+                    }
+                  }}
+                >
                   <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
                     {' '}
                     Update Password

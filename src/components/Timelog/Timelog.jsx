@@ -41,7 +41,7 @@ import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import Loading from '../common/Loading';
+import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
@@ -86,7 +86,7 @@ const Timelog = props => {
   const userProjects = useSelector(state => state.userProjects);
   const role = useSelector(state => state.role);
   const userTask = useSelector(state => state.userTask);
-  const userIdByState = useSelector(state => state.auth.user.userid)
+  const userIdByState = useSelector(state => state.auth.user.userid);
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
 
   const defaultTab = () => {
@@ -338,8 +338,8 @@ const Timelog = props => {
   const [state, setState] = useState(initialState);
 
   const handleUpdateTask = () => {
-    setIsTaskUpdated(!isTaskUpdated)
-  }
+    setIsTaskUpdated(!isTaskUpdated);
+  };
 
   useEffect(() => {
     // Does not run again (except once in development): load data
@@ -422,9 +422,9 @@ const Timelog = props => {
         ''
       )}
       {state.isTimeEntriesLoading ? (
-        <Loading />
+        <LoadingSkeleton template="Timelog" />
       ) : (
-        <Container className="right-padding-temp-fix">
+        <Container fluid="md" className="right-padding-temp-fix">
           {state.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -725,11 +725,11 @@ const Timelog = props => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks 
-                      asUser={props.asUser} 
-                      handleUpdateTask={handleUpdateTask} 
-                      roles={role.roles}
-                      userPermissions={userPermissions}
+                      <TeamMemberTasks
+                        asUser={props.asUser}
+                        handleUpdateTask={handleUpdateTask}
+                        roles={role.roles}
+                        userPermissions={userPermissions}
                       />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>

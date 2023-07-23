@@ -27,7 +27,7 @@ describe('WeeklySummariesReport page', () => {
         error: { message: 'SOME ERROR CONNECTING!!!' },
         loading: false,
         summaries: [],
-        authUser: {role:''},
+        authUser: { role: '' },
         roles: [],
       };
       renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
@@ -43,7 +43,7 @@ describe('WeeklySummariesReport page', () => {
         getWeeklySummariesReport: jest.fn(),
         loading: true,
         summaries: [],
-        authUser: {role:''},
+        authUser: { role: '' },
         roles: [],
       };
       renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
@@ -57,7 +57,7 @@ describe('WeeklySummariesReport page', () => {
       getWeeklySummariesReport: jest.fn(),
       loading: false,
       summaries: [],
-      authUser: {role:''},
+      authUser: { role: '' },
       roles: [],
     };
     beforeEach(() => {

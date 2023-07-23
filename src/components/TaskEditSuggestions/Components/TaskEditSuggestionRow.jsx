@@ -10,12 +10,19 @@ export const TaskEditSuggestionRow = ({
     <tr onClick={() => handleToggleTaskEditSuggestionModal(taskEditSuggestion)}>
       <td>{datetimeToDate(taskEditSuggestion.dateSuggested)}</td>
       <td>{taskEditSuggestion.user}</td>
+      <td>{taskEditSuggestion.oldTask.taskName}</td>
       <td>
-        {
-          <Link to={`/wbs/tasks/${taskEditSuggestion.oldTask._id}`}>
-            {taskEditSuggestion.oldTask.taskName}
-          </Link>
-        }
+        <button
+          onClick={handleToggleTaskEditSuggestionModal}
+          style={{
+            backgroundColor: '#007bff',
+            borderRadius: '5px',
+            padding: '5px 10px',
+            color: 'white',
+          }}
+        >
+          View Suggestion
+        </button>
       </td>
     </tr>
   );

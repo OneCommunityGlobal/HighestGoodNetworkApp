@@ -113,7 +113,7 @@ const UserTableData = React.memo(props => {
             </button>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton user={props.user} isSmallButton />
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton />
           </span>
         </td>
       )}

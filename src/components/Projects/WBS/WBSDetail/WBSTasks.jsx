@@ -199,7 +199,7 @@ function WBSTasks(props) {
 
   return (
     <>
-      <ReactTooltip delayShow={250}/>
+      <ReactTooltip delayShow={250} />
       <div className="container-tasks">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
@@ -357,7 +357,8 @@ function WBSTasks(props) {
             <tr className="taskDrop">
               <td colSpan={14} />
             </tr>
-            {props.state.tasks.fetched && filteredTasks.map((task, i) => (
+            {props.state.tasks.fetched &&
+              filteredTasks.map((task, i) => (
                 <Task
                   key={`${task._id}${i}`}
                   id={task._id}
@@ -396,7 +397,7 @@ function WBSTasks(props) {
                   childrenQty={task.childrenQty}
                   filteredTasks={filteredTasks}
                 />
-            ))}
+              ))}
           </tbody>
         </table>
       </div>
