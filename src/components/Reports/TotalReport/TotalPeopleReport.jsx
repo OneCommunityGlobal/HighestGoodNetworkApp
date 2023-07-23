@@ -252,7 +252,7 @@ const TotalPeopleReport = props => {
             className="fa fa-info-circle"
             data-tip
             data-for="totalPeopleDetailTip"
-            data-delay-hide="500"
+            data-delay-hide="0"
             aria-hidden="true"
             style={{ paddingLeft: '.32rem' }}
           />

@@ -403,7 +403,7 @@ class ReportsPage extends Component {
                   className="fa fa-info-circle"
                   data-tip
                   data-for="totalTaskTip"
-                  data-delay-hide="1000"
+                  data-delay-hide="0"
                   aria-hidden="true"
                   title=""
                   style={{ paddingLeft: '.32rem' }}
@@ -422,7 +422,7 @@ class ReportsPage extends Component {
                   className="fa fa-info-circle"
                   data-tip
                   data-for="totalPeopleTip"
-                  data-delay-hide="1000"
+                  data-delay-hide="0"
                   aria-hidden="true"
                   style={{ paddingLeft: '.32rem' }}
                 />
@@ -446,7 +446,7 @@ class ReportsPage extends Component {
                   className="fa fa-info-circle"
                   data-tip
                   data-for="totalTeamTip"
-                  data-delay-hide="1000"
+                  data-delay-hide="0"
                   aria-hidden="true"
                   title=""
                   style={{ paddingLeft: '.32rem' }}

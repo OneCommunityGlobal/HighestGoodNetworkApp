@@ -70,9 +70,9 @@ const TotalReportBarGraph = props => {
             .append('text')
             .attr('class', 'value')
             .attr('x', a => xScale(a.label) + xScale.bandwidth() / 2)
-            .attr('y', a => yScale(a.value) + 30)
+            .attr('y', a => yScale(0)+30)
             .attr('text-anchor', 'middle')
-            .text(a => `${a.months} months`)
+            .text(a => `${a.months} mos.`)
             .style('fill', 'black');
         }
       })
