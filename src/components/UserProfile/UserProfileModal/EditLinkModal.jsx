@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Modal,
@@ -11,15 +11,11 @@ import {
   Col,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
-import hasPermission from '../../../utils/permissions';
-import { useSelector } from 'react-redux';
 import styles from './EditLinkModal.css';
 import { boxStyle } from 'styles';
 
 const EditLinkModal = props => {
-  const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
-  const { roles } = useSelector(state => state.role);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+  const { isOpen, closeModal, updateLink, userProfile } = props;
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
@@ -139,7 +135,6 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {hasPermission(role, 'adminLinks', roles, userPermissions) && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
@@ -260,7 +255,6 @@ const EditLinkModal = props => {
                   </div>
                 </Card>
               </CardBody>
-            )}
             <CardBody>
               <Card style={{ padding: '16px' }}>
                 <Label style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
