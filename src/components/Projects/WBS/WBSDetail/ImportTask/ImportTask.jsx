@@ -71,7 +71,7 @@ const ImportTask = props => {
       setTaskList(tmpList);
     } catch (error) {
       setImportStatus('importError');
-      setAlert(`${error}`);
+      setAlert(error.message);
     }
   };
 
@@ -81,9 +81,9 @@ const ImportTask = props => {
       name = name.trim();
       const member = members.find(p => `${p.firstName} ${p.lastName}`.toLocaleLowerCase() === name.toLowerCase());
 
-      if (!member) throw new Error(`${name} is not in the project member list`);
+      if (!member) throw new Error(`Error: ${name} is not in the project member list`);
 
-      if (nameCache.includes(name)) throw new Error(`There are more than one [${name}] in resources on line ${i}`);
+      if (nameCache.includes(name)) throw new Error(`Error: There are more than one [${name}] in resources on line ${i + 1}`);
       nameCache.push(name);
       
       return name + '|' + member._id + '|' + (member.profilePic || '/defaultprofilepic.png');
@@ -194,7 +194,7 @@ const ImportTask = props => {
               {importStatus === 'importError' ? (
                 <tr>
                   <td>
-                    <Alert color='danger'>{`${alert} is not in the project member list`}</Alert>
+                    <Alert color='danger'>{alert}</Alert>
                     <input
                       type="file"
                       id="file"
