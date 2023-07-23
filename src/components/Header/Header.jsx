@@ -40,7 +40,7 @@ import {
 } from 'reactstrap';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
-import hasPermission, { canUpdateDevAdminDetails } from '../../utils/permissions';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
 export const Header = props => {
@@ -245,7 +245,7 @@ export const Header = props => {
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
-                  {!canUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                  {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
                     <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
                       {UPDATE_PASSWORD}
                     </DropdownItem>

@@ -23,7 +23,7 @@ import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
-import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
+import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
@@ -334,7 +334,7 @@ class UserManagement extends React.PureComponent {
       alert('You are not authorized to change the active status.');
       return;
     }
-    if (deactivateOwnerPermission(user, authRole)) {
+    if (cantDeactivateOwner(user, authRole)) {
       //Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');
       return;
