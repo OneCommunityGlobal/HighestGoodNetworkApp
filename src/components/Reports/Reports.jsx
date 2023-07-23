@@ -19,6 +19,7 @@ import teamsImage from './images/Teams.svg';
 import ReactTooltip from 'react-tooltip';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
 import TotalTeamReport from './TotalReport/TotalTeamReport';
+import TotalProjectReport from './TotalReport/TotalProjectReport';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -31,6 +32,7 @@ class ReportsPage extends Component {
       showTeams: false,
       showTotalPeople: false,
       showTotalTeam: false,
+      showTotalProject: false,
       teamNameSearchText: '',
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
@@ -79,6 +81,7 @@ class ReportsPage extends Component {
     this.showTeamsTable = this.showTeamsTable.bind(this);
     this.showTotalPeople = this.showTotalPeople.bind(this);
     this.showTotalTeam = this.showTotalTeam.bind(this);
+    this.showTotalProject = this.showTotalProject.bind(this);
     this.setActive = this.setActive.bind(this);
     this.setInActive = this.setInActive.bind(this);
     this.setAll = this.setAll.bind(this);
@@ -203,6 +206,9 @@ class ReportsPage extends Component {
       showProjects: !prevState.showProjects,
       showPeople: false,
       showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
     }));
   }
 
@@ -211,6 +217,9 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: !prevState.showTeams,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
     }));
   }
 
@@ -219,6 +228,9 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: !prevState.showPeople,
       showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
     }));
   }
 
@@ -227,7 +239,7 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: false,
-      //showTotalProjects: false,
+      showTotalProject: false,
       showTotalPeople: !prevState.showTotalPeople,
       showTotalTeam: false,
     }));
@@ -238,17 +250,19 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: false,
-      //showTotalProjects: false,
+      showTotalProject: false,
       showTotalTeam: !prevState.showTotalTeam,
       showTotalPeople: false,
     }));
   }
-
-  showTasksTable() {
+  showTotalProject() {
     this.setState(prevState => ({
       showProjects: false,
       showPeople: false,
       showTeams: false,
+      showTotalProject: !prevState.showTotalProject,
+      showTotalTeam: false,
+      showTotalPeople: false,
     }));
   }
 
@@ -378,7 +392,11 @@ class ReportsPage extends Component {
                   selected={this.state.startDate}
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
                   maxDate={new Date()}
-                  onChange={date => this.setState({ startDate: date })}
+                  onChange={date => {
+                    if (date > new Date(DATE_PICKER_MIN_DATE) && date <= this.state.endDate) {
+                      this.setState({ startDate: date });
+                    }
+                  }}
                   className="form-control"
                 />
               </div>
@@ -391,32 +409,48 @@ class ReportsPage extends Component {
                   selected={this.state.endDate}
                   maxDate={new Date()}
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
-                  onChange={date => this.setState({ endDate: date })}
+                  onChange={date => {
+                    if (date >= this.state.startDate) {
+                      this.setState({ endDate: date });
+                    }
+                  }}
                   className="form-control"
                 />
               </div>
             </div>
             <div className="total-report-container">
               <div className="total-report-item">
-                <Button color="info">Total Task Report</Button>
+                <Button color="info" onClick={this.showTotalProject}>
+                  {this.state.showTotalProject
+                    ? 'Hide Total Project Report'
+                    : 'Show Total Project Report'}
+                </Button>
                 <i
                   className="fa fa-info-circle"
                   data-tip
-                  data-for="totalTaskTip"
+                  data-for="totalProjectTip"
                   data-delay-hide="0"
                   aria-hidden="true"
                   title=""
                   style={{ paddingLeft: '.32rem' }}
                 />
-                <ReactTooltip id="totalTaskTip" place="bottom" effect="solid">
+                <ReactTooltip id="totalProjectTip" place="bottom" effect="solid">
+                  Click this button to see exactly how many new projects have been worked on for a
+                  designated time period.
                   <br />
+                  Projects must have had at least 1 hour logged to them to be included.
                   <br />
-                  <br />
+                  A 'Total Hours' section will show the total tangible time logged to all projects
+                  during the selected period.
+                  <br />A detail report will list all the projects and hours contributed by each
+                  during that time period.
                 </ReactTooltip>
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalPeople}>
-                  Total People Report
+                  {this.state.showTotalPeople
+                    ? 'Hide Total People Report'
+                    : 'Show Total People Report'}
                 </Button>
                 <i
                   className="fa fa-info-circle"
@@ -440,7 +474,7 @@ class ReportsPage extends Component {
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalTeam}>
-                  Total Team Report
+                  {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
                 </Button>
                 <i
                   className="fa fa-info-circle"
@@ -470,6 +504,13 @@ class ReportsPage extends Component {
           {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
           {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
           {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
+          {this.state.showTotalProject && (
+            <TotalProjectReport
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              userProfiles={userProfiles}
+            />
+          )}
           {this.state.showTotalPeople && (
             <TotalPeopleReport
               startDate={this.state.startDate}

@@ -380,23 +380,25 @@ const TotalTeamReport = props => {
             <TotalReportBarGraph barData={teamInYear} range="year" />
           ) : null}
         </div>
-        <div className="total-detail">
-          <Button onClick={e => onClickTotalTeamDetail()}>
-            {showTotalTeamTable ? 'Hide Details' : 'Show Details'}
-          </Button>
-          <i
-            className="fa fa-info-circle"
-            data-tip
-            data-for="totalPeopleDetailTip"
-            data-delay-hide="0"
-            aria-hidden="true"
-            style={{ paddingLeft: '.32rem' }}
-          />
-          <ReactTooltip id="totalTeamDetailTip" place="bottom" effect="solid">
-            Click this button to show or hide the list of all the teams and their total hours
-            logged.
-          </ReactTooltip>
-        </div>
+        {totalTeam.length ? (
+          <div className="total-detail">
+            <Button onClick={e => onClickTotalTeamDetail()}>
+              {showTotalTeamTable ? 'Hide Details' : 'Show Details'}
+            </Button>
+            <i
+              className="fa fa-info-circle"
+              data-tip
+              data-for="totalTeamDetailTip"
+              data-delay-hide="0"
+              aria-hidden="true"
+              style={{ paddingLeft: '.32rem' }}
+            />
+            <ReactTooltip id="totalTeamDetailTip" place="bottom" effect="solid">
+              Click this button to show or hide the list of all the teams and their total hours
+              logged.
+            </ReactTooltip>
+          </div>
+        ) : null}
       </div>
     );
   };
@@ -404,17 +406,9 @@ const TotalTeamReport = props => {
   return (
     <div>
       {!dataReady ? (
-        dataLoading || !teamMemberLoaded ? (
-          <div>
-            <div>Loading data...</div>
-            <Loading />
-          </div>
-        ) : (
-          <div>
-            <div>Reloading data in the selected time range...</div>
-            <Loading />
-          </div>
-        )
+        <div>
+          <Loading />
+        </div>
       ) : (
         <div>
           <div>{totalTeamInfo(allTeams)}</div>

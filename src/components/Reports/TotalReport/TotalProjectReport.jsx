@@ -9,14 +9,14 @@ import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
 
-const TotalPeopleReport = props => {
+const TotalProjectReport = props => {
   const [dataLoading, setDataLoading] = useState(true);
   const [dataRefresh, setDataRefresh] = useState(false);
-  const [showTotalPeopleTable, setShowTotalPeopleTable] = useState(false);
+  const [showTotalProjectTable, setShowTotalProjectTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
-  const [allPeople, setAllPeople] = useState([]);
-  const [peopleInMonth, setPeopleInMonth] = useState([]);
-  const [peopleInYear, setPeopleInYear] = useState([]);
+  const [allProject, setAllProject] = useState([]);
+  const [projectInMonth, setProjectInMonth] = useState([]);
+  const [projectInYear, setProjectInYear] = useState([]);
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
 
@@ -32,7 +32,8 @@ const TotalPeopleReport = props => {
       .then(res => {
         return res.data.map(entry => {
           return {
-            userId: entry.personId,
+            projectId: entry.projectId,
+            projectName: entry.projectName,
             hours: entry.hours,
             minutes: entry.minutes,
             isTangible: entry.isTangible,
@@ -46,12 +47,13 @@ const TotalPeopleReport = props => {
     setAllTimeEntries(timeEntries);
   };
 
-  const sumByUser = (objectArray, property) => {
+  const sumByProject = (objectArray, property) => {
     return objectArray.reduce((acc, obj) => {
       var key = obj[property];
       if (!acc[key]) {
         acc[key] = {
-          userId: key,
+          projectId: key,
+          projectName: obj['projectName'],
           hours: 0,
           minutes: 0,
           tangibleHours: 0,
@@ -90,38 +92,36 @@ const TotalPeopleReport = props => {
     const groupedEntries = Object.entries(groupByTimeRange(allTimeEntries, timeRange));
     let summaryOfTime = [];
     groupedEntries.forEach(element => {
-      const groupedUsersOfTime = Object.values(sumByUser(element[1], 'userId'));
-      const contributedUsersOfTime = filterTenHourUser(groupedUsersOfTime);
-      summaryOfTime.push({ timeRange: element[0], usersOfTime: contributedUsersOfTime });
+      const groupedProjectsOfTime = Object.values(sumByProject(element[1], 'projectId'));
+      const contributedProjectsOfTime = filterOneHourProject(groupedProjectsOfTime);
+      summaryOfTime.push({ timeRange: element[0], projectsOfTime: contributedProjectsOfTime });
     });
     return summaryOfTime;
   };
 
-  const filterTenHourUser = userTimeList => {
-    let filteredUsers = [];
-    userTimeList.forEach(element => {
+  const filterOneHourProject = projectTimeList => {
+    let filteredProjects = [];
+    projectTimeList.forEach(element => {
       const allTimeLogged = element.hours + element.minutes / 60.0;
       const allTangibleTimeLogged = element.tangibleHours + element.tangibleMinutes / 60.0;
-      if (allTimeLogged >= 10) {
-        const matchedUser = props.userProfiles.filter(user => user._id === element.userId)[0];
-        filteredUsers.push({
-          userId: element.userId,
-          firstName: matchedUser.firstName,
-          lastName: matchedUser.lastName,
+      if (allTimeLogged >= 1) {
+        filteredProjects.push({
+          projectId: element.projectId,
+          projectName: element.projectName,
           totalTime: allTimeLogged.toFixed(2),
           tangibleTime: allTangibleTimeLogged.toFixed(2),
         });
       }
     });
-    return filteredUsers;
+    return filteredProjects;
   };
 
   const checkPeriodForSummary = () => {
     const oneMonth = 1000 * 60 * 60 * 24 * 31;
     const diffDate = props.endDate - props.startDate;
     if (diffDate > oneMonth) {
-      setPeopleInMonth(generateBarData(summaryOfTimeRange('month')));
-      setPeopleInYear(generateBarData(summaryOfTimeRange('year'), true));
+      setProjectInMonth(generateBarData(summaryOfTimeRange('month')));
+      setProjectInYear(generateBarData(summaryOfTimeRange('year'), true));
       if (diffDate <= oneMonth * 12) {
         setShowMonthly(true);
       }
@@ -142,35 +142,37 @@ const TotalPeopleReport = props => {
     if (!dataLoading && dataRefresh) {
       setShowMonthly(false);
       setShowYearly(false);
-      const groupedUsers = Object.values(sumByUser(allTimeEntries, 'userId'));
-      const contributedUsers = filterTenHourUser(groupedUsers);
-      setAllPeople(contributedUsers);
+      const groupedProjects = Object.values(sumByProject(allTimeEntries, 'projectId'));
+      const contributedProjects = filterOneHourProject(groupedProjects);
+      setAllProject(contributedProjects);
       checkPeriodForSummary();
       setDataRefresh(false);
     }
   }, [dataRefresh]);
 
-  const onClickTotalPeopleDetail = () => {
-    const showDetail = showTotalPeopleTable;
-    setShowTotalPeopleTable(!showDetail);
+  const onClickTotalProjectDetail = () => {
+    const showDetail = showTotalProjectTable;
+    setShowTotalProjectTable(!showDetail);
   };
 
-  const totalPeopleTable = totalPeople => {
-    let PeopleList = [];
-    if (totalPeople.length > 0) {
-      PeopleList = totalPeople
-        .sort((a, b) => a.firstName.localeCompare(b.firstName))
-        .map((person, index) => (
-          <tr className="teams__tr" id={`tr_${person.userId}`} key={person.userId}>
+  const totalProjectTable = totalProject => {
+    let ProjectList = [];
+    if (totalProject.length > 0) {
+      ProjectList = totalProject
+        .sort((a, b) => a.projectName.localeCompare(b.projectName))
+        .map((project, index) => (
+          <tr className="teams__tr" id={`tr_${project.projectId}`} key={project.projectId}>
             <th className="teams__order--input" scope="row">
               <div>{index + 1}</div>
             </th>
             <td>
-              <Link to={`/userProfile/${person.userId}`}>
-                {person.firstName} {person.lastName}
-              </Link>
+              {project.projectId ? (
+                <Link to={`/projectReport/${project.projectId}`}>{project.projectName}</Link>
+              ) : (
+                'Unrecorded Project'
+              )}
             </td>
-            <td>{person.totalTime}</td>
+            <td>{project.totalTime}</td>
           </tr>
         ));
     }
@@ -182,11 +184,11 @@ const TotalPeopleReport = props => {
             <th scope="col" id="projects__order">
               #
             </th>
-            <th scope="col">Person Name</th>
+            <th scope="col">Project Name</th>
             <th scope="col">Total Logged Time (Hrs) </th>
           </tr>
         </thead>
-        <tbody>{PeopleList}</tbody>
+        <tbody>{ProjectList}</tbody>
       </table>
     );
   };
@@ -198,7 +200,7 @@ const TotalPeopleReport = props => {
       const sumData = groupedDate.map(range => {
         return {
           label: range.timeRange,
-          value: range.usersOfTime.length,
+          value: range.projectsOfTime.length,
           months: 12,
         };
       });
@@ -211,54 +213,54 @@ const TotalPeopleReport = props => {
       const sumData = groupedDate.map(range => {
         return {
           label: range.timeRange,
-          value: range.usersOfTime.length,
+          value: range.projectsOfTime.length,
         };
       });
       return sumData;
     }
   };
 
-  const totalPeopleInfo = totalPeople => {
-    const totalTangibleTime = totalPeople.reduce((acc, obj) => {
+  const totalProjectInfo = totalProject => {
+    const totalTangibleTime = totalProject.reduce((acc, obj) => {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
       <div className="total-container">
-        <div className="total-title">Total People Report</div>
+        <div className="total-title">Total Project Report</div>
         <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
         <div className="total-item">
-          <div className="total-number">{allPeople.length}</div>
-          <div className="total-text">members have contributed more than 10 hours.</div>
+          <div className="total-number">{allProject.length}</div>
+          <div className="total-text">projects have been worked on more than 1 hours.</div>
         </div>
         <div className="total-item">
           <div className="total-number">{totalTangibleTime.toFixed(2)}</div>
           <div className="total-text">hours of tangible time have been logged.</div>
         </div>
         <div>
-          {showMonthly && peopleInMonth.length > 0 ? (
-            <TotalReportBarGraph barData={peopleInMonth} range="month" />
+          {showMonthly && projectInMonth.length > 0 ? (
+            <TotalReportBarGraph barData={projectInMonth} range="month" />
           ) : null}
-          {showYearly && peopleInYear.length > 0 ? (
-            <TotalReportBarGraph barData={peopleInYear} range="year" />
+          {showYearly && projectInYear.length > 0 ? (
+            <TotalReportBarGraph barData={projectInYear} range="year" />
           ) : null}
         </div>
-        {allPeople.length ? (
+        {allProject.length ? (
           <div className="total-detail">
-            <Button onClick={e => onClickTotalPeopleDetail()}>
-              {showTotalPeopleTable ? 'Hide Details' : 'Show Details'}
+            <Button onClick={e => onClickTotalProjectDetail()}>
+              {showTotalProjectTable ? 'Hide Details' : 'Show Details'}
             </Button>
             <i
               className="fa fa-info-circle"
               data-tip
-              data-for="totalPeopleDetailTip"
+              data-for="totalProjectDetailTip"
               data-delay-hide="0"
               aria-hidden="true"
               style={{ paddingLeft: '.32rem' }}
             />
-            <ReactTooltip id="totalPeopleDetailTip" place="bottom" effect="solid">
-              Click this button to show or hide the list of all the people and their total hours
+            <ReactTooltip id="totalProjectDetailTip" place="bottom" effect="solid">
+              Click this button to show or hide the list of all the projects and their total hours
               logged.
             </ReactTooltip>
           </div>
@@ -273,11 +275,11 @@ const TotalPeopleReport = props => {
         <Loading />
       ) : (
         <div>
-          <div>{totalPeopleInfo(allPeople)}</div>
-          <div>{showTotalPeopleTable ? totalPeopleTable(allPeople) : null}</div>
+          <div>{totalProjectInfo(allProject)}</div>
+          <div>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
         </div>
       )}
     </div>
   );
 };
-export default TotalPeopleReport;
+export default TotalProjectReport;
