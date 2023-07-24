@@ -335,7 +335,7 @@ class ReportsPage extends Component {
             </div>
             <div className="date-picker-container">
               <td id="task_startDate" className="date-picker-item">
-                <label for="task_startDate" className="date-picker-label">
+                <label htmlFor="task_startDate" className="date-picker-label">
                   {' '}
                   Start Date
                 </label>
@@ -348,7 +348,7 @@ class ReportsPage extends Component {
                 />
               </td>
               <td id="task_EndDate" className="date-picker-item">
-                <label for="task_EndDate" className="date-picker-label">
+                <label htmlFor="task_EndDate" className="date-picker-label">
                   {' '}
                   End Date
                 </label>

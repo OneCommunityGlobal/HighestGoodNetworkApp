@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges } from '../../actions/badgeManagement';
+import { boxStyle } from 'styles';
 
 const BadgeManagement = props => {
   const [activeTab, setActiveTab] = useState('1');
@@ -32,6 +33,7 @@ const BadgeManagement = props => {
             onClick={() => {
               toggle('1');
             }}
+            style={boxStyle}
           >
             Badge Assignment
           </NavLink>
@@ -42,6 +44,7 @@ const BadgeManagement = props => {
             onClick={() => {
               toggle('2');
             }}
+            style={boxStyle}
           >
             Badge Development
           </NavLink>

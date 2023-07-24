@@ -4,6 +4,7 @@ import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
 import { useEffect } from 'react';
+import { boxStyle } from 'styles';
 
 const Team = props => {
 
@@ -42,6 +43,7 @@ const Team = props => {
         onClick={e => {
           props.onMembersClick(props.teamId, props.name);
         }}
+        style={boxStyle}
       >
         <i className="fa fa-users" aria-hidden="true" />
       </button>
@@ -55,6 +57,7 @@ const Team = props => {
             onClick={() => {
               props.onEditTeam(props.name, props.teamId, props.active);
             }}
+            style={boxStyle}
           >
             Edit
           </button>
@@ -66,6 +69,7 @@ const Team = props => {
             onClick={() => {
               props.onDeleteClick(props.name, props.teamId, props.active);
             }}
+            style={boxStyle}
           >
             {DELETE}
           </button>

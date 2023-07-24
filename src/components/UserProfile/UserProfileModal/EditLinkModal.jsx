@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './EditLinkModal.css';
+import { boxStyle } from 'styles';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
@@ -103,7 +104,11 @@ const EditLinkModal = props => {
                       <div className="customTitle">Link URL</div>
                     </div>
                     {adminLinks?.map((link, index) => (
-                      <div key={index} style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                      <div
+                        key={index}
+                        style={{ display: 'flex', margin: '5px' }}
+                        className="link-fields"
+                      >
                         <input
                           className="customInput"
                           value={link.Name}
@@ -141,7 +146,7 @@ const EditLinkModal = props => {
                       <div className="customTitle">+ ADD LINK:</div>
                     </div>
 
-                    <div style={{ display: 'flex', margin: '5px'}} className="link-fields">
+                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
                       <input
                         className="customEdit"
                         id="linkName"
@@ -180,7 +185,11 @@ const EditLinkModal = props => {
                     <div className="customTitle">Link URL</div>
                   </div>
                   {personalLinks.map((link, index) => (
-                    <div key={index} style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <div
+                      key={index}
+                      style={{ display: 'flex', margin: '5px' }}
+                      className="link-fields"
+                    >
                       <input
                         className="customInput"
                         value={link.Name}
@@ -258,10 +267,11 @@ const EditLinkModal = props => {
               updateLink(personalLinks, adminLinks);
               closeModal();
             }}
+            style={boxStyle}
           >
             Update
           </Button>
-          <Button color="primary" onClick={closeModal}>
+          <Button color="primary" onClick={closeModal} style={boxStyle}>
             Cancel
           </Button>
         </ModalFooter>

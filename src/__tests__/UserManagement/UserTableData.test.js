@@ -83,8 +83,15 @@ describe('User Table Data', () => {
       expect(onActiveInactiveClick).toHaveBeenCalledTimes(1);
     });
     it('should render a modal once the user clicks the `reset password` button', () => {
-      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      if (userProfileMock.email !== "devadmin@hgn.net") {
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      }
+      else {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }))
+        expect(alertMock).toHaveBeenCalledTimes(1)
+      }
     });
   });
 });

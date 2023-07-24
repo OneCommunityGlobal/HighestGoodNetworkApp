@@ -175,7 +175,7 @@ body.dark .text--black{
   font-size: 1rem;
 }
 
-.disabled-bar{
+.disabled-bar {
   opacity: 0.4;
   filter: alpha(opacity=40); /* msie */
 }
