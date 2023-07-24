@@ -52,6 +52,7 @@ const TeamLocations = () => {
               <CircleMarker
                 center={[profile.location.coords.lat, profile.location.coords.lng]}
                 key={profile._id}
+                color={profile.isActive ? 'green' : 'gray'}
               >
                 <Popup>
                   <div>
