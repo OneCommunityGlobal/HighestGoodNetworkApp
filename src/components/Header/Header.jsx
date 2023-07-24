@@ -230,7 +230,7 @@ export const Header = props => {
                       {UPDATE_PASSWORD}
                     </DropdownItem>}
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to="/#" onClick={openModal}>
+                  <DropdownItem onClick={openModal}>
                     {LOGOUT}
                   </DropdownItem>
                 </DropdownMenu>
