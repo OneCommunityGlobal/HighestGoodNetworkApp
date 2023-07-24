@@ -551,9 +551,10 @@ function UserProfile(props) {
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
 
-  const canEditUserProfile = targetIsDevAdminUneditable ? false : canPutUserProfile || isUserSelf;
+  const canEditUserProfile = targetIsDevAdminUneditable ? false : canPutUserProfile;
 
-  const canEdit = userProfile.role === 'Owner' ? canAddDeleteEditOwners : canEditUserProfile;
+  const canEdit =
+    userProfile.role === 'Owner' ? canAddDeleteEditOwners : canEditUserProfile || isUserSelf;
 
   const customStyles = {
     control: (base, state) => ({
@@ -828,7 +829,7 @@ function UserProfile(props) {
                   setFormValid={setFormValid}
                   isUserSelf={isUserSelf}
                   canEdit={canEdit}
-                  canEditRole={canEdit}
+                  canEditRole={canEditUserProfile}
                   roles={roles}
                 />
               </TabPane>
