@@ -90,6 +90,36 @@ const mockAPIResponse = {
       jobTitle: 'Software Engineer',
       _id: 'id6',
     },
+    {
+      firstName: 'Test',
+      lastName: 'User',
+      location: {
+        raw: 'Sydney',
+        coords: {
+          lat: -33.8698439,
+          lng: 151.2082848
+        },
+        country: 'Australia',
+      },
+      isActive: true,
+      jobTitle: 'Software Engineer',
+      _id: 'id7',
+    },
+    {
+      firstName: 'Test',
+      lastName: 'User',
+      location: {
+        raw: 'Antarctica',
+        coords: {
+          lat: -79.4063075,
+          lng: 0.3149312
+        },
+        country: null,
+      },
+      isActive: true,
+      jobTitle: 'Software Engineer',
+      _id: 'id8',
+    }
   ],
 };
 
