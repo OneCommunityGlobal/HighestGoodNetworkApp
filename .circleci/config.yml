@@ -46,7 +46,7 @@ jobs:
           command: npm install
       - run:
           name: Build the React client
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true && npm run build
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true && npm run build
       - run:
           name: Create ZIP archive of build directory
           command: zip -r build.zip build
