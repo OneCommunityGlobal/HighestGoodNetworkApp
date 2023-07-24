@@ -32,7 +32,7 @@ const ProjectTable = props => {
   }
 
   return (
-    <table className="table table-bordered table-responsive-sm">
+    <table className="table table-bordered">
       <thead>
         <tr>
           <th scope="col" id="projects__order">

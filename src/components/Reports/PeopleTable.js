@@ -16,7 +16,8 @@ const PeopleTable = props => {
           </th>
           <td>
             <Link to={`/peoplereport/${person._id}`} personId={person._id}>
-              {person.firstName} {person.lastName.length > 15 ? person.lastName.slice(0, 15) + '...' : person.lastName}
+              {person.firstName}{' '}
+              {person.lastName.length > 15 ? person.lastName.slice(0, 15) + '...' : person.lastName}
             </Link>
           </td>
           <td
@@ -35,8 +36,12 @@ const PeopleTable = props => {
               </div>
             )}
           </td>
-          <td className="hide-mobile-start-end">{moment(person.createdDate).format('MM/DD/YYYY')}</td>
-          <td className="hide-mobile-start-end">{moment(person.endDate).format('MM/DD/YYYY') || 'N/A'}</td>
+          <td className="hide-mobile-start-end">
+            {moment(person.createdDate).format('MM/DD/YYYY')}
+          </td>
+          <td className="hide-mobile-start-end">
+            {moment(person.endDate).format('MM/DD/YYYY') || 'N/A'}
+          </td>
           {/* <td>
           {person.blueSquares||"N/A"}
         </td> */}
@@ -45,7 +50,7 @@ const PeopleTable = props => {
   }
 
   return (
-    <table className="table table-bordered table-responsive-sm">
+    <table className="table table-bordered">
       <thead>
         <tr>
           <th scope="col" id="projects__order">
@@ -55,8 +60,12 @@ const PeopleTable = props => {
           <th scope="col" id="projects__active">
             Active
           </th>
-          <th className="hide-mobile-start-end" scope="col">Start Date</th>
-          <th className="hide-mobile-start-end" scope="col">End Date</th>
+          <th className="hide-mobile-start-end" scope="col">
+            Start Date
+          </th>
+          <th className="hide-mobile-start-end" scope="col">
+            End Date
+          </th>
           {/* <th scope="col">Blue Squares</th> */}
         </tr>
       </thead>

@@ -70,3 +70,9 @@
 .input-wrapper + .input-wrapper {
   margin-left: 1rem;
 }
+
+.active-inactive-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
