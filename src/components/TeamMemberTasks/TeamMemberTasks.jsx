@@ -16,9 +16,10 @@ import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
-import { hrsFilterBtnRed, hrsFilterBtnBlue, skyblue} from 'constants/colors';
-import { getTeamMembers} from '../../actions/allTeamsAction';
 
+import { hrsFilterBtnRed, hrsFilterBtnBlue, skyblue} from 'constants/colors';
+import { getTeamMembers, getAllUserTeams} from '../../actions/allTeamsAction';
+import { getUserTeamMembers } from '../../actions/team';
 
 
 const TeamMemberTasks = props => {
@@ -90,6 +91,7 @@ const TeamMemberTasks = props => {
         setUserRole(props.auth.user.role);
       }
       setShouldRun(true);
+ 
     };
     initialFetching();
   }, []);
@@ -121,7 +123,7 @@ const TeamMemberTasks = props => {
   },[usersWithTasks])
 
   useEffect(() => {  
-    submitTasks();
+    //submitTasks();
     if (userId !== props.auth.user.userid) {
       dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
       const currentUserRole = getUserRole(userId)
@@ -136,7 +138,9 @@ const TeamMemberTasks = props => {
   }, [updatedTasks]);
 
   const closeMarkAsDone = () => {
+    setClickedToShowModal(false);
     setMarkAsDoneModal(false);
+    setCurrentUserId('');
   };
 
   const onUpdateTask = (taskId, updatedTask) => {
@@ -398,7 +402,7 @@ const renderTeamsList = async () => {
         getMyTeam();
       }
     }
-  }
+  };
 
   return (
     <div className="container team-member-tasks">
@@ -533,8 +537,10 @@ const renderTeamsList = async () => {
           </thead>
 
           <tbody>
-            {isLoading || isLoadingmember ?  (
+
+            {isLoading ? isLoadingmember (
               <SkeletonLoading template="TeamMemberTasks" />
+
             ) : (
               teamList.map(user => {
                 if (!isTimeLogActive) {
@@ -603,4 +609,3 @@ export default connect(mapStateToProps, {
   getUserProfile,
   fetchAllManagingTeams,
 })(TeamMemberTasks);
-

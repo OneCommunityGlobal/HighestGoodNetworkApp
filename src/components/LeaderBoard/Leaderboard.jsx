@@ -44,6 +44,8 @@ const LeaderBoard = ({
   dispatch
 }) => {
 
+
+
   const [myTeamData,setmyTeamData] = useState(undefined)
   const [leaderboarddata,setleaderboarddata] = useState([]);
   const [showLeaderboard, setShowLeaderboard] = useState([]);
@@ -60,8 +62,11 @@ const LeaderBoard = ({
 
   //get leaderboard data
   const getdata = async ()=>{
-
+    // const url = ENDPOINTS.LEADER_BOARD(userId);
+    // const res = await httpService.get(url);
+    // let leaderBoardData = res.data
     let leaderBoardData = await getLeaderboardData(userId)(dispatch)
+
     if (loggedInUser.role !== 'Administrator' && loggedInUser.role !== 'Owner' && loggedInUser.role !== 'Core Team') {
       leaderBoardData = leaderBoardData.filter(element => {
         return element.weeklycommittedHours > 0 || loggedInUser.userid === element.personId;
@@ -72,7 +77,7 @@ const LeaderBoard = ({
       let maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
       leaderBoardData = leaderBoardData.map(element => {
         element.didMeetWeeklyCommitment =
-        element.totaltangibletime_hrs >= element.weeklycommittedHours ? true : false;
+        element.totaltangibletime_hrs >= element.weeklycommittedHours;
         element.weeklycommitted = round(element.weeklycommittedHours, 2);
         element.tangibletime = round(element.totaltangibletime_hrs, 2);
         element.intangibletime = round(element.totalintangibletime_hrs, 2);
@@ -139,7 +144,7 @@ const LeaderBoard = ({
     }
     const filteredlist = leaderboarddata.filter(user => {
       for(let i = 0; i < member.length; i++){
-        if(user.personId == member[i]._id){
+        if(user.personId === member[i]._id){
           return user;
         }
       }
