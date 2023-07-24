@@ -28,45 +28,53 @@ const TeamLocations = () => {
     };
   }, []);
 
+  // Get an array of all users' non-null countries (some locations may not be associated with a country)
+  const countries = userProfiles.map(user => user.location.country).filter(country => country);
+  // Get the number of unique countries
+  const totalUniqueCountries = [...new Set(countries)].length;
+
   return (
-    <MapContainer
-      center={[51.505, -0.09]}
-      maxBounds={[
-        [-90, -225],
-        [90, 225],
-      ]}
-      maxBoundsViscosity={1.0}
-      zoom={3}
-      scrollWheelZoom={true}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        minZoom={2}
-        maxZoom={15}
-      />
-      <MarkerClusterGroup chunkedLoading>
-        {userProfiles.map(profile => {
-          if (profile.location.raw) {
-            return (
-              <CircleMarker
-                center={[profile.location.coords.lat, profile.location.coords.lng]}
-                key={profile._id}
-                color={profile.isActive ? 'green' : 'gray'}
-              >
-                <Popup>
-                  <div>
-                    <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
-                    <div>{`Title: ${profile.jobTitle}`}</div>
-                    <div>{`Location: ${profile.location.raw}`}</div>
-                  </div>
-                </Popup>
-              </CircleMarker>
-            );
-          }
-        })}
-      </MarkerClusterGroup>
-    </MapContainer>
+    <>
+      <div>Total Countries: {totalUniqueCountries}</div>
+      <MapContainer
+        center={[51.505, -0.09]}
+        maxBounds={[
+          [-90, -225],
+          [90, 225],
+        ]}
+        maxBoundsViscosity={1.0}
+        zoom={3}
+        scrollWheelZoom={true}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          minZoom={2}
+          maxZoom={15}
+        />
+        <MarkerClusterGroup chunkedLoading>
+          {userProfiles.map(profile => {
+            if (profile.location.raw) {
+              return (
+                <CircleMarker
+                  center={[profile.location.coords.lat, profile.location.coords.lng]}
+                  key={profile._id}
+                  color={profile.isActive ? 'green' : 'gray'}
+                >
+                  <Popup>
+                    <div>
+                      <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
+                      <div>{`Title: ${profile.jobTitle}`}</div>
+                      <div>{`Location: ${profile.location.raw}`}</div>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              );
+            }
+          })}
+        </MarkerClusterGroup>
+      </MapContainer>
+    </>
   );
 };
 
