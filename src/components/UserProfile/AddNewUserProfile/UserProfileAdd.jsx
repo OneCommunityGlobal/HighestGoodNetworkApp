@@ -543,7 +543,7 @@ class AddUserProfile extends Component {
     } = that.state.userProfile;
 
     const userData = {
-      password: '123Welcome!',
+      password: process.env.REACT_APP_DEF_PWD,
       role: role,
       firstName: firstName,
       lastName: lastName,
