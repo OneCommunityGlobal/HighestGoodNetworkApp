@@ -82,9 +82,6 @@ export const ENDPOINTS = {
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
 
-  // INFOS: () => `${APIEndpoint}/infos`,
-  // INFOS_BY_ID: infoId => `${APIEndpoint}/infos/${infoId}`,
-
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
   OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
 

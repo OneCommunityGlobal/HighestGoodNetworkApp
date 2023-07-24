@@ -12,7 +12,7 @@ import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
-import Infos from 'components/UserProfile/EditableModal/Infos';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
@@ -450,9 +450,8 @@ const BasicInformationTab = props => {
             )}
             </Col>
             {(CanRead) &&( 
-            <Infos
-              CanEdit={CanEdit}
-              CanRead={CanRead}
+            <EditableInfoModal
+              role={userProfile.role}
               areaName={'roleInfo'}
               fontSize={24}
              />

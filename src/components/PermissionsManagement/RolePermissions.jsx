@@ -12,6 +12,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
@@ -229,18 +230,14 @@ function RolePermissions(props) {
               {permission}
             </p>
             {permissions.includes(permission) ? (
-              <div>
-                <i
-                  data-toggle="tooltip"
-                  data-placement="center"
-                  title="Click for more information"
-                  style={{ fontSize: 24, cursor: 'pointer' }}
-                  aria-hidden="true"
-                  className="fa fa-info-circle"
-                  onClick={() => {
-                    handleModalOpen(permission);
-                  }}
-                />{' '}
+              <div style={{display:'flex'}}>
+                <div style={{paddingRight: '1px'}}>
+                  <EditableInfoModal
+                    role={props?.userRole}
+                    areaName={`${roleName}`+`${permission}`+'Info'}
+                    fontSize={24} />{' '}
+                </div>
+                {' '}
                 &nbsp;&nbsp;
                 <Button
                   color="danger"

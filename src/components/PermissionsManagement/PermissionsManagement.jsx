@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader, Row, Col } from 'reactstrap';
 import CreateNewRolePopup from './NewRolePopUp';
 import './PermissionsManagement.css';
 import { connect,useSelector } from 'react-redux';
@@ -10,13 +10,12 @@ import { getAllUserProfile } from 'actions/userManagement';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
-import Infos from 'components/UserProfile/EditableModal/Infos';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
-  const CanEdit = userProfile?.role==='Owner'?true:false;
-  const CanRead= userProfile?.role !=='Volunteer'? true:false;
+
   
   let history = useHistory();
   const togglePopUpNewRole = () => {
@@ -47,21 +46,20 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
             let roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
               <>
-              <button
-                onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
-                key={roleName}
-                className="role-name"
-              >
-                {roleName}
-                <div className='infos'>
-                <Infos 
-                CanEdit={CanEdit}
-                CanRead={CanRead}
-                areaName={`${roleName}`+'Info'}
-                fontSize={15}
-                /> 
-                </div>
-              </button> 
+                <button
+                  onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
+                  key={roleName}
+                  className="role-name"
+                >
+                  <div className='center-item'>{roleName}</div>
+                  <div className='infos'>
+                    <EditableInfoModal
+                    role={userProfile.role}
+                    areaName={`${roleName}`+'Info'}
+                    fontSize={18}
+                    /> 
+                  </div>
+                </button> 
               </>           
             )})};
         </div>

@@ -95,21 +95,42 @@
   border-radius: 8px;
 }
 
-.role-name {
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0;
-  padding: 0.5rem 0;
+.role-name{
+  margin: 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   font-size: 1.2rem;
   font-weight: 500;
-  text-align: center;
+  cursor: pointer; 
+  display: flex;
+  align-items: center;
 }
 
-.infos {
-  padding-left: 1rem;
+.center-item {
+  text-align: center;
+  flex-grow: 1;
 }
+
+.info{
+  margin-left: auto;
+  text-align: center;
+  align-items: center;
+  background-color: #1d62f0;
+}
+
+
+/* 
+.role-row {
+  margin: 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer; 
+  align-items: center;
+  text-align: center;
+} */
 
 
 .role-name:hover {

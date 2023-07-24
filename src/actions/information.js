@@ -18,6 +18,7 @@ export const getInfoCollections = () => {
 
 // Add new info collection
 export const addInfoCollection = (newInfo) => {
+  
   const url = ENDPOINTS.INFO_COLLECTIONS;
   return async (dispatch) => {
     try {

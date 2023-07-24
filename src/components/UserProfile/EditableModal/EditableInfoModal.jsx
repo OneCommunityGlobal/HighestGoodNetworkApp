@@ -6,15 +6,45 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Row,
+  Col,
  } from 'reactstrap';
+ import Select from 'react-select'
  import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection} from '../../../actions/information';
 import { getUserProfile } from '../../../actions/userProfile';
+import styles from './EditableInfoModal.css';
+
+// New RichTextEditor component
+const RichTextEditor = ({ disabled, value, onEditorChange }) => (
+  <Editor
+    init={{
+      menubar: false,
+      placeholder: 'Please input infos',
+      plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+      toolbar: 'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+      branding: false,
+      min_height: 180,
+      max_height: 500,
+      autoresize_bottom_margin: 1,
+    }}
+    disabled={disabled}
+    value={value}
+    onEditorChange={onEditorChange}
+  />
+);
+
+const options = [
+  { value: '0', label: 'All (default)' },
+  { value: '1', label: 'Admin + Owner User Classes Only' },
+  { value: '2', label: 'Everyone But Volunteer Class' }
+]
 
 export class EditableInfoModal extends Component {
   state = {
+    editableModalOpen:false,
     infoElements: [],
     fetchError: null,
     loading: true,
@@ -23,29 +53,42 @@ export class EditableInfoModal extends Component {
     CanEdit: false,
     infoName:'',
     infoContent:'',
+    visibility: '',
+    fontSize: 24,
   };
+  
   
   async componentDidMount() {
     await this.props.getInfoCollections();
-    const {currentUser, infoCollections} = this.props;
+    const {infoCollections, role, areaName, fontSize} = this.props;
     let content = '';
+    let visible = '0'
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((index) => {
-        if (index.infoName === this.props.areaName) {
+        if (index.infoName === areaName) {
           content = index.infoContent;
+          visible = index.visibility;
         }
       });
-    }    
+    } 
+    // console.log('onf', infoCollections)
+    content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
+    let CanRead = (visible === '0') || 
+                    (visible === '1' && (role==='Owner' || role==='Admin')) ||
+                    (visible === '2' && (role !== 'Volunteer'));
+    let CanEdit = role === 'Owner';
 
     this.setState({
       infoElements: [
         ...infoCollections],
       fetchError: this.props.fetchError,
       loading: this.props.loading,
-      infoName: this.props.areaName,
+      infoName: areaName,
       infoContent: content || '',
-      CanRead: this.props.CanRead,
-      CanEdit: this.props.CanEdit,
+      visibility: visible,
+      CanRead,
+      CanEdit,
+      fontSize: fontSize,
     });
   };
 
@@ -56,6 +99,10 @@ export class EditableInfoModal extends Component {
       return null;
     }
   }
+  toggleEditableModal = (open) => {
+    this.setState({editableModalOpen:!open});
+  }
+
   handleEdit = () => {
     const edit = this.state.editing;
     this.setState({editing:!edit});
@@ -85,23 +132,37 @@ export class EditableInfoModal extends Component {
     let newInfoElements = [...this.state.infoElements]
     let findIndex = false;
     let foundInfoId;
-    newInfoElements.forEach((index) => {
+
+    newInfoElements = newInfoElements.map((index) => {
       if (index.infoName === this.state.infoName) {
-        index.infoContent=this.state.infoContent;
         findIndex = true;
-        foundInfoId = index._id
+        foundInfoId = index._id;
+        return { ...index, infoContent: this.state.infoContent };
       }
+      return index;
     });
+
+    this.setState({ infoElements: newInfoElements });
+
     return {
       findIndex,
-      infoId: foundInfoId
+      infoId: foundInfoId,
     };
   }
+  
+  handleSelectChange = (selectedOption) => {
+    this.setState({visibility:selectedOption.value});
+  };
   
   
     // Updates user profile and weekly summaries 
   updateUserData = async () => {
+    try {
       await this.props.getInfoCollections();
+    } catch (error) {
+      console.error(error);
+      // Handle error appropriately here
+    }
   }
 
   mainSaveHandler = async () => {
@@ -109,9 +170,11 @@ export class EditableInfoModal extends Component {
     const newInfo = {
       infoName: this.state.infoName,
       infoContent: this.state.infoContent,
+      visibility: this.state.visibility,
     }
     let saveResult;
     if (!updatedInfo) {
+      console.log('update')
       saveResult = await this.props.addInfoCollection(newInfo);
     }else{
       saveResult = await this.props.updateInfoCollection(infoId, newInfo);
@@ -125,6 +188,7 @@ export class EditableInfoModal extends Component {
   
 
   handleSave = async event => {
+    this.handleEdit();
     if (event) {
       event.preventDefault();
     }
@@ -138,43 +202,77 @@ export class EditableInfoModal extends Component {
       infoElements,
       infoContent,
       infoName,
+      visibility,
+      editableModalOpen,
+      fontSize,
+      CanRead,
+      CanEdit,
      } = this.state;
+
     return (
-        <Modal isOpen={this.props.isOpen} toggle={this.props.toggle} size="lg">
-        <ModalHeader>Welcome to Information Page!</ModalHeader>
-        <ModalBody>
-        <Editor
-        init={{
-          menubar: false,
-          placeholder:
-          'Please input infos',
-          plugins:
-          'advlist autolink autoresize lists link charmap table paste help wordcount',
-          toolbar:
-          'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-          branding: false,
-          min_height: 180,
-          max_height: 500,
-          autoresize_bottom_margin: 1,
+    (CanRead)&&(
+      <div>
+        <i
+          data-toggle="tooltip"
+          data-placement="right"
+          title="Click for user class information"
+          style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '10px'}}
+          aria-hidden="true"
+          className="fa fa-info-circle"
+          onMouseOver={() => {
+            this.toggleEditableModal(); // open modal
           }}
-          disabled={!this.state.editing}
-          value={this.state.infoContent}
-          onEditorChange={this.handleInputChange}
-          />
-        </ModalBody>
-        <ModalFooter>
-        <Button onClick={this.props.toggle}>Close</Button>
-        {(this.state.CanEdit && !this.state.editing)&&
-        (<Button onClick={this.handleEdit}>Edit</Button>)
-
-        }
-        {(this.state.CanEdit&&this.state.editing)&&
-        (<Button onClick={this.handleSave}>Save</Button>)
-        }
-        </ModalFooter>
-        </Modal>
-        );
-
+        />
+        {editableModalOpen && (
+          <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg">
+          <ModalHeader>Welcome to Information Page!</ModalHeader>
+          <ModalBody>
+          {this.state.editing
+                ? <RichTextEditor
+                    disabled={!this.state.editing}
+                    value={infoContent}
+                    onEditorChange={this.handleInputChange}
+                  />
+                : <div 
+                style={{ paddingLeft: '20px' }} 
+                dangerouslySetInnerHTML={{ __html: infoContent }} />
+              }
+          </ModalBody>
+          <ModalFooter>
+          <Row>
+            <Col md={{ size: 5, offset:4}}>
+            {(this.state.editing)&&
+            (
+                <Select 
+                  options={options} 
+                  onChange={this.handleSelectChange}
+                  value={options.find(option => option.value === this.state.visibility)} 
+                  />
+            )
+            }
+             </Col>
+          <Col 
+            md={{ size: 3}}
+            >
+            {(CanEdit && !this.state.editing)&&
+            (<Button 
+              className='editBtn'
+              onClick={this.handleEdit}>Edit</Button>)
+  
+            }
+            {(CanEdit&&this.state.editing)&&
+            (<Button
+              className='saveBtn' 
+              onClick={this.handleSave}>Save</Button>)
+            }
+             <Button onClick={this.toggleEditableModal}>Close</Button>
+          </Col>
+          </Row>
+          </ModalFooter>
+          </Modal>
+        )}
+    </div>)   
+    )
     };
   }
 

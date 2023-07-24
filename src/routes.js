@@ -5,7 +5,7 @@ import Timelog from './components/Timelog';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
-import Infos from 'components/UserProfile/EditableModal/Infos';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import Dashboard from './components/Dashboard';
 import { Logout } from './components/Logout/Logout';
 import Login from './components/Login';
@@ -142,7 +142,7 @@ export default (
 
       <Route path="/login" component={Login} />
       <Route path="/forgotpassword" component={ForgotPassword} />
-      <ProtectedRoute path="/infoCollections" component={Infos} />
+      <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
       <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
       <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
       <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />

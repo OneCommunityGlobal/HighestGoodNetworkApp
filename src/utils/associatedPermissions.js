@@ -45,7 +45,7 @@ const associatedPermissions =
       dataIsTangibleTimelog: [''],
       addDeleteEditOwners:[''],
       toggleSubmitForm: [''],
-      seePermissionsManagement: ['']
+      seePermissionsManagement: [''],
     }
 
 export const commonBackEndPermissions = ['infringementAuthorizer','getTimeZoneAPIKey','checkLeadTeamOfXplus']

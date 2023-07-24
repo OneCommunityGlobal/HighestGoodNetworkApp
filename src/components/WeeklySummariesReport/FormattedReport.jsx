@@ -10,11 +10,9 @@ import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import Infos from 'components/UserProfile/EditableModal/Infos';
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit, CanEdit, CanRead}) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, role}) => {
   const emails = [];
   //const bioCanEdit = role === 'Owner' || role === 'Administrator';
   summaries.forEach(summary => {
@@ -212,7 +210,6 @@ const getWeeklySummaryMessage = summary => {
   };
 
   const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
-
   return (
     <>
       {alphabetize(summaries).map((summary, index) => {
@@ -233,15 +230,11 @@ const getWeeklySummaryMessage = summary => {
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
-                {(CanRead)&&(
-                  <div className='reportInfo'>
-                    <Infos 
-                    CanEdit={CanEdit}
-                    CanRead={CanRead}
-                    areaName={`${summary.firstName+summary.lastName}`+'ReportInfo'+`${index}`}
-                    fontSize={21}/>
-                  </div>
-                )}
+              {role!=='Volunteer' &&(
+                <div className='role-info'>
+                 <p>({role})</p>
+                </div>
+              )}
               {showStar(hoursLogged, summary.weeklycommittedHours) && (
                 <i
                   className="fa fa-star"

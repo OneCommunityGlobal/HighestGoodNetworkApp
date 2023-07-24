@@ -21,7 +21,6 @@
 .google-doc-icon {
   height: 20px;
   margin-left: 10px;
-  margin-bottom: 6px;
 }
 
 .bio-toggle {
@@ -30,8 +29,4 @@
 
 .name-info{
   display: flex;
-  
-}
-.reportInfo{
-  padding-left: 2px;
 }
