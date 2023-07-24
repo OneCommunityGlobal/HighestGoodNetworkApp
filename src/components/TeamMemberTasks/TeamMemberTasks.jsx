@@ -86,7 +86,7 @@ const TeamMemberTasks = props => {
           });
       } else {
         getUserProfile(userId)(dispatch)
-        await dispatch(fetchTeamMembersTask(userId, null));
+         dispatch(fetchTeamMembersTask(userId, null));
         setUserRole(props.auth.user.role);
       }
       setShouldRun(true);
@@ -235,7 +235,7 @@ const TeamMemberTasks = props => {
     });
 
     //3. set three array of time logs
-    setSeventyTwoHours([...newList]);
+    //setSeventyTwoHours([...newList]);
     setFortyEightHours([...fortyEightList]);
     setTwentyFourHours([...twentyFourList]);
 
