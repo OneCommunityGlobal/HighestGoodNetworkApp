@@ -5,8 +5,6 @@ import './reviewButton.css';
 import { boxStyle } from 'styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import httpService from '../../services/httpService';
-import { ApiEndpoint } from 'utils/URL';
 
 const ReviewButton = ({
   user,
@@ -55,16 +53,6 @@ const ReviewButton = ({
     setModal(false);
   };
 
-  const sendReviewReq = event => {
-    event.preventDefault();
-    var data = {};
-    data['myUserId'] = myUserId;
-    data['name'] = user.name;
-    data['taskName'] = task.taskName;
-
-    httpService.post(`${ApiEndpoint}/dashboard/reviewreq/${myUserId}`, data);
-  };
-
   return (
     <>
       <Modal isOpen={modal} toggle={toggleModal}>
@@ -78,10 +66,9 @@ const ReviewButton = ({
         </ModalBody>
         <ModalFooter>
           <Button
-            onClick={(e) => {
+            onClick={() => {
               reviewStatus == "Unsubmitted"
-              ? (updReviewStat("Submitted"),
-                sendReviewReq(e))
+              ? updReviewStat("Submitted")
               : updReviewStat("Reviewed");
             }}
             color="primary"
