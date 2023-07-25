@@ -33,7 +33,7 @@ const TeamLocations = () => {
   // Get the number of unique countries
   const totalUniqueCountries = [...new Set(countries)].length;
   // Filters out users that don't have locations specified
-  const usersWithValidLocations = userProfiles.filter(profile => profile.location.raw);
+  const usersWithValidLocations = userProfiles.filter(profile => profile.location.userProvided);
 
   return (
     <>
@@ -66,7 +66,7 @@ const TeamLocations = () => {
                   <div>
                     <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
                     <div>{`Title: ${profile.jobTitle}`}</div>
-                    <div>{`Location: ${profile.location.raw}`}</div>
+                    <div>{`Location: ${profile.location.userProvided}`}</div>
                   </div>
                 </Popup>
               </CircleMarker>
