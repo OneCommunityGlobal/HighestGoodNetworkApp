@@ -96,7 +96,6 @@ class AddUserProfile extends Component {
     this.onCreateNewUser();
   }
 
-  
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
@@ -270,7 +269,7 @@ class AddUserProfile extends Component {
                     <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
-                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile}/>
+                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
                   </Col>
                 </Row>
                 <Row className="user-add-row">
