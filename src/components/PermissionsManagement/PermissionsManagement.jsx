@@ -16,7 +16,6 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
-  
   let history = useHistory();
   const togglePopUpNewRole = () => {
     setIsNewRolePopUpOpen(previousState => !previousState);
@@ -36,6 +35,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
   };
 
   const roleNames = roles?.map(role => role.roleName);
+  const role = userProfile?.role;
 
   return (
     <div className="permissions-management">
@@ -45,22 +45,22 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
           {roleNames?.map(roleName => {
             let roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
-              <>
+              <div className='role-name'>
                 <button
                   onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                   key={roleName}
-                  className="role-name"
+                  className="role-btn"
                 >
-                  <div className='center-item'>{roleName}</div>
+                  {roleName}
+                 </button> 
                   <div className='infos'>
                     <EditableInfoModal
-                    role={userProfile.role}
+                    role={role}
                     areaName={`${roleName}`+'Info'}
                     fontSize={18}
                     /> 
                   </div>
-                </button> 
-              </>           
+              </div>           
             )})};
         </div>
         {userProfile?.role === 'Owner' && (

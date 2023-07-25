@@ -251,7 +251,7 @@ function RolePermissions(props) {
               </div>
             ) : (
               <div style={{display:'flex'}}>
-                <div style={{paddingRight: '1px'}}>
+                <div style={{paddingRight: '27px'}}>
                   <EditableInfoModal
                     role={props?.userRole}
                     areaName={`${permission}`+'Info'}

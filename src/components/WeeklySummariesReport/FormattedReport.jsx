@@ -11,8 +11,9 @@ import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit}) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, role}) => {
   const emails = [];
   //const bioCanEdit = role === 'Owner' || role === 'Administrator';
   summaries.forEach(summary => {

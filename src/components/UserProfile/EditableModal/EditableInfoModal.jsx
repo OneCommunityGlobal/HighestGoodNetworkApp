@@ -14,7 +14,6 @@ import {
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection} from '../../../actions/information';
-import { getUserProfile } from '../../../actions/userProfile';
 import styles from './EditableInfoModal.css';
 
 // New RichTextEditor component
@@ -73,17 +72,15 @@ export class EditableInfoModal extends Component {
     } 
     content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
     let CanRead = (visible === '0') || 
-                    (visible === '1' && (role==='Owner' || role==='Admin')) ||
+                    (visible === '1' && (role==='Owner' || role==='Administrator')) ||
                     (visible === '2' && (role !== 'Volunteer'));
     let CanEdit = role === 'Owner';
-
     this.setState({
-      infoElements: [
-        ...infoCollections],
+      infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
       fetchError: this.props.fetchError,
       loading: this.props.loading,
       infoName: areaName,
-      infoContent: content || '',
+      infoContent: content || 'Please input information!',
       visibility: visible,
       CanRead,
       CanEdit,
@@ -104,8 +101,9 @@ export class EditableInfoModal extends Component {
   }
 
   handleEdit = (edit) => {
-    // const editing = this.state.editing;
-    this.setState({editing:edit});
+    if(this.state.CanEdit){
+      this.setState({editing:edit});
+    }
   }
 
   handleSaveSuccess = async () => {
@@ -278,9 +276,6 @@ export class EditableInfoModal extends Component {
   }
 
 EditableInfoModal.propTypes = {
-  currentUser: PropTypes.shape({
-    userid: PropTypes.string.isRequired,
-  }).isRequired,
   fetchError: PropTypes.any,
   getInfoCollections:PropTypes.func.isRequired,
   addInfoCollection:PropTypes.func.isRequired,
@@ -290,11 +285,10 @@ EditableInfoModal.propTypes = {
 };
 
   
-const mapStateToProps = ({ auth, infoCollections }) => ({
-  currentUser: auth.user,
-  loading: infoCollections.loading,
-  fetchError: infoCollections.error,
-  infoCollections: infoCollections.infos,
+const mapStateToProps = ({infoCollections }) => ({
+  loading: infoCollections?.loading,
+  fetchError: infoCollections?.error,
+  infoCollections: infoCollections?.infos,
 });
   
 const mapDispatchToProps = dispatch => {

@@ -106,31 +106,16 @@
   align-items: center;
 }
 
-.center-item {
+.role-btn {
   text-align: center;
   flex-grow: 1;
 }
 
-.info{
+.infos{
   margin-left: auto;
   text-align: center;
   align-items: center;
-  background-color: #1d62f0;
 }
-
-
-/* 
-.role-row {
-  margin: 0;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  font-size: 1.3rem;
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer; 
-  align-items: center;
-  text-align: center;
-} */
 
 
 .role-name:hover {

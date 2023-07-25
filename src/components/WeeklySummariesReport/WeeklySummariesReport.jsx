@@ -154,7 +154,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={0}
                       bioCanEdit={bioEditPermission}
-                      roles={roles}
+                      role={role}
                     />
                   </Col>
                 </Row>
@@ -179,7 +179,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={1}
                       bioCanEdit={bioEditPermission}
-                      roles={roles}
+                      role={role}
                     />
                   </Col>
                 </Row>
@@ -195,7 +195,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={2}
                       weekDates={this.getWeekDates(2)}
-                      roles={roles}
+                      role={role}
                     />
                   </Col>
                 </Row>
@@ -205,7 +205,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={2}
                       bioCanEdit={bioEditPermission}
-                      roles={roles}
+                      role={role}
                     />
                   </Col>
                 </Row>
@@ -230,7 +230,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={3}
                       bioCanEdit={bioEditPermission}
-                      roles={roles}
+                      role={role}
                     />
                   </Col>
                 </Row>
