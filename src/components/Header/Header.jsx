@@ -43,7 +43,6 @@ import './Header.css';
 import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
-
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
@@ -225,12 +224,13 @@ export const Header = props => {
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
-                  {!denyPermissionToSelfUpdateDevAdminDetails(props.userProfile.email, true) &&
+                  {!denyPermissionToSelfUpdateDevAdminDetails(props.userProfile.email, true) && (
                     <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
                       {UPDATE_PASSWORD}
-                    </DropdownItem>}
+                    </DropdownItem>
+                  )}
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to="/#" onClick={openModal}>
+                  <DropdownItem onClick={openModal}>
                     {LOGOUT}
                   </DropdownItem>
                 </DropdownMenu>
