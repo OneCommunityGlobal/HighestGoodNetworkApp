@@ -30,7 +30,6 @@ const textColors = {
 const FormattedReport = ({ summaries, weekIndex, bioCanEdit, allRoleInfo}) => {
   const emails = [];
   //const bioCanEdit = role === 'Owner' || role === 'Administrator';
-  console.log(allRoleInfo,'for')
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
       emails.push(summary.email);
