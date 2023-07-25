@@ -219,7 +219,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={'summary-' + index}
           >
-            <div>
+            <div style={{display:'flex'}}>
               <b>Name: </b>
               <Link to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
@@ -229,7 +229,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
               {summary.role!=='Volunteer' &&(
-                <div className='role-info' style={{paddingLeft:"5px"}}>
+                <div className='role-info'style={{paddingLeft:"5px"}}>
                  <p>({summary.role})</p>
                 </div>
               )}
