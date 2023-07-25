@@ -234,7 +234,7 @@ const EditTaskModal = props => {
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
-      oldTask
+      oldTask,
     );
     await props.fetchAllTasks(props.wbsId);
 

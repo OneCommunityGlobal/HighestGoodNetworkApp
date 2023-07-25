@@ -550,8 +550,8 @@ class UserProfileEdit extends Component {
                   zIndex: '9',
                 }}
               >
-                Reminder: You must click &quot;Save Changes&quot; at the bottom of this page. If you don&apos;t,
-                changes to your profile will not be saved.
+                Reminder: You must click &quot;Save Changes&quot; at the bottom of this page. If you
+                don&apos;t, changes to your profile will not be saved.
               </h6>
             )}
           </Sticky>
