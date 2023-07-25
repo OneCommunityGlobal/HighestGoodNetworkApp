@@ -44,6 +44,27 @@ export const updateInfoCollection = (infoId, updatedInfo) => {
   };
 };
 
+// Delete info collection by id
+export const deleteInfoCollectionById = (infoId) => {
+  const url = ENDPOINTS.INFO_COLLECTION(infoId);
+  return async (dispatch) => {
+    try {
+      const response = await axios.delete(url);
+      dispatch(deleteInfoSuccess(infoId));
+      return response.status;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
+
+// Action creator
+export const deleteInfoSuccess = infoId => ({
+  type: actions.DELETE_INFO_SUCCESS,
+  payload: infoId,
+});
+
+
 // Actions creators
 export const fetchInfosSuccess = infoCollectionsData => ({
   type: actions.FETCH_INFOS_SUCCESS,
@@ -54,4 +75,6 @@ export const updateInfoSuccess = updatedInfo => ({
   type: actions.UPDATE_INFO_SUCCESS,
   payload: updatedInfo,
 });
+
+
 

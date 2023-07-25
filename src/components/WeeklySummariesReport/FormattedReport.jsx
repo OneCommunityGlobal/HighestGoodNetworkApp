@@ -10,8 +10,9 @@ import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
+
 
 const textColors = {
   Default: '#000000',
@@ -26,10 +27,10 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, allRoleInfo}) => {
   const emails = [];
   //const bioCanEdit = role === 'Owner' || role === 'Administrator';
-
+  console.log(allRoleInfo,'for')
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
       emails.push(summary.email);
@@ -229,10 +230,15 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
               {summary.role!=='Volunteer' &&(
-                <div className='role-info'style={{paddingLeft:"5px"}}>
-                 <p>({summary.role})</p>
-                </div>
-              )}
+                <>
+                  <div className='role-info'style={{paddingLeft:"5px"}}>
+                  <p>({summary.role})</p>
+                  </div>
+                  <div>
+                    <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />
+                  </div>
+                </>
+                )}
               {showStar(hoursLogged, summary.weeklycommittedHours) && (
                 <i
                   className="fa fa-star"

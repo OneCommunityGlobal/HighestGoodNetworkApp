@@ -13,7 +13,7 @@ import {
  import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { getInfoCollections, addInfoCollection, updateInfoCollection} from '../../../actions/information';
+import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById} from '../../../actions/information';
 import styles from './EditableInfoModal.css';
 
 // New RichTextEditor component
@@ -61,18 +61,19 @@ export class EditableInfoModal extends Component {
     await this.props.getInfoCollections();
     const {infoCollections, role, areaName, fontSize} = this.props;
     let content = '';
-    let visible = '0'
+    let visible = '0';
     if (Array.isArray(infoCollections)) {
-      infoCollections.forEach((index) => {
-        if (index.infoName === areaName) {
-          content = index.infoContent;
-          visible = index.visibility;
+      infoCollections.forEach((info) => {
+        if (info.infoName === areaName) {
+          content = info.infoContent;
+          visible = info.visibility;
         }
       });
     } 
+    
     content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
     let CanRead = (visible === '0') || 
-                    (visible === '1' && (role==='Owner' || role==='Administrator')) ||
+                    (visible === '1' && (role ==='Owner' || role ==='Administrator')) ||
                     (visible === '2' && (role !== 'Volunteer'));
     let CanEdit = role === 'Owner';
     this.setState({
@@ -182,6 +183,10 @@ export class EditableInfoModal extends Component {
       this.handleSaveError();
     }
   }
+  handleDelete = async () => {
+    const { infoId } = this.handleChangeInInfos();
+    const deleteResult = await this.props.deleteInfoCollectionById(infoId);
+  };
 
   handleClose = () => {
     this.toggleEditableModal();
@@ -280,6 +285,7 @@ EditableInfoModal.propTypes = {
   getInfoCollections:PropTypes.func.isRequired,
   addInfoCollection:PropTypes.func.isRequired,
   updateInfoCollection:PropTypes.func.isRequired,
+  deleteInfoCollectionById: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
 
 };
@@ -296,6 +302,7 @@ const mapDispatchToProps = dispatch => {
     getInfoCollections: ()=> dispatch(getInfoCollections()),
     updateInfoCollection: (infoId, updatedInfo)=>dispatch(updateInfoCollection(infoId, updatedInfo)),
     addInfoCollection: (newInfo)=>dispatch(addInfoCollection(newInfo)),
+    deleteInfoCollectionById: (infoId)=>dispatch(deleteInfoCollectionById(infoId)), 
   };
 };
 

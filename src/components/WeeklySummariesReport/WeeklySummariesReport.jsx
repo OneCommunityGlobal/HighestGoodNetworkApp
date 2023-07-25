@@ -11,6 +11,8 @@ import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
+import { getInfoCollections } from '../../actions/information';
+
 
 export class WeeklySummariesReport extends Component {
   state = {
@@ -22,10 +24,27 @@ export class WeeklySummariesReport extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummariesReport();
+    await this.props.getInfoCollections();
+    const { infoCollections,roles } = this.props;
+    const role = this.props.authUser?.role;
+    const roleInfoNames = roles?.map(role => role.roleName + 'Info');
+    const allRoleInfo = [];
+    if (Array.isArray(infoCollections)) {
+      infoCollections.forEach((info) => {
+        if(roleInfoNames.includes(info.infoName)) {
+          let visible = (info.visibility === '0') || 
+          (info.visibility === '1' && (role==='Owner' || role==='Administrator')) ||
+          (info.visibility=== '2' && (role !== 'Volunteer'));
+          info.CanRead = visible;
+          allRoleInfo.push(info);
+        }
+      });
+    }
     this.setState({
       error: this.props.error,
       loading: this.props.loading,
       summaries: this.props.summaries, 
+      allRoleInfo: allRoleInfo,
       activeTab:
         sessionStorage.getItem('tabSelection') === null
           ? '2'
@@ -155,6 +174,7 @@ export class WeeklySummariesReport extends Component {
                       weekIndex={0}
                       bioCanEdit={bioEditPermission}
                       role={role}
+                      allRoleInfo={this.state.allRoleInfo}
                     />
                   </Col>
                 </Row>
@@ -180,6 +200,7 @@ export class WeeklySummariesReport extends Component {
                       weekIndex={1}
                       bioCanEdit={bioEditPermission}
                       role={role}
+                      allRoleInfo={this.state.allRoleInfo}
                     />
                   </Col>
                 </Row>
@@ -206,6 +227,7 @@ export class WeeklySummariesReport extends Component {
                       weekIndex={2}
                       bioCanEdit={bioEditPermission}
                       role={role}
+                      allRoleInfo={this.state.allRoleInfo}
                     />
                   </Col>
                 </Row>
@@ -231,6 +253,7 @@ export class WeeklySummariesReport extends Component {
                       weekIndex={3}
                       bioCanEdit={bioEditPermission}
                       role={role}
+                      allRoleInfo={this.state.allRoleInfo}
                     />
                   </Col>
                 </Row>
@@ -248,6 +271,8 @@ WeeklySummariesReport.propTypes = {
   getWeeklySummariesReport: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
+  getInfoCollections: PropTypes.func.isRequired,
+  infoCollections: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
@@ -256,6 +281,7 @@ const mapStateToProps = state => ({
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
+  infoCollections:state.infoCollections.infos,
 });
 
-export default connect(mapStateToProps, { getWeeklySummariesReport })(WeeklySummariesReport);
+export default connect(mapStateToProps, { getWeeklySummariesReport,getInfoCollections })(WeeklySummariesReport);

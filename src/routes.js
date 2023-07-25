@@ -36,6 +36,7 @@ import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSugg
 import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 
 export default (
   <React.Fragment>
@@ -143,6 +144,7 @@ export default (
       <Route path="/login" component={Login} />
       <Route path="/forgotpassword" component={ForgotPassword} />
       <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
+      <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
       <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
       <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
       <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />

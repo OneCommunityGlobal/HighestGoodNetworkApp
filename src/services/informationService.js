@@ -8,5 +8,4 @@ export function getInformations() {
 }
 export function addInformation(data) {
   return httpService.post(`${ApiUri}`, data);
-
 }
