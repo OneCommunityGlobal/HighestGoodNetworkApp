@@ -127,8 +127,8 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     };
     if (summary.weeklySummariesCount === 8) {
       return (
-        <p style={style}>
-          <b>Total Valid Weekly Summaries:</b>{' '}
+        <p>
+          <b style={style}>Total Valid Weekly Summaries:</b>{' '}
           {summary.weeklySummariesCount || 'No valid submissions yet!'}
         </p>
       );
