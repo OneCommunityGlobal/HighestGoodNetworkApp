@@ -19,6 +19,8 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import { boxStyle } from 'styles';
+import '../Badge/BadgeReport.css'
+import './BadgeSummaryViz.css'
 
 const BadgeSummaryViz = (props) => {
   const {
@@ -73,28 +75,23 @@ return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle}>
       <ModalHeader>Badge Summary</ModalHeader>
       <ModalBody>
-      <div>
-
-      {/* DESKTOP VERSION OF MODAL */}
-
-      <div className="desktop">
-        <div style={{ overflowY: 'scroll', height: '75vh' }}>
-          <Table>
-            <thead style={{ zIndex: '10' }}>
-              <tr style={{ zIndex: '10' }}>
-                <th style={{ width: '93px' }}>Badge</th>
-                <th>Name</th>
-                <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '110px' }}>Earned Dates</th>
-                <th style={{ width: '90px' }}>Count</th>
-              </tr>
-            </thead>
-            <tbody>
-
-            {/* //* TODO: SORT BADGES */}
-
-                {badges &&
-                  badges.map((value, index) => (
+        <div>
+        {/* DESKTOP VERSION OF MODAL */}
+          <div className="desktop">
+            <div style={{ overflowY: 'scroll', height: '75vh' }}>
+              <Table>
+                <thead style={{ zIndex: '10' }}>
+                  <tr style={{ zIndex: '10' }}>
+                    <th style={{ width: '93px' }}>Badge</th>
+                    <th>Name</th>
+                    <th style={{ width: '110px' }}>Modified</th>
+                    <th style={{ width: '110px' }}>Earned Dates</th>
+                    <th style={{ width: '90px' }}>Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {/* //* TODO: SORT BADGES */}
+                {badges && badges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
@@ -140,35 +137,30 @@ return (
                     <td>{value.count}</td>
                   </tr>
                 ))}
-            </tbody>
-          </Table>
-        </div>
-      </div>
-
-      {/* TABLET VERSION OF MODAL */}
-
-      <div className="tablet">
-        <div style={{ overflow: 'auto', height: '68vh' }}>
-          <Table>
-            <thead style={{ zIndex: '10' }}>
-              <tr style={{ zIndex: '10' }}>
-                <th style={{ width: '93px' }}>Badge</th>
-                <th>Name</th>
-                <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '100%', zIndex: '10' }}>Count</th>
-              </tr>
-            </thead>
-            <tbody>
-              {badges &&
-                badges.map((value, index) => (
+                </tbody>
+              </Table>
+            </div>
+          </div>
+          {/* TABLET VERSION OF MODAL */}
+          {/* //* TODO: UPDATE TABLET COLUMNS STYLING */}
+          <div className="tablet">
+            <div style={{ overflow: 'auto', height: '68vh' }}>
+              <Table>
+                <thead style={{ zIndex: '10' }}>
+                  <tr style={{ zIndex: '10' }}>
+                    <th style={{ width: '93px' }}>Badge</th>
+                    <th>Name</th>
+                    <th style={{ width: '110px' }}>Modified</th>
+                    <th style={{ width: '100%', zIndex: '10' }}>Count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {badges && badges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
                       <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
                     </td>
-
-                    {/* //* TOD0: TEST POPOVER ON MOBILE */}
-
                     <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
                       <Card className="text-center">
                         <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
@@ -187,7 +179,6 @@ return (
                         </CardBody>
                       </Card>
                     </UncontrolledPopover>
-
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
@@ -196,31 +187,25 @@ return (
                     </td>
                     <td>{value.count}</td>
                   </tr>
-                ))}
-            </tbody>
-          </Table>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
       </ModalBody>
-
-    {/* //* TODO: Add breakpoint styles to ModalFooter */}
-
-    <ModalFooter>
-      <div style={{ margin: "0.5rem auto" }}>
-        <Button
-          className="btn--dark-sea-green"
-          style={{ width: "100%" }}
-          onClick={toggle}
-        >
-          Close
-        </Button>
-      </div>
-    </ModalFooter>
-
+      <ModalFooter>
+          <div className='badge_summary_viz_footer'>
+            <Button
+              className="btn--dark-sea-green badge_summary_viz_button"
+              onClick={toggle}
+            >
+              Close
+            </Button>
+          </div>
+      </ModalFooter>
     </Modal>
   </div>)
 }
-
 
 export default BadgeSummaryViz
