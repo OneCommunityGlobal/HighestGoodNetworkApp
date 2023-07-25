@@ -32,6 +32,8 @@ const TeamLocations = () => {
   const countries = userProfiles.map(user => user.location.country).filter(country => country);
   // Get the number of unique countries
   const totalUniqueCountries = [...new Set(countries)].length;
+  // Filters out users that don't have locations specified
+  const usersWithValidLocations = userProfiles.filter(profile => profile.location.raw);
 
   return (
     <>
@@ -53,24 +55,22 @@ const TeamLocations = () => {
           maxZoom={15}
         />
         <MarkerClusterGroup chunkedLoading>
-          {userProfiles.map(profile => {
-            if (profile.location.raw) {
-              return (
-                <CircleMarker
-                  center={[profile.location.coords.lat, profile.location.coords.lng]}
-                  key={profile._id}
-                  color={profile.isActive ? 'green' : 'gray'}
-                >
-                  <Popup>
-                    <div>
-                      <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
-                      <div>{`Title: ${profile.jobTitle}`}</div>
-                      <div>{`Location: ${profile.location.raw}`}</div>
-                    </div>
-                  </Popup>
-                </CircleMarker>
-              );
-            }
+          {usersWithValidLocations.map(profile => {
+            return (
+              <CircleMarker
+                center={[profile.location.coords.lat, profile.location.coords.lng]}
+                key={profile._id}
+                color={profile.isActive ? 'green' : 'gray'}
+              >
+                <Popup>
+                  <div>
+                    <div>{`Name: ${profile.firstName} ${profile.lastName}`}</div>
+                    <div>{`Title: ${profile.jobTitle}`}</div>
+                    <div>{`Location: ${profile.location.raw}`}</div>
+                  </div>
+                </Popup>
+              </CircleMarker>
+            );
           })}
         </MarkerClusterGroup>
       </MapContainer>

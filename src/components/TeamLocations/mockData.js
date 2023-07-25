@@ -97,7 +97,7 @@ const mockAPIResponse = {
         raw: 'Sydney',
         coords: {
           lat: -33.8698439,
-          lng: 151.2082848
+          lng: 151.2082848,
         },
         country: 'Australia',
       },
@@ -112,14 +112,29 @@ const mockAPIResponse = {
         raw: 'Antarctica',
         coords: {
           lat: -79.4063075,
-          lng: 0.3149312
+          lng: 0.3149312,
         },
         country: null,
       },
       isActive: true,
       jobTitle: 'Software Engineer',
       _id: 'id8',
-    }
+    },
+    {
+      firstName: 'Test',
+      lastName: 'User',
+      location: {
+        raw: '',
+        coords: {
+          lat: -79.4063075,
+          lng: 0.3149312,
+        },
+        country: null,
+      },
+      isActive: true,
+      jobTitle: 'Software Engineer',
+      _id: 'id9',
+    },
   ],
 };
 
