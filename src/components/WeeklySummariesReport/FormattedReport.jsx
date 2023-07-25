@@ -12,7 +12,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit, role}) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit}) => {
   const emails = [];
   //const bioCanEdit = role === 'Owner' || role === 'Administrator';
   summaries.forEach(summary => {
@@ -230,9 +230,9 @@ const getWeeklySummaryMessage = summary => {
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
-              {role!=='Volunteer' &&(
-                <div className='role-info'>
-                 <p>({role})</p>
+              {summary.role!=='Volunteer' &&(
+                <div className='role-info' style={{paddingLeft:"5px"}}>
+                 <p>({summary.role})</p>
                 </div>
               )}
               {showStar(hoursLogged, summary.weeklycommittedHours) && (

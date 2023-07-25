@@ -133,7 +133,6 @@ function RolePermissions(props) {
     const permissionsBackEnd = permissionsObjectName.map(permission =>
       permissionFrontToBack(permission),
     );
-
     const id = props.roleId;
 
     const updatedRole = {
@@ -234,7 +233,7 @@ function RolePermissions(props) {
                 <div style={{paddingRight: '1px'}}>
                   <EditableInfoModal
                     role={props?.userRole}
-                    areaName={`${roleName}`+`${permission}`+'Info'}
+                    areaName={`${permission}`+'Info'}
                     fontSize={24} />{' '}
                 </div>
                 {' '}
@@ -251,19 +250,13 @@ function RolePermissions(props) {
                 </Button>
               </div>
             ) : (
-              <div>
-                <i
-                  data-toggle="tooltip"
-                  data-placement="center"
-                  title="Click for more information"
-                  style={{ fontSize: 24, cursor: 'pointer' }}
-                  aria-hidden="true"
-                  className="fa fa-info-circle"
-                  onClick={() => {
-                    handleModalOpen(permission);
-                  }}
-                />{' '}
-                &nbsp;&nbsp;
+              <div style={{display:'flex'}}>
+                <div style={{paddingRight: '1px'}}>
+                  <EditableInfoModal
+                    role={props?.userRole}
+                    areaName={`${permission}`+'Info'}
+                    fontSize={24} />{' '}
+                </div>
                 <Button
                   color="success"
                   onClick={() => {

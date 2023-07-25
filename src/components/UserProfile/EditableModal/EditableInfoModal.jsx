@@ -48,8 +48,8 @@ export class EditableInfoModal extends Component {
     infoElements: [],
     fetchError: null,
     loading: true,
-    editing:false,
-    CanRead:false,
+    editing: false,
+    CanRead: false,
     CanEdit: false,
     infoName:'',
     infoContent:'',
@@ -71,7 +71,6 @@ export class EditableInfoModal extends Component {
         }
       });
     } 
-    // console.log('onf', infoCollections)
     content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
     let CanRead = (visible === '0') || 
                     (visible === '1' && (role==='Owner' || role==='Admin')) ||
@@ -99,13 +98,14 @@ export class EditableInfoModal extends Component {
       return null;
     }
   }
-  toggleEditableModal = (open) => {
-    this.setState({editableModalOpen:!open});
+
+  toggleEditableModal = () => {
+    this.setState({editableModalOpen: false});
   }
 
-  handleEdit = () => {
-    const edit = this.state.editing;
-    this.setState({editing:!edit});
+  handleEdit = (edit) => {
+    // const editing = this.state.editing;
+    this.setState({editing:edit});
   }
 
   handleSaveSuccess = async () => {
@@ -174,7 +174,6 @@ export class EditableInfoModal extends Component {
     }
     let saveResult;
     if (!updatedInfo) {
-      console.log('update')
       saveResult = await this.props.addInfoCollection(newInfo);
     }else{
       saveResult = await this.props.updateInfoCollection(infoId, newInfo);
@@ -185,10 +184,16 @@ export class EditableInfoModal extends Component {
       this.handleSaveError();
     }
   }
+
+  handleClose = () => {
+    this.toggleEditableModal();
+    this.handleEdit(false);
+
+  }
   
 
   handleSave = async event => {
-    this.handleEdit();
+    this.handleEdit(false);
     if (event) {
       event.preventDefault();
     }
@@ -219,9 +224,7 @@ export class EditableInfoModal extends Component {
           style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '10px'}}
           aria-hidden="true"
           className="fa fa-info-circle"
-          onMouseOver={() => {
-            this.toggleEditableModal(); // open modal
-          }}
+          onMouseOver={()=>this.setState({editableModalOpen: true})}
         />
         {editableModalOpen && (
           <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg">
@@ -235,7 +238,8 @@ export class EditableInfoModal extends Component {
                   />
                 : <div 
                 style={{ paddingLeft: '20px' }} 
-                dangerouslySetInnerHTML={{ __html: infoContent }} />
+                dangerouslySetInnerHTML={{ __html: infoContent }}
+                onClick={() => this.handleEdit(true)} />
               }
           </ModalBody>
           <ModalFooter>
@@ -251,21 +255,18 @@ export class EditableInfoModal extends Component {
             )
             }
              </Col>
-          <Col 
-            md={{ size: 3}}
-            >
-            {(CanEdit && !this.state.editing)&&
-            (<Button 
-              className='editBtn'
-              onClick={this.handleEdit}>Edit</Button>)
-  
-            }
             {(CanEdit&&this.state.editing)&&
-            (<Button
-              className='saveBtn' 
-              onClick={this.handleSave}>Save</Button>)
+            (
+              <Col md={{ size: 1}} style={{paddingLeft:'5px'}}>
+                <Button
+                  className='saveBtn' 
+                  onClick={this.handleSave}>Save</Button>
+              </Col>)
             }
-             <Button onClick={this.toggleEditableModal}>Close</Button>
+          <Col 
+            md={{ size: 1}}
+            >
+            <Button onClick={this.handleClose}>Close</Button>
           </Col>
           </Row>
           </ModalFooter>
