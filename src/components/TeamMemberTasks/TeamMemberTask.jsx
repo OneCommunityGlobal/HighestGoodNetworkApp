@@ -10,6 +10,7 @@ import hasPermission from 'utils/permissions';
 import './style.css';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
+import ReviewButton from './ReviewButton'
 
 const TeamMemberTask = ({
   user,
@@ -20,6 +21,8 @@ const TeamMemberTask = ({
   userRole,
   roles,
   userPermissions,
+  userId,
+  updateTask,
 }) => {
   const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
 
@@ -197,6 +200,14 @@ const TeamMemberTask = ({
                               </Button>
                             </ModalFooter>
                           </Modal>
+                          <ReviewButton 
+                            user={user}
+                            myUserId={userId}
+                            myRole={userRole}
+                            task={task}
+                            updateTask={updateTask}
+                            style={boxStyle}
+                          />
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
