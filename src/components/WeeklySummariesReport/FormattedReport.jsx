@@ -26,7 +26,7 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit,  }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   const emails = [];
   //const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
