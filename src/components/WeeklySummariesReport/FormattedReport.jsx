@@ -10,14 +10,9 @@ import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
+
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
-<<<<<<< HEAD
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit, role}) => {
-=======
-
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit}) => {
 const textColors = {
   Default: '#000000',
   'Not Required': '#708090',
@@ -32,14 +27,15 @@ const textColors = {
 };
 
 const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
->>>>>>> 73b40dcb6a3033bc127d8b5e3d7001c360ab1243
   const emails = [];
   //const bioCanEdit = role === 'Owner' || role === 'Administrator';
+
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
       emails.push(summary.email);
     }
   });
+
   //Necessary because our version of node is outdated
   //and doesn't have String.prototype.replaceAll
   let emailString = [...new Set(emails)].toString();
@@ -211,6 +207,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   };
 
   const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
+
   return (
     <>
       {alphabetize(summaries).map((summary, index) => {
@@ -222,7 +219,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={'summary-' + index}
           >
-            <div className='name-info'>
+            <div>
               <b>Name: </b>
               <Link to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
