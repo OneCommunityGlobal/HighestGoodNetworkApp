@@ -162,6 +162,7 @@ const AssignBadge = props => {
           </UncontrolledTooltip>
           <div style={{ marginRight: '5px' }}>
             <Autosuggest
+              autoFocus={true}
               suggestions={firstSuggestions}
               onSuggestionsFetchRequested={onFirstSuggestionsFetchRequested}
               onSuggestionsClearRequested={onFirstSuggestionsClearRequested}
