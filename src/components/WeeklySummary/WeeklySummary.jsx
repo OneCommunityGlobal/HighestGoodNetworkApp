@@ -106,7 +106,9 @@ export class WeeklySummary extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
+
     const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || '';
     const summaryLastWeek =
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
@@ -141,6 +143,7 @@ export class WeeklySummary extends Component {
     const dueDateLastWeek = moment(dueDate)
       .subtract(1, 'weeks')
       .toISOString();
+
     const dueDateBeforeLast = moment(dueDate)
       .subtract(2, 'weeks')
       .toISOString();
