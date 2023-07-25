@@ -50,14 +50,11 @@ export const Header = props => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const [isViewingAnotherUser, setIsViewingAnotherUser] = useState(false)
+  const [isViewingAnotherUser, setIsViewingAnotherUser] = useState(false);
 
-  const {
-    isAuthenticated,
-    user,
-    firstName,
-    profilePic
-  } = location.pathname.includes(props.userProfile._id)
+  const { isAuthenticated, user, firstName, profilePic } = location.pathname.includes(
+    props.userProfile._id,
+  )
     ? {
         isAuthenticated: true,
         user: {
@@ -68,20 +65,20 @@ export const Header = props => {
           iat: '',
         },
         firstName: props.userProfile.firstName,
-        profilePic: ''
+        profilePic: '',
       }
-    : { ...props.auth};
+    : { ...props.auth };
 
   const userPermissions = location.pathname.includes(props.userProfile._id)
     ? props.userProfile?.permissions?.frontPermissions
     : props.auth.user?.permissions?.frontPermissions;
 
   useEffect(() => {
-    if(location.pathname.includes(props.userProfile._id)){
-      setIsViewingAnotherUser(true)
+    if (location.pathname.includes(props.userProfile._id)) {
+      setIsViewingAnotherUser(true);
     }
-  }, [location, props.userProfile])
-  
+  }, [location, props.userProfile]);
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -276,10 +273,10 @@ export const Header = props => {
                     ) : null
                   ) : (
                     !denyPermissionToSelfUpdateDevAdminDetails(props.userProfile.email, true) && (
-                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                      <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
                         {UPDATE_PASSWORD}
                       </DropdownItem>
-                  )}
+                    )
                   )}
                   <DropdownItem divider />
                   {isViewingAnotherUser ? null : (
