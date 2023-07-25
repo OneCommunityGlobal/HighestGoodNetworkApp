@@ -29,8 +29,8 @@ const BadgeSummaryViz = (props) => {
     lastName,
     permissions
   } = props
+    console.log("🚀 ~ file: BadgeSummaryViz.jsx:32 ~ BadgeSummaryViz ~ badges:", badges)
 
-  // console.log("🚀 ~ file: BadgeSummaryViz.jsx:54 ~ BadgeSummaryViz ~ props:", props)
 
   const [isOpen, setIsOpen] = useState(false);
   const [sortBadges, setSortBadges] = useState(badges || []);
@@ -137,13 +137,7 @@ return (
                         </DropdownMenu>
                       </UncontrolledDropdown>
                     </td>
-
-                    {/* //* TODO: CREATE NEW COUNT METHOD */}
-
-                    <td>
-                      1
-                    </td>
-
+                    <td>{value.count}</td>
                   </tr>
                 ))}
             </tbody>
@@ -200,11 +194,7 @@ return (
                         ? value.lastModified.substring(0, 10)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
-
-                    <td>
-                      {/* //* TODO: COUNT GOES HERE */}
-                      1
-                    </td>
+                    <td>{value.count}</td>
                   </tr>
                 ))}
             </tbody>
