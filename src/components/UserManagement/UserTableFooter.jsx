@@ -91,11 +91,12 @@ const PageSummaryLabel = React.memo(props => {
       className="table-summary col-md-4 col-sm-4 col-xs-4 ember-view"
       style={{ marginBottom: '25px' }}
     >
-      {`Show `}
-      {props.datacount > props.selectedPage * props.pageSize
-        ? `${props.selectedPage * props.pageSize}`
-        : `${props.datacount}`}
-      {` of ${props.datacount}`}
+      {props.datacount < 10
+        ? `Showing ${(props.selectedPage - 1) * props.pageSize + 1} - ${
+            props.datacount
+          } of ${props.selectedPage * props.pageSize} `
+        : `${(props.selectedPage - 1) * props.pageSize + 1} - ${props.selectedPage *
+            props.pageSize} of ${props.datacount}`}
     </div>
   );
 });
