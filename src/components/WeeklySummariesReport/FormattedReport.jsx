@@ -28,9 +28,12 @@ const textColors = {
 
 const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   const emails = [];
-  //const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
+    if (summary.firstName === 'Sherly') {
+      console.log(summary);
+    }
+
     if (summary.email !== undefined && summary.email !== null) {
       emails.push(summary.email);
     }
@@ -207,11 +210,32 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   };
 
   const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
+  // TODO 0: add this.getweekDates.todate to pass in to formatted Report
+  // TODO 1:
+  const getPromisedHours = (weekToDate, weeklycommittedHoursHistory) => {
+    // 1. edge case, if there is only one:
+    // return that
+    // 2. edge case, if there is none:
+    // return
+    // 3. else just iterate weeklycommittedHoursHistory from the last index (-1) to the beginning
+    // - as soon as the weekToDate is smaller than current date
+    // return the promised hour
+  };
 
+  // TODO 2: change all the summary.weeklycommittedHours in jsx
+  // to promisedHoursForThisWeek
+
+  // TODO 3: check report page, confirm with Jae what to add to the new column
   return (
     <>
       {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+
+        // const promisedHoursForThisWeek = getPromisedHours(
+        //   weekToDate,
+        //   summary.weeklycommittedHoursHistory,
+        // );
+
         const googleDocLink = getGoogleDocLink(summary);
         const teamColor = textColors[summary?.weeklySummaryOption] || textColors['Default'];
         return (
