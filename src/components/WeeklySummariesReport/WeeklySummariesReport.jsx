@@ -24,6 +24,16 @@ export class WeeklySummariesReport extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummariesReport();
+    this.setState({
+      error: this.props.error,
+      loading: this.props.loading,
+      summaries: this.props.summaries, 
+      allRoleInfo: [],
+      activeTab:
+        sessionStorage.getItem('tabSelection') === null
+          ? '2'
+          : sessionStorage.getItem('tabSelection'),
+    });
     await this.props.getInfoCollections();
     const { infoCollections,roles } = this.props;
     const role = this.props.authUser?.role;
@@ -40,16 +50,7 @@ export class WeeklySummariesReport extends Component {
         }
       });
     }
-    this.setState({
-      error: this.props.error,
-      loading: this.props.loading,
-      summaries: this.props.summaries, 
-      allRoleInfo: allRoleInfo,
-      activeTab:
-        sessionStorage.getItem('tabSelection') === null
-          ? '2'
-          : sessionStorage.getItem('tabSelection'),
-    });
+    this.setState({allRoleInfo:allRoleInfo})
   }
 
   componentWillUnmount() {

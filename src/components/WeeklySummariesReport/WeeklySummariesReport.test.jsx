@@ -13,6 +13,7 @@ describe('WeeklySummariesReport page', () => {
         summaries: [],
         authUser: { role: '' },
         roles: [],
+        getInfoCollections: jest.fn(),
       };
       render(<WeeklySummariesReport {...props} />);
 
@@ -28,6 +29,7 @@ describe('WeeklySummariesReport page', () => {
         summaries: [],
         authUser: { role: '' },
         roles: [],
+        getInfoCollections: jest.fn(),
       };
       render(<WeeklySummariesReport {...props} />);
       expect(screen.getByTestId('loading')).toBeInTheDocument();
@@ -37,6 +39,7 @@ describe('WeeklySummariesReport page', () => {
   describe('Tabs display', () => {
     const props = {
       getWeeklySummariesReport: jest.fn(),
+      getInfoCollections: jest.fn(),
       loading: false,
       summaries: [],
       authUser: { role: '' },
