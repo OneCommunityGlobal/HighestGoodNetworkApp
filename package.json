@@ -81,8 +81,10 @@
     "test:coverage": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen --coverage",
     "eject": "react-scripts eject",
     "start:local": "react-scripts start",
-    "format:check": "npx prettier src/** --check && npx eslint --ext js,jsx src",
-    "format": "npx eslint --fix --ext js,jsx src && npx prettier src/** --write"
+    "prettier": "prettier --check src/**",
+    "prettier:fix": "prettier --write src/**",
+    "format": "npx prettier src/** --check && npx eslint --ext js,jsx src",
+    "format:fix": "npx prettier src/** --write && npx eslint --fix --ext js,jsx src"
   },
   "browserslist": [
     ">0.2%",

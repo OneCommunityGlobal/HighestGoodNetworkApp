@@ -84,28 +84,28 @@ const WeeklySummaryOptions = props => {
   }
 
   const summaryOptions = [
-    {value: "Required", text: "Required"},
-    {value: "Not Required", text: "Not Required (Slate Gray)"},
-    {value: "Team Fabulous", text: "Team Fabulous (Fuschia)"},
-    {value: "Team Marigold", text: "Team Marigold (Orange)"},
-    {value: "Team Luminous", text: "Team Luminous (Yellow)"},
-    {value: "Team Lush", text: "Team Lush (Green)"},
-    {value: "Team Sky", text: "Team Sky (Blue)"},
-    {value: "Team Azure", text: "Team Azure (Indigo)"},
-    {value: "Team Amethyst", text: "Team Amethyst (Purple)"},
-  ]
+    { value: 'Required', text: 'Required' },
+    { value: 'Not Required', text: 'Not Required (Slate Gray)' },
+    { value: 'Team Fabulous', text: 'Team Fabulous (Fuschia)' },
+    { value: 'Team Marigold', text: 'Team Marigold (Orange)' },
+    { value: 'Team Luminous', text: 'Team Luminous (Yellow)' },
+    { value: 'Team Lush', text: 'Team Lush (Green)' },
+    { value: 'Team Sky', text: 'Team Sky (Blue)' },
+    { value: 'Team Azure', text: 'Team Azure (Indigo)' },
+    { value: 'Team Amethyst', text: 'Team Amethyst (Purple)' },
+  ];
 
-  const handleOnChange = (e) => {
-    let temp = {...props.userProfile}
-    temp.weeklySummaryOption = e.target.value
-    if(e.target.value === "Not Required") {
-      temp.weeklySummaryNotReq = true
+  const handleOnChange = e => {
+    let temp = { ...props.userProfile };
+    temp.weeklySummaryOption = e.target.value;
+    if (e.target.value === 'Not Required') {
+      temp.weeklySummaryNotReq = true;
     } else {
-      temp.weeklySummaryNotReq = false
+      temp.weeklySummaryNotReq = false;
     }
     props.setUserProfile(temp);
-  }
-  
+  };
+
   return (
     <FormGroup>
       <select
@@ -119,8 +119,10 @@ const WeeklySummaryOptions = props => {
         }
         onChange={handleOnChange}
       >
-        {summaryOptions.map(({value, text}) => (
-          <option key={value} value={value}>{text}</option>
+        {summaryOptions.map(({ value, text }) => (
+          <option key={value} value={value}>
+            {text}
+          </option>
         ))}
       </select>
     </FormGroup>
@@ -425,36 +427,36 @@ const ViewTab = props => {
 
         {props?.userProfile?.hoursByCategory
           ? Object.keys(userProfile.hoursByCategory).map(key => (
-            <React.Fragment key={'hours-by-category-' + key}>
-              <Row className="volunteering-time-row">
-                <Col md="6">
-                  <Label className="hours-label">
-                    {key !== 'unassigned' ? (
-                      <>Total Tangible {capitalize(key)} Hours</>
+              <React.Fragment key={'hours-by-category-' + key}>
+                <Row className="volunteering-time-row">
+                  <Col md="6">
+                    <Label className="hours-label">
+                      {key !== 'unassigned' ? (
+                        <>Total Tangible {capitalize(key)} Hours</>
+                      ) : (
+                        <>Total Unassigned Category Hours</>
+                      )}
+                    </Label>
+                  </Col>
+                  <Col md="6">
+                    {canEdit ? (
+                      <Input
+                        type="number"
+                        pattern="^\d*\.?\d{0,2}$"
+                        id={`${key}Hours`}
+                        step=".01"
+                        min="0"
+                        value={roundToTwo(userProfile.hoursByCategory[key])}
+                        onChange={e => handleOnChangeHours(e, key)}
+                        placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                      />
                     ) : (
-                      <>Total Unassigned Category Hours</>
+                      <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
                     )}
-                  </Label>
-                </Col>
-                <Col md="6">
-                  {canEdit ? (
-                    <Input
-                      type="number"
-                      pattern="^\d*\.?\d{0,2}$"
-                      id={`${key}Hours`}
-                      step=".01"
-                      min="0"
-                      value={roundToTwo(userProfile.hoursByCategory[key])}
-                      onChange={e => handleOnChangeHours(e, key)}
-                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
-                    />
-                  ) : (
-                    <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
-                  )}
-                </Col>
-              </Row>
-            </React.Fragment>
-          ))
+                  </Col>
+                </Row>
+              </React.Fragment>
+            ))
           : []}
       </Row>
     </div>

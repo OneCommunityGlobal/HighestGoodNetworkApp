@@ -251,9 +251,7 @@ export const Header = props => {
                     </DropdownItem>
                   )}
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to="/#" onClick={openModal}>
-                    {LOGOUT}
-                  </DropdownItem>
+                  <DropdownItem onClick={openModal}>{LOGOUT}</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Nav>

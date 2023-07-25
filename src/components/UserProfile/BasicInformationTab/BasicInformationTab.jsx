@@ -520,8 +520,8 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-                  : 'Inactive'}
+                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                : 'Inactive'}
             </Label>
             &nbsp;
             {canEdit && (
@@ -763,8 +763,8 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                    ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
-                    : 'Inactive'}
+                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                  : 'Inactive'}
               </Label>
               &nbsp;
               {canEdit && <PauseAndResumeButton isBigBtn={true} userProfile={userProfile} />}
