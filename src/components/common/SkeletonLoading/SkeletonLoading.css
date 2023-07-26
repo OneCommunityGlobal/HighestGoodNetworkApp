@@ -12,7 +12,7 @@
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
-  height: 20px;
+  height: 20px;   
   border-radius: 5px;
   margin: 0.625rem 18.75rem 0.125rem 2.5rem;
 }
@@ -32,17 +32,17 @@
 .skeleton-loading-timelog-filter {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between;  
 }
 
 .skeleton-loading-timelog-filter-item {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
-  width: 40px;
-  height: 40px;
+  width: 40px; 
+  height: 40px; 
   border-radius: 5px;
-  margin-left: 15px;
+  margin-left: 15px; 
   padding-left: 15px;
 }
 
@@ -50,9 +50,10 @@
 
 .skeleton-loading-team-member-tasks-row {
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
-  background-size: 200% 100%;
+  background-size: 200% 100%;  
   height: 60px;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
+  
 }
 
 /* Skeleton Loading for Weekly Summary Due Date (click to add) */
@@ -60,7 +61,7 @@
 .skeleton-loading-weekly-summary {
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(0, 0, 0, 0.125);
+  border: 1px solid rgba(0, 0, 0, 0.125);  
   background-color: #f3f4f6;
   width: 16rem;
   height: 8rem;
@@ -73,17 +74,17 @@
 
 /* Skeleton Loading for Weekly Summaries Report Page */
 
-.skeleton-loading-weekly-summaries-report {
+.skeleton-loading-weekly-summaries-report{
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.125);  
+  background-color: white;      
   margin-top: 3rem;
   padding-top: 1rem;
 }
 
-.skeleton-loading-weekly-summaries-report-item {
-  border: 1px solid rgba(0, 0, 0, 0.125);
+.skeleton-loading-weekly-summaries-report-item{  
+  border: 1px solid rgba(0, 0, 0, 0.125);  
   background-color: #f3f4f6;
   width: 35rem;
   height: 1.5rem;
@@ -99,7 +100,7 @@
 .skeleton-loading-user-profile-picture {
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(0, 0, 0, 0.125);
+  border: 1px solid rgba(0, 0, 0, 0.125);  
   background-color: #f3f4f6;
   width: 16rem;
   height: 8rem;
@@ -126,7 +127,7 @@
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;
-  height: 2.5rem;
+  height: 2.5rem;   
   border-radius: 5px;
   margin: 0.625rem 0.25rem 0.125rem 0.25rem;
 }

@@ -23,11 +23,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
-import hasPermission, {
-  deactivateOwnerPermission,
-  denyPermissionForOthersToUpdateDevAdminDetails,
-  denyPermissionToSelfUpdateDevAdminDetails,
-} from '../../utils/permissions';
+import hasPermission, { deactivateOwnerPermission, denyPermissionForOthersToUpdateDevAdminDetails, denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -547,22 +543,22 @@ function UserProfile(props) {
     'editUserProfile',
     roles,
     userPermissions,
-  );
+  )
   const isUserSelf = targetUserId === requestorId;
 
-  const checkCanEditProfile = checkHasPermissions || isUserSelf;
+  const checkCanEditProfile = checkHasPermissions || isUserSelf
 
-  const canEditPermissions =
-    denyPermissionToSelfUpdateDevAdminDetails(userProfile.email, isUserSelf) ||
-    denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
-      ? false
-      : checkCanEditProfile;
+  const canEditPermissions = (denyPermissionToSelfUpdateDevAdminDetails(
+    userProfile.email,
+    isUserSelf))
+    || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
+    ? false : checkCanEditProfile;
 
-  const checkVolunteeringTimeTabPermission =
-    denyPermissionToSelfUpdateDevAdminDetails(userProfile.email, isUserSelf) ||
-    denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
-      ? false
-      : checkHasPermissions;
+  const checkVolunteeringTimeTabPermission = (denyPermissionToSelfUpdateDevAdminDetails(
+    userProfile.email,
+    isUserSelf))
+    || denyPermissionForOthersToUpdateDevAdminDetails(userProfile.email, authEmail)
+    ? false : checkHasPermissions;
 
   const canEditProfile =
     userProfile.role === 'Owner'
@@ -864,6 +860,7 @@ function UserProfile(props) {
               </TabPane>
               <TabPane tabId="2">
                 {
+
                   <VolunteeringTimeTab
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
@@ -889,12 +886,10 @@ function UserProfile(props) {
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                   handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName ||
+                  disabled={!formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
-                  }
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -910,12 +905,10 @@ function UserProfile(props) {
                   userId={props.match.params.userId}
                   updateTask={onUpdateTask}
                   handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName ||
+                  disabled={!formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
-                  }
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -966,11 +959,7 @@ function UserProfile(props) {
                       ) &&
                         canEdit &&
                         !isUserSelf && (
-                          <ResetPasswordButton
-                            className="mr-1 btn-bottom"
-                            user={userProfile}
-                            authEmail={authEmail}
-                          />
+                          <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} authEmail={authEmail} />
                         )}
                       {isUserSelf &&
                         (activeTab == '1' ||
@@ -979,22 +968,15 @@ function UserProfile(props) {
                             'editUserProfile',
                             roles,
                             userPermissions,
-                          )) && (
-                          <Link
-                            to={
-                              denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)
-                                ? `#`
-                                : `/updatepassword/${userProfile._id}`
-                            }
+                          ))
+                        && (
+                          <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
                             onClick={() => {
-                              if (
-                                denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)
-                              ) {
-                                alert(
-                                  'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                    'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                                    'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
-                                );
+                              if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
+                                alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. " +
+                                  "You shouldn’t even be using this account except to create your own accounts to use. " +
+                                  "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
+                                )
                                 return `#`;
                               }
                             }}
@@ -1122,12 +1104,10 @@ function UserProfile(props) {
                     isVisible={userProfile.isVisible}
                     canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                     handleSubmit={handleSubmit}
-                    disabled={
-                      !formValid.firstName ||
+                    disabled={!formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
-                    }
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1189,12 +1169,10 @@ function UserProfile(props) {
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
                     handleSubmit={handleSubmit}
-                    disabled={
-                      !formValid.firstName ||
+                    disabled={!formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
-                    }
+                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1307,28 +1285,18 @@ function UserProfile(props) {
               {hasPermission(requestorRole, 'resetPasswordOthers', roles, userPermissions) &&
                 canEdit &&
                 !isUserSelf && (
-                  <ResetPasswordButton
-                    className="mr-1 btn-bottom"
-                    user={userProfile}
-                    authEmail={authEmail}
-                  />
+                  <ResetPasswordButton className="mr-1 btn-bottom" user={userProfile} authEmail={authEmail} />
                 )}
               {isUserSelf &&
                 (activeTab === '1' ||
                   hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)) && (
-                  <Link
-                    to={
-                      denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)
-                        ? `#`
-                        : `/updatepassword/${userProfile._id}`
-                    }
+                  <Link to={denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf) ? `#` : `/updatepassword/${userProfile._id}`}
                     onClick={() => {
                       if (denyPermissionToSelfUpdateDevAdminDetails(authEmail, isUserSelf)) {
-                        alert(
-                          'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                            'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                            'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
-                        );
+                        alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. " +
+                          "You shouldn’t even be using this account except to create your own accounts to use. " +
+                          "Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now."
+                        )
                         return `#`;
                       }
                     }}
@@ -1375,7 +1343,7 @@ function UserProfile(props) {
           </Col>
         </Row>
       </Container>
-    </div>
+    </div >
   );
 }
 
