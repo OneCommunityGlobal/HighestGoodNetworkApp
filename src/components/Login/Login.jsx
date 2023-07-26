@@ -35,7 +35,8 @@ export class Login extends Form {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
         this.props.history.push(url);
       } else if (this.props.auth.isAuthenticated) {
-        this.props.history.push('/dashboard');
+        const { state } = this.props.location;
+        this.props.history.push(state ? state.from.pathname : '/dashboard');
       }
     }
 
