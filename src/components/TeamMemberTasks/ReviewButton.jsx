@@ -33,24 +33,54 @@ const ReviewButton = ({
 
   const updReviewStat = (newStatus) => {
     const resources = [...task.resources];
-    const newResources = resources?.map(resource => {
-      let newResource = { ...resource };
-      if (resource.userID === user.personId) {
-        newResource = newStatus === "Reviewed"
-        ? {
-          ...resource,
-          completedTask: true,
-          reviewStatus: newStatus,
-        } : {
-          ...resource,
-          reviewStatus: newStatus,
-        };
-      }
+    const newResources = resources.map(resource => {
+      const newResource = { ...resource };
+      newResource.reviewStatus = newStatus;
+      newResource.completedTask = newStatus === "Reviewed";
       return newResource;
     });
     const updatedTask = { ...task, resources: newResources };
     updateTask(task._id, updatedTask);
     setModal(false);
+  };
+
+  const buttonFormat = () => {
+    if (user.personId == myUserId && reviewStatus == "Unsubmitted") {
+      return <Button className='reviewBtn' color='primary' onClick={toggleModal}>
+        Submit for Review
+      </Button>;
+     } else if (reviewStatus == "Submitted")  {
+      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") {
+        return (
+          <UncontrolledDropdown>
+            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret>
+              Ready for Review
+            </DropdownToggle>
+            <DropdownMenu>
+            <DropdownItem onClick={toggleModal}>
+              <FontAwesomeIcon
+                className="team-member-tasks-done"
+                icon={faCheck}
+              /> as complete and remove task
+            </DropdownItem>
+            <DropdownItem onClick={() => {updReviewStat("Unsubmitted");}}>
+              More work needed, reset this button
+            </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        );
+      } else if (user.personId == myUserId) {
+        return <Button className='reviewBtn' color='success' onClick={() => {updReviewStat("Unsubmitted");}}>
+          More work needed, reset this button
+        </Button>;
+      } else {
+        return <Button className='reviewBtn' color='success' disabled>
+          Ready for Review
+        </Button>;
+      }
+     } else {
+      return <></>;
+     }
   };
 
   return (
@@ -87,37 +117,7 @@ const ReviewButton = ({
           </Button>
         </ModalFooter>
       </Modal>
-      {(user.personId == myUserId && reviewStatus == "Unsubmitted") ? (
-          <Button className='reviewBtn' color='primary' onClick={toggleModal}>
-              Submit for Review
-            </Button>
-        ) : ((myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") && reviewStatus == "Submitted") ? (
-          <UncontrolledDropdown>
-            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret>
-              Ready for Review
-            </DropdownToggle>
-            <DropdownMenu>
-            <DropdownItem onClick={toggleModal}>
-              <FontAwesomeIcon
-                className="team-member-tasks-done"
-                icon={faCheck}
-              /> as complete and remove task
-            </DropdownItem>
-            <DropdownItem onClick={() => {updReviewStat("Unsubmitted");}}>
-              More work needed, reset this button
-            </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        ) : (user.personId == myUserId && reviewStatus == "Submitted")?(
-          <Button className='reviewBtn' color='success' onClick={() => {updReviewStat("Unsubmitted");}}>
-            More work needed, reset this button
-          </Button>
-        ) : (reviewStatus == "Submitted") ? (
-          <Button className='reviewBtn' color='success' disabled>
-            Ready for Review
-          </Button>
-        ) : (<></>
-        )}
+      {buttonFormat()}
     </>
   );
 };
