@@ -20,7 +20,7 @@ const BlueSquareLayout = props => {
       case 'SUCCESS':
         return { isFetching: false, error: false, success: true };
       case 'FETCHING_FINISHED':
-        return { error: false, success: false, isFetching: false, fetchMessage: '', errorCode: null };
+        return { error: false, success: false, isFetching: false, fetchMessage: '', errorCode: null, isSet: action.payload.isSet };
       default:
         return state
     }
@@ -45,7 +45,8 @@ const BlueSquareLayout = props => {
     error: false,
     success: false,
     fetchMessage: '',
-    errorCode: null
+    errorCode: null,
+    isSet: false
   });
 
   const handleToggle = () => {
