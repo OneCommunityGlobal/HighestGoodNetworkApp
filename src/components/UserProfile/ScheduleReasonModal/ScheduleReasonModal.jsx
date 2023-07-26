@@ -4,6 +4,7 @@ import moment from 'moment';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import { useEffect } from 'react';
+import { getReasonByDate } from 'actions/reasonsActions';
 
 const ScheduleReasonModal = ({
   handleToggle,
@@ -15,12 +16,37 @@ const ScheduleReasonModal = ({
   fetchState,
   date,
   setDate,
-  fetchMessage
+  fetchMessage,
+  fetchDispatch,
+  userId,
 }) => {
+  useEffect(() => {
+    setDate(
+      moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .toISOString()
+        .split('T')[0],
+    );
+  });
 
   useEffect(() => {
-    setDate(moment().tz('America/Los_Angeles').endOf('week').toISOString().split('T')[0])
-  }, [])
+    const initialFetching = async () => {
+      fetchDispatch({ type: 'FETCHING_STARTED' });
+      const response = await getReasonByDate(userId, date);
+      console.log(response);
+      if (response.status !== 200) {
+        fetchDispatch({
+          type: 'ERROR',
+          payload: { message: response.message, errorCode: response.errorCode },
+        });
+      } else {
+        setReason(response.data.reason);
+        fetchDispatch({ type: 'FETCHING_FINISHED' });
+      }
+    };
+    initialFetching();
+  }, [date]);
 
   return (
     <>
@@ -40,9 +66,15 @@ const ScheduleReasonModal = ({
                 </p>
               </Form.Label>
               <Form.Label>Pick a date to schedule your reason!</Form.Label>
-              <Form.Control name="datePicker" type="date" className="w-100" value={date} onChange={(e) => {
-                setDate(e.target.value)
-              }}/>
+              <Form.Control
+                name="datePicker"
+                type="date"
+                className="w-100"
+                value={date}
+                onChange={e => {
+                  setDate(e.target.value);
+                }}
+              />
               <Form.Label className="mt-4">Write the blue square's reason</Form.Label>
               <Form.Control
                 as="textarea"
