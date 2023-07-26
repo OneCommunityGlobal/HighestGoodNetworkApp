@@ -25,6 +25,5 @@ export const assignStarDotColors = (hoursLogged, weeklyCommittedHours) => {
 };
 
 export const showStar = (hoursLogged, weeklyCommittedHours) => {
-  console.log('show star=');
   return weeklyCommittedHours !== 0 && hoursLogged >= weeklyCommittedHours * DARKGREEN_TIER;
 };

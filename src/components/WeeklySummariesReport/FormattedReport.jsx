@@ -26,14 +26,10 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, weekToDate }) => {
   const emails = [];
 
   summaries.forEach(summary => {
-    if (summary.firstName === 'Sherly') {
-      console.log(summary);
-    }
-
     if (summary.email !== undefined && summary.email !== null) {
       emails.push(summary.email);
     }
@@ -210,31 +206,54 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   };
 
   const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
-  // TODO 0: add this.getweekDates.todate to pass in to formatted Report
-  // TODO 1:
-  const getPromisedHours = (weekToDate, weeklycommittedHoursHistory) => {
-    // 1. edge case, if there is only one:
-    // return that
-    // 2. edge case, if there is none:
-    // return
-    // 3. else just iterate weeklycommittedHoursHistory from the last index (-1) to the beginning
-    // - as soon as the weekToDate is smaller than current date
-    // return the promised hour
-  };
 
-  // TODO 2: change all the summary.weeklycommittedHours in jsx
-  // to promisedHoursForThisWeek
+  const getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
+    // 0. Edge case: If there is only one history, return that
+    if (!weeklycommittedHoursHistory) {
+      // console.log('NO!');
+      return -1;
+    }
+
+    // 1. Edge case: If there is only one history, return that
+    if (weeklycommittedHoursHistory.length === 1) {
+      // console.log('YES=1!');
+      return weeklycommittedHoursHistory[0].hours; // assuming there's an `hours` field
+    }
+
+    // 2. Edge case: If there is none, return 10 (the default value of weeklyComHours)
+    if (weeklycommittedHoursHistory.length === 0) {
+      console.log('YES=0');
+      return 10;
+    }
+
+    weekToDateX = new Date(weekToDateX);
+    // 3. Else just iterate weeklycommittedHoursHistory from the last index (-1) to the beginning
+    for (let i = weeklycommittedHoursHistory.length - 1; i >= 0; i--) {
+      const historyDateX = new Date(weeklycommittedHoursHistory[i].dateChanged);
+      console.log(`${weekToDateX} >= ${historyDateX} is ${weekToDateX >= historyDateX}`);
+
+      // As soon as the weekToDate is greater or equal than current history date
+      if (weekToDateX >= historyDateX) {
+        // return the promised hour
+        return weeklycommittedHoursHistory[i].hours;
+      }
+    }
+  };
 
   // TODO 3: check report page, confirm with Jae what to add to the new column
   return (
     <>
       {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+        let promisedHoursThisWeek = -1;
 
-        // const promisedHoursForThisWeek = getPromisedHours(
-        //   weekToDate,
-        //   summary.weeklycommittedHoursHistory,
-        // );
+        // assign
+        promisedHoursThisWeek = getPromisedHours(weekToDate, summary.weeklycommittedHoursHistory);
+        if (summary.firstName === 'Oleksandr' && summary.lastName == 'Admin') {
+          console.log(summary);
+          promisedHoursThisWeek = getPromisedHours(weekToDate, summary.weeklycommittedHoursHistory);
+          console.log(`promisedHoursThisWeek = ${promisedHoursThisWeek}`);
+        }
 
         const googleDocLink = getGoogleDocLink(summary);
         const teamColor = textColors[summary?.weeklySummaryOption] || textColors['Default'];
@@ -252,12 +271,12 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
-              {showStar(hoursLogged, summary.weeklycommittedHours) && (
+              {showStar(hoursLogged, promisedHoursThisWeek) && (
                 <i
                   className="fa fa-star"
-                  title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
+                  title={`Weekly Committed: ${promisedHoursThisWeek} hours`}
                   style={{
-                    color: assignStarDotColors(hoursLogged, summary.weeklycommittedHours),
+                    color: assignStarDotColors(hoursLogged, promisedHoursThisWeek),
                     fontSize: '55px',
                     marginLeft: '10px',
                     verticalAlign: 'middle',
@@ -275,7 +294,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                       fontSize: '10px',
                     }}
                   >
-                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}%
+                    +{Math.round((hoursLogged / promisedHoursThisWeek - 1) * 100)}%
                   </span>
                 </i>
               )}
@@ -286,16 +305,16 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
             </div>
             {bioFunction(summary._id, summary.bioPosted, summary.weeklySummaryOption, teamColor)}
             {getTotalValidWeeklySummaries(summary, teamColor)}
-            {hoursLogged >= summary.weeklycommittedHours && (
+            {hoursLogged >= promisedHoursThisWeek && (
               <p>
                 <b style={{ color: teamColor }}>Hours logged: </b>
-                {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+                {hoursLogged.toFixed(2)} / {promisedHoursThisWeek}
               </p>
             )}
-            {hoursLogged < summary.weeklycommittedHours && (
+            {hoursLogged < promisedHoursThisWeek && (
               <p>
                 <b style={{ color: teamColor }}>Hours logged:</b> {hoursLogged.toFixed(2)} /{' '}
-                {summary.weeklycommittedHours}
+                {promisedHoursThisWeek}
               </p>
             )}
             {getWeeklySummaryMessage(summary)}
@@ -311,6 +330,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
 FormattedReport.propTypes = {
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekIndex: PropTypes.number.isRequired,
+  weekToDate: PropTypes.number.isRequired,
 };
 
 export default FormattedReport;
