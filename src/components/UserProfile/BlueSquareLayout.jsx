@@ -41,6 +41,7 @@ const BlueSquareLayout = props => {
     isFetching: false,
     error: false,
     success: false,
+    fetchMessage: ''
   });
 
   const handleToggle = () => {
