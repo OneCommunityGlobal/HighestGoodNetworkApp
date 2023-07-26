@@ -28,7 +28,7 @@ const ScheduleReasonModal = ({
         .toISOString()
         .split('T')[0],
     );
-  });
+  }, []);
 
   useEffect(() => {
     const initialFetching = async () => {
@@ -42,7 +42,7 @@ const ScheduleReasonModal = ({
         });
       } else {
         setReason(response.data.reason);
-        fetchDispatch({ type: 'FETCHING_FINISHED' });
+        fetchDispatch({ type: 'FETCHING_FINISHED', payload: {isSet: response.data.isSet} });
       }
     };
     initialFetching();
