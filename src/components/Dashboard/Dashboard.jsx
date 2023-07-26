@@ -10,6 +10,9 @@ import '../../App.css';
 import { connect } from 'react-redux';
 import { getUserProfile } from '../../actions/userProfile';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
+
 
 export const Dashboard = props => {
   const [popup, setPopup] = useState(false);
@@ -31,12 +34,22 @@ export const Dashboard = props => {
     props.getTimeZoneAPIKey();
   }, []);
 
-  useEffect(() => {
-    if (props.match.params && props.match.params.userId && userId != props.match.params.userId) {
-      userId = props.match.params.userId;
-      getUserProfile(userId);
-    }
-  }, [props.match]);
+
+  const getuser = async()=>{
+    const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+    const newUserProfile = response.data;
+    setUserProfile(newUserProfile);
+   }
+ 
+   useEffect(() => {
+     if (props.match.params && props.match.params.userId && userId != props.match.params.userId) {
+       userId = props.match.params.userId;
+       getUserProfile(userId)
+     }else{
+       getuser();
+     }
+   }, [props.match]);
+
 
   return (
     <Container fluid>
@@ -72,7 +85,7 @@ export const Dashboard = props => {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard asUser={userId} />
+        <Leaderboard asUser={userId} userTeams={userProfile?.teams} userRole = {userProfile?.role}/>
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
