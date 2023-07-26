@@ -21,7 +21,7 @@ export async function getReasonByDate(userId, queryDate){
       }
 }
 
-export async function addReason(userId, reasonData) {
+export async function patchReason(userId, reasonData) {
     try {
       const url = ENDPOINTS.PATCHUSERREASONBYID(userId);
       const response = await axios.patch(url, { userId: userId, reasonData: reasonData });
