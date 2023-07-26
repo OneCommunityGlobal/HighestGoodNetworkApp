@@ -1,8 +1,8 @@
-import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faFrown} from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
@@ -16,8 +16,11 @@ import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
-import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
-import { toast } from 'react-toastify';
+
+import { hrsFilterBtnRed, hrsFilterBtnBlue, skyblue} from 'constants/colors';
+import { getTeamMembers, getAllUserTeams} from '../../actions/allTeamsAction';
+import { getUserTeamMembers } from '../../actions/team';
+
 
 const TeamMemberTasks = props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -29,14 +32,21 @@ const TeamMemberTasks = props => {
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
+  const [allTeamList, setallTeamList] = useState([]);
+  const [myTeamList, setmyTeamList] = useState(undefined);
   const [teamList, setTeamList] = useState([]);
+  const [isLoadingmember, setisLoadingmember] = useState(false);
+  const [isTimeLogActive, setIsTimeLogActive] = useState(false);
   const [timeEntriesList, setTimeEntriesList] = useState([]);
   const [selectedPeriod, setSelectedPeriod] = useState();
-  const [isTimeLogActive, setIsTimeLogActive] = useState(false);
-  const [twentyFourHoursTimeEntries, setTwentyFourHoursTimeEntries] = useState([]);
-  const [fortyEightHoursTimeEntries, setFortyEightHoursTimeEntries] = useState([]);
-  const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
-  const [finishLoading, setFinishLoading] = useState(false);
+  const [isTeamTab, setisTeamTab] = useState(false);
+  const [allTeamtwentyFourHoursTimeEntries, setallTeamTwentyFourHoursTimeEntries] = useState([]);
+  const [allTeamfortyEightHoursTimeEntries, setallTeamFortyEightHoursTimeEntries] = useState([]);
+  const [allTeamseventyTwoHoursTimeEntries, setallTeamSeventyTwoHoursTimeEntries] = useState([]);
+  const [myTeamtwentyFourHoursTimeEntries, setmyTeamTwentyFourHoursTimeEntries] = useState([]);
+  const [myTeamfortyEightHoursTimeEntries, setmyTeamFortyEightHoursTimeEntries] = useState([]);
+  const [myTeamseventyTwoHoursTimeEntries, setmyTeamSeventyTwoHoursTimeEntries] = useState([]);
+  const [finishLoadingTimeData, setFinishLoadingTimeData] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
 
   //added it to keep track if the renderTeamsList should run
@@ -69,17 +79,19 @@ const TeamMemberTasks = props => {
       //if it's not differente, it'll attribute the current authenticated user's role.
       //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
       if (userId !== props.auth.user.userid) {
-        await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+         dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
         const currentUserRole = getUserRole(userId)
           .then(resp => resp)
           .then(user => {
             setUserRole(user.data.role);
           });
       } else {
-        await dispatch(fetchTeamMembersTask(userId, null));
+        getUserProfile(userId)(dispatch)
+         dispatch(fetchTeamMembersTask(userId, null));
         setUserRole(props.auth.user.role);
       }
       setShouldRun(true);
+ 
     };
     initialFetching();
   }, []);
@@ -90,12 +102,40 @@ const TeamMemberTasks = props => {
     }
   }, [currentUserId]);
 
-  useEffect(() => {
-    if (isLoading === false && shouldRun) {
-      renderTeamsList();
-      closeMarkAsDone();
+  //if user role is core team instead of showing all members show only team members by default.
+  useEffect(()=>{
+    if((props.userProfile.role=== 'Owner' || props.userProfile.role === 'Administrator' || props.userProfile.role === 'Core Team') && props.managingTeams.length > 0){
+      setisTeamTab(true)
+      setisLoadingmember(true)
     }
-  }, [usersWithTasks, shouldRun]);
+  },[props.userProfile])
+
+  //which data to show depending on user role
+  useEffect(()=>{
+    if(userRole){
+      if((userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Manager') && props.managingTeams.length > 0){ 
+        getMyTeam();
+      }else{
+        renderTeamsList();
+      }
+    }
+
+  },[usersWithTasks])
+
+  useEffect(() => {  
+    //submitTasks();
+    if (userId !== props.auth.user.userid) {
+      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+      const currentUserRole = getUserRole(userId)
+        .then(resp => resp)
+        .then(user => {
+          setUserRole(user.data.role);
+        });
+    } else {
+      dispatch(fetchTeamMembersTask(userId, null));
+      setUserRole(props.auth.user.role);
+    }
+  }, [updatedTasks]);
 
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
@@ -153,7 +193,10 @@ const TeamMemberTasks = props => {
     handleOpenTaskNotificationModal();
   };
 
-  const getTimeEntriesForPeriod = async teamList => {
+  //if called from getTeamMember it will set team member's time data, from renderTeamList it will set all member's data according to the parameters
+  const getTimeEntriesForPeriod = async (member, SeventyTwoHours, setSeventyTwoHours, setFortyEightHours,setTwentyFourHours )=> {
+    
+    let newList = [];
     let twentyFourList = [];
     let fortyEightList = [];
 
@@ -166,7 +209,7 @@ const TeamMemberTasks = props => {
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD');
 
-    const userIds = teamList.map(user => user.personId);
+    const userIds = member.map(user => user.personId);
 
     const userListTasksRequest = async userList => {
       const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
@@ -188,7 +231,7 @@ const TeamMemberTasks = props => {
         .subtract(48, 'hours')
         .format('YYYY-MM-DD');
 
-      setSeventyTwoHoursTimeEntries([...seventyTwoHoursTimeEntries, entry]);
+      setSeventyTwoHours([...SeventyTwoHours, entry]);
       const isFortyEight = moment(entry.dateOfWork).isAfter(threeDaysAgo);
       if (isFortyEight) fortyEightList.push(entry);
       const isTwentyFour = moment(entry.dateOfWork).isAfter(twoDaysAgo);
@@ -196,88 +239,168 @@ const TeamMemberTasks = props => {
     });
 
     //3. set three array of time logs
-    setSeventyTwoHoursTimeEntries([...usersListTasks]);
-    setFortyEightHoursTimeEntries([...fortyEightList]);
-    setTwentyFourHoursTimeEntries([...twentyFourList]);
+    //setSeventyTwoHours([...newList]);
+    setFortyEightHours([...fortyEightList]);
+    setTwentyFourHours([...twentyFourList]);
 
-    setFinishLoading(true);
+    if (newList && twentyFourList && fortyEightList) {
+      setFinishLoadingTimeData(true);
+      setisLoadingmember(false)
+
+    }
   };
 
-  //Display timelogs based on selected period
+  //Display timelogs based on selected period and team members
   const selectPeriod = period => {
+    if(!finishLoadingTimeData){
+      setisLoadingmember(true)
+      return
+    }
     if (period === selectedPeriod) {
       setIsTimeLogActive(!isTimeLogActive);
     } else {
       setIsTimeLogActive(true);
     }
     setSelectedPeriod(period);
+   
     if (period === 24) {
-      setTimeEntriesList([...twentyFourHoursTimeEntries]);
+      if(isTeamTab){
+        setTimeEntriesList([...myTeamtwentyFourHoursTimeEntries]);
+      }else{
+        setTimeEntriesList([...allTeamtwentyFourHoursTimeEntries]);
+      }
+      
     } else if (period === 48) {
-      setTimeEntriesList([...fortyEightHoursTimeEntries]);
+      if(isTeamTab){
+        setTimeEntriesList([...myTeamfortyEightHoursTimeEntries]);
+      }else{
+        setTimeEntriesList([...allTeamfortyEightHoursTimeEntries]);
+      }
+      
     } else {
-      setTimeEntriesList([...seventyTwoHoursTimeEntries]);
+    
+      if(isTeamTab){
+        setTimeEntriesList([...myTeamseventyTwoHoursTimeEntries]);
+      }else{
+        setTimeEntriesList([...allTeamseventyTwoHoursTimeEntries]);
+      }
+     
     }
   };
 
-  const renderTeamsList = async () => {
-    if (usersWithTasks && usersWithTasks.length > 0) {
-      // give different users different views
-      let filteredMembers = usersWithTasks.filter(member => {
-        if (userRole === 'Volunteer' || userRole === 'Core Team') {
-          return member.role === 'Volunteer' || member.role === 'Core Team';
-        } else if (userRole === 'Manager' || userRole === 'Mentor') {
-          return (
-            member.role === 'Volunteer' ||
-            member.role === 'Core Team' ||
-            member.role === 'Manager' ||
-            member.role === 'Mentor'
-          );
-        } else {
-          return member;
+  //get user's tems member data
+  const getMyTeam = async () => { 
+
+    let member = []
+    let res
+    for(let i = 0; i < props.userProfile.teams.length; i++){    
+        res = await getTeamMembers(props.userProfile.teams[i]._id)(dispatch);
+        if(member.length > 0){
+          member.forEach(user => {
+            res = res.filter(item => user._id !== item._id)
+          });
         }
-      });
-
-      //sort all users by their name
-      filteredMembers.sort((a, b) => {
-        let filteredMembersA = a.name.toLowerCase();
-        let filteredMembersB = b.name.toLowerCase();
-
-        if (filteredMembersA < filteredMembersB) {
-          return -1;
-        }
-        if (filteredMembersA > filteredMembersB) {
-          return 1;
-        }
-        return 0;
-      });
-
-      //find currentUser
-      const currentUser = filteredMembers.find(user => user.personId === userId);
-      // if current user doesn't have any task, the currentUser cannot be found
-
-      if (currentUser) {
-        //conditional variable for moving current user up front.
-        let moveCurrentUserFront = false;
-
-        //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
-        for (const task of currentUser.tasks) {
-          if (task.wbsId && task.projectId) {
-            moveCurrentUserFront = true;
-            break;
-          }
-        }
-        //if needs to move current user up front, first remove current user from filterMembers. Then put the current user on top of the list.
-        if (moveCurrentUserFront) {
-          //removed currentUser
-          filteredMembers = filteredMembers.filter(user => user.personId !== userId);
-          //push currentUser on top of the array.
-          filteredMembers.unshift(currentUser);
+        member = member.concat(res)
+    }
+    const filteredlist = usersWithTasks.filter(user => {
+      for(let i = 0; i < member.length; i++){
+        if(user.personId === member[i]._id){
+          return user
         }
       }
+    })
+    arrangeMembers(filteredlist,setmyTeamList, true)
+  
+  }
 
-      getTimeEntriesForPeriod(filteredMembers);
-      setTeamList([...filteredMembers]);
+//short members and place current members on top if has any task assigned.
+  const arrangeMembers = async (filteredMembers,setTeam,isteamtab)=>{
+          //sort all users by their name
+          filteredMembers.sort((a, b) => {
+            let filteredMembersA = a.name.toLowerCase();
+            let filteredMembersB = b.name.toLowerCase();
+    
+            if (filteredMembersA < filteredMembersB) {
+              return -1;
+            }
+            if (filteredMembersA > filteredMembersB) {
+              return 1;
+            }
+            return 0;
+          });
+    
+          //find currentUser
+          const currentUser = filteredMembers.find(user => user.personId === userId);
+          // if current user doesn't have any task, the currentUser cannot be found
+    
+          if (currentUser) {
+            //conditional variable for moving current user up front.
+            let moveCurrentUserFront = false;
+    
+            //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
+            for (const task of currentUser.tasks) {
+              if (task.wbsId && task.projectId) {
+                moveCurrentUserFront = true;
+                break;
+              }
+            }
+            //if needs to move current user up front, first remove current user from filterMembers. Then put the current user on top of the list.
+            if (moveCurrentUserFront) {
+              //removed currentUser
+              filteredMembers = filteredMembers.filter(user => user.personId !== userId);
+              //push currentUser on top of the array.
+              filteredMembers.unshift(currentUser);
+            }
+          }
+            if(isteamtab){
+              await getTimeEntriesForPeriod(filteredMembers,myTeamseventyTwoHoursTimeEntries, setmyTeamSeventyTwoHoursTimeEntries, setmyTeamFortyEightHoursTimeEntries, setmyTeamTwentyFourHoursTimeEntries);
+            }else{
+              await getTimeEntriesForPeriod(filteredMembers,allTeamseventyTwoHoursTimeEntries ,setallTeamSeventyTwoHoursTimeEntries, setallTeamFortyEightHoursTimeEntries, setallTeamTwentyFourHoursTimeEntries);
+            }
+            setTeam([...filteredMembers])
+            setTeamList([...filteredMembers]);           
+}
+
+//set all memmers
+const renderTeamsList = async () => {
+    
+    setisLoadingmember(true)
+    let filteredMembers
+    if (usersWithTasks && usersWithTasks.length > 0) {
+      filteredMembers = usersWithTasks.filter(member => {
+          return member;
+      });  
+    }
+    
+    arrangeMembers(filteredMembers,setallTeamList, false)
+  }
+
+ //stop loading on data fetched 
+  useEffect(()=>{
+    if(isLoadingmember){
+      setisLoadingmember(false)
+    }
+  },[teamList])
+
+//Toggle members view
+  const toggleTeamView = () =>{
+    if(isTimeLogActive){
+      setIsTimeLogActive(false)
+    }
+    if(isTeamTab){
+      setisTeamTab(false)
+      if(allTeamList.length > 0){
+        setTeamList([...allTeamList]);
+      }else{
+        renderTeamsList();
+      }
+    }else{
+      setisTeamTab(true)
+      if(myTeamList.length > 0){
+        setTeamList([...myTeamList]);
+      }else{
+        getMyTeam();
+      }
     }
   };
 
@@ -285,7 +408,15 @@ const TeamMemberTasks = props => {
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
-        {finishLoading ? (
+        {(props.userProfile?.role == 'Owner' || props.userProfile?.role === 'Administrator' || props.userProfile?.role === 'Core Team') &&  props.managingTeams.length > 0 &&<button className='circle-border my-team' style={{ 
+                backgroundColor: isTeamTab ? skyblue : 'slategray',
+                cursor: isLoadingmember ? 'not-allowed' : 'pointer'
+                }} onClick={toggleTeamView}
+                disabled={isLoadingmember}>
+               {isTeamTab ? 'View All' : 'My Teams'}
+        </button>}
+        
+        { finishLoadingTimeData ? (
           <div className="hours-btn-container">
             <button
               type="button"
@@ -406,8 +537,10 @@ const TeamMemberTasks = props => {
           </thead>
 
           <tbody>
-            {isLoading ? (
+
+            {isLoading ? isLoadingmember (
               <SkeletonLoading template="TeamMemberTasks" />
+
             ) : (
               teamList.map(user => {
                 if (!isTimeLogActive) {
@@ -454,9 +587,12 @@ const TeamMemberTasks = props => {
                   );
                 }
               })
-            )}
+            ) }
           </tbody>
+          
         </Table>
+        {isTeamTab && myTeamList?.length === 1 && <p className='noMember'>Great, you are on a team! Unfortunately though, your team has only you in it 
+         <FontAwesomeIcon icon={faFrown} size='lg' style={{color: "#ffd22e", marginLeft:'2px'}} />. Contact an Administrator or your Manager to fix this so you are not so lonely here!</p>}
       </div>
     </div>
   );
