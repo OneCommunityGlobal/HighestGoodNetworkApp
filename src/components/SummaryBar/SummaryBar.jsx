@@ -40,7 +40,6 @@ const SummaryBar = props => {
   const [badges, setBadges] = useState(0);
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState([]);
-
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
   const gsUserprofile = useSelector(state => state.userProfile);
@@ -50,7 +49,7 @@ const SummaryBar = props => {
   const authenticateUserPermission = authenticateUser
     ? authenticateUser.permissions?.frontPermissions
     : [];
-
+  
   const matchUser = asUser == authenticateUserId ? true : false;
 
   // Similar to UserProfile component function
@@ -132,11 +131,19 @@ const SummaryBar = props => {
   const readFormData = (formid) =>{
     let form = document.getElementById(formid);
     let formData = new FormData(form);
-    var data = {};
+    let data = {};
+    let isvalid = true;
+
     formData.forEach(function(value, key) {
-      data[key] = value;
+      if(value.trim() !== '' ){
+        data[key] = value
+      }else{
+        isvalid = false;
+      }
+       
     });
-    return data;
+    
+    return isvalid ? data : null;
   }
 
   const openReport = () => {
@@ -175,29 +182,39 @@ const SummaryBar = props => {
   const editField = async (event) =>{
     event.preventDefault();
     const data = readFormData('newFieldForm');
-    if(extraFieldForSuggestionForm === 'suggestion'){
-      data.suggestion = true;
-      data.field = false;
-      setnewfields(data, setSuggestionCategory);
-    }else if(extraFieldForSuggestionForm === 'field'){
-      data.suggestion = false;
-      data.field = true
-      setnewfields(data, setInputField);
+   
+    if(data){
+      if(extraFieldForSuggestionForm === 'suggestion'){
+        data.suggestion = true;
+        data.field = false;
+        setnewfields(data, setSuggestionCategory);
+      }else if(extraFieldForSuggestionForm === 'field'){
+        data.suggestion = false;
+        data.field = true
+        setnewfields(data, setInputField);
+      }
+        setExtraFieldForSuggestionForm('');
+        seteditType('');
+        httpService.post(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`, data).catch(e => {});
+    }else{
+      toast.error('Please fill all fields with valid values.')
     }
-    setExtraFieldForSuggestionForm('');
-    seteditType('');
-    httpService.post(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`, data).catch(e => {});
   }
 
   const sendUserSuggestion = async event =>{
     event.preventDefault();
     const data = readFormData('suggestionForm')
-    setShowSuggestionModal(prev => !prev);
-    const res = await httpService.post(`${ApiEndpoint}/dashboard/makesuggestion/${userProfile._id}`, data).catch(e => {});
+    
+    if(data){
+      setShowSuggestionModal(prev => !prev);
+      const res = await httpService.post(`${ApiEndpoint}/dashboard/makesuggestion/${userProfile._id}`, data).catch(e => {});
     if(res.status === 200){
       toast.success('Email sent successfully!');
     }else{
        toast.error('Failed to send email!');
+    }
+    }else{
+      toast.error('Please fill all fields with valid values.')
     }
   }
  
