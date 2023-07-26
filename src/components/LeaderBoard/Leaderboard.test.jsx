@@ -8,7 +8,7 @@ describe('Leaderboard page structure', () => {
   beforeEach(() => {
     props = mockAdminState;
     props.organizationData = { weeklyCommittedHours: 0, tangibletime: 0, totaltime: 0 };
-    props.getLeaderboardData = jest.fn();
+    props.leaderBoardData = jest.fn();
     props.loggedInUser = jest.fn();
     mountedLeaderboard = shallow(<Leaderboard {...props} />);
   });
@@ -27,9 +27,11 @@ describe('Leaderboard page structure', () => {
 
   it('should be rendered with mock Leaderboard data', () => {
     const leaderBoardBody = mountedLeaderboard.find('tbody');
+  
     const leaderBoardItems = leaderBoardBody.find('tr');
     let lbData = mockAdminState.leaderBoardData;
     const lBLength = lbData.length;
+  
     expect(leaderBoardItems.length).toBe(lBLength + 1);
 
     for (let i = 0; i < lBLength; i++) {

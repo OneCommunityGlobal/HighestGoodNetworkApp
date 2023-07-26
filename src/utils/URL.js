@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 let APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
 let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
@@ -5,7 +6,6 @@ let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
-  USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
@@ -26,7 +26,7 @@ export const ENDPOINTS = {
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
-  TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
+  TIME_ENTRIES_USER_LIST: users => `${APIEndpoint}/TimeEntry/users?members=${users}`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
@@ -67,11 +67,9 @@ export const ENDPOINTS = {
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
 
-  DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
-  `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
-  `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
+    `${ENDPOINTS.TASK_EDIT_SUGGESTION()}/${taskEditSuggestionId}`,
 
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
@@ -84,8 +82,7 @@ export const ENDPOINTS = {
   OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
 
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
-  OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
-    `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
+  OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId => `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -4,8 +4,7 @@ import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
-import styles from './UserTeamsTable.css';
-import { boxStyle } from 'styles';
+import './UserTeamsTable.css';
 
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
@@ -42,29 +41,15 @@ const UserTeamsTable = props => {
             {props.edit && props.role && (
               <Col md="5">
                 {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                  props.disabled? (
-                    <div className="div-addteam" title="Please save changes before assign team">
-                      <Button
-                        className="btn-addteam"
-                        color="primary"
-                        style={boxStyle}
-                        disabled
-                      >
-                        Assign Team
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      onClick={() => {
-                        props.onButtonClick();
-                      }}
-                      style={boxStyle}
-                    >
-                      Assign Team
-                    </Button>
-                  )
+                  <Button
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                  >
+                    Assign Team
+                  </Button>
                 ) : (
                   <></>
                 )}
@@ -101,7 +86,6 @@ const UserTeamsTable = props => {
                           onClick={e => {
                             props.onDeleteClick(team._id);
                           }}
-                          style={boxStyle}
                         >
                           Delete
                         </Button>
@@ -153,32 +137,17 @@ const UserTeamsTable = props => {
             <span className="teams-span">Teams</span>
           </Col>
           {props.edit && props.role && (
-            <Col
-              md="12"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
+            <Col md="12" className="centered-col">
               {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                props.disabled? (
-                  <div className="div-addteam" title="Please save changes before assign team">
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      disabled
-                    >
-                      Assign Team
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    className="btn-addteam"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                  >
-                    Assign Team
-                  </Button>
-                )
+                <Button
+                  className="btn-addteam"
+                  color="primary"
+                  onClick={() => {
+                    props.onButtonClick();
+                  }}
+                >
+                  Assign Team
+                </Button>
               ) : (
                 <></>
               )}
@@ -206,13 +175,7 @@ const UserTeamsTable = props => {
                     <td>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
                       <td>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
+                        <div className="centered-col">
                           <Button
                             disabled={
                               !hasPermission(props.role, 'assignTeamToUser', roles, userPermissions)

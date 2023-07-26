@@ -1,3 +1,3 @@
-import TableFilter from './TableFilter';
+import TableFilter from "./TableFilter";
 
 export default TableFilter;

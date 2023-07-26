@@ -9,7 +9,6 @@ import {
 } from '../../actions/badgeManagement';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { boxStyle } from 'styles';
 
 const AssignBadgePopup = props => {
   const [searchedName, setSearchedName] = useState('');
@@ -65,7 +64,7 @@ const AssignBadgePopup = props => {
           onSearch(e.target.value);
         }}
       />
-      <div style={{ overflowY: 'scroll', height: '75vh' }}>
+      <div style={{ overflowY: 'scroll', height: '75vh'}}>
         <Table>
           <thead>
             <tr>
@@ -79,10 +78,9 @@ const AssignBadgePopup = props => {
                   style={{ backgroundColor: '#666', color: '#fff' }}
                 >
                   <p className="badge_info_icon_text">
-                    Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check
-                    those boxes to select the badges you wish to assign a person. Click the
-                    &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you wish
-                    to add.
+                    Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check those
+                    boxes to select the badges you wish to assign a person. Click the "Confirm" button
+                    at the bottom when you've selected all you wish to add.
                   </p>
                   <p className="badge_info_icon_text">
                     Want to assign multiple of the same badge to a person? Repeat the process!!
@@ -93,14 +91,14 @@ const AssignBadgePopup = props => {
           </thead>
           <tbody>
             {filteredBadges.map((value, index) => (
-              <AssignTableRow badge={value} index={index} key={index} />
+              <AssignTableRow badge={value} index={index} key={index}/>
             ))}
           </tbody>
         </Table>
       </div>
       <Button
         className="btn--dark-sea-green float-right"
-        style={{ ...boxStyle, margin: 5 }}
+        style={{ margin: 5 }}
         onClick={assignBadges}
       >
         Confirm

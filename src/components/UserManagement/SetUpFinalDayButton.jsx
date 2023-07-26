@@ -5,7 +5,6 @@ import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { updateUserFinalDayStatus } from 'actions/userManagement';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
 
 /**
  * @param {*} props
@@ -65,7 +64,6 @@ const SetUpFinalDayButton = props => {
         onClick={e => {
           onFinalDayClick(props.userProfile, isSet);
         }}
-        style={boxStyle}
       >
         {isSet ? CANCEL : SET_FINAL_DAY}
       </Button>

@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
 import { useHistory } from 'react-router-dom';
-import { boxStyle } from 'styles';
 
 /**
  * Modal popup to show the user profile in create mode
@@ -56,7 +55,7 @@ const NewUserPopup = React.memo(props => {
         {/* Nested Modal that triggers when a first and last name user already exists */}
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <Button color="secondary" onClick={closePopup}>
           Close
         </Button>
       </ModalFooter>

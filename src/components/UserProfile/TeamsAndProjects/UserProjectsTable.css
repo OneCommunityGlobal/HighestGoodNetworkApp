@@ -17,11 +17,3 @@
   align-items: center;
   justify-content: center;
 }
-
-.div-addproject {
-  display: inline-block;
-}
-
-.div-addproject .btn-addproject[disabled] {
-  pointer-events: none;
-}

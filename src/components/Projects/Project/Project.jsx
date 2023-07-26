@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
 
 const Project = props => {
   const [originName] = useState(props.name);
@@ -96,7 +95,7 @@ const Project = props => {
       </td>
       <td>
         <NavItem tag={Link} to={`/inventory/${props.projectId}`}>
-          <button type="button" className="btn btn-outline-info" style={boxStyle}>
+          <button type="button" className="btn btn-outline-info">
             {' '}
             <i className="fa fa-archive" aria-hidden="true"></i>
           </button>
@@ -104,7 +103,7 @@ const Project = props => {
       </td>
       <td>
         <NavItem tag={Link} to={`/project/members/${props.projectId}`}>
-          <button type="button" className="btn btn-outline-info" style={boxStyle}>
+          <button type="button" className="btn btn-outline-info">
             {' '}
             <i className="fa fa-users" aria-hidden="true"></i>
           </button>
@@ -113,7 +112,7 @@ const Project = props => {
 
       <td>
         <NavItem tag={Link} to={`/project/wbs/${props.projectId}`}>
-          <button type="button" className="btn btn-outline-info" style={boxStyle}>
+          <button type="button" className="btn btn-outline-info">
             <i className="fa fa-tasks" aria-hidden="true"></i>
           </button>
         </NavItem>
@@ -125,7 +124,6 @@ const Project = props => {
             type="button"
             className="btn btn-outline-danger"
             onClick={e => props.onClickDelete(props.projectId, props.active, props.name)}
-            style={boxStyle}
           >
             {DELETE}
           </button>

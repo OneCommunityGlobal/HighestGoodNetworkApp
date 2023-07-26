@@ -1,7 +1,6 @@
 import React from 'react';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
 
 /**
  * The search panel stateless component for  Teams grid
@@ -16,7 +15,6 @@ const TeamTablesearchPanel = props => {
           onClick={e => {
             props.onCreateNewTeamClick();
           }}
-          style={boxStyle}
         >
           {CREATE_NEW_TEAM}
         </button>
@@ -26,7 +24,6 @@ const TeamTablesearchPanel = props => {
       </div>
 
       <input
-        autoFocus
         type="text"
         className="form-control"
         aria-label="Search"

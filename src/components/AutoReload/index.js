@@ -1,2 +1,2 @@
-import AutoUpdate from '../AutoUpdate';
+import AutoUpdate from './AutoUpdate';
 export default AutoUpdate;

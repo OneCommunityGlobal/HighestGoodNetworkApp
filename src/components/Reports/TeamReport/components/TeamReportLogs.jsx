@@ -1,18 +1,12 @@
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
-import React, { useState, useEffect } from 'react';
-
+import React, { useState } from 'react';
+import { useEffect } from 'react';
 import './ReportLogs.css';
 
-function TeamReportLogs({
-  title,
-  teamMembers,
-  teamTotalBlueSquares,
-  teamWeeklyCommittedHours,
-  totalTeamWeeklyWorkedHours,
-}) {
+function TeamReportLogs({ title, teamMembers, teamTotalBlueSquares, teamWeeklyCommittedHours, totalTeamWeeklyWorkedHours }) {
   return (
     <section>
-      <h2 className="teams-report-time-title">{title}</h2>
+      <h2 className="teams-report-time-title">{ title }</h2>
       <div className="teams-report-time-logs-wrapper">
         <ReportPage.ReportBlock
           firstColor="#ff5e82"

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { getWeeklySummaries, updateWeeklySummaries } from '../actions/weeklySummaries';
@@ -9,7 +10,7 @@ const url = ENDPOINTS.USER_PROFILE(':userId');
 
 const weeklySummariesMockData = {
   weeklySummariesCount: 1,
-  weeklySummaries: [{ _id: '1', dueDate: '1', summary: 'a', uploadDate: '1' }],
+  weeklySummaries: [{ _id: '1', dueDate: '1', summary: 'a' }],
   mediaUrl: 'u',
 };
 
@@ -36,7 +37,7 @@ describe('WeeklySummary Redux related actions', () => {
 
       expect(wSummariesSlice().summaries).toHaveProperty('mediaUrl', 'u');
       expect(wSummariesSlice().summaries).toHaveProperty('weeklySummaries', [
-        { _id: '1', dueDate: '1', summary: 'a', uploadDate: '1' },
+        { _id: '1', dueDate: '1', summary: 'a' },
       ]);
       expect(wSummariesSlice().summaries).toHaveProperty('weeklySummariesCount', 1);
     });

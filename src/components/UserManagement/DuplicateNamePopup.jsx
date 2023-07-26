@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle } from 'styles';
 
 /**
  * Modal popup to delete the user profile
@@ -23,13 +22,10 @@ const DuplicateNamePopup = React.memo(props => {
               props.createUserProfile(true);
               props.onClose();
             }}
-            style={boxStyle}
           >
             Confirm
           </Button>
-          <Button onClick={() => props.popupClose()} style={boxStyle}>
-            Change name
-          </Button>
+          <Button onClick={() => props.popupClose()}>Change name</Button>
         </ModalFooter>
       </ModalBody>
     </Modal>

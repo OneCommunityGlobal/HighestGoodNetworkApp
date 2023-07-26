@@ -1,10 +1,7 @@
 import moment from 'moment';
 import 'moment-timezone';
 
-const dueDateThisWeek = moment()
-  .tz('America/Los_Angeles')
-  .endOf('week')
-  .toISOString();
+const dueDateThisWeek = moment().tz('America/Los_Angeles').endOf('week').toISOString();
 const dueDateLastWeek = moment()
   .tz('America/Los_Angeles')
   .endOf('week')

@@ -9,7 +9,7 @@ import { allProjectsReducer } from './allProjectsReducer';
 import { projectReportReducer } from './projectReportReducer';
 import { userProjectsReducer } from './userProjectsReducer';
 import { projectMembershipReducer } from './projectMembershipReducer';
-import { allUserTeamsReducer } from './allTeamsReducer';
+import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer';
 import { teamByIdReducer } from './teamByIdReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';

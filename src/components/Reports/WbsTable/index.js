@@ -1,1 +1,1 @@
-export { WbsTable } from './WbsTable';
+export { WbsTable } from "./WbsTable";

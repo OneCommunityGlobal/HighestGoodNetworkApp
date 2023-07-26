@@ -1,12 +1,7 @@
 html {
   overflow-x: hidden;
 }
-
-body {
-  display: grid;
-  grid-template-columns: auto 0px;
-}
-
+body,
 #root {
   height: 100%;
 }
@@ -94,24 +89,6 @@ body {
   /*  90%to100%-red */
 }
 
-
-nav ul.navbar-nav li:last-child>div {
+nav ul.navbar-nav li:last-child > div {
   transform: translate3d(-26px, 40px, 0px) !important;
-}
-
-.top {
-  text-decoration: none;
-  padding: 10px;
-  margin: 10px;
-  --offset: 100px;
-  margin-top: calc(100vh + var(--offset));
-  font-family: sans-serif;
-  color: #fff;
-  background: #000;
-  border-radius: 100px;
-  place-self: end;
-  position: sticky;
-  right: -30px;
-  bottom: 10px;
-  white-space: nowrap
 }

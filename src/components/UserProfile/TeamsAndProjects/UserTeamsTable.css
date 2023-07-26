@@ -17,11 +17,3 @@
   align-items: center;
   justify-content: center;
 }
-
-.div-addteam {
-  display: inline-block;
-}
-
-.div-addteam .btn-addteam[disabled] {
-  pointer-events: none;
-}

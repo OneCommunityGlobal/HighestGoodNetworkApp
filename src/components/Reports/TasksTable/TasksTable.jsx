@@ -8,7 +8,6 @@ import './TasksTable.css';
 import DropDownSearchBox from 'components/UserManagement/DropDownSearchBox';
 import { Checkbox } from 'components/common/Checkbox';
 import TextSearchBox from 'components/UserManagement/TextSearchBox';
-import { boxStyle } from 'styles';
 
 export const TasksTable = ({ WbsTasksID }) => {
   const { get_tasks } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
@@ -101,11 +100,7 @@ export const TasksTable = ({ WbsTasksID }) => {
           />
         </div>
 
-        <button
-          className="tasks-table-clear-filter-button"
-          onClick={() => resetAllFilters()}
-          style={boxStyle}
-        >
+        <button exact className="tasks-table-clear-filter-button" onClick={() => resetAllFilters()}>
           Clear filters
         </button>
       </div>

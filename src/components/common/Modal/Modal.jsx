@@ -11,7 +11,6 @@ import {
   Input,
 } from 'reactstrap';
 import ReactHtmlParser from 'react-html-parser';
-import { boxStyle } from 'styles';
 
 const ModalExample = props => {
   const {
@@ -74,17 +73,17 @@ const ModalExample = props => {
         )}
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={closeModal} style={boxStyle}>
+        <Button color="primary" onClick={closeModal}>
           Close
         </Button>
 
         {confirmModal != null ? (
-          <Button color="danger" onClick={confirmModal} style={boxStyle}>
+          <Button color="danger" onClick={confirmModal}>
             Confirm
           </Button>
         ) : null}
         {setInactiveModal != null ? (
-          <Button color="warning" onClick={setInactiveModal} style={boxStyle}>
+          <Button color="warning" onClick={setInactiveModal}>
             Set inactive
           </Button>
         ) : null}
@@ -94,7 +93,6 @@ const ModalExample = props => {
             color="danger"
             onClick={() => confirmModal(linkName, linkURL, linkType)}
             disabled={buttonDisabled}
-            style={boxStyle}
           >
             Add
           </Button>

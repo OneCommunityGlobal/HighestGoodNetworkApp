@@ -1,6 +1,6 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle } from 'styles';
 
 const DeleteTeamPopup = React.memo(props => {
   const closePopup = () => {
@@ -22,7 +22,6 @@ const DeleteTeamPopup = React.memo(props => {
           onClick={() => {
             props.onDeleteClick(props.selectedTeamId);
           }}
-          style={boxStyle}
         >
           Confirm
         </Button>
@@ -31,11 +30,10 @@ const DeleteTeamPopup = React.memo(props => {
           onClick={() => {
             props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false);
           }}
-          style={boxStyle}
         >
           Set Inactive
         </Button>
-        <Button color="primary" onClick={closePopup} style={boxStyle}>
+        <Button color="primary" onClick={closePopup}>
           Close
         </Button>
       </ModalFooter>

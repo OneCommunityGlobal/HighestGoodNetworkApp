@@ -18,7 +18,6 @@ import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
-import { boxStyle } from 'styles';
 
 const BadgeDevelopmentTable = props => {
   const [name, setName] = useState('');
@@ -190,12 +189,7 @@ const BadgeDevelopmentTable = props => {
               <td>{value.ranking || 0}</td>
               <td>
                 <span className="badgemanagement-actions-cell">
-                  <Button
-                    outline
-                    color="info"
-                    onClick={() => onEditButtonClick(value)}
-                    style={boxStyle}
-                  >
+                  <Button outline color="info" onClick={() => onEditButtonClick(value)}>
                     Edit
                   </Button>{' '}
                 </span>
@@ -204,7 +198,6 @@ const BadgeDevelopmentTable = props => {
                     outline
                     color="danger"
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
-                    style={boxStyle}
                   >
                     Delete
                   </Button>
