@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import moment from 'moment';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
+import { useEffect } from 'react';
 
 const ScheduleReasonModal = ({
   handleToggle,
@@ -14,7 +15,13 @@ const ScheduleReasonModal = ({
   fetchState,
   date,
   setDate,
+  fetchMessage
 }) => {
+
+  useEffect(() => {
+    setDate(moment().tz('America/Los_Angeles').endOf('week').toISOString().split('T')[0])
+  }, [])
+
   return (
     <>
       <Modal show={show} onHide={handleToggle}>
@@ -50,7 +57,7 @@ const ScheduleReasonModal = ({
               />
             </Form.Group>
             {!fetchState.isFetching && fetchState.error ? (
-              <Alert variant={'danger'}>Something went wrong while saving the Reason.</Alert>
+              <Alert variant={'danger'}>{fetchMessage}</Alert>
             ) : !fetchState.isFetching && fetchState.success ? (
               <Alert variant={'success'}>Reason Scheduling Saved!</Alert>
             ) : null}
