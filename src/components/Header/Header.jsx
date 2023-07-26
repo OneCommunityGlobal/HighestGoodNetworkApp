@@ -41,8 +41,6 @@ import {
 } from 'reactstrap';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
-
-import hasPermission from '../../utils/permissions';
 import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
 import { BsFillSunFill, BsFillMoonFill } from 'react-icons/bs';
 import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
