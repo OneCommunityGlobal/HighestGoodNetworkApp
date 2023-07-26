@@ -30,7 +30,7 @@ const BlueSquareLayout = props => {
           errorCode: action.payload.errorCode,
         };
       case 'SUCCESS':
-        return { isFetching: false, error: false, success: true, isSet: true, ...state };
+        return { ...state, isFetching: false, error: false, success: true, isSet: true };
       case 'FETCHING_FINISHED':
         return {
           error: false,
