@@ -4,11 +4,16 @@ import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
-import {
-  hasLeaderboardPermissions,
-  assignStarDotColors,
-  showStar,
-} from 'utils/leaderboardPermissions';
+import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import { getTeamMembers} from '../../actions/allTeamsAction';
+import {skyblue} from 'constants/colors';
+import Loading from '../common/Loading';
+import { getLeaderboardData, getOrgData} from '../../actions/leaderBoardData';
+import { round, maxBy } from 'lodash';
+import { getcolor, getProgressValue } from '../../utils/effortColors';
+import {faFrown} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -28,38 +33,143 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 const LeaderBoard = ({
-  getLeaderboardData,
-  getOrgData,
   leaderBoardData,
   loggedInUser,
   organizationData,
   timeEntries,
   isVisible,
   asUser,
+  userTeams,
+  userRole,
+  dispatch
 }) => {
+
+
+
+  const [myTeamData,setmyTeamData] = useState(undefined)
+  const [leaderboarddata,setleaderboarddata] = useState([]);
+  const [showLeaderboard, setShowLeaderboard] = useState([]);
+  const [isTeamTab, setisTeamTab] = useState(false);
+  const [isLoadingmember, setisLoadingmember] = useState(false);
+ 
   const userId = asUser ? asUser : loggedInUser.userId;
   const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
-
+ 
   useDeepEffect(() => {
-    getLeaderboardData(userId);
-    getOrgData();
+    getLeaderboardData(userId)(dispatch);
+    getOrgData()(dispatch);
   }, [timeEntries]);
 
-  useDeepEffect(() => {
-    try {
-      if (window.screen.width < 540) {
-        const scrollWindow = document.getElementById('leaderboard');
-        if (scrollWindow) {
-          const elem = document.getElementById(`id${userId}`); //
+  //get leaderboard data
+  const getdata = async ()=>{
+    // const url = ENDPOINTS.LEADER_BOARD(userId);
+    // const res = await httpService.get(url);
+    // let leaderBoardData = res.data
+    let leaderBoardData = await getLeaderboardData(userId)(dispatch)
 
-          if (elem) {
-            const topPos = elem.offsetTop;
-            scrollWindow.scrollTo(0, topPos - 100 < 100 ? 0 : topPos - 100);
+    if (loggedInUser.role !== 'Administrator' && loggedInUser.role !== 'Owner' && loggedInUser.role !== 'Core Team') {
+      leaderBoardData = leaderBoardData.filter(element => {
+        return element.weeklycommittedHours > 0 || loggedInUser.userid === element.personId;
+      });
+    }
+  
+    if (leaderBoardData.length) {
+      let maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
+      leaderBoardData = leaderBoardData.map(element => {
+        element.didMeetWeeklyCommitment =
+        element.totaltangibletime_hrs >= element.weeklycommittedHours;
+        element.weeklycommitted = round(element.weeklycommittedHours, 2);
+        element.tangibletime = round(element.totaltangibletime_hrs, 2);
+        element.intangibletime = round(element.totalintangibletime_hrs, 2);
+        element.tangibletimewidth = round((element.totaltangibletime_hrs * 100) / maxTotal, 0);
+        element.intangibletimewidth = round((element.totalintangibletime_hrs * 100) / maxTotal, 0);
+        element.barcolor = getcolor(element.totaltangibletime_hrs);
+        element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
+        element.totaltime = round(element.totaltime_hrs, 2);
+        element.isVisible = element.role === 'Volunteer' || element.isVisible;
+  
+        return element;
+      });
+    }
+    setleaderboarddata([...leaderBoardData])
+  }
+
+  //set team toggler button state according to logged in user role
+  useEffect(()=>{
+    if(loggedInUser){
+      setisLoadingmember(true)
+      getdata()
+    }
+  },[loggedInUser])
+
+  //if user role is core team or admin or owner instead of showing all members show only team members by default.//loggedInUser.role
+  useDeepEffect(() => {
+    if(userRole){
+      if((userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team') && userTeams?.length > 0){
+        setisTeamTab(true)
+        getMyTeam();
+      }else{
+        setShowLeaderboard([...leaderboarddata])
+      } 
+      try {
+        if (window.screen.width < 540) {
+          const scrollWindow = document.getElementById('leaderboard');
+          if (scrollWindow) {
+            const elem = document.getElementById(`id${userId}`); //
+  
+            if (elem) {
+              const topPos = elem.offsetTop;
+              scrollWindow.scrollTo(0, topPos - 100 < 100 ? 0 : topPos - 100);
+            }
           }
         }
+      } catch {} 
+    }
+
+  }, [leaderboarddata,userRole]);
+
+  //get user team members
+  const getMyTeam = async () => { 
+    let member = []
+    let res
+    if(userTeams){
+      for(let i =0; i < userTeams?.length; i++){    
+        res = await getTeamMembers(userTeams[i]._id)(dispatch);
+        if(member.length > 0){
+          member.forEach(user => {
+            res = res.filter(item => user._id !== item._id);
+          });
+        }
+        member = member.concat(res);
+    }
+    const filteredlist = leaderboarddata.filter(user => {
+      for(let i = 0; i < member.length; i++){
+        if(user.personId === member[i]._id){
+          return user;
+        }
       }
-    } catch {}
-  }, [leaderBoardData]);
+    })
+    setmyTeamData([...filteredlist]);
+    setShowLeaderboard([...filteredlist]);
+  }
+}
+//my team toggle button
+const toggleTeamView = () =>{
+  if(isTeamTab){
+    setisTeamTab(false)
+    setShowLeaderboard([...leaderboarddata]);
+  }else{
+    setisTeamTab(true)
+    setShowLeaderboard([...myTeamData]);
+  }
+}
+
+//stop loading on data fetched
+useEffect(()=>{
+  if(isLoadingmember && showLeaderboard){
+    setisLoadingmember(false)
+  }
+},[showLeaderboard])
 
   const [isOpen, setOpen] = useState(false);
   const [modalContent, setContent] = useState(null);
@@ -139,6 +249,7 @@ const LeaderBoard = ({
 
   return (
     <div>
+      <div className='leader-head'>
       <h3>
         Leaderboard&nbsp;&nbsp;
         <i
@@ -165,6 +276,14 @@ const LeaderBoard = ({
           }}
         />
       </h3>
+      {(loggedInUser.role === 'Owner' || loggedInUser.role === 'Administrator' || loggedInUser.role == 'Core Team') && userTeams?.length > 0 && <button className='circle-border my-team' style={{ 
+                backgroundColor: isTeamTab ? skyblue : 'slategray',
+                cursor: isLoadingmember ? 'not-allowed': 'pointer',
+                }} onClick={toggleTeamView}
+                disabled={isLoadingmember}>
+                {isTeamTab ? 'View All' : 'My Teams'}
+      </button>}
+      </div>
       {!isVisible && (
         <Alert color="warning">
           Note: You are currently invisible to the team(s) you are on.&nbsp;&nbsp;
@@ -230,7 +349,8 @@ const LeaderBoard = ({
                 </span>
               </td>
             </tr>
-            {leaderBoardData.map((item, key) => (
+            {isLoadingmember ? <Loading/>: (
+            showLeaderboard.map((item, key) => (
               <tr key={key}>
                 <td className="align-middle">
                   <div>
@@ -332,9 +452,11 @@ const LeaderBoard = ({
                   </span>
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </Table>
+        {isTeamTab && myTeamData?.length === 1 && <p className='noMember'>Great, you are on a team! Unfortunately though, your team has only you in it 
+         <FontAwesomeIcon icon={faFrown} size='lg' style={{color: "#ffd22e", marginLeft:'2px'}} />. Contact an Administrator or your Manager to fix this so you are not so lonely here!</p>}
       </div>
     </div>
   );
