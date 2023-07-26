@@ -14,11 +14,13 @@ const BlueSquareLayout = props => {
   const fetchingReducer = (state, action) => {
     switch (action.type) {
       case 'FETCHING_STARTED':
-        return { ...state, isFetching: true };
+        return { error: false, success: false, isFetching: true, fetchMessage: '', errorCode: null };
       case 'ERROR':
         return { isFetching: false, error: true, success: false, fetchMessage: action.payload.message, errorCode: action.payload.errorCode };
       case 'SUCCESS':
         return { isFetching: false, error: false, success: true };
+      case 'FETCHING_FINISHED':
+        return { error: false, success: false, isFetching: false, fetchMessage: '', errorCode: null };
       default:
         return state
     }
@@ -55,7 +57,8 @@ const BlueSquareLayout = props => {
     setShow(false)
     fetchDispatch({ type: 'FETCHING_STARTED' });
     const response = await addReason(userProfile._id, {date: date, message: reason})
-    if(response.httpCode !== 200){
+    console.log(response)
+    if(response.status !== 200){
       fetchDispatch({type:'ERROR', payload: {message: response.message, errorCode: response.errorCode}})
     }else{
       fetchDispatch({type: 'SUCCESS'})
@@ -102,6 +105,8 @@ const BlueSquareLayout = props => {
             date={date}
             setDate={setDate}
             fetchMessage={fetchState.fetchMessage}
+            fetchDispatch={fetchDispatch}
+            userId={userProfile._id}
           />
         )}
       </div>
