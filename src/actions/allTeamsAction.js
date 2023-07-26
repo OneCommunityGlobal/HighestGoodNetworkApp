@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -13,6 +14,7 @@ import {
   TEAM_MEMBER_DELETE,
   TEAM_MEMBER_ADD,
 } from '../constants/allTeamsConstants';
+import { updateUserProfile } from './userProfile';
 
 /**
  * set allteams in store
@@ -181,25 +183,27 @@ export const getTeamMembers = (teamId) => {
  * delete an existing team member
  * @param {*} teamId  - the team to be deleted
  */
-export const deleteTeamMember = (teamId, userId) => {
-  const requestData = { users: [{ userId, operation: 'UnAssign' }] };
-  const teamMemberDeletePromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
+export const deleteTeamMember =  (teamId,  userProfile) => {
+  const requestData = { users: [{ userId: userProfile._id, operation: 'UnAssign' }] };
   return async (dispatch) => {
-    teamMemberDeletePromise.then(() => {
-      dispatch(teamMemberDeleteAction(userId));
-    });
+    const teamMemberDeletePromise = await axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
+      await dispatch(teamMemberDeleteAction( userProfile._id));
+      //update user team
+     await updateUserProfile( userProfile._id, userProfile)(dispatch);
   };
 };
 
 /**
  * Adding an existing user to team
  */
-export const addTeamMember = (teamId, userId, firstName, lastName) => {
-  const requestData = { users: [{ userId, operation: 'Assign' }] };
-  const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
+export const addTeamMember = (teamId,  userProfile) => {
+  console.log('userIDDDD', userProfile._id)
+  const requestData = { users: [{ userId : userProfile._id, operation: 'Assign' }] };
   return async (dispatch) => {
-    teamMemberAddPromise.then(() => {
-      dispatch(teamMemberAddAction({ _id: userId, firstName, lastName }));
-    });
+    const teamMemberAddPromise = await axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
+      await dispatch(teamMemberAddAction({ _id:userProfile._id , firstName: userProfile.firstName, lastName: userProfile.lastName }));
+      //update user team
+      await updateUserProfile(userProfile._id, userProfile)(dispatch);
+    
   };
 };
