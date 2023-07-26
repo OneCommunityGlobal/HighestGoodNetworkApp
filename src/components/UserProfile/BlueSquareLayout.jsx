@@ -8,6 +8,7 @@ import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 import { useState } from 'react';
 import { useReducer } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
+import { addReason } from 'actions/reasonsActions';
 
 const BlueSquareLayout = props => {
   const fetchingReducer = (state, action) => {
@@ -15,7 +16,7 @@ const BlueSquareLayout = props => {
       case 'FETCHING_STARTED':
         return { ...state, isFetching: true };
       case 'ERROR':
-        return { isFetching: false, error: true, success: false };
+        return { isFetching: false, error: true, success: false, fetchMessage: action.payload.message, errorCode: action.payload.errorCode };
       case 'SUCCESS':
         return { isFetching: false, error: false, success: true };
       default:
@@ -41,21 +42,25 @@ const BlueSquareLayout = props => {
     isFetching: false,
     error: false,
     success: false,
-    fetchMessage: ''
+    fetchMessage: '',
+    errorCode: null
   });
 
   const handleToggle = () => {
     setShow(prev => !prev);
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
     setShow(false)
     fetchDispatch({ type: 'FETCHING_STARTED' });
-    setTimeout(() => {
+    const response = await addReason(userProfile._id, {date: date, message: reason})
+    if(response.httpCode !== 200){
+      fetchDispatch({type:'ERROR', payload: {message: response.message, errorCode: response.errorCode}})
+    }else{
       fetchDispatch({type: 'SUCCESS'})
-      setShow(true)
-    }, 4000)
+    }
+    setShow(true)
   };
 
   if (canEdit) {
@@ -96,6 +101,7 @@ const BlueSquareLayout = props => {
             fetchState={fetchState}
             date={date}
             setDate={setDate}
+            fetchMessage={fetchState.fetchMessage}
           />
         )}
       </div>
