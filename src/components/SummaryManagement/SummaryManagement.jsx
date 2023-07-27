@@ -59,7 +59,7 @@ class SummaryManagement extends Component {
   async componentDidMount() {
     this.props.getAllSummaryGroup();
     await this.props.getWeeklySummariesReport();
-    await this.props.getWeeklySummaries('this.state.selectedSummaryGroupId');
+    // await this.props.getWeeklySummaries(this.state.selectedSummaryGroupId);
   }
 
   /*Create New SummaryGroup related function */
@@ -332,6 +332,7 @@ class SummaryManagement extends Component {
         const user = await this.props.getUser();
         this.setState({ currentUserRole: user.role });
         this.setState({ currentUserId: user.userid });
+        // await this.props.getWeeklySummaries(user.userid);
       }
     } catch (error) {
       console.log(error);
