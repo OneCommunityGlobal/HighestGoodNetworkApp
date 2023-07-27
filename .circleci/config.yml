@@ -1,8 +1,6 @@
 version: 2
 jobs:
   build_PROD:
-    environment:
-      REACT_APP_DEF_PWD: "${REACT_APP_DEF_PWD}"
     docker:
       - image: cimg/node:14.17.0
     steps:
@@ -18,8 +16,6 @@ jobs:
           command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_PROD
 
   build_development:
-    environment:
-      REACT_APP_DEF_PWD: "${REACT_APP_DEF_PWD}"
     docker:
       - image: ubuntu:20.04
     steps:
@@ -65,8 +61,6 @@ jobs:
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV --project ./build
 
   build_beta:
-    environment:
-      REACT_APP_DEF_PWD: "${REACT_APP_DEF_PWD}"
     docker:
       - image: ubuntu:20.04
     steps:
