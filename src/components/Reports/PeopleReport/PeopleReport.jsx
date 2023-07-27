@@ -535,8 +535,6 @@ class PeopleReport extends Component {
       }
     };
 
-    console.log('userProfile', userProfile)
-
     return (
       <ReportPage renderProfile={renderProfileInfo}>
         <div className="people-report-time-logs-wrapper">
@@ -609,13 +607,7 @@ class PeopleReport extends Component {
                 <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
               </div>
               <div className='visualizationDiv'>
-                <BadgeSummaryViz 
-                  userId={userProfile._id}
-                  badges={userProfile.badgeCollection}
-                  role={userProfile.role}
-                  firstName={userProfile.firstName}
-                  lastName={userProfile.lastName}
-                  permissions={userProfile.permissions}
+                <BadgeSummaryViz badges={userProfile.badgeCollection}
                 />
               </div>
             </table>
