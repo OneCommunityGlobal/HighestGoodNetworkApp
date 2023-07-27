@@ -2,17 +2,14 @@ import { Stub } from 'components/common/Stub';
 import React from 'react';
 import './WbsTable.css';
 import {useState} from 'react';
-//import {  Link} from 'react-router-dom';
-
-
+import { Link, useParams } from 'react-router-dom'
 
 export const WbsTable = ({ wbs, skip, take }) => {
   const [copyMessage, setCopyMessage ] = useState("Copy id to clipboard");
 
-  // const {projectId} = useParams();
+  const {projectId} = useParams();
 
-  //console.log("check::", projectId, `/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`);
-
+  console.log("wbs", wbs)
   const copyContent = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -26,13 +23,17 @@ export const WbsTable = ({ wbs, skip, take }) => {
   let WbsList = [];
   if (wbs.fetched) {
     if (wbs.WBSItems.length > 0) {
-      WbsList = wbs.WBSItems.slice(skip, skip + take).map((item, index) => (
+      WbsList = wbs.WBSItems.slice(skip, skip + take).map((item, index) => {
+        console.log(item.wbsName)
+        console.log("check::", `/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`);
+        console.log("http://localhost:3000/wbs/tasks/6453e697e198371c7cf6d860/5f6cdff77b73161ddb32a0e5/Jae's%20WBS%20-%20USE%20THIS")
+        return (
         <div className="wbs-table-row" id={'tr_' + item._id} key={item._id}>
           <div>{skip + index + 1}</div>
-          <div>   {item.wbsName}
-          {/* <a href={`/wbs/tasks/${item._id}/63aec7acf228944096961f0d/${item.wbsName}`}>  
-       
-          </a>  */}
+          <div>   
+          <Link to={`/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`}>  
+          {item.wbsName}
+          </Link > 
        </div>
           <div className="projects__active--input">
             {item.isActive ? (
@@ -49,7 +50,7 @@ export const WbsTable = ({ wbs, skip, take }) => {
           <div>{copyMessage}</div>
           </div>
         </div>
-      ));
+    )});
     }
   }
 
