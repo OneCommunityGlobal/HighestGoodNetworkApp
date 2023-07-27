@@ -386,7 +386,7 @@ const TeamMemberTasks = props => {
           useWindow={false}
           loader={
             <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-              <FontAwesomeIcon icon={faSpinner} className="fa-pulse" /> Loading...
+              <FontAwesomeIcon icon={faSpinner} pulse /> Loading...
             </div>
           }
         >
