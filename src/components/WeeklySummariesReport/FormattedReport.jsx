@@ -120,18 +120,21 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     );
   };
 
-  const getTotalValidWeeklySummaries = (summary, teamColor) => {
+  const getTotalValidWeeklySummaries = summary => {
+    const style = {
+      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    };
     if (summary.weeklySummariesCount === 8) {
       return (
-        <p style={{ color: teamColor }}>
-          <b>Total Valid Weekly Summaries:</b>{' '}
+        <p>
+          <b style={style}>Total Valid Weekly Summaries:</b>{' '}
           {summary.weeklySummariesCount || 'No valid submissions yet!'}
         </p>
       );
     } else {
       return (
         <p>
-          <b style={{ color: teamColor }}>Total Valid Weekly Summaries:</b>{' '}
+          <b style={style}>Total Valid Weekly Summaries:</b>{' '}
           {summary.weeklySummariesCount || 'No valid submissions yet!'}
         </p>
       );
@@ -171,12 +174,15 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     }
   };
 
-  const BioSwitch = (userId, bioPosted, weeklySummaryOption, teamColor) => {
+  const BioSwitch = (userId, bioPosted, summary) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
+    const style = {
+      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    };
     return (
       <div>
         <div className="bio-toggle">
-          <b style={{ color: teamColor }}>Bio announcement:</b>
+          <b style={style}>Bio announcement:</b>
         </div>
         <div className="bio-toggle">
           <ToggleSwitch
@@ -192,10 +198,13 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     );
   };
 
-  const BioLabel = (userId, bioPosted, weeklySummaryOption, teamColor) => {
+  const BioLabel = (userId, bioPosted, summary) => {
+    const style = {
+      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    };
     return (
       <div>
-        <b style={{ color: teamColor }}>Bio announcement:</b>
+        <b style={style}>Bio announcement:</b>
         {bioPosted === 'default'
           ? ' Not requested/posted'
           : bioPosted === 'posted'
@@ -212,7 +221,6 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
       {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
         const googleDocLink = getGoogleDocLink(summary);
-        const teamColor = textColors[summary?.weeklySummaryOption] || textColors['Default'];
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
@@ -259,18 +267,30 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </div>
-            {bioFunction(summary._id, summary.bioPosted, summary.weeklySummaryOption, teamColor)}
-            {getTotalValidWeeklySummaries(summary, teamColor)}
+            {bioFunction(summary._id, summary.bioPosted, summary)}
+            {getTotalValidWeeklySummaries(summary)}
             {hoursLogged >= summary.weeklycommittedHours && (
               <p>
-                <b style={{ color: teamColor }}>Hours logged: </b>
+                <b
+                  style={{
+                    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                  }}
+                >
+                  Hours logged:{' '}
+                </b>
                 {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
             {hoursLogged < summary.weeklycommittedHours && (
               <p>
-                <b style={{ color: teamColor }}>Hours logged:</b> {hoursLogged.toFixed(2)} /{' '}
-                {summary.weeklycommittedHours}
+                <b
+                  style={{
+                    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                  }}
+                >
+                  Hours logged:
+                </b>{' '}
+                {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
             {getWeeklySummaryMessage(summary)}

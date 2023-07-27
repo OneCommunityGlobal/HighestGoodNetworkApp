@@ -551,10 +551,13 @@ function UserProfile(props) {
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
 
-  const canEditUserProfile = targetIsDevAdminUneditable ? false : canPutUserProfile;
+  const canEditUserProfile = targetIsDevAdminUneditable
+    ? false
+    : userProfile.role === 'Owner'
+    ? canAddDeleteEditOwners
+    : canPutUserProfile;
 
-  const canEdit =
-    userProfile.role === 'Owner' ? canAddDeleteEditOwners : canEditUserProfile || isUserSelf;
+  const canEdit = canEditUserProfile || isUserSelf;
 
   const customStyles = {
     control: (base, state) => ({
@@ -843,7 +846,6 @@ function UserProfile(props) {
                     onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
                     canEdit={canPutUserProfile}
-                    // canEdit={checkVolunteeringTimeTabPermission}
                     onStartDate={handleStartDate}
                   />
                 }

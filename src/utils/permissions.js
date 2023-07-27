@@ -20,10 +20,15 @@ const hasPermission = (action) => {
 };
 
 // others cannot change the details for devadmin@hgn.net
-export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
-  return (devAdminEmail === "devadmin@hgn.net" && (authEmail !== "jae@onecommunityglobal.org" ||
-    authEmail !== "one.community@me.com" || authEmail !== "jsabol@me.com "));
-};
+export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => (
+  devAdminEmail === "devadmin@hgn.net"
+  && (
+    authEmail !== "jae@onecommunityglobal.org"
+    // || authEmail !== "one.community@me.com"
+    // || authEmail !== "jsabol@me.com "
+  )
+);
+
 
 export const cantDeactivateOwner = (user, authRole) => {
   return user.role === 'Owner' && user.isActive && authRole !== 'Owner';

@@ -426,7 +426,7 @@ const BasicInformationTab = props => {
             <Label>Role</Label>
           </Col>
           <Col>
-            {canEditRole ? (
+            {canEditRole && !isUserSelf ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
