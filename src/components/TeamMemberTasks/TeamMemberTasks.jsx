@@ -355,8 +355,9 @@ const TeamMemberTasks = props => {
             if(isteamtab){
               await getTimeEntriesForPeriod(filteredMembers,myTeamseventyTwoHoursTimeEntries, setmyTeamSeventyTwoHoursTimeEntries, setmyTeamFortyEightHoursTimeEntries, setmyTeamTwentyFourHoursTimeEntries);
             }else{
-              await getTimeEntriesForPeriod(filteredMembers,allTeamseventyTwoHoursTimeEntries ,setallTeamSeventyTwoHoursTimeEntries, setallTeamFortyEightHoursTimeEntries, setallTeamTwentyFourHoursTimeEntries);
+               getTimeEntriesForPeriod(filteredMembers,allTeamseventyTwoHoursTimeEntries ,setallTeamSeventyTwoHoursTimeEntries, setallTeamFortyEightHoursTimeEntries, setallTeamTwentyFourHoursTimeEntries);
             }
+            //setisLoadingmember(false)
             setTeam([...filteredMembers])
             setTeamList([...filteredMembers]);           
 }
@@ -377,10 +378,18 @@ const renderTeamsList = async () => {
 
  //stop loading on data fetched 
   useEffect(()=>{
+    console.log('out',isLoadingmember)
     if(isLoadingmember){
       setisLoadingmember(false)
+      console.log('in')
     }
   },[teamList])
+
+  useEffect(()=>{
+    console.log('out',isLoadingmember)
+
+    
+  },[isLoadingmember])
 
 //Toggle members view
   const toggleTeamView = () =>{
@@ -538,8 +547,8 @@ const renderTeamsList = async () => {
 
           <tbody>
 
-            {isLoading ? isLoadingmember (
-              <SkeletonLoading template="TeamMemberTasks" />
+            {isLoadingmember? (
+              <p>loding</p>
 
             ) : (
               teamList.map(user => {

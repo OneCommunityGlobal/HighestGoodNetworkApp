@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import {
-  updateUserProfileProperty,
+  updateUserProfile,
   getUserProfile,
   getUserTask,
 } from '../../../actions/userProfile';
@@ -152,7 +152,7 @@ class PeopleReport extends Component {
     });
 
     try {
-      await this.props.updateUserProfileProperty(
+      await this.props.updateUserProfile(
         this.props.userProfile,
         'isRehireable',
         rehireValue,
@@ -527,7 +527,7 @@ class PeopleReport extends Component {
       });
 
       try {
-        await this.props.updateUserProfileProperty(this.props.userProfile, 'bioPosted', bioStatus);
+        await this.props.updateUserProfile(this.props.userProfile, 'bioPosted', bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
         alert('An error occurred while attempting to save the bioPosted change to the profile.');
@@ -614,7 +614,7 @@ class PeopleReport extends Component {
 }
 export default connect(getPeopleReportData, {
   getUserProfile,
-  updateUserProfileProperty,
+  updateUserProfile,
   getWeeklySummaries,
   updateWeeklySummaries,
   getUserTask,
