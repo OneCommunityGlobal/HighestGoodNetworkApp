@@ -633,7 +633,7 @@ function UserProfile(props) {
             <div className="profile-head">
               {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
                 <Alert color="warning">
-                  Please click on "Save changes" to save the changes you have made.{' '}
+                  Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
                 </Alert>
               ) : null}
               <h5 style={{ display: 'inline-block', marginRight: 10 }}>
