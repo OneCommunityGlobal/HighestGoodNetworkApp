@@ -12,8 +12,8 @@ const DeleteSummaryGroupPopup = React.memo(props => {
       <ModalHeader toggle={closePopup}>Delete</ModalHeader>
       <ModalBody>
         <p>
-          Are you sure you want to delete the "{props.selectedSummaryGroupName}" Summary Group ?
-          Only do this if you are sure, this action cannot be undone.
+          Are you sure you want to delete the &quot;{props.selectedSummaryGroupName}&quot; Summary
+          Group ? Only do this if you are sure, this action cannot be undone.
         </p>
 
         <p>
