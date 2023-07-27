@@ -24,8 +24,13 @@ import { useHistory } from 'react-router-dom';
 import { getUserTimeZone } from '../../services/timezoneApiService';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDispatch } from 'react-redux';
+import jwtDecode from 'jwt-decode';
+import { tokenKey } from '../../config.json';
+import { setCurrentUser } from '../../actions/authActions';
 
 const SetupProfileUserEntry = ({ token }) => {
+  const dispatch = useDispatch();
   const history = useHistory();
   const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
   const containSpecialCar = RegExp(/[!@#$%^&*(),.?":{}|<>]/);
@@ -135,7 +140,7 @@ const SetupProfileUserEntry = ({ token }) => {
 
   const handleFormSubmit = e => {
     e.preventDefault();
-
+    console.log('clicked');
     // jobtitle firstName
     if (userProfile.firstName.trim() === '') {
       setFormErrors(prevErrors => ({
@@ -291,8 +296,6 @@ const SetupProfileUserEntry = ({ token }) => {
 
     // Validate Location
 
-    console.log;
-
     if (userProfile.location.trim() === '') {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -307,25 +310,31 @@ const SetupProfileUserEntry = ({ token }) => {
 
     // Validate get time zone
 
-    if (userProfile.timeZoneFilter.trim() === '') {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        timeZoneFilter: 'Set time zone is required',
-      }));
-    } else {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        timeZoneFilter: '',
-      }));
-    }
+    // if (userProfile.timeZoneFilter.trim() === '') {
+    //   setFormErrors(prevErrors => ({
+    //     ...prevErrors,
+    //     timeZoneFilter: 'Set time zone is required',
+    //   }));
+    // } else {
+    //   setFormErrors(prevErrors => ({
+    //     ...prevErrors,
+    //     timeZoneFilter: '',
+    //   }));
+    // }
 
     // Submit the form if there are no errors
-    if (Object.values(formErrors).some(err => err !== '')) {
+    if (Object.values(formErrors).some(err => err === '')) {
+      console.log('run');
+      console.log(userProfile);
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), userProfile)
         .then(response => {
           if (response.status === 200) {
-            history.push('/login');
+            localStorage.setItem(tokenKey, response.data.token);
+            httpService.setjwt(response.data.token);
+            const decoded = jwtDecode(response.data.token);
+            dispatch(setCurrentUser(decoded));
+            history.push('/dashboard');
             toast.success(`Congratulations! Your account has been successfully created.`);
           }
         })
