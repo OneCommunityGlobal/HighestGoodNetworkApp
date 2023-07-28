@@ -55,7 +55,6 @@ class UserManagement extends React.PureComponent {
 
   componentDidMount() {
     // Initiating the user profile fetch action.
-    console.log('poprs', this.props.state)
     this.props.getAllUserProfile();
   }
 
