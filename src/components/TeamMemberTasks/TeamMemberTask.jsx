@@ -200,12 +200,6 @@ const TeamMemberTask = ({
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
-                            {isAllowedToSeeDeadlineCount && (
-                              <span className="deadlineCount" title="Deadline Follow-up Count">
-                                {task.deadlineCount === undefined ? 0 : task.deadlineCount}
-                              </span>
-                            )}
-
                             <div>
                               <span>
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
