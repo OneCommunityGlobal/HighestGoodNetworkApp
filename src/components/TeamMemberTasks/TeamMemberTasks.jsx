@@ -231,7 +231,6 @@ const TeamMemberTasks = props => {
         .subtract(48, 'hours')
         .format('YYYY-MM-DD');
 
-      setSeventyTwoHours([...SeventyTwoHours, entry]);
       const isFortyEight = moment(entry.dateOfWork).isAfter(threeDaysAgo);
       if (isFortyEight) fortyEightList.push(entry);
       const isTwentyFour = moment(entry.dateOfWork).isAfter(twoDaysAgo);
@@ -239,7 +238,7 @@ const TeamMemberTasks = props => {
     });
 
     //3. set three array of time logs
-    //setSeventyTwoHours([...newList]);
+    setSeventyTwoHours([...usersListTasks]);
     setFortyEightHours([...fortyEightList]);
     setTwentyFourHours([...twentyFourList]);
 
@@ -355,9 +354,8 @@ const TeamMemberTasks = props => {
             if(isteamtab){
               await getTimeEntriesForPeriod(filteredMembers,myTeamseventyTwoHoursTimeEntries, setmyTeamSeventyTwoHoursTimeEntries, setmyTeamFortyEightHoursTimeEntries, setmyTeamTwentyFourHoursTimeEntries);
             }else{
-               getTimeEntriesForPeriod(filteredMembers,allTeamseventyTwoHoursTimeEntries ,setallTeamSeventyTwoHoursTimeEntries, setallTeamFortyEightHoursTimeEntries, setallTeamTwentyFourHoursTimeEntries);
+              await getTimeEntriesForPeriod(filteredMembers,allTeamseventyTwoHoursTimeEntries ,setallTeamSeventyTwoHoursTimeEntries, setallTeamFortyEightHoursTimeEntries, setallTeamTwentyFourHoursTimeEntries);
             }
-            //setisLoadingmember(false)
             setTeam([...filteredMembers])
             setTeamList([...filteredMembers]);           
 }
@@ -378,18 +376,10 @@ const renderTeamsList = async () => {
 
  //stop loading on data fetched 
   useEffect(()=>{
-    console.log('out',isLoadingmember)
     if(isLoadingmember){
       setisLoadingmember(false)
-      console.log('in')
     }
   },[teamList])
-
-  useEffect(()=>{
-    console.log('out',isLoadingmember)
-
-    
-  },[isLoadingmember])
 
 //Toggle members view
   const toggleTeamView = () =>{
@@ -548,7 +538,7 @@ const renderTeamsList = async () => {
           <tbody>
 
             {isLoadingmember? (
-              <p>loding</p>
+              <SkeletonLoading template="TeamMemberTasks" />
 
             ) : (
               teamList.map(user => {
