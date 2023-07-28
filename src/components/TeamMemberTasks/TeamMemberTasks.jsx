@@ -409,7 +409,7 @@ const TeamMemberTasks = props => {
             {isLoading ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
-              teamList.map(user => {
+              teamList.slice(0, 10).map(user => {
                 if (!isTimeLogActive) {
                   return (
                     <TeamMemberTask
