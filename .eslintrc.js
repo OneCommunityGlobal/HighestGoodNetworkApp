@@ -3,7 +3,6 @@ module.exports = {
     browser: true,
     es6: true,
     node: true,
-    jest: true,
   },
   settings: {
     react: {
@@ -22,7 +21,7 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:react/jsx-runtime',
     'plugin:import/recommended',
-    'plugin:prettier/recommended',
+    'plugin:prettier/recommended', // use prettier as a eslint rule
   ],
   globals: {
     Atomics: 'readonly',
