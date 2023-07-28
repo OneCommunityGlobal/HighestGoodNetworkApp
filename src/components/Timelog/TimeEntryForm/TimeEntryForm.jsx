@@ -501,7 +501,6 @@ const TimeEntryForm = props => {
 
     await getUserProfile(userId)(dispatch);
     if (isOpen) toggle();
-
   };
 
   const handleInputChange = event => {
