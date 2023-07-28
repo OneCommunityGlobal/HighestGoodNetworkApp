@@ -109,7 +109,9 @@ export class WeeklySummary extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
+
     const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || '';
     const summaryLastWeek =
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
@@ -143,8 +145,8 @@ export class WeeklySummary extends Component {
     // and then setting the due date to the end of the ISO week (Saturday) for each respective week
     const dueDateLastWeek = moment(dueDate)
       .subtract(1, 'weeks')
-      .startOf('isoWeek')
-      .add(5, 'days');
+      .toISOString();
+
     const dueDateBeforeLast = moment(dueDate)
       .subtract(2, 'weeks')
       .startOf('isoWeek')
