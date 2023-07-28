@@ -34,7 +34,7 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import DueDateTime from './DueDateTime';
 import moment from 'moment';
 import 'moment-timezone';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
@@ -106,7 +106,9 @@ export class WeeklySummary extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
+
     const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || '';
     const summaryLastWeek =
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
@@ -141,6 +143,7 @@ export class WeeklySummary extends Component {
     const dueDateLastWeek = moment(dueDate)
       .subtract(1, 'weeks')
       .toISOString();
+
     const dueDateBeforeLast = moment(dueDate)
       .subtract(2, 'weeks')
       .toISOString();
@@ -313,11 +316,11 @@ export class WeeklySummary extends Component {
       .invalid(false)
       .label('Media Confirm'),
     editorConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Editor Confirm'),
+      .invalid(false)
+      .label('Editor Confirm'),
     proofreadConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Proofread Confirm'),
+      .invalid(false)
+      .label('Proofread Confirm'),
   };
 
   validate = () => {
@@ -380,7 +383,6 @@ export class WeeklySummary extends Component {
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
-
   handleCheckboxChange = event => {
     event.persist();
     const { name, checked } = event.target;
@@ -584,7 +586,7 @@ export class WeeklySummary extends Component {
       return (
         <Container fluid>
           <Row className="text-center" data-testid="loading">
-            <Loading />
+            <SkeletonLoading template="WeeklySummary" />
           </Row>
         </Container>
       );
@@ -709,8 +711,7 @@ export class WeeklySummary extends Component {
             <Row>
               <Col>
                 <Label for="mediaUrl" className="mt-1">
-                  Dropbox link to your weekly media files. (required){' '}
-                  <MediaURLTooltip />
+                  Dropbox link to your weekly media files. (required) <MediaURLTooltip />
                 </Label>
                 <Row form>
                   <Col md={8}>
