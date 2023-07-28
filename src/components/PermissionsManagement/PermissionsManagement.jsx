@@ -38,14 +38,14 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
   const role = userProfile?.role;
 
   return (
-    <div className="permissions-management">
+    <div key={`${role}+permission`} className="permissions-management">
       <h1 className="permissions-management__title">User Roles</h1>
-      <div className="permissions-management__header">
-        <div className="role-name-container">
+      <div key={`${role}_header`} className="permissions-management__header">
+        <div key={`${role}_name`} className="role-name-container">
           {roleNames?.map(roleName => {
             let roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
-              <div className='role-name'>
+              <div key={roleNameLC} className="role-name">
                 <button
                   onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                   key={roleName}

@@ -438,7 +438,7 @@ const BasicInformationTab = props => {
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
-                    return <option value={roleName}>{roleName}</option>;
+                    return <option key={roleName} value={roleName}>{roleName}</option>;
                   })}
                   {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
                     <option value="Owner">Owner</option>
@@ -699,7 +699,7 @@ const BasicInformationTab = props => {
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
-                    return <option value={roleName}>{roleName}</option>;
+                    return <option key={roleName} value={roleName}>{roleName}</option>;
                   })}
                   {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
                     <option value="Owner">Owner</option>
