@@ -845,7 +845,7 @@ function UserProfile(props) {
                     role={requestorRole}
                     onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
-                    canEdit={canPutUserProfile}
+                    canEdit={canEditUserProfile}
                     onStartDate={handleStartDate}
                   />
                 }
