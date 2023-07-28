@@ -207,8 +207,8 @@ const CreateNewBadgePopup = props => {
         <UncontrolledTooltip placement="right" target="TypeInfo" className="badgeTooltip">
           <p className="badge_info_icon_text">
             Choosing a type is optional but generally the best thing to do. If no type is chosen,
-            the type will automatically be marked as &quot;Custom&quot;, the least cool option of all as no
-            autoassignment will happen.
+            the type will automatically be marked as &quot;Custom&quot;, the least cool option of
+            all as no autoassignment will happen.
           </p>
         </UncontrolledTooltip>
         <Input type="select" name="selectType" id="badgeType" value={type} onChange={handleChange}>
@@ -365,8 +365,8 @@ const CreateNewBadgePopup = props => {
         <UncontrolledTooltip placement="right" target="RankingInfo" className="badgeTooltip">
           <p className="badge_info_icon_text">
             Ranking number MUST be non-negative and whole number. Seriously, how could anything be
-            ranked -1.1? Also, the default value is &quot;0&quot;, which would be the lowest rank, 1 though is
-            the highest rank. Confused yet?
+            ranked -1.1? Also, the default value is &quot;0&quot;, which would be the lowest rank, 1
+            though is the highest rank. Confused yet?
           </p>
           <p className="badge_info_icon_text">
             Good news is, everything else is really simple! The lower the number (other than zero)
