@@ -632,7 +632,7 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on "Save changes" to save the changes you have made.{' '}
+                Please click on  &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
             <div className="profile-head">
