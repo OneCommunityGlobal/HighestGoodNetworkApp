@@ -494,13 +494,14 @@ const TimeEntryForm = props => {
       }));
     }
 
-    if (isOpen) toggle();
     if (fromTimer) clearForm();
     setReminder(initialReminder);
 
     if (!props.edit) setInputs(initialFormValues);
 
     await getUserProfile(userId)(dispatch);
+    if (isOpen) toggle();
+
   };
 
   const handleInputChange = event => {
