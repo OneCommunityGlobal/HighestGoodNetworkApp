@@ -177,11 +177,12 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
 
   const BioSwitch = (userId, bioPosted, summary, weeklySummaryOption, teamColor, totalTangibleHrs, daysInTeam) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
+    const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== "posted"
     const style = {
       color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
     };
     return (
-      <div style={totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== "posted" ? {backgroundColor: "yellow"}: {}}> 
+      <div style={isMeetCriteria ? {backgroundColor: "yellow"}: {}}> 
         <div className="bio-toggle">
           <b style={style}>Bio announcement:</b>
         </div>
