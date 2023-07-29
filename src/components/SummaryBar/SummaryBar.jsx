@@ -36,7 +36,7 @@ const SummaryBar = props => {
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
   const [totalEffort, setTotalEffort] = useState(0);
-  const [weeklySummary, setWeeklySummary] = useState([]);
+  const [weeklySummary, setWeeklySummary] = useState(null);
 
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
@@ -47,6 +47,9 @@ const SummaryBar = props => {
   const matchUser = asUser == authenticateUserId ? true : false;
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  useEffect(() => {
+    setUserProfile(gsUserprofile);
+  }, [gsUserprofile]);
 
   // Similar to UserProfile component function
   // Loads component depending on asUser passed as prop
@@ -170,7 +173,7 @@ const SummaryBar = props => {
 
   if (userProfile !== undefined && summaryBarData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
-    const weeklySummary = getWeeklySummary(userProfile);
+    //const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container
         fluid
