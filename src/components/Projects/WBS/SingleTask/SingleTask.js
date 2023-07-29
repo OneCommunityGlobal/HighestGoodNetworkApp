@@ -4,10 +4,10 @@ import { connect, useSelector } from 'react-redux';
 
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
-import { NavItem, Button , Modal, ModalBody } from 'reactstrap';
+import { NavItem, Button, Modal, ModalBody } from 'reactstrap';
 
 import { Editor } from '@tinymce/tinymce-react';
-import { Link , useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
 import { getUserProfile } from 'actions/userProfile';
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
@@ -67,7 +67,9 @@ const SingleTask = props => {
                   <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
                 </Button>
               </NavItem>
-              <div id="single_task_name">See tasks in the same folder as &quot;{task.taskName}&quot;</div>
+              <div id="single_task_name">
+                See tasks in the same folder as &quot;{task.taskName}&quot;
+              </div>
             </ol>
           </nav>
         )}
@@ -179,7 +181,8 @@ const SingleTask = props => {
                               data-tip={elem.name}
                               className="name"
                               href={`/userprofile/${elem.userID}`}
-                              target="_blank" rel="noreferrer"
+                              target="_blank"
+                              rel="noreferrer"
                             >
                               <img className="img-circle" src={elem.profilePic} />
                             </a>
@@ -191,7 +194,8 @@ const SingleTask = props => {
                               data-tip={elem.name}
                               className="name"
                               href={`/userprofile/${elem.userID}`}
-                              target="_blank" rel="noreferrer"
+                              target="_blank"
+                              rel="noreferrer"
                             >
                               <span className="dot">{elem.name.substring(0, 2)}</span>
                             </a>
