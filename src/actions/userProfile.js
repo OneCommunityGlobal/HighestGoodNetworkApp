@@ -2,7 +2,6 @@ import axios from 'axios';
 import {
   getUserProfile as getUserProfileActionCreator,
   getUserTask as getUserTaskActionCreator,
- 
   editFirstName as editFirstNameActionCreator,
   editUserProfile as editUserProfileActionCreator,
   CLEAR_USER_PROFILE,
@@ -53,6 +52,16 @@ export const updateUserProfile = (userId, userProfile) => {
     const res = await axios.put(url, userProfile);
     if (res.status === 200) {
       console.log('success', res.data)
+      await dispatch(getUserProfileActionCreator(userProfile));
+    }
+    return res.status;
+  };
+};
+export const updateUserProfileProperty = (userProfile, key, value) => {
+  const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfile._id);
+  return async dispatch => {
+    const res = await axios.patch(url, {key: key, value: value});
+    if (res.status === 200) {
       await dispatch(getUserProfileActionCreator(userProfile));
     }
     return res.status;

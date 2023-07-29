@@ -1,3 +1,4 @@
+
 import { faClock, faFrown} from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -196,7 +197,7 @@ const TeamMemberTasks = props => {
   //if called from getTeamMember it will set team member's time data, from renderTeamList it will set all member's data according to the parameters
   const getTimeEntriesForPeriod = async (member, SeventyTwoHours, setSeventyTwoHours, setFortyEightHours,setTwentyFourHours )=> {
     
-    let newList = [];
+    
     let twentyFourList = [];
     let fortyEightList = [];
 
@@ -242,7 +243,7 @@ const TeamMemberTasks = props => {
     setFortyEightHours([...fortyEightList]);
     setTwentyFourHours([...twentyFourList]);
 
-    if (newList && twentyFourList && fortyEightList) {
+    if (twentyFourList && fortyEightList) {
       setFinishLoadingTimeData(true);
       setisLoadingmember(false)
 
@@ -608,3 +609,4 @@ export default connect(mapStateToProps, {
   getUserProfile,
   fetchAllManagingTeams,
 })(TeamMemberTasks);
+
