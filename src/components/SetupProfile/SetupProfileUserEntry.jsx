@@ -66,9 +66,10 @@ const SetupProfileUserEntry = ({ token }) => {
     jobTitle: '',
     timeZone: '',
     location: '',
-    timeZoneFilter: '',
+    timeZoneFilterClicked: 'false',
   });
 
+  //  get the timezone API key using the setup token
   useEffect(() => {
     httpService.post(ENDPOINTS.TIMEZONE_KEY_BY_TOKEN(), { token }).then(response => {
       setAPIkey(response.data.userAPIKey);
@@ -108,12 +109,17 @@ const SetupProfileUserEntry = ({ token }) => {
   };
 
   const getTimeZone = () => {
+    setFormErrors(prevErrors => ({
+      ...prevErrors,
+      timeZoneFilterClicked: '',
+    }));
+
     if (!userProfile.location) {
       alert('Please enter valid location');
       return;
     }
     if (!APIkey) {
-      console.log('Geocoding API missing');
+      console.log('Geocoding API key missing');
       return;
     }
 
@@ -140,8 +146,8 @@ const SetupProfileUserEntry = ({ token }) => {
 
   const handleFormSubmit = e => {
     e.preventDefault();
-    console.log('clicked');
-    // jobtitle firstName
+
+    // Validate firstName
     if (userProfile.firstName.trim() === '') {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -268,10 +274,10 @@ const SetupProfileUserEntry = ({ token }) => {
 
     // Validate Weekly Committed Hours
 
-    if (userProfile.weeklyCommittedHours === '') {
+    if (Number(userProfile.weeklyCommittedHours) <= 0) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
-        weeklyCommittedHours: 'Weekly Committed Hours can not be empty',
+        weeklyCommittedHours: 'Weekly Committed Hours can not be 0',
       }));
     } else {
       setFormErrors(prevErrors => ({
@@ -310,24 +316,40 @@ const SetupProfileUserEntry = ({ token }) => {
 
     // Validate get time zone
 
-    // if (userProfile.timeZoneFilter.trim() === '') {
-    //   setFormErrors(prevErrors => ({
-    //     ...prevErrors,
-    //     timeZoneFilter: 'Set time zone is required',
-    //   }));
-    // } else {
-    //   setFormErrors(prevErrors => ({
-    //     ...prevErrors,
-    //     timeZoneFilter: '',
-    //   }));
-    // }
+    if (formErrors.timeZoneFilterClicked === 'false') {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        timeZoneFilter: 'Set time zone is required',
+      }));
+    } else {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        timeZoneFilter: '',
+      }));
+    }
 
     // Submit the form if there are no errors
-    if (Object.values(formErrors).some(err => err === '')) {
-      console.log('run');
-      console.log(userProfile);
+    if (Object.values(formErrors).every(err => err === '')) {
+      const data = {
+        firstName: userProfile.firstName.trim(),
+        lastName: userProfile.lastName.trim(),
+        password: userProfile.password.trim(),
+        email: userProfile.email.trim().toLowerCase(),
+        phoneNumber: userProfile.phoneNumber,
+        weeklycommittedHours: Number(userProfile.weeklyCommittedHours.trim()),
+        collaborationPreference: userProfile.collaborationPreference.trim(),
+        privacySettings: {
+          email: userProfile.privacySettings.email,
+          phoneNumber: userProfile.privacySettings.phoneNumber,
+        },
+        jobTitle: userProfile.jobTitle.trim(),
+        timeZone: userProfile.timeZone.trim(),
+        location: userProfile.location.trim(),
+        token,
+      };
+
       httpService
-        .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), userProfile)
+        .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), data)
         .then(response => {
           if (response.status === 200) {
             localStorage.setItem(tokenKey, response.data.token);
@@ -408,7 +430,6 @@ const SetupProfileUserEntry = ({ token }) => {
                         handleChange(e);
                       }}
                       placeholder="Enter your password"
-                      autoComplete="off"
                       invalid={formErrors.password !== ''}
                     />
 
@@ -438,7 +459,6 @@ const SetupProfileUserEntry = ({ token }) => {
                         handleChange(e);
                       }}
                       placeholder="Confirm your password"
-                      autoComplete="off"
                       invalid={formErrors.confirmPassword !== ''}
                     />
 
@@ -647,6 +667,7 @@ const SetupProfileUserEntry = ({ token }) => {
                   <Row>
                     <Col md="4" className="pl-4">
                       <Button
+                        type="submit"
                         className="btn btn-content p-2 pl-4 pr-4"
                         color="primary"
                         onClick={e => handleFormSubmit(e)}
