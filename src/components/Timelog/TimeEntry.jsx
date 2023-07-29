@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
 import moment from 'moment-timezone';
 import './Timelog.css';
@@ -8,13 +8,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
-import { useDispatch } from 'react-redux';
+
 import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
 import { updateUserProfile } from '../../actions/userProfile';
 import hasPermission from 'utils/permissions';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { useEffect } from 'react';
+
 import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {

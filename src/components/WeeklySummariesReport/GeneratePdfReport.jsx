@@ -5,6 +5,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
+import { boxStyle } from 'styles';
 
 const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   const generateFormattedReport = () => {
@@ -71,9 +72,12 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
             .tz('America/Los_Angeles')
             .format('YYYY-MMM-DD')}</b>):</div>
                                   <div data-pdfmake="{&quot;margin&quot;:[20,0,20,0]}" ${colorStyle}>${summary
-                                    .replace(styleRegex, '')
-                                    .replace(styleInlineRegex, '')}</div>`;
-        } else if (weeklySummaryOption === 'Not Required' || (!weeklySummaryOption && eachSummary.weeklySummaryNotReq)) {
+            .replace(styleRegex, '')
+            .replace(styleInlineRegex, '')}</div>`;
+        } else if (
+          weeklySummaryOption === 'Not Required' ||
+          (!weeklySummaryOption && eachSummary.weeklySummaryNotReq)
+        ) {
           weeklySummaryMessage = weeklySummaryNotRequiredMessage;
         }
       }
@@ -121,7 +125,11 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   };
 
   return (
-    <Button className="px-5 btn--dark-sea-green float-right" onClick={generateAndDownloadPdf}>
+    <Button
+      className="px-5 btn--dark-sea-green float-right"
+      onClick={generateAndDownloadPdf}
+      style={boxStyle}
+    >
       Open PDF
     </Button>
   );

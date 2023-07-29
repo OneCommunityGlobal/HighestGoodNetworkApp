@@ -6,7 +6,7 @@ import mockState from './mockAdminState.js';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS , ApiEndpoint } from '../utils/URL';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import routes from './../routes';
 const url = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
@@ -14,7 +14,7 @@ const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let requestedLeaderBoard = false;
 let refreshed = false;
-import { ApiEndpoint } from '../utils/URL';
+
 
 const server = setupServer(
   rest.get(url, (req, res, ctx) => {

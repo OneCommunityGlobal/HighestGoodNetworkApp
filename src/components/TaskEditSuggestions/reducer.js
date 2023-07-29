@@ -1,5 +1,3 @@
-import { actions } from 'react-table';
-
 const initialState = {
   isLoading: false,
   taskEditSuggestions: [],

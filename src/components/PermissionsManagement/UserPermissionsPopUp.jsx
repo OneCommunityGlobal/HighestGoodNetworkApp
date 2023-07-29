@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
@@ -6,11 +6,11 @@ import { addNewRole, getAllRoles } from '../../actions/role';
 import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { getAllUserProfile } from 'actions/userManagement';
 import { permissionLabel } from './UserRoleTab';
-import { useRef } from 'react';
 
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
+import { boxStyle } from 'styles';
 
 const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
   const [searchText, onInputChange] = useState('');
@@ -173,6 +173,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
                     color="danger"
                     onClick={e => onChangeCheck(key)}
                     disabled={actualUserProfile ? false : true}
+                    style={boxStyle}
                   >
                     Remove
                   </Button>
@@ -182,6 +183,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
                     color="success"
                     onClick={e => onChangeCheck(key)}
                     disabled={actualUserProfile ? false : true}
+                    style={boxStyle}
                   >
                     Add
                   </Button>
@@ -197,7 +199,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
         color="primary"
         size="lg"
         block
-        style={{ marginTop: '1rem' }}
+        style={{ ...boxStyle, marginTop: '1rem' }}
       >
         Submit
       </Button>

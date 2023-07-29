@@ -4,7 +4,24 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ['plugin:react/recommended', 'airbnb'],
+  settings: {
+    react: {
+      version: 'detect',
+    },
+    'import/resolver': {
+      node: {
+        paths: ["src"],
+        extensions: ['.js', '.jsx'],
+      },
+    },
+  },
+  extends: [
+    'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
+    'plugin:react-hooks/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:import/recommended',
+    'prettier',
+  ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -21,6 +38,14 @@ module.exports = {
   rules: {
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'no-underscore-dangle': 'off',
+    'react/prop-types': 'off',
+    'react-hooks/exhaustive-deps': 'off',
+    'react/jsx-key': 'off',
+    'react/display-name': 'off',
+    'react/no-direct-mutation-state': 'off',
+    'react/no-unknown-property': 'off',
+    'import/no-duplicates': 'off',
+    'import/no-named-as-default': 'off',
   },
   overrides: [
     {

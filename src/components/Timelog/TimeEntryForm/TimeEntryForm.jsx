@@ -32,6 +32,7 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
+import { boxStyle } from 'styles';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -137,7 +138,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [props.isTaskUpdated]);
 
   //grab form data before editing
   useEffect(() => {
@@ -309,10 +310,12 @@ const TimeEntryForm = props => {
       //Get category
       const category = foundProject
         ? foundProject.category.toLowerCase()
-        : foundTask.classification.toLowerCase();
+        : foundTask.category.toLowerCase();
 
       //update hours
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+      const isFindCategory = Object.keys(hoursByCategory).find(
+        key => key === category && key !== 'unassigned',
+      );
       if (isFindCategory) {
         hoursByCategory[category] += volunteerTime;
       } else {
@@ -367,8 +370,10 @@ const TimeEntryForm = props => {
 
     category = foundProject
       ? foundProject.category.toLowerCase()
-      : foundTask?.classification.toLowerCase();
-    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+      : foundTask?.category.toLowerCase();
+    const isFindCategory = Object.keys(hoursByCategory).find(
+      key => key === category && key !== 'unassigned',
+    );
 
     //if change timeEntry from intangible to tangible, we need add hours on categories
     if (oldIsTangible === 'false' && currIsTangible === 'true') {
@@ -755,11 +760,11 @@ const TimeEntryForm = props => {
         </ModalBody>
         <ModalFooter>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger">
+          <Button onClick={clearForm} color="danger" style={boxStyle}>
             Clear Form
           </Button>
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-          <Button color="primary" onClick={handleSubmit}>
+          <Button color="primary" onClick={handleSubmit} style={boxStyle}>
             {edit ? 'Save' : 'Submit'}
           </Button>
         </ModalFooter>

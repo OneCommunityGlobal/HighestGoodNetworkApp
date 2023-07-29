@@ -6,6 +6,7 @@ import ModalBackupConfirm from './../../common/Modal';
 import axios from 'axios';
 import { ENDPOINTS } from './../../../utils/URL';
 import './style.css';
+import { boxStyle } from 'styles';
 
 const PopupText = props => {
   const [content, setContent] = useState(props.content);
@@ -47,6 +48,7 @@ const PopupText = props => {
                 type="button"
                 className="ml-1 p-1 align-middle btn btn-warning"
                 onClick={() => pressBackup()}
+                style={boxStyle}
               >
                 Backup
               </button>
@@ -78,6 +80,7 @@ const PopupText = props => {
                 type="button"
                 className="ml-1 p-1 align-middle btn btn-success"
                 onClick={() => save(props.id)}
+                style={boxStyle}
               >
                 Apply
               </button>
@@ -87,6 +90,7 @@ const PopupText = props => {
             type="button"
             className="btn btn-outline-info"
             onClick={() => getBackupData(props.id)}
+            style={boxStyle}
           >
             Restore
           </button>

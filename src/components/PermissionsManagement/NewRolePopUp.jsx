@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { commonBackEndPermissions, permissionFrontToBack } from 'utils/associatedPermissions';
+import { boxStyle } from 'styles';
 
 const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
@@ -96,7 +97,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
           );
         })}
       </FormGroup>
-      <Button type="submit" id="createRole" color="primary" size="lg" block>
+      <Button type="submit" id="createRole" color="primary" size="lg" block style={boxStyle}>
         Create
       </Button>
     </Form>

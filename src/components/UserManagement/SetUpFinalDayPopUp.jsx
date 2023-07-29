@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-
+import { boxStyle } from 'styles';
 /**
  * Modal popup to show the user profile in create mode
  */
@@ -39,10 +39,10 @@ const SetUpFinalDayPopUp = React.memo(props => {
         {dateError && <Alert color="danger">{'Please choose a future date.'}</Alert>}
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={deactiveUser}>
+        <Button color="primary" onClick={deactiveUser} style={boxStyle}>
           Save
         </Button>
-        <Button color="secondary" onClick={closePopup}>
+        <Button color="secondary" onClick={closePopup} style={boxStyle}>
           Close
         </Button>
       </ModalFooter>

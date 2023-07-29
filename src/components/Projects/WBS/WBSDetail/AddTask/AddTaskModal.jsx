@@ -9,6 +9,7 @@ import { fetchAllTasks, addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
+import { boxStyle } from 'styles';
 
 function AddTaskModal(props) {
   const tasks = props.tasks.taskItems;
@@ -16,7 +17,8 @@ function AddTaskModal(props) {
   // members
   const [members, setMembers] = useState([]);
   useEffect(() => {
-    setMembers(props.projectMembers.members);
+    const activeUsers = props.projectMembers.members.filter(member => member.isActive);
+    setMembers(activeUsers);
   }, [props.projectMembers.members]);
 
   // modal
@@ -51,7 +53,7 @@ function AddTaskModal(props) {
   const [assigned, setAssigned] = useState(true);
 
   // status
-  const [status, setStatus] = useState('Started');
+  const [status, setStatus] = useState(true);
 
   // hour best
   const [hoursBest, setHoursBest] = useState(0);
@@ -111,7 +113,6 @@ function AddTaskModal(props) {
       }
     }
   };
-
 
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
@@ -308,6 +309,7 @@ function AddTaskModal(props) {
       if (props.tasks.error === 'none') {
         toggle();
         getNewNum();
+        setTaskName('');
       }
     }, 1000);
   };
@@ -337,6 +339,7 @@ function AddTaskModal(props) {
             className="btn btn-primary btn-sm margin-left"
             onClick={() => paste()}
             disabled={hoursWarning}
+            style={boxStyle}
           >
             Paste
           </button>
@@ -345,6 +348,7 @@ function AddTaskModal(props) {
             size="small"
             className="btn btn-danger btn-sm margin-left"
             onClick={() => clear()}
+            style={boxStyle}
           >
             Reset
           </button>
@@ -407,7 +411,8 @@ function AddTaskModal(props) {
                         id="true"
                         name="Assigned"
                         value={true}
-                        onChange={() => setAssigned(true)}
+                        checked={assigned}
+                        onClick={() => setAssigned(true)}
                       />
                       <label className="form-check-label" htmlFor="true">
                         Yes
@@ -420,7 +425,8 @@ function AddTaskModal(props) {
                         id="false"
                         name="Assigned"
                         value={false}
-                        onChange={() => setAssigned(false)}
+                        checked={!assigned}
+                        onClick={() => setAssigned(false)}
                       />
                       <label className="form-check-label" htmlFor="false">
                         No
@@ -440,7 +446,8 @@ function AddTaskModal(props) {
                         id="started"
                         name="started"
                         value={true}
-                        onChange={() => setStatus(true)}
+                        checked={status}
+                        onClick={() => setStatus(true)}
                       />
                       <label className="form-check-label" htmlFor="started">
                         Started
@@ -453,7 +460,8 @@ function AddTaskModal(props) {
                         id="notStarted"
                         name="started"
                         value={false}
-                        onChange={() => setStatus(false)}
+                        checked={!status}
+                        onClick={() => setStatus(false)}
                       />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
@@ -705,7 +713,7 @@ function AddTaskModal(props) {
           ) : null}
         </ModalFooter>
       </Modal>
-      <Button color="primary" size="sm" onClick={setToggle}>
+      <Button color="primary" size="sm" onClick={setToggle} style={boxStyle}>
         Add Task
       </Button>
     </div>

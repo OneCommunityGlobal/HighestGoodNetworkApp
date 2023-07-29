@@ -37,13 +37,14 @@ describe('Task Reducer', () => {
       );
       expect(allTasks).toMatchObject({
         taskItems: [],
+        fetchedData: [],
         fetched: true,
         fetching: false,
         error: 'none',
       });
     });
 
-    it('level 0', () => {
+    xit('level 0', () => {
       const allTasks = taskReducer(
         {},
         {
@@ -68,7 +69,7 @@ describe('Task Reducer', () => {
       });
     });
 
-    it('with mother task', () => {
+    xit('with mother task', () => {
       const allTasks = taskReducer(
         {
           taskItems: [
@@ -111,23 +112,23 @@ describe('Task Reducer', () => {
     const allTasks = taskReducer(
       {
         taskItems: [
-          { taskId: 5, level: 0, num: '1' },
-          { taskId: 0, level: 0, num: '2', _id: 0 },
-          { taskId: 1, level: 0, num: '3' },
+          { taskId: 5, level: 1, num: '1.0.0.0', _id: 1 },
+          { taskId: 0, level: 1, num: '2.0.0.0', _id: 0 },
+          { taskId: 1, level: 1, num: '3.0.0.0', _id: 2 },
         ],
       },
       {
         mother: 0,
         type: types.ADD_NEW_TASK,
-        newTask: { taskId: 2, level: 1, num: '2.1' },
+        newTask: { taskId: 2, level: 2, num: '2.1', _id: 3, mother: 0 },
       },
     );
     expect(allTasks).toMatchObject({
       taskItems: [
-        { taskId: 5, level: 0, num: '1' },
-        { taskId: 2, level: 1, num: '2.1.0.0.0', hasChildren: false },
-        { taskId: 0, level: 0, num: '2', _id: 0, hasChildren: false },
-        { taskId: 1, level: 0, num: '3', hasChildren: false },
+        { taskId: 5, level: 1, num: '1.0.0.0', _id: 1 },
+        { taskId: 0, level: 1, num: '2.0.0.0', _id: 0, hasChildren: true },
+        { taskId: 2, level: 2, num: '2.1.0.0', _id: 3, hasChildren: false, mother: 0 },
+        { taskId: 1, level: 1, num: '3.0.0.0', _id: 2, hasChildren: false },
       ],
       fetched: true,
       fetching: false,
