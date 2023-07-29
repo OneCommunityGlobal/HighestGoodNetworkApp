@@ -53,8 +53,8 @@ class Teams extends React.PureComponent {
     const userPermissions = this.props.state.auth.user?.permissions?.frontPermissions;
     const { roles } = this.props.state.role;
     const teamTable = this.teamTableElements(allTeams, requestorRole, roles, userPermissions);
-    const numberOfTeams = allTeams.length;
-    const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
+    const numberOfTeams = allTeams?.length;
+    const numberOfActiveTeams = numberOfTeams ? allTeams?.filter(team => team.isActive).length : 0;
 
     return (
       <Container fluid>

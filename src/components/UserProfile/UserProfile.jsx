@@ -1347,7 +1347,7 @@ function UserProfile(props) {
                       }
                     }}
                   >
-                    <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
+                    <Button className="mr-1 btn-bottom" color="primary" >
                       {' '}
                       Update Password
                     </Button>
