@@ -2,7 +2,7 @@ import { faClock, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
@@ -20,7 +20,7 @@ import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 import { toast } from 'react-toastify';
 import InfiniteScroll from 'react-infinite-scroller';
 
-const TeamMemberTasks = props => {
+const TeamMemberTasks = React.memo(props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
@@ -106,7 +106,7 @@ const TeamMemberTasks = props => {
     setCurrentUserId('');
   };
 
-  const onUpdateTask = (taskId, updatedTask) => {
+  const onUpdateTask = useCallback((taskId, updatedTask) => {
     const newTask = {
       updatedTask,
       taskId,
@@ -114,7 +114,7 @@ const TeamMemberTasks = props => {
     submitTasks(newTask);
     dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
     props.handleUpdateTask();
-  };
+  }, []);
 
   const submitTasks = async updatedTasks => {
     const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
@@ -125,28 +125,28 @@ const TeamMemberTasks = props => {
     }
   };
 
-  const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
+  const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
     setTaskNotificationModal(!showTaskNotificationModal);
-  };
+  }, []);
 
-  const handleMarkAsDoneModal = (userId, task) => {
+  const handleMarkAsDoneModal = useCallback((userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  };
+  }, []);
 
-  const handleRemoveFromTaskModal = (userId, task) => {
+  const handleRemoveFromTaskModal = useCallback((userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  };
+  }, []);
 
-  const handleTaskModalOption = option => {
+  const handleTaskModalOption = useCallback(option => {
     setTaskModalOption(option);
-  };
+  }, []);
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     //if the authentitated user is seeing it's own notification
@@ -490,13 +490,15 @@ const TeamMemberTasks = props => {
       </div>
     </div>
   );
-};
+});
 
 const mapStateToProps = state => ({
   auth: state.auth,
   userId: state.userProfile.id,
   managingTeams: state.userProfile.teams,
   teamsInfo: state.managingTeams,
+  roles: state.role.roles,
+  userPermissions: state.auth?.permissions?.frontPermissions,
 });
 
 export default connect(mapStateToProps, {
