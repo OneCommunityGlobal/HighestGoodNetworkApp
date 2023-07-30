@@ -37,6 +37,7 @@ const TeamMemberTasks = props => {
   const [twentyFourHoursTimeEntries, setTwentyFourHoursTimeEntries] = useState([]);
   const [fortyEightHoursTimeEntries, setFortyEightHoursTimeEntries] = useState([]);
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
+  const [allHoursTimeEntries, setAllHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
   const [displayData, setDisplayData] = useState([]);
@@ -159,11 +160,12 @@ const TeamMemberTasks = props => {
   const getTimeEntriesForPeriod = async teamList => {
     let twentyFourList = [];
     let fortyEightList = [];
+    let seventyTwoList = [];
 
-    //1, fetch data of past 72hrs timelogs
+    //1, fetch data of past timelogs
     const fromDate = moment()
       .tz('America/Los_Angeles')
-      .subtract(72, 'hours')
+      .subtract(Number.MAX_VALUE, 'hours')
       .format('YYYY-MM-DD');
     const toDate = moment()
       .tz('America/Los_Angeles')
@@ -181,6 +183,11 @@ const TeamMemberTasks = props => {
 
     //2. Generate array of past 24/48 hrs timelogs
     usersListTasks.map(entry => {
+      const FourDaysAgo = moment()
+        .tz('America/Los_Angeles')
+        .subtract(96, 'hours')
+        .format('YYYY-MM-DD');
+
       const threeDaysAgo = moment()
         .tz('America/Los_Angeles')
         .subtract(72, 'hours')
@@ -191,7 +198,8 @@ const TeamMemberTasks = props => {
         .subtract(48, 'hours')
         .format('YYYY-MM-DD');
 
-      setSeventyTwoHoursTimeEntries([...seventyTwoHoursTimeEntries, entry]);
+      const isSeventyTwo = moment(entry.dateOfWork).isAfter(FourDaysAgo);
+      if (isSeventyTwo) seventyTwoList.push(entry);
       const isFortyEight = moment(entry.dateOfWork).isAfter(threeDaysAgo);
       if (isFortyEight) fortyEightList.push(entry);
       const isTwentyFour = moment(entry.dateOfWork).isAfter(twoDaysAgo);
@@ -199,7 +207,8 @@ const TeamMemberTasks = props => {
     });
 
     //3. set three array of time logs
-    setSeventyTwoHoursTimeEntries([...usersListTasks]);
+    setAllHoursTimeEntries([...usersListTasks]);
+    setSeventyTwoHoursTimeEntries([...seventyTwoList]);
     setFortyEightHoursTimeEntries([...fortyEightList]);
     setTwentyFourHoursTimeEntries([...twentyFourList]);
 
@@ -218,8 +227,10 @@ const TeamMemberTasks = props => {
       setTimeEntriesList([...twentyFourHoursTimeEntries]);
     } else if (period === 48) {
       setTimeEntriesList([...fortyEightHoursTimeEntries]);
-    } else {
+    } else if (period === 72){
       setTimeEntriesList([...seventyTwoHoursTimeEntries]);
+    } else {
+      setTimeEntriesList([...allHoursTimeEntries]);
     }
   };
 
@@ -345,6 +356,19 @@ const TeamMemberTasks = props => {
               onClick={() => selectPeriod(72)}
             >
               72h
+            </button>
+            <button
+              type="button"
+              className="circle-border 72h+"
+              title="Timelogs submitted after 72+ hours"
+              style={{
+                color: selectedPeriod === 73 && isTimeLogActive ? 'white' : '#696868',
+                backgroundColor: selectedPeriod === 73 && isTimeLogActive ? '#696868' : 'white',
+                border: '1px solid #696868',
+              }}
+              onClick={() => selectPeriod(73)}
+            >
+              72h+
             </button>
           </div>
         ) : (

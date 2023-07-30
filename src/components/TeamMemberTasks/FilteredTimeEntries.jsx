@@ -27,6 +27,11 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
       .subtract(48, 'hours')
       .format('YYYY-MM-DD');
 
+    const pastSeventyTwoHrs = moment()
+      .tz('America/Los_Angeles')
+      .subtract(72, 'hours')
+      .format('YYYY-MM-DD');
+
     if (moment(dateOfWork).isSameOrAfter(pastTwentyFourHrs)) {
       return (
         <div
@@ -47,11 +52,20 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
           }}
         ></div>
       );
+    } else if (moment(dateOfWork).isSameOrAfter(pastSeventyTwoHrs)) {
+      return (
+        <div
+          className="color-bar"
+          style={{ backgroundColor: projectName ? 'white' : 'green',
+            border: '5px solid green' }}
+        ></div>
+      );
     } else {
       return (
         <div
           className="color-bar"
-          style={{ backgroundColor: projectName ? 'white' : 'green', border: '5px solid green' }}
+          style={{ backgroundColor: projectName ? 'white' : '#696868',
+            border: '5px solid #696868' }}
         ></div>
       );
     }
