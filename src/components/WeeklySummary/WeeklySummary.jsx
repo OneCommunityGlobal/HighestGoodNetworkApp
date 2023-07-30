@@ -383,7 +383,7 @@ export class WeeklySummary extends Component {
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
-  
+
   handleCheckboxChange = event => {
     event.persist();
     const { name, checked } = event.target;
@@ -397,7 +397,7 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleChangeInSummary = async() => {
+  handleChangeInSummary = async () => {
     // Extract state variables for ease of access
     let {
       submittedDate,
@@ -878,7 +878,8 @@ const mapStateToProps = ({ auth, weeklySummaries }) => ({
 const mapDispatchToProps = dispatch => {
   return {
     getWeeklySummaries: getWeeklySummaries,
-    updateWeeklySummaries:(userId,weeklySummary)=> updateWeeklySummaries(userId,weeklySummary)(dispatch),
+    updateWeeklySummaries: (userId, weeklySummary) =>
+      updateWeeklySummaries(userId, weeklySummary)(dispatch),
     getWeeklySummaries: userId => getWeeklySummaries(userId)(dispatch),
     getUserProfile: userId => getUserProfile(userId)(dispatch),
   };

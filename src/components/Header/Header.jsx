@@ -230,9 +230,7 @@ export const Header = props => {
                     </DropdownItem>
                   )}
                   <DropdownItem divider />
-                  <DropdownItem onClick={openModal}>
-                    {LOGOUT}
-                  </DropdownItem>
+                  <DropdownItem onClick={openModal}>{LOGOUT}</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Nav>

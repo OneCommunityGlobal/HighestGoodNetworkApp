@@ -50,7 +50,9 @@ const SummaryBar = props => {
 
   const matchUser = asUser == authenticateUserId ? true : false;
 
-  useEffect(()=>{setUserProfile(gsUserprofile)},[gsUserprofile])
+  useEffect(() => {
+    setUserProfile(gsUserprofile);
+  }, [gsUserprofile]);
 
   // Similar to UserProfile component function
   // Loads component depending on asUser passed as prop
