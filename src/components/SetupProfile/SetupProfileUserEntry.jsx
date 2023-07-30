@@ -656,8 +656,7 @@ const SetupProfileUserEntry = ({ token }) => {
               <Row>
                 <Col md={{ size: 6, offset: 2 }}>
                   <div className="alert alert-info text-center">
-                    Clicking the "Submit" button redirects you to your personalized profile
-                    dashboard.
+                    Clicking the Submit button redirects you to your personalized profile dashboard.
                   </div>
                 </Col>
               </Row>

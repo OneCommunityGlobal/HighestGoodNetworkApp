@@ -11,7 +11,7 @@ const SetupProfileInvalidToken = () => {
         <div className="invalid-token-card-title">Invalid Link</div>
         <div className="invalid-token-card-message">
           <p>
-            The link you've used has expired, is invalid, or has already been visited.
+            The link you have used has expired, is invalid, or has already been visited.
             <br />
             If you need help, feel free to contact the{' '}
             <span className="invalid-token-card-company-name">One Community</span> team.
