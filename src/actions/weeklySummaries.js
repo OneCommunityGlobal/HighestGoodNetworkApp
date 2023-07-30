@@ -3,6 +3,10 @@ import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
 import { filter } from 'lodash';
 import { strip } from 'joi/lib/types/lazy';
+import {
+  getUserProfile as getUserProfileActionCreator,
+} from '../constants/userProfile';
+
 
 /**
  * Action to set the 'loading' flag to true.
@@ -61,7 +65,7 @@ export const getWeeklySummaries = userId => {
  */
 export const updateWeeklySummaries = (userId, weeklySummariesData) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
-  return async () => {
+  return async (dispatch) => {
     try {
       // Get the user's profile from the server.
       let response = await axios.get(url);
@@ -76,8 +80,12 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
         weeklySummariesCount,
       };
 
+
       // Update the user's profile on the server.
       response = await axios.put(url, userProfileUpdated);
+      if (response.status === 200) {
+        await dispatch(getUserProfileActionCreator(userProfileUpdated));
+      }
       return response.status;
     } catch (error) {
       return error.response.status;
