@@ -20,6 +20,7 @@ import {
 // import { getUser } from 'actions/authActions';
 import { getWeeklySummaries, extractWeeklySummaries } from 'actions/weeklySummaries';
 import { getWeeklySummariesReport } from 'actions/weeklySummariesReport';
+import { getAllUserProfile } from 'actions/userManagement';
 //import { getAllUserProfile } from 'actions/userManagement';
 import { TEAM_MEMBER, SUMMARY_RECEIVER, SUMMARY_GROUP, ACTIONS, ACTIVE } from 'languages/en/ui';
 import CreateNewSummaryGroupPopup from './CreateNewSummaryGroupPopup';
@@ -59,6 +60,7 @@ class SummaryManagement extends Component {
   async componentDidMount() {
     this.props.getAllSummaryGroup();
     await this.props.getWeeklySummariesReport();
+    this.props.getAllUserProfile();
     // await this.props.getWeeklySummaries(this.state.selectedSummaryGroupId);
   }
 
@@ -451,7 +453,6 @@ class SummaryManagement extends Component {
 
   render() {
     const { allSummaryGroups } = this.props.state.allSummaryGroups;
-    // console.log(allSummaryGroups[0]);
     const summaryGroupTable = this.summaryGroupElements(allSummaryGroups);
     const numberOfSummaryGroup = allSummaryGroups.length;
     const numberOfActiveSummaryGroup = numberOfSummaryGroup
@@ -625,4 +626,5 @@ export default connect(mapStateToProps, {
   extractWeeklySummaries,
   getWeeklySummariesReport,
   getUser,
+  getAllUserProfile,
 })(SummaryManagement);
