@@ -44,6 +44,8 @@ import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import dateFnsFormat from 'date-fns/format';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
@@ -101,6 +103,13 @@ class AddUserProfile extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
+
+    //Date picker
+    const FORMAT = 'MM/dd/yy';
+    const date = new Date();
+    const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
+    const tomorrow = new Date(date.getFullYear(), date.getMonth(), (date.getDate() + 1));
+
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -360,6 +369,24 @@ class AddUserProfile extends Component {
                         selected={'America/Los_Angeles'}
                         id="timeZone"
                       />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label>Start Date</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <div className="w-100 pt-1 mb-2 mx-auto">
+                        <DayPickerInput
+                          format={FORMAT}
+                          formatDate={formatDate}
+                          placeholder={`${dateFnsFormat(tomorrow, FORMAT)}`}
+                          onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
+                          value={tomorrow}
+                        />
+                      </div>
                     </FormGroup>
                   </Col>
                 </Row>
