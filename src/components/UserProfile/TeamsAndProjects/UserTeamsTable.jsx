@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import styles from './UserTeamsTable.css';
 import { boxStyle } from 'styles';
 
-
 const UserTeamsTable = props => {
   const { roles } = useSelector(state => state.role);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
@@ -43,14 +42,9 @@ const UserTeamsTable = props => {
             {props.edit && props.role && (
               <Col md="5">
                 {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                  props.disabled? (
+                  props.disabled ? (
                     <div className="div-addteam" title="Please save changes before assign team">
-                      <Button
-                        className="btn-addteam"
-                        color="primary"
-                        style={boxStyle}
-                        disabled
-                      >
+                      <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
                         Assign Team
                       </Button>
                     </div>
@@ -159,13 +153,9 @@ const UserTeamsTable = props => {
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                props.disabled? (
+                props.disabled ? (
                   <div className="div-addteam" title="Please save changes before assign team">
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      disabled
-                    >
+                    <Button className="btn-addteam" color="primary" disabled>
                       Assign Team
                     </Button>
                   </div>
