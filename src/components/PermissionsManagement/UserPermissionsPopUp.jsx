@@ -65,10 +65,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
     getAllUsers();
     if (actualUserProfile?.role && roles) {
       const roleIndex = roles?.findIndex(({ roleName }) => roleName === actualUserProfile?.role);
-      let permissions = [];
-      if (roleIndex !== -1) {
-        permissions = roles[roleIndex].permissions;
-      }
+      const permissions = roleIndex !== -1 ? roles[roleIndex].permissions : [];
       setActualUserRolePermission(permissions);
     }
   }, [actualUserProfile]);
