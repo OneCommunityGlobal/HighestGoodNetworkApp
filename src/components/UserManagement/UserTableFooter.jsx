@@ -91,7 +91,9 @@ const PageSummaryLabel = React.memo(props => {
 
   const displayedUsers =
     totalUsersFind < 10 || lastUserOfPage > totalUsersFind
-      ? `Showing ${firstUserOfPage} - ${totalUsersFind} of ${totalUsersFind}`
+      ? totalUsersFind === 0
+        ? `Showing 0 - ${totalUsersFind} of ${totalUsersFind}`
+        : `Showing ${firstUserOfPage} - ${totalUsersFind} of ${totalUsersFind}`
       : `Showing ${firstUserOfPage} - ${lastUserOfPage} of ${totalUsersFind}`;
 
   return (
