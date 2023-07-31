@@ -45,7 +45,7 @@ const SetupProfileUserEntry = ({ token }) => {
     confirmPassword: '',
     email: '',
     phoneNumber: null,
-    weeklyCommittedHours: 10,
+    weeklyCommittedHours: '10',
     collaborationPreference: 'Zoom',
     privacySettings: { email: true, phoneNumber: true },
     jobTitle: '',
