@@ -284,7 +284,7 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
-  const loadFunc = useCallback(pageNum => {
+  const loadFunc = useCallback((pageNum = 0) => {
     if (teamList.length <= displayData.length) {
       setHasMore(false);
       return;
