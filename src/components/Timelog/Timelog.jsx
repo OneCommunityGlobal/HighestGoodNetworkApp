@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Container,
   Row,
@@ -341,9 +341,9 @@ const Timelog = props => {
   };
   const [state, setState] = useState(initialState);
 
-  const handleUpdateTask = () => {
+  const handleUpdateTask = useCallback(() => {
     setIsTaskUpdated(!isTaskUpdated);
-  };
+  }, []);
 
   useEffect(() => {
     // Does not run again (except once in development): load data
@@ -731,12 +731,14 @@ const Timelog = props => {
                     )}
                     <TabPane tabId={0}>
 
+
                       <TeamMemberTasks 
                       asUser={props.asUser} 
                       handleUpdateTask={handleUpdateTask} 
                       roles={role.roles}
                       userPermissions={userPermissions}
                       userProfile={userProfile}
+
 
                       />
                     </TabPane>

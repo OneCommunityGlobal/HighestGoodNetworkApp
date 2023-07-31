@@ -1,4 +1,3 @@
-
 import { faClock, faFrown} from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
