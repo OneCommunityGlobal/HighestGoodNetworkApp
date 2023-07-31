@@ -1,3 +1,4 @@
+import { ENDPOINTS } from 'utils/URL';
 import {
   fetchTaskEditSuggestionsBegin,
   fetchTaskEditSuggestionsError,
@@ -5,7 +6,6 @@ import {
   rejectTaskEditSuggestionSuccess,
   fetchTaskEditSuggestionCountSuccess,
 } from './actions';
-import { ENDPOINTS } from 'utils/URL';
 import {
   getTaskEditSuggestionsHTTP,
   rejectTaskEditSuggestionHTTP,
@@ -31,7 +31,7 @@ export const rejectTaskEditSuggestion = taskEditSuggestionId => async (dispatch,
     await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
     dispatch(rejectTaskEditSuggestionSuccess(taskEditSuggestionId));
   } catch (error) {
-    console.log('reject task edit suggestion thunk error\n' + error);
+    console.log(`reject task edit suggestion thunk error\n${  error}`);
   }
 };
 
@@ -40,6 +40,6 @@ export const fetchTaskEditSuggestionCount = () => async (dispatch, getState) => 
     const response = await getTaskEditSuggestionCountHTTP();
     dispatch(fetchTaskEditSuggestionCountSuccess(response.data.count));
   } catch (error) {
-    console.log('fetch task edit suggestion count thunk error\n' + error);
+    console.log(`fetch task edit suggestion count thunk error\n${  error}`);
   }
 };
