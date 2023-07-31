@@ -1,4 +1,4 @@
-import { faClock, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
@@ -18,7 +18,6 @@ import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 import { toast } from 'react-toastify';
-import InfiniteScroll from 'react-infinite-scroller';
 
 const TeamMemberTasks = React.memo(props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -39,8 +38,6 @@ const TeamMemberTasks = React.memo(props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
-  const [displayData, setDisplayData] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
 
   //added it to keep track if the renderTeamsList should run
   const [shouldRun, setShouldRun] = useState(false);
@@ -284,21 +281,6 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
-  const loadFunc = useCallback(pageNum => {
-    if (teamList.length <= displayData.length) {
-      setHasMore(false);
-      return;
-    }
-
-    const start = pageNum * 10;
-    setDisplayData([...displayData, ...teamList.slice(start, start + 10)]);
-    setHasMore(true);
-  });
-
-  useEffect(() => {
-    loadFunc();
-  }, [teamList]);
-
   return (
     <div className="container team-member-tasks">
       <header className="header-box">
@@ -377,19 +359,7 @@ const TeamMemberTasks = React.memo(props => {
           taskModalOption={taskModalOption}
         />
       )}
-      <div style={{ maxHeight: '700px', overflow: 'auto' }}>
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={loadFunc}
-          hasMore={hasMore}
-          className="table-container"
-          useWindow={false}
-          loader={
-            <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-              <FontAwesomeIcon icon={faSpinner} pulse /> Loading...
-            </div>
-          }
-        >
+      <div className='table-container'>
           <Table>
             <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
               <tr>
@@ -438,7 +408,7 @@ const TeamMemberTasks = React.memo(props => {
               {isLoading ? (
                 <SkeletonLoading template="TeamMemberTasks" />
               ) : (
-                displayData.map(user => {
+                teamList.map(user => {
                   if (!isTimeLogActive) {
                     return (
                       <TeamMemberTask
@@ -486,7 +456,6 @@ const TeamMemberTasks = React.memo(props => {
               )}
             </tbody>
           </Table>
-        </InfiniteScroll>
       </div>
     </div>
   );
