@@ -1,5 +1,5 @@
-import { ENDPOINTS } from '../utils/URL';
 import axios from 'axios';
+import { ENDPOINTS } from '../utils/URL';
 import { GET_PROJECT_BY_ID } from '../constants/project';
 
 export const getProjectDetail = projectId => {

@@ -1,7 +1,7 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Action: WBS
  * Author: Henry Ng - 03/20/20
- ********************************************************************************/
+ ******************************************************************************* */
 import axios from 'axios';
 import * as types from '../constants/WBS';
 import { ENDPOINTS } from '../utils/URL';
@@ -26,9 +26,9 @@ export const addNewWBS = (wbsName, projectId) => {
     await dispatch(
       postNewWBS(
         {
-          _id: _id,
-          wbsName: wbsName,
-          isActive: isActive,
+          _id,
+          wbsName,
+          isActive,
         },
         status,
       ),
