@@ -361,7 +361,7 @@ const TeamMemberTasks = React.memo(props => {
       )}
       <div className='table-container'>
           <Table>
-            <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
+            <thead className="pc-component">
               <tr>
                 {/* Empty column header for hours completed icon */}
                 <th />
