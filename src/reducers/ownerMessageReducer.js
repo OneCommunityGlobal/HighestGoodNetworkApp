@@ -1,4 +1,4 @@
-import * as types from './../constants/ownerMessageConstants';
+import * as types from "../constants/ownerMessageConstants";
 
 const initialState = null;
 

@@ -1,9 +1,9 @@
 const get_task_by_wbsId = (WbsTasksID, tasks) => {
-  var get_tasks = [];
+  const get_tasks = [];
   if (WbsTasksID.length > 0) {
-    var i = 0;
+    let i = 0;
     while (i < WbsTasksID.length && tasks.fetched) {
-      var result = tasks.taskItems.filter(task => task.wbsId == WbsTasksID[i]);
+      const result = tasks.taskItems.filter(task => task.wbsId == WbsTasksID[i]);
       get_tasks.push(result);
       i += 1;
     }

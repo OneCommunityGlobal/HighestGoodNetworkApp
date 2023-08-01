@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment';
 import {
   FETCH_USER_PROFILES_ERROR,
   FETCH_USER_PROFILES_START,
@@ -8,7 +9,6 @@ import {
 } from '../constants/userManagement';
 import { ENDPOINTS } from '../utils/URL';
 import { UserStatus } from '../utils/enums';
-import moment from 'moment';
 
 /**
  * fetching all user profiles
@@ -34,10 +34,10 @@ export const getAllUserProfile = () => {
  * @param {*} status  - Active/InActive
  */
 export const updateUserStatus = (user, status, reactivationDate) => {
-  const userProfile = Object.assign({}, user);
+  const userProfile = { ...user};
   userProfile.isActive = status === UserStatus.Active;
   userProfile.reactivationDate = reactivationDate;
-  const patchData = { status: status, reactivationDate: reactivationDate };
+  const patchData = { status, reactivationDate };
   if (status === UserStatus.InActive) {
     patchData.endDate = moment(new Date()).format('YYYY-MM-DD');
     userProfile.endDate = moment(new Date()).format('YYYY-MM-DD');
@@ -60,7 +60,7 @@ export const updateUserStatus = (user, status, reactivationDate) => {
  * @param {*} option - archive / delete
  */
 export const deleteUser = (user, option) => {
-  const requestData = { option: option, userId: user._id };
+  const requestData = { option, userId: user._id };
   const deleteProfilePromise = axios.delete(ENDPOINTS.USER_PROFILE(user._id), {
     data: requestData,
   });
@@ -134,10 +134,10 @@ export const userProfileDeleteAction = user => {
  * @param {*} finalDate  - the date to be inactive
  */
 export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
-  const userProfile = Object.assign({}, user);
+  const userProfile = { ...user};
   userProfile.endDate = finalDayDate;
   userProfile.isActive = status === 'Active';
-  const patchData = { status: status, endDate: finalDayDate };
+  const patchData = { status, endDate: finalDayDate };
   if (finalDayDate === undefined) {
     patchData.endDate = undefined;
     userProfile.endDate = undefined;
@@ -155,11 +155,11 @@ export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
 };
 
 export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet) => {
-  const userProfile = Object.assign({}, user);
+  const userProfile = { ...user};
   userProfile.endDate = finalDayDate;
   userProfile.isActive = status === 'Active';
   userProfile.isSet = isSet === 'FinalDay';
-  const patchData = { status: status, endDate: finalDayDate, isSet: isSet };
+  const patchData = { status, endDate: finalDayDate, isSet };
   if (finalDayDate === undefined) {
     patchData.endDate = undefined;
     userProfile.endDate = undefined;
