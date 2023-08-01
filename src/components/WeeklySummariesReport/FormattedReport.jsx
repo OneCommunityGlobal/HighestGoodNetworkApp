@@ -218,21 +218,18 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, weekToDate }) => {
   const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
 
   const getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
-    // 0. Edge case: If there is only one history, return that
+    // 0. Edge case: If the history doesnt even exist, SHOULD NOT HAPPEN
     if (!weeklycommittedHoursHistory) {
-      // console.log('NO!');
       return -1;
     }
 
     // 1. Edge case: If there is only one history, return that
-    if (weeklycommittedHoursHistory.length === 1) {
-      // console.log('YES=1!');
-      return weeklycommittedHoursHistory[0].hours; // assuming there's an `hours` field
-    }
+    // if (weeklycommittedHoursHistory.length === 1) {
+    //   return weeklycommittedHoursHistory[0].hours; // assuming there's an `hours` field
+    // }
 
     // 2. Edge case: If there is none, return 10 (the default value of weeklyComHours)
     if (weeklycommittedHoursHistory.length === 0) {
-      console.log('YES=0');
       return 10;
     }
 
@@ -240,12 +237,14 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, weekToDate }) => {
     // 3. Else just iterate weeklycommittedHoursHistory from the last index (-1) to the beginning
     for (let i = weeklycommittedHoursHistory.length - 1; i >= 0; i--) {
       const historyDateX = new Date(weeklycommittedHoursHistory[i].dateChanged);
-      console.log(`${weekToDateX} >= ${historyDateX} is ${weekToDateX >= historyDateX}`);
+      // console.log(`${weekToDateX} >= ${historyDateX} is ${weekToDateX >= historyDateX}`);
 
       // As soon as the weekToDate is greater or equal than current history date
       if (weekToDateX >= historyDateX) {
         // return the promised hour
         return weeklycommittedHoursHistory[i].hours;
+      } else {
+        return 0;
       }
     }
   };
@@ -259,11 +258,6 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, weekToDate }) => {
 
         // assign
         promisedHoursThisWeek = getPromisedHours(weekToDate, summary.weeklycommittedHoursHistory);
-        if (summary.firstName === 'Oleksandr' && summary.lastName == 'Admin') {
-          console.log(summary);
-          promisedHoursThisWeek = getPromisedHours(weekToDate, summary.weeklycommittedHoursHistory);
-          console.log(`promisedHoursThisWeek = ${promisedHoursThisWeek}`);
-        }
 
         const googleDocLink = getGoogleDocLink(summary);
         return (
