@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
-import * as types from './../constants/role';
+import * as types from "../constants/role";
 
 export const fetchAllRoles = roles => {
   return {
