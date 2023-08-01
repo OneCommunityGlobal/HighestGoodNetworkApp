@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import BlueSquare from './BlueSquares';
 import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import './UserProfile.scss';
@@ -9,6 +9,8 @@ import { useState } from 'react';
 import { useReducer } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import { addReason, patchReason } from 'actions/reasonsActions';
+import moment from 'moment-timezone';
+import {Modal} from 'react-bootstrap';
 
 const BlueSquareLayout = props => {
   const fetchingReducer = (state, action) => {
@@ -58,7 +60,13 @@ const BlueSquareLayout = props => {
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [reason, setReason] = useState('');
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(
+    moment
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .toISOString()
+      .split('T')[0],
+  );
   const [fetchState, fetchDispatch] = useReducer(fetchingReducer, {
     isFetching: false,
     error: false,
@@ -68,9 +76,14 @@ const BlueSquareLayout = props => {
     isSet: false,
   });
 
-  const handleToggle = () => {
-    setShow(prev => !prev);
-  };
+  const handleOpen = useCallback(() => {
+    setShow(true);
+  }, [])
+
+  const handleClose = useCallback(() => {
+    setShow(false)
+  }, [])
+
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -124,7 +137,7 @@ const BlueSquareLayout = props => {
           userPermissions={userPermissions}
         />
         <div className="mt-4 w-100">
-          <Button variant="primary" onClick={handleToggle} className="w-100" size="md">
+          <Button variant="primary" onClick={handleOpen} className="w-100" size="md">
             {fetchState.isFetching ? (
               <Spinner size="sm" animation="border" />
             ) : (
@@ -133,20 +146,21 @@ const BlueSquareLayout = props => {
           </Button>
         </div>
         {show && (
-          <ScheduleReasonModal
-            show={show}
-            handleToggle={handleToggle}
-            user={userProfile}
-            reason={reason}
-            setReason={setReason}
-            handleSubmit={handleSubmit}
-            fetchState={fetchState}
-            date={date}
-            setDate={setDate}
-            fetchMessage={fetchState.fetchMessage}
-            fetchDispatch={fetchDispatch}
-            userId={userProfile._id}
-          />
+          <Modal show={show} onHide={handleClose}>
+            <ScheduleReasonModal
+              handleClose={handleClose}
+              user={userProfile}
+              reason={reason}
+              setReason={setReason}
+              handleSubmit={handleSubmit}
+              fetchState={fetchState}
+              date={date}
+              setDate={setDate}
+              fetchMessage={fetchState.fetchMessage}
+              fetchDispatch={fetchDispatch}
+              userId={userProfile._id}
+            />
+          </Modal>
         )}
       </div>
     );
