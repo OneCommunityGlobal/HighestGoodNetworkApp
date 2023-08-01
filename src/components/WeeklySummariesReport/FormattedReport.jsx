@@ -348,7 +348,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, weekToDate }) => {
 FormattedReport.propTypes = {
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekIndex: PropTypes.number.isRequired,
-  weekToDate: PropTypes.number.isRequired,
+  weekToDate: PropTypes.string.isRequired,
 };
 
 export default FormattedReport;
