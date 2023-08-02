@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col, Button, FormGroup } from 'reactstrap';
 import moment from 'moment-timezone';

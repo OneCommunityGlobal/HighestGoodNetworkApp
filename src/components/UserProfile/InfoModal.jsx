@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
 
