@@ -9,7 +9,7 @@ const HistoryModal = ({ isOpen, toggle, userName, userHistory }) => {
         <ModalHeader toggle={toggle}>Past Promised Hours</ModalHeader>
         <ModalBody>
           {userHistory.length <= 1 ? (
-            <p>{userName} has never made any changes to her weekly promised hours.</p>
+            <p>{userName} has never made any changes to the promised hours.</p>
           ) : (
             <Table striped>
               <thead>

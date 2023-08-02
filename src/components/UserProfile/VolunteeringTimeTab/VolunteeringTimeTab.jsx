@@ -394,7 +394,7 @@ const ViewTab = props => {
             userHistory={userProfile.weeklycommittedHoursHistory}
           />
           <span className="history-icon">
-            <i class="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal}></i>
+            <i className="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal}></i>
           </span>
         </Col>
       </Row>

@@ -218,6 +218,8 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, weekToDate }) => {
   const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
 
   const getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
+    console.log(`${weekToDateX}`);
+
     // 0. Edge case: If the history doesnt even exist
     // only happens if the user is created without the backend changes
     if (!weeklycommittedHoursHistory) {
@@ -251,11 +253,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, weekToDate }) => {
         let promisedHoursThisWeek = -1;
 
         // assign
-        if (summary.firstName === '0Sherly' && summary.lastName == 'Admin') {
-          console.log(summary.weeklycommittedHoursHistory);
-          promisedHoursThisWeek = getPromisedHours(weekToDate, summary.weeklycommittedHoursHistory);
-        }
-        // promisedHoursThisWeek = getPromisedHours(weekToDate, summary.weeklycommittedHoursHistory);
+        // if (summary.firstName === '0Sherly' && summary.lastName == 'Admin') {
+        //   promisedHoursThisWeek = getPromisedHours(weekToDate, summary.weeklycommittedHoursHistory);
+        // }
+        promisedHoursThisWeek = getPromisedHours(weekToDate, summary.weeklycommittedHoursHistory);
 
         const googleDocLink = getGoogleDocLink(summary);
         return (
