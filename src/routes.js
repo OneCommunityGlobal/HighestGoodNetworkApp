@@ -1,6 +1,12 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
+import AutoUpdate from 'components/AutoUpdate';
+import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
+import { RoutePermissions } from 'utils/routePermissions';
+import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
+import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import Timelog from './components/Timelog';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
@@ -19,7 +25,6 @@ import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
 import WBSDetail from './components/Projects/WBS/WBSDetail';
 import SingleTask from './components/Projects/WBS/SingleTask';
-import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,14 +35,9 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
-import AutoUpdate from 'components/AutoUpdate';
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
-import { RoutePermissions } from 'utils/routePermissions';
-import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
-import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 
 export default (
-  <React.Fragment>
+  <>
     <Header />
     <AutoUpdate />
     <ToastContainer />
@@ -148,5 +148,5 @@ export default (
       <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
       <ProtectedRoute path="/" exact component={Dashboard} />
     </Switch>
-  </React.Fragment>
+  </>
 );
