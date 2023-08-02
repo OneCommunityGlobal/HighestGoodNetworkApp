@@ -1,4 +1,4 @@
-import * as types from './../constants/projectMembership';
+import * as types from "../constants/projectMembership";
 
 const allMembershipInital = {
   projectName: '',
@@ -40,7 +40,7 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
     case types.ADD_NEW_MEMBER_ERROR:
       return { ...allMembership, fetched: true, fetching: false, error: action.err };
     case types.DELETE_MEMBER:
-      let indexMember = allMembership.members.findIndex(member => member._id === action.userId);
+      const indexMember = allMembership.members.findIndex(member => member._id === action.userId);
       return {
         ...allMembership,
         members: [
@@ -49,7 +49,7 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
         ],
       };
     case types.REMOVE_FOUND_USER:
-      let indexUser = allMembership.foundUsers.findIndex(user => user._id === action.userId);
+      const indexUser = allMembership.foundUsers.findIndex(user => user._id === action.userId);
       return {
         ...allMembership,
         foundUsers: [

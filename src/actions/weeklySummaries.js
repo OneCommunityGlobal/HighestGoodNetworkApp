@@ -1,6 +1,9 @@
 import axios from 'axios';
 import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
+import {
+  getUserProfile as getUserProfileActionCreator,
+} from '../constants/userProfile';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -43,8 +46,8 @@ export const getWeeklySummaries = userId => {
       // Only pick the fields related to weekly summaries from the userProfile.
       const { weeklySummariesCount, weeklySummaries, mediaUrl, adminLinks } = response.data;
       let summaryDocLink;
-      for (let link in adminLinks) {
-        if (adminLinks[link].Name === 'Media Folder') {
+      for (const link in adminLinks) {
+        if (adminLinks[link].Name === 'Dropbox Link') {
           summaryDocLink = adminLinks[link].Link;
           break; 
         }
@@ -66,7 +69,7 @@ export const getWeeklySummaries = userId => {
  */
 export const updateWeeklySummaries = (userId, weeklySummariesData) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
-  return async () => {
+  return async (dispatch) => {
     try {
       // Get the user's profile from the server.
       let response = await axios.get(url);
@@ -76,8 +79,8 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       // Merge the weekly summaries related changes with the user's profile.
       const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
       // update the changes on weekly summaries link into admin links
-      for (let link of adminLinks) {
-        if (link.Name === 'Media Folder') {
+      for (const link of adminLinks) {
+        if (link.Name === 'Dropbox Link') {
           link.Link = mediaUrl;
           break; 
         }
@@ -90,8 +93,12 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
         weeklySummariesCount,
       };
 
+
       // Update the user's profile on the server.
       response = await axios.put(url, userProfileUpdated);
+      if (response.status === 200) {
+        await dispatch(getUserProfileActionCreator(userProfileUpdated));
+      }
       return response.status;
     } catch (error) {
       return error.response.status;

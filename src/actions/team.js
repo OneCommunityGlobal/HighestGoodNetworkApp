@@ -1,9 +1,9 @@
 import moment from 'moment';
 import { uniqBy } from 'lodash';
+import axios from 'axios';
 import httpService from '../services/httpService';
 import { FETCH_TEAMS_START, RECEIVE_TEAMS, FETCH_TEAMS_ERROR } from '../constants/teams';
 import { ENDPOINTS } from '../utils/URL';
-import axios from 'axios';
 import { GET_TEAM_BY_ID } from '../constants/team';
 import {
   GET_USER_PROFILE,
@@ -114,7 +114,7 @@ export const getTeamDetail = teamId => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
-        //logout error
+        // logout error
         loggedOut = true;
       }
     });
