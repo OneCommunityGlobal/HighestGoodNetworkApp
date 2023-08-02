@@ -1,4 +1,4 @@
-import * as types from './../constants/popupEditorConstants';
+import * as types from "../constants/popupEditorConstants";
 
 const allPopupEditorInital = {
   fetching: false,

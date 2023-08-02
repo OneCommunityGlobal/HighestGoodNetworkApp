@@ -6,10 +6,10 @@
   },
   "private": true,
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-regular-svg-icons": "^5.12.1",
-    "@fortawesome/free-solid-svg-icons": "^5.12.1",
-    "@fortawesome/react-fontawesome": "^0.1.8",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.19",
     "@sentry/browser": "^4.6.6",
     "@tinymce/tinymce-react": "^3.6.0",
     "@uiw/react-heat-map": "^1.3.3",
@@ -76,14 +76,14 @@
     "prestart": "npm run test",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "lint": "eslint src --fix",
     "test": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:watch": " react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:coverage": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen --coverage",
     "eject": "react-scripts eject",
     "start:local": "react-scripts start",
-    "format:check": "npx prettier src/** --check && npx eslint --ext js,jsx src",
-    "format": "npx eslint --fix --ext js,jsx src && npx prettier src/** --write"
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prepare": "husky install"
   },
   "browserslist": [
     ">0.2%",
@@ -117,6 +117,7 @@
     "prettier": "^1.19.1",
     "redux-mock-store": "^1.5.4",
     "sinon": "^7.3.2",
-    "surge": "^0.21.6"
+    "surge": "^0.21.6",
+    "husky": "^8.0.0"
   }
 }
