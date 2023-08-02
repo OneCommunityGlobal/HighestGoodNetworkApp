@@ -25,7 +25,7 @@ export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
                          'one.community@me.com',
                          'jsabol@me.com'
                         ]
-  return devAdminEmail === 'devadmin@hgn.net' && allowedEmails.contains(authEmail);
+  return devAdminEmail === 'devadmin@hgn.net' && allowedEmails.includes(authEmail);
 };
 
 
