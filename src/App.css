@@ -112,6 +112,6 @@ nav ul.navbar-nav li:last-child>div {
   place-self: end;
   position: sticky;
   right: -30px;
-  bottom: 70px;
+  bottom: 10px;
   white-space: nowrap
 }

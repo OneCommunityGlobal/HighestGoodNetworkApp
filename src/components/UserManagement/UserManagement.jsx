@@ -97,13 +97,15 @@ class UserManagement extends React.PureComponent {
                 <tbody>{userTable}</tbody>
               </Table>
             </div>
-            <UserTableFooter
-              datacount={this.filteredUserDataCount}
-              selectedPage={this.state.selectedPage}
-              onPageSelect={this.onSelectPage}
-              onSelectPageSize={this.onSelectPageSize}
-              pageSize={this.state.pageSize}
-            />
+            <div style={{ marginBottom: '50px' }}>
+              <UserTableFooter
+                datacount={this.filteredUserDataCount}
+                selectedPage={this.state.selectedPage}
+                onPageSelect={this.onSelectPage}
+                onSelectPageSize={this.onSelectPageSize}
+                pageSize={this.state.pageSize}
+              />
+            </div>
           </React.Fragment>
         )}
       </Container>
