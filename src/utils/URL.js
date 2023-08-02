@@ -1,6 +1,6 @@
-let APIEndpoint =
+const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
-let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
+const GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
@@ -34,7 +34,7 @@ export const ENDPOINTS = {
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
   TASKS: (wbsId, level, mother) =>
-    `${APIEndpoint}/tasks/${wbsId}/${level}/${mother ? mother : '0'}`,
+    `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
   TASK_IMPORT: wbsId => `${APIEndpoint}/task/import/${wbsId}`,
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/del/${wbsId}`,
