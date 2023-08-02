@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { getMouseoverText, createMouseoverText, updateMouseoverText } from '../../actions/mouseoverTextAction';
 
 
-function MouseoverTextTotalTime({
+function MouseoverTextTotalTimeButton({
     getMouseoverText,
     createMouseoverText,
     updateMouseoverText,
@@ -46,16 +46,13 @@ function MouseoverTextTotalTime({
         };
         if (text) {
             updateMouseoverText(mouseoverTextId, mouseoverText);
-            setModalOpen(false);
-            setText(newText);
-            onUpdate(newText);
         } else {
             //console.log('createMouseoverText is ' + mouseoverText.newMouseoverText);
             createMouseoverText(mouseoverText);
-            setModalOpen(false);
-            setText(newText);
-            onUpdate(newText);
         }
+        setModalOpen(false);
+        setText(newText);
+        onUpdate(newText);
     };
 
     const handleCancelSave = () => {
@@ -116,7 +113,7 @@ const mapDispatchToProps = dispatch => ({
         dispatch(updateMouseoverText(mouseoverTextId, mouseoverText)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MouseoverTextTotalTime);
+export default connect(mapStateToProps, mapDispatchToProps)(MouseoverTextTotalTimeButton);
 
 
 
