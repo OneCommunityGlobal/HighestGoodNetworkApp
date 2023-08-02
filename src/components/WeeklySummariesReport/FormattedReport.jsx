@@ -95,7 +95,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
 
         summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
           .tz('America/Los_Angeles')
-          .format('YYYY-MMM-DD');
+          .format('MMM-DD-YY');
         summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
         return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
