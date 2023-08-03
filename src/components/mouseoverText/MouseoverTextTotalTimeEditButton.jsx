@@ -20,11 +20,19 @@ function MouseoverTextTotalTimeEditButton({
 
     useEffect(() => {
         getMouseoverText();
+    }, [getMouseoverText]);
+
+    useEffect(() => {
         if (mouseoverText) {
-            setText(mouseoverText);
             onUpdate(mouseoverText);
         }
-    }, [getMouseoverText, mouseoverText, onUpdate]);
+    }, [mouseoverText, onUpdate]);
+
+    useEffect(() => {
+        if (mouseoverText) {
+            setText(mouseoverText);
+        }
+    }, [mouseoverText]);
 
 
     const handleUpdateText = () => {
