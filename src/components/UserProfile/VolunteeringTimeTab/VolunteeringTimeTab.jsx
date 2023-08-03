@@ -18,7 +18,7 @@ const startEndDateValidation = props => {
 
 const StartDate = props => {
   if (!props.canEdit) {
-    return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
+    return <p>{moment(props.userProfile.createdDate).format('MMM-DD-YY')}</p>;
   }
   return (
     <Input
