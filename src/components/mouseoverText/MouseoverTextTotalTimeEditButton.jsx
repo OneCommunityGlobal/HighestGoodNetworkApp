@@ -18,21 +18,30 @@ function MouseoverTextTotalTimeEditButton({
     const [modalOpen, setModalOpen] = useState(false);
     const [newText, setNewText] = useState('');
 
+    // useEffect(() => {
+    //     getMouseoverText();
+    // }, [getMouseoverText]);
+
+    // useEffect(() => {
+    //     if (mouseoverText) {
+    //         onUpdate(mouseoverText);
+    //     }
+    // }, [mouseoverText, onUpdate]);
+
+    // useEffect(() => {
+    //     if (mouseoverText) {
+    //         setText(mouseoverText);
+    //     }
+    // }, [mouseoverText]);
+
     useEffect(() => {
         getMouseoverText();
-    }, [getMouseoverText]);
-
-    useEffect(() => {
         if (mouseoverText) {
             onUpdate(mouseoverText);
-        }
-    }, [mouseoverText, onUpdate]);
-
-    useEffect(() => {
-        if (mouseoverText) {
             setText(mouseoverText);
         }
-    }, [mouseoverText]);
+    }, []);
+
 
 
     const handleUpdateText = () => {
