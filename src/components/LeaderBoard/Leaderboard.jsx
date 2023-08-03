@@ -11,6 +11,7 @@ import {
 } from 'utils/leaderboardPermissions';
 import MouseoverTextTotalTimeButton from '../mouseoverText/MouseoverTextTotalTimeButton';
 import MouseoverTextTotalTimeUpdater from '../mouseoverText/MouseoverTextTotalTimeUpdater';
+import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -220,7 +221,8 @@ const LeaderBoard = ({
                     <span className="d-none d-sm-inline-block" title={mouseoverText}>Total Time </span>
                   </div>
                   {isOwner && (
-                    <MouseoverTextTotalTimeButton onUpdate={handleMouseoverTextUpdate} />
+                    // <MouseoverTextTotalTimeButton onUpdate={handleMouseoverTextUpdate} />
+                    <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
                   )}
                   {!isOwner && (
                     <MouseoverTextTotalTimeUpdater onUpdate={handleMouseoverTextUpdate} />
