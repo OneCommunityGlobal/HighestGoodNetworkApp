@@ -43,7 +43,7 @@ const EndDate = props => {
     return (
       <p>
         {props.userProfile.endDate
-          ? props.userProfile.endDate.toLocaleString().split('T')[0]
+          ?  moment(props.userProfile.endDate).format('MMM-DD-YY')
           : 'N/A'}
       </p>
     );
