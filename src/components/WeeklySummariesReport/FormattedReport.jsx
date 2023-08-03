@@ -85,7 +85,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
       .tz('America/Los_Angeles')
       .endOf('week')
       .subtract(weekIndex, 'week')
-      .format('YYYY-MMM-DD');
+      .format('MMM-DD-YY');
     let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
       if (summaryText) {
