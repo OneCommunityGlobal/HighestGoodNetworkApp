@@ -455,7 +455,7 @@ function UserProfile(props) {
     const newUserProfile = {
       ...userProfile,
       isActive: !userProfile.isActive,
-      endDate: userProfile.isActive ? moment(new Date()).format('YYYY-MM-DD') : undefined,
+      endDate: userProfile.isActive ? moment(new Date()).format('MMM-DD-YY') : undefined,
     };
     updateUserStatus(newUserProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined);
     setUserProfile(newUserProfile);
@@ -720,11 +720,11 @@ function UserProfile(props) {
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
+              From : <span>{moment(userProfile.createdDate).format('MMM-DD-YY')}</span>
               {'   '}
               To:{' '}
               <span>
-                {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
+                {userProfile.endDate ? moment(userProfile.endDate).format('MMM-DD-YY') : 'N/A'}
               </span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
