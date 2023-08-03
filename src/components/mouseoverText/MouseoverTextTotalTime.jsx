@@ -2,16 +2,13 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { getMouseoverText } from '../../actions/mouseoverTextAction';
 
-function MouseoverTextTotalTimeUpdater({ getMouseoverText, mouseoverText, onUpdate }) {
+function MouseoverTextTotalTime({ getMouseoverText, mouseoverText, onUpdate }) {
     useEffect(() => {
         getMouseoverText();
-    }, [getMouseoverText]);
-
-    useEffect(() => {
         if (mouseoverText) {
-            onUpdate(mouseoverText); // Call the onUpdate function to pass the mouseoverText value to the parent component
+            onUpdate(mouseoverText);
         }
-    }, [mouseoverText, onUpdate]);
+    }, [getMouseoverText, mouseoverText, onUpdate]);
 
     return null;
 }
@@ -26,4 +23,4 @@ const mapDispatchToProps = (dispatch) => ({
     getMouseoverText: () => dispatch(getMouseoverText()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MouseoverTextTotalTimeUpdater);
+export default connect(mapStateToProps, mapDispatchToProps)(MouseoverTextTotalTime);

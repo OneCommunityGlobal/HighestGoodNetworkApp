@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { getMouseoverText, createMouseoverText, updateMouseoverText } from '../../actions/mouseoverTextAction';
 
 
-function MouseoverTextTotalTimeButton({
+function MouseoverTextTotalTimeEditButton({
     getMouseoverText,
     createMouseoverText,
     updateMouseoverText,
@@ -103,7 +103,7 @@ const mapDispatchToProps = dispatch => ({
         dispatch(updateMouseoverText(mouseoverTextId, mouseoverText)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MouseoverTextTotalTimeButton);
+export default connect(mapStateToProps, mapDispatchToProps)(MouseoverTextTotalTimeEditButton);
 
 
 

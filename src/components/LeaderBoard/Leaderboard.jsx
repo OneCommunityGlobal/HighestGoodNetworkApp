@@ -9,8 +9,7 @@ import {
   assignStarDotColors,
   showStar,
 } from 'utils/leaderboardPermissions';
-import MouseoverTextTotalTimeButton from '../mouseoverText/MouseoverTextTotalTimeButton';
-import MouseoverTextTotalTimeUpdater from '../mouseoverText/MouseoverTextTotalTimeUpdater';
+import MouseoverTextTotalTime from '../mouseoverText/MouseoverTextTotalTime';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 
 function useDeepEffect(effectFunc, deps) {
@@ -221,11 +220,10 @@ const LeaderBoard = ({
                     <span className="d-none d-sm-inline-block" title={mouseoverText}>Total Time </span>
                   </div>
                   {isOwner && (
-                    // <MouseoverTextTotalTimeButton onUpdate={handleMouseoverTextUpdate} />
                     <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
                   )}
                   {!isOwner && (
-                    <MouseoverTextTotalTimeUpdater onUpdate={handleMouseoverTextUpdate} />
+                    <MouseoverTextTotalTime onUpdate={handleMouseoverTextUpdate} />
                   )}
                 </div>
               </th>
