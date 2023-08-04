@@ -11,9 +11,10 @@ import { updateDashboardData, getDashboardDataAI } from '../../actions/dashboard
 function CurrentPromptModal(props) {
   const current = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format. Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'. Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment. Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`;
   const dashboardDataAIPrompt =
-    props.state.dashboardData === '' || props.state.dashboardData === null
+    props.state.dashboardData.aIPromptText === '' || props.state.dashboardData.aIPromptText === null
       ? current
-      : props.state.dashboardData;
+      : props.state.dashboardData.aIPromptText;
+
 
   const [modal, setModal] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
@@ -52,7 +53,7 @@ function CurrentPromptModal(props) {
   };
 
   const currentPrompt = canEdit ? (
-    <textarea defaultValue={newPrompt} onChange={e => changeNewName(e.target.value)}></textarea>
+    <textarea autoFocus defaultValue={newPrompt} onChange={e => changeNewName(e.target.value)}></textarea>
   ) : (
     newPrompt
   );
