@@ -239,6 +239,9 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, allRoleInfo}) => {
               <span>
                 <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
               </span>
+              <div>
+                    <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />
+              </div>
               {showStar(hoursLogged, summary.weeklycommittedHours) && (
                 <i
                   className="fa fa-star"
