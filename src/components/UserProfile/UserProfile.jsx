@@ -455,7 +455,7 @@ function UserProfile(props) {
     const newUserProfile = {
       ...userProfile,
       isActive: !userProfile.isActive,
-      endDate: userProfile.isActive ? moment(new Date()).format('MMM-DD-YY') : undefined,
+      endDate: userProfile.isActive ? moment(new Date()).format('YYYY-MM-DD') : undefined,
     };
     updateUserStatus(newUserProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined);
     setUserProfile(newUserProfile);

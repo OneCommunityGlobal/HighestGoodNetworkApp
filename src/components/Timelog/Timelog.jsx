@@ -462,7 +462,7 @@ const Timelog = props => {
                                 isActive: !userProfile.isActive,
                                 endDate:
                                   !userProfile.isActive === false
-                                    ? moment(new Date()).format('MMM-DD-YY')
+                                    ? moment(new Date()).format('YYYY-MM-DD')
                                     : undefined,
                               });
                             }}
