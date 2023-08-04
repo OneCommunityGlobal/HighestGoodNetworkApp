@@ -1,14 +1,14 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Action: PROJECTS
  * Author: Henry Ng - 01/17/20
- ********************************************************************************/
+ ******************************************************************************* */
 import axios from 'axios';
-import * as types from './../constants/projects';
+import * as types from "../constants/projects";
 import { ENDPOINTS } from '../utils/URL';
 
-/*******************************************
+/** *****************************************
  * ACTION CREATORS
- *******************************************/
+ ****************************************** */
 
 /**
  * Call API to get all projects
@@ -51,10 +51,10 @@ export const postNewProject = (projectName, projectCategory, isActive) => {
     dispatch(
       addNewProject(
         {
-          _id: _id,
-          projectName: projectName,
+          _id,
+          projectName,
           category: projectCategory,
-          isActive: isActive,
+          isActive,
         },
         status,
       ),
@@ -95,9 +95,9 @@ export const modifyProject = (type, projectId, projectName, category, isActive) 
 
     try {
       const res = await axios.put(url, {
-        projectName: projectName,
-        category: category,
-        isActive: isActive,
+        projectName,
+        category,
+        isActive,
       });
       status = res.status;
       console.log(status);
@@ -110,9 +110,9 @@ export const modifyProject = (type, projectId, projectName, category, isActive) 
   };
 };
 
-/*******************************************
+/** *****************************************
  * PLAIN OBJECT ACTIONS
- *******************************************/
+ ****************************************** */
 
 /**
  * Set a flag that fetching projects

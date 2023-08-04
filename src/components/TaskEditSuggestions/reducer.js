@@ -43,7 +43,7 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
           ),
           userSortDirection: null,
         };
-      } else if (state.dateSuggestedSortDirection == 'desc') {
+      } if (state.dateSuggestedSortDirection == 'desc') {
         return {
           ...state,
           dateSuggestedSortDirection: 'asc',
@@ -63,7 +63,7 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
           ),
           dateSuggestedSortDirection: null,
         };
-      } else if (state.userSortDirection == 'desc') {
+      } if (state.userSortDirection == 'desc') {
         return {
           ...state,
           userSortDirection: 'asc',
