@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Leaderboard from './Leaderboard';
 import { getcolor, getprogress, getProgressValue } from '../../utils/effortColors';
 import { get, round, maxBy } from 'lodash';
+import { getMouseoverText } from '../../actions/mouseoverTextAction';
 
 
 const mapStateToProps = state => {
@@ -63,6 +64,10 @@ const mapStateToProps = state => {
     organizationData: orgData,
     timeEntries: get(state, 'timeEntries', {}),
     isVisible: user.role === 'Volunteer' || user.isVisible,
+    totalTimeMouseoverText: state?.mouseoverText?.[0]?.mouseoverText,
+    totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
   };
 };
-export default connect(mapStateToProps, { getLeaderboardData, getOrgData })(Leaderboard);
+
+
+export default connect(mapStateToProps, { getLeaderboardData, getOrgData, getMouseoverText })(Leaderboard);

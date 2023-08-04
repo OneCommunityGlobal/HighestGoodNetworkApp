@@ -3,45 +3,17 @@ import { ENDPOINTS } from '../../utils/URL';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { getMouseoverText, createMouseoverText, updateMouseoverText } from '../../actions/mouseoverTextAction';
+import { createMouseoverText, updateMouseoverText } from '../../actions/mouseoverTextAction';
 
 
 function MouseoverTextTotalTimeEditButton({
-    getMouseoverText,
     createMouseoverText,
     updateMouseoverText,
     onUpdate,
-    mouseoverText,
     mouseoverTextId,
 }) {
-    const [text, setText] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
     const [newText, setNewText] = useState('');
-
-    // useEffect(() => {
-    //     getMouseoverText();
-    // }, [getMouseoverText]);
-
-    // useEffect(() => {
-    //     if (mouseoverText) {
-    //         onUpdate(mouseoverText);
-    //     }
-    // }, [mouseoverText, onUpdate]);
-
-    // useEffect(() => {
-    //     if (mouseoverText) {
-    //         setText(mouseoverText);
-    //     }
-    // }, [mouseoverText]);
-
-    useEffect(() => {
-        getMouseoverText();
-        if (mouseoverText) {
-            onUpdate(mouseoverText);
-            setText(mouseoverText);
-        }
-    }, []);
-
 
 
     const handleUpdateText = () => {
@@ -49,18 +21,17 @@ function MouseoverTextTotalTimeEditButton({
     };
 
     const handleSaveText = () => {
-        const mouseoverText = {
+        const mouseoverTextFormat = {
             newMouseoverText: newText,
         };
-        if (text) {
-            updateMouseoverText(mouseoverTextId, mouseoverText);
+        if (newText) {
+            updateMouseoverText(mouseoverTextId, mouseoverTextFormat);
             toast.success('Mouseover Text updated!');
         } else {
-            createMouseoverText(mouseoverText);
+            createMouseoverText(mouseoverTextFormat);
             toast.success('Mouseover Text created!');
         }
         setModalOpen(false);
-        setText(newText);
         onUpdate(newText);
     };
 
@@ -86,6 +57,7 @@ function MouseoverTextTotalTimeEditButton({
                             type="text"
                             name="newText"
                             id="newText"
+                            value={newText}
                             onChange={(e) => setNewText(e.target.value)}
                         />
                     </ModalBody>
@@ -114,14 +86,12 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-    getMouseoverText: () => dispatch(getMouseoverText()),
     createMouseoverText: mouseoverText => dispatch(createMouseoverText(mouseoverText)),
     updateMouseoverText: (mouseoverTextId, mouseoverText) =>
         dispatch(updateMouseoverText(mouseoverTextId, mouseoverText)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MouseoverTextTotalTimeEditButton);
-
 
 
 

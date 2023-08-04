@@ -13,7 +13,7 @@ export const getMouseoverTextAction = payload => {
 export const getMouseoverText = () => async dispatch => {
     try {
         const { data } = await axios.get(ENDPOINTS.MOUSEOVERTEXT());
-        //console.log('Fetched mouseoverText data:', data); // Verify the fetched data
+        // console.log('Fetched mouseoverText data:', data); // Verify the fetched data
         return dispatch(getMouseoverTextAction(data));
     } catch (error) {
         console.log('Error fetching mouseoverText:', error);

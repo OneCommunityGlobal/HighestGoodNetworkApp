@@ -9,7 +9,6 @@ import {
   assignStarDotColors,
   showStar,
 } from 'utils/leaderboardPermissions';
-import MouseoverTextTotalTime from '../mouseoverText/MouseoverTextTotalTime';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 
 function useDeepEffect(effectFunc, deps) {
@@ -32,21 +31,31 @@ function useDeepEffect(effectFunc, deps) {
 const LeaderBoard = ({
   getLeaderboardData,
   getOrgData,
+  getMouseoverText,
   leaderBoardData,
   loggedInUser,
   organizationData,
   timeEntries,
   isVisible,
   asUser,
+  totalTimeMouseoverText,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
   const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
   const isOwner = ['Owner'].includes(loggedInUser.role);
 
-  const [mouseoverText, setMouseoverText] = useState('');
+  const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
+
+  useEffect(() => {
+    getMouseoverText();
+  }, [totalTimeMouseoverText]);
+
+  useEffect(() => {
+    setMouseoverTextValue(totalTimeMouseoverText);
+  }, [totalTimeMouseoverText]);
 
   const handleMouseoverTextUpdate = (text) => {
-    setMouseoverText(text);
+    setMouseoverTextValue(text);
   };
 
   useDeepEffect(() => {
@@ -217,13 +226,12 @@ const LeaderBoard = ({
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ textAlign: 'left' }}>
                     <span className="d-sm-none">Tot. Time</span>
-                    <span className="d-none d-sm-inline-block" title={mouseoverText}>Total Time </span>
+                    <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>Total Time </span>
                   </div>
                   {isOwner && (
-                    <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
-                  )}
-                  {!isOwner && (
-                    <MouseoverTextTotalTime onUpdate={handleMouseoverTextUpdate} />
+                    <MouseoverTextTotalTimeEditButton
+                      onUpdate={handleMouseoverTextUpdate}
+                    />
                   )}
                 </div>
               </th>
@@ -344,7 +352,7 @@ const LeaderBoard = ({
                 </td>
                 <td className="align-middle">
                   <span
-                    title={mouseoverText}
+                    title={mouseoverTextValue}
                     id="Total time"
                     className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
                   >
