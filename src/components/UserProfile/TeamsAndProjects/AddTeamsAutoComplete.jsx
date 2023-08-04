@@ -22,6 +22,7 @@ const AddTeamsAutoComplete = React.memo(props => {
         value={props.searchText}
         onChange={e => {
           props.setSearchText(e.target.value);
+          props.setNewTeamName(e.target.value);
           toggle(true);
         }}
       />
@@ -53,6 +54,18 @@ const AddTeamsAutoComplete = React.memo(props => {
                 {item.teamName}
               </div>
             ))}
+            
+            {props.teamsData.allTeams.every(team => team.teamName.toLowerCase() !== props.searchText.toLowerCase()) && (
+              <div
+                className="team-auto-complete"
+                onClick={() => {
+                  toggle(false);
+                  props.onCreateNewTeam(props.searchText);
+                }}
+              >
+                Create new team: {props.searchText}
+              </div>
+            )}
         </div>
       ) : (
         <></>

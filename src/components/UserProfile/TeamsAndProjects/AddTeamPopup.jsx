@@ -20,6 +20,7 @@ const AddTeamPopup = React.memo(props => {
   // states and onrs for the new team form
   const [newTeamName, setNewTeamName] = useState('');
   const [newTeamIsActive, setNewTeamIsActive] = useState(true);
+  const [isDuplicateTeam, setDuplicateTeam] = useState(false);
 
   const onAssignTeam = () => {
     if (!searchText) {
@@ -42,24 +43,25 @@ const AddTeamPopup = React.memo(props => {
     onValidation(true);
   };
 
-const onCreateTeam = async () => {
-  if (newTeamName !== '') {
-    const response = await dispatch(postNewTeam(newTeamName, newTeamIsActive));
-      
-    if (response.status === 200) {
-      toast.success('Team created successfully'); // toast notification
-      setNewTeamName('');
-      setNewTeamIsActive(true);
-      await dispatch(getAllUserTeams());
-    } else if (response.status === 400) {
-      toast.error('A team with this name already exists'); // toast error message
+  const onCreateTeam = async () => {
+    if (newTeamName !== '') {
+      const response = await dispatch(postNewTeam(newTeamName, newTeamIsActive));
+        
+      if (response.status === 200) {
+        toast.success('Team created successfully'); // toast notification
+        setNewTeamName('');
+        setNewTeamIsActive(true);
+        setDuplicateTeam(false); // Reset duplicate team state
+        await dispatch(getAllUserTeams());
+      } else if (response.status === 400) {
+        setDuplicateTeam(true); // set duplicate team state to true
+      } else {
+        toast.error('Error occurred while creating team'); // general error message
+      }
     } else {
-      toast.error('Error occurred while creating team'); // general error message
+      onNewTeamValidation(false);
     }
-  } else {
-    onNewTeamValidation(false);
-  }
-};
+  };
 
   useEffect(() => {
     onValidation(true);
@@ -79,8 +81,11 @@ const onCreateTeam = async () => {
           <AddTeamsAutoComplete
             teamsData={props.teamsData}
             onDropDownSelect={selectTeam}
+            onCreateNewTeam={onCreateTeam}
             selectedTeam={selectedTeam}
             searchText={searchText}
+            setNewTeamName={setNewTeamName} 
+            newTeamName={newTeamName}
             setSearchText={setSearchText}  // Added setSearchText prop
           />
           <Button color="primary" style={{ marginLeft: '5px' }} onClick={onAssignTeam}>
@@ -93,18 +98,10 @@ const onCreateTeam = async () => {
         {!isValidTeam && !searchText && (
           <Alert color="danger">Hey, You need to pick a team first!</Alert>
         )}
-        <label style={{textAlign: 'left'}}>Create New Team</label>
-        <div className="input-group mb-3">
-          <Input
-            placeholder="Please enter a new team name"
-            value={newTeamName}
-            onChange={e => setNewTeamName(e.target.value)}
-          />
-          <Button color="primary" style={{ marginLeft: '5px' }} onClick={onCreateTeam}>
-            Create New Team
-          </Button>
-        </div>
-        {!isValidNewTeam ? <Alert color="danger">Please enter a team name.</Alert> : null}
+        {!isValidNewTeam && !isDuplicateTeam ? <Alert color="danger">Please enter a team name.</Alert> : null}
+        {isDuplicateTeam && (
+          <Alert color="danger">A team with this name already exists</Alert>
+        )}
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={closePopup}>
