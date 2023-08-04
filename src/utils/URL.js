@@ -86,6 +86,9 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
+
+  MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
+  MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;
