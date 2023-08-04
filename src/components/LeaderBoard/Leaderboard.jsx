@@ -48,9 +48,6 @@ const LeaderBoard = ({
 
   useEffect(() => {
     getMouseoverText();
-  }, [totalTimeMouseoverText]);
-
-  useEffect(() => {
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
 
