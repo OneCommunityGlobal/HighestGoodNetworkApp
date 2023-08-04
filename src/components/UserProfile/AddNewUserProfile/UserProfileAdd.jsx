@@ -44,8 +44,8 @@ import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
-import dateFnsFormat from 'date-fns/format';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
@@ -73,6 +73,7 @@ class AddUserProfile extends Component {
         location: '',
         showphone: true,
         weeklySummaryOption: 'Required',
+        startDate: new Date(),
       },
       formValid: {},
       formErrors: {
@@ -104,11 +105,13 @@ class AddUserProfile extends Component {
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
 
+    // startDate variable, need to add to constructor after
+    const date = new Date();
+    const tomorrow = new Date(date.getFullYear(), date.getMonth(), (date.getDate() + 1));
+
     //Date picker
     const FORMAT = 'MM/dd/yy';
-    const date = new Date();
-    const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
-    const tomorrow = new Date(date.getFullYear(), date.getMonth(), (date.getDate() + 1));
+    const DATE_PICKER_MIN_DATE = '01/01/2010';
 
     return (
       <StickyContainer>
@@ -378,14 +381,14 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <div className="w-100 pt-1 mb-2 mx-auto">
-                        <DayPickerInput
-                          format={FORMAT}
-                          formatDate={formatDate}
-                          placeholder={`${dateFnsFormat(tomorrow, FORMAT)}`}
-                          onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                          value={tomorrow}
-                        />
+                    <div className="date-picker-item">                        
+                      <DatePicker
+                        selected={tomorrow}
+                        minDate={new Date(DATE_PICKER_MIN_DATE)}
+                        maxDate={tomorrow}
+                        onChange={date => this.setState({ startDate: date })}
+                        className="form-control"
+                      />
                       </div>
                     </FormGroup>
                   </Col>
@@ -566,6 +569,7 @@ class AddUserProfile extends Component {
       timeZone,
       location,
       weeklySummaryOption,
+      startDate,
     } = that.state.userProfile;
 
     const userData = {
@@ -588,6 +592,7 @@ class AddUserProfile extends Component {
       timeZone: timeZone,
       location: location,
       allowsDuplicateName: allowsDuplicateName,
+      startDate: startDate,
     };
 
     this.setState({ formSubmitted: true });
