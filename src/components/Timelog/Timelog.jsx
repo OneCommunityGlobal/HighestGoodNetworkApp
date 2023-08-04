@@ -205,7 +205,7 @@ const Timelog = props => {
       .tz('America/Los_Angeles')
       .startOf('week')
       .subtract(offset, 'weeks')
-      .format('MMM-DD-YY');
+      .format('YYYY-MM-DD');
   };
 
   // endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
@@ -215,7 +215,7 @@ const Timelog = props => {
       .tz('America/Los_Angeles')
       .endOf('week')
       .subtract(offset, 'weeks')
-      .format('MMM-DD-YY');
+      .format('YYYY-MM-DD');
   };
 
   const calculateTotalTime = (data, isTangible) => {
