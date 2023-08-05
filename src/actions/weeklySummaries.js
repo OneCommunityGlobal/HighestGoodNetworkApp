@@ -102,10 +102,10 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       }
       return response.status;
     } catch (error) {
-      if (error.response.status){
-      return error.response.status;
+      if (error.response && error.response.status) {
+        return error.response.status;
       }
-      return "put operation failed";
+      return 404;
     }
   };
 };
