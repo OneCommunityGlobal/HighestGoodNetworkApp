@@ -99,7 +99,7 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       response = await axios.put(url, userProfileUpdated);
       if (response.status === 200) {
         await dispatch(getUserProfileActionCreator(userProfileUpdated));
-        return response.status;
+        // return response.status;
       }
       return 200;
     } catch (error) {
