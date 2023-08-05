@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
+import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
 // import { handleSuccessReducer } from './handleSuccessReducer'
@@ -33,12 +35,12 @@ import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { timeZoneAPIReducer } from './timezoneApiReducer';
-import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
-import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { roleReducer } from './roleReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { summaryGroupReducer } from './allSummaryGroupReducer';
+import { mouseoverTextReducer } from './mouseoverTextReducer';
+
 
 export default combineReducers({
   auth: authReducer,
@@ -84,6 +86,6 @@ export default combineReducers({
   ownerMessage: ownerMessageReducer,
   ownerStandardMessage: ownerStandardMessageReducer,
   allSummaryGroups: summaryGroupReducer,
-  
-  
+  mouseoverText: mouseoverTextReducer,
+
 });

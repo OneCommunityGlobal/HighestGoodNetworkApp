@@ -1,7 +1,7 @@
-/* eslint-disable import/prefer-default-export */
-let APIEndpoint =
+
+const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
-let GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
+const GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
@@ -42,8 +42,7 @@ export const ENDPOINTS = {
   TIMER: userId => `${APIEndpoint}/timer/${userId}`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
-  TASKS: (wbsId, level, mother) =>
-    `${APIEndpoint}/tasks/${wbsId}/${level}/${mother ? mother : '0'}`,
+  TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
   TASK_IMPORT: wbsId => `${APIEndpoint}/task/import/${wbsId}`,
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/del/${wbsId}`,
@@ -75,10 +74,11 @@ export const ENDPOINTS = {
     `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
-
+  DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
+    `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
-    `${ENDPOINTS.TASK_EDIT_SUGGESTION()}/${taskEditSuggestionId}`,
+    `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
@@ -91,7 +91,11 @@ export const ENDPOINTS = {
   OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
 
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
-  OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId => `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`
+  OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
+    `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
+
+  MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
+  MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;
