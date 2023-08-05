@@ -4,6 +4,11 @@ thead {
 
 #new_usermanagement {
   margin-bottom: 10px;
+  box-sizing: border-box;
+  width: calc(100vw - 45px);
+}
+#user-management-table {
+  width: calc(100vw - 45px);
 }
 
 #usermanagement_order {

@@ -9,6 +9,7 @@ import {
   PAUSE,
   USER_RESUME_DATE,
   MANAGE_FINAL_DAY,
+  REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 import userTableDataPermissions from 'utils/userTableDataPermissions';
 
@@ -38,6 +39,9 @@ const UserTableHeader = React.memo(props => {
       </th>
       <th scope="col" id="usermanagement_pause">
         {PAUSE}
+      </th>
+      <th scope="col" id="usermanagement_requested_time_off">
+        {REQUESTED_TIME_OFF}
       </th>
       <th scope="col" id="usermanagement_finalday">
         {MANAGE_FINAL_DAY}

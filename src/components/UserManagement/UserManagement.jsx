@@ -28,6 +28,7 @@ import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
+import LogTimeOffPopUp from './logTimeOffPopUp';
 import { Table } from 'react-bootstrap';
 
 class UserManagement extends React.PureComponent {
@@ -76,7 +77,7 @@ class UserManagement extends React.PureComponent {
               onActiveFiter={this.onActiveFiter}
               onNewUserClick={this.onNewUserClick}
             />
-            <div className="table-responsive">
+            <div className="table-responsive" id="user-management-table">
               <Table className="table table-bordered noWrap">
                 <thead>
                   <UserTableHeader
@@ -153,6 +154,7 @@ class UserManagement extends React.PureComponent {
           onClose={this.setUpFinalDayPopupClose}
           onSave={this.deactiveUser}
         />
+        <LogTimeOffPopUp open={true} />
       </React.Fragment>
     );
   };

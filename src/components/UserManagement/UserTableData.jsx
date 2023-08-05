@@ -79,6 +79,11 @@ const UserTableData = React.memo(props => {
         </button>
       </td>
       <td>
+        <button type="button" className="btn btn-outline-primary btn-sm" style={boxStyle}>
+          log time off
+        </button>
+      </td>
+      <td>
         <button
           type="button"
           className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
