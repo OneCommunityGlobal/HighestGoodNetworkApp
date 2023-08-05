@@ -29,7 +29,7 @@ export const denyPermissionToSelfUpdateDevAdminDetails = (userEmail, isUserSelf)
 
 // others cannot change the details for devadmin@hgn.net
 export const denyPermissionForOthersToUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
-  //const permissionToEdit = ['jae@onecommunityglobal.org', 'one.community@me.com', 'jsabol@me.com', 'nidazaki97@gmail.com']
+  // const permissionToEdit = ['jae@onecommunityglobal.org', 'one.community@me.com', 'jsabol@me.com', 'nidazaki97@gmail.com']
   return (devAdminEmail === "devadmin@hgn.net" && (authEmail !== "jae@onecommunityglobal.org"))
 };
 
