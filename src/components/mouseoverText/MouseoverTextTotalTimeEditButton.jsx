@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { ENDPOINTS } from '../../utils/URL';
+import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
@@ -45,7 +44,7 @@ function MouseoverTextTotalTimeEditButton({
           aria-hidden="true"
           style={{ marginLeft: '5px', cursor: 'pointer' }}
           onClick={handleUpdateText}
-        ></i>
+        />
         <Modal isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)}>
           <ModalHeader toggle={() => setModalOpen(!modalOpen)}>Edit Mouseover Text</ModalHeader>
           <ModalBody>
@@ -61,7 +60,7 @@ function MouseoverTextTotalTimeEditButton({
           <ModalFooter>
             <Button color="primary" onClick={handleSaveText}>
               Save
-            </Button>{' '}
+            </Button>
             <Button color="secondary" onClick={handleCancelSave}>
               Cancel
             </Button>
