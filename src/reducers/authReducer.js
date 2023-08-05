@@ -12,20 +12,20 @@ export const authReducer = (auth = initialState, action) => {
   if (action.type === SET_CURRENT_USER) {
     if (!action.payload) {
       return initialState;
-    } else if (action.payload.new) {
+    } if (action.payload.new) {
       return {
         ...auth,
         isAuthenticated: false,
         user: action.payload,
       };
-    } else {
+    } 
       return {
         ...auth,
         isAuthenticated: !isEmpty(action.payload),
         user: action.payload,
       };
-    }
-  } else if (action.type === SET_HEADER_DATA) {
+    
+  } if (action.type === SET_HEADER_DATA) {
     return {
       ...auth,
       firstName: action.payload.firstName,

@@ -31,52 +31,91 @@ const mapPermissionToLabel = permissions => {
 
 function RolePermissions(props) {
   const modalInfo = {
-    'See Weekly Summary Reports Tab' : 'Make the "Other Links" -> "Reports" button appear/accessible.',
-    'See User Management Tab (delete and update users)' : 'Make the "Other Links" -> "User Management" button appear/accessible and be able to create, delete, and update users.',
-    'See Badge Management Tab (create badges)' : 'Make the "Other Links" -> "Badge Management" button appear and then have the ability to create, delete, and update badges. ',
-    'Delete Badge': 'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
-    'Modify Badge Amount' : 'Gives the user permission to decrease the count of a badge on the Badge Reports Component',
-    'Assign Badges' : 'Gives the user permission to assign badges to others users "User Profile" -> "Assign Badges"',
-    'See Popup Management Tab (create and update popups)' : 'Make the "Other Links" -> "Popup Management" button appear and be able to create and update popups.',
-    'See Project Management Tab' : 'Make the "Other Links" -> "Projects" button appear and be able to create or delete new projects, edit projects names, add members to projects, upload/import/create new WBSs, etc.',
-    'Delete WBS' : 'Gives the user permission to delete any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Minus Red Icon"',
-    'Add Task': 'Gives the user permission to add a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Add task button"',
-    'Delete Task' : 'Gives the user permission to delete a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Remove"',
-    'Edit Task': 'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit"',
-    'Suggest Changes on a task': 'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
-    'Add WBS': 'Gives the user permission to create a new WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Add new WBS Input"',
-    'Add Project' : 'Gives the user permission to create any Project. "Other Links" -> "Projects" -> "Add new Project Input"',
-    'Delete Project' : 'Gives the user permission to delete any Project. "Other Links" -> "Projects" -> "Delete button" ',
-    'Edit Project': 'Gives the user permission to edit the category or the status of any Project. "Other Links" -> "Projects"',
-    'Find User in Project' : 'Gives the user permission to find any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Find user input"',
-    'Assign User in Project' : 'Gives the user permission to add any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Find user input"',
-    'Unassign User in Project' : 'Gives the user permission to remove any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Minus button"',
-    'See Teams Management Tab' : 'Make the "Other Links" -> "Teams" button appear and be able to add/delete teams, edit team names, and add/delete members.',
-    'Edit/Delete Team' : 'Gives the user permission to Edit or delete a team.',
-    'Create Team' : 'Gives the user permission to create a team.',
-    'Assign Team to User' : 'Gives the user permission to add any user on any team. "Other Links" -> "Teams" -> "Members" -> "Add Input"',
-    'Edit Timelog Information' : 'Gives the user permission to edit any time log entry.',
-    'Add Time Entry (Others)' : 'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button"',
-    'Delete Time Entry (Others)' : 'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
-    'Toggle Tangible Time' : 'Gives the user permission to toggle the Tanglible check when editing a Time entry.',
-    'Change Date on Intangible Time Entry' : 'Gives the user permission to edit the date when adding an intangible time entry.',
-    'Edit Time Entry' : 'Gives the user permission to edit any time entry on their own time logs tab "Dashboard" -> "Current Time Log" -> "Pencil Icon"',
-    'Delete Time Entry' : 'Gives the user permission to delete any time entry on their own time logs tab "Dashboard" -> "Current Time Log" -> "Trash Icon"',
-    'Change User Status' : 'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
-    'Manage Admin Links in User Profile' : 'Gives the user permission to edit the links of any user on the user profile page. "User Profile" -> "Links button"',
-    'Edit User Profile' : 'Gives the user permission to edit the information of any user on the user profile page.',
-    'See User Profiles in Projects' : 'Gives the user permission to access the profile of an user directly from the projects members page. "Other Links" -> "Projects" -> "Members" -> "Name of any member"',
-    'Reset Password (Others)' : 'Gives the user permission to Reset the password of any user.',
-    'Timelog Data is Tangible' : 'Gives the user permission to toggle the tanglible check when editing a Time entry of another user.',
-    'Toggle Summary Submit Form (Others)' : 'Gives the user permission to change the requirement to the user to submit a summary.',
-    'Handle Blue Squares' : 'Gives the user permission to Update/Delete/Edit any blue square.',
-    'Only Assign Blue Squares' : 'Gives the user permission to add blue squares to any user.',
-    'See Permissions Management Tab' : 'Gives the user permission to access the Permissions Management tab.',
-    'Submit Weekly Summary For Others' : 'Gives the user permission to submit weekly summary for another user',
-    'Change the Bio Announcement Status' : 'GIves the user permission to change the annoucement status',
-    'See Summary Indicator' : 'Gives the user permission to see summary indicator on leaderboard.',
-    'See Visibility Icon' : 'Gives the user permission to see visibility icon on leaderboard.',
-  }
+    'See Weekly Summary Reports Tab':
+      'Make the "Other Links" -> "Reports" button appear/accessible.',
+    'See User Management Tab (delete and update users)':
+      'Make the "Other Links" -> "User Management" button appear/accessible and be able to create, delete, and update users.',
+    'See Badge Management Tab (create badges)':
+      'Make the "Other Links" -> "Badge Management" button appear and then have the ability to create, delete, and update badges. ',
+    'Delete Badge':
+      'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
+    'Modify Badge Amount':
+      'Gives the user permission to decrease the count of a badge on the Badge Reports Component',
+    'Assign Badges':
+      'Gives the user permission to assign badges to others users "User Profile" -> "Assign Badges"',
+    'See Popup Management Tab (create and update popups)':
+      'Make the "Other Links" -> "Popup Management" button appear and be able to create and update popups.',
+    'See Project Management Tab':
+      'Make the "Other Links" -> "Projects" button appear and be able to create or delete new projects, edit projects names, add members to projects, upload/import/create new WBSs, etc.',
+    'Delete WBS':
+      'Gives the user permission to delete any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Minus Red Icon"',
+    'Add Task':
+      'Gives the user permission to add a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Add task button"',
+    'Delete Task':
+      'Gives the user permission to delete a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Remove"',
+    'Edit Task':
+      'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit"',
+    'Suggest Changes on a task':
+      'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
+    'Add WBS':
+      'Gives the user permission to create a new WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Add new WBS Input"',
+    'Add Project':
+      'Gives the user permission to create any Project. "Other Links" -> "Projects" -> "Add new Project Input"',
+    'Delete Project':
+      'Gives the user permission to delete any Project. "Other Links" -> "Projects" -> "Delete button" ',
+    'Edit Project':
+      'Gives the user permission to edit the category or the status of any Project. "Other Links" -> "Projects"',
+    'Find User in Project':
+      'Gives the user permission to find any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Find user input"',
+    'Assign User in Project':
+      'Gives the user permission to add any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Find user input"',
+    'Unassign User in Project':
+      'Gives the user permission to remove any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Minus button"',
+    'See Teams Management Tab':
+      'Make the "Other Links" -> "Teams" button appear and be able to add/delete teams, edit team names, and add/delete members.',
+    'Edit/Delete Team': 'Gives the user permission to Edit or delete a team.',
+    'Create Team': 'Gives the user permission to create a team.',
+    'Assign Team to User':
+      'Gives the user permission to add any user on any team. "Other Links" -> "Teams" -> "Members" -> "Add Input"',
+    'Edit Timelog Information': 'Gives the user permission to edit any time log entry.',
+    'Add Time Entry (Others)':
+      'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button"',
+    'Delete Time Entry (Others)':
+      'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
+    'Toggle Tangible Time':
+      'Gives the user permission to toggle the Tanglible check when editing a Time entry.',
+    'Change Date on Intangible Time Entry':
+      'Gives the user permission to edit the date when adding an intangible time entry.',
+    'Edit Time Entry':
+      'Gives the user permission to edit any time entry on their own time logs tab "Dashboard" -> "Current Time Log" -> "Pencil Icon"',
+    'Delete Time Entry':
+      'Gives the user permission to delete any time entry on their own time logs tab "Dashboard" -> "Current Time Log" -> "Trash Icon"',
+    'Change User Status':
+      'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
+    'Manage Admin Links in User Profile':
+      'Gives the user permission to edit the links of any user on the user profile page. "User Profile" -> "Links button"',
+    'Edit User Profile':
+      'Gives the user permission to edit the information of any user on the user profile page.',
+    'See User Profiles in Projects':
+      'Gives the user permission to access the profile of an user directly from the projects members page. "Other Links" -> "Projects" -> "Members" -> "Name of any member"',
+    'Reset Password (Others)': 'Gives the user permission to Reset the password of any user.',
+    'Timelog Data is Tangible':
+      'Gives the user permission to toggle the tanglible check when editing a Time entry of another user.',
+    'Toggle Summary Submit Form (Others)':
+      'Gives the user permission to change the requirement to the user to submit a summary.',
+    'Handle Blue Squares': 'Gives the user permission to Update/Delete/Edit any blue square.',
+    'Only Assign Blue Squares': 'Gives the user permission to add blue squares to any user.',
+    'See Permissions Management Tab':
+      'Gives the user permission to access the Permissions Management tab.',
+    'Submit Weekly Summary For Others':
+      'Gives the user permission to submit weekly summary for another user',
+    'Change the Bio Announcement Status':
+      'GIves the user permission to change the annoucement status',
+    'See Summary Indicator' : 
+      'Gives the user permission to see summary indicator on leaderboard.',
+    'See Visibility Icon' : 
+      'Gives the user permission to see visibility icon on leaderboard.',
+  };
 
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
@@ -242,7 +281,8 @@ function RolePermissions(props) {
                   onClick={() => {
                     handleModalOpen(permission);
                   }}
-                /> &nbsp;&nbsp;
+                />{' '}
+                &nbsp;&nbsp;
                 <Button
                   color="danger"
                   onClick={() => {
@@ -265,8 +305,9 @@ function RolePermissions(props) {
                   className="fa fa-info-circle"
                   onClick={() => {
                     handleModalOpen(permission);
-                  }} 
-                /> &nbsp;&nbsp;
+                  }}
+                />{' '}
+                &nbsp;&nbsp;
                 <Button
                   color="success"
                   onClick={() => {
@@ -295,21 +336,23 @@ function RolePermissions(props) {
           Are you sure you want to delete <strong>{roleName}</strong> role?
         </ModalBody>
         <ModalFooter>
-          <Button onClick={toggleDeleteRoleModal} style={boxStyle}>Cancel</Button>
+          <Button onClick={toggleDeleteRoleModal} style={boxStyle}>
+            Cancel
+          </Button>
           <Button color="danger" onClick={() => deleteRole()} style={boxStyle}>
             Delete
           </Button>
         </ModalFooter>
       </Modal>
       <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal}>
-      <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
-      <ModalBody>{modalContent}</ModalBody>
-      <ModalFooter>
-        <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
-          {' '}
-          Ok{' '}
-        </Button>
-      </ModalFooter>
+        <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
+        <ModalBody>{modalContent}</ModalBody>
+        <ModalFooter>
+          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+            {' '}
+            Ok{' '}
+          </Button>
+        </ModalFooter>
       </Modal>
     </>
   );

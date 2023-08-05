@@ -149,8 +149,8 @@ const Badge = props => {
           </p>
           <p className="badge_info_icon_text">
             Hours in Category: As you submit hours to a project of a certain category such as
-            'Food', 'Energy', etc you can earn badges for hitting certain levels of hours worked in
-            each category.
+            &apos;Food&apos;, &apos;Energy&apos;, etc you can earn badges for hitting certain levels
+            of hours worked in each category.
           </p>
           <p className="badge_info_icon_text">
             Hour Multiple: If you earn a multiple of your weekly committed hours you can earn a

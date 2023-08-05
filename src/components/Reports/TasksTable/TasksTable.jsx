@@ -102,7 +102,6 @@ export const TasksTable = ({ WbsTasksID }) => {
         </div>
 
         <button
-          exact
           className="tasks-table-clear-filter-button"
           onClick={() => resetAllFilters()}
           style={boxStyle}

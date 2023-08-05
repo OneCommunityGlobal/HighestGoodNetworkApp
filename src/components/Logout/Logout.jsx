@@ -23,7 +23,7 @@ export const Logout = props => {
       <ModalHeader toggle={closePopup}>Are you sure you want to logout?</ModalHeader>
       <ModalBody>
         <div>
-          <p>Don't forget to log your time before logout!</p>
+          <p>Don&apos;t forget to log your time before logout!</p>
         </div>
       </ModalBody>
       <ModalFooter>

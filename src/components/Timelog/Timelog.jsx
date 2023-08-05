@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Container,
   Row,
@@ -41,17 +41,16 @@ import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import Loading from '../common/Loading';
+import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 
 const doesUserHaveTaskWithWBS = (tasks, userId) => {
-  
   for (let task of tasks) {
-    for(let resource of task.resources){
+    for (let resource of task.resources) {
       if (resource.userID == userId && resource.completedTask == false) {
-        return true
+        return true;
       }
     }
   }
@@ -84,14 +83,14 @@ const Timelog = props => {
   const userProjects = useSelector(state => state.userProjects);
   const role = useSelector(state => state.role);
   const userTask = useSelector(state => state.userTask);
-  const userIdByState = useSelector(state => state.auth.user.userid)
+  const userIdByState = useSelector(state => state.auth.user.userid);
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
 
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = auth.user.role;
     let tab = 0;
-    const UserHaveTask = doesUserHaveTaskWithWBS(userTask,userIdByState);
+    const UserHaveTask = doesUserHaveTaskWithWBS(userTask, userIdByState);
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
     Accounts assigned with tasks with no wbs return and empty array.
@@ -100,7 +99,7 @@ const Timelog = props => {
     That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
     //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if ((role === 'Volunteer') && !UserHaveTask) {
+    if (role === 'Volunteer' && !UserHaveTask) {
       tab = 1;
     }
 
@@ -342,9 +341,9 @@ const Timelog = props => {
   };
   const [state, setState] = useState(initialState);
 
-  const handleUpdateTask = () => {
-    setIsTaskUpdated(!isTaskUpdated)
-  }
+  const handleUpdateTask = useCallback(() => {
+    setIsTaskUpdated(!isTaskUpdated);
+  }, []);
 
   useEffect(() => {
     // Does not run again (except once in development): load data
@@ -428,9 +427,9 @@ const Timelog = props => {
         ''
       )}
       {state.isTimeEntriesLoading ? (
-        <Loading />
+        <LoadingSkeleton template="Timelog" />
       ) : (
-        <Container className="right-padding-temp-fix">
+        <Container fluid="md" className="right-padding-temp-fix">
           {state.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -731,11 +730,9 @@ const Timelog = props => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks 
-                      asUser={props.asUser} 
-                      handleUpdateTask={handleUpdateTask} 
-                      roles={role.roles}
-                      userPermissions={userPermissions}
+                      <TeamMemberTasks
+                        asUser={props.asUser}
+                        handleUpdateTask={handleUpdateTask}
                       />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>

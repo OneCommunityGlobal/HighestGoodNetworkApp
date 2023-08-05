@@ -4,8 +4,12 @@ import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
-import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import hasPermission from 'utils/permissions';
+import {
+  hasLeaderboardPermissions,
+  assignStarDotColors,
+  showStar,
+} from 'utils/leaderboardPermissions';
+import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -27,6 +31,7 @@ function useDeepEffect(effectFunc, deps) {
 const LeaderBoard = ({
   getLeaderboardData,
   getOrgData,
+  getMouseoverText,
   leaderBoardData,
   loggedInUser,
   organizationData,
@@ -34,11 +39,23 @@ const LeaderBoard = ({
   isVisible,
   roles,
   asUser,
+  totalTimeMouseoverText,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
   const userPermissions = loggedInUser.permissions?.frontPermissions;
   const hasSummaryIndicatorPermission = hasPermission(loggedInUser.role, 'seeSummaryIndicator', roles, userPermissions);
   const hasVisibilityIconPermission = hasPermission(loggedInUser.role, 'seeVisibilityIcon', roles, userPermissions);
+
+  const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
+
+  useEffect(() => {
+    getMouseoverText();
+    setMouseoverTextValue(totalTimeMouseoverText);
+  }, [totalTimeMouseoverText]);
+
+  const handleMouseoverTextUpdate = text => {
+    setMouseoverTextValue(text);
+  };
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
@@ -103,8 +120,8 @@ const LeaderBoard = ({
     </>,
     <>
       <p>
-        An Admin has made it so you can see your team but they can't see you. We recommend you keep
-        this setting as it is.
+        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you
+        keep this setting as it is.
       </p>
       <p>
         If you want to change this setting so your team/everyone can see and access your time log
@@ -203,15 +220,25 @@ const LeaderBoard = ({
                 <span className="d-none d-sm-block">Tangible Time</span>
               </th>
               <th>Progress</th>
-              <th>
-                <span className="d-sm-none">Tot. Time</span>
-                <span className="d-none d-sm-block">Total Time</span>
+
+              <th style={{ textAlign: 'right' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <span className="d-sm-none">Tot. Time</span>
+                    <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>
+                      Total Time{' '}
+                    </span>
+                  </div>
+                  {isOwner && (
+                    <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
+                  )}
+                </div>
               </th>
             </tr>
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr>
-              <td/>
+              <td />
               <th scope="row">{organizationData.name}</th>
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime}</span>
@@ -248,24 +275,32 @@ const LeaderBoard = ({
                       </ModalFooter>
                     </Modal>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center' }}>
-
-                  {/* <Link to={`/dashboard/${item.personId}`}> */}
-                  <div onClick={() => dashboardToggle(item)}>
-                    {
-                      hasLeaderboardPermissions(loggedInUser.role) && 
-                    showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center',
+                    }}
+                  >
+                    {/* <Link to={`/dashboard/${item.personId}`}> */}
+                    <div onClick={() => dashboardToggle(item)}>
+                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                      showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
-                        className="fa fa-star"
-                        title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                        style={{
-                          color: assignStarDotColors(item.tangibletime, item.weeklycommittedHours),
-                          fontSize: '20px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      />) : (
+                          className="fa fa-star"
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                          style={{
+                            color: assignStarDotColors(
+                              item.tangibletime,
+                              item.weeklycommittedHours,
+                            ),
+                            fontSize: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        />
+                      ) : (
                         <div
                           title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                           style={{
@@ -278,21 +313,19 @@ const LeaderBoard = ({
                             verticalAlign: 'middle',
                           }}
                         />
-                      )
-                    }
-                  </div>
-                  {
-                    hasSummaryIndicatorPermission && item.hasSummary && 
-                    <div
-                      title={`Weekly Summary Submitted`}
-                      style={{
-                        color: '#32a518',
-                        cursor: 'default',
-                      }}
-                    >
-                      <strong>✓</strong>
+                      )}
                     </div>
-                  }
+                    {hasSummaryIndicatorPermission && item.hasSummary && (
+                      <div
+                        title={`Weekly Summary Submitted`}
+                        style={{
+                          color: '#32a518',
+                          cursor: 'default',
+                        }}
+                      >
+                        <strong>✓</strong>
+                      </div>
+                    )}
                   </div>
                   {/* </Link> */}
                 </td>
@@ -301,7 +334,9 @@ const LeaderBoard = ({
                     {item.name}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
-                  {hasVisibilityIconPermission && !item.isVisible && <i className="fa fa-eye-slash" title="User is invisible"></i>}
+                  {hasVisibilityIconPermission && !item.isVisible && (
+                    <i className="fa fa-eye-slash" title="User is invisible"></i>
+                  )}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
@@ -315,7 +350,13 @@ const LeaderBoard = ({
                   </Link>
                 </td>
                 <td className="align-middle">
-                  <span title="Total time">{item.totaltime}</span>
+                  <span
+                    title={mouseoverTextValue}
+                    id="Total time"
+                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                  >
+                    {item.totaltime}
+                  </span>
                 </td>
               </tr>
             ))}

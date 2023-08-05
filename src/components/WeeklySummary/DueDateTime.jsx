@@ -21,7 +21,6 @@ function DueDateTime({ dueDate, isShow }) {
       <div className="mx-auto due-section" style={boxStyle}>
         <div className="text-white due-section__date">
           <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />{' '}
-          {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
           {displayTime.format('YYYY-MMM-DD')} at {displayTime.format('HH:mm')} PST
         </div>
         <CountdownTimer date={dueDate} />

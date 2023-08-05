@@ -1,3 +1,7 @@
+*.png
+*.svg
+*.test.js
+*.test.jsx
 src/actions/**
 src/App.css
 src/config.json
@@ -10,6 +14,7 @@ src/routes.js
 src/services/**
 src/setupTests.js
 src/store.js
+src/styles.js
 src/utils/**
 src/__tests__/**
 
@@ -49,3 +54,4 @@ src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/WeeklySummariesReport/**
 src/components/WeeklySummary/**
+src/components/MouseoverText/**

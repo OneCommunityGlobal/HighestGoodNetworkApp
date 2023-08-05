@@ -15,6 +15,7 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
+import { toast } from 'react-toastify';
 
 const EditTaskModal = props => {
   const [role] = useState(props.auth ? props.auth.user.role : null);
@@ -26,11 +27,13 @@ const EditTaskModal = props => {
 
   // get this task by id
   const [thisTask, setThisTask] = useState();
+  const [oldTask, setOldTask] = useState();
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
+        setOldTask(res?.data || {});
         setCategory(res.data.category);
         setAssigned(res.data.isAssigned);
       } catch (error) {
@@ -69,8 +72,8 @@ const EditTaskModal = props => {
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
   // hour estimate
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
-  //deadline count 
-  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount)
+  //deadline count
+  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
   // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
 
@@ -200,11 +203,10 @@ const EditTaskModal = props => {
   };
 
   // helper for updating task
-  const updateTask = () => {
-
-    let newDeadlineCount = deadlineCount
+  const updateTask = async () => {
+    let newDeadlineCount = deadlineCount;
     if (thisTask?.estimatedHours !== hoursEstimate) {
-      newDeadlineCount = deadlineCount + 1
+      newDeadlineCount = deadlineCount + 1;
       setDeadlineCount(newDeadlineCount);
     }
 
@@ -228,19 +230,19 @@ const EditTaskModal = props => {
       category,
     };
 
-    props.updateTask(
+    await props.updateTask(
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
+      oldTask,
     );
-    setTimeout(() => {
-      props.fetchAllTasks(props.wbsId);
-    }, 4000);
+    await props.fetchAllTasks(props.wbsId);
 
-    if (props.tasks.error === 'none') {
-      toggle();
+    if (props.tasks.error === 'none' || Object.keys(props.tasks.error).length === 0) {
+      window.location.reload();
+    } else {
+      toast.error('Update failed! Error is ' + props.tasks.error);
     }
-    window.location.reload();
   };
 
   const handleAssign = value => {
@@ -492,7 +494,7 @@ const EditTaskModal = props => {
                     {links?.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i} className="task-link">
-                          <a href={link} target="_blank">
+                          <a href={link} target="_blank" rel="noreferrer">
                             {link.slice(-10)}
                           </a>
                           <span className="remove-link" onClick={() => removeLink(i)}>

@@ -24,9 +24,9 @@ import badges_icon from './badges_icon.png';
 import bluesquare_icon from './bluesquare_icon.png';
 import report_icon from './report_icon.png';
 import httpService from '../../services/httpService';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
-import { ApiEndpoint } from 'utils/URL';
+
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 
@@ -36,7 +36,7 @@ const SummaryBar = props => {
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
   const [totalEffort, setTotalEffort] = useState(0);
-  const [weeklySummary, setWeeklySummary] = useState([]);
+  const [weeklySummary, setWeeklySummary] = useState(null);
 
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
@@ -49,6 +49,8 @@ const SummaryBar = props => {
     : [];
 
   const matchUser = asUser == authenticateUserId ? true : false;
+
+  useEffect(()=>{setUserProfile(gsUserprofile)},[gsUserprofile])
 
   // Similar to UserProfile component function
   // Loads component depending on asUser passed as prop
@@ -173,7 +175,7 @@ const SummaryBar = props => {
   const authenticateUserRole = authenticateUser ? authenticateUser.role : '';
   if (userProfile !== undefined && summaryBarData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
-    const weeklySummary = getWeeklySummary(userProfile);
+    //const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container
         fluid

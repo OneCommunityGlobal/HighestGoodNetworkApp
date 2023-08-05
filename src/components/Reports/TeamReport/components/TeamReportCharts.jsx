@@ -6,39 +6,51 @@ import { generateArrayOfUniqColors } from '../../../common/PieChart/colorsGenera
 import '../../../common/PieChart/PieChart.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
-function TeamReportCharts({ title, pieChartId, teamWeeklyCommittedHours, totalTeamWeeklyWorkedHours }) {
+function TeamReportCharts({
+  title,
+  pieChartId,
+  teamWeeklyCommittedHours,
+  totalTeamWeeklyWorkedHours,
+}) {
   const totalHoursAvailable = teamWeeklyCommittedHours - totalTeamWeeklyWorkedHours;
 
   const chart = {
     teamWeeklyCommittedHours,
     totalTeamWeeklyWorkedHours,
-    totalHoursAvailable
-  }
-  
-  const getCreateSvgPie = () => d3.select(`#pie-chart-container-${pieChartId}`)
-    .append('svg')
-    .attr('id', `pie-chart-${pieChartId}`)
-    .attr('width', CHART_SIZE)
-    .attr('height', CHART_SIZE)
-    .append('g')
-    .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
+    totalHoursAvailable,
+  };
 
-  const color = d3.scaleOrdinal()
-    .range(['#B88AD5', '#FAE386', '#E4E4E4']);
+  const getCreateSvgPie = () =>
+    d3
+      .select(`#pie-chart-container-${pieChartId}`)
+      .append('svg')
+      .attr('id', `pie-chart-${pieChartId}`)
+      .attr('width', CHART_SIZE)
+      .attr('height', CHART_SIZE)
+      .append('g')
+      .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
 
-  const pie = d3.pie().value((d) => d[1]);
+  const color = d3.scaleOrdinal().range(['#B88AD5', '#FAE386', '#E4E4E4']);
+
+  const pie = d3.pie().value(d => d[1]);
 
   useEffect(() => {
-    const data_ready = pie(Object.entries([teamWeeklyCommittedHours, totalTeamWeeklyWorkedHours, totalHoursAvailable]));
+    const data_ready = pie(
+      Object.entries([teamWeeklyCommittedHours, totalTeamWeeklyWorkedHours, totalHoursAvailable]),
+    );
 
     getCreateSvgPie()
       .selectAll('whatever')
       .data(data_ready)
       .join('path')
-      .attr('d', d3.arc()
-        .innerRadius(70)
-        .outerRadius(CHART_RADIUS))
-      .attr('fill', (d) => color(d.data[0]))
+      .attr(
+        'd',
+        d3
+          .arc()
+          .innerRadius(70)
+          .outerRadius(CHART_RADIUS),
+      )
+      .attr('fill', d => color(d.data[0]))
       .style('opacity', 0.8);
 
     return () => {
@@ -59,14 +71,25 @@ function TeamReportCharts({ title, pieChartId, teamWeeklyCommittedHours, totalTe
                   <h5>Name</h5>
                   <h5>Hours</h5>
                 </div>
-                <PieChartInfoDetail keyName="Commited" value={teamWeeklyCommittedHours} color="#B88AD5" />
-                <PieChartInfoDetail keyName="Worked" value={totalTeamWeeklyWorkedHours} color="#FAE386" />
-                <PieChartInfoDetail keyName="Total Hours Available" value={totalHoursAvailable > 0 ? totalHoursAvailable : 0} color="#E4E4E4" />
+                <PieChartInfoDetail
+                  keyName="Commited"
+                  value={teamWeeklyCommittedHours}
+                  color="#B88AD5"
+                />
+                <PieChartInfoDetail
+                  keyName="Worked"
+                  value={totalTeamWeeklyWorkedHours}
+                  color="#FAE386"
+                />
+                <PieChartInfoDetail
+                  keyName="Total Hours Available"
+                  value={totalHoursAvailable > 0 ? totalHoursAvailable : 0}
+                  color="#E4E4E4"
+                />
               </div>
             </div>
           </div>
-          <div className="team-report-chart-info">
-          </div>
+          <div className="team-report-chart-info"></div>
         </div>
       </div>
     </section>

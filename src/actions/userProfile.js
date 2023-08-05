@@ -2,7 +2,6 @@ import axios from 'axios';
 import {
   getUserProfile as getUserProfileActionCreator,
   getUserTask as getUserTaskActionCreator,
-  getUserProject as getUserProjectActionCreator,
   editFirstName as editFirstNameActionCreator,
   editUserProfile as editUserProfileActionCreator,
   CLEAR_USER_PROFILE,
@@ -15,7 +14,7 @@ export const getUserProfile = userId => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
-        //logout error
+        // logout error
         loggedOut = true;
       }
     });
@@ -60,7 +59,7 @@ export const updateUserProfile = (userId, userProfile) => {
 export const updateUserProfileProperty = (userProfile, key, value) => {
   const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfile._id);
   return async dispatch => {
-    const res = await axios.patch(url, {key: key, value: value});
+    const res = await axios.patch(url, {key, value});
     if (res.status === 200) {
       await dispatch(getUserProfileActionCreator(userProfile));
     }
