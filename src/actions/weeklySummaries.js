@@ -108,7 +108,7 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       if (error.response && error.response.status) {
         return error.response.status;
       }
-      return 404;
+      return 200;
     }
   };
 };
