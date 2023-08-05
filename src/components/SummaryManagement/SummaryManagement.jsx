@@ -1,13 +1,14 @@
-/*****************************************************************
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/destructuring-assignment */
+/** ***************************************************************
  * Component   : SUMMARY MANAGEMENT
  * Author      : YAN XU
  * Created on  : 03/21/2023
- *****************************************************************/
+ **************************************************************** */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import SummaryGroupTableBody from './summaryGroupTableBody';
 import {
   postNewSummaryGroup,
   getAllSummaryGroup,
@@ -21,8 +22,9 @@ import {
 import { getWeeklySummaries, extractWeeklySummaries } from 'actions/weeklySummaries';
 import { getWeeklySummariesReport } from 'actions/weeklySummariesReport';
 import { getAllUserProfile } from 'actions/userManagement';
-//import { getAllUserProfile } from 'actions/userManagement';
+// import { getAllUserProfile } from 'actions/userManagement';
 import { TEAM_MEMBER, SUMMARY_RECEIVER, SUMMARY_GROUP, ACTIONS, ACTIVE } from 'languages/en/ui';
+import SummaryGroupTableBody from './summaryGroupTableBody';
 import CreateNewSummaryGroupPopup from './CreateNewSummaryGroupPopup';
 import UpdateSummaryGroupPopup from './UpdateSummaryGroupPopup';
 import DeleteSummaryGroupPopup from './DeleteSummaryGroupPopup';
@@ -57,6 +59,7 @@ class SummaryManagement extends Component {
       currentUserId: 0,
     };
   }
+
   async componentDidMount() {
     this.props.getAllSummaryGroup();
     await this.props.getWeeklySummariesReport();
@@ -64,12 +67,13 @@ class SummaryManagement extends Component {
     // await this.props.getWeeklySummaries(this.state.selectedSummaryGroupId);
   }
 
-  /*Create New SummaryGroup related function */
+  /* Create New SummaryGroup related function */
   onCreateNewTeamShow = () => {
     this.setState({
       createNewSummaryGroupPopupOpen: true,
     });
   };
+
   onCreateNewSummaryGroupClose = () => {
     this.setState({
       createNewSummaryGroupPopupOpen: false,
@@ -92,7 +96,8 @@ class SummaryManagement extends Component {
       summaryGroups: data,
     });
   }
-  /*Delete SummaryGroup related function*/
+
+  /* Delete SummaryGroup related function */
   onDeleteTeamPopupShow = (deletedname, SummaryGroupId, status) => {
     this.setState({
       deleteSummaryGroupPopupOpen: true,
@@ -111,15 +116,15 @@ class SummaryManagement extends Component {
   };
 
   onDeleteSummaryGroup = async deletedId => {
-    this.props.deleteSummaryGroup(deletedId);
-
+    await this.props.deleteSummaryGroup(deletedId);
     alert('Team deleted successfully');
     this.setState({
       deleteSummaryGroupPopupOpen: false,
     });
+    await this.props.getAllSummaryGroup();
   };
 
-  /*Update SummaryGroup related Function*/
+  /* Update SummaryGroup related Function */
   onUpdateTeamPopupShow = (updatename, SummaryGroupId, status) => {
     this.setState({
       updateSummaryGroupPopupOpen: true,
@@ -128,6 +133,7 @@ class SummaryManagement extends Component {
       isActive: status,
     });
   };
+
   onUpdateSummaryPopupClose = () => {
     this.setState({
       selectedSummaryGroupId: undefined,
@@ -135,6 +141,7 @@ class SummaryManagement extends Component {
       updateSummaryGroupPopupOpen: false,
     });
   };
+
   onUpadteSummaryGroup = async updatename => {
     this.props.updateSummaryGroup(
       updatename,
@@ -146,6 +153,7 @@ class SummaryManagement extends Component {
       updateSummaryGroupPopupOpen: false,
     });
   };
+
   onConfirmClick = (summaryGroupId, summaryGroupName, isActive) => {
     this.props.updateSummaryGroup(summaryGroupId, summaryGroupName, isActive);
     this.setState({
@@ -154,7 +162,8 @@ class SummaryManagement extends Component {
     });
     alert('Status Updated Successfully');
   };
-  /* Active and Inactive Set function*/
+
+  /* Active and Inactive Set function */
   onSummaryGroupStatusShow = (summaryGroupName, summaryGroupId, isActive) => {
     this.setState({
       summaryGroupStatusPopupOpen: true,
@@ -163,6 +172,7 @@ class SummaryManagement extends Component {
       isActive,
     });
   };
+
   onSummaryGroupStatusClose = () => {
     this.setState({
       selectedSummaryGroupId: undefined,
@@ -173,7 +183,7 @@ class SummaryManagement extends Component {
 
   getTeamMembersReports = async () => {
     try {
-      //Getting the ids of every member in the summary group
+      // Getting the ids of every member in the summary group
       const result = await this.props.extractMembers(this.state.selectedSummaryGroupId);
       const members = { teamMembers: result.teamMembers };
 
@@ -187,8 +197,8 @@ class SummaryManagement extends Component {
 
       const extractedIds = reportsList.map(member => member._id);
 
-      //Getting the 1st week summary reports of each member
-      //remember to run the first and second line of code when the page loads up and not all times.
+      // Getting the 1st week summary reports of each member
+      // remember to run the first and second line of code when the page loads up and not all times.
       // await this.props.getWeeklySummariesReport();
       // const summary = await this.props.getWeeklySummaries('this.state.selectedSummaryGroupId');
 
@@ -212,6 +222,7 @@ class SummaryManagement extends Component {
       selectedSummaryGroupId: groupId,
     });
   };
+
   onTeamMembersPopupShow = async (summaryGroupId, name) => {
     this.setState({
       teamMembersPopupOpen: true,
@@ -220,15 +231,15 @@ class SummaryManagement extends Component {
     });
 
     try {
-      //Calling the members from Redux
+      // Calling the members from Redux
       const result = await this.props.extractMembers(summaryGroupId);
       const members = { teamMembers: result.teamMembers };
-      //Calling the members from MongoDB
+      // Calling the members from MongoDB
       // const response = await axios.get(ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS(summaryGroupId));
       // const members = response.data;
 
       // this.setState({ members: response.data });
-      this.setState({ members: members });
+      this.setState({ members });
     } catch (error) {
       console.log(error);
     }
@@ -251,6 +262,7 @@ class SummaryManagement extends Component {
       teamMembersPopupOpen: false,
     });
   };
+
   getTeamMembers = async selectedSummaryGroupId => {
     try {
       const response = await axios.get(
@@ -263,6 +275,7 @@ class SummaryManagement extends Component {
       console.log(error);
     }
   };
+
   onAddTeamMember = async (user, selectedSummaryGroupId) => {
     this.setState({ ApiCallDone: false });
     const requestData = {
@@ -275,11 +288,11 @@ class SummaryManagement extends Component {
         ENDPOINTS.SUMMARY_GROUP_TEAM_MEMBERS(selectedSummaryGroupId),
         requestData,
       );
-      //updating the member state variable directly with entired value
+      // updating the member state variable directly with entired value
       const { members } = this.state;
       const newTeamList = [...members.teamMembers, requestData];
       this.setState({ members: { ...members, teamMembers: newTeamList } });
-      //Updating Redux from MongoDB lazily
+      // Updating Redux from MongoDB lazily
       this.props.getAllSummaryGroup();
       // this.getTeamMembers(selectedSummaryGroupId);
     } catch (error) {
@@ -312,6 +325,7 @@ class SummaryManagement extends Component {
       'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
     );
   };
+
   getSummaryReceiver = async summaryGroupId => {
     try {
       const response = await axios.get(ENDPOINTS.SUMMARY_GROUP_SUMMARY_RECEVIER(summaryGroupId));
@@ -371,6 +385,7 @@ class SummaryManagement extends Component {
     });
     this.getSummaryReceiverRedux(summaryGroupId);
   };
+
   onSummaryReciverClose = () => {
     this.setState({
       selectedSummaryGroupId: undefined,
@@ -378,6 +393,7 @@ class SummaryManagement extends Component {
       SummaryReceiverPopupOpen: false,
     });
   };
+
   onAddSummaryReceiver = async (user, selectedSummaryGroupId) => {
     this.setState({ ApiCallDone: false });
     const requestData = {
@@ -418,6 +434,7 @@ class SummaryManagement extends Component {
       'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
     );
   };
+
   onWildCardSearch = searchText => {
     this.setState(
       {
@@ -461,119 +478,117 @@ class SummaryManagement extends Component {
     const usersdata = this.props.state ? this.props.state.allUserProfiles : [];
 
     return (
-      <React.Fragment>
-        <div className="container">
-          <SummarysOverview
-            numberOfSummaryGroup={numberOfSummaryGroup}
-            numberOfActiveSummaryGroup={numberOfActiveSummaryGroup}
-          />
-          <SummaryTablesearchPanel
-            onSearch={this.onWildCardSearch}
-            //requestorRole={requestorRole}
-            //userPermissions={userPermissions}
-            //roles={roles}
-            onCreateNewTeamClick={this.onCreateNewTeamShow}
-          />
-          <CreateNewSummaryGroupPopup
-            open={this.state.createNewSummaryGroupPopupOpen}
-            onOkClick={this.addNewSummaryGroup}
-            onClose={this.onCreateNewSummaryGroupClose}
-            SummaryGroupName={this.state.selectedSummaryGroup}
-            SummaryGroupId={this.state.selectedSummaryGroupId}
-            isEdit={this.state.isEdit}
-            summaryGroup={allSummaryGroups}
-          />
-          <UpdateSummaryGroupPopup
-            open={this.state.updateSummaryGroupPopupOpen}
-            onOkClick={this.onUpadteSummaryGroup}
-            onClose={this.onUpdateSummaryPopupClose}
-            SummaryGroupName={this.state.selectedSummaryGroup}
-            SummaryGroupId={this.state.selectedSummaryGroupId}
-            summaryGroup={allSummaryGroups}
-            //isEdit={this.state.isEdit}
-          />
-          <DeleteSummaryGroupPopup
-            open={this.state.deleteSummaryGroupPopupOpen}
-            onClose={this.onDeleteTeamPopupClose}
-            selectedSummaryGroupName={this.state.selectedSummaryGroup}
-            selectedSummaryGroupId={this.state.selectedSummaryGroupId}
-            selectedStatus={this.state.isActive}
-            onDeleteClick={this.onDeleteSummaryGroup}
-            onSetInactiveClick={this.onConfirmClick}
-          />
-          <SummaryGroupStatusPopup
-            open={this.state.summaryGroupStatusPopupOpen}
-            onClose={this.onSummaryGroupStatusClose}
-            selectedSummaryGroupName={this.state.selectedSummaryGroup}
-            selectedSummaryGroupId={this.state.selectedSummaryGroupId}
-            selectedStatus={this.state.isActive}
-            onConfirmClick={this.onConfirmClick}
-          ></SummaryGroupStatusPopup>
-          <TeamMembersPopup
-            open={this.state.teamMembersPopupOpen}
-            onClose={this.onTeamMembersPopupClose}
-            members={this.state.members}
-            usersdata={usersdata}
-            selectedSummaryGroupName={this.state.selectedSummaryGroup}
-            selectedSummaryGroupId={this.state.selectedSummaryGroupId}
-            onAddUser={this.onAddTeamMember}
-            onDeleteClick={this.onDeleteTeamMember}
-            apiCallDone={this.state.ApiCallDone}
-          ></TeamMembersPopup>
-          <SummaryReceiverPopup
-            open={this.state.SummaryReceiverPopupOpen}
-            onClose={this.onSummaryReciverClose}
-            members={this.state.summaryReceiver}
-            usersdata={usersdata}
-            selectedSummaryGroupName={this.state.selectedSummaryGroup}
-            selectedSummaryGroupId={this.state.selectedSummaryGroupId}
-            onAddUser={this.onAddSummaryReceiver}
-            onDeleteClick={this.onDeleteSummaryReceiver}
-            apiCallDone={this.state.ApiCallDone}
-          ></SummaryReceiverPopup>
+      <div className="container">
+        <SummarysOverview
+          numberOfSummaryGroup={numberOfSummaryGroup}
+          numberOfActiveSummaryGroup={numberOfActiveSummaryGroup}
+        />
+        <SummaryTablesearchPanel
+          onSearch={this.onWildCardSearch}
+          // requestorRole={requestorRole}
+          // userPermissions={userPermissions}
+          // roles={roles}
+          onCreateNewTeamClick={this.onCreateNewTeamShow}
+        />
+        <CreateNewSummaryGroupPopup
+          open={this.state.createNewSummaryGroupPopupOpen}
+          onOkClick={this.addNewSummaryGroup}
+          onClose={this.onCreateNewSummaryGroupClose}
+          SummaryGroupName={this.state.selectedSummaryGroup}
+          SummaryGroupId={this.state.selectedSummaryGroupId}
+          isEdit={this.state.isEdit}
+          summaryGroup={allSummaryGroups}
+        />
+        <UpdateSummaryGroupPopup
+          open={this.state.updateSummaryGroupPopupOpen}
+          onOkClick={this.onUpadteSummaryGroup}
+          onClose={this.onUpdateSummaryPopupClose}
+          SummaryGroupName={this.state.selectedSummaryGroup}
+          SummaryGroupId={this.state.selectedSummaryGroupId}
+          summaryGroup={allSummaryGroups}
+          // isEdit={this.state.isEdit}
+        />
+        <DeleteSummaryGroupPopup
+          open={this.state.deleteSummaryGroupPopupOpen}
+          onClose={this.onDeleteTeamPopupClose}
+          selectedSummaryGroupName={this.state.selectedSummaryGroup}
+          selectedSummaryGroupId={this.state.selectedSummaryGroupId}
+          selectedStatus={this.state.isActive}
+          onDeleteClick={this.onDeleteSummaryGroup}
+          onSetInactiveClick={this.onConfirmClick}
+        />
+        <SummaryGroupStatusPopup
+          open={this.state.summaryGroupStatusPopupOpen}
+          onClose={this.onSummaryGroupStatusClose}
+          selectedSummaryGroupName={this.state.selectedSummaryGroup}
+          selectedSummaryGroupId={this.state.selectedSummaryGroupId}
+          selectedStatus={this.state.isActive}
+          onConfirmClick={this.onConfirmClick}
+        />
+        <TeamMembersPopup
+          open={this.state.teamMembersPopupOpen}
+          onClose={this.onTeamMembersPopupClose}
+          members={this.state.members}
+          usersdata={usersdata}
+          selectedSummaryGroupName={this.state.selectedSummaryGroup}
+          selectedSummaryGroupId={this.state.selectedSummaryGroupId}
+          onAddUser={this.onAddTeamMember}
+          onDeleteClick={this.onDeleteTeamMember}
+          apiCallDone={this.state.ApiCallDone}
+        />
+        <SummaryReceiverPopup
+          open={this.state.SummaryReceiverPopupOpen}
+          onClose={this.onSummaryReciverClose}
+          members={this.state.summaryReceiver}
+          usersdata={usersdata}
+          selectedSummaryGroupName={this.state.selectedSummaryGroup}
+          selectedSummaryGroupId={this.state.selectedSummaryGroupId}
+          onAddUser={this.onAddSummaryReceiver}
+          onDeleteClick={this.onDeleteSummaryReceiver}
+          apiCallDone={this.state.ApiCallDone}
+        />
 
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-              <tr>
-                <th scope="col" id="summary__order">
-                  {' '}
-                  #
-                </th>
-                <th scope="col" id="summary_name">
-                  {SUMMARY_GROUP}
-                </th>
-                <th scope="col" id="summary__active">
-                  {ACTIVE}
-                </th>
-                <th scope="col" id="summary_team__member">
-                  {TEAM_MEMBER}
-                </th>
-                <th scope="col" id="summary_receiver">
-                  {SUMMARY_RECEIVER}
-                </th>
-                <th scope="col" id="summary_actions">
-                  {ACTIONS}
-                </th>
-              </tr>
-            </thead>
-            <tbody>{summaryGroupTable}</tbody>
-          </table>
-          <div>
-            <SummaryReportsDisplay
-              teamMembersReports={this.getTeamMembersReports}
-              summaryGroupId={this.state.selectedSummaryGroupId}
-              getSummaryReceiver={this.getSummaryReceiverRedux}
-              onDisplaySummaryTableVar={this.state.displaySummaryReportTable}
-              onDisplaySummaryTableFunc={this.onDisplaySummaryTable}
-              usersdata={usersdata}
-              summaryReceiver={this.state.summaryReceiver}
-              currentUserRole={this.state.currentUserRole}
-              currentUserId={this.state.currentUserId}
-              updateUserInfo={this.getSummaryReceiverRedux}
-            />
-          </div>
+        <table className="table table-bordered table-responsive-sm">
+          <thead>
+            <tr>
+              <th scope="col" id="summary__order">
+                {' '}
+                #
+              </th>
+              <th scope="col" id="summary_name">
+                {SUMMARY_GROUP}
+              </th>
+              <th scope="col" id="summary__active">
+                {ACTIVE}
+              </th>
+              <th scope="col" id="summary_team__member">
+                {TEAM_MEMBER}
+              </th>
+              <th scope="col" id="summary_receiver">
+                {SUMMARY_RECEIVER}
+              </th>
+              <th scope="col" id="summary_actions">
+                {ACTIONS}
+              </th>
+            </tr>
+          </thead>
+          <tbody>{summaryGroupTable}</tbody>
+        </table>
+        <div>
+          <SummaryReportsDisplay
+            teamMembersReports={this.getTeamMembersReports}
+            summaryGroupId={this.state.selectedSummaryGroupId}
+            getSummaryReceiver={this.getSummaryReceiverRedux}
+            onDisplaySummaryTableVar={this.state.displaySummaryReportTable}
+            onDisplaySummaryTableFunc={this.onDisplaySummaryTable}
+            usersdata={usersdata}
+            summaryReceiver={this.state.summaryReceiver}
+            currentUserRole={this.state.currentUserRole}
+            currentUserId={this.state.currentUserId}
+            updateUserInfo={this.getSummaryReceiverRedux}
+          />
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 
