@@ -33,8 +33,7 @@ export const ENDPOINTS = {
   TIMER: userId => `${APIEndpoint}/timer/${userId}`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
-  TASKS: (wbsId, level, mother) =>
-    `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,
+  TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
   TASK_IMPORT: wbsId => `${APIEndpoint}/task/import/${wbsId}`,
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/del/${wbsId}`,
@@ -71,7 +70,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
-  `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
+    `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
@@ -94,6 +93,9 @@ export const ENDPOINTS = {
     `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`
 
+
+  MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
+  MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
 };
 
 export const ApiEndpoint = APIEndpoint;
