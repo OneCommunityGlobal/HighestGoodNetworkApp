@@ -91,7 +91,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () =>
     `${APIEndpoint}/ProfileInitialSetup`,
-  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`
+  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
 
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
