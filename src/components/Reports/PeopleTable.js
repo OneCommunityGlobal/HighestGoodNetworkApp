@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import './reports.css';
 import moment from 'moment';
 
-const PeopleTable = props => {
+function PeopleTable(props) {
   let PeopleList = [];
   if (props.userProfiles.length > 0) {
     PeopleList = props.userProfiles
@@ -16,7 +16,9 @@ const PeopleTable = props => {
           </th>
           <td>
             <Link to={`/peoplereport/${person._id}`} personId={person._id}>
-              {person.firstName} {person.lastName}
+              {person.firstName} 
+              {' '}
+              {person.lastName}
             </Link>
           </td>
           <td
@@ -63,5 +65,5 @@ const PeopleTable = props => {
       <tbody>{PeopleList}</tbody>
     </table>
   );
-};
+}
 export default PeopleTable;
