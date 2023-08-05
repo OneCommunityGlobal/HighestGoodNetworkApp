@@ -72,7 +72,7 @@ export const getWeeklySummaries = userId => {
  */
 export const updateWeeklySummaries = (userId, weeklySummariesData) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
-  return async (dispatch) => {
+  return async () => {
     try {
       // Get the user's profile from the server.
       let response = await axios.get(url);
@@ -80,13 +80,6 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
 
       // Merge the weekly summaries related changes with the user's profile.
       const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
-      // update the changes on weekly summaries link into admin links
-      for (const link of adminLinks) {
-        if (link.Name === 'Dropbox Link') {
-          link.Link = mediaUrl;
-          break; 
-        }
-      }
       const userProfileUpdated = {
         ...userProfile,
         mediaUrl,
@@ -94,22 +87,15 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
         weeklySummariesCount,
       };
 
-
       // Update the user's profile on the server.
       response = await axios.put(url, userProfileUpdated);
-      if (response.status === 200) {
-        await dispatch(getUserProfileActionCreator(userProfileUpdated));
-      }
-      if (response){
-        return response.status;
-      }
+      return response.status;
     } catch (error) {
-      if (error.response && error.response.status) {
-        return error.response.status;
-      }
+      return error.response.status;
     }
   };
 };
+
 
 export const extractWeeklySummaries = userIds => {
   return async (dispatch, getState) => {
