@@ -11,7 +11,7 @@ import './style.css';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
 
-const TeamMemberTask = ({
+const TeamMemberTask = React.memo(({
   user,
   handleMarkAsDoneModal,
   handleRemoveFromTaskModal,
@@ -23,7 +23,7 @@ const TeamMemberTask = ({
 }) => {
   const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
 
-  const infoTaskIconContent = `Red Bell Icon: When clicked, this will show any task changes\n 
+  const infoTaskIconContent = `Red Bell Icon: When clicked, this will show any task changes\n
   Green Checkmark Icon: When clicked, this will mark the task as completed\n
   X Mark Icon: When clicked, this will remove the user from that task`;
 
@@ -208,7 +208,7 @@ const TeamMemberTask = ({
                             <div>
                               <span>
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
-                            of 
+                            of
                           ${parseFloat(task.estimatedHours.toFixed(2))}`}
                               </span>
                               <Progress
@@ -232,6 +232,6 @@ const TeamMemberTask = ({
       </tr>
     </>
   );
-};
+});
 
 export default TeamMemberTask;
