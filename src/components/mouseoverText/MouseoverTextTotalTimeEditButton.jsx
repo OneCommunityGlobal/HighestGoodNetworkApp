@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import { createMouseoverText, updateMouseoverText } from '../../actions/mouseoverTextAction';
 
 function MouseoverTextTotalTimeEditButton({
-  createMouseoverText,
-  updateMouseoverText,
+  createMouseoverTextProp,
+  updateMouseoverTextProp,
   onUpdate,
   mouseoverTextId,
 }) {
@@ -22,10 +22,10 @@ function MouseoverTextTotalTimeEditButton({
       newMouseoverText: newText,
     };
     if (newText) {
-      updateMouseoverText(mouseoverTextId, mouseoverTextFormat);
+      updateMouseoverTextProp(mouseoverTextId, mouseoverTextFormat);
       toast.success('Mouseover Text updated!');
     } else {
-      createMouseoverText(mouseoverTextFormat);
+      createMouseoverTextProp(mouseoverTextFormat);
       toast.success('Mouseover Text created!');
     }
     setModalOpen(false);
@@ -79,8 +79,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  createMouseoverText: mouseoverText => dispatch(createMouseoverText(mouseoverText)),
-  updateMouseoverText: (mouseoverTextId, mouseoverText) =>
+  createMouseoverTextProp: mouseoverText => dispatch(createMouseoverText(mouseoverText)),
+  updateMouseoverTextProp: (mouseoverTextId, mouseoverText) =>
     dispatch(updateMouseoverText(mouseoverTextId, mouseoverText)),
 });
 
