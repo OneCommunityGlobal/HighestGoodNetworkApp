@@ -9,6 +9,7 @@ import {
   assignStarDotColors,
   showStar,
 } from 'utils/leaderboardPermissions';
+import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 
 function useDeepEffect(effectFunc, deps) {
@@ -45,6 +46,7 @@ const LeaderBoard = ({
   const userPermissions = loggedInUser.permissions?.frontPermissions;
   const hasSummaryIndicatorPermission = hasPermission(loggedInUser.role, 'seeSummaryIndicator', roles, userPermissions);
   const hasVisibilityIconPermission = hasPermission(loggedInUser.role, 'seeVisibilityIcon', roles, userPermissions);
+  const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
 
