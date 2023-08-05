@@ -262,11 +262,13 @@ class PeopleReport extends Component {
       toDate,
       timeEntries,
     } = this.state;
-    const { firstName, lastName, weeklycommittedHours, totalTangibleHrs } = userProfile;
+    const { firstName, lastName, weeklycommittedHours,hoursByCategory } = userProfile;
 
+  
     var totalTangibleHrsRound = 0;
-    if (totalTangibleHrs) {
-      totalTangibleHrsRound = totalTangibleHrs.toFixed(2);
+    if (hoursByCategory) {
+      const hours = hoursByCategory ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0):0;
+      totalTangibleHrsRound = hours.toFixed(2);
     }
 
     const UserProject = props => {
