@@ -103,12 +103,10 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       if (response){
         return response.status;
       }
-      return 200;
     } catch (error) {
       if (error.response && error.response.status) {
         return error.response.status;
       }
-      return 200;
     }
   };
 };
