@@ -1,8 +1,8 @@
-import { faClock, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
@@ -18,9 +18,8 @@ import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 import { toast } from 'react-toastify';
-import InfiniteScroll from 'react-infinite-scroller';
 
-const TeamMemberTasks = props => {
+const TeamMemberTasks = React.memo(props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
@@ -39,8 +38,6 @@ const TeamMemberTasks = props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
-  const [displayData, setDisplayData] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
 
   //added it to keep track if the renderTeamsList should run
   const [shouldRun, setShouldRun] = useState(false);
@@ -106,7 +103,7 @@ const TeamMemberTasks = props => {
     setCurrentUserId('');
   };
 
-  const onUpdateTask = (taskId, updatedTask) => {
+  const onUpdateTask = useCallback((taskId, updatedTask) => {
     const newTask = {
       updatedTask,
       taskId,
@@ -114,7 +111,7 @@ const TeamMemberTasks = props => {
     submitTasks(newTask);
     dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
     props.handleUpdateTask();
-  };
+  }, []);
 
   const submitTasks = async updatedTasks => {
     const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
@@ -125,28 +122,28 @@ const TeamMemberTasks = props => {
     }
   };
 
-  const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
+  const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
     setTaskNotificationModal(!showTaskNotificationModal);
-  };
+  }, []);
 
-  const handleMarkAsDoneModal = (userId, task) => {
+  const handleMarkAsDoneModal = useCallback((userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  };
+  }, []);
 
-  const handleRemoveFromTaskModal = (userId, task) => {
+  const handleRemoveFromTaskModal = useCallback((userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  };
+  }, []);
 
-  const handleTaskModalOption = option => {
+  const handleTaskModalOption = useCallback(option => {
     setTaskModalOption(option);
-  };
+  }, []);
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     //if the authentitated user is seeing it's own notification
@@ -284,21 +281,6 @@ const TeamMemberTasks = props => {
     }
   };
 
-  const loadFunc = useCallback(pageNum => {
-    if (teamList.length <= displayData.length) {
-      setHasMore(false);
-      return;
-    }
-
-    const start = pageNum * 10;
-    setDisplayData([...displayData, ...teamList.slice(start, start + 10)]);
-    setHasMore(true);
-  });
-
-  useEffect(() => {
-    loadFunc();
-  }, [teamList]);
-
   return (
     <div className="container team-member-tasks">
       <header className="header-box">
@@ -377,21 +359,9 @@ const TeamMemberTasks = props => {
           taskModalOption={taskModalOption}
         />
       )}
-      <div style={{ maxHeight: '700px', overflow: 'auto' }}>
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={loadFunc}
-          hasMore={hasMore}
-          className="table-container"
-          useWindow={false}
-          loader={
-            <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-              <FontAwesomeIcon icon={faSpinner} pulse /> Loading...
-            </div>
-          }
-        >
+      <div className='table-container'>
           <Table>
-            <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
+            <thead className="pc-component">
               <tr>
                 {/* Empty column header for hours completed icon */}
                 <th />
@@ -438,7 +408,7 @@ const TeamMemberTasks = props => {
               {isLoading ? (
                 <SkeletonLoading template="TeamMemberTasks" />
               ) : (
-                displayData.map(user => {
+                teamList.map(user => {
                   if (!isTimeLogActive) {
                     return (
                       <TeamMemberTask
@@ -486,17 +456,18 @@ const TeamMemberTasks = props => {
               )}
             </tbody>
           </Table>
-        </InfiniteScroll>
       </div>
     </div>
   );
-};
+});
 
 const mapStateToProps = state => ({
   auth: state.auth,
   userId: state.userProfile.id,
   managingTeams: state.userProfile.teams,
   teamsInfo: state.managingTeams,
+  roles: state.role.roles,
+  userPermissions: state.auth?.permissions?.frontPermissions,
 });
 
 export default connect(mapStateToProps, {
