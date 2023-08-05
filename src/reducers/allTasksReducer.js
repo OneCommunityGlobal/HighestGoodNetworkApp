@@ -1,6 +1,6 @@
 import { createOrUpdateTaskNotificationHTTP } from 'actions/taskNotification';
 import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
-import * as types from './../constants/task';
+import * as types from "../constants/task";
 
 const allTasksInital = {
   fetching: false,
@@ -74,7 +74,7 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         error: 'none',
       };
     case types.DELETE_TASK:
-      let delIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
+      const delIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
       let delIndexEnd = delIndexStart;
       allTasks.taskItems.forEach((task, index) => {
         if (task.parentId3 === action.taskId) {
@@ -107,8 +107,8 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         error: 'none',
       };
     case types.UPDATE_TASK:
-      let updIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
-      let updIndexEnd = updIndexStart;
+      const updIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
+      const updIndexEnd = updIndexStart;
       let updatedTask = allTasks.taskItems.filter(task => task._id === action.taskId)[0];
       updatedTask = { ...updatedTask, ...action.updatedTask };
       return {
