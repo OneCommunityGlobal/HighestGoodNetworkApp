@@ -48,6 +48,10 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+const DATE_PICKER_MIN_DATE = '01/01/2010';
+const nextDay = new Date();
+nextDay.setDate(nextDay.getDate()+1);
+
 class AddUserProfile extends Component {
   constructor(props) {
     super(props);
@@ -73,7 +77,7 @@ class AddUserProfile extends Component {
         location: '',
         showphone: true,
         weeklySummaryOption: 'Required',
-        startDate: new Date(),
+        startDate: nextDay,
       },
       formValid: {},
       formErrors: {
@@ -104,14 +108,6 @@ class AddUserProfile extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
-
-    // startDate variable, need to add to constructor after
-    const date = new Date();
-    const tomorrow = new Date(date.getFullYear(), date.getMonth(), (date.getDate() + 1));
-
-    //Date picker
-    const FORMAT = 'MM/dd/yy';
-    const DATE_PICKER_MIN_DATE = '01/01/2010';
 
     return (
       <StickyContainer>
@@ -383,10 +379,13 @@ class AddUserProfile extends Component {
                     <FormGroup>
                     <div className="date-picker-item">                        
                       <DatePicker
-                        selected={tomorrow}
+                        selected={this.state.userProfile.startDate}
                         minDate={new Date(DATE_PICKER_MIN_DATE)}
-                        maxDate={tomorrow}
-                        onChange={date => this.setState({ startDate: date })}
+                        maxDate={nextDay}
+                        onChange={date => this.setState({ userProfile: {
+                          ...this.state.userProfile,
+                          startDate: date,
+                        }})}
                         className="form-control"
                       />
                       </div>
