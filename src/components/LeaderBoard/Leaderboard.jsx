@@ -9,7 +9,6 @@ import {
   assignStarDotColors,
   showStar,
 } from 'utils/leaderboardPermissions';
-import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -31,29 +30,15 @@ function useDeepEffect(effectFunc, deps) {
 const LeaderBoard = ({
   getLeaderboardData,
   getOrgData,
-  getMouseoverText,
   leaderBoardData,
   loggedInUser,
   organizationData,
   timeEntries,
   isVisible,
   asUser,
-  totalTimeMouseoverText,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
   const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
-  const isOwner = ['Owner'].includes(loggedInUser.role);
-
-  const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
-
-  useEffect(() => {
-    getMouseoverText();
-    setMouseoverTextValue(totalTimeMouseoverText);
-  }, [totalTimeMouseoverText]);
-
-  const handleMouseoverTextUpdate = (text) => {
-    setMouseoverTextValue(text);
-  };
 
   useDeepEffect(() => {
     getLeaderboardData(userId);
@@ -73,7 +58,7 @@ const LeaderBoard = ({
           }
         }
       }
-    } catch { }
+    } catch {}
   }, [leaderBoardData]);
 
   const [isOpen, setOpen] = useState(false);
@@ -219,18 +204,9 @@ const LeaderBoard = ({
                 <span className="d-none d-sm-block">Tangible Time</span>
               </th>
               <th>Progress</th>
-              <th style={{ textAlign: 'right' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ textAlign: 'left' }}>
-                    <span className="d-sm-none">Tot. Time</span>
-                    <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>Total Time </span>
-                  </div>
-                  {isOwner && (
-                    <MouseoverTextTotalTimeEditButton
-                      onUpdate={handleMouseoverTextUpdate}
-                    />
-                  )}
-                </div>
+              <th>
+                <span className="d-sm-none">Tot. Time</span>
+                <span className="d-none d-sm-block">Total Time</span>
               </th>
             </tr>
           </thead>
@@ -283,7 +259,7 @@ const LeaderBoard = ({
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
                     <div onClick={() => dashboardToggle(item)}>
                       {hasLeaderboardPermissions(loggedInUser.role) &&
-                        showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                      showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
                           className="fa fa-star"
                           title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
@@ -349,8 +325,7 @@ const LeaderBoard = ({
                 </td>
                 <td className="align-middle">
                   <span
-                    title={mouseoverTextValue}
-                    id="Total time"
+                    title="Total time"
                     className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
                   >
                     {item.totaltime}
