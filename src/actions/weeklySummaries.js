@@ -100,7 +100,10 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       if (response.status === 200) {
         await dispatch(getUserProfileActionCreator(userProfileUpdated));
       }
-      return response.status;
+      if (response){
+        return response.status;
+      }
+      return 200;
     } catch (error) {
       if (error.response && error.response.status) {
         return error.response.status;
