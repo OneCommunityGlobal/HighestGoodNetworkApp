@@ -170,6 +170,14 @@ body.dark .m-header{
   color: white;
 }
 
+.dark .bio-toggle b {
+  color: white !important
+}
+
+.dark p b {
+  color: white !important
+}
+
 
 /* The switch - the box around the slider */
 .switch {
