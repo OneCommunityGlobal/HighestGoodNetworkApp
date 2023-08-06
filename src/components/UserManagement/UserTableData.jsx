@@ -79,7 +79,12 @@ const UserTableData = React.memo(props => {
         </button>
       </td>
       <td>
-        <button type="button" className="btn btn-outline-primary btn-sm" style={boxStyle}>
+        <button
+          type="button"
+          className="btn btn-outline-primary btn-sm"
+          onClick={e => props.onLogTimeOffClick()}
+          style={boxStyle}
+        >
           log time off
         </button>
       </td>

@@ -51,6 +51,7 @@ class UserManagement extends React.PureComponent {
       deletePopupOpen: false,
       isPaused: false,
       finalDayDateOpen: false,
+      logTimeOffPopUpOpen: false,
     };
   }
 
@@ -154,7 +155,10 @@ class UserManagement extends React.PureComponent {
           onClose={this.setUpFinalDayPopupClose}
           onSave={this.deactiveUser}
         />
-        <LogTimeOffPopUp open={true} />
+        <LogTimeOffPopUp
+          open={this.state.logTimeOffPopUpOpen}
+          onClose={this.logTimeOffPopUpClose}
+        />
       </React.Fragment>
     );
   };
@@ -195,6 +199,7 @@ class UserManagement extends React.PureComponent {
                 this.state.finalDayDateOpen
               }
               onPauseResumeClick={that.onPauseResumeClick}
+              onLogTimeOffClick={that.onLogTimeOffClick}
               onFinalDayClick={that.onFinalDayClick}
               onDeleteClick={that.onDeleteButtonClick}
               onActiveInactiveClick={that.onActiveInactiveClick}
@@ -266,6 +271,15 @@ class UserManagement extends React.PureComponent {
   };
 
   /**
+   * Call back on log time off button click
+   */
+  onLogTimeOffClick = () => {
+    this.setState({
+      logTimeOffPopUpOpen: true,
+    });
+  };
+
+  /**
    * Call back on Set Final day or Delete final button click to trigger the action to update user endate
    */
 
@@ -295,6 +309,14 @@ class UserManagement extends React.PureComponent {
   setUpFinalDayPopupClose = () => {
     this.setState({
       finalDayDateOpen: false,
+    });
+  };
+  /**
+   * call back function to close log time off popup
+   */
+  logTimeOffPopUpClose = () => {
+    this.setState({
+      logTimeOffPopUpOpen: false,
     });
   };
 
