@@ -45,6 +45,7 @@ import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
+import { formattedDate } from 'utils/dateFormat';
 
 const doesUserHaveTaskWithWBS = (tasks, userId) => {
   for (let task of tasks) {
@@ -56,6 +57,7 @@ const doesUserHaveTaskWithWBS = (tasks, userId) => {
   }
   return false;
 };
+
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -256,7 +258,7 @@ const Timelog = props => {
     } else if (state.activeTab === 4) {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{state.fromDate}</b> to <b>{state.toDate}</b>
+          Viewing time Entries from <b>{formattedDate(state.fromDate)}</b> to <b>{formattedDate(state.toDate)}</b>
         </p>
       );
     } else {
