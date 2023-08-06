@@ -107,9 +107,10 @@ export class WeeklySummariesReport extends Component {
     if (weeklycommittedHoursHistory.length === 0) {
       return 10;
     }
-    const weekToDateReformat = new Date(weekToDateX);
+
+    const weekToDateReformat = new Date(weekToDateX).setHours(23, 59, 59, 999);
     // 2. Iterate weeklycommittedHoursHistory from the last index (-1) to the beginning
-    for (let i = weeklycommittedHoursHistory.length - 1; i >= 0; i--) {
+    for (let i = weeklycommittedHoursHistory.length - 1; i >= 0; i -= 1) {
       const historyDateX = new Date(weeklycommittedHoursHistory[i].dateChanged);
       // console.log(`${weekToDateX} >= ${historyDateX} is ${weekToDateX >= historyDateX}`);
       // As soon as the weekToDate is greater or equal than current history date
