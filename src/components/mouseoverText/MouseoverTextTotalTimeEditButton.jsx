@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { ENDPOINTS } from '../../utils/URL';
+import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { createMouseoverText, updateMouseoverText } from '../../actions/mouseoverTextAction';
 
 function MouseoverTextTotalTimeEditButton({
-  createMouseoverText,
-  updateMouseoverText,
+  createMouseoverTextProp,
+  updateMouseoverTextProp,
   onUpdate,
   mouseoverTextId,
 }) {
@@ -23,10 +22,10 @@ function MouseoverTextTotalTimeEditButton({
       newMouseoverText: newText,
     };
     if (newText) {
-      updateMouseoverText(mouseoverTextId, mouseoverTextFormat);
+      updateMouseoverTextProp(mouseoverTextId, mouseoverTextFormat);
       toast.success('Mouseover Text updated!');
     } else {
-      createMouseoverText(mouseoverTextFormat);
+      createMouseoverTextProp(mouseoverTextFormat);
       toast.success('Mouseover Text created!');
     }
     setModalOpen(false);
@@ -45,7 +44,7 @@ function MouseoverTextTotalTimeEditButton({
           aria-hidden="true"
           style={{ marginLeft: '5px', cursor: 'pointer' }}
           onClick={handleUpdateText}
-        ></i>
+        />
         <Modal isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)}>
           <ModalHeader toggle={() => setModalOpen(!modalOpen)}>Edit Mouseover Text</ModalHeader>
           <ModalBody>
@@ -61,7 +60,7 @@ function MouseoverTextTotalTimeEditButton({
           <ModalFooter>
             <Button color="primary" onClick={handleSaveText}>
               Save
-            </Button>{' '}
+            </Button>
             <Button color="secondary" onClick={handleCancelSave}>
               Cancel
             </Button>
@@ -80,8 +79,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  createMouseoverText: mouseoverText => dispatch(createMouseoverText(mouseoverText)),
-  updateMouseoverText: (mouseoverTextId, mouseoverText) =>
+  createMouseoverTextProp: mouseoverText => dispatch(createMouseoverText(mouseoverText)),
+  updateMouseoverTextProp: (mouseoverTextId, mouseoverText) =>
     dispatch(updateMouseoverText(mouseoverTextId, mouseoverText)),
 });
 
