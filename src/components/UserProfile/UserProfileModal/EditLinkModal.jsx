@@ -36,7 +36,7 @@ const EditLinkModal = props => {
       ? userProfile.adminLinks.find(link => link.Name === 'Google Doc')
       : initialAdminLinkState[0],
   );
-  const [dropboxLink, setDropboxLink] = useState(
+  const [mediaFolderLink, setMediaFolderLink] = useState(
     userProfile.adminLinks.find(link => link.Name === 'Media Folder')
       ? userProfile.adminLinks.find(link => link.Name === 'Media Folder')
       : initialAdminLinkState[1],
@@ -69,10 +69,10 @@ const EditLinkModal = props => {
   };
 
   const addNewLink = (links, setLinks, newLink, clearInput) => {
-    const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
-    if (isDuplicateLink(links, newLink) || !isValidUrl(newLink.Link)) {
+    if (isDuplicateLink([googleLink,mediaFolderLink,...links], newLink) || !isValidUrl(newLink.Link)) {
       setIsValidLink(false);
     } else {
+      const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
       setLinks(newLinks);
       setIsChanged(true);
       setIsValidLink(true);
@@ -85,16 +85,17 @@ const EditLinkModal = props => {
       return link.Name !== name;
     });
     setLinks(newLinks);
+    setIsChanged(true);
   };
 
   const isDuplicateLink = (links, newLink) => {
     // ! return true if there is a duplicate link, which is invalid
     if (newLink.Name === '' || newLink.Link === '') return true;
     else {
-      const name = newLink.Name;
+      const name = newLink.Name.trim().toLowerCase();
       const nameSet = new Set();
       links.forEach(link => {
-        nameSet.add(link.Name);
+        nameSet.add(link.Name.trim().toLowerCase());
       });
       return nameSet.has(name);
     }
@@ -112,13 +113,13 @@ const EditLinkModal = props => {
 
   const handleUpdate = () => {
     const updatable =
-      (isValidUrl(googleLink.Link) && isValidUrl(dropboxLink.Link)) ||
-      (googleLink.Link === '' && dropboxLink.Link === '') ||
-      (isValidUrl(googleLink.Link) && dropboxLink.Link === '') ||
-      (isValidUrl(dropboxLink.Link) && googleLink.Link === '');
+      (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
+      (googleLink.Link === '' && mediaFolderLink.Link === '') ||
+      (isValidUrl(googleLink.Link) && mediaFolderLink.Link === '') ||
+      (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
-      updateLink(personalLinks, [googleLink, dropboxLink, ...adminLinks]);
+      updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
       setIsValidLink(true);
       setIsChanged(true);
       closeModal();
@@ -171,9 +172,9 @@ const EditLinkModal = props => {
                         className="customEdit"
                         id="linkURL2"
                         placeholder="Enter Dropbox link"
-                        value={dropboxLink.Link}
+                        value={mediaFolderLink.Link}
                         onChange={e => {
-                          setDropboxLink({ ...dropboxLink, Link: e.target.value.trim() });
+                          setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
                           setIsChanged(true);
                         }}
                       />
@@ -298,7 +299,6 @@ const EditLinkModal = props => {
                   <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
                     <input
                       className="customEdit me-3"
-                      id="linkName"
                       placeholder="enter name"
                       value={newPersonalLink.Name}
                       onChange={e => {
@@ -309,7 +309,6 @@ const EditLinkModal = props => {
                     />
                     <input
                       className="customEdit"
-                      id="linkURL"
                       placeholder="enter link"
                       value={newPersonalLink.Link}
                       onChange={e => {

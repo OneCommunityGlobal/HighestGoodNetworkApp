@@ -9,6 +9,8 @@ import {
   assignStarDotColors,
   showStar,
 } from 'utils/leaderboardPermissions';
+import hasPermission from 'utils/permissions';
+import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -30,16 +32,32 @@ function useDeepEffect(effectFunc, deps) {
 const LeaderBoard = ({
   getLeaderboardData,
   getOrgData,
+  getMouseoverText,
   leaderBoardData,
   loggedInUser,
   organizationData,
   timeEntries,
   isVisible,
+  roles,
   asUser,
+  totalTimeMouseoverText,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
-  const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
+  const userPermissions = loggedInUser.permissions?.frontPermissions;
+  const hasSummaryIndicatorPermission = hasPermission(loggedInUser.role, 'seeSummaryIndicator', roles, userPermissions);
+  const hasVisibilityIconPermission = hasPermission(loggedInUser.role, 'seeVisibilityIcon', roles, userPermissions);
+  const isOwner = ['Owner'].includes(loggedInUser.role);
 
+  const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
+
+  useEffect(() => {
+    getMouseoverText();
+    setMouseoverTextValue(totalTimeMouseoverText);
+  }, [totalTimeMouseoverText]);
+
+  const handleMouseoverTextUpdate = text => {
+    setMouseoverTextValue(text);
+  };
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
@@ -204,9 +222,19 @@ const LeaderBoard = ({
                 <span className="d-none d-sm-block">Tangible Time</span>
               </th>
               <th>Progress</th>
-              <th>
-                <span className="d-sm-none">Tot. Time</span>
-                <span className="d-none d-sm-block">Total Time</span>
+
+              <th style={{ textAlign: 'right' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <span className="d-sm-none">Tot. Time</span>
+                    <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>
+                      Total Time{' '}
+                    </span>
+                  </div>
+                  {isOwner && (
+                    <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
+                  )}
+                </div>
               </th>
             </tr>
           </thead>
@@ -253,7 +281,7 @@ const LeaderBoard = ({
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: isAdmin ? 'space-between' : 'center',
+                      justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center',
                     }}
                   >
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
@@ -289,7 +317,7 @@ const LeaderBoard = ({
                         />
                       )}
                     </div>
-                    {isAdmin && item.hasSummary && (
+                    {hasSummaryIndicatorPermission && item.hasSummary && (
                       <div
                         title={`Weekly Summary Submitted`}
                         style={{
@@ -308,7 +336,7 @@ const LeaderBoard = ({
                     {item.name}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
-                  {isAdmin && !item.isVisible && (
+                  {hasVisibilityIconPermission && !item.isVisible && (
                     <i className="fa fa-eye-slash" title="User is invisible"></i>
                   )}
                 </th>
@@ -325,7 +353,8 @@ const LeaderBoard = ({
                 </td>
                 <td className="align-middle">
                   <span
-                    title="Total time"
+                    title={mouseoverTextValue}
+                    id="Total time"
                     className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
                   >
                     {item.totaltime}
