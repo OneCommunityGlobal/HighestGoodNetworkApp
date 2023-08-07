@@ -75,4 +75,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: .5rem;
+}
+
+.date-picker-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
 }
