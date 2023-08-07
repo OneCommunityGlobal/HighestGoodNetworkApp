@@ -9,6 +9,7 @@ import {
   assignStarDotColors,
   showStar,
 } from 'utils/leaderboardPermissions';
+import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 
 function useDeepEffect(effectFunc, deps) {
@@ -37,11 +38,14 @@ const LeaderBoard = ({
   organizationData,
   timeEntries,
   isVisible,
+  roles,
   asUser,
   totalTimeMouseoverText,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
-  const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
+  const userPermissions = loggedInUser.permissions?.frontPermissions;
+  const hasSummaryIndicatorPermission = hasPermission(loggedInUser.role, 'seeSummaryIndicator', roles, userPermissions);
+  const hasVisibilityIconPermission = hasPermission(loggedInUser.role, 'seeVisibilityIcon', roles, userPermissions);
   const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
@@ -54,7 +58,6 @@ const LeaderBoard = ({
   const handleMouseoverTextUpdate = text => {
     setMouseoverTextValue(text);
   };
-
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
@@ -278,7 +281,7 @@ const LeaderBoard = ({
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: isAdmin ? 'space-between' : 'center',
+                      justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center',
                     }}
                   >
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
@@ -314,7 +317,7 @@ const LeaderBoard = ({
                         />
                       )}
                     </div>
-                    {isAdmin && item.hasSummary && (
+                    {hasSummaryIndicatorPermission && item.hasSummary && (
                       <div
                         title={`Weekly Summary Submitted`}
                         style={{
@@ -333,7 +336,7 @@ const LeaderBoard = ({
                     {item.name}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
-                  {isAdmin && !item.isVisible && (
+                  {hasVisibilityIconPermission && !item.isVisible && (
                     <i className="fa fa-eye-slash" title="User is invisible"></i>
                   )}
                 </th>
