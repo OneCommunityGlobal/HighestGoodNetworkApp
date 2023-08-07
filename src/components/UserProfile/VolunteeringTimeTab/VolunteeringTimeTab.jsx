@@ -4,7 +4,6 @@ import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle } from 'styles';
 
@@ -227,7 +226,6 @@ const ViewTab = props => {
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
-  const [historyModal, setHistoryModal] = useState(false);
 
   const handleStartDates = async startDate => {
     props.onStartDate(startDate);
@@ -261,10 +259,6 @@ const ViewTab = props => {
   const sumOfCategoryHours = () => {
     const hours = Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0);
     setTotalTangibleHours(hours.toFixed(2));
-  };
-
-  const toggleHistoryModal = () => {
-    setHistoryModal(!historyModal);
   };
 
   useEffect(() => {
@@ -378,22 +372,13 @@ const ViewTab = props => {
         <Col md="6">
           <Label className="hours-label">Weekly Committed Hours </Label>
         </Col>
-        <Col md="6" className="d-flex align-items-center">
+        <Col md="6">
           <WeeklyCommittedHours
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
           />
-          <HistoryModal
-            isOpen={historyModal}
-            toggle={toggleHistoryModal}
-            userName={userProfile.firstName}
-            userHistory={userProfile.weeklycommittedHoursHistory}
-          />
-          <span className="history-icon">
-            <i className="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal}></i>
-          </span>
         </Col>
       </Row>
       {userProfile.role === 'Core Team' && (

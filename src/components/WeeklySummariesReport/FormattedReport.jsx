@@ -28,6 +28,7 @@ const textColors = {
 
 const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   const emails = [];
+  //const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -40,6 +41,13 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
   let emailString = [...new Set(emails)].toString();
   while (emailString.includes(',')) emailString = emailString.replace(',', '\n');
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
+
+  const alphabetize = summaries => {
+    const temp = [...summaries];
+    return temp.sort((a, b) =>
+      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
+    );
+  };
 
   const getMediaUrlLink = summary => {
     if (summary.mediaUrl) {
@@ -211,9 +219,8 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
 
   return (
     <>
-      {summaries.map((summary, index) => {
+      {alphabetize(summaries).map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-
         const googleDocLink = getGoogleDocLink(summary);
         return (
           <div
@@ -232,12 +239,12 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
               <span>
                 <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
               </span>
-              {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+              {showStar(hoursLogged, summary.weeklycommittedHours) && (
                 <i
                   className="fa fa-star"
-                  title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
+                  title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
                   style={{
-                    color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+                    color: assignStarDotColors(hoursLogged, summary.weeklycommittedHours),
                     fontSize: '55px',
                     marginLeft: '10px',
                     verticalAlign: 'middle',
@@ -255,7 +262,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                       fontSize: '10px',
                     }}
                   >
-                    +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}%
                   </span>
                 </i>
               )}
@@ -266,7 +273,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
             </div>
             {bioFunction(summary._id, summary.bioPosted, summary)}
             {getTotalValidWeeklySummaries(summary)}
-            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+            {hoursLogged >= summary.weeklycommittedHours && (
               <p>
                 <b
                   style={{
@@ -275,10 +282,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                 >
                   Hours logged:{' '}
                 </b>
-                {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
-            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+            {hoursLogged < summary.weeklycommittedHours && (
               <p>
                 <b
                   style={{
@@ -287,7 +294,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
                 >
                   Hours logged:
                 </b>{' '}
-                {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
               </p>
             )}
             {getWeeklySummaryMessage(summary)}
