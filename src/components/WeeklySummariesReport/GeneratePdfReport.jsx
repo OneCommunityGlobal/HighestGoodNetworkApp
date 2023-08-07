@@ -23,21 +23,24 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
     const weeklySummaryNotRequiredMessage =
       '<div><b>Weekly Summary:</b> <span style="color: green;">Not required for this user</span></div>';
 
+    summaries.sort((a, b) =>
+      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
+    );
+
     summaries.forEach(eachSummary => {
-      // 1. get vars that we need
       const {
         firstName,
         lastName,
         weeklySummaries,
         mediaUrl,
         weeklySummariesCount,
-
+        weeklycommittedHours,
         totalSeconds,
         weeklySummaryOption,
       } = eachSummary;
 
       const hoursLogged = (totalSeconds[weekIndex] || 0) / 3600;
-      // 2. email
+
       if (eachSummary.email !== undefined && eachSummary.email !== null) {
         emails.push(eachSummary.email);
       }
@@ -47,8 +50,6 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         : '<span style="color: red;">Not provided!</span>';
 
       const totalValidWeeklySummaries = weeklySummariesCount || 'No valid submissions yet!';
-
-      // 2. edit style
       const colorStyle = (() => {
         switch (weeklySummaryOption) {
           case 'Team':
@@ -61,8 +62,6 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
             return eachSummary.weeklySummaryNotReq ? 'style="color: green"' : '';
         }
       })();
-
-      // 3. get message
       let weeklySummaryMessage = weeklySummaryNotProvidedMessage;
       if (Array.isArray(weeklySummaries) && weeklySummaries[weekIndex]) {
         const { dueDate, summary } = weeklySummaries[weekIndex];
@@ -83,7 +82,6 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         }
       }
 
-      // 4. styling
       wsReport += `\n
       <div><b>Name:</b> <span class="name">${firstName} ${lastName}</span></div>
       <div><b>Media URL:</b> ${mediaUrlLink}</div>
@@ -91,9 +89,9 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         totalValidWeeklySummaries === 8 ? 'text-decoration: underline; color: red;' : ''
       }"><b>Total valid weekly summaries:</b> ${totalValidWeeklySummaries}</div>
       ${
-        hoursLogged >= eachSummary.promisedHoursByWeek[weekIndex]
-          ? `<div><b>Hours logged:</b> ${hoursLogged} / ${eachSummary.promisedHoursByWeek[weekIndex]} </div>`
-          : `<div style="color: red;"><b>Hours logged:</b> ${hoursLogged} / ${eachSummary.promisedHoursByWeek[weekIndex]}</div>`
+        hoursLogged >= weeklycommittedHours
+          ? `<div><b>Hours logged:</b> ${hoursLogged} / ${weeklycommittedHours} </div>`
+          : `<div style="color: red;"><b>Hours logged:</b> ${hoursLogged} / ${weeklycommittedHours}</div>`
       }
       ${weeklySummaryMessage}
       <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
@@ -101,8 +99,9 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
 
     wsReport += '<h2>Emails</h2>';
 
-    //5. elimiates duplicate entries if they're somehow present
-    wsReport += [...new Set(emails)].toString().replaceAll(',', ', ');
+    wsReport += [...new Set(emails)] //elimiates duplicate entries if they're somehow present
+      .toString()
+      .replaceAll(',', ', ');
 
     return wsReport;
   };
