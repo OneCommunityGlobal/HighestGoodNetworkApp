@@ -52,7 +52,7 @@ return (
       <ModalHeader>Badge Summary</ModalHeader>
       <ModalBody>
         <div>
-        {/* DESKTOP VERSION OF MODAL */}
+        {/* --- DESKTOP VERSION OF MODAL --- */}
           <div className="desktop">
             <div style={{ overflowY: 'scroll', height: '75vh' }}>
               <Table>
@@ -116,7 +116,7 @@ return (
               </Table>
             </div>
           </div>
-          {/* TABLET VERSION OF MODAL */}
+          {/* --- TABLET VERSION OF MODAL --- */}
           <div className="tablet">
             <div style={{ overflow: 'auto', height: '68vh' }}>
               <Table>
