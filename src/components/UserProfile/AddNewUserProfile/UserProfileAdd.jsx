@@ -381,7 +381,6 @@ class AddUserProfile extends Component {
                       <DatePicker
                         selected={this.state.userProfile.startDate}
                         minDate={new Date(DATE_PICKER_MIN_DATE)}
-                        maxDate={nextDay}
                         onChange={date => this.setState({ userProfile: {
                           ...this.state.userProfile,
                           startDate: date,

@@ -720,7 +720,7 @@ function UserProfile(props) {
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
+              From : <span>{moment(userProfile.startDate || userProfile.createdDate).format('YYYY-MM-DD')}</span>
               {'   '}
               To:{' '}
               <span>
