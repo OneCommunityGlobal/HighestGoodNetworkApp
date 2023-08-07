@@ -144,7 +144,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
 
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
-    if (googleDocLink) {
+    if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
       window.open(googleDocLink.Link);
     } else {
       toast.error(
