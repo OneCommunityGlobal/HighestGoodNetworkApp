@@ -46,9 +46,7 @@ import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 
-const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
-  if (!Array.isArray(tasks)) return false;
-
+const doesUserHaveTaskWithWBS = (tasks, userId) => {
   for (let task of tasks) {
     for (let resource of task.resources) {
       if (resource.userID == userId && resource.completedTask == false) {
