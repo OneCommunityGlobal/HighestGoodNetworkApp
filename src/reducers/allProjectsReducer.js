@@ -1,4 +1,4 @@
-import * as types from './../constants/projects';
+import * as types from "../constants/projects";
 
 const allProjectsInital = {
   fetching: false,
@@ -30,12 +30,12 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
     case types.ADD_NEW_PROJECT:
       if (action.status === 201) {
         return { ...allProjects, projects: [action.payload, ...allProjects.projects] };
-      } else {
+      } 
         return { ...allProjects, status: action.status };
-      }
+      
     case types.DELETE_PROJECT:
       if (action.status === 200) {
-        let index = allProjects.projects.findIndex(project => project._id === action.projectId);
+        const index = allProjects.projects.findIndex(project => project._id === action.projectId);
         return updateObject(allProjects, {
           projects: Object.assign([
             ...allProjects.projects.slice(0, index),
@@ -44,7 +44,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         });
       }
     case types.UPDATE_PROJECT:
-      let index = allProjects.projects.findIndex(project => project._id === action.projectId);
+      const index = allProjects.projects.findIndex(project => project._id === action.projectId);
       return updateObject(allProjects, {
         projects: Object.assign([
           ...allProjects.projects.slice(0, index),

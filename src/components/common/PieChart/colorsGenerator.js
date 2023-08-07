@@ -14,9 +14,9 @@ const randomInteger = max => {
 };
 
 const randomRgbColor = () => {
-  let r = randomInteger(255);
-  let g = randomInteger(255);
-  let b = randomInteger(255);
+  const r = randomInteger(255);
+  const g = randomInteger(255);
+  const b = randomInteger(255);
   return `rgb(${r}, ${g}, ${b})`;
 };
 
