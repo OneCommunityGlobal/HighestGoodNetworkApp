@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import './reports.css';
 import moment from 'moment';
 
-const PeopleTable = props => {
+function PeopleTable(props) {
   let PeopleList = [];
   if (props.userProfiles.length > 0) {
     PeopleList = props.userProfiles
@@ -72,5 +72,5 @@ const PeopleTable = props => {
       <tbody>{PeopleList}</tbody>
     </table>
   );
-};
+}
 export default PeopleTable;

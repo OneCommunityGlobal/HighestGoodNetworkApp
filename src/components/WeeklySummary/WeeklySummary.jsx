@@ -106,7 +106,9 @@ export class WeeklySummary extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
+
     const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || '';
     const summaryLastWeek =
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
@@ -141,6 +143,7 @@ export class WeeklySummary extends Component {
     const dueDateLastWeek = moment(dueDate)
       .subtract(1, 'weeks')
       .toISOString();
+
     const dueDateBeforeLast = moment(dueDate)
       .subtract(2, 'weeks')
       .toISOString();
@@ -380,6 +383,7 @@ export class WeeklySummary extends Component {
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
+
   handleCheckboxChange = event => {
     event.persist();
     const { name, checked } = event.target;
@@ -393,7 +397,7 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleChangeInSummary = () => {
+  handleChangeInSummary = async() => {
     // Extract state variables for ease of access
     let {
       submittedDate,
@@ -466,6 +470,7 @@ export class WeeklySummary extends Component {
       modifiedWeeklySummaries,
     );
   };
+
   // Updates user profile and weekly summaries
   updateUserData = async userId => {
     await this.props.getUserProfile(userId);
@@ -498,13 +503,9 @@ export class WeeklySummary extends Component {
     if (errors) this.state.moveConfirm = false;
     if (errors) return;
 
-    const updateWeeklySummaries = this.handleChangeInSummary();
-    let saveResult;
-    if (updateWeeklySummaries) {
-      saveResult = await updateWeeklySummaries();
-    }
+    const result = await this.handleChangeInSummary();
 
-    if (saveResult === 200) {
+    if (result === 200) {
       await this.handleSaveSuccess(toastIdOnSave);
       if (closeAfterSave) {
         this.handleClose();
@@ -729,7 +730,7 @@ export class WeeklySummary extends Component {
                         <ModalBody>
                           Whoa Tiger! Are you sure you want to do that? This link was added by an
                           Admin when you were set up as a member of the team. Only change this if
-                          you are SURE your new link is more than the one already here.
+                          you are SURE your new link is more correct than the one already here.
                         </ModalBody>
                         <ModalFooter>
                           <Button onClick={this.handleMediaChange} style={boxStyle}>
@@ -877,7 +878,7 @@ const mapStateToProps = ({ auth, weeklySummaries }) => ({
 const mapDispatchToProps = dispatch => {
   return {
     getWeeklySummaries: getWeeklySummaries,
-    updateWeeklySummaries: updateWeeklySummaries,
+    updateWeeklySummaries:(userId,weeklySummary)=> updateWeeklySummaries(userId,weeklySummary)(dispatch),
     getWeeklySummaries: userId => getWeeklySummaries(userId)(dispatch),
     getUserProfile: userId => getUserProfile(userId)(dispatch),
   };

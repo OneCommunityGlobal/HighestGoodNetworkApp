@@ -5,73 +5,35 @@
  ********************************************************************************/
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { importTask, fetchAllTasks } from './../../../../../actions/task';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
+import { importTask } from './../../../../../actions/task';
 import readXlsxFile from 'read-excel-file';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
 import ReactHtmlParser from 'react-html-parser';
 
 const ImportTask = props => {
-  const [isDone, setIsDone] = useState(0);
-  // modal
+  /*
+  * -------------------------------- variable declarations -------------------------------- 
+  */
+  // props from store 
+  const { popupContent, members } = props;
+
+  // states from hooks
+  const [importStatus, setImportStatus] = useState('choosing');
   const [modal, setModal] = useState(false);
-  const toggle = () => {
-    setModal(!modal);
-    setIsDone(0);
-    props.fetchAllTasks(props.wbsId, 0);
-  };
   const [taskList, setTaskList] = useState([]);
+  const [alert, setAlert] = useState('')
+  const [instruction, setInstruction] = useState(ReactHtmlParser(popupContent));  // right now the saved popupContent for this is 'Task PR#905', better to change it 
 
-  useEffect(() => {
+  /*
+  * -------------------------------- functions -------------------------------- 
+  */
+ const toggle = async () => {
     props.getPopupById(TASK_IMPORT_POPUP_ID);
-  }, [1]);
-
-  const handleFileRead = async rows => {
-    setIsDone(1);
-    const tmpList = [];
-    await rows.forEach((rowArr, i) => {
-      if (i >= 2) {
-        // level 1
-        if (rowArr[0] !== null && rowArr[1] !== null) {
-          tmpList.push(newTask(rowArr[0], rowArr[1], 1, rowArr));
-        }
-        // level 2
-        if (rowArr[2] !== null && rowArr[3] !== null) {
-          tmpList.push(newTask(rowArr[2], rowArr[3], 2, rowArr));
-        }
-        // level 3
-        if (rowArr[4] !== null && rowArr[5] !== null) {
-          tmpList.push(newTask(rowArr[4], rowArr[5], 3, rowArr));
-        }
-        // level 4
-        if (rowArr[6] !== null && rowArr[7] !== null) {
-          tmpList.push(newTask(rowArr[6], rowArr[7], 4, rowArr));
-        }
-
-        if (i === rows.length - 1) {
-          document.getElementById('instruction').innerHTML =
-            rows[0][0] + '<br/> Rows: ' + rows.length;
-
-          setTimeout(() => {
-            setIsDone(2);
-          }, 1000);
-        }
-      }
-    });
-
-    setTaskList(tmpList);
-  };
-
-  const uploadTaskList = () => {
-    setIsDone(3);
-    props.importTask(taskList, props.wbsId);
-    setTimeout(() => {
-      setTimeout(() => {
-        setIsDone(4);
-      }, 5000);
-      props.fetchAllTasks(props.wbsId, 0);
-    }, 1000);
+    setInstruction(ReactHtmlParser(popupContent));
+    setModal(!modal);
+    setImportStatus('choosing');
   };
 
   const handleFileChosen = file => {
@@ -80,79 +42,129 @@ const ImportTask = props => {
     });
   };
 
-  let position = 0;
-  const foundUser = [];
-  const foundUserData = [];
-
-  const newTask = (num, taskName, level, rowArr) => {
-    const indexFoundUser = foundUser.findIndex(user => user === rowArr[9]);
-    if (indexFoundUser >= 0) {
-      rowArr[9] = foundUserData[indexFoundUser];
-    } else {
-      const members = props.projectMembers.members;
-      foundUser.push(rowArr[9]);
-
-      for (let i = 0; i < members.length; i++) {
-        if (`${members[i].firstName} ${members[i].lastName}` === rowArr[9]) {
-          rowArr[9] =
-            rowArr[9] +
-            '|' +
-            members[i]._id +
-            '|' +
-            (members[i].profilePic || '/defaultprofilepic.png');
-          foundUserData.push(rowArr[9]);
-          break;
+  const handleFileRead = async rows => {
+    setImportStatus('importing');
+    const tmpList = [];
+    try {
+      rows.forEach((rowArr, i) => {
+        if (i >= 2) {
+          // level 1
+          if (rowArr[0] !== null && rowArr[1] !== null) {
+            tmpList.push(newTask(rowArr[0], rowArr[1], 1, rowArr, i));
+          }
+          // level 2
+          if (rowArr[2] !== null && rowArr[3] !== null) {
+            tmpList.push(newTask(rowArr[2], rowArr[3], 2, rowArr, i));
+          }
+          // level 3
+          if (rowArr[4] !== null && rowArr[5] !== null) {
+            tmpList.push(newTask(rowArr[4], rowArr[5], 3, rowArr, i));
+          }
+          // level 4
+          if (rowArr[6] !== null && rowArr[7] !== null) {
+            tmpList.push(newTask(rowArr[6], rowArr[7], 4, rowArr, i));
+          }
         }
-      }
+      });
+      setInstruction(ReactHtmlParser(rows[0][0] + '<br/> Rows: ' + rows.length))
+      setImportStatus('imported');
+      setTaskList(tmpList);
+    } catch (error) {
+      setImportStatus('importError');
+      setAlert(error.message);
     }
+  };
+
+  const newTask = (num, taskName, level, rowArr, i) => {
+    const nameCache = []; // check for duplicates
+    const resourcesNames = rowArr[9]?.split(',').map(name => {
+      name = name.trim();
+      const member = members.find(p => `${p.firstName} ${p.lastName}`.toLocaleLowerCase() === name.toLowerCase());
+
+      if (!member) throw new Error(`Error: ${name} is not in the project member list`);
+
+      if (nameCache.includes(name)) throw new Error(`Error: There are more than one [${name}] in resources on line ${i + 1}`);
+      nameCache.push(name);
+      
+      return name + '|' + member._id + '|' + (member.profilePic || '/defaultprofilepic.png');
+    }) || [];  // if cell under resources column is empty (rowArr[9] is undefined), then assign resources with []
 
     let newTask = {
-      taskName: `${taskName}`,
-      num: `${num.toString().slice(-1) === '.' ? num.toString().slice(0, -1) : num.toString()}`,
-      level: `${parseInt(level, 10)}`,
-      position: `${position}`,
-      wbsId: `${props.wbsId}`,
-      priority: `${rowArr[8]}`,
-      resourceName: rowArr[9],
-      isAssigned: `${rowArr[10]}` === 'yes' ? true : false,
-      status: `${rowArr[11]}`,
-      hoursBest: `${rowArr[12]}`,
-      hoursWorst: `${rowArr[13]}`,
-      hoursMost: `${rowArr[14]}`,
-      hoursLogged: '0',
-      estimatedHours: `${rowArr[15]}`,
+      taskName: taskName,
+      wbsId: String(props.wbsId),
+      num: String(num),
+      level: parseInt(level, 10),
+      priority: String(rowArr[8]),
+      resources: resourcesNames, 
+      isAssigned: String(rowArr[10]).toLowerCase() === 'yes' && resourcesNames.length !== 0, // if .xlsx file shows assigned but no resources, then make it false
+      status: String(rowArr[11]),
+      hoursBest: parseFloat(rowArr[12]),
+      hoursWorst: parseFloat(rowArr[13]),
+      hoursMost: parseFloat(rowArr[14]),
+      hoursLogged: 0, // was previously set as 0, hoursLogged is not in the xlsx file, not sure how to get this value
+      estimatedHours: parseFloat(rowArr[15]),
       startedDatetime: null,
       dueDatetime: null,
-      whyInfo: `${rowArr[18]}`,
-      intentInfo: `${rowArr[19]}`,
-      endstateInfo: `${rowArr[20]}`,
-      links: `${rowArr[21]}`,
-      category: `${rowArr[22]}`,
-      mother: null,
+      links: String(rowArr[21]),
+      category: String(rowArr[22]),
       parentId1: null,
       parentId2: null,
       parentId3: null,
+      mother: null,
+      position: 0,   // 'position' property only changes value in AddTaskModal, and its meaning is no longer useful in the new task system, however it is required in database schema
       isActive: true,
+      whyInfo: String(rowArr[18]),
+      intentInfo: String(rowArr[19]),
+      endstateInfo: String(rowArr[20]),
     };
 
     return newTask;
   };
 
+  const uploadTaskList = async () => {
+    setImportStatus('uploading');
+    await props.importTask(taskList, props.wbsId);
+    // await props.load();
+    setImportStatus('uploaded');
+  };
+
+  const reset = () => {
+    setImportStatus('choosing');
+    setInstruction(ReactHtmlParser(popupContent));
+    setTaskList([]);
+  }
+
+  const onCloseHandler = async () => {
+    props.setIsLoading(true);
+    await props.load();
+    props.setIsLoading(false);
+  }
+
+
+
+  /*
+  * -------------------------------- useEffects -------------------------------- 
+  */
+
+  useEffect(() => {
+    props.getPopupById(TASK_IMPORT_POPUP_ID)
+  }, [popupContent])
+
   return (
-    <React.Fragment>
-      <Modal isOpen={modal} toggle={toggle}>
+    <>
+      <Modal isOpen={modal} toggle={toggle} onClosed={onCloseHandler}>
         <ModalHeader toggle={toggle}>Import Tasks</ModalHeader>
         <ModalBody>
           <table className="table table-bordered">
             <tbody>
               <tr>
                 <td scope="col">
-                  <p id="instruction">
-                    {ReactHtmlParser(props.popupEditor.currPopup.popupContent) || ''}
-                  </p>
+                  <div id="instruction">
+                    {instruction}
+                  </div>
                 </td>
               </tr>
-              {isDone === 0 ? (
+              {importStatus === 'choosing' ? (
                 <tr>
                   <td scope="col">
                     <input
@@ -164,7 +176,7 @@ const ImportTask = props => {
                   </td>
                 </tr>
               ) : null}
-              {isDone === 1 ? (
+              {importStatus === 'importing' ? (
                 <tr>
                   <td>
                     <button className="btn btn-primary" type="button" disabled>
@@ -172,29 +184,50 @@ const ImportTask = props => {
                         className="spinner-grow spinner-grow-sm"
                         role="status"
                         aria-hidden="true"
-                      ></span>
-                      Loading...
+                      >
+                        Importing...
+                      </span>
                     </button>
                   </td>
                 </tr>
               ) : null}
-
-              {isDone === 2 ? (
+              {importStatus === 'importError' ? (
                 <tr>
                   <td>
-                    Are you sure you want to upload it? <br />{' '}
+                    <Alert color='danger'>{alert}</Alert>
+                    <input
+                      type="file"
+                      id="file"
+                      accept=".xlsx"
+                      onChange={e => handleFileChosen(e.target.files[0])}
+                    />
+                  </td>
+                </tr>
+              ) : null}
+
+              {importStatus === 'imported' ? (
+                <tr>
+                  <td>
+                    <Alert color='primary'>Are you sure you want to upload it? </Alert>
                     <button
                       className="btn btn-primary"
                       type="button"
-                      onClick={() => uploadTaskList()}
+                      onClick={uploadTaskList}
                     >
                       Upload
+                    </button>
+                    <button
+                      className="btn btn-secondary ml-2"
+                      type="button"
+                      onClick={reset}
+                    >
+                      Reset
                     </button>
                   </td>
                 </tr>
               ) : null}
 
-              {isDone === 3 ? (
+              {importStatus === 'uploading' ? (
                 <tr>
                   <td>
                     <button className="btn btn-primary" type="button" disabled>
@@ -202,9 +235,17 @@ const ImportTask = props => {
                         className="spinner-grow spinner-grow-sm"
                         role="status"
                         aria-hidden="true"
-                      ></span>
-                      Importing...
+                      >
+                        Uploading...
+                      </span>
                     </button>
+                  </td>
+                </tr>
+              ) : null}
+              {importStatus === 'uploaded' ? (
+                <tr>
+                  <td>
+                    <Alert color='primary'>File Uploaded!</Alert>
                   </td>
                 </tr>
               ) : null}
@@ -213,18 +254,20 @@ const ImportTask = props => {
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={toggle}>
-            {isDone === 4 ? 'Done' : 'Cancel'}
+            {importStatus === 'uploaded' ? 'Done' : 'Cancel'}
           </Button>
         </ModalFooter>
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle}>
-        <span onClick={() => props.getPopupById(TASK_IMPORT_POPUP_ID)}>Import Tasks</span>
+      <Button color="primary" className="controlBtn" size="sm" onClick={toggle}>
+        <span onClick={toggle}>Import Tasks</span>
       </Button>
-    </React.Fragment>
+    </>
   );
 };
 
-const mapStateToProps = state => {
-  return state;
-};
-export default connect(mapStateToProps, { importTask, fetchAllTasks, getPopupById })(ImportTask);
+const mapStateToProps = state => ({
+  popupContent: state.popupEditor.currPopup.popupContent,
+  members: state.projectMembers.members,
+  state: state,
+});
+export default connect(mapStateToProps, { importTask, getPopupById })(ImportTask);

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 
-import * as types from './../constants/ownerMessageConstants';
+import * as types from "../constants/ownerMessageConstants";
 
 export const getOwnerMessageAction = payload => {
   return {
