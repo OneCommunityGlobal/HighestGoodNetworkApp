@@ -11,8 +11,7 @@ import './style.css';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
 
-const MIN_NUM_TASKS_CAN_TRUNCATE = 5;
-const NUM_TASKS_SHOW_TRUNCATE = 3;
+const NUM_TASKS_SHOW_TRUNCATE = 6;
 
 const TeamMemberTask = React.memo(({
   user,
@@ -54,7 +53,7 @@ const TeamMemberTask = React.memo(({
     return [totalHoursRemaining, activeTasks];
   }, [user]);
 
-  const canTruncate = activeTasks.length >= MIN_NUM_TASKS_CAN_TRUNCATE;
+  const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
   const [isTruncated, setIsTruncated] = useState(canTruncate);
   const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
 
