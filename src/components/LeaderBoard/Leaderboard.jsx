@@ -99,7 +99,7 @@ const LeaderBoard = ({
           total hours they have completed.
           {/*The color and length of that bar
           changes based on what percentage of the total committed hours for the week have been
-          completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo, 
+          completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo,
           and Equal or More than 100%: Purple.*/}
         </li>
         <li>
@@ -243,7 +243,7 @@ const LeaderBoard = ({
               <td />
               <th scope="row">{organizationData.name}</th>
               <td className="align-middle">
-                <span title="Tangible time">{organizationData.tangibletime}</span>
+                <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
               <td className="align-middle">
                 <Progress
