@@ -52,7 +52,7 @@ const SummaryBar = props => {
   const authenticateUserPermission = authenticateUser
     ? authenticateUser.permissions?.frontPermissions
     : [];
-  
+
   const matchUser = asUser == authenticateUserId ? true : false;
 
   useEffect(()=>{setUserProfile(gsUserprofile)},[gsUserprofile])
@@ -145,14 +145,14 @@ const SummaryBar = props => {
       }else{
         isvalid = false;
       }
-       
+
     });
-    
+
     return isvalid ? data : null;
   }
 
   const openReport = () => {
-    const htmlStr = ''; 
+    const htmlStr = '';
     setBugReport(info => ({
       ...info,
       in: !info.in,
@@ -174,7 +174,7 @@ const SummaryBar = props => {
   const setnewfields = (fielddata, setfield) =>{
     setfield(prev =>{
       let newarr = prev;
-      if(fielddata.action === 'add') newarr.unshift(fielddata.newField); 
+      if(fielddata.action === 'add') newarr.unshift(fielddata.newField);
       if(fielddata.action === 'delete'){
         newarr = newarr.filter((item, index) => {
           return fielddata.field ?  fielddata.newField !== item : +fielddata.newField !== index + 1
@@ -187,7 +187,7 @@ const SummaryBar = props => {
   const editField = async (event) =>{
     event.preventDefault();
     const data = readFormData('newFieldForm');
-   
+
     if(data){
       if(extraFieldForSuggestionForm === 'suggestion'){
         data.suggestion = true;
@@ -209,7 +209,7 @@ const SummaryBar = props => {
   const sendUserSuggestion = async event =>{
     event.preventDefault();
     const data = readFormData('suggestionForm')
-    
+
     if(data){
       setShowSuggestionModal(prev => !prev);
       const res = await httpService.post(`${ApiEndpoint}/dashboard/makesuggestion/${userProfile._id}`, data).catch(e => {});
@@ -222,13 +222,13 @@ const SummaryBar = props => {
       toast.error('Please fill all fields with valid values.')
     }
   }
- 
+
   const openSuggestionModal = async () => {
     if(!showSuggestionModal){
       let res = await httpService.get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`).catch(e => {});
       if(res.status == 200){
           setSuggestionCategory(res.data.suggestion);
-          setInputField(res.data.field);  
+          setInputField(res.data.field);
       }
     }
     setShowSuggestionModal(prev => !prev)
@@ -243,17 +243,13 @@ const SummaryBar = props => {
   };
 
   const getWeeklySummary = user => {
-    let summaries = user.weeklySummaries;
+    const hasWeeklySummary = user?.weeklySummaries?.[0]?.summary;
+    if (!hasWeeklySummary) return '';
+
     const timeNow = new Date();
     const latestSummaryDueDate = new Date(summaries[0].dueDate);
 
-    if (
-      summaries &&
-      Array.isArray(summaries) &&
-      summaries[0] &&
-      summaries[0].summary &&
-      timeNow < latestSummaryDueDate
-    ) {
+    if (timeNow < latestSummaryDueDate) {
       return summaries[0].summary;
     } else {
       return '';
@@ -324,7 +320,7 @@ const SummaryBar = props => {
 
               <div
                 className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center"
-                
+
               >
                 <div className="align-items-center" id="timelogweeklychart">
                   <div className="text--black align-items-center med_text_summary">
@@ -354,7 +350,7 @@ const SummaryBar = props => {
                   ) ? (
                     <p
                       className={'summary-toggle large_text_summary text--black text-danger'}
-                      
+
                       onClick={props.toggleSubmitForm}
                     >
                       !
@@ -362,7 +358,7 @@ const SummaryBar = props => {
                   ) : (
                     <p
                       className={'summary-toggle large_text_summary text--black text-danger'}
-                      
+
                     >
                       !
                     </p>
@@ -388,7 +384,7 @@ const SummaryBar = props => {
 
               <div
                 className="col-8 border-black bg--white-smoke d-flex align-items-center"
-                
+
               >
                 <div className="m-auto p-2">
                   <font className="text--black med_text_summary align-middle" size="3">
@@ -484,7 +480,7 @@ const SummaryBar = props => {
                   </Button>
                 </FormGroup>
               }
-               
+
               {extraFieldForSuggestionForm &&
                  <Form onSubmit={editField} id="newFieldForm" style={{border:'1px solid gray', padding:'5px 10px', margin: '5px 10px'}}>
                     <FormGroup tag="fieldset" id='fieldsetinner'>
@@ -496,13 +492,13 @@ const SummaryBar = props => {
                       </FormGroup>
                       <FormGroup check>
                         <Label check>
-                           <Input onChange={()=> seteditType('delete')} type="radio" name="action" value={'delete'} required disabled={extraFieldForSuggestionForm === 'field' && inputFiled.length === 0}/> Delete 
+                           <Input onChange={()=> seteditType('delete')} type="radio" name="action" value={'delete'} required disabled={extraFieldForSuggestionForm === 'field' && inputFiled.length === 0}/> Delete
                         </Label>
                       </FormGroup>
                     </FormGroup>
                     {editType !== '' && <FormGroup>
                       <Label for="newField">{extraFieldForSuggestionForm === 'suggestion' ?
-                                             editType === 'delete' ? 'Delete category (Write the suggestion category number from the dropdown to delete it).' : 'Add category' : 
+                                             editType === 'delete' ? 'Delete category (Write the suggestion category number from the dropdown to delete it).' : 'Add category' :
                                              editType === 'add' ? 'Add Field' : 'Delete field (Copy the field name to delete it).'}
                       </Label>
                       <Input
@@ -511,7 +507,7 @@ const SummaryBar = props => {
                           id="newField"
                           placeholder={extraFieldForSuggestionForm === 'suggestion' ? editType === 'delete'  ? 'write the category number, like 1 or 2 etc': 'write the category name': 'write the field name'}
                           required
-                        /> 
+                        />
                     </FormGroup>}
                     <Button id='add' type="submit" color="success" size="md">
                        Submit
@@ -528,14 +524,14 @@ const SummaryBar = props => {
               <Form onSubmit={sendUserSuggestion} id="suggestionForm">
                 <FormGroup>
                   <Label for="suggestioncate">Please select a category of your suggestion:</Label>
-                  
+
                   <Input onChange={()=> setTakeInput(true)} type="select" name="suggestioncate" id="suggestioncate" defaultValue={""} required>
                     <option disabled  value=""  hidden>
                       {' '}
                       -- select an option --{' '}
                     </option>
                     {suggestionCategory.map((item,index) => {
-                        return <option key={index} value={item}>{`${index+1}. ${item}`}</option>             
+                        return <option key={index} value={item}>{`${index+1}. ${item}`}</option>
                     })}
                   </Input>
                 </FormGroup>
