@@ -34,7 +34,7 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
-import NewHeader from 'components/NewHeader';
+import NewHeader from 'components/NewHeader/Header';
 
 export default (
   <React.Fragment>
