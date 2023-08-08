@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
@@ -23,6 +23,8 @@ const TeamMemberTask = React.memo(({
   roles,
   userPermissions,
 }) => {
+  const ref = useRef(null);
+
   const [totalHoursRemaining, activeTasks] = useMemo(() => {
     let totalHoursRemaining = 0;
 
@@ -78,9 +80,20 @@ const TeamMemberTask = React.memo(({
   const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles, userPermissions);
   const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
+  const handleTruncateTasksButtonClick = () => {
+    if (!isTruncated) {
+      ref.current?.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        setIsTruncated(!isTruncated);
+      }, 0);
+    } else {
+      setIsTruncated(!isTruncated);
+    }
+  };
+
   return (
     <>
-      <tr className="table-row" key={user.personId}>
+      <tr ref={ref} className="table-row" key={user.personId}>
         {/* green if member has met committed hours for the week, red if not */}
         <td>
           <div className="committed-hours-circle">
@@ -237,7 +250,7 @@ const TeamMemberTask = React.memo(({
                 })}
                 {canTruncate && <tr key="truncate-button-row" className="task-break">
                   <td className="task-align">
-                    <button onClick={() => setIsTruncated(!isTruncated)}>
+                    <button onClick={handleTruncateTasksButtonClick}>
                       {isTruncated ? `Show All (${activeTasks.length}) Tasks` : 'Truncate Tasks'}
                     </button>
                   </td>
