@@ -77,7 +77,7 @@ class AddUserProfile extends Component {
         location: '',
         showphone: true,
         weeklySummaryOption: 'Required',
-        startDate: nextDay,
+        createdDate: nextDay,
       },
       formValid: {},
       formErrors: {
@@ -379,11 +379,11 @@ class AddUserProfile extends Component {
                     <FormGroup>
                     <div className="date-picker-item">                        
                       <DatePicker
-                        selected={this.state.userProfile.startDate}
+                        selected={this.state.userProfile.createdDate}
                         minDate={new Date(DATE_PICKER_MIN_DATE)}
                         onChange={date => this.setState({ userProfile: {
                           ...this.state.userProfile,
-                          startDate: date,
+                          createdDate: date,
                         }})}
                         className="form-control"
                       />
@@ -567,7 +567,7 @@ class AddUserProfile extends Component {
       timeZone,
       location,
       weeklySummaryOption,
-      startDate,
+      createdDate,
     } = that.state.userProfile;
 
     const userData = {
@@ -590,7 +590,7 @@ class AddUserProfile extends Component {
       timeZone: timeZone,
       location: location,
       allowsDuplicateName: allowsDuplicateName,
-      startDate: startDate,
+      createdDate: createdDate,
     };
 
     this.setState({ formSubmitted: true });
