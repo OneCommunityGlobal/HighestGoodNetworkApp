@@ -45,7 +45,7 @@ import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
-import { formattedDate } from 'utils/dateFormat';
+import { formattedDate } from 'utils/formattedDate';
 
 const doesUserHaveTaskWithWBS = (tasks, userId) => {
   for (let task of tasks) {
