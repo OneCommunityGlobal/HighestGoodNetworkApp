@@ -246,11 +246,12 @@ const SummaryBar = props => {
     const hasWeeklySummary = user?.weeklySummaries?.[0]?.summary;
     if (!hasWeeklySummary) return '';
 
+    const { dueDate, summary } = user.weeklySummaries[0];
     const timeNow = new Date();
-    const latestSummaryDueDate = new Date(summaries[0].dueDate);
+    const latestSummaryDueDate = new Date(dueDate);
 
     if (timeNow < latestSummaryDueDate) {
-      return summaries[0].summary;
+      return summary;
     } else {
       return '';
     }
