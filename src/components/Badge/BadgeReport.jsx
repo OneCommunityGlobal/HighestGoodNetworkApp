@@ -31,6 +31,7 @@ import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
 import './BadgeReport.css';
 import { boxStyle } from 'styles';
+import { formattedDate } from 'utils/formattedDate';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -339,9 +340,9 @@ const BadgeReport = props => {
                       </Card>
                     </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
-                    <td>
+                    <td id='badge_date_desktop'>
                       {typeof value.lastModified == 'string'
-                        ? value.lastModified.substring(0, 10)
+                        ? formattedDate(value.lastModified)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
                     <td>
@@ -490,9 +491,9 @@ const BadgeReport = props => {
                       </Card>
                     </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
-                    <td>
+                    <td id='badge_date_tablet'>
                       {typeof value.lastModified == 'string'
-                        ? value.lastModified.substring(0, 10)
+                        ? formattedDate(value.lastModified)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
 
