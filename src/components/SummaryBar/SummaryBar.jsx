@@ -243,19 +243,12 @@ const SummaryBar = props => {
   };
 
   const getWeeklySummary = user => {
-    const hasWeeklySummary = user?.weeklySummaries?.[0]?.summary;
-    if (!hasWeeklySummary) return '';
-
-    const { dueDate, summary } = user.weeklySummaries[0];
-    const timeNow = new Date();
-    const latestSummaryDueDate = new Date(dueDate);
-
-    if (timeNow < latestSummaryDueDate) {
-      return summary;
-    } else {
-      return '';
-    }
-  };
+  const latestSummary = user?.weeklySummaries?.[0];
+  if (latestSummary && new Date() < new Date(latestSummary.dueDate)) {
+    return latestSummary.summary;
+  }
+  return '';
+};
 
   const authenticateUserRole = authenticateUser ? authenticateUser.role : '';
   if (userProfile !== undefined && summaryBarData !== undefined) {
