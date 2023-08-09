@@ -13,9 +13,21 @@ import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { Input } from 'reactstrap';
 
+const textColors = {
+  Default: '#000000',
+  'Not Required': '#708090',
+  Team: '#FF00FF',
+  'Team Fabulous': '#FF00FF',
+  'Team Marigold': '#FF7F00',
+  'Team Luminous': '#C4AF18',
+  'Team Lush': '#00FF00',
+  'Team Sky': '#0000FF',
+  'Team Azure': '#4B0082',
+  'Team Amethyst': '#9400D3',
+};
+
 const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount }) => {
   const emails = [];
-  //const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -28,13 +40,6 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
   let emailString = [...new Set(emails)].toString();
   while (emailString.includes(',')) emailString = emailString.replace(',', '\n');
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
-
-  const alphabetize = summaries => {
-    const temp = [...summaries];
-    return temp.sort((a, b) =>
-      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
-    );
-  };
 
   const getMediaUrlLink = summary => {
     if (summary.mediaUrl) {
@@ -76,33 +81,22 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
       if (summaryText) {
+        const style = {
+          color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+        };
+
         summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
           .tz('America/Los_Angeles')
           .format('YYYY-MMM-DD');
         summaryDateText = `Summary Submitted On (${summaryDate}):`;
-        const style = {};
-        switch (summary?.weeklySummaryOption) {
-          case 'Team':
-            style.color = 'magenta';
-            break;
-          case 'Not Required':
-            style.color = 'green';
-            break;
-          case 'Required':
-            break;
-          default:
-            if (summary.weeklySummaryNotReq) {
-              style.color = 'green';
-            }
-            break;
-        }
+
         return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
       } else {
         if (
           summary?.weeklySummaryOption === 'Not Required' ||
           (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
         ) {
-          return <p style={{ color: 'green' }}>Not required for this user</p>;
+          return <p style={{ color: textColors['Not Required'] }}>Not required for this user</p>;
         } else {
           return <span style={{ color: 'red' }}>Not provided!</span>;
         }
@@ -120,6 +114,11 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
   };
 
   const getTotalValidWeeklySummaries = summary => {
+
+    const style = {
+      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    };
+    
     const [weeklySummariesCount, setWeeklySummariesCount] = useState(parseInt(summary.weeklySummariesCount));
     
     const handleOnChange = async (userProfileSummary, count) => {
@@ -139,11 +138,11 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     return (
       <div className='total-valid-wrapper'>
         {weeklySummariesCount === 8 ? 
-        <div className='total-valid-text' style={{ color: 'blue '}}>
+        <div className='total-valid-text' style={style}>
           <b>Total Valid Weekly Summaries:</b>{' '}
         </div> : 
         <div className='total-valid-text'>
-          <b style={summary.weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
+          <b style={style}>
             Total Valid Weekly Summaries:
           </b>{' '}
         </div>
@@ -167,7 +166,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
 
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
-    if (googleDocLink) {
+    if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
       window.open(googleDocLink.Link);
     } else {
       toast.error(
@@ -198,14 +197,15 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     }
   };
 
-  const BioSwitch = (userId, bioPosted, weeklySummaryOption) => {
+  const BioSwitch = (userId, bioPosted, summary) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
+    const style = {
+      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    };
     return (
       <div>
         <div className="bio-toggle">
-          <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
-            Bio announcement:
-          </b>
+          <b style={style}>Bio announcement:</b>
         </div>
         <div className="bio-toggle">
           <ToggleSwitch
@@ -221,10 +221,13 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     );
   };
 
-  const BioLabel = (userId, bioPosted, weeklySummaryOption) => {
+  const BioLabel = (userId, bioPosted, summary) => {
+    const style = {
+      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    };
     return (
       <div>
-        <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>Bio announcement:</b>
+        <b style={style}>Bio announcement:</b>
         {bioPosted === 'default'
           ? ' Not requested/posted'
           : bioPosted === 'posted'
@@ -238,10 +241,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
 
   return (
     <>
-      {alphabetize(summaries).map((summary, index) => {
+      {summaries.map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-        const googleDocLink = getGoogleDocLink(summary);
 
+        const googleDocLink = getGoogleDocLink(summary);
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
@@ -256,12 +259,15 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
                 <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
               </span>
-              {showStar(hoursLogged, summary.weeklycommittedHours) && (
+              <span>
+                <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+              </span>
+              {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
                 <i
                   className="fa fa-star"
-                  title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
+                  title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
                   style={{
-                    color: assignStarDotColors(hoursLogged, summary.weeklycommittedHours),
+                    color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
                     fontSize: '55px',
                     marginLeft: '10px',
                     verticalAlign: 'middle',
@@ -279,7 +285,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
                       fontSize: '10px',
                     }}
                   >
-                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}%
+                    +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
                   </span>
                 </i>
               )}
@@ -288,19 +294,30 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </div>
-            {bioFunction(summary._id, summary.bioPosted, summary.weeklySummaryOption)}
+            {bioFunction(summary._id, summary.bioPosted, summary)}
             {getTotalValidWeeklySummaries(summary)}
-            {hoursLogged >= summary.weeklycommittedHours && (
+            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
               <p>
-                <b style={summary.weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
-                  Hours logged:
+                <b
+                  style={{
+                    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                  }}
+                >
+                  Hours logged:{' '}
                 </b>
-                {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+                {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
               </p>
             )}
-            {hoursLogged < summary.weeklycommittedHours && (
-              <p style={{ color: 'red' }}>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+              <p>
+                <b
+                  style={{
+                    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                  }}
+                >
+                  Hours logged:
+                </b>{' '}
+                {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
               </p>
             )}
             {getWeeklySummaryMessage(summary)}

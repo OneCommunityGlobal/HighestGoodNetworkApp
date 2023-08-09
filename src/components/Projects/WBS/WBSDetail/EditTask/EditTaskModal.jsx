@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
@@ -15,107 +15,47 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
+import { toast } from 'react-toastify';
 
 const EditTaskModal = props => {
-  const [role] = useState(props.auth ? props.auth.user.role : null);
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
-  const { roles } = props.role;
-
-  const [members] = useState(props.projectMembers || props.projectMembers.members);
-  let foundedMembers = [];
-
-  // get this task by id
+  /*
+  * -------------------------------- variable declarations -------------------------------- 
+  */
+  // props from store
+  const { role, userPermissions, roles, allMembers, error } = props;
+  
+  // states from hooks
   const [thisTask, setThisTask] = useState();
   const [oldTask, setOldTask] = useState();
-  useEffect(() => {
-    const fetchTaskData = async () => {
-      try {
-        const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
-        setThisTask(res?.data || {});
-        setOldTask(res?.data || {});
-        setCategory(res.data.category);
-        setAssigned(res.data.isAssigned);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchTaskData();
-  }, [props.taskId]);
-
-  // modal
   const [modal, setModal] = useState(false);
-  const toggle = () => setModal(!modal);
-
-  // task name
   const [taskName, setTaskName] = useState(thisTask?.taskName);
-
-  // priority
   const [priority, setPriority] = useState(thisTask?.priority);
-
-  // members name
-  const [memberName, setMemberName] = useState('');
-  // resources
   const [resourceItems, setResourceItems] = useState(thisTask?.resources);
-
-  // assigned
   const [assigned, setAssigned] = useState(false);
-
-  // status
   const [status, setStatus] = useState('false');
-
-  // hour best
   const [hoursBest, setHoursBest] = useState(thisTask?.hoursBest);
-  // hour worst
   const [hoursWorst, setHoursWorst] = useState(thisTask?.hoursWorst);
-  // hour most
   const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
-  // hour estimate
   const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
-  //deadline count
   const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
-  // hours warning
   const [hoursWarning, setHoursWarning] = useState(false);
-
-  // links
+  const [link, setLink] = useState('');
   const [links, setLinks] = useState(thisTask?.links);
-
-  // Category
   const [category, setCategory] = useState(thisTask?.category);
-
-  // Why info (Why is this task important)
   const [whyInfo, setWhyInfo] = useState(thisTask?.whyInfo);
-  // Intent info (Design intent)
   const [intentInfo, setIntentInfo] = useState(thisTask?.intentInfo);
-  // Endstate info (what it should look like when done)
   const [endstateInfo, setEndstateInfo] = useState(thisTask?.endstateInfo);
-
-  // started date
   const [startedDate, setStartedDate] = useState(thisTask?.startedDatetime);
-  // due date
   const [dueDate, setDueDate] = useState(thisTask?.dueDatetime);
-  // date warning
   const [dateWarning, setDateWarning] = useState(false);
-
-  // associate states with thisTask state
-  useEffect(() => {
-    setTaskName(thisTask?.taskName);
-    setPriority(thisTask?.priority);
-    setResourceItems(thisTask?.resources);
-    setAssigned(thisTask?.isAssigned || false);
-    setStatus(thisTask?.status || false);
-    setHoursBest(thisTask?.hoursBest);
-    setHoursWorst(thisTask?.hoursWorst);
-    setHoursMost(thisTask?.hoursMost);
-    setHoursEstimate(thisTask?.estimatedHours);
-    setDeadlineCount(thisTask?.deadlineCount);
-    setLinks(thisTask?.links);
-    setCategory(thisTask?.category);
-    setWhyInfo(thisTask?.whyInfo);
-    setIntentInfo(thisTask?.intentInfo);
-    setEndstateInfo(thisTask?.endstateInfo);
-    setStartedDate(thisTask?.startedDatetime);
-    setDueDate(thisTask?.dueDatetime);
-  }, [thisTask]);
+  
+  const res = [...(resourceItems ? resourceItems : [])];
+  const FORMAT = 'MM/dd/yy';
+  
+  /*
+  * -------------------------------- functions -------------------------------- 
+  */
+  const toggle = () => setModal(!modal);
 
   const removeResource = userID => {
     const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
@@ -125,7 +65,6 @@ const EditTaskModal = props => {
     ]);
   };
 
-  const res = [...(resourceItems ? resourceItems : [])];
   const addResources = (userID, first, last, profilePic) => {
     res.push({
       userID,
@@ -160,16 +99,7 @@ const EditTaskModal = props => {
     }
   };
 
-  // helpers for add/remove links
-  const [link, setLink] = useState('');
-  const addLink = () => {
-    setLinks([...links, link]);
-  };
-  const removeLink = index => {
-    setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
-  };
-
-  // helpers for change start/end date
+   // helpers for change start/end date
   const changeDateStart = startDate => {
     setStartedDate(startDate);
     if (dueDate) {
@@ -191,7 +121,6 @@ const EditTaskModal = props => {
     }
   };
   // helper for date picker
-  const FORMAT = 'MM/dd/yy';
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   const parseDate = (str, format, locale) => {
     const parsed = dateFnsParse(str, format, new Date(), { locale });
@@ -199,6 +128,15 @@ const EditTaskModal = props => {
       return parsed;
     }
     return undefined;
+  };
+
+   // helpers for add/remove links
+   const addLink = () => {
+    setLinks([...links, link]);
+    setLink('');
+  };
+  const removeLink = index => {
+    setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
 
   // helper for updating task
@@ -228,31 +166,107 @@ const EditTaskModal = props => {
       endstateInfo,
       category,
     };
-
+    props.setIsLoading(true);
     await props.updateTask(
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
-      oldTask
+      oldTask,
     );
-    await props.fetchAllTasks(props.wbsId);
+    await props.load();
+    props.setIsLoading(false);
 
-    if (props.tasks.error === 'none') {
-      window.location.reload();
+    if (error === 'none' || Object.keys(error).length === 0) {
+      toggle();
+    } else {
+      toast.error('Update failed! Error is ' + props.tasks.error);
     }
   };
 
-  const handleAssign = value => {
-    setAssigned(value);
-  };
+  /*
+  * -------------------------------- useEffects -------------------------------- 
+  */
 
-  const handleStatus = value => {
-    setStatus(value);
-  };
+  useEffect(() => {
+    const fetchTaskData = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
+        setThisTask(res?.data || {});
+        setCategory(res.data.category);
+        setAssigned(res.data.isAssigned);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTaskData();
+  }, []);
+
+  // from dev
+  useEffect(() => {
+    const fetchTaskData = async () => {
+      try {
+        const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
+        setThisTask(res?.data || {});
+        setOldTask(res?.data || {});
+        setCategory(res.data.category);
+        setAssigned(res.data.isAssigned);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTaskData();
+  }, [props.taskId]);
+
+  // associate states with thisTask state
+  useEffect(() => {
+    setTaskName(thisTask?.taskName);
+    setPriority(thisTask?.priority);
+    setResourceItems(thisTask?.resources);
+    setAssigned(thisTask?.isAssigned || false);
+    setStatus(thisTask?.status || false);
+    setHoursBest(thisTask?.hoursBest);
+    setHoursWorst(thisTask?.hoursWorst);
+    setHoursMost(thisTask?.hoursMost);
+    setHoursEstimate(thisTask?.estimatedHours);
+    setLinks(thisTask?.links);
+    setCategory(thisTask?.category);
+    setWhyInfo(thisTask?.whyInfo);
+    setIntentInfo(thisTask?.intentInfo);
+    setEndstateInfo(thisTask?.endstateInfo);
+    setStartedDate(thisTask?.startedDatetime);
+    setDueDate(thisTask?.dueDatetime);
+  }, [thisTask]);
+
+  // from dev
+  useEffect(() => {
+    setTaskName(thisTask?.taskName);
+    setPriority(thisTask?.priority);
+    setResourceItems(thisTask?.resources);
+    setAssigned(thisTask?.isAssigned || false);
+    setStatus(thisTask?.status || false);
+    setHoursBest(thisTask?.hoursBest);
+    setHoursWorst(thisTask?.hoursWorst);
+    setHoursMost(thisTask?.hoursMost);
+    setHoursEstimate(thisTask?.estimatedHours);
+    setDeadlineCount(thisTask?.deadlineCount);
+    setLinks(thisTask?.links);
+    setCategory(thisTask?.category);
+    setWhyInfo(thisTask?.whyInfo);
+    setIntentInfo(thisTask?.intentInfo);
+    setEndstateInfo(thisTask?.endstateInfo);
+    setStartedDate(thisTask?.startedDatetime);
+    setDueDate(thisTask?.dueDatetime);
+  }, [thisTask]);
+  
+  
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  }, [links]);
 
   return (
     <div className="controlBtn">
       <Modal isOpen={modal} toggle={toggle}>
+        <ReactTooltip delayShow={300}/>
         <ModalHeader toggle={toggle}>
           {hasPermission(role, 'editTask', roles, userPermissions)
             ? 'Edit'
@@ -261,7 +275,6 @@ const EditTaskModal = props => {
             : 'View'}
         </ModalHeader>
         <ModalBody>
-          <ReactTooltip />
           <table
             className={`table table-bordered responsive
             ${
@@ -310,7 +323,7 @@ const EditTaskModal = props => {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={members.members}
+                      members={allMembers}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -329,7 +342,7 @@ const EditTaskModal = props => {
                         id="true"
                         name="Assigned"
                         value="true"
-                        onChange={e => handleAssign(true)}
+                        onChange={e => setAssigned(true)}
                         checked={assigned}
                       />
                       <label className="form-check-label" htmlFor="true">
@@ -343,7 +356,7 @@ const EditTaskModal = props => {
                         id="false"
                         name="Assigned"
                         value="false"
-                        onChange={e => handleAssign(false)}
+                        onChange={e => setAssigned(false)}
                         checked={!assigned}
                       />
                       <label className="form-check-label" htmlFor="false">
@@ -357,18 +370,18 @@ const EditTaskModal = props => {
                 <td scope="col">Status</td>
                 <td scope="col">
                   <div className="flex-row  d-inline align-items-center">
-                    <div className="form-check form-check-inline">
+                  <div className="form-check form-check-inline">
                       <input
                         className="form-check-input"
                         type="radio"
-                        id="started"
-                        name="started"
-                        value="true"
-                        onChange={e => handleStatus('true')}
-                        checked={status === 'true' ? true : false}
+                        id="active"
+                        name="status"
+                        value="Active"
+                        checked={status === 'Active' || status === 'Started'}
+                        onChange={(e) => setStatus(e.target.value)}
                       />
-                      <label className="form-check-label" htmlFor="started">
-                        Started
+                      <label className="form-check-label" htmlFor="active">
+                        Active
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -376,13 +389,41 @@ const EditTaskModal = props => {
                         className="form-check-input"
                         type="radio"
                         id="notStarted"
-                        name="started"
-                        value="false"
-                        onChange={e => handleStatus('false')}
-                        checked={status === 'false' ? true : false}
+                        name="status"
+                        value="Not Started"
+                        checked={status === 'Not Started'}
+                        onChange={(e) => setStatus(e.target.value)}
                       />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="paused"
+                        name="status"
+                        value="Paused"
+                        checked={status === 'Paused'}
+                        onChange={(e) => setStatus(e.target.value)}
+                      />
+                      <label className="form-check-label" htmlFor="paused">
+                        Paused
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="complete"
+                        name="status"
+                        value="Complete"
+                        checked={status === 'Complete'}
+                        onChange={(e) => setStatus(e.target.value)}
+                      />
+                      <label className="form-check-label" htmlFor="complete">
+                        Complete
                       </label>
                     </div>
                   </div>
@@ -469,7 +510,7 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
-                  <div>
+                  <div >
                     <input
                       type="text"
                       aria-label="Search user"
@@ -477,6 +518,7 @@ const EditTaskModal = props => {
                       className="task-resouces-input"
                       data-tip="Add a link"
                       onChange={e => setLink(e.target.value)}
+                      value={link}
                     />
                     <button
                       className="task-resouces-btn"
@@ -490,13 +532,11 @@ const EditTaskModal = props => {
                   <div>
                     {links?.map((link, i) =>
                       link.length > 1 ? (
-                        <div key={i} className="task-link">
-                          <a href={link} target="_blank" rel="noreferrer">
-                            {link.slice(-10)}
+                        <div key={i}>
+                          <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)} ></i>
+                          <a href={link} className="task-link" target="_blank" data-tip={link} rel="noreferrer">
+                            {link}
                           </a>
-                          <span className="remove-link" onClick={() => removeLink(i)}>
-                            x
-                          </span>
                         </div>
                       ) : null,
                     )}
@@ -653,8 +693,11 @@ const EditTaskModal = props => {
   );
 };
 
-const mapStateToProps = state => state;
-export default connect(mapStateToProps, {
-  updateTask,
-  fetchAllTasks,
-})(EditTaskModal);
+const mapStateToProps = state => ({
+  role: state.auth ? state.auth.user.role : null,
+  userPermissions: state.auth.user?.permissions?.frontPermissions,
+  roles: state.role.roles,
+  allMembers: state.projectMembers.members,
+  error: state.tasks.error,
+});
+export default connect(mapStateToProps, { updateTask })(EditTaskModal);

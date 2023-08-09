@@ -4,6 +4,7 @@ import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle } from 'styles';
 
@@ -82,6 +83,30 @@ const WeeklySummaryOptions = props => {
       </p>
     );
   }
+
+  const summaryOptions = [
+    { value: 'Required', text: 'Required' },
+    { value: 'Not Required', text: 'Not Required (Slate Gray)' },
+    { value: 'Team Fabulous', text: 'Team Fabulous (Fuschia)' },
+    { value: 'Team Marigold', text: 'Team Marigold (Orange)' },
+    { value: 'Team Luminous', text: 'Team Luminous (Yellow)' },
+    { value: 'Team Lush', text: 'Team Lush (Green)' },
+    { value: 'Team Sky', text: 'Team Sky (Blue)' },
+    { value: 'Team Azure', text: 'Team Azure (Indigo)' },
+    { value: 'Team Amethyst', text: 'Team Amethyst (Purple)' },
+  ];
+
+  const handleOnChange = e => {
+    let temp = { ...props.userProfile };
+    temp.weeklySummaryOption = e.target.value;
+    if (e.target.value === 'Not Required') {
+      temp.weeklySummaryNotReq = true;
+    } else {
+      temp.weeklySummaryNotReq = false;
+    }
+    props.setUserProfile(temp);
+  };
+
   return (
     <FormGroup>
       <select
@@ -93,13 +118,13 @@ const WeeklySummaryOptions = props => {
           props.userProfile.weeklySummaryOption ??
           (props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required')
         }
-        onChange={e => {
-          props.setUserProfile({ ...props.userProfile, weeklySummaryOption: e.target.value });
-        }}
+        onChange={handleOnChange}
       >
-        <option value="Required">Required</option>
-        <option value="Not Required">Not Required</option>
-        <option value="Team">Team</option>
+        {summaryOptions.map(({ value, text }) => (
+          <option key={value} value={value}>
+            {text}
+          </option>
+        ))}
       </select>
     </FormGroup>
   );
@@ -202,6 +227,7 @@ const ViewTab = props => {
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
+  const [historyModal, setHistoryModal] = useState(false);
 
   const handleStartDates = async startDate => {
     props.onStartDate(startDate);
@@ -235,6 +261,10 @@ const ViewTab = props => {
   const sumOfCategoryHours = () => {
     const hours = Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0);
     setTotalTangibleHours(hours.toFixed(2));
+  };
+
+  const toggleHistoryModal = () => {
+    setHistoryModal(!historyModal);
   };
 
   useEffect(() => {
@@ -348,13 +378,22 @@ const ViewTab = props => {
         <Col md="6">
           <Label className="hours-label">Weekly Committed Hours </Label>
         </Col>
-        <Col md="6">
+        <Col md="6" className="d-flex align-items-center">
           <WeeklyCommittedHours
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
           />
+          <HistoryModal
+            isOpen={historyModal}
+            toggle={toggleHistoryModal}
+            userName={userProfile.firstName}
+            userHistory={userProfile.weeklycommittedHoursHistory}
+          />
+          <span className="history-icon">
+            <i className="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal}></i>
+          </span>
         </Col>
       </Row>
       {userProfile.role === 'Core Team' && (

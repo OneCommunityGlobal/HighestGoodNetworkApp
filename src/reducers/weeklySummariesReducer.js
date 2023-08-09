@@ -1,7 +1,7 @@
 import * as actions from '../constants/weeklySummaries';
 
 const initialState = {
-  summaries: [],
+  summaries: {},
   loading: false,
   fetchError: null,
 };
