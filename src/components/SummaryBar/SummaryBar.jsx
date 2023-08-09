@@ -243,17 +243,9 @@ const SummaryBar = props => {
   };
 
   const getWeeklySummary = user => {
-    const hasWeeklySummary = user?.weeklySummaries?.[0]?.summary;
-    if (!hasWeeklySummary) return '';
-
-    const timeNow = new Date();
-    const latestSummaryDueDate = new Date(summaries[0].dueDate);
-
-    if (timeNow < latestSummaryDueDate) {
-      return summaries[0].summary;
-    } else {
-      return '';
-    }
+    const latestSummary = user?.weeklySummaries?.[0];
+    return latestSummary && new Date() < new Date(latestSummary.dueDate)
+      ? latestSummary.summary : '';
   };
 
   const authenticateUserRole = authenticateUser ? authenticateUser.role : '';
