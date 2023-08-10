@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
@@ -8,7 +8,7 @@ import { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
-import { updateTask, fetchAllTasks } from '../../../../../actions/task';
+import { updateTask } from '../../../../../actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
@@ -19,11 +19,11 @@ import { toast } from 'react-toastify';
 
 const EditTaskModal = props => {
   /*
-  * -------------------------------- variable declarations -------------------------------- 
+  * -------------------------------- variable declarations --------------------------------
   */
   // props from store
   const { role, userPermissions, roles, allMembers, error } = props;
-  
+
   // states from hooks
   const [thisTask, setThisTask] = useState();
   const [oldTask, setOldTask] = useState();
@@ -48,12 +48,12 @@ const EditTaskModal = props => {
   const [startedDate, setStartedDate] = useState(thisTask?.startedDatetime);
   const [dueDate, setDueDate] = useState(thisTask?.dueDatetime);
   const [dateWarning, setDateWarning] = useState(false);
-  
+
   const res = [...(resourceItems ? resourceItems : [])];
   const FORMAT = 'MM/dd/yy';
-  
+
   /*
-  * -------------------------------- functions -------------------------------- 
+  * -------------------------------- functions --------------------------------
   */
   const toggle = () => setModal(!modal);
 
@@ -166,25 +166,24 @@ const EditTaskModal = props => {
       endstateInfo,
       category,
     };
-    props.setIsLoading(true);
     await props.updateTask(
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
       oldTask,
     );
-    await props.load();
-    props.setIsLoading(false);
+    props.setTask(updatedTask)
 
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
+      toast.success('Update Success!')
     } else {
       toast.error('Update failed! Error is ' + props.tasks.error);
     }
   };
 
   /*
-  * -------------------------------- useEffects -------------------------------- 
+  * -------------------------------- useEffects --------------------------------
   */
 
   useEffect(() => {
@@ -257,8 +256,8 @@ const EditTaskModal = props => {
     setStartedDate(thisTask?.startedDatetime);
     setDueDate(thisTask?.dueDatetime);
   }, [thisTask]);
-  
-  
+
+
   useEffect(() => {
     ReactTooltip.rebuild();
   }, [links]);
