@@ -99,9 +99,14 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       // Update the user's profile on the server.
       response = await axios.put(url, userProfileUpdated);
       return response.status;
-    } catch (error) {
-      return error.response.status;
-    }
+    } 
+    catch (error) {
+  if (error.response) {
+    return error.response.status;
+  } else {
+    return 500; 
+  }
+}
   };
 };
 
