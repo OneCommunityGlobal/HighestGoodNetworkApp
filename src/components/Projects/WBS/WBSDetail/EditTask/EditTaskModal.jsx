@@ -148,6 +148,7 @@ const EditTaskModal = props => {
     }
 
     const updatedTask = {
+      ...oldTask,
       taskName,
       priority,
       resources: resourceItems,
