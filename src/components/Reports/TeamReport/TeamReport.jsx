@@ -286,7 +286,7 @@ export function TeamReport({ match }) {
       renderProfile={() => (
         <ReportPage.ReportHeader isActive={team.isActive} avatar={<FiUsers />} name={team.teamName}>
           <div>
-            <h5>{moment(team.createdDatetime).format('YYYY-MM-DD')}</h5>
+            <h5>{moment(team.createdDatetime).format('MMM-DD-YY')}</h5>
             <p>Created Date</p>
           </div>
         </ReportPage.ReportHeader>
