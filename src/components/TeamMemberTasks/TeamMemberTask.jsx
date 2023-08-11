@@ -29,28 +29,19 @@ const TeamMemberTask = React.memo(({
     let totalHoursRemaining = 0;
 
     if (user.tasks) {
-      user.tasks = user.tasks.map(task => {
-        task.hoursLogged = task.hoursLogged ? task.hoursLogged : 0;
-        task.estimatedHours = task.estimatedHours ? task.estimatedHours : 0;
-        return task;
-      });
+      totalHoursRemaining = user.tasks.reduce((total, task) => {
+        task.hoursLogged = task.hoursLogged || 0;
+        task.estimatedHours = task.estimatedHours || 0;
 
-      for (const task of user.tasks) {
         if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-          totalHoursRemaining = totalHoursRemaining + (task.estimatedHours - task.hoursLogged);
+          return total + (task.estimatedHours - task.hoursLogged);
         }
-      }
+        return total;
+      }, 0);
     }
 
-    const activeTasks = user.tasks.filter((task) => {
-      let isActiveTaskForUser = true;
-      if (task?.resources) {
-        isActiveTaskForUser = !task.resources?.find(
-          resource => resource.userID === user.personId,
-        ).completedTask;
-      }
-      return task.wbsId && task.projectId && isActiveTaskForUser;
-    });
+    const activeTasks = user.tasks.filter((task) => task.wbsId && task.projectId
+      && !task.resources?.some(resource => resource.userID === user.personId && resource.completedTask));
 
     return [totalHoursRemaining, activeTasks];
   }, [user]);
