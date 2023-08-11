@@ -102,10 +102,10 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       return updateResponse.status;
     } 
     catch (error) {
-  if (error.updateResponse) {
-    return error.updateResponse.status;
+  if (error.response) {
+    return error.response.status;
   } else {
-    return 500; 
+    return 404; 
   }
 }
   };
