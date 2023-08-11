@@ -5,7 +5,6 @@ import { getcolor, getprogress, getProgressValue } from '../../utils/effortColor
 import { get, round, maxBy } from 'lodash';
 import { getMouseoverText } from '../../actions/mouseoverTextAction';
 
-
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
   let user = get(state, 'userProfile', []);
@@ -54,9 +53,6 @@ const mapStateToProps = state => {
   orgData.barcolor = getcolor(orgTangibleColorTime);
   orgData.barprogress = getprogress(orgTangibleColorTime);
 
-
-
-
   return {
     isAuthenticated: get(state, 'auth.isAuthenticated', false),
     leaderBoardData: leaderBoardData,
@@ -64,10 +60,11 @@ const mapStateToProps = state => {
     organizationData: orgData,
     timeEntries: get(state, 'timeEntries', {}),
     isVisible: user.role === 'Volunteer' || user.isVisible,
+    roles: get(state, 'role', {}).roles,
     totalTimeMouseoverText: state?.mouseoverText?.[0]?.mouseoverText,
     totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
   };
 };
-
-
-export default connect(mapStateToProps, { getLeaderboardData, getOrgData, getMouseoverText })(Leaderboard);
+export default connect(mapStateToProps, { getLeaderboardData, getOrgData, getMouseoverText })(
+  Leaderboard,
+);
