@@ -386,6 +386,7 @@ export class WeeklySummary extends Component {
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
+
   handleCheckboxChange = event => {
     event.persist();
     const { name, checked } = event.target;
@@ -399,7 +400,7 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleChangeInSummary = () => {
+  handleChangeInSummary = async() => {
     // Extract state variables for ease of access
     let {
       submittedDate,
@@ -472,6 +473,7 @@ export class WeeklySummary extends Component {
       modifiedWeeklySummaries,
     );
   };
+
   // Updates user profile and weekly summaries
   updateUserData = async userId => {
     await this.props.getUserProfile(userId);
@@ -504,13 +506,9 @@ export class WeeklySummary extends Component {
     if (errors) this.state.moveConfirm = false;
     if (errors) return;
 
-    const updateWeeklySummaries = this.handleChangeInSummary();
-    let saveResult;
-    if (updateWeeklySummaries) {
-      saveResult = await updateWeeklySummaries();
-    }
+    const result = await this.handleChangeInSummary();
 
-    if (saveResult === 200) {
+    if (result === 200) {
       await this.handleSaveSuccess(toastIdOnSave);
       if (closeAfterSave) {
         this.handleClose();
@@ -907,7 +905,7 @@ const mapStateToProps = ({ auth, weeklySummaries }) => ({
 const mapDispatchToProps = dispatch => {
   return {
     getWeeklySummaries: getWeeklySummaries,
-    updateWeeklySummaries: updateWeeklySummaries,
+    updateWeeklySummaries:(userId,weeklySummary)=> updateWeeklySummaries(userId,weeklySummary)(dispatch),
     getWeeklySummaries: userId => getWeeklySummaries(userId)(dispatch),
     getUserProfile: userId => getUserProfile(userId)(dispatch),
   };

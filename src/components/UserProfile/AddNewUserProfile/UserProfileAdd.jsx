@@ -96,7 +96,6 @@ class AddUserProfile extends Component {
     this.onCreateNewUser();
   }
 
-  
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
@@ -270,7 +269,7 @@ class AddUserProfile extends Component {
                     <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
-                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile}/>
+                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
                   </Col>
                 </Row>
                 <Row className="user-add-row">
@@ -543,7 +542,7 @@ class AddUserProfile extends Component {
     } = that.state.userProfile;
 
     const userData = {
-      password: process.env.REACT_APP_DEF_PWD,
+      password: '123Welcome!',
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -570,7 +569,7 @@ class AddUserProfile extends Component {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
     if (dropboxDoc) {
-      userData.adminLinks.push({ Name: 'Dropbox Link', Link: dropboxDoc });
+      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });

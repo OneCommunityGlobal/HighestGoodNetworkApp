@@ -9,18 +9,20 @@ import { ENDPOINTS } from '../utils/URL';
  * number === 2 week before last
  */
 export const getTimeEntriesForWeek = (userId, offset) => {
-  //TODO: Environment variable for server timezone
+  // TODO: Environment variable for server timezone
 
   const fromDate = moment()
     .tz('America/Los_Angeles')
     .startOf('week')
     .subtract(offset, 'weeks')
+    .add(1, 'days') // Adjust the start of the week to Sunday
     .format('YYYY-MM-DD');
 
   const toDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
     .subtract(offset, 'weeks')
+    .add(1, 'days') // Adjust the end of the week to Saturday
     .format('YYYY-MM-DD');
 
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
@@ -28,7 +30,7 @@ export const getTimeEntriesForWeek = (userId, offset) => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
-        //logout error
+        // logout error
         loggedOut = true;
       }
     });
@@ -39,17 +41,26 @@ export const getTimeEntriesForWeek = (userId, offset) => {
 };
 
 export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
+  toDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
-        //logout error
+        // logout error
         loggedOut = true;
       }
     });
     if (!loggedOut || !res || !res.data) {
-      await dispatch(setTimeEntriesForPeriod(res.data));
+      const filteredEntries = res.data.filter(entry => {
+        const entryDate = moment(entry.dateOfWork); // Convert the entry date to a moment object
+        return entryDate.isBetween(fromDate, toDate, 'day','[]'); // Check if the entry date is within the range (inclusive)
+      });
+      filteredEntries.sort((a, b) => {
+        return moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf();
+      });
+
+      await dispatch(setTimeEntriesForPeriod(filteredEntries));
     }
   };
 };

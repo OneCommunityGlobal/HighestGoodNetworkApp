@@ -111,6 +111,10 @@ function RolePermissions(props) {
       'Gives the user permission to submit weekly summary for another user',
     'Change the Bio Announcement Status':
       'GIves the user permission to change the annoucement status',
+    'See Summary Indicator' : 
+      'Gives the user permission to see summary indicator on leaderboard.',
+    'See Visibility Icon' : 
+      'Gives the user permission to see visibility icon on leaderboard.',
   };
 
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));

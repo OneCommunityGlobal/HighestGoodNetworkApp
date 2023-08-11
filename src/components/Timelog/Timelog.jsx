@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Container,
   Row,
@@ -46,7 +46,9 @@ import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 
-const doesUserHaveTaskWithWBS = (tasks, userId) => {
+const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
+  if (!Array.isArray(tasks)) return false;
+
   for (let task of tasks) {
     for (let resource of task.resources) {
       if (resource.userID == userId && resource.completedTask == false) {
@@ -341,9 +343,9 @@ const Timelog = props => {
   };
   const [state, setState] = useState(initialState);
 
-  const handleUpdateTask = () => {
+  const handleUpdateTask = useCallback(() => {
     setIsTaskUpdated(!isTaskUpdated);
-  };
+  }, []);
 
   useEffect(() => {
     // Does not run again (except once in development): load data
@@ -733,8 +735,6 @@ const Timelog = props => {
                       <TeamMemberTasks
                         asUser={props.asUser}
                         handleUpdateTask={handleUpdateTask}
-                        roles={role.roles}
-                        userPermissions={userPermissions}
                       />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
