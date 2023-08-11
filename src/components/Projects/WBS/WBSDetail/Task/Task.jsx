@@ -30,6 +30,7 @@ import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { formattedDate } from 'utils/formattedDate';
 
 function Task(props) {
   const [role] = useState(props.state ? props.state.auth.user.role : null);
@@ -404,14 +405,13 @@ function Task(props) {
             </td>
             <td className="desktop-view">
               {startedDate.getFullYear() !== 1969
-                ? `${startedDate.getMonth() +
-                    1}/${startedDate.getDate()}/${startedDate.getFullYear()}`
+                ? formattedDate(startedDate)
                 : null}
               <br />
             </td>
             <td className="desktop-view">
               {dueDate.getFullYear() !== 1969
-                ? `${dueDate.getMonth() + 1}/${dueDate.getDate()}/${dueDate.getFullYear()}`
+                ? formattedDate(dueDate)
                 : null}
             </td>
             <td className="desktop-view">
