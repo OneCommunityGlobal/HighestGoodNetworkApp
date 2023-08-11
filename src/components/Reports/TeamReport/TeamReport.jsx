@@ -306,7 +306,7 @@ export function TeamReport({ match }) {
 
           <div className="update-date">
             Last updated:
-            {moment(team.modifiedDatetime).format('YYYY-MM-DD')}
+            {moment(team.modifiedDatetime).format('MMM-DD-YY')}
           </div>
         </div>
       </ReportPage.ReportBlock>
