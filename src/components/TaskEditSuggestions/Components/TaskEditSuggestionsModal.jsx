@@ -30,7 +30,7 @@ export const TaskEditSuggestionsModal = ({
     updateTask(
       taskEditSuggestion.taskId,
       taskEditSuggestion.newTask,
-      dispatch(hasPermission('editTask')),
+      dispatch(hasPermission('updateTask')),
     )(dispatch, getState);
     dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
     handleToggleTaskEditSuggestionModal();

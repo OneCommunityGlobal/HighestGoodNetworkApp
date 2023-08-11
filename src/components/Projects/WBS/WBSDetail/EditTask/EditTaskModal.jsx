@@ -229,7 +229,7 @@ const EditTaskModal = props => {
       category,
     };
 
-    await props.updateTask(props.taskId, updatedTask, hasPermission('editTask'), oldTask);
+    await props.updateTask(props.taskId, updatedTask, canUpdateTask, oldTask);
     await props.fetchAllTasks(props.wbsId);
 
     if (props.tasks.error === 'none' || Object.keys(props.tasks.error).length === 0) {
