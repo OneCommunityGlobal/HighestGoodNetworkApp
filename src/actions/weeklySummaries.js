@@ -82,12 +82,13 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
 
       // update the changes on weekly summaries link into admin links
-      for (const link of adminLinks) {
-        if (link.Name === 'Media Folder') {
-          link.Link = mediaUrl;
-          break; 
-        }
-      }
+      // This piece of code is breaking the submission of weekly summaries in the pr 1033 when merged.
+      // for (const link of adminLinks) {
+      //   if (link.Name === 'Media Folder') {
+      //     link.Link = mediaUrl;
+      //     break; 
+      //   }
+      // }
 
       const userProfileUpdated = {
         ...userProfile,
