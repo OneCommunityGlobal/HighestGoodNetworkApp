@@ -16,7 +16,7 @@ function setjwt(jwt) {
   if (jwt) {
     axios.defaults.headers.common.Authorization = jwt;
   } else {
-    delete axios.defaults.headers.common['Authorization'];
+    delete axios.defaults.headers.common.Authorization;
   }
 }
 

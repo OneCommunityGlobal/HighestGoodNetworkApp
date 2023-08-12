@@ -11,14 +11,13 @@ module.exports = {
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
 
-	// An array of file extensions your modules use
-	moduleFileExtensions: ['js', 'json', 'jsx'],
-	
-	// Bundle mapper for d3 import
-	moduleNameMapper: {
-    'd3': '<rootDir>/node_modules/d3/dist/d3.min.js',
-	},
+  // An array of file extensions your modules use
+  moduleFileExtensions: ['js', 'json', 'jsx'],
 
+  // Bundle mapper for d3 import
+  moduleNameMapper: {
+    d3: '<rootDir>/node_modules/d3/dist/d3.min.js',
+  },
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
   setupFiles: ['<rootDir>src/setupTests.js'],
@@ -36,7 +35,7 @@ module.exports = {
   testURL: 'http://localhost',
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  transformIgnorePatterns: ["/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)"],
+  transformIgnorePatterns: ['/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
 
   // Indicates whether each individual test should be reported during the run
