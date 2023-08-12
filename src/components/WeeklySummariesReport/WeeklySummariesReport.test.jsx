@@ -18,6 +18,9 @@ describe('WeeklySummariesReport page', () => {
 
       await waitFor(() => screen.getByTestId('loading'));
 
+      await waitForElementToBeRemoved(screen.getByTestId('loading'));
+      expect(screen.getByTestId('loading')).not.toBeInTheDocument();
+
       expect(screen.getByTestId('error')).toBeInTheDocument();
     });
 
@@ -50,40 +53,39 @@ describe('WeeklySummariesReport page', () => {
       jest.clearAllMocks();
     });
 
-    it('should have second tab set to "active" by default', () => {
+    it('should have second tab set to "active" by default', async () => {
+      await waitForElementToBeRemoved(screen.getByTestId('loading'));
+      expect(screen.getByTestId('loading')).not.toBeInTheDocument();
       expect(screen.getByTestId('tab-2').classList.contains('active')).toBe(true);
     });
 
     it('should make 1st tab active when clicked', async () => {
       // First tab click.
-      await waitFor(() => {
-        expect(screen.getByTestId('tab-1')).toBeInTheDocument();
-        fireEvent.click(screen.getByTestId('tab-1'));
-        expect(screen.getByTestId('tab-1').classList.contains('active')).toBe(true);
-      });
+      await waitForElementToBeRemoved(screen.getByTestId('loading'));
+      expect(screen.getByTestId('loading')).not.toBeInTheDocument();
+      fireEvent.click(screen.getByTestId('tab-1'));
+      expect(screen.getByTestId('tab-1').classList.contains('active')).toBe(true);
     });
     it('should make 2nd tab active when clicked', async () => {
-      await waitFor(() => {
-        expect(screen.getByTestId('tab-2')).toBeInTheDocument();
-        fireEvent.click(screen.getByTestId('tab-2'));
-        expect(screen.getByTestId('tab-2').classList.contains('active')).toBe(true);
-      });
+      // Second tab click.
+      await waitForElementToBeRemoved(screen.getByTestId('loading'));
+      expect(screen.getByTestId('loading')).not.toBeInTheDocument();
+      fireEvent.click(screen.getByTestId('tab-2'));
+      expect(screen.getByTestId('tab-2').classList.contains('active')).toBe(true);
     });
     it('should make 3rd tab active when clicked', async () => {
       // Third tab click.
-      await waitFor(() => {
-        expect(screen.getByTestId('tab-3')).toBeInTheDocument();
-        fireEvent.click(screen.getByTestId('tab-3'));
-        expect(screen.getByTestId('tab-3').classList.contains('active')).toBe(true);
-      });
+      await waitForElementToBeRemoved(screen.getByTestId('loading'));
+      expect(screen.getByTestId('loading')).not.toBeInTheDocument();
+      fireEvent.click(screen.getByTestId('tab-3'));
+      expect(screen.getByTestId('tab-3').classList.contains('active')).toBe(true);
     });
     it('should make 4th tab active when clicked', async () => {
       // Fourth tab click.
-      await waitFor(() => {
-        expect(screen.getByTestId('tab-4')).toBeInTheDocument();
-        fireEvent.click(screen.getByTestId('tab-4'));
-        expect(screen.getByTestId('tab-4').classList.contains('active')).toBe(true);
-      });
+      await waitForElementToBeRemoved(screen.getByTestId('loading'));
+      expect(screen.getByTestId('loading')).not.toBeInTheDocument();
+      fireEvent.click(screen.getByTestId('tab-4'));
+      expect(screen.getByTestId('tab-4').classList.contains('active')).toBe(true);
     });
   });
 });
