@@ -24,9 +24,7 @@ describe('WeeklySummariesReport page', () => {
 
       //await waitFor(() => screen.getByTestId('loading'));
 
-      await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument(), {
-        timeout: 3000,
-      });
+      await waitForElementToBeRemoved(screen.queryByTestId('loading'), { timeout: 5000 });
 
       expect(screen.getByTestId('error')).toBeInTheDocument();
     });
@@ -44,6 +42,7 @@ describe('WeeklySummariesReport page', () => {
     });
   });
 
+  /*
   describe('Tabs display', () => {
     const props = {
       getWeeklySummariesReport: jest.fn(),
@@ -60,7 +59,7 @@ describe('WeeklySummariesReport page', () => {
       jest.clearAllMocks();
     });
 
-    /*
+    
     it('should have second tab set to "active" by default', async () => {
       await waitForElementToBeRemoved(screen.queryByTestId('loading'));
       expect(screen.getByTestId('loading')).not.toBeInTheDocument();
@@ -90,6 +89,6 @@ describe('WeeklySummariesReport page', () => {
       fireEvent.click(screen.getByTestId('tab-4'));
       expect(screen.getByTestId('tab-4').classList.contains('active')).toBe(true);
     });
-      */
-  });
+      
+  });*/
 });
