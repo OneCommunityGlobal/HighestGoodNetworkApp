@@ -2,6 +2,7 @@ import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { formattedDate } from 'utils/formattedDate';
+import { formatDateFromDescriptionString } from 'utils/formatDateFromDescriptionString';
 
 const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermissions }) => {
   return (
@@ -41,7 +42,7 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
                 >
                   <div className="report" data-testid="report">
                     <div className="title">{formattedDate(blueSquare.date)}</div>
-                    <div className="summary">{blueSquare.description}</div>
+                    <div className="summary">{formatDateFromDescriptionString(blueSquare.description)}</div>
                   </div>
                 </div>
               ))
