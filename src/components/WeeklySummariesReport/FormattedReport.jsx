@@ -11,7 +11,15 @@ import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { Input } from 'reactstrap';
+import {
+  Input,
+  Card,
+  CardTitle,
+  CardBody,
+  CardImg,
+  CardText,
+  UncontrolledPopover,
+} from 'reactstrap';
 
 const textColors = {
   Default: '#000000',
@@ -26,7 +34,7 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, badges }) => {
   const emails = [];
 
   summaries.forEach(summary => {
@@ -114,54 +122,57 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
   };
 
   const getTotalValidWeeklySummaries = summary => {
-
     const style = {
       color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
     };
-    
-    const [weeklySummariesCount, setWeeklySummariesCount] = useState(parseInt(summary.weeklySummariesCount));
-    
+
+    const [weeklySummariesCount, setWeeklySummariesCount] = useState(
+      parseInt(summary.weeklySummariesCount),
+    );
+
     const handleOnChange = async (userProfileSummary, count) => {
-      const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id)
+      const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
       try {
-        await axios.patch(url, {key: 'weeklySummariesCount', value: count});
+        await axios.patch(url, { key: 'weeklySummariesCount', value: count });
       } catch (err) {
-        alert('An error occurred while attempting to save the new weekly summaries count change to the profile.');
+        alert(
+          'An error occurred while attempting to save the new weekly summaries count change to the profile.',
+        );
       }
     };
 
     const handleWeeklySummaryCountChange = e => {
-        setWeeklySummariesCount(e.target.value);
-        handleOnChange(summary, e.target.value);
-      }
-    
+      setWeeklySummariesCount(e.target.value);
+      handleOnChange(summary, e.target.value);
+    };
+
     return (
-      <div className='total-valid-wrapper'>
-        {weeklySummariesCount === 8 ? 
-        <div className='total-valid-text' style={style}>
-          <b>Total Valid Weekly Summaries:</b>{' '}
-        </div> : 
-        <div className='total-valid-text'>
-          <b style={style}>
-            Total Valid Weekly Summaries:
-          </b>{' '}
-        </div>
-        }
-        {canEditSummaryCount ? 
-        <div style={{width: '150px', paddingLeft: "5px"}}>
-          <Input 
-              type='number' 
-              name='weeklySummaryCount' 
-              step='1'
-              value={weeklySummariesCount} 
+      <div className="total-valid-wrapper">
+        {weeklySummariesCount === 8 ? (
+          <div className="total-valid-text" style={style}>
+            <b>Total Valid Weekly Summaries:</b>{' '}
+          </div>
+        ) : (
+          <div className="total-valid-text">
+            <b style={style}>Total Valid Weekly Summaries:</b>{' '}
+          </div>
+        )}
+        {canEditSummaryCount ? (
+          <div style={{ width: '150px', paddingLeft: '5px' }}>
+            <Input
+              type="number"
+              name="weeklySummaryCount"
+              step="1"
+              value={weeklySummariesCount}
               onChange={e => handleWeeklySummaryCountChange(e)}
-              min='0'
-          />
-        </div> : 
-        <div>&nbsp;{weeklySummariesCount || 'No valid submissions yet!'}</div>
-        } 
+              min="0"
+            />
+          </div>
+        ) : (
+          <div>&nbsp;{weeklySummariesCount || 'No valid submissions yet!'}</div>
+        )}
       </div>
-    )
+    );
   };
 
   const handleGoogleDocClick = googleDocLink => {
@@ -239,6 +250,77 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
 
   const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
 
+  const getWeeklyBadge = summary => {
+    const badgeEndDate = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .format('YYYY-MM-DD');
+    const badgeStartDate = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(weekIndex, 'week')
+      .format('YYYY-MM-DD');
+    let badgeIdThisWeek = [];
+    let badgeThisWeek = [];
+    summary.badgeCollection.map(badge => {
+      if (badge.earnedDate) {
+        if (badge.earnedDate[0] <= badgeEndDate && badge.earnedDate[0] >= badgeStartDate) {
+          badgeIdThisWeek.push(badge.badge);
+        }
+      } else {
+        const modifiedDate = badge.lastModified.substring(0, 10);
+        if (modifiedDate <= badgeEndDate && modifiedDate >= badgeStartDate) {
+          badgeIdThisWeek.push(badge.badge);
+        }
+      }
+    });
+    if (badgeIdThisWeek.length > 0) {
+      badgeIdThisWeek.forEach(badgeId => {
+        const badge = badges.filter(badge => badge._id === badgeId)[0];
+        badgeThisWeek.push(badge);
+      });
+    }
+    return (
+      <table>
+        <tbody>
+          {badgeThisWeek.length > 0
+            ? badgeThisWeek.map(
+                (value, index) =>
+                  value.showReport && (
+                    <tr key={index + '_' + value._id}>
+                      <td className="badge_image_sm">
+                        {' '}
+                        <img src={value.imageUrl} id={'popover_' + value._id} />
+                        <UncontrolledPopover trigger="hover" target={'popover_' + value._id}>
+                          <Card className="text-center">
+                            <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                            <CardBody>
+                              <CardTitle
+                                style={{
+                                  fontWeight: 'bold',
+                                  fontSize: 18,
+                                  color: '#285739',
+                                  marginBottom: 15,
+                                }}
+                              >
+                                {value?.badgeName}
+                              </CardTitle>
+                              <CardText>{value?.description}</CardText>
+                            </CardBody>
+                          </Card>
+                        </UncontrolledPopover>
+                      </td>
+                      <td>{value.badgeName}</td>
+                    </tr>
+                  ),
+              )
+            : null}
+        </tbody>
+      </table>
+    );
+  };
+
   return (
     <>
       {summaries.map((summary, index) => {
@@ -290,6 +372,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
                 </i>
               )}
             </div>
+            {summary.badgeCollection.length > 0 && getWeeklyBadge(summary)}
             <div>
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}

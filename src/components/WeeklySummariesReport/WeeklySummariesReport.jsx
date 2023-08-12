@@ -11,6 +11,8 @@ import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 
 export class WeeklySummariesReport extends Component {
   constructor(props) {
@@ -21,6 +23,7 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: '2',
+      badges: [],
     };
 
     this.weekDates = Array(4)
@@ -45,16 +48,25 @@ export class WeeklySummariesReport extends Component {
       return { ...summary, promisedHoursByWeek };
     });
 
-    // 4. update
-    this.setState({
-      error: this.props.error,
-      loading: this.props.loading,
-      summaries: summariesCopy,
-      activeTab:
-        sessionStorage.getItem('tabSelection') === null
-          ? '2'
-          : sessionStorage.getItem('tabSelection'),
-    });
+    // 4. fetch badge and update
+    const url = ENDPOINTS.BADGE();
+    await axios
+      .get(url)
+      .then(res => {
+        return res.data;
+      })
+      .then(res => {
+        this.setState({
+          error: this.props.error,
+          loading: this.props.loading,
+          summaries: summariesCopy,
+          activeTab:
+            sessionStorage.getItem('tabSelection') === null
+              ? '2'
+              : sessionStorage.getItem('tabSelection'),
+          badges: res,
+        });
+      });
   }
 
   componentWillUnmount() {
@@ -134,13 +146,13 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab } = this.state;
+    const { error, loading, summaries, activeTab, badges } = this.state;
     const role = this.props.authUser?.role;
     const userPermissions = this.props.authUser?.permissions?.frontPermissions;
     const roles = this.props.roles;
     const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
     const rolesAllowedToEditSummaryCount = ['Administrator', 'Owner'];
-    const canEditSummaryCount = rolesAllowedToEditSummaryCount.includes(role)
+    const canEditSummaryCount = rolesAllowedToEditSummaryCount.includes(role);
 
     if (error) {
       return (
@@ -232,6 +244,7 @@ export class WeeklySummariesReport extends Component {
                       weekIndex={0}
                       bioCanEdit={bioEditPermission}
                       canEditSummaryCount={canEditSummaryCount}
+                      badges={badges}
                     />
                   </Col>
                 </Row>
@@ -256,6 +269,7 @@ export class WeeklySummariesReport extends Component {
                       weekIndex={1}
                       bioCanEdit={bioEditPermission}
                       canEditSummaryCount={canEditSummaryCount}
+                      badges={badges}
                     />
                   </Col>
                 </Row>
@@ -280,6 +294,7 @@ export class WeeklySummariesReport extends Component {
                       weekIndex={2}
                       bioCanEdit={bioEditPermission}
                       canEditSummaryCount={canEditSummaryCount}
+                      badges={badges}
                     />
                   </Col>
                 </Row>
@@ -304,6 +319,7 @@ export class WeeklySummariesReport extends Component {
                       weekIndex={3}
                       bioCanEdit={bioEditPermission}
                       canEditSummaryCount={canEditSummaryCount}
+                      badges={badges}
                     />
                   </Col>
                 </Row>
