@@ -4,7 +4,6 @@ import {
   fireEvent,
   waitFor,
   screen,
-  waitForElementToBeRemoved,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { WeeklySummariesReport } from './WeeklySummariesReport';
@@ -23,8 +22,8 @@ describe('WeeklySummariesReport page', () => {
       render(<WeeklySummariesReport {...props} />);
 
       //await waitFor(() => screen.getByTestId('loading'));
-      waitFor(() => queryByTestId('loading') === null);
-      const error = await waitFor(() => screen.getByTestId('error'));
+      //waitFor(() => screen.queryByTestId('loading') === null);
+      const error = await waitFor(() => screen.queryByTestId('error'));
       expect(error).toBeInTheDocument();
 
       //expect(screen.getByTestId('error')).toBeInTheDocument();
