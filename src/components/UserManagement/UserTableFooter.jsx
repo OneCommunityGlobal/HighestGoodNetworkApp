@@ -85,14 +85,24 @@ const PageSizeDropDown = React.memo(props => {
  * Stateless component to display the page summary labels.
  */
 const PageSummaryLabel = React.memo(props => {
+  let firstUserOfPage = (props.selectedPage - 1) * props.pageSize + 1;
+  let totalUsersFind = props.datacount;
+  let lastUserOfPage = props.selectedPage * props.pageSize;
+
+  const displayedUsers =
+    totalUsersFind < 10 || lastUserOfPage > totalUsersFind
+      ? totalUsersFind === 0
+        ? `Showing 0 - ${totalUsersFind} of ${totalUsersFind}`
+        : `Showing ${firstUserOfPage} - ${totalUsersFind} of ${totalUsersFind}`
+      : `Showing ${firstUserOfPage} - ${lastUserOfPage} of ${totalUsersFind}`;
+
   return (
     <div
       id="user_table_footer"
       className="table-summary col-md-4 col-sm-4 col-xs-4 ember-view"
       style={{ marginBottom: '25px' }}
     >
-      {`Show ${(props.selectedPage - 1) * props.pageSize + 1} -
-    ${props.selectedPage * props.pageSize} of ${props.datacount}`}
+      {displayedUsers}
     </div>
   );
 });

@@ -10,6 +10,7 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
+import { useMemo } from 'react';
 
 function AddTaskModal(props) {
   /*
@@ -19,6 +20,14 @@ function AddTaskModal(props) {
   const { tasks, copiedTask, allMembers, allProjects, error } = props;
 
   // states from hooks
+  const defaultCategory = useMemo(() => {
+    if (props.level >= 1) {
+      return tasks.find(({ _id }) => _id === props.taskId).category;
+    } else {
+      return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
+    }  
+  }, []);
+
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
   const [resourceItems, setResourceItems] = useState([]);
@@ -30,7 +39,7 @@ function AddTaskModal(props) {
   const [hoursEstimate, setHoursEstimate] = useState(0);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
-  const [category, setCategory] = useState('Housing');
+  const [category, setCategory] = useState(defaultCategory);
   const [whyInfo, setWhyInfo] = useState('');
   const [intentInfo, setIntentInfo] = useState('');
   const [startedDate, setStartedDate] = useState('');
@@ -44,11 +53,12 @@ function AddTaskModal(props) {
   const priorityRef = useRef(null);
 
   const categoryOptions = [
+    { value: 'Unspecified', label: 'Unspecified' },
     { value: 'Housing', label: 'Housing' },
     { value: 'Food', label: 'Food' },
     { value: 'Energy', label: 'Energy' },
     { value: 'Education', label: 'Education' },
-    { value: 'Soceity', label: 'Soceity' },
+    { value: 'Society', label: 'Society' },
     { value: 'Economics', label: 'Economics' },
     { value: 'Stewardship', label: 'Stewardship' },
     { value: 'Other', label: 'Other' },
@@ -173,7 +183,7 @@ function AddTaskModal(props) {
     setTaskName('');
     setPriority('Primary');
     setResourceItems([]);
-    setAssigned(false);
+    setAssigned(true);
     setStatus('Started');
     setHoursBest(0);
     setHoursWorst(0);
@@ -185,7 +195,7 @@ function AddTaskModal(props) {
     setWhyInfo('');
     setIntentInfo('');
     setEndstateInfo('');
-    setCategory('');
+    setCategory(defaultCategory);
   };
 
   const paste = () => {
@@ -247,18 +257,6 @@ function AddTaskModal(props) {
   /*
   * -------------------------------- useEffects -------------------------------- 
   */
-  useEffect(() => {
-    if (props.level >= 1) {
-      const categoryMother = tasks.find(({ _id }) => _id === props.taskId).category;
-      if (categoryMother) {
-        setCategory(categoryMother);
-      }
-    } else {
-      const res = allProjects.projects.filter(({ _id }) => _id === props.projectId)[0];
-      setCategory(res.category);
-    }
-  }, [props.level]);
-
   useEffect(() => {
     setNewTaskNum(getNewNum());
   }, [modal]);
