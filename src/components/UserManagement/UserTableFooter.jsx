@@ -11,7 +11,7 @@ const UserTableFooter = React.memo(props => {
   };
 
   return (
-    <div id="usermanagement-footer" className="row">
+    <div className="row">
       <PageSummaryLabel
         selectedPage={props.selectedPage}
         pageSize={props.pageSize}

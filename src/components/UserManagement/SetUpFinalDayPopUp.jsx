@@ -22,11 +22,10 @@ const SetUpFinalDayPopUp = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
+    <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Set Your Final Day</ModalHeader>
       <ModalBody>
         <Input
-          autoFocus
           type="date"
           name="inactiveDate"
           id="inactiveDate"

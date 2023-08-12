@@ -47,13 +47,12 @@ const ResetPasswordPopup = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
+    <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Reset Password</ModalHeader>
       <ModalBody>
         <FormGroup>
           <Label for="newpassword">New Password</Label>
           <Input
-            autoFocus
             type="password"
             name="newpassword"
             id="newpassword"
