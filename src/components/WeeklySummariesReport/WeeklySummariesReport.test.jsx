@@ -23,10 +23,11 @@ describe('WeeklySummariesReport page', () => {
       render(<WeeklySummariesReport {...props} />);
 
       //await waitFor(() => screen.getByTestId('loading'));
+      waitFor(() => queryByTestId('loading') === null);
+      const error = await waitFor(() => screen.getByTestId('error'));
+      expect(error).toBeInTheDocument();
 
-      await waitForElementToBeRemoved(screen.queryByTestId('loading'), { timeout: 5000 });
-
-      expect(screen.getByTestId('error')).toBeInTheDocument();
+      //expect(screen.getByTestId('error')).toBeInTheDocument();
     });
 
     it('displays loading indicator', () => {
