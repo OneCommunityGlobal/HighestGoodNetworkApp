@@ -264,38 +264,62 @@ function RolePermissions(props) {
         <h2 className="user-role-tab__h2">Permission List</h2>
       </header>
       <ul className="user-role-tab__permissionList">
-        {props.permissionsList.map((permission) => (
+        {props.permissionsList.map(permission => (
           <li className="user-role-tab__permissions" key={permission}>
             <p style={{ color: permissions.includes(permission) ? 'green' : 'red' }}>
               {permission}
             </p>
-            <div className="icon-button-container">
-              <i
-                data-toggle="tooltip"
-                data-placement="center"
-                title="Click for more information"
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={() => {
-                  handleModalOpen(permission);
-                }}
-              />
-              &nbsp;&nbsp;
-              <Button
-                className="icon-button"
-                color={permissions.includes(permission) ? 'danger' : 'success'}
-                onClick={() => {
-                  permissions.includes(permission)
-                    ? onRemovePermission(permission)
-                    : onAddPermission(permission);
-                  setChanged(true);
-                }}
-                disabled={props?.userRole !== 'Owner'}
-                style={boxStyle}
-              >
-                {permissions.includes(permission) ? 'Delete' : 'Add'}
-              </Button>
-            </div>
+            {permissions.includes(permission) ? (
+              <div>
+                <i
+                  data-toggle="tooltip"
+                  data-placement="center"
+                  title="Click for more information"
+                  style={{ fontSize: 24, cursor: 'pointer' }}
+                  aria-hidden="true"
+                  className="fa fa-info-circle"
+                  onClick={() => {
+                    handleModalOpen(permission);
+                  }}
+                />{' '}
+                &nbsp;&nbsp;
+                <Button
+                  color="danger"
+                  onClick={() => {
+                    onRemovePermission(permission), setChanged(true);
+                  }}
+                  disabled={props?.userRole !== 'Owner' ? true : false}
+                  style={boxStyle}
+                >
+                  Delete
+                </Button>
+              </div>
+            ) : (
+              <div>
+                <i
+                  data-toggle="tooltip"
+                  data-placement="center"
+                  title="Click for more information"
+                  style={{ fontSize: 24, cursor: 'pointer' }}
+                  aria-hidden="true"
+                  className="fa fa-info-circle"
+                  onClick={() => {
+                    handleModalOpen(permission);
+                  }}
+                />{' '}
+                &nbsp;&nbsp;
+                <Button
+                  color="success"
+                  onClick={() => {
+                    onAddPermission(permission), setChanged(true);
+                  }}
+                  disabled={props?.userRole !== 'Owner' ? true : false}
+                  style={boxStyle}
+                >
+                  Add
+                </Button>
+              </div>
+            )}
           </li>
         ))}
       </ul>

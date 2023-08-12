@@ -28,7 +28,6 @@ const Admin = props => {
           </div>
 
           <input
-            autoFocus
             type="text"
             className="form-control"
             onChange={e => setKeyword(e.target.value)}

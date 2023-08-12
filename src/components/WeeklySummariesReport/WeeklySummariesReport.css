@@ -26,10 +26,3 @@
 .bio-toggle {
   display: inline-block;
 }
-
-.total-valid-wrapper {
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  white-space: nowrap;
-}

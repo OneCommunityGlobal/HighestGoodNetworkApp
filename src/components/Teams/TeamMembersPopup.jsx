@@ -32,7 +32,7 @@ const TeamMembersPopup = React.memo(props => {
 
   return (
     <Container fluid>
-      <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
+      <Modal isOpen={props.open} toggle={closePopup}>
         <ModalHeader toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
           {hasPermission(

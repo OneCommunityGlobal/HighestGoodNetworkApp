@@ -12,14 +12,13 @@ const CreateNewTeamPopup = React.memo(props => {
     onNewName(props.teamName);
   }, [props.open, props.teamName]);
   return (
-    <Modal autoFocus={false} isOpen={props.open} toggle={closePopup}>
+    <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>
         {props.isEdit ? 'Update Team Name' : 'Create New Team'}
       </ModalHeader>
       <ModalBody style={{ textAlign: 'start' }}>
         <label>Name of the Team</label>
         <Input
-          autoFocus
           id="teamName"
           placeholder="Please enter a new team name"
           value={newTeam}
