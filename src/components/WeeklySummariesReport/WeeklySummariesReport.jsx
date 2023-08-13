@@ -13,19 +13,43 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 
 export class WeeklySummariesReport extends Component {
-  state = {
-    error: null,
-    loading: true,
-    summaries: [],
-    activeTab: '2',
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      error: null,
+      loading: true,
+      summaries: [],
+      activeTab: '2',
+    };
+
+    this.weekDates = Array(4)
+      .fill(null)
+      .map((_, index) => this.getWeekDates(index));
+  }
 
   async componentDidMount() {
+    // 1. fetch report
     await this.props.getWeeklySummariesReport();
+
+    // 2. shallow copy and sort
+    let summariesCopy = [...this.props.summaries];
+    summariesCopy = this.alphabetize(summariesCopy);
+
+    // 3. add new key of promised hours by week
+    summariesCopy = summariesCopy.map(summary => {
+      // append the promised hours starting from the latest week (this week)
+      const promisedHoursByWeek = this.weekDates.map(weekDate =>
+        this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+      );
+      return { ...summary, promisedHoursByWeek };
+    });
+
+    // 4. update
     this.setState({
       error: this.props.error,
       loading: this.props.loading,
-      summaries: this.props.summaries,
+      summaries: summariesCopy,
       activeTab:
         sessionStorage.getItem('tabSelection') === null
           ? '2'
@@ -36,6 +60,18 @@ export class WeeklySummariesReport extends Component {
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
   }
+
+  /**
+   * Sort the summaries in alphabetixal order
+   * @param {*} summaries
+   * @returns
+   */
+  alphabetize = summaries => {
+    const temp = [...summaries];
+    return temp.sort((a, b) =>
+      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
+    );
+  };
 
   getWeekDates = weekIndex => ({
     fromDate: moment()
@@ -49,6 +85,45 @@ export class WeeklySummariesReport extends Component {
       .subtract(weekIndex, 'week')
       .format('MMM-DD-YY'),
   });
+
+  /**
+   * This function calculates the hours promised by a user by a given end date of the week.
+   * It goes through the user's committed hours history and returns the last committed hour value that is less than or equal to the given date.
+   * If there's no such record in the history, it returns 10 (default value).
+   * If the history does not exist at all, it returns -1.
+   *
+   * @param {string} weekToDateX - The end date of the week in question. It should be a string that can be parsed into a Date object.
+   * @param {Array<Object>} weeklycommittedHoursHistory - An array of user's committed hours history records. Each record should be an object that contains at least the properties 'dateChanged' (a string that can be parsed into a Date object) and 'hours' (a number).
+   *
+   * @returns {number} The hours promised by the user by the given end date.
+   */
+  getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
+    // 0. Edge case: If the history doesnt even exist
+    // only happens if the user is created without the backend changes
+    if (!weeklycommittedHoursHistory) {
+      return -1;
+    }
+    // 1. Edge case: If there is none, return 10 (the default value of weeklyComHours)
+    if (weeklycommittedHoursHistory.length === 0) {
+      return 10;
+    }
+
+    const weekToDateReformat = new Date(weekToDateX).setHours(23, 59, 59, 999);
+    // 2. Iterate weeklycommittedHoursHistory from the last index (-1) to the beginning
+    for (let i = weeklycommittedHoursHistory.length - 1; i >= 0; i -= 1) {
+      const historyDateX = new Date(weeklycommittedHoursHistory[i].dateChanged);
+      // console.log(`${weekToDateX} >= ${historyDateX} is ${weekToDateX >= historyDateX}`);
+      // As soon as the weekToDate is greater or equal than current history date
+      if (weekToDateReformat >= historyDateX) {
+        // return the promised hour
+        return weeklycommittedHoursHistory[i].hours;
+      }
+    }
+
+    // 3. at this date when the week ends, the person has not even join the team
+    // so it promised 0 hours
+    return 0;
+  };
 
   toggleTab = tab => {
     const activeTab = this.state.activeTab;
@@ -64,6 +139,8 @@ export class WeeklySummariesReport extends Component {
     const userPermissions = this.props.authUser?.permissions?.frontPermissions;
     const roles = this.props.roles;
     const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
+    const rolesAllowedToEditSummaryCount = ['Administrator', 'Owner'];
+    const canEditSummaryCount = rolesAllowedToEditSummaryCount.includes(role)
 
     if (error) {
       return (
@@ -138,14 +215,13 @@ export class WeeklySummariesReport extends Component {
               <TabPane tabId="1">
                 <Row>
                   <Col sm="12" md="8" className="mb-2">
-                    From <b>{this.getWeekDates(0).fromDate}</b> to{' '}
-                    <b>{this.getWeekDates(0).toDate}</b>
+                    From <b>{this.weekDates[0].fromDate}</b> to <b>{this.weekDates[0].toDate}</b>
                   </Col>
                   <Col sm="12" md="4">
                     <GeneratePdfReport
                       summaries={summaries}
                       weekIndex={0}
-                      weekDates={this.getWeekDates(0)}
+                      weekDates={this.weekDates[0]}
                     />
                   </Col>
                 </Row>
@@ -155,6 +231,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={0}
                       bioCanEdit={bioEditPermission}
+                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -162,14 +239,13 @@ export class WeeklySummariesReport extends Component {
               <TabPane tabId="2">
                 <Row>
                   <Col sm="12" md="8" className="mb-2">
-                    From <b>{this.getWeekDates(1).fromDate}</b> to{' '}
-                    <b>{this.getWeekDates(1).toDate}</b>
+                    From <b>{this.weekDates[1].fromDate}</b> to <b>{this.weekDates[1].toDate}</b>
                   </Col>
                   <Col sm="12" md="4">
                     <GeneratePdfReport
                       summaries={summaries}
                       weekIndex={1}
-                      weekDates={this.getWeekDates(1)}
+                      weekDates={this.weekDates[1]}
                     />
                   </Col>
                 </Row>
@@ -179,6 +255,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={1}
                       bioCanEdit={bioEditPermission}
+                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -186,14 +263,13 @@ export class WeeklySummariesReport extends Component {
               <TabPane tabId="3">
                 <Row>
                   <Col sm="12" md="8" className="mb-2">
-                    From <b>{this.getWeekDates(2).fromDate}</b> to{' '}
-                    <b>{this.getWeekDates(2).toDate}</b>
+                    From <b>{this.weekDates[2].fromDate}</b> to <b>{this.weekDates[2].toDate}</b>
                   </Col>
                   <Col sm="12" md="4">
                     <GeneratePdfReport
                       summaries={summaries}
                       weekIndex={2}
-                      weekDates={this.getWeekDates(2)}
+                      weekDates={this.weekDates[2]}
                     />
                   </Col>
                 </Row>
@@ -203,6 +279,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={2}
                       bioCanEdit={bioEditPermission}
+                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -210,14 +287,13 @@ export class WeeklySummariesReport extends Component {
               <TabPane tabId="4">
                 <Row>
                   <Col sm="12" md="8" className="mb-2">
-                    From <b>{this.getWeekDates(3).fromDate}</b> to{' '}
-                    <b>{this.getWeekDates(3).toDate}</b>
+                    From <b>{this.weekDates[3].fromDate}</b> to <b>{this.weekDates[3].toDate}</b>
                   </Col>
                   <Col sm="12" md="4">
                     <GeneratePdfReport
                       summaries={summaries}
                       weekIndex={3}
-                      weekDates={this.getWeekDates(3)}
+                      weekDates={this.weekDates[3]}
                     />
                   </Col>
                 </Row>
@@ -227,6 +303,7 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={3}
                       bioCanEdit={bioEditPermission}
+                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>

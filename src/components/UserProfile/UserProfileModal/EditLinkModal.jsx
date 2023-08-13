@@ -90,15 +90,9 @@ const EditLinkModal = props => {
       const name = newLink.Name.trim().toLowerCase();
       const nameSet = new Set();
       links.forEach(link => {
-        if(nameSet.has(name)) {
-          return true;
-        }
-        else {
-          nameSet.add(name.trim().toLowerCase());
-          
-        }
+        nameSet.add(link.Name.trim().toLowerCase());
       });
-      return false;
+      return nameSet.has(name);
     }
   };
 
