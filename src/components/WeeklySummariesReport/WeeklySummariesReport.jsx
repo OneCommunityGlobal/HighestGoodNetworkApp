@@ -11,8 +11,7 @@ import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
-import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
+import { fetchAllBadges } from '../../actions/badgeManagement';
 
 export class WeeklySummariesReport extends Component {
   constructor(props) {
@@ -34,6 +33,7 @@ export class WeeklySummariesReport extends Component {
   async componentDidMount() {
     // 1. fetch report
     await this.props.getWeeklySummariesReport();
+    await this.props.fetchAllBadges();
 
     // 2. shallow copy and sort
     let summariesCopy = [...this.props.summaries];
@@ -48,25 +48,17 @@ export class WeeklySummariesReport extends Component {
       return { ...summary, promisedHoursByWeek };
     });
 
-    // 4. fetch badge and update
-    const url = ENDPOINTS.BADGE();
-    await axios
-      .get(url)
-      .then(res => {
-        return res.data;
-      })
-      .then(res => {
-        this.setState({
-          error: this.props.error,
-          loading: this.props.loading,
-          summaries: summariesCopy,
-          activeTab:
-            sessionStorage.getItem('tabSelection') === null
-              ? '2'
-              : sessionStorage.getItem('tabSelection'),
-          badges: res,
-        });
-      });
+    // 4. update
+    this.setState({
+      error: this.props.error,
+      loading: this.props.loading,
+      summaries: summariesCopy,
+      activeTab:
+        sessionStorage.getItem('tabSelection') === null
+          ? '2'
+          : sessionStorage.getItem('tabSelection'),
+      badges: this.props.allBadgeData,
+    });
   }
 
   componentWillUnmount() {
@@ -335,6 +327,7 @@ export class WeeklySummariesReport extends Component {
 WeeklySummariesReport.propTypes = {
   error: PropTypes.any,
   getWeeklySummariesReport: PropTypes.func.isRequired,
+  fetchAllBadges: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
 };
@@ -345,6 +338,12 @@ const mapStateToProps = state => ({
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
+  allBadgeData: state.badge.allBadgeData,
 });
 
-export default connect(mapStateToProps, { getWeeklySummariesReport })(WeeklySummariesReport);
+const mapDispatchToProps = dispatch => ({
+  fetchAllBadges: () => dispatch(fetchAllBadges()),
+  getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);

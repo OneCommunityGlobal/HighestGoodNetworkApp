@@ -287,7 +287,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
           {badgeThisWeek.length > 0
             ? badgeThisWeek.map(
                 (value, index) =>
-                  value.showReport && (
+                  value?.showReport && (
                     <tr key={index + '_' + value._id}>
                       <td className="badge_image_sm">
                         {' '}
