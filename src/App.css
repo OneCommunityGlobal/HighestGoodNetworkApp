@@ -348,6 +348,11 @@ input:checked + .slider:before {
   color: #007bff
 }
 
+.dark .input-group .form-control {
+  background-color: #333;
+  columns: white;
+}
+
 .top {
   text-decoration: none;
   padding: 10px;
