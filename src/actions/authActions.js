@@ -8,7 +8,7 @@ import { SET_CURRENT_USER, SET_HEADER_DATA } from '../constants/auth';
 
 const { tokenKey } = config;
 
-export const loginUser = credentials => dispatch => {
+export const loginUser = credentials => (dispatch, getState) => {
   return httpService
     .post(ENDPOINTS.LOGIN, credentials)
     .then(res => {
@@ -19,6 +19,12 @@ export const loginUser = credentials => dispatch => {
         httpService.setjwt(res.data.token);
         const decoded = jwtDecode(res.data.token);
         dispatch(setCurrentUser(decoded));
+      }
+      const profile = getState().userProfile;
+      if (profile.isFirstLogin === true) {
+        console.log("You have just logged in for the first time!");
+        // set isFirstLogin to False
+        // update createdDate to today
       }
     })
     .catch(err => {
