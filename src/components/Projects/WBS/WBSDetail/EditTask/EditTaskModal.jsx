@@ -50,6 +50,17 @@ const EditTaskModal = props => {
   const [dateWarning, setDateWarning] = useState(false);
 
   const res = [...(resourceItems ? resourceItems : [])];
+  const categoryOptions = [
+    { value: 'Unspecified', label: 'Unspecified' },
+    { value: 'Housing', label: 'Housing' },
+    { value: 'Food', label: 'Food' },
+    { value: 'Energy', label: 'Energy' },
+    { value: 'Education', label: 'Education' },
+    { value: 'Society', label: 'Society' },
+    { value: 'Economics', label: 'Economics' },
+    { value: 'Stewardship', label: 'Stewardship' },
+    { value: 'Other', label: 'Other' },
+  ];
   const FORMAT = 'MM/dd/yy';
 
   /*
@@ -546,20 +557,12 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
-                  <select
-                    value={category}
-                    onChange={e => {
-                      setCategory(e.target.value);
-                    }}
-                  >
-                    <option value="Housing">Housing</option>
-                    <option value="Food">Food</option>
-                    <option value="Energy">Energy</option>
-                    <option value="Education">Education</option>
-                    <option value="Soceity">Society</option>
-                    <option value="Economics">Economics</option>
-                    <option value="Stewardship">Stewardship</option>
-                    <option value="Not Assigned">Not Assigned</option>
+                  <select value={category} onChange={e => setCategory(e.target.value)}>
+                    {categoryOptions.map(cla => (
+                      <option value={cla.value} key={cla.value}>
+                        {cla.label}
+                      </option>
+                    ))}
                   </select>
                 </td>
               </tr>
