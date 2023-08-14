@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck, faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table, Progress } from 'reactstrap';
 
@@ -177,12 +177,10 @@ const TeamMemberTask = React.memo(({
                               }}
                             />
                           )}
-                          <i
-                            className="fa fa-info-circle"
-                            style={{ cursor: 'pointer', marginLeft: '10px' }}
-                            data-tip
-                            data-for="taskIconTip"
-                            aria-hidden="true"
+                          <FontAwesomeIcon
+                            className="team-member-task-info"
+                            icon={faInfoCircle}
+                            title="Click this icon to learn about the task icons"
                             onClick={() => {
                               handleModalOpen();
                             }}
