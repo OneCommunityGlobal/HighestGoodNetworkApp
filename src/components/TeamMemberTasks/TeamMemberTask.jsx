@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
-import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
@@ -185,10 +184,7 @@ const TeamMemberTask = React.memo(({
                               handleModalOpen();
                             }}
                           />
-                          <ReactTooltip id="taskIconTip" place="bottom" effect="solid">
-                            Click this icon to learn about the task icons
-                          </ReactTooltip>
-                          <Modal isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
+                          <Modal backdropClassName="task-info-modal-backdrop" isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
                             <ModalHeader toggle={toggleInfoTaskIconModal}>
                               Task Icons Info
                             </ModalHeader>
