@@ -22,9 +22,11 @@ import { getUserProfile } from '../../actions/userProfile';
 import { boxStyle } from 'styles';
 
 const Badge = props => {
+  console.log("🚀 ~ file: Badge.jsx:25 ~ Badge ~ props:", props)
   const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
+  console.log("🚀 ~ file: Badge.jsx:29 ~ Badge ~ totalBadge:", totalBadge)
 
   const toggle = () => {
     if (isOpen) {
@@ -35,7 +37,7 @@ const Badge = props => {
           if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
             count += 1;
           } else {
-            count += badge.count;
+            count += Number(badge.count);
           }
         });
         setTotalBadge(Math.round(count));
@@ -49,6 +51,7 @@ const Badge = props => {
   };
 
   useEffect(() => {
+    console.log("useEffect invoked")
     const userId = props.userId;
     let count = 0;
     if (props.userProfile.badgeCollection) {
@@ -56,7 +59,7 @@ const Badge = props => {
         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
           count += 1;
         } else {
-          count += badge.count;
+          count += Number(badge.count);
         }
       });
       setTotalBadge(Math.round(count));
