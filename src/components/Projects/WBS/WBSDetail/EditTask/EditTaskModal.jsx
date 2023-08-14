@@ -173,7 +173,7 @@ const EditTaskModal = props => {
       hasPermission(role, 'editTask', roles, userPermissions),
       oldTask,
     );
-    props.setTask(updatedTask)
+    props.setTask && props.setTask(updatedTask)
 
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
