@@ -26,7 +26,6 @@ const Badge = props => {
   const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
-  console.log("🚀 ~ file: Badge.jsx:29 ~ Badge ~ totalBadge:", totalBadge)
 
   const toggle = () => {
     if (isOpen) {
@@ -51,7 +50,6 @@ const Badge = props => {
   };
 
   useEffect(() => {
-    console.log("useEffect invoked")
     const userId = props.userId;
     let count = 0;
     if (props.userProfile.badgeCollection) {
