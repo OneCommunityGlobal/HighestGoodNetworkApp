@@ -5,13 +5,13 @@ import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 
 const TeamMembersPopup = React.memo(props => {
-  // debugger;
   const closePopup = () => {
     props.onClose();
   };
   const [selectedUser, onSelectUser] = useState(undefined);
   const [isValidUser, onValidation] = useState(true);
   const [searchText, setSearchText] = useState('');
+  const [memberList, setMemberList] = useState([]);
 
   const onAddUser = () => {
     if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
@@ -25,6 +25,20 @@ const TeamMembersPopup = React.memo(props => {
     onSelectUser(user);
     onValidation(true);
   };
+
+  useEffect(() => {
+    setMemberList(props.members.teamMembers.toSorted((a, b) => {
+      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    }))
+  }, [props.members.teamMembers])
 
   useEffect(() => {
     onValidation(true);
@@ -53,11 +67,7 @@ const TeamMembersPopup = React.memo(props => {
               </Button>
             </div>
           )}
-          {isValidUser === false ? (
-            <Alert color="danger">Please choose a valid user.</Alert>
-          ) : (
-            <></>
-          )}
+          {isValidUser && <Alert color="danger">Please choose a valid user.</Alert>}
           <div>
             <table className="table table-bordered table-responsive-sm">
               <thead>
@@ -73,8 +83,8 @@ const TeamMembersPopup = React.memo(props => {
                 </tr>
               </thead>
               <tbody>
-                {props.members.teamMembers.length > 0 ? (
-                  props.members.teamMembers.map((user, index) => (
+                {props.members.teamMembers.length > 0 &&
+                  memberList.toSorted().map((user, index) => (
                     <tr key={`team_member_${index}`}>
                       <td>{index + 1}</td>
                       <td>{`${user.firstName} ${user.lastName}`}</td>
@@ -98,9 +108,7 @@ const TeamMembersPopup = React.memo(props => {
                       )}
                     </tr>
                   ))
-                ) : (
-                  <></>
-                )}
+                }
               </tbody>
             </table>
           </div>
