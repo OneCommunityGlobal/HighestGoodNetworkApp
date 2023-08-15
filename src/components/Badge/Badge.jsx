@@ -22,7 +22,6 @@ import { getUserProfile } from '../../actions/userProfile';
 import { boxStyle } from 'styles';
 
 const Badge = props => {
-  console.log("🚀 ~ file: Badge.jsx:25 ~ Badge ~ props:", props)
   const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);

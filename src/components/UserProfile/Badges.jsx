@@ -19,7 +19,6 @@ import { clearSelected } from 'actions/badgeManagement';
 import { boxStyle } from 'styles';
 
 export const Badges = props => {
-  console.log("🚀 ~ file: Badges.jsx:22 ~ Badges ~ props:", props)
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
   const permissionsUser = props.userProfile?.permissions?.frontPermissions;
