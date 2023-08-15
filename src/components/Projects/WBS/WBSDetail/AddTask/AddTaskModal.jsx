@@ -251,6 +251,7 @@ function AddTaskModal(props) {
       endstateInfo,
     };
     await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
+    props.load();
     toggle();
   };
 
