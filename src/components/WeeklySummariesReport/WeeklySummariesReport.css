@@ -29,8 +29,10 @@
 
 .name-info{
   display: flex;
+}
 .total-valid-wrapper {
   display: flex;
   align-items: center;
   flex-direction: row;
   white-space: nowrap;
+}

@@ -31,7 +31,6 @@ const mapPermissionToLabel = permissions => {
 };
 
 function RolePermissions(props) {
-  const modalInfo = {
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
