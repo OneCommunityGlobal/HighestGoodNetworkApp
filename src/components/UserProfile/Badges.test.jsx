@@ -33,7 +33,7 @@ describe('Badges Component', () => {
         const props = {
           ...badgeProps,
           isUserSelf: true,
-          userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1'] },
+          userProfile: { ...badgeProps.userProfile, badgeCollection: [{ count: 1 }] },
         };
         const renderedBadges = render(<Badges {...props} />);
         expect(renderedBadges.find('.card-footer').text()).toBe('Bravo! You have earned 1 badge! ');
@@ -45,7 +45,7 @@ describe('Badges Component', () => {
           isUserSelf: true,
           userProfile: {
             ...badgeProps.userProfile,
-            badgeCollection: ['B1', 'B2', 'B3'],
+            badgeCollection: [{ count: 1 }, { count: 2 }, { count: 3 }],
           },
         };
         const renderedBadges = render(<Badges {...props} />);
@@ -65,7 +65,7 @@ describe('Badges Component', () => {
       it('should display the correct text when they have exactly 1 badge', () => {
         const props = {
           ...badgeProps,
-          userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1'] },
+          userProfile: { ...badgeProps.userProfile, badgeCollection: [ { count: 1 }] },
         };
         const renderedBadges = render(<Badges {...props} />);
         expect(renderedBadges.find('.card-footer').text()).toBe(
@@ -78,7 +78,7 @@ describe('Badges Component', () => {
           ...badgeProps,
           userProfile: {
             ...badgeProps.userProfile,
-            badgeCollection: ['B1', 'B2', 'B3'],
+            badgeCollection: [{ count: 1 }, { count: 2 }, { count: 3 }],
           },
         };
         const renderedBadges = render(<Badges {...props} />);
