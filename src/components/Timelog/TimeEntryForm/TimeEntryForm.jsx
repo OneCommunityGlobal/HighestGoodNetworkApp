@@ -22,6 +22,7 @@ import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
 import { getAllRoles } from 'actions/role';
+import { updateUserProfile } from 'actions/userProfile';
 
 import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
@@ -475,6 +476,20 @@ const TimeEntryForm = props => {
         `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
       );
       return;
+    }
+
+    // see if this is the first time the user is logging time
+    if (!edit) {
+      if (userProfile.isFirstTimelog && userProfile.isFirstTimelog === true) {
+
+        const updatedUserProfile = {
+          ...userProfile,
+          createdDate: new Date(),
+          isFirstTimelog: false,
+        };
+    
+        dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
+      }
     }
 
     //Clear the form and clean up.
