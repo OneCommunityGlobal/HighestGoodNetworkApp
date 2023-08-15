@@ -49,6 +49,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         projects: Object.assign([
           ...allProjects.projects.slice(0, index),
           {
+            category: action.category,
             _id: action.projectId,
             isActive: action.isActive,
             projectName: action.projectName,
