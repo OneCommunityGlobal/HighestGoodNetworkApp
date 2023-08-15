@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PopupText from './PopupText/';
 import { fetchAllPopupEditor } from './../../actions/popupEditorAction';
@@ -9,8 +9,6 @@ const Admin = props => {
     console.log('props', props);
     props.fetchAllPopupEditor();
   }, [1]);
-
-  const [keyword, setKeyword] = useState('');
 
   return (
     <>

@@ -11,7 +11,6 @@ export const fetchAllPopupEditor = () => {
   return async dispatch => {
     request
       .then(res => {
-        console.log('res', res);
         dispatch(setPopup(res.data));
       })
       .catch(err => {
