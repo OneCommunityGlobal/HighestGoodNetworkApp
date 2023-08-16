@@ -200,14 +200,16 @@ const TeamMemberTask = React.memo(({
                               </Button>
                             </ModalFooter>
                           </Modal>
-                          <ReviewButton 
-                            user={user}
-                            myUserId={userId}
-                            myRole={userRole}
-                            task={task}
-                            updateTask={updateTask}
-                            style={boxStyle}
-                          />
+                          <div>
+                            <ReviewButton 
+                              user={user}
+                              myUserId={userId}
+                              myRole={userRole}
+                              task={task}
+                              updateTask={updateTask}
+                              style={boxStyle}
+                            />
+                          </div>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
