@@ -265,7 +265,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </div>
-            {bioFunction(summary, summary._id, summary.bioPosted, summary.weeklySummaryOption, summary.totalTangibleHrs, summary.daysInTeam)}
+            {bioFunction(summary._id, summary.bioPosted, summary, summary.weeklySummaryOption, summary.totalTangibleHrs, summary.daysInTeam)}
             {getTotalValidWeeklySummaries(summary)}
             {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
               <p>
