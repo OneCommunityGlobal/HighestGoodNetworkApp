@@ -119,7 +119,7 @@ function AddTaskModal(props) {
       ...resourceItems,
     ]
     setResourceItems(newResource);
-    if (newResource.length) setAssigned(true);
+    setAssigned(true);
   };
 
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });

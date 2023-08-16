@@ -28,25 +28,25 @@ const EditTaskModal = props => {
   const [thisTask, setThisTask] = useState();
   const [oldTask, setOldTask] = useState();
   const [modal, setModal] = useState(false);
-  const [taskName, setTaskName] = useState(thisTask?.taskName);
-  const [priority, setPriority] = useState(thisTask?.priority);
-  const [resourceItems, setResourceItems] = useState(thisTask?.resources);
-  const [assigned, setAssigned] = useState(false);
-  const [status, setStatus] = useState('false');
-  const [hoursBest, setHoursBest] = useState(thisTask?.hoursBest);
-  const [hoursWorst, setHoursWorst] = useState(thisTask?.hoursWorst);
-  const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
-  const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
-  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
+  const [taskName, setTaskName] = useState();
+  const [priority, setPriority] = useState();
+  const [resourceItems, setResourceItems] = useState();
+  const [assigned, setAssigned] = useState();
+  const [status, setStatus] = useState();
+  const [hoursBest, setHoursBest] = useState();
+  const [hoursWorst, setHoursWorst] = useState();
+  const [hoursMost, setHoursMost] = useState();
+  const [hoursEstimate, setHoursEstimate] = useState();
+  const [deadlineCount, setDeadlineCount] = useState();
   const [hoursWarning, setHoursWarning] = useState(false);
   const [link, setLink] = useState('');
-  const [links, setLinks] = useState(thisTask?.links);
-  const [category, setCategory] = useState(thisTask?.category);
-  const [whyInfo, setWhyInfo] = useState(thisTask?.whyInfo);
-  const [intentInfo, setIntentInfo] = useState(thisTask?.intentInfo);
-  const [endstateInfo, setEndstateInfo] = useState(thisTask?.endstateInfo);
-  const [startedDate, setStartedDate] = useState(thisTask?.startedDatetime);
-  const [dueDate, setDueDate] = useState(thisTask?.dueDatetime);
+  const [links, setLinks] = useState();
+  const [category, setCategory] = useState();
+  const [whyInfo, setWhyInfo] = useState();
+  const [intentInfo, setIntentInfo] = useState();
+  const [endstateInfo, setEndstateInfo] = useState();
+  const [startedDate, setStartedDate] = useState();
+  const [dueDate, setDueDate] = useState();
   const [dateWarning, setDateWarning] = useState(false);
 
   const res = [...(resourceItems ? resourceItems : [])];
@@ -69,23 +69,24 @@ const EditTaskModal = props => {
   const toggle = () => setModal(!modal);
 
   const removeResource = userID => {
-    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
-    setResourceItems([
-      ...resourceItems.slice(0, removeIndex),
-      ...resourceItems.slice(removeIndex + 1),
-    ]);
+    const newResource = resourceItems.filter(item => item.userID !== userID);
+    setResourceItems(newResource);
+    if (!newResource.length) setAssigned(false);
   };
 
   const addResources = (userID, first, last, profilePic) => {
-    res.push({
-      userID,
-      name: `${first} ${last}`,
-      profilePic,
-    });
-    setResourceItems([...(res ? res : [])]);
+    const newResource = [
+      {
+        userID,
+        name: `${first} ${last}`,
+        profilePic,
+      },
+      ...resourceItems,
+    ]
+    setResourceItems(newResource);
+    setAssigned(true);
   };
 
-  // helper for hours estimate calculation
   const calHoursEstimate = (isOn = null) => {
     let currHoursMost = parseInt(hoursMost);
     let currHoursWorst = parseInt(hoursWorst);
@@ -110,7 +111,6 @@ const EditTaskModal = props => {
     }
   };
 
-   // helpers for change start/end date
   const changeDateStart = startDate => {
     setStartedDate(startDate);
     if (dueDate) {
@@ -131,7 +131,6 @@ const EditTaskModal = props => {
       }
     }
   };
-  // helper for date picker
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   const parseDate = (str, format, locale) => {
     const parsed = dateFnsParse(str, format, new Date(), { locale });
@@ -141,8 +140,7 @@ const EditTaskModal = props => {
     return undefined;
   };
 
-   // helpers for add/remove links
-   const addLink = () => {
+  const addLink = () => {
     setLinks([...links, link]);
     setLink('');
   };
@@ -150,7 +148,6 @@ const EditTaskModal = props => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
 
-  // helper for updating task
   const updateTask = async () => {
     let newDeadlineCount = deadlineCount;
     if (thisTask?.estimatedHours !== hoursEstimate) {
@@ -197,30 +194,12 @@ const EditTaskModal = props => {
   /*
   * -------------------------------- useEffects --------------------------------
   */
-
-  useEffect(() => {
-    const fetchTaskData = async () => {
-      try {
-        const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
-        setThisTask(res?.data || {});
-        setCategory(res.data.category);
-        setAssigned(res.data.isAssigned);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchTaskData();
-  }, []);
-
-  // from dev
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
         setOldTask(res?.data || {});
-        setCategory(res.data.category);
-        setAssigned(res.data.isAssigned);
       } catch (error) {
         console.log(error);
       }
@@ -233,28 +212,8 @@ const EditTaskModal = props => {
     setTaskName(thisTask?.taskName);
     setPriority(thisTask?.priority);
     setResourceItems(thisTask?.resources);
-    setAssigned(thisTask?.isAssigned || false);
-    setStatus(thisTask?.status || false);
-    setHoursBest(thisTask?.hoursBest);
-    setHoursWorst(thisTask?.hoursWorst);
-    setHoursMost(thisTask?.hoursMost);
-    setHoursEstimate(thisTask?.estimatedHours);
-    setLinks(thisTask?.links);
-    setCategory(thisTask?.category);
-    setWhyInfo(thisTask?.whyInfo);
-    setIntentInfo(thisTask?.intentInfo);
-    setEndstateInfo(thisTask?.endstateInfo);
-    setStartedDate(thisTask?.startedDatetime);
-    setDueDate(thisTask?.dueDatetime);
-  }, [thisTask]);
-
-  // from dev
-  useEffect(() => {
-    setTaskName(thisTask?.taskName);
-    setPriority(thisTask?.priority);
-    setResourceItems(thisTask?.resources);
-    setAssigned(thisTask?.isAssigned || false);
-    setStatus(thisTask?.status || false);
+    setAssigned(thisTask?.isAssigned);
+    setStatus(thisTask?.status);
     setHoursBest(thisTask?.hoursBest);
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
@@ -268,7 +227,6 @@ const EditTaskModal = props => {
     setStartedDate(thisTask?.startedDatetime);
     setDueDate(thisTask?.dueDatetime);
   }, [thisTask]);
-
 
   useEffect(() => {
     ReactTooltip.rebuild();
