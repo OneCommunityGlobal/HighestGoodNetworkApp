@@ -464,8 +464,8 @@ const BasicInformationTab = props => {
               <Label>Location</Label>
             </Col>
             <Col md="6">
-              <Row>
-                <Col md="6">
+              <Row className='ml-0'>
+                <Col md="6" className='p-0'>
                   <Input
                     onChange={e => {
                       setLocation(e.target.value);
@@ -474,18 +474,16 @@ const BasicInformationTab = props => {
                     value={userProfile.location}
                   />
                 </Col>
-                <Col md="6">
-                  <div className="w-100 pt-1 mb-2 mx-auto">
-                    <Button
-                      color="secondary"
-                      block
-                      size="sm"
-                      onClick={onClickGetTimeZone}
-                      style={boxStyle}
-                    >
-                      Get Time Zone
-                    </Button>
-                  </div>
+                <Col md="6" className='pr-0'>
+                  <Button
+                    color="secondary"
+                    block
+                    onClick={onClickGetTimeZone}
+                    style={boxStyle}
+                    className='px-0'
+                  >
+                    Get Time Zone
+                  </Button>
                 </Col>
               </Row>
             </Col>
