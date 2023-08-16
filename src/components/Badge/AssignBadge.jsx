@@ -111,6 +111,7 @@ const AssignBadge = props => {
     placeholder: ' first name',
     value: props.firstName,
     onChange: onFirstChange,
+    autoFocus: true,
   };
   const LastInputProps = {
     placeholder: ' last name',
@@ -148,15 +149,16 @@ const AssignBadge = props => {
             }}
           >
             <p className="badge_info_icon_text">
-              Really, you&apos;re not sure what &quot;name&quot; means? Start typing a first or last name and a
-              list of the active members (matching what you type) will be auto generated. Then
-              you........ CHOOSE ONE!
+              Really, you&apos;re not sure what &quot;name&quot; means? Start typing a first or last
+              name and a list of the active members (matching what you type) will be auto generated.
+              Then you........ CHOOSE ONE!
             </p>
             <p className="badge_info_icon_text">
-              Yep, that&apos;s it. Next you click &quot;Assign Badge&quot; and.... choose one or multiple badges!
-              Click &quot;confirm&quot; then &quot;submit&quot; and those badges will show up as part of that person&apos;s
-              earned badges. You can even assign a person multiple of the same badge(s) by repeating
-              this process and choosing the same badge as many times as you want them to earn it.
+              Yep, that&apos;s it. Next you click &quot;Assign Badge&quot; and.... choose one or
+              multiple badges! Click &quot;confirm&quot; then &quot;submit&quot; and those badges
+              will show up as part of that person&apos;s earned badges. You can even assign a person
+              multiple of the same badge(s) by repeating this process and choosing the same badge as
+              many times as you want them to earn it.
             </p>
           </UncontrolledTooltip>
           <div style={{ marginRight: '5px' }}>

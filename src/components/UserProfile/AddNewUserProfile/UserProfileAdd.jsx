@@ -43,6 +43,7 @@ import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
+import WeeklySummaryOptions from './WeeklySummaryOptions';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
@@ -268,19 +269,7 @@ class AddUserProfile extends Component {
                     <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="select"
-                        name="weeklySummaryOption"
-                        id="weeklySummaryOption"
-                        defaultValue="Required"
-                        onChange={this.handleUserProfile}
-                      >
-                        <option value="Required">Required</option>
-                        <option value="Not Required">Not Required</option>
-                        <option value="Team">Team</option>
-                      </Input>
-                    </FormGroup>
+                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
                   </Col>
                 </Row>
                 <Row className="user-add-row">
@@ -580,7 +569,7 @@ class AddUserProfile extends Component {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
     if (dropboxDoc) {
-      userData.adminLinks.push({ Name: 'Dropbox Link', Link: dropboxDoc });
+      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
