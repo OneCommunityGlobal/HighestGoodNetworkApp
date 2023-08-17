@@ -369,3 +369,8 @@ input:checked + .slider:before {
   bottom: 10px;
   white-space: nowrap
 }
+
+.dark .input-group-prepend + .form-control{
+  color: white !important;
+}
+
