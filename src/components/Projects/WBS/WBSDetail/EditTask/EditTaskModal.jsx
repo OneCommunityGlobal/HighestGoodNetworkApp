@@ -175,13 +175,16 @@ const EditTaskModal = props => {
       endstateInfo,
       category,
     };
+    props.setIsLoading?.(true);
     await props.updateTask(
       props.taskId,
       updatedTask,
       hasPermission(role, 'editTask', roles, userPermissions),
       oldTask,
     );
-    props.setTask(updatedTask)
+    props.setTask?.(updatedTask);
+    await props.load?.();
+    props.setIsLoading?.(false);
 
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
