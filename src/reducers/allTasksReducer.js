@@ -29,7 +29,7 @@ const sortByNum = tasks => {
      * so below are the temporary fix to create a 'hasChildren' property to represent the actual 'hasChild' value
      * this should be fixed by future PR. --- PR#934
      */
-    const hasChildren = tasks.some(item => item.mother === task._id);
+    const hasChildren = tasks.some(item => item?.mother === task._id);
 
     /** task.num from response data has different form for different level:
      *    level 1: x
@@ -47,59 +47,25 @@ const sortByNum = tasks => {
 };
 
 export const taskReducer = (allTasks = allTasksInital, action) => {
+  let newTaskItems;
   switch (action.type) {
     case types.FETCH_TASKS_START:
       return { ...allTasks, fetched: false, fetching: true, error: 'none' };
     case types.FETCH_TASKS_ERROR:
       return { ...allTasks, fetched: true, fetching: false, error: action.err };
     case types.RECEIVE_TASKS:
-      /** commemt out old code for future reference (mother parameter) --- PR#934 */
-      // if (action.level === -1) {
-      //   return { ...allTasks, taskItems: [], fetched: true, fetching: false, error: 'none' };
-      // } else if (action.level === 0) {
-      //   return {
-      //     ...allTasks,
-      //     taskItems: [...sortByNum(action.taskItems)],
-      //     fetched: true,
-      //     fetching: false,
-      //     error: 'none',
-      //   };
-      // } else {
-      //   const motherIndex = allTasks.taskItems.findIndex(item => item._id === action.mother);
-      //   return {
-      //     ...allTasks,
-      //     taskItems: [
-      //       ...allTasks.taskItems.slice(0, motherIndex + 1),
-      //       ...sortByNum(action.taskItems),
-      //       ...allTasks.taskItems.slice(motherIndex + 1),
-      //     ],
-      //     fetched: true,
-      //     fetching: false,
-      //     error: 'none',
-      //   };
-      if (action.level === -1) {
-        return {
-          ...allTasks,
-          taskItems: [],
-          fetchedData: [],
-          fetched: true,
-          fetching: false,
-          error: 'none',
-        };
-      } else {
-        allTasks.fetchedData[action.level] = action.taskItems;
-        const newTaskItems = allTasks.fetchedData.flat();
-        return {
-          ...allTasks,
-          fetchedData: [...allTasks.fetchedData],
-          taskItems: sortByNum(newTaskItems),
-          fetched: true,
-          fetching: false,
-          error: 'none',
-        };
-      }
+      allTasks.fetchedData[action.level] = action.taskItems;
+      newTaskItems = allTasks.fetchedData.flat();
+      return {
+        ...allTasks,
+        fetchedData: [...allTasks.fetchedData],
+        taskItems: sortByNum(newTaskItems),
+        fetched: true,
+        fetching: false,
+        error: 'none',
+      };
     case types.ADD_NEW_TASK:
-      const newTaskItems = [action.newTask, ...allTasks.taskItems];
+      newTaskItems = [action.newTask, ...allTasks.taskItems];
       return {
         ...allTasks,
         taskItems: sortByNum(newTaskItems),
@@ -134,8 +100,11 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
     case types.EMPTY_TASK_ITEMS:
       return {
         ...allTasks,
-        fetchedData: [],
         taskItems: [],
+        fetchedData: [],
+        fetched: true,
+        fetching: false,
+        error: 'none',
       };
     case types.UPDATE_TASK:
       const updIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
@@ -154,9 +123,12 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         error: 'none',
       };
     case types.COPY_TASK:
-      const copiedIndex = allTasks.taskItems.findIndex(item => item._id === action.taskId);
-      console.log(allTasks.taskItems[copiedIndex]);
-      return { ...allTasks, copiedTask: allTasks.taskItems[copiedIndex] };
+      const copiedTask = allTasks.taskItems.find(item => item._id === action.taskId);
+      console.log(copiedTask);
+      return { ...allTasks, copiedTask };
+    case types.ADD_NEW_TASK_ERROR:
+      const error = action.err;
+      return { ...allTasks, error };
     case fetchTeamMembersTaskSuccess.type:
       return { ...allTasks, ...action.tasks }; // change that when there will be backend
     default:

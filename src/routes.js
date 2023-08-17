@@ -93,7 +93,7 @@ export default (
             exact
             component={Projects}
             allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-            routePermissions={RoutePermissions.weeklySummariesReport}
+            routePermissions={RoutePermissions.projects}
           />
           <ProtectedRoute
             path="/projects"

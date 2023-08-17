@@ -15,78 +15,118 @@ import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './EditLinkModal.css';
 import { boxStyle } from 'styles';
+import { set } from 'lodash';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
   const { roles } = useSelector(state => state.role);
   const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
-  const [linkName, setLinkName] = useState('');
-  const [linkURL, setLinkURL] = useState('');
 
-  const [adminLinkName, setAdminLinkName] = useState('');
-  const [adminLinkURL, setAdminLinkURL] = useState('');
+  const initialAdminLinkState = [
+    { Name: 'Google Doc', Link: '' },
+    { Name: 'Media Folder', Link: '' },
+  ];
+  const emptyLink = { Name: '', Link: '' };
 
-  const [personalLinks, dispatchPersonalLinks] = useReducer(
-    (personalLinks, { type, value, passedIndex }) => {
-      setChanged(true);
-      switch (type) {
-        case 'add':
-          setLinkName('');
-          setLinkURL('');
-          return [...personalLinks, value];
-        case 'remove':
-          return personalLinks.filter((_, index) => index !== passedIndex);
-        case 'updateName':
-          return personalLinks.filter((_, index) => {
-            if (index === passedIndex) {
-              _.Name = value;
-            }
-            return _;
-          });
-        case 'updateLink':
-          return personalLinks.filter((_, index) => {
-            if (index === passedIndex) {
-              _.Link = value;
-            }
-            return _;
-          });
-        default:
-          return personalLinks;
-      }
-    },
-    userProfile.personalLinks,
+  const [newAdminLink, setNewAdminLink] = useState(emptyLink);
+  const [newPersonalLink, setNewPersonalLink] = useState(emptyLink);
+
+  const [googleLink, setGoogleLink] = useState(
+    userProfile.adminLinks.find(link => link.Name === 'Google Doc')
+      ? userProfile.adminLinks.find(link => link.Name === 'Google Doc')
+      : initialAdminLinkState[0],
+  );
+  const [mediaFolderLink, setMediaFolderLink] = useState(
+    userProfile.adminLinks.find(link => link.Name === 'Media Folder')
+      ? userProfile.adminLinks.find(link => link.Name === 'Media Folder')
+      : initialAdminLinkState[1],
+  );
+  const [adminLinks, setAdminLinks] = useState(
+    userProfile.adminLinks
+      ? userProfile.adminLinks
+          .filter(link => link.Name !== 'Google Doc')
+          .filter(link => link.Name !== 'Media Folder')
+      : [],
+  );
+  const [personalLinks, setPersonalLinks] = useState(
+    userProfile.personalLinks ? userProfile.personalLinks : [],
   );
 
-  const [adminLinks, dispatchAdminLinks] = useReducer(
-    (adminLinks, { type, value, passedIndex }) => {
-      setChanged(true);
-      switch (type) {
-        case 'add':
-          setAdminLinkName('');
-          setAdminLinkURL('');
-          return [...adminLinks, value];
-        case 'remove':
-          return adminLinks.filter((_, index) => index !== passedIndex);
-        case 'updateName':
-          return adminLinks.filter((_, index) => {
-            if (index === passedIndex) {
-              _.Name = value;
-            }
-            return _;
-          });
-        case 'updateLink':
-          return adminLinks.filter((_, index) => {
-            if (index === passedIndex) {
-              _.Link = value;
-            }
-            return _;
-          });
-        default:
-          return adminLinks;
-      }
-    },
-    userProfile.adminLinks,
-  );
+  const [isChanged, setIsChanged] = useState(false);
+  const [isValidLink, setIsValidLink] = useState(true);
+
+  const handleNameChanges = (e, links, index, setLinks) => {
+    const updateLinks = [...links];
+    updateLinks[index] = { ...updateLinks[index], Name: e.target.value };
+    setLinks(updateLinks);
+    setIsChanged(true);
+  };
+  const handleLinkChanges = (e, links, index, setLinks) => {
+    const updateLinks = [...links];
+    updateLinks[index] = { ...updateLinks[index], Link: e.target.value };
+    setLinks(updateLinks);
+    setIsChanged(true);
+  };
+
+  const addNewLink = (links, setLinks, newLink, clearInput) => {
+    if (isDuplicateLink([googleLink,mediaFolderLink,...links], newLink) || !isValidUrl(newLink.Link)) {
+      setIsValidLink(false);
+    } else {
+      const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
+      setLinks(newLinks);
+      setIsChanged(true);
+      setIsValidLink(true);
+      clearInput();
+    }
+  };
+
+  const removeLink = (links, setLinks, { name, link }) => {
+    const newLinks = links.filter(link => {
+      return link.Name !== name;
+    });
+    setLinks(newLinks);
+    setIsChanged(true);
+  };
+
+  const isDuplicateLink = (links, newLink) => {
+    // ! return true if there is a duplicate link, which is invalid
+    if (newLink.Name === '' || newLink.Link === '') return true;
+    else {
+      const name = newLink.Name.trim().toLowerCase();
+      const nameSet = new Set();
+      links.forEach(link => {
+        nameSet.add(link.Name.trim().toLowerCase());
+      });
+      return nameSet.has(name);
+    }
+  };
+
+  const isValidUrl = url => {
+    try {
+      const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
+      return pattern.test(url);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  };
+
+  const handleUpdate = () => {
+    const updatable =
+      (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
+      (googleLink.Link === '' && mediaFolderLink.Link === '') ||
+      (isValidUrl(googleLink.Link) && mediaFolderLink.Link === '') ||
+      (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
+    if (updatable) {
+      // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
+      updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
+      setIsValidLink(true);
+      setIsChanged(true);
+      closeModal();
+    } else {
+      setIsValidLink(false);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -99,49 +139,81 @@ const EditLinkModal = props => {
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
                   <div>
-                    <div style={{ display: 'flex', margin: '5px' }}>
-                      <div className="customTitle">Name</div>
-                      <div className="customTitle">Link URL</div>
-                    </div>
-                    {adminLinks?.map((link, index) => (
-                      <div
-                        key={index}
-                        style={{ display: 'flex', margin: '5px' }}
-                        className="link-fields"
-                      >
-                        <input
-                          className="customInput"
-                          value={link.Name}
-                          onChange={e =>
-                            dispatchAdminLinks({
-                              type: 'updateName',
-                              value: e.target.value,
-                              passedIndex: index,
-                            })
-                          }
-                        />
-                        <input
-                          className="customInput"
-                          value={link.Link}
-                          onChange={e =>
-                            dispatchAdminLinks({
-                              type: 'updateLink',
-                              value: e.target.value,
-                              passedIndex: index,
-                            })
-                          }
-                        />
-                        <button
-                          type="button"
-                          className="closeButton"
-                          color="danger"
-                          onClick={() => dispatchAdminLinks({ type: 'remove', passedIndex: index })}
-                        >
-                          X
-                        </button>
-                      </div>
-                    ))}
+                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                      <input
+                        className="customEdit"
+                        id="linkName1"
+                        placeholder="Google Doc"
+                        value="Google Doc"
+                        disabled
+                      />
 
+                      <input
+                        className="customEdit"
+                        id="linkURL1"
+                        placeholder="Enter Google Doc link"
+                        value={googleLink.Link}
+                        onChange={e => {
+                          setGoogleLink({ ...googleLink, Link: e.target.value.trim() });
+                          setIsChanged(true);
+                        }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                      <input
+                        className="customEdit"
+                        id="linkName2"
+                        placeholder="Media Folder"
+                        value="Media Folder"
+                        disabled
+                      />
+
+                      <input
+                        className="customEdit"
+                        id="linkURL2"
+                        placeholder="Enter Dropbox link"
+                        value={mediaFolderLink.Link}
+                        onChange={e => {
+                          setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+                          setIsChanged(true);
+                        }}
+                      />
+                    </div>
+                    {adminLinks?.map((link, index) => {
+                      return (
+                        <div
+                          key={index}
+                          style={{ display: 'flex', margin: '5px' }}
+                          className="link-fields"
+                        >
+                          <input
+                            className="customInput"
+                            value={link.Name}
+                            onChange={e => handleNameChanges(e, adminLinks, index, setAdminLinks)}
+                            placeholder="Link Name"
+                          />
+                          <input
+                            className="customInput"
+                            value={link.Link}
+                            onChange={e => handleLinkChanges(e, adminLinks, index, setAdminLinks)}
+                            placeholder="Link URL"
+                          />
+                          <button
+                            type="button"
+                            className="closeButton"
+                            color="danger"
+                            onClick={() =>
+                              removeLink(adminLinks, setAdminLinks, {
+                                name: link.Name,
+                                link: link.Link,
+                              })
+                            }
+                          >
+                            X
+                          </button>
+                        </div>
+                      );
+                    })}
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <div className="customTitle">+ ADD LINK:</div>
                     </div>
@@ -151,23 +223,31 @@ const EditLinkModal = props => {
                         className="customEdit"
                         id="linkName"
                         placeholder="enter name"
-                        onChange={e => setAdminLinkName(e.target.value)}
+                        value={newAdminLink.Name}
+                        onChange={e => {
+                          const { value } = e.target;
+                          setNewAdminLink(prev => ({ ...prev, Name: value }));
+                        }}
                       />
                       <input
                         className="customEdit"
                         id="linkURL"
                         placeholder="enter link"
-                        onChange={e => setAdminLinkURL(e.target.value.trim())}
+                        value={newAdminLink.Link}
+                        onChange={e => {
+                          const { value } = e.target;
+                          setNewAdminLink(prev => ({ ...prev, Link: value }));
+                        }}
                       />
+
                       <button
                         type="button"
                         className="addButton"
-                        onClick={() =>
-                          dispatchAdminLinks({
-                            type: 'add',
-                            value: { Name: adminLinkName, Link: adminLinkURL },
-                          })
-                        }
+                        onClick={() => {
+                          addNewLink(adminLinks, setAdminLinks, newAdminLink, () =>
+                            setNewAdminLink(emptyLink),
+                          );
+                        }}
                       >
                         +
                       </button>
@@ -180,10 +260,6 @@ const EditLinkModal = props => {
               <Card style={{ padding: '16px' }}>
                 <Label style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
                 <div>
-                  <div style={{ display: 'flex', margin: '5px' }}>
-                    <div className="customTitle">Name</div>
-                    <div className="customTitle">Link URL</div>
-                  </div>
                   {personalLinks.map((link, index) => (
                     <div
                       key={index}
@@ -193,31 +269,22 @@ const EditLinkModal = props => {
                       <input
                         className="customInput"
                         value={link.Name}
-                        onChange={e =>
-                          dispatchPersonalLinks({
-                            type: 'updateName',
-                            value: e.target.value,
-                            passedIndex: index,
-                          })
-                        }
+                        onChange={e => handleNameChanges(e, personalLinks, index, setPersonalLinks)}
                       />
                       <input
                         className="customInput"
                         value={link.Link}
-                        onChange={e =>
-                          dispatchPersonalLinks({
-                            type: 'updateLink',
-                            value: e.target.value,
-                            passedIndex: index,
-                          })
-                        }
+                        onChange={e => handleLinkChanges(e, personalLinks, index, setPersonalLinks)}
                       />
                       <button
                         type="button"
                         className="closeButton"
                         color="danger"
                         onClick={() =>
-                          dispatchPersonalLinks({ type: 'remove', passedIndex: index })
+                          removeLink(personalLinks, setPersonalLinks, {
+                            name: link.Name,
+                            link: link.Link,
+                          })
                         }
                       >
                         X
@@ -231,41 +298,53 @@ const EditLinkModal = props => {
 
                   <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
                     <input
-                      className="customEdit"
-                      id="linkName"
+                      className="customEdit me-3"
                       placeholder="enter name"
-                      onChange={e => setLinkName(e.target.value)}
+                      value={newPersonalLink.Name}
+                      onChange={e => {
+                        const { value } = e.target;
+                        setNewPersonalLink(prev => ({ ...prev, Name: value }));
+                        setIsChanged(true);
+                      }}
                     />
                     <input
                       className="customEdit"
-                      id="linkURL"
                       placeholder="enter link"
-                      onChange={e => setLinkURL(e.target.value.trim())}
+                      value={newPersonalLink.Link}
+                      onChange={e => {
+                        const { value } = e.target;
+                        setNewPersonalLink(prev => ({ ...prev, Link: value }));
+                        setIsChanged(true);
+                      }}
                     />
                     <button
                       type="button"
                       className="addButton"
-                      onClick={() =>
-                        dispatchPersonalLinks({
-                          type: 'add',
-                          value: { Name: linkName, Link: linkURL },
-                        })
-                      }
+                      onClick={() => {
+                        addNewLink(personalLinks, setPersonalLinks, newPersonalLink, () =>
+                          setNewPersonalLink(emptyLink),
+                        );
+                      }}
                     >
                       +
                     </button>
                   </div>
                 </div>
               </Card>
+              {!isValidLink && (
+                <p className="invalid-help-context">
+                  Please ensure each link has a unique and not empty, and enter valid URLs.
+                </p>
+              )}
             </CardBody>
           </div>
         </ModalBody>
         <ModalFooter>
           <Button
             color="info"
+            disabled={!isChanged}
             onClick={() => {
-              updateLink(personalLinks, adminLinks);
-              closeModal();
+              handleUpdate();
             }}
             style={boxStyle}
           >
