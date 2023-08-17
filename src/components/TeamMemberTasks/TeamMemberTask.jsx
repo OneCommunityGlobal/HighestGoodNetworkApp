@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck, faTimes, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table, Progress } from 'reactstrap';
 
@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
-import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
 import { useDispatch } from 'react-redux';
 
@@ -177,20 +176,15 @@ const TeamMemberTask = React.memo(({
                               }}
                             />
                           )}
-                          <i
-                            className="fa fa-info-circle"
-                            style={{ cursor: 'pointer', marginLeft: '10px' }}
-                            data-tip
-                            data-for="taskIconTip"
-                            aria-hidden="true"
+                          <FontAwesomeIcon
+                            className="team-member-task-info"
+                            icon={faInfoCircle}
+                            title="Click this icon to learn about the task icons"
                             onClick={() => {
                               handleModalOpen();
                             }}
                           />
-                          <ReactTooltip id="taskIconTip" place="bottom" effect="solid">
-                            Click this icon to learn about the task icons
-                          </ReactTooltip>
-                          <Modal isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
+                          <Modal backdropClassName="task-info-modal-backdrop" isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
                             <ModalHeader toggle={toggleInfoTaskIconModal}>
                               Task Icons Info
                             </ModalHeader>

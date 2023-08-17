@@ -15,13 +15,13 @@ export const getTimeEntriesForWeek = (userId, offset) => {
     .tz('America/Los_Angeles')
     .startOf('week')
     .subtract(offset, 'weeks')
-    .format('YYYY-MM-DD');
+    .format('YYYY-MM-DDTHH:mm:ss');
 
   const toDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
     .subtract(offset, 'weeks')
-    .format('YYYY-MM-DD');
+    .format('YYYY-MM-DDTHH:mm:ss');
 
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
@@ -33,12 +33,18 @@ export const getTimeEntriesForWeek = (userId, offset) => {
       }
     });
     if (!loggedOut || !res || !res.data) {
-      await dispatch(setTimeEntriesForWeek(res.data, offset));
+      const filteredEntries = res.data.filter(entry => {
+        const entryDate = moment(entry.dateOfWork); // Convert the entry date to a moment object
+        return entryDate.isBetween(fromDate, toDate, 'day', '[]'); // Check if the entry date is within the range (inclusive)
+      });
+      await dispatch(setTimeEntriesForWeek(filteredEntries, offset));
+      // await dispatch(setTimeEntriesForWeek(res.data, offset));
     }
   };
 };
 
 export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
+  toDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
@@ -49,7 +55,16 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
       }
     });
     if (!loggedOut || !res || !res.data) {
-      await dispatch(setTimeEntriesForPeriod(res.data));
+      const filteredEntries = res.data.filter(entry => {
+        const entryDate = moment(entry.dateOfWork); // Convert the entry date to a moment object
+        return entryDate.isBetween(fromDate, toDate, 'day', '[]'); // Check if the entry date is within the range (inclusive)
+      });
+      filteredEntries.sort((a, b) => {
+        return moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf();
+      });
+
+      await dispatch(setTimeEntriesForPeriod(filteredEntries));
+      // await dispatch(setTimeEntriesForPeriod(res.data));
     }
   };
 };

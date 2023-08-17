@@ -71,7 +71,7 @@ const MediaURLTooltip = () => {
         <br />
         <br />
         Add the link to whichever you are using in the Link field. The app will remember whatever
-        you put there so you don’t need to re-enter it each week. <br />
+        you put there and once saved, it can only be changed on the profile. <br />
         <br />
         Pictures should cover the details of your work completed for the week: written content,
         mockups, designs, materials researched, etc. They are used for reviewing your work and
