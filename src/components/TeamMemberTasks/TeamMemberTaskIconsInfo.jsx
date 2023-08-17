@@ -5,10 +5,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { boxStyle } from 'styles';
 import './style.css';
-
-const infoTaskIconContent = `Red Bell Icon: When clicked, this will show any task changes\n
-  Green Checkmark Icon: When clicked, this will mark the task as completed\n
-  X Mark Icon: When clicked, this will remove the user from that task`;
+import { infoTaskIconContent } from './infoTaskIconContent';
 
 const TeamMemberTaskInfo = React.memo(() => {
     const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
@@ -27,18 +24,14 @@ const TeamMemberTaskInfo = React.memo(() => {
             className="team-member-task-info"
             icon={faInfoCircle}
             title="Click this icon to learn about the task icons"
-            onClick={() => {
-                handleModalOpen();
-            }}
+            onClick={handleModalOpen}
         />
         <Modal backdropClassName="task-info-modal-backdrop" isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
             <ModalHeader toggle={toggleInfoTaskIconModal}>
                 Task Icons Info
             </ModalHeader>
             <ModalBody>
-                {infoTaskIconContent.split('\n').map((item, i) => (
-                <p key={i}>{item}</p>
-                ))}
+                {infoTaskIconContent}
             </ModalBody>
             <ModalFooter>
                 <Button
@@ -46,9 +39,8 @@ const TeamMemberTaskInfo = React.memo(() => {
                     color="secondary"
                     className="float-left"
                     style={boxStyle}
-                    >
-                    {' '}
-                    Ok{' '}
+                >
+                    Ok
                 </Button>
             </ModalFooter>
         </Modal>
