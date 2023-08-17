@@ -48,9 +48,19 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
           Open link to media files
         </a>
       );
-    } else {
-      return 'Not provided!';
+    } 
+    else if(summary.adminLinks) {
+      for (const link of summary.adminLinks) {
+        if (link.Name === 'Media Folder'){
+          return (
+            <a href={link.Link} target="_blank" rel="noopener noreferrer">
+              Open link to media files
+            </a>
+          )
+        }
+      }
     }
+    return ('Not provided!')
   };
 
   const getGoogleDocLink = summary => {
