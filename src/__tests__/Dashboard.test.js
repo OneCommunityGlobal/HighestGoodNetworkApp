@@ -1,13 +1,7 @@
-// import React from 'react';
-// import { renderWithRouterMatch } from './utils.js';
-// import { screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import mockState from './mockAdminState.js';
-// import Dashboard from '../components/Dashboard';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-// import { Route } from 'react-router-dom';
-// import userEvent from '@testing-library/user-event';
 
 const mockStore = configureStore([thunk]);
 describe('Dashboard ', () => {

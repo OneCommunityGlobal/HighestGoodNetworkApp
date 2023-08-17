@@ -18,6 +18,7 @@ import Collapse from 'react-bootstrap/Collapse';
 import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
+import BadgeSummaryViz from '../BadgeSummaryViz';
 import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
@@ -262,11 +263,13 @@ class PeopleReport extends Component {
       toDate,
       timeEntries,
     } = this.state;
-    const { firstName, lastName, weeklycommittedHours, totalTangibleHrs } = userProfile;
+    const { firstName, lastName, weeklycommittedHours,hoursByCategory } = userProfile;
 
+  
     var totalTangibleHrsRound = 0;
-    if (totalTangibleHrs) {
-      totalTangibleHrsRound = totalTangibleHrs.toFixed(2);
+    if (hoursByCategory) {
+      const hours = hoursByCategory ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0):0;
+      totalTangibleHrsRound = hours.toFixed(2);
     }
 
     const UserProject = props => {
@@ -604,6 +607,9 @@ class PeopleReport extends Component {
               </div>
               <div className="visualizationDiv">
                 <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+              </div>
+              <div className='visualizationDiv'>
+                <BadgeSummaryViz badges={userProfile.badgeCollection} />
               </div>
             </table>
           </div>

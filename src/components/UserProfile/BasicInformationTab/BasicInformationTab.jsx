@@ -431,7 +431,11 @@ const BasicInformationTab = props => {
                 <select
                   value={userProfile.role}
                   onChange={e => {
-                    setUserProfile({ ...userProfile, role: e.target.value });
+                    setUserProfile({
+                      ...userProfile,
+                      role: e.target.value,
+                      permissions: { ...userProfile.permissions, frontPermissions: [] },
+                    });
                   }}
                   id="role"
                   name="role"
@@ -439,7 +443,11 @@ const BasicInformationTab = props => {
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
-                    return <option value={roleName}>{roleName}</option>;
+                    return (
+                      <option key={roleName} value={roleName}>
+                        {roleName}
+                      </option>
+                    );
                   })}
                   {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>
@@ -690,7 +698,7 @@ const BasicInformationTab = props => {
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
-                    return <option value={roleName}>{roleName}</option>;
+                    return <option key={roleName} value={roleName}>{roleName}</option>;
                   })}
                   {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>

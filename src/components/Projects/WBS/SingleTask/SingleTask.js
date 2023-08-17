@@ -145,6 +145,7 @@ function SingleTask(props) {
                   parentId3={task.parentId3}
                   mother={task.mother}
                   level={task.level}
+                  setTask={setTask}
                 />
                 {user.role === 'Volunteer' ? (
                     ''
@@ -157,7 +158,7 @@ function SingleTask(props) {
                         onClick={() => showUpDeleteModal()}
                         style={boxStyle}
                       >
-                        Delete 
+                        Delete
                         {' '}
                         <i className="fa fa-trash" aria-hidden="true" />
                       </Button>
@@ -193,7 +194,7 @@ function SingleTask(props) {
                               <img className="img-circle" src={elem.profilePic} />
                             </a>
                           );
-                        } 
+                        }
                           return (
                             <a
                               key={`res_${i}`}
@@ -206,7 +207,7 @@ function SingleTask(props) {
                               <span className="dot">{elem.name.substring(0, 2)}</span>
                             </a>
                           );
-                        
+
                       } catch (err) {}
                     })}
               </td>

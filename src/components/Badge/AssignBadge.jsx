@@ -111,6 +111,7 @@ const AssignBadge = props => {
     placeholder: ' first name',
     value: props.firstName,
     onChange: onFirstChange,
+    autoFocus: true,
   };
   const LastInputProps = {
     placeholder: ' last name',

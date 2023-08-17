@@ -64,9 +64,7 @@ const Project = props => {
               setCategory(e.target.value);
             }}
           >
-            <option default value="Unspecified">
-              {category}
-            </option>
+            <option default value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>
             <option value="Housing">Housing</option>

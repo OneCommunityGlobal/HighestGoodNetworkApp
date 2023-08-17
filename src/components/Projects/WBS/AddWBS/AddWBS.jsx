@@ -31,6 +31,7 @@ const AddWBS = props => {
           </div>
 
           <input
+            autoFocus
             type="text"
             className="form-control"
             aria-label="WBS WBS"
