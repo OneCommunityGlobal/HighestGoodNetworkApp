@@ -133,3 +133,50 @@ tr:hover {
 .noWrap {
   white-space: nowrap;
 }
+
+.centered-td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#requested-time-off-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+#requested-time-off-btn:hover {
+  background-color: #95c0fe;
+}
+.requested-time-off-calender-svg {
+  fill: #0d6efd;
+}
+
+.requested-time-off-clock-icon {
+  position: relative;
+  top: -8px;
+  right: 9px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.requested-time-off-clock-icon-svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+.requested-time-off-clock-icon-svg path {
+  fill: #0d6efd;
+}
+.Logged-time-off-cards-container {
+  overflow: scroll;
+  overflow-x: hidden;
+  max-height: 215px;
+}

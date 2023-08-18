@@ -13,6 +13,10 @@ import {
   Col,
   FormGroup,
   Label,
+  Card,
+  CardBody,
+  CardTitle,
+  Form,
 } from 'reactstrap';
 import { boxStyle } from 'styles';
 
@@ -24,11 +28,19 @@ const LogTimeOffPopUp = React.memo(props => {
   const [dateOfLeaveError, setDateOfLeaveError] = useState(false);
   const [numberOfWeeksError, setNumberOfWeeksError] = useState(false);
   const [reasonForLeaveError, setReasonForLeaveError] = useState(false);
+  const [nestedModal, SetNestedModal] = useState(false);
 
   const closePopup = e => {
     props.onClose();
   };
 
+  const closeNested = () => {
+    SetNestedModal(false);
+  };
+
+  const openNested = () => {
+    SetNestedModal(true);
+  };
   const handleDateOfLeave = e => {
     e.preventDefault();
     const DateOfLeave = e.target.value;
@@ -69,64 +81,189 @@ const LogTimeOffPopUp = React.memo(props => {
       <ModalHeader toggle={closePopup}>Log Requested Time Off</ModalHeader>
       <ModalBody>
         <Container>
-          <Row>
-            <Col>
-              <FormGroup>
-                <Label for="dateOfLeave">Date of leave</Label>
-                <Input
-                  type="date"
-                  name="dateOfLeave"
-                  id="dateOfLeave"
-                  value={dateOfLeave}
-                  onChange={e => handleDateOfLeave(e)}
-                />
-                {dateOfLeaveError && (
-                  <FormText color="danger">{'Please choose a future date.'}</FormText>
-                )}
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <Label for="numberOfWeeks">Duration in weeks</Label>
-                <Input
-                  type="number"
-                  name="numberOfWeeks"
-                  id="numberOfWeeks"
-                  value={numberOfWeeks}
-                  onChange={e => handleNumberOfWeeks(e)}
-                />
-                {numberOfWeeksError && (
-                  <FormText color="danger">{'Number of weeks should be greater than 0.'}</FormText>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <FormGroup>
-                <Label for="reasonForLeave">Reason for leave</Label>
-                <Input
-                  type="textarea"
-                  rows="4"
-                  placeholder="Add the reason for requesting time off here"
-                  id="reasonForLeave"
-                  value={reasonForLeave}
-                  onChange={e => handleReasonForLeave(e)}
-                />
-                {reasonForLeaveError && (
-                  <FormText color="danger">
-                    {'the reason for leave should be at least 10 words.'}
-                  </FormText>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
+          <Form>
+            <Row>
+              <Col>
+                <FormGroup>
+                  <Label for="dateOfLeave">Date of leave</Label>
+                  <Input
+                    type="date"
+                    name="dateOfLeave"
+                    id="dateOfLeave"
+                    value={dateOfLeave}
+                    onChange={e => handleDateOfLeave(e)}
+                  />
+                  {dateOfLeaveError && (
+                    <FormText color="danger">{'Please choose a future date.'}</FormText>
+                  )}
+                </FormGroup>
+              </Col>
+              <Col>
+                <FormGroup>
+                  <Label for="numberOfWeeks">Duration in weeks</Label>
+                  <Input
+                    type="number"
+                    name="numberOfWeeks"
+                    id="numberOfWeeks"
+                    value={numberOfWeeks}
+                    onChange={e => handleNumberOfWeeks(e)}
+                  />
+                  {numberOfWeeksError && (
+                    <FormText color="danger">
+                      {'Number of weeks should be greater than 0.'}
+                    </FormText>
+                  )}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <FormGroup>
+                  <Label for="reasonForLeave">Reason for leave</Label>
+                  <Input
+                    type="textarea"
+                    rows="2"
+                    placeholder="Add the reason for requesting time off here"
+                    id="reasonForLeave"
+                    value={reasonForLeave}
+                    onChange={e => handleReasonForLeave(e)}
+                  />
+                  {reasonForLeaveError && (
+                    <FormText color="danger">
+                      {'the reason for leave should be at least 10 words.'}
+                    </FormText>
+                  )}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Button color="primary" style={boxStyle}>
+                  Save
+                </Button>
+              </Col>
+            </Row>
+          </Form>
         </Container>
       </ModalBody>
+
+      <ModalHeader>Logged Time Off</ModalHeader>
+      <ModalBody className="Logged-time-off-cards-container">
+        <Container>
+          <Card className="mb-2">
+            <CardBody>
+              <Row>
+                <Col>
+                  <h6>Date of Leave:</h6>
+                  <p>12/8/58</p>
+                </Col>
+                <Col>
+                  <h6>Duration (weeks):</h6>
+                  <p>10 weeks</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <h6>Reason for Leave:</h6>
+                  <p>adipisicing elit. Natus, odit?</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <Button color="primary" onClick={openNested}>
+                    Edit
+                  </Button>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+          <Card>
+            <CardBody>
+              <Row>
+                <Col>
+                  <h6>Date of Leave:</h6>
+                  <p>12/8/58</p>
+                </Col>
+                <Col>
+                  <h6>Duration (weeks):</h6>
+                  <p>10 weeks</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <h6>Reason for Leave:</h6>
+                  <p>adipisicing elit. Natus, odit?</p>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <Button color="primary">Edit</Button>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+        </Container>
+        <Modal isOpen={nestedModal} toggle={closeNested}>
+          <ModalHeader toggle={closeNested}>Edit Time Off Request</ModalHeader>
+          <ModalBody>
+            {' '}
+            <ModalBody>
+              <Container>
+                <Form>
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <Label for="dateOfLeave">Date of leave</Label>
+                        <Input type="date" />
+                        {dateOfLeaveError && (
+                          <FormText color="danger">{'Please choose a future date.'}</FormText>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <Label for="numberOfWeeks">Duration in weeks</Label>
+                        <Input type="number" />
+                        {numberOfWeeksError && (
+                          <FormText color="danger">
+                            {'Number of weeks should be greater than 0.'}
+                          </FormText>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <Label for="reasonForLeave">Reason for leave</Label>
+                        <Input type="textarea" rows="2" />
+                        {reasonForLeaveError && (
+                          <FormText color="danger">
+                            {'the reason for leave should be at least 10 words.'}
+                          </FormText>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <Button color="primary" style={boxStyle}>
+                        Save
+                      </Button>
+                    </Col>
+                  </Row>
+                </Form>
+              </Container>
+            </ModalBody>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={closeNested} style={boxStyle}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </ModalBody>
       <ModalFooter>
-        <Button color="primary" style={boxStyle}>
-          Save
-        </Button>
         <Button color="secondary" onClick={closePopup} style={boxStyle}>
           Close
         </Button>
