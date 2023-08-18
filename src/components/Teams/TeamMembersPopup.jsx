@@ -5,11 +5,12 @@ import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowAltCircleDown } from '@fortawesome/free-regular-svg-icons';
+import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
 const TeamMembersPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
+    setSortOrder(0)
   };
   const [selectedUser, onSelectUser] = useState(undefined);
   const [isValidUser, onValidation] = useState(true);
@@ -67,6 +68,12 @@ const TeamMembersPopup = React.memo(props => {
     return nameA.localeCompare(nameB);
   })
 
+  const icons = {
+    '-1': {icon: faSortUp},
+    '0': {icon: faSort, style: {color: 'lightgrey'}},
+    '1': {icon: faSortDown}
+  }
+
   const toggleOrder = useCallback(() => {
     setSortOrder((pre) => {
       if (pre !== -1) {
@@ -113,7 +120,7 @@ const TeamMembersPopup = React.memo(props => {
               <tr>
                 <th>#</th>
                 <th>User Name</th>
-                <th>Date Added <div onClick={toggleOrder}>{sortOrder}</div></th>
+                <th style={{cursor: 'pointer'}} onClick={toggleOrder}>Date Added <FontAwesomeIcon {...icons[sortOrder]} /></th>
                 {hasPermission(
                   props.requestorRole,
                   'assignTeamToUser',
