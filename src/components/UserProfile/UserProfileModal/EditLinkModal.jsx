@@ -15,6 +15,7 @@ import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './EditLinkModal.css';
 import { boxStyle } from 'styles';
+import { set } from 'lodash';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
