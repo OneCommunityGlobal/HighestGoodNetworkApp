@@ -115,8 +115,9 @@ function RolePermissions(props) {
       'Gives the user permission to see summary indicator on leaderboard.',
     'See Visibility Icon' : 
       'Gives the user permission to see visibility icon on leaderboard.',
+    
   };
-
+  const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
@@ -126,7 +127,7 @@ function RolePermissions(props) {
   const history = useHistory();
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
-
+  
   useEffect(() => {
     setRoleName(props.role);
   }, []);
@@ -265,8 +266,41 @@ function RolePermissions(props) {
       </header>
       <ul className="user-role-tab__permissionList">
         {props.permissionsList.map((permission) => (
+          mainPermissions.includes(permission) ?
           <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' }}>
+            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , fontSize: '20px'}}>
+              {permission}
+            </p>
+            <div className="icon-button-container">
+              <i
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={() => {
+                  handleModalOpen(permission);
+                }}
+              />
+              &nbsp;&nbsp;
+              <Button
+                className="icon-button"
+                color={permissions.includes(permission) ? 'danger' : 'success'}
+                onClick={() => {
+                  permissions.includes(permission)
+                    ? onRemovePermission(permission)
+                    : onAddPermission(permission);
+                  setChanged(true);
+                }}
+                disabled={props?.userRole !== 'Owner'}
+                style={boxStyle}
+              >
+                {permissions.includes(permission) ? 'Delete' : 'Add'}
+              </Button>
+            </div>
+          </li>:
+           <li className="user-role-tab__permissions" key={permission}>
+            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , paddingLeft: '50px'}}>
               {permission}
             </p>
             <div className="icon-button-container">
