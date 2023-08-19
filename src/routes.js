@@ -11,6 +11,7 @@ import Timelog from './components/Timelog';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import Dashboard from './components/Dashboard';
 import { Logout } from './components/Logout/Logout';
 import Login from './components/Login';
@@ -35,6 +36,7 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
+import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 
 const RoutesWrapper = props => (
   <React.Fragment>
@@ -141,6 +143,8 @@ const RoutesWrapper = props => (
 
       <Route path="/login" component={Login} />
       <Route path="/forgotpassword" component={ForgotPassword} />
+      <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
+      <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
       <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
       <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
       <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react';
 import {
   Row,
   Input,
@@ -213,7 +213,6 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
@@ -577,7 +576,6 @@ function UserProfile(props) {
     roles,
     userPermissions,
   );
-
   const customStyles = {
     control: (base, state) => ({
       ...base,
@@ -860,6 +858,7 @@ function UserProfile(props) {
                   canEditRole={canEditProfile}
                   roles={roles}
                   userPermissions={userPermissions}
+                  asUser={requestorId}
                 />
               </TabPane>
               <TabPane tabId="2">

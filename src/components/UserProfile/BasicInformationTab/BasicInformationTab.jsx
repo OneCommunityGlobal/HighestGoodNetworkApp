@@ -12,12 +12,11 @@ import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
-
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
   const { firstName, lastName } = userProfile;
-
   if (canEdit) {
     return (
       <>
@@ -276,7 +275,8 @@ const BasicInformationTab = props => {
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
-
+  const CanRead = role !=='Volunteer'? true:false;
+  const CanEdit =  role ==='Owner'? true:false;
   const onClickGetTimeZone = () => {
     if (!location) {
       alert('Please enter valid location');
@@ -456,7 +456,15 @@ const BasicInformationTab = props => {
             ) : (
               `${userProfile.role}`
             )}
-          </Col>
+            </Col>
+            {(CanRead) &&( 
+            <EditableInfoModal
+              role={userProfile.role}
+              areaName={'roleInfo'}
+              fontSize={24}
+             />
+            )}
+          
         </Row>
         {canEdit && (
           <Row>

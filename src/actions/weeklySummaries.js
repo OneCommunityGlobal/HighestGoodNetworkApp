@@ -77,7 +77,8 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       const adminLinks = userProfile.adminLinks || [];
 
       // Merge the weekly summaries related changes with the user's profile.
-      const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      const {mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      console.log('respon get', response.data)
       // update the changes on weekly summaries link into admin links
       for (const link of adminLinks) {
         if (link.Name === 'Media Folder') {

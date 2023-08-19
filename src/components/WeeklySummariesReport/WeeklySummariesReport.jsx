@@ -11,6 +11,7 @@ import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
+import { getInfoCollections } from '../../actions/information';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 
@@ -64,12 +65,30 @@ export class WeeklySummariesReport extends Component {
     this.setState({
       error: this.props.error,
       loading: this.props.loading,
+      allRoleInfo: [],
       summaries: summariesCopy,
       activeTab:
         sessionStorage.getItem('tabSelection') === null
           ? '2'
           : sessionStorage.getItem('tabSelection'),
     });
+    await this.props.getInfoCollections();
+    const { infoCollections,roles } = this.props;
+    const role = this.props.authUser?.role;
+    const roleInfoNames = roles?.map(role => role.roleName + 'Info');
+    const allRoleInfo = [];
+    if (Array.isArray(infoCollections)) {
+      infoCollections.forEach((info) => {
+        if(roleInfoNames.includes(info.infoName)) {
+          let visible = (info.visibility === '0') || 
+          (info.visibility === '1' && (role==='Owner' || role==='Administrator')) ||
+          (info.visibility=== '2' && (role !== 'Volunteer'));
+          info.CanRead = visible;
+          allRoleInfo.push(info);
+        }
+      });
+    }
+    this.setState({allRoleInfo:allRoleInfo})
   }
 
   componentWillUnmount() {
@@ -149,14 +168,14 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab } = this.state;
+    const { error, loading, summaries, activeTab} = this.state;
     const role = this.props.authUser?.role;
     const userPermissions = this.props.authUser?.permissions?.frontPermissions;
     const roles = this.props.roles;
     const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
+
     const rolesAllowedToEditSummaryCount = ['Administrator', 'Owner'];
     const canEditSummaryCount = rolesAllowedToEditSummaryCount.includes(role)
-
     if (error) {
       return (
         <Container>
@@ -246,6 +265,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={0}
                       bioCanEdit={bioEditPermission}
+                      role={role}
+                      allRoleInfo={this.state.allRoleInfo}
                       canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
@@ -270,6 +291,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={1}
                       bioCanEdit={bioEditPermission}
+                      role={role}
+                      allRoleInfo={this.state.allRoleInfo}
                       canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
@@ -284,6 +307,7 @@ export class WeeklySummariesReport extends Component {
                     <GeneratePdfReport
                       summaries={summaries}
                       weekIndex={2}
+                      role={role}
                       weekDates={this.weekDates[2]}
                     />
                   </Col>
@@ -294,6 +318,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={2}
                       bioCanEdit={bioEditPermission}
+                      role={role}
+                      allRoleInfo={this.state.allRoleInfo}
                       canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
@@ -318,6 +344,8 @@ export class WeeklySummariesReport extends Component {
                       summaries={summaries}
                       weekIndex={3}
                       bioCanEdit={bioEditPermission}
+                      role={role}
+                      allRoleInfo={this.state.allRoleInfo}
                       canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
@@ -336,6 +364,8 @@ WeeklySummariesReport.propTypes = {
   getWeeklySummariesReport: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
+  getInfoCollections: PropTypes.func.isRequired,
+  infoCollections: PropTypes.array,
 };
 
 const mapStateToProps = state => ({
@@ -344,6 +374,7 @@ const mapStateToProps = state => ({
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
+  infoCollections:state.infoCollections.infos,
 });
 
-export default connect(mapStateToProps, { getWeeklySummariesReport })(WeeklySummariesReport);
+export default connect(mapStateToProps, { getWeeklySummariesReport,getInfoCollections })(WeeklySummariesReport);
