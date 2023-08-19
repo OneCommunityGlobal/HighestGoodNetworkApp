@@ -44,9 +44,8 @@ const RoleInfoModal = ({info}) => {
       </div>)
     }
     return (
-        <div>
-          <p>Please Input Informations first!</p>
-        </div>
+        <>
+        </>
         
     )
 }
