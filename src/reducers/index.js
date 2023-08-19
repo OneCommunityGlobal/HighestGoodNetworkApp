@@ -27,6 +27,7 @@ import { roleReducer } from './roleReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+import { timeOffRequestsReducer } from "./timeOffRequestReducer"
 
 export default combineReducers({
   auth: authReducer,
@@ -59,4 +60,5 @@ export default combineReducers({
   ownerMessage: ownerMessageReducer,
   ownerStandardMessage: ownerStandardMessageReducer,
   mouseoverText: mouseoverTextReducer,
+  timeOffRequests: timeOffRequestsReducer,
 });

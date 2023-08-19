@@ -89,6 +89,7 @@ export const ENDPOINTS = {
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
+  GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -30,6 +30,7 @@ import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import { Table } from 'react-bootstrap';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -52,18 +53,21 @@ class UserManagement extends React.PureComponent {
       isPaused: false,
       finalDayDateOpen: false,
       logTimeOffPopUpOpen: false,
+      userTimeOffRequests: [],
     };
   }
 
   componentDidMount() {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
+    this.props.getAllTimeOffRequests();
   }
 
   render() {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions);
+    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests);
     let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
       <Container fluid>
@@ -158,6 +162,7 @@ class UserManagement extends React.PureComponent {
         <LogTimeOffPopUp
           open={this.state.logTimeOffPopUpOpen}
           onClose={this.logTimeOffPopUpClose}
+          userTimeOffRequests={this.state.userTimeOffRequests}
         />
       </React.Fragment>
     );
@@ -166,7 +171,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements = (userProfiles, rolesPermissions) => {
+  userTableElements = (userProfiles, rolesPermissions, timeOffRequests) => {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -209,6 +214,7 @@ class UserManagement extends React.PureComponent {
               role={this.props.state.auth.user.role}
               userPermissions={this.props.state.auth.user?.permissions?.frontPermisssion}
               roles={rolesPermissions}
+              timeOffRequests={timeOffRequests[user._id] || []}
             />
           );
         });
@@ -273,9 +279,10 @@ class UserManagement extends React.PureComponent {
   /**
    * Call back on log time off button click
    */
-  onLogTimeOffClick = () => {
+  onLogTimeOffClick = timeOffRequests => {
     this.setState({
       logTimeOffPopUpOpen: true,
+      userTimeOffRequests: timeOffRequests,
     });
   };
 
@@ -562,4 +569,5 @@ export default connect(mapStateToProps, {
   updateUserStatus,
   updateUserFinalDayStatusIsSet,
   deleteUser,
+  getAllTimeOffRequests,
 })(UserManagement);

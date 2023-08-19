@@ -146,6 +146,12 @@ tr:hover {
   padding-left: 4px;
   padding-right: 4px;
 }
+
+.time-off-request-btn-moved {
+  position: relative;
+  right: -9px;
+}
+
 #requested-time-off-btn:hover {
   background-color: #95c0fe;
 }
@@ -156,7 +162,6 @@ tr:hover {
 .requested-time-off-clock-icon {
   position: relative;
   top: -8px;
-  right: 9px;
   font-size: 18px;
   width: 18px;
   height: 18px;
