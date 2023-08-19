@@ -36,8 +36,8 @@ import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 
-export default (
-  <>
+const RoutesWrapper = props => (
+  <React.Fragment>
     <Header />
     <AutoUpdate />
     <ToastContainer />
@@ -148,5 +148,7 @@ export default (
       <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
       <ProtectedRoute path="/" exact component={Dashboard} />
     </Switch>
-  </>
+  </React.Fragment>
 );
+
+export default RoutesWrapper;
