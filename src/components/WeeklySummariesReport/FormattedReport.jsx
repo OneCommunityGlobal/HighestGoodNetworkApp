@@ -5,6 +5,7 @@ import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
 import google_doc_icon from './google_doc_icon.png';
+import google_doc_icon_gray from './google_doc_icon_gray.png'; 
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
@@ -256,6 +257,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
         const googleDocLink = getGoogleDocLink(summary);
+        // Determine whether to use grayscale or color icon based on googleDocLink
+        const googleDocIcon = googleDocLink && googleDocLink.Link.trim() !== ''
+          ? google_doc_icon
+          : google_doc_icon_gray;
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
@@ -268,7 +273,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
               </Link>
 
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-                <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
+                <img className="google-doc-icon" src={googleDocIcon } alt="google_doc" />
               </span>
               <span>
                 <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
