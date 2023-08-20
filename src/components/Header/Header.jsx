@@ -42,42 +42,13 @@ import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
-import { useLocation } from 'react-router-dom';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const location = useLocation();
+  const { isAuthenticated, user, firstName, profilePic } = props.auth;
   const dispatch = useDispatch();
-
-  const [isViewingAnotherUser, setIsViewingAnotherUser] = useState(false);
-
-  const { isAuthenticated, user, firstName, profilePic } = location.pathname.includes(
-    props.userProfile._id,
-  )
-    ? {
-        isAuthenticated: true,
-        user: {
-          userid: props.userProfile._id,
-          role: props.userProfile.props,
-          permissions: props.userProfile.permissions,
-          expiryTimestamp: '',
-          iat: '',
-        },
-        firstName: props.userProfile.firstName,
-        profilePic: '',
-      }
-    : { ...props.auth };
-
-  const userPermissions = location.pathname.includes(props.userProfile._id)
-    ? props.userProfile?.permissions?.frontPermissions
-    : props.auth.user?.permissions?.frontPermissions;
-
-  useEffect(() => {
-    if (location.pathname.includes(props.userProfile._id)) {
-      setIsViewingAnotherUser(true);
-    }
-  }, [location, props.userProfile]);
+  const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   useEffect(() => {
     if (props.auth.isAuthenticated) {
@@ -112,13 +83,7 @@ export const Header = props => {
           className="timer-message-section"
           style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
-          {isViewingAnotherUser ? (
-            props.auth.user.role == 'Owner' || props.auth.user.role == 'Administrator' ? (
-              <Timer />
-            ) : null
-          ) : (
-            isAuthenticated && <Timer />
-          )}
+          {isAuthenticated && <Timer />}
           {isAuthenticated && (
             <div className="owner-message">
               <OwnerMessage />
@@ -139,15 +104,9 @@ export const Header = props => {
                 </NavItem>
               )}
               <NavItem>
-                {isViewingAnotherUser ? (
-                  <NavLink tag={Link} to={`/dashboard/${user.userid}`}>
-                    <span className="dashboard-text-link">{DASHBOARD}</span>
-                  </NavLink>
-                ) : (
-                  <NavLink tag={Link} to="/dashboard">
-                    <span className="dashboard-text-link">{DASHBOARD}</span>
-                  </NavLink>
-                )}
+                <NavLink tag={Link} to="/dashboard">
+                  <span className="dashboard-text-link">{DASHBOARD}</span>
+                </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
@@ -265,25 +224,15 @@ export const Header = props => {
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
-                  {isViewingAnotherUser ? (
-                    props.auth.user.role == 'Owner' || props.auth.user.role == 'Administrator' ? (
-                      <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
-                        {UPDATE_PASSWORD}
-                      </DropdownItem>
-                    ) : null
-                  ) : (
-                    !denyPermissionToSelfUpdateDevAdminDetails(props.userProfile.email, true) && (
-                      <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
-                        {UPDATE_PASSWORD}
-                      </DropdownItem>
-                    )
-                  )}
-                  <DropdownItem divider />
-                  {isViewingAnotherUser ? null : (
-                    <DropdownItem tag={Link} to="/#" onClick={openModal}>
-                      {LOGOUT}
+                  {!denyPermissionToSelfUpdateDevAdminDetails(props.userProfile.email, true) && (
+                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                      {UPDATE_PASSWORD}
                     </DropdownItem>
                   )}
+                  <DropdownItem divider />
+                  <DropdownItem onClick={openModal}>
+                    {LOGOUT}
+                  </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Nav>

@@ -7,8 +7,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../utils/URL';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-//import routes from './../routes';
-import RoutesWrapper from './../routes';
+import routes from './../routes';
 import { ForcePasswordUpdate } from '../components/ForcePasswordUpdate/ForcePasswordUpdate';
 import { forcePasswordUpdate as fPU } from './../actions/updatePassword';
 import { clearErrors } from './../actions/errorsActions';
@@ -32,18 +31,6 @@ const server = setupServer(
     if (req.body.newpassword === 'newPassword8') {
       return res(ctx.status(200));
     }
-  }),
-  rest.get('*/api/ownerStandardMessage', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}))
-  }),
-  rest.get('*/api/ownerMessage', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}))
-  }),
-  rest.get('https://*/api/ownerStandardMessage', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}))
-  }),
-  rest.get('https://*/api/ownerMessage', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}))
   }),
   //prevents errors when loading header
   rest.get('http*/api/userprofile/*', (req, res, ctx) => {
@@ -110,7 +97,7 @@ describe('Force Password Update behaviour', () => {
   beforeEach(() => {
     rt = '/forcePasswordUpdate/5edf141c78f1380017b829a6';
     hist = createMemoryHistory({ initialEntries: [rt] });
-    fPUMountedPage = renderWithRouterMatch(<RoutesWrapper/>, {
+    fPUMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
       route: rt,
       history: hist,
