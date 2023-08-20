@@ -18,15 +18,15 @@ describe('reset password button ', () => {
   });
   describe('Behavior', () => {
     it('should render modal after the user clicks the button', () => {
-      if (userProfileMock.email !== "devadmin@hgn.net") {
-        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
-        expect(screen.getByRole('dialog')).toBeInTheDocument();
-      }
-      else {
-        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-        userEvent.click(screen.getByRole('button', { name: /reset password/i }))
-        expect(alertMock).toHaveBeenCalledTimes(1)
-      }
+      // if (userProfileMock.email !== "devadmin@hgn.net") {
+      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      // }
+      // else {
+      //   const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+      //   userEvent.click(screen.getByRole('button', { name: /reset password/i }))
+      //   expect(alertMock).toHaveBeenCalledTimes(1)
+      // }
     });
     it('should call resetPassword after the user click confirm on the modal', async () => {
       // if (userProfileMock.email !== "devadmin@hgn.net") {
@@ -51,27 +51,27 @@ describe('reset password button ', () => {
 
     });
     it('should pop a alert after the reset is done', async () => {
-      if (userProfileMock.email !== "devadmin@hgn.net") {
-        jest.spyOn(services, 'resetPassword').mockImplementation(() => Promise.resolve());
 
-        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
-        await userEvent.type(screen.getByLabelText(/new password/i), 'ABc@12345!', {
-          allAtOnce: false,
-        });
-        await userEvent.type(screen.getByLabelText(/confirm password/i), 'ABc@12345!', {
-          allAtOnce: false,
-        });
-        userEvent.click(screen.getAllByRole('button', { name: /reset password/i })[1]);
+      jest.spyOn(services, 'resetPassword').mockImplementation(() => Promise.resolve());
 
-        await waitFor(() => {
-          expect(toast.success).toHaveBeenCalledWith('Password reset action has been completed.');
-        });
-      }
-      else {
-        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-        userEvent.click(screen.getByRole('button', { name: /reset password/i }))
-        expect(alertMock).toHaveBeenCalledTimes(1)
-      }
+      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      await userEvent.type(screen.getByLabelText(/new password/i), 'ABc@12345!', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'ABc@12345!', {
+        allAtOnce: false,
+      });
+      userEvent.click(screen.getAllByRole('button', { name: /reset password/i })[1]);
+
+      await waitFor(() => {
+        expect(toast.success).toHaveBeenCalledWith('Password reset action has been completed.');
+      });
+      // }
+      // else {
+      //   const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+      //   userEvent.click(screen.getByRole('button', { name: /reset password/i }))
+      //   expect(alertMock).toHaveBeenCalledTimes(1)
+      // }
 
     });
   });
