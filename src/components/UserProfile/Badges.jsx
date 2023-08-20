@@ -78,7 +78,7 @@ export const Badges = props => {
                   </Modal>
                 </>
               )}
-              {((props.canEdit && (props.role == 'Owner' || props.role == 'Administrator')) ||
+              {(props.role == 'Owner' || props.role == 'Administrator' ||
                 props.userPermissions.includes('assignBadgeOthers')) && (
                 <>
                   <Button

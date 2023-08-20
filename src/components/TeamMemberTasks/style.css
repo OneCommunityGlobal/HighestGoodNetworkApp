@@ -29,6 +29,16 @@
   cursor: pointer;
 }
 
+.team-member-task-info {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.task-info-modal-backdrop {
+  background-color: grey;
+  opacity: 0.5;
+}
+
 .committed-hours-circle {
   padding: 0.75rem;
 }

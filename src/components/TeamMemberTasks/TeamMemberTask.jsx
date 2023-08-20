@@ -1,15 +1,14 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table, Progress } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
-import ReactTooltip from 'react-tooltip';
-import { boxStyle } from 'styles';
+import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -48,25 +47,12 @@ const TeamMemberTask = React.memo(({
 
   const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
   const [isTruncated, setIsTruncated] = useState(canTruncate);
-  const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
-
-  const infoTaskIconContent = `Red Bell Icon: When clicked, this will show any task changes\n
-  Green Checkmark Icon: When clicked, this will mark the task as completed\n
-  X Mark Icon: When clicked, this will remove the user from that task`;
 
   const thisWeekHours = user.totaltangibletime_hrs;
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
   const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
   const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
-
-  const toggleInfoTaskIconModal = () => {
-    setInfoTaskIconModal(!infoTaskIconModal);
-  };
-
-  const handleModalOpen = () => {
-    setInfoTaskIconModal(true);
-  };
 
   const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles, userPermissions);
   const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
@@ -177,40 +163,7 @@ const TeamMemberTask = React.memo(({
                               }}
                             />
                           )}
-                          <i
-                            className="fa fa-info-circle"
-                            style={{ cursor: 'pointer', marginLeft: '10px' }}
-                            data-tip
-                            data-for="taskIconTip"
-                            aria-hidden="true"
-                            onClick={() => {
-                              handleModalOpen();
-                            }}
-                          />
-                          <ReactTooltip id="taskIconTip" place="bottom" effect="solid">
-                            Click this icon to learn about the task icons
-                          </ReactTooltip>
-                          <Modal isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
-                            <ModalHeader toggle={toggleInfoTaskIconModal}>
-                              Task Icons Info
-                            </ModalHeader>
-                            <ModalBody>
-                              {infoTaskIconContent.split('\n').map((item, i) => (
-                                <p key={i}>{item}</p>
-                              ))}
-                            </ModalBody>
-                            <ModalFooter>
-                              <Button
-                                onClick={toggleInfoTaskIconModal}
-                                color="secondary"
-                                className="float-left"
-                                style={boxStyle}
-                              >
-                                {' '}
-                                Ok{' '}
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
+                          <TeamMemberTaskIconsInfo />
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">

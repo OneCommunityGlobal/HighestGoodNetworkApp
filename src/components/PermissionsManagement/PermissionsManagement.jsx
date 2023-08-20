@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader, Row, Col } from 'reactstrap';
 import CreateNewRolePopup from './NewRolePopUp';
 import './PermissionsManagement.css';
-import { connect } from 'react-redux';
+import { connect,useSelector } from 'react-redux';
 import { getAllRoles } from '../../actions/role';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
-  let history = useHistory();
 
+  let history = useHistory();
   const togglePopUpNewRole = () => {
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
@@ -34,24 +35,33 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
   };
 
   const roleNames = roles?.map(role => role.roleName);
+  const role = userProfile?.role;
 
   return (
-    <div className="permissions-management">
+    <div key={`${role}+permission`} className="permissions-management">
       <h1 className="permissions-management__title">User Roles</h1>
-      <div className="permissions-management__header">
-        <div className="role-name-container">
+      <div key={`${role}_header`} className="permissions-management__header">
+        <div key={`${role}_name`} className="role-name-container">
           {roleNames?.map(roleName => {
             let roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
-              <button
-                onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
-                key={roleName}
-                className="role-name"
-              >
-                {roleName}
-              </button>
-            );
-          })}
+              <div key={roleNameLC} className="role-name">
+                <button
+                  onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
+                  key={roleName}
+                  className="role-btn"
+                >
+                  {roleName}
+                 </button> 
+                  <div className='infos'>
+                    <EditableInfoModal
+                    role={role}
+                    areaName={`${roleName}`+'Info'}
+                    fontSize={18}
+                    /> 
+                  </div>
+              </div>           
+            )})};
         </div>
         {userProfile?.role === 'Owner' && (
           <div className="buttons-container">
