@@ -291,7 +291,7 @@ const SummaryBar = props => {
                 <div className="border-red col-4 bg--white-smoke" >
                   <div className="py-1"> </div>
                   <p className="text-center large_text_summary text--black text-danger" >
-                    !
+                    ! 
                   </p>
                   <font className="text-center text--black" size="3">
                     HOURS
