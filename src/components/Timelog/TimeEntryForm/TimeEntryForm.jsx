@@ -32,7 +32,6 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
-import { useLocation } from 'react-router-dom';
 import { boxStyle } from 'styles';
 
 /**
@@ -50,7 +49,6 @@ import { boxStyle } from 'styles';
  * @returns
  */
 const TimeEntryForm = props => {
-  const location = useLocation()
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
 
   const initialFormValues = {
@@ -140,7 +138,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, [props.isTaskUpdated, location]);
+  }, [props.isTaskUpdated]);
 
   //grab form data before editing
   useEffect(() => {

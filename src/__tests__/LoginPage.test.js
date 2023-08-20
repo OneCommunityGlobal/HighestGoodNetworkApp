@@ -8,8 +8,7 @@ import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { ApiEndpoint, ENDPOINTS } from '../utils/URL';
 import { GET_ERRORS } from '../constants/errors';
 import mockState from './mockAdminState.js';
-//import routes from '../routes';
-import RoutesWrapper from '../routes';
+import routes from '../routes';
 import { clearErrors } from '../actions/errorsActions';
 
 import { loginUser } from '../actions/authActions';
@@ -154,7 +153,7 @@ describe('Login behavior', () => {
     const rt = '/login';
     const hist = createMemoryHistory({ initialEntries: [rt] });
 
-    loginMountedPage = renderWithRouterMatch(<RoutesWrapper/>, {
+    loginMountedPage = renderWithRouterMatch(routes, {
       initialState: mockState,
       route: rt,
       history: hist,

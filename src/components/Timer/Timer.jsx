@@ -6,7 +6,6 @@ import TimeEntryForm from '../Timelog/TimeEntryForm';
 import './Timer.css';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import { useLocation } from 'react-router-dom';
 
 const Timer = () => {
   const data = {
@@ -16,19 +15,10 @@ const Timer = () => {
     //How does the screen position of the element influence tangability?
     //This has been changed as part of a hotfix.
   };
-
-  const location = useLocation()
-
-  const userIdFromState = useSelector(state => state.auth.user.userid);
-  const userProfileFromState = useSelector(state => state.userProfile)
-  const authUserFromState = useSelector(state => state.auth.user);
-  
-  const userId = location.pathname.includes(userProfileFromState._id) ? userProfileFromState._id : userIdFromState
-  const userProfile = location.pathname.includes(userProfileFromState._id) ? userProfileFromState : authUserFromState
-
+  const userId = useSelector(state => state.auth.user.userid);
+  const userProfile = useSelector(state => state.auth.user);
   const pausedAt = useSelector(state => state.timer?.seconds);
   const isWorking = useSelector(state => state.timer?.isWorking);
-
   const dispatch = useDispatch();
   const alert = {
     va: true,
@@ -180,7 +170,7 @@ const Timer = () => {
           Stop
         </Button>
       </div>
-      {modal ? (
+      {modal && (
         <TimeEntryForm
           edit={false}
           userId={userId}
@@ -191,7 +181,7 @@ const Timer = () => {
           userProfile={userProfile}
           resetTimer={reset}
         />
-      ) : null}
+      )}
     </div>
   );
 };

@@ -38,8 +38,8 @@ import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 
-const RoutesWrapper = props => (
-  <React.Fragment>
+export default (
+  <>
     <Header />
     <AutoUpdate />
     <ToastContainer />
@@ -152,7 +152,5 @@ const RoutesWrapper = props => (
       <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
       <ProtectedRoute path="/" exact component={Dashboard} />
     </Switch>
-  </React.Fragment>
+  </>
 );
-
-export default RoutesWrapper;
