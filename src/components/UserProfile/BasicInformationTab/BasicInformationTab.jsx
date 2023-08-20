@@ -20,7 +20,7 @@ const Name = props => {
   if (canEdit) {
     return (
       <>
-        <Col md="3">
+        <Col md="3" >
           <FormGroup>
             <Input
               type="text"
@@ -38,7 +38,7 @@ const Name = props => {
             <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
           </FormGroup>
         </Col>
-        <Col md="3">
+        <Col md="3" style={{ marginRight: "2rem"}}>
           <FormGroup>
             <Input
               type="text"
@@ -76,7 +76,7 @@ const Title = props => {
   if (canEdit) {
     return (
       <>
-        <Col>
+        <Col md="6" style={{ marginRight: "2rem"}}>
           <FormGroup>
             <Input
               type="text"
@@ -111,7 +111,7 @@ const Email = props => {
   if (canEdit) {
     return (
       <>
-        <Col>
+        <Col md="6" style={{ marginRight: "2rem"}}>
           <FormGroup>
             <ToggleSwitch
               switchType="email"
@@ -185,13 +185,14 @@ const Phone = props => {
     return (
       <>
         <Col>
-          <FormGroup>
+          <FormGroup style={{ marginRight: "30px"}}>
             <ToggleSwitch
               switchType="phone"
               state={privacySettings?.phoneNumber}
               handleUserProfile={handleUserProfile}
             />
             <PhoneInput
+              inputStyle={{ width: "325px", marginRight: "0px" }}
               country={'us'}
               value={phoneNumber}
               onChange={phoneNumber => {
@@ -401,7 +402,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>Video Call Preference</Label>
           </Col>
-          <Col>
+          <Col md="6" style={{ marginRight: "30px"}}>
             {canEdit ? (
               <FormGroup disabled={!canEdit}>
                 <Input
@@ -424,7 +425,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>Role</Label>
           </Col>
-          <Col>
+          <Col md="5" style={{marginRight:"20px"}}>
             {canEditRole && !isUserSelf ? (
               <FormGroup>
                 <select
@@ -457,23 +458,25 @@ const BasicInformationTab = props => {
               `${userProfile.role}`
             )}
             </Col>
-            {(CanRead) &&( 
-            <EditableInfoModal
+            {( 
+            <Col md="1">
+              <EditableInfoModal
               role={userProfile.role}
               areaName={'roleInfo'}
               fontSize={24}
-             />
-            )}
+              />
+            </Col>
+             )}
           
         </Row>
         {canEdit && (
           <Row>
-            <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
+            <Col md={{ size: 5, offset: 0 }}>
               <Label>Location</Label>
             </Col>
-            <Col md="6">
+            <Col md="7">
               <Row className='ml-0'>
-                <Col md="6" className='p-0'>
+                <Col md="5" className='p-0' style={{marginRight:"5px"}}>
                   <Input
                     onChange={e => {
                       setLocation(e.target.value);
@@ -482,7 +485,7 @@ const BasicInformationTab = props => {
                     value={userProfile.location}
                   />
                 </Col>
-                <Col md="6" className='pr-0'>
+                <Col md="5" className='pr-0' style={{marginRight:"2px"}}>
                   <Button
                     color="secondary"
                     block
@@ -497,11 +500,11 @@ const BasicInformationTab = props => {
             </Col>
           </Row>
         )}
-        <Row style={{ marginBottom: '10px' }}>
+        <Row style={{ marginTop:'15px', marginBottom: '10px' }}>
           <Col>
             <Label>Time Zone</Label>
           </Col>
-          <Col>
+          <Col md="6" style={{ marginRight:'2rem'}}>
             {!canEdit && <p>{userProfile.timeZone}</p>}
             {canEdit && (
               <TimeZoneDropDown
