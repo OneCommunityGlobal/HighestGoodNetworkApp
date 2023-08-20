@@ -59,7 +59,7 @@ export class EditableInfoModal extends Component {
   
   async componentDidMount() {
     await this.props.getInfoCollections();
-    const {infoCollections, role, areaName, fontSize} = this.props;
+    const {infoCollections, role, areaName, fontSize, isPermissionPage} = this.props;
     let content = '';
     let visible = '0';
     if (Array.isArray(infoCollections)) {
@@ -86,6 +86,7 @@ export class EditableInfoModal extends Component {
       CanRead,
       CanEdit,
       fontSize: fontSize,
+      isPermissionPage,
     });
   };
 
@@ -215,6 +216,7 @@ export class EditableInfoModal extends Component {
       fontSize,
       CanRead,
       CanEdit,
+      isPermissionPage,
      } = this.state;
 
     return (
@@ -227,7 +229,7 @@ export class EditableInfoModal extends Component {
           style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '10px'}}
           aria-hidden="true"
           className="fa fa-info-circle"
-          onMouseOver={()=>this.setState({editableModalOpen: true})}
+          onClick={()=>this.setState({editableModalOpen: true})}
         />
         {editableModalOpen && (
           <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg">
@@ -244,6 +246,14 @@ export class EditableInfoModal extends Component {
                 dangerouslySetInnerHTML={{ __html: infoContent }}
                 onClick={() => this.handleEdit(true)} />
               }
+          {isPermissionPage && CanEdit&&
+            (
+              <div style={{ paddingLeft: '20px' }}> 
+                <p>Click above to edit this content. (Note: Only works on Permissions Management Page)</p>
+              </div>
+              
+            )
+          }
           </ModalBody>
           <ModalFooter>
           <Row>
