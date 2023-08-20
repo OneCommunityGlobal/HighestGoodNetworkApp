@@ -265,7 +265,8 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
           >
             <div style={{display:'flex'}}>
               <b>Name: </b>
-              <Link to={`/userProfile/${summary._id}`} title="View Profile">
+              <Link style={{marginLeft:'5px'}}
+                to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
               </Link>
 
