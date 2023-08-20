@@ -34,6 +34,7 @@ const associatedPermissions =
       assignUserInProject: ['assignProjectToUsers'],
       unassignUserInProject: ['assignProjectToUsers', 'putProject'],
       adminLinks:[''],
+      infoCollections:[''],
       editUserProfile:['putUserProfile'],
       assignTeamToUser: ['assignTeamToUsers'],
       createTeam: [''],
@@ -44,7 +45,7 @@ const associatedPermissions =
       dataIsTangibleTimelog: [''],
       addDeleteEditOwners:[''],
       toggleSubmitForm: [''],
-      seePermissionsManagement: ['']
+      seePermissionsManagement: [''],
     }
 
 export const commonBackEndPermissions = ['infringementAuthorizer','getTimeZoneAPIKey','checkLeadTeamOfXplus']

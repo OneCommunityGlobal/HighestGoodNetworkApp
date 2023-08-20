@@ -47,12 +47,13 @@ export const getWeeklySummaries = userId => {
       const { weeklySummariesCount, weeklySummaries, mediaUrl, adminLinks } = response.data;
       let summaryDocLink;
       for (const link in adminLinks) {
-        if (adminLinks[link].Name === 'Dropbox Link') {
+        if (adminLinks[link].Name === 'Media Folder') {
           summaryDocLink = adminLinks[link].Link;
           break; 
         }
       }
       dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl:summaryDocLink || mediaUrl}));
+      dispatch(getUserProfileActionCreator(response.data));
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesError(error));
@@ -77,10 +78,11 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       const adminLinks = userProfile.adminLinks || [];
 
       // Merge the weekly summaries related changes with the user's profile.
-      const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      const {mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      console.log('respon get', response.data)
       // update the changes on weekly summaries link into admin links
       for (const link of adminLinks) {
-        if (link.Name === 'Dropbox Link') {
+        if (link.Name === 'Media Folder') {
           link.Link = mediaUrl;
           break; 
         }

@@ -569,7 +569,7 @@ class AddUserProfile extends Component {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
     if (dropboxDoc) {
-      userData.adminLinks.push({ Name: 'Dropbox Link', Link: dropboxDoc });
+      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
