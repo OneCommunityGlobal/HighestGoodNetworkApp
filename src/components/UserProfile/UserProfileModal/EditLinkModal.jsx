@@ -15,7 +15,6 @@ import hasPermission from '../../../utils/permissions';
 import { useSelector } from 'react-redux';
 import styles from './EditLinkModal.css';
 import { boxStyle } from 'styles';
-import { set } from 'lodash';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
@@ -140,14 +139,7 @@ const EditLinkModal = props => {
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <input
-                        className="customEdit"
-                        id="linkName1"
-                        placeholder="Google Doc"
-                        value="Google Doc"
-                        disabled
-                      />
-
+                      <label className='custom-label'>Google Doc</label>
                       <input
                         className="customEdit"
                         id="linkURL1"
@@ -160,14 +152,8 @@ const EditLinkModal = props => {
                       />
                     </div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <input
-                        className="customEdit"
-                        id="linkName2"
-                        placeholder="Media Folder"
-                        value="Media Folder"
-                        disabled
-                      />
 
+                      <label className='custom-label'>Media Folder</label>
                       <input
                         className="customEdit"
                         id="linkURL2"
