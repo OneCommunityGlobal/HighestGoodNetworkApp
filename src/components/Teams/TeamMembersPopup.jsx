@@ -22,9 +22,11 @@ const TeamMembersPopup = React.memo(props => {
         setSearchText('');
         setDuplicateUserAlert(false);
       } else {
+        setSearchText('');
         setDuplicateUserAlert(true);
       }
     } else {
+      setDuplicateUserAlert(false);
       onValidation(false);
     }
   };

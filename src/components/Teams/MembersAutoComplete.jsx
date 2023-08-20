@@ -19,6 +19,7 @@ const MemberAutoComplete = props => {
         onChange={e => {
           props.setSearchText(e.target.value);
           toggle(true);
+          props.onAddUser(undefined);
         }}
       />
 
