@@ -457,7 +457,7 @@ const BasicInformationTab = props => {
               `${userProfile.role}`
             )}
             </Col>
-            {(CanRead) &&( 
+            {( 
             <EditableInfoModal
               role={userProfile.role}
               areaName={'roleInfo'}
