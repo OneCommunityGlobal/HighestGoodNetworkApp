@@ -21,16 +21,15 @@ const hasPermission = (role, action, roles, userPermissions) => {
   return false;
 };
 
-// cannot self update the details for devadmin@hgn.net in UserProfile
+//TODO: Remove usage of function when no longer needed
 export const denyPermissionToSelfUpdateDevAdminDetails = (userEmail, isUserSelf) => {
-  return userEmail === "devadmin@hgn.net" && isUserSelf;
+  return false;
 
 };
 
-// others cannot change the details for devadmin@hgn.net
+//TODO: Remove usage of function when no longer needed
 export const denyPermissionForOthersToUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
-  // const permissionToEdit = ['jae@onecommunityglobal.org', 'one.community@me.com', 'jsabol@me.com', 'nidazaki97@gmail.com']
-  return (devAdminEmail === "devadmin@hgn.net" && (authEmail !== "jae@onecommunityglobal.org"))
+  return false;
 };
 
 export const deactivateOwnerPermission = (user, authRole) => {
