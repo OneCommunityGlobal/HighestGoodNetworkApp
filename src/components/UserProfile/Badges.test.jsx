@@ -49,7 +49,7 @@ describe('Badges Component', () => {
         const props = {
           ...badgeProps,
           isUserSelf: true,
-          userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1'] },
+          userProfile: { ...badgeProps.userProfile, badgeCollection: [{ count: 1 }] },
         };
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
           store,
@@ -63,7 +63,7 @@ describe('Badges Component', () => {
           isUserSelf: true,
           userProfile: {
             ...badgeProps.userProfile,
-            badgeCollection: ['B1', 'B2', 'B3'],
+            badgeCollection: [{ count: 1 }, { count: 2 }, { count: 3 }],
           },
         };
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
@@ -87,7 +87,7 @@ describe('Badges Component', () => {
       it('should display the correct text when they have exactly 1 badge', () => {
         const props = {
           ...badgeProps,
-          userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1'] },
+          userProfile: { ...badgeProps.userProfile, badgeCollection: [ { count: 1 }] },
         };
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
           store,
@@ -102,7 +102,7 @@ describe('Badges Component', () => {
           ...badgeProps,
           userProfile: {
             ...badgeProps.userProfile,
-            badgeCollection: ['B1', 'B2', 'B3'],
+            badgeCollection: [{ count: 1 }, { count: 2 }, { count: 3 }],
           },
         };
 

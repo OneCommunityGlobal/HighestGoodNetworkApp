@@ -35,7 +35,7 @@ const Badge = props => {
           if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
             count += 1;
           } else {
-            count += badge.count;
+            count += Number(badge.count);
           }
         });
         setTotalBadge(Math.round(count));
@@ -56,7 +56,7 @@ const Badge = props => {
         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
           count += 1;
         } else {
-          count += badge.count;
+          count += Number(badge.count);
         }
       });
       setTotalBadge(Math.round(count));
