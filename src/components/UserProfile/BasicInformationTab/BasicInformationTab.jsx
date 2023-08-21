@@ -270,8 +270,10 @@ const BasicInformationTab = props => {
     canEdit,
     canEditRole,
     roles,
+    role,
     loadUserProfile,
   } = props;
+
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
   let topMargin = "6px";
