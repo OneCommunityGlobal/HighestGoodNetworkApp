@@ -7,7 +7,6 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 import { updateRole, getAllRoles } from '../../actions/role';
 import { toast } from 'react-toastify';
-import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
@@ -84,15 +83,11 @@ function RolePermissions(props) {
       return getKeyByValue(permissionLabel, perm);
     });
 
-    const permissionsBackEnd = permissionsObjectName.map(permission =>
-      permissionFrontToBack(permission),
-    );
     const id = props.roleId;
 
     const updatedRole = {
       roleName: roleName,
       permissions: permissionsObjectName,
-      permissionsBackEnd: permissionsBackEnd.flat(),
       roleId: id,
     };
     try {

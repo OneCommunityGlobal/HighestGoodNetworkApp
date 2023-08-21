@@ -89,6 +89,24 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
 
+
+  //reasons endpoints
+  CREATEREASON: () => {
+    return `${APIEndpoint}/reason/`
+  },
+  GETALLUSERREASONS: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
+  },
+  GETSINGLEREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/single/${userId}`
+  },
+  PATCHUSERREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
+  },
+  DELETEUSERREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
+  },
+
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
 };

@@ -58,6 +58,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
                     role={role}
                     areaName={`${roleName}`+'Info'}
                     fontSize={18}
+                    isPermissionPage={true}
                     /> 
                   </div>
               </div>           

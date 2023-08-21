@@ -34,7 +34,10 @@ export class WeeklySummariesReport extends Component {
   async componentDidMount() {
     // 1. fetch report
     await this.props.getWeeklySummariesReport();
-    
+    this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
+    this.bioEditPermission = this.canPutUserProfileImportantInfo;
+    this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
+
     const now = moment().tz('America/Los_Angeles')
 
     const summaryPromise = this.props.summaries.map(async summary => {
@@ -168,14 +171,8 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab} = this.state;
-    const role = this.props.authUser?.role;
-    const userPermissions = this.props.authUser?.permissions?.frontPermissions;
-    const roles = this.props.roles;
-    const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
+    const { error, loading, summaries, activeTab } = this.state;
 
-    const rolesAllowedToEditSummaryCount = ['Administrator', 'Owner'];
-    const canEditSummaryCount = rolesAllowedToEditSummaryCount.includes(role)
     if (error) {
       return (
         <Container>
@@ -264,10 +261,9 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={0}
-                      bioCanEdit={bioEditPermission}
-                      role={role}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
-                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -290,10 +286,9 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={1}
-                      bioCanEdit={bioEditPermission}
-                      role={role}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
-                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -307,7 +302,6 @@ export class WeeklySummariesReport extends Component {
                     <GeneratePdfReport
                       summaries={summaries}
                       weekIndex={2}
-                      role={role}
                       weekDates={this.weekDates[2]}
                     />
                   </Col>
@@ -317,10 +311,9 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={2}
-                      bioCanEdit={bioEditPermission}
-                      role={role}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
-                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -343,10 +336,9 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={3}
-                      bioCanEdit={bioEditPermission}
-                      role={role}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
-                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -369,12 +361,10 @@ WeeklySummariesReport.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  authUser: state.auth.user,
-  roles: state.role.roles,
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
   infoCollections:state.infoCollections.infos,
 });
 
-export default connect(mapStateToProps, { getWeeklySummariesReport,getInfoCollections })(WeeklySummariesReport);
+export default connect(mapStateToProps, { getWeeklySummariesReport, hasPermission, getInfoCollections })(WeeklySummariesReport);
