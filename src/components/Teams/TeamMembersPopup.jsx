@@ -6,6 +6,7 @@ import { boxStyle } from 'styles';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { connect } from 'react-redux';
 
 const TeamMembersPopup = React.memo(props => {
   const closePopup = () => {
@@ -17,6 +18,8 @@ const TeamMembersPopup = React.memo(props => {
   const [searchText, setSearchText] = useState('');
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0)
+
+  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
   const onAddUser = () => {
     if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
@@ -96,12 +99,7 @@ const TeamMembersPopup = React.memo(props => {
       <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} size='lg'>
         <ModalHeader toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
-          {hasPermission(
-            props.requestorRole,
-            'assignTeamToUser',
-            props.roles,
-            props.userPermissions,
-          ) && (
+          {canAssignTeamToUsers && (
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
@@ -114,19 +112,14 @@ const TeamMembersPopup = React.memo(props => {
               </Button>
             </div>
           )}
-          {isValidUser && <Alert color="danger">Please choose a valid user.</Alert>}
+          {!isValidUser && <Alert color="danger">Please choose a valid user.</Alert>}
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <tr>
                 <th>#</th>
                 <th>User Name</th>
                 <th style={{cursor: 'pointer'}} onClick={toggleOrder}>Date Added <FontAwesomeIcon {...icons[sortOrder]} /></th>
-                {hasPermission(
-                  props.requestorRole,
-                  'assignTeamToUser',
-                  props.roles,
-                  props.userPermissions,
-                ) && <th />}
+                {canAssignTeamToUsers && <th />}
               </tr>
             </thead>
             <tbody>
@@ -136,18 +129,11 @@ const TeamMembersPopup = React.memo(props => {
                     <td>{index + 1}</td>
                     <td>{`${user.firstName} ${user.lastName}`}</td>
                     <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
-                    {hasPermission(
-                      props.requestorRole,
-                      'assignTeamToUser',
-                      props.roles,
-                      props.userPermissions,
-                    ) && (
+                    {canAssignTeamToUsers && (
                       <td>
                         <Button
                           color="danger"
-                          onClick={() => {
-                            props.onDeleteClick(`${user._id}`);
-                          }}
+                          onClick={() => props.onDeleteClick(`${user._id}`)}
                           style={boxStyle}
                         >
                           Delete
@@ -170,4 +156,4 @@ const TeamMembersPopup = React.memo(props => {
   );
 });
 
-export default TeamMembersPopup;
+export default connect(null, { hasPermission })(TeamMembersPopup);

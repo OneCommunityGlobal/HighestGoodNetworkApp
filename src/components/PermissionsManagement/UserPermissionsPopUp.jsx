@@ -3,7 +3,6 @@ import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { getAllUserProfile } from 'actions/userManagement';
 import { permissionLabel } from './UserRoleTab';
 
@@ -40,15 +39,9 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
         ? unCheckPermission
         : [...permissionsUserFront, actualValue];
 
-      let permissionsBackEnd = actualPermissionsFront
-        .map(permission => {
-          permissionFrontToBack(permission);
-        })
-        .filter(e => e != undefined);
 
       const newPermissionsObject = {
         frontPermissions: actualPermissionsFront,
-        backPermissions: permissionsBackEnd,
       };
       return { ...previous, permissions: newPermissionsObject };
     });

@@ -23,12 +23,11 @@ import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 function SingleTask(props) {
   const {taskId} = props.match.params;
   const { user } = props.auth;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
-  const roles = useSelector(state => state.role.roles);
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
+  const canPostProject = props.hasPermission('postProject');
 
   const history = useHistory();
   useEffect(() => {
@@ -59,7 +58,7 @@ function SingleTask(props) {
     <>
       <ReactTooltip />
       <div className="container-single-task">
-        {hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) && (
+        {canPostProject && (
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
@@ -289,4 +288,5 @@ export default connect(mapStateToProps, {
   getUserProfile,
   deleteTask,
   getPopupById,
+  hasPermission,
 })(SingleTask);
