@@ -35,7 +35,7 @@ function RolePermissions(props) {
       'Make the "Other Links" -> "Reports" button appear/accessible.',
     'See User Management Tab (Full Functionality)':
       'Make the "Other Links" -> "User Management" button appear/accessible and be able to create, delete, and update users.',
-    'See Badge Management Tab (Full Funtionality)':
+      'See Badge Management Tab (Full Functionality)':
       'Make the "Other Links" -> "Badge Management" button appear and then have the ability to create, delete, and update badges. ',
     'Delete Badge':
       'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
@@ -78,6 +78,8 @@ function RolePermissions(props) {
     'Assign Users Team':
     'Gives the user permission to add a user to a team from their profile page. "User Profile" -> "Teams" -> "Assign Team"',
     'Edit Timelog Information': 'Gives the user permission to edit any time log entry.',
+    'Edit Project Category or Status':
+    'Gives the user permission to edit the category or the status of any Project. "Other Links" -> "Projects"',
     'Add Time Entry (Others)':
       'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button"',
     'Delete Time Entry (Others)':
@@ -86,9 +88,9 @@ function RolePermissions(props) {
     'Gives the user permission to toggle the Tanglible check when editing their own time entry.',
     'Toggle Tangible/Intangible Time Others':
       'Gives the user permission to toggle the tanglible check when editing a time entry of another user.',
-    'Edit Time Entry':
+      'Edit Own Time Entry':
       'Gives the user permission to edit any time entry on their own time logs tab "Dashboard" -> "Current Time Log" -> "Pencil Icon"',
-    'Delete Time Entry':
+      'Delete Own Time Entry':
       'Gives the user permission to delete any time entry on their own time logs tab "Dashboard" -> "Current Time Log" -> "Trash Icon"',
     'Change User Status':
       'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
@@ -105,16 +107,18 @@ function RolePermissions(props) {
       'Gives the user permission to change the requirement to the user to submit a summary.',
     'Handle Blue Squares': 'Gives the user permission to Update/Delete/Edit any blue square.',
     'Only Assign Blue Squares': 'Gives the user permission to add blue squares to any user.',
-    'See Permissions Management Tab':
+    'See Permissions Management Tab and Edit Permission':
       'Gives the user permission to access the Permissions Management tab.',
     'Submit Weekly Summary For Others':
       'Gives the user permission to submit weekly summary for another user',
     'Change the Bio Announcement Status':
       'Gives the user permission to change the annoucement status',
+      'Change Date on Intangible Time Entry':
+      'Gives the user permission to edit the date when adding an intangible time entry.',
     'See Summary Indicator' : 
-      'Gives the user permission to see summary indicator on leaderboard.',
+      'Give the ability to see on the dashboard the green ✓ indicator for when a summary has been submitted. ',
     'See Visibility Icon' : 
-      'Gives the user permission to see visibility icon on leaderboard.',
+      'Give the ability to see on the dashboard the eye indicator for when a person is invisible. ',
     
   };
   const mainPermissions = []
