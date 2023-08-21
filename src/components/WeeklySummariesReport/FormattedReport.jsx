@@ -11,6 +11,7 @@ import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import { Input } from 'reactstrap';
 
 const textColors = {
@@ -26,7 +27,8 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount }) => {
+
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo }) => {
   const emails = [];
 
   summaries.forEach(summary => {
@@ -261,9 +263,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={'summary-' + index}
           >
-            <div>
+            <div style={{display:'flex'}}>
               <b>Name: </b>
-              <Link to={`/userProfile/${summary._id}`} title="View Profile">
+              <Link style={{marginLeft:'5px'}}
+                to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
               </Link>
 
@@ -273,6 +276,9 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
               <span>
                 <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
               </span>
+               <div>
+                    {(summary.role !== 'Volunteer')&& <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />}
+               </div>
               {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
                 <i
                   className="fa fa-star"

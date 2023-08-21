@@ -29,6 +29,7 @@ describe('WeeklySummariesReport page', () => {
         summaries: [],
         authUser: { role: '' },
         roles: [],
+        getInfoCollections: jest.fn(),
       };
       renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
 
@@ -45,6 +46,7 @@ describe('WeeklySummariesReport page', () => {
         summaries: [],
         authUser: { role: '' },
         roles: [],
+        getInfoCollections: jest.fn(),
       };
       renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
       expect(screen.getByTestId('loading')).toBeInTheDocument();
@@ -55,6 +57,7 @@ describe('WeeklySummariesReport page', () => {
     const props = {
       hasPermission: hasPermission,
       getWeeklySummariesReport: jest.fn(),
+      getInfoCollections: jest.fn(),
       loading: false,
       summaries: [],
       authUser: { role: '' },

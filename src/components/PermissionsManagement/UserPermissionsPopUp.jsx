@@ -39,15 +39,9 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
         ? unCheckPermission
         : [...permissionsUserFront, actualValue];
 
-      let permissionsBackEnd = actualPermissionsFront
-        .map(permission => {
-          permissionFrontToBack(permission);
-        })
-        .filter(e => e != undefined);
 
       const newPermissionsObject = {
         frontPermissions: actualPermissionsFront,
-        backPermissions: permissionsBackEnd,
       };
       return { ...previous, permissions: newPermissionsObject };
     });
