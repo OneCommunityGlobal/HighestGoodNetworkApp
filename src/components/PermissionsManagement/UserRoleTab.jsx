@@ -59,6 +59,7 @@ export const permissionLabel = {
   editWeeklySummaryOptions: 'Edit Weekly Summary Options',
   seePopupManagement: 'See Popup Management Tab (create and update popups)',
   dataIsTangibleTimelog: 'Timelog Data is Tangible',
+
 };
 
 const UserRoleTab = props => {

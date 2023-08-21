@@ -10,7 +10,7 @@ class UserTeamProjectContainer extends React.PureComponent {
     super(props);
     this.state = {
       addTeamPopupOpen: false,
-      addProjectPopupOpen: false,
+      postProjectPopupOpen: false,
       renderedOn: 0,
     };
   }
@@ -26,7 +26,7 @@ class UserTeamProjectContainer extends React.PureComponent {
           onSelectAssignTeam={this.onSelectAssignTeam}
         />
         <AddProjectPopup
-          open={this.state.addProjectPopupOpen}
+          open={this.state.postProjectPopupOpen}
           onClose={this.onAddProjectPopupClose}
           userProjectsById={this.props.userProjects}
           projects={this.props.projectsData}
@@ -77,19 +77,19 @@ class UserTeamProjectContainer extends React.PureComponent {
     this.props.onAssignProject(project);
     this.setState({
       renderedOn: Date.now(),
-      addProjectPopupOpen: false,
+      postProjectPopupOpen: false,
     });
   };
 
   onAddProjectPopupShow = () => {
     this.setState({
-      addProjectPopupOpen: true,
+      postProjectPopupOpen: true,
     });
   };
 
   onAddProjectPopupClose = () => {
     this.setState({
-      addProjectPopupOpen: false,
+      postProjectPopupOpen: false,
     });
   };
 

@@ -7,11 +7,11 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 import { updateRole, getAllRoles } from '../../actions/role';
 import { toast } from 'react-toastify';
-import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
@@ -118,6 +118,7 @@ function RolePermissions(props) {
     
   };
   const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
+
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
@@ -171,16 +172,11 @@ function RolePermissions(props) {
       return getKeyByValue(permissionLabel, perm);
     });
 
-    const permissionsBackEnd = permissionsObjectName.map(permission =>
-      permissionFrontToBack(permission),
-    );
-
     const id = props.roleId;
 
     const updatedRole = {
       roleName: roleName,
       permissions: permissionsObjectName,
-      permissionsBackEnd: permissionsBackEnd.flat(),
       roleId: id,
     };
     try {
@@ -304,17 +300,12 @@ function RolePermissions(props) {
               {permission}
             </p>
             <div className="icon-button-container">
-              <i
-                data-toggle="tooltip"
-                data-placement="center"
-                title="Click for more information"
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={() => {
-                  handleModalOpen(permission);
-                }}
-              />
-              &nbsp;&nbsp;
+              <div style={{paddingRight: '27px'}}>
+                  <EditableInfoModal
+                    role={props?.userRole}
+                    areaName={`${permission}`+'Info'}
+                    fontSize={24} />{' '}
+               </div>
               <Button
                 className="icon-button"
                 color={permissions.includes(permission) ? 'danger' : 'success'}
