@@ -5,7 +5,6 @@ import { permissionLabel } from './UserRoleTab';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { commonBackEndPermissions, permissionFrontToBack } from 'utils/associatedPermissions';
 import { boxStyle } from 'styles';
 
 const CreateNewRolePopup = ({ toggle, addNewRole }) => {
@@ -17,11 +16,6 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    let permissionsBackEnd = permissionsChecked.map(permission => {
-      permissionFrontToBack(permission);
-    });
-
-    permissionsBackEnd = [...permissionsBackEnd, ...commonBackEndPermissions].flat();
 
     if (!isValidRole) {
       toast.error('Please enter a valid role name');
@@ -29,7 +23,6 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
       const newRoleObject = {
         roleName: newRoleName,
         permissions: permissionsChecked,
-        permissionsBackEnd,
       };
       await addNewRole(newRoleObject);
       toast.success('Role created successfully');
