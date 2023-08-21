@@ -453,7 +453,7 @@ const BasicInformationTab = props => {
                     );
                   })}
                   {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                    <option value="Owner" style={{marginLeft:"5px", backgroundColor:"green"}}>Owner</option>
+                    <option value="Owner">Owner</option>
                   )}
                 </select>
               </FormGroup>
