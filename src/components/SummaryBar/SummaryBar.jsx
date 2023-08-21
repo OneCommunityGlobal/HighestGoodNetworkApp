@@ -282,10 +282,10 @@ const SummaryBar = props => {
               {totalEffort < weeklyCommittedHours && (
                 <div className="border-red col-4 bg--white-smoke" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black text-danger" >
-                    !
+                  <p className="text-center large_text_summary text--black text-danger" >
+                    ! 
                   </p>
-                  <font className="text--black" size="3">
+                  <font className="text-center text--black" size="3">
                     HOURS
                   </font>
                   <div className="py-2"> </div>
@@ -327,7 +327,7 @@ const SummaryBar = props => {
                   <div className="py-1"> </div>
                   {matchUser || canPutUserProfileImportantInfo ? (
                     <p
-                      className={'summary-toggle large_text_summary text--black text-danger'}
+                      className={'text-center summary-toggle large_text_summary text--black text-danger'}
 
                       onClick={props.toggleSubmitForm}
                     >
@@ -335,14 +335,14 @@ const SummaryBar = props => {
                     </p>
                   ) : (
                     <p
-                      className={'summary-toggle large_text_summary text--black text-danger'}
+                      className={'text-center summary-toggle large_text_summary text--black text-danger'}
 
                     >
                       !
                     </p>
                   )}
 
-                  <font className="text--black" size="3">
+                  <font className="text-center text--black" size="3">
                     SUMMARY
                   </font>
                   <div className="py-2"> </div>
