@@ -31,6 +31,7 @@ const TimeZoneDropDown = props => {
       className="form form-control"
       onChange={props.onChange}
       defaultValue={props.selected}
+      style={{width:"332px"}}
     >
       {Object.keys(timeZoneMap).map(timeZoneName => {
         const timeZoneString = `${timeZoneName} (UTC${timeZoneMap[timeZoneName].utcOffset})`;
