@@ -302,7 +302,6 @@ export class WeeklySummariesReport extends Component {
                     <GeneratePdfReport
                       summaries={summaries}
                       weekIndex={2}
-                      role={role}
                       weekDates={this.weekDates[2]}
                     />
                   </Col>
