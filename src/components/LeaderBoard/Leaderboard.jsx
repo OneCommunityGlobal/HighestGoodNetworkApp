@@ -38,14 +38,12 @@ const LeaderBoard = ({
   organizationData,
   timeEntries,
   isVisible,
-  roles,
   asUser,
   totalTimeMouseoverText,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
-  const userPermissions = loggedInUser.permissions?.frontPermissions;
-  const hasSummaryIndicatorPermission = hasPermission(loggedInUser.role, 'seeSummaryIndicator', roles, userPermissions);
-  const hasVisibilityIconPermission = hasPermission(loggedInUser.role, 'seeVisibilityIcon', roles, userPermissions);
+  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); //??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');     //??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
