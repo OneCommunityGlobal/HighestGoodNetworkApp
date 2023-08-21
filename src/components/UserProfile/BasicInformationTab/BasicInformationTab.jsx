@@ -12,6 +12,7 @@ import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const Name = props => {
@@ -266,18 +267,17 @@ const BasicInformationTab = props => {
     handleUserProfile,
     formValid,
     setFormValid,
-    role,
     canEdit,
     canEditRole,
     roles,
-    userPermissions,
     loadUserProfile,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
-  const CanRead = role !=='Volunteer'? true:false;
-  const CanEdit =  role ==='Owner'? true:false;
+
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+
   const onClickGetTimeZone = () => {
     if (!location) {
       alert('Please enter valid location');
@@ -449,9 +449,7 @@ const BasicInformationTab = props => {
                       </option>
                     );
                   })}
-                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                    <option value="Owner">Owner</option>
-                  )}
+                  {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>
               </FormGroup>
             ) : (
@@ -710,9 +708,7 @@ const BasicInformationTab = props => {
                     if (roleName === 'Owner') return;
                     return <option key={roleName} value={roleName}>{roleName}</option>;
                   })}
-                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                    <option value="Owner">Owner</option>
-                  )}
+                  {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>
               </FormGroup>
             ) : (
@@ -803,4 +799,4 @@ const BasicInformationTab = props => {
     </div>
   );
 };
-export default BasicInformationTab;
+export default connect(null, { hasPermission })(BasicInformationTab);

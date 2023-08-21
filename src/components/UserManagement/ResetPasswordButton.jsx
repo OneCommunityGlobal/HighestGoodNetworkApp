@@ -1,6 +1,6 @@
 import React from 'react';
 import ResetPasswordPopup from './ResetPasswordPopup';
-import { denyPermissionForOthersToUpdateDevAdminDetails } from 'utils/permissions';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { resetPassword } from '../../services/userProfileService';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -36,9 +36,7 @@ class ResetPasswordButton extends React.PureComponent {
   }
 
   onResetClick = () => {
-    if (
-      denyPermissionForOthersToUpdateDevAdminDetails(this.props.user.email, this.props.authEmail)
-    ) {
+    if (cantUpdateDevAdminDetails(this.props.user.email, this.props.authEmail)) {
       alert(
         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
           'You shouldn’t even be using this account except to create your own accounts to use. ' +

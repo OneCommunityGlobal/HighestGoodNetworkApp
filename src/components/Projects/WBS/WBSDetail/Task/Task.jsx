@@ -21,11 +21,11 @@ import { boxStyle } from 'styles';
 
 function Task(props) {
   /*
-  * -------------------------------- variable declarations -------------------------------- 
+  * -------------------------------- variable declarations --------------------------------
   */
   // props from store
   const { tasks } = props;
-  
+
   const startedDate = new Date(props.startedDatetime);
   const dueDate = new Date(props.dueDatetime);
 
@@ -38,9 +38,9 @@ function Task(props) {
   const [children, setChildren] = useState([]);
   const [showMoreResources, setShowMoreResources] = useState(false);
   const tableRowRef = useRef();
-  
+
   /*
-  * -------------------------------- functions -------------------------------- 
+  * -------------------------------- functions --------------------------------
   */
   const toggleModel = () => setModal(!modal);
 
@@ -69,7 +69,7 @@ function Task(props) {
   };
 
   /*
-  * -------------------------------- useEffects -------------------------------- 
+  * -------------------------------- useEffects --------------------------------
   */
   useEffect(() => {
     if (props.controllerId !== props.taskId) setControllerRow(false);
@@ -172,15 +172,15 @@ function Task(props) {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {!elm.profilePic || elm.profilePic === "/defaultprofilepic.png" 
-                          ? <span className="dot">{elm.name.split(' ').map(n => n[0]).join('').toUpperCase()}</span> 
+                        {!elm.profilePic || elm.profilePic === "/defaultprofilepic.png"
+                          ? <span className="dot">{elm.name.split(' ').map(n => n[0]).join('').toUpperCase()}</span>
                           : <img className="img-circle" src={elm.profilePic} />}
                       </a>
                     );
                   })
                 : null}
-              {props.resources.length > 2 
-                ? <a 
+              {props.resources.length > 2
+                ? <a
                     className="resourceMoreToggle"
                     onClick={() => setShowMoreResources(!showMoreResources)}
                   >
@@ -309,7 +309,7 @@ function Task(props) {
             </Modal>
           </tr>
           {controllerRow ? (
-            <ControllerRow 
+            <ControllerRow
               tableColNum={tableColNum}
               num={props.num}
               taskId={props.taskId}
@@ -323,7 +323,6 @@ function Task(props) {
               level={props.level}
               isOpen={isOpen}
               setIsOpen={setIsOpen}
-              hasPermission={true}
               siblings={props.siblings}
               load={props.load}
               pageLoadTime={props.pageLoadTime}
@@ -377,7 +376,7 @@ function Task(props) {
   );
 }
 
-const mapStateToProps = state => ({ 
+const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
  });
 

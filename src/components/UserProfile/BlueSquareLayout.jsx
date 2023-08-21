@@ -51,10 +51,6 @@ const BlueSquareLayout = props => {
     userProfile,
     handleUserProfile,
     handleBlueSquare,
-    isUserSelf,
-    role,
-    roles,
-    userPermissions,
     canEdit,
   } = props;
   const { privacySettings } = userProfile;
@@ -129,13 +125,7 @@ const BlueSquareLayout = props => {
           ) : null}
         </div>
 
-        <BlueSquare
-          blueSquares={userProfile?.infringements}
-          handleBlueSquare={handleBlueSquare}
-          role={role}
-          roles={roles}
-          userPermissions={userPermissions}
-        />
+        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
         <div className="mt-4 w-100">
           <Button variant="primary" onClick={handleOpen} className="w-100" size="md">
             {fetchState.isFetching ? (
@@ -175,9 +165,6 @@ const BlueSquareLayout = props => {
           <BlueSquare
             blueSquares={userProfile?.infringements}
             handleBlueSquare={handleBlueSquare}
-            role={role}
-            userPermissions={userPermissions}
-            roles={roles}
           />
         </div>
       )}

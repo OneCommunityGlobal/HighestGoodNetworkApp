@@ -2,17 +2,29 @@ import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UserTableData from '../../components/UserManagement/UserTableData';
-import { userProfileMock } from '../mockStates';
+import { authMock, userProfileMock, rolesMock } from '../mockStates';
+import { renderWithProvider } from '../utils';
+import thunk from 'redux-thunk';
+import configureStore from 'redux-mock-store';
+
+const mockStore = configureStore([thunk]);
+
 
 describe('User Table Data', () => {
   let onPauseResumeClick;
   let onDeleteClick;
   let onActiveInactiveClick;
+  let store;
   beforeEach(() => {
+    store = mockStore({
+      auth: authMock,
+      userProfile: userProfileMock,
+      role: rolesMock.role
+    });
     onPauseResumeClick = jest.fn();
     onDeleteClick = jest.fn();
     onActiveInactiveClick = jest.fn();
-    render(
+    renderWithProvider(
       <table>
         <tbody>
           <UserTableData
@@ -26,6 +38,7 @@ describe('User Table Data', () => {
           />
         </tbody>
       </table>,
+      { store, }
     );
   });
   describe('Structure', () => {
@@ -83,15 +96,15 @@ describe('User Table Data', () => {
       expect(onActiveInactiveClick).toHaveBeenCalledTimes(1);
     });
     it('should render a modal once the user clicks the `reset password` button', () => {
-      // if (userProfileMock.email !== "devadmin@hgn.net") {
-      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-      // }
-      // else {
-      //   const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-      //   userEvent.click(screen.getByRole('button', { name: /reset password/i }))
-      //   expect(alertMock).toHaveBeenCalledTimes(1)
-      // }
+      if (userProfileMock.email !== "devadmin@hgn.net") {
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      }
+      else {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }))
+        expect(alertMock).toHaveBeenCalledTimes(1)
+      }
     });
   });
 });

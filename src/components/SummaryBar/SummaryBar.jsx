@@ -16,7 +16,7 @@ import {
   Input,
   FormText,
 } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
 import task_icon from './task_icon.png';
@@ -34,7 +34,7 @@ import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { toast } from 'react-toastify';
 
 const SummaryBar = props => {
-  const { asUser, role, summaryBarData } = props;
+  const { asUser, summaryBarData } = props;
   const [userProfile, setUserProfile] = useState(undefined);
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
@@ -47,15 +47,14 @@ const SummaryBar = props => {
   const authenticateUser = useSelector(state => state.auth.user);
   const gsUserprofile = useSelector(state => state.userProfile);
   const gsUserTasks = useSelector(state => state.userTask);
-  const roles = useSelector(state => state.role.roles);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
-  const authenticateUserPermission = authenticateUser
-    ? authenticateUser.permissions?.frontPermissions
-    : [];
 
   const matchUser = asUser == authenticateUserId ? true : false;
 
-  useEffect(()=>{setUserProfile(gsUserprofile)},[gsUserprofile])
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  useEffect(() => {
+    setUserProfile(gsUserprofile);
+  }, [gsUserprofile]);
 
   // Similar to UserProfile component function
   // Loads component depending on asUser passed as prop
@@ -248,7 +247,6 @@ const SummaryBar = props => {
       ? latestSummary.summary : '';
   };
 
-  const authenticateUserRole = authenticateUser ? authenticateUser.role : '';
   if (userProfile !== undefined && summaryBarData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
     //const weeklySummary = getWeeklySummary(userProfile);
@@ -256,13 +254,7 @@ const SummaryBar = props => {
       <Container
         fluid
         className={
-          matchUser ||
-          hasPermission(
-            authenticateUserRole,
-            'submitWeeklySummaryForOthers',
-            roles,
-            authenticateUserPermission,
-          )
+          matchUser || canPutUserProfileImportantInfo
             ? 'px-lg-0 bg--bar'
             : 'px-lg-0 bg--bar disabled-bar'
         }
@@ -333,13 +325,7 @@ const SummaryBar = props => {
               {!weeklySummary ? (
                 <div className="border-red col-4 bg--white-smoke no-gutters" >
                   <div className="py-1"> </div>
-                  {matchUser ||
-                  hasPermission(
-                    authenticateUserRole,
-                    'submitWeeklySummaryForOthers',
-                    roles,
-                    authenticateUserPermission,
-                  ) ? (
+                  {matchUser || canPutUserProfileImportantInfo ? (
                     <p
                       className={'summary-toggle large_text_summary text--black text-danger'}
 
@@ -680,4 +666,4 @@ const SummaryBar = props => {
   }
 };
 
-export default SummaryBar;
+export default connect(null, { hasPermission })(SummaryBar);

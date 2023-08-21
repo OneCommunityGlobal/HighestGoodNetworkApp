@@ -1,8 +1,12 @@
 import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 
-const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermissions }) => {
+const BlueSquare = (props, { blueSquares, handleBlueSquare }) => {
+  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+
   return (
     <div className="blueSquareContainer">
       <div className="blueSquares">
@@ -18,20 +22,16 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
                   className="blueSquareButton"
                   onClick={() => {
                     if (!blueSquare._id) {
+                      handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
+                    } else if (canPutUserProfileImportantInfo) {
                       handleBlueSquare(
-                        hasPermission(role, 'handleBlueSquare', roles, userPermissions),
-                        'message',
-                        'none',
-                      );
-                    } else if (hasPermission(role, 'handleBlueSquare', roles, userPermissions)) {
-                      handleBlueSquare(
-                        hasPermission(role, 'handleBlueSquare', roles, userPermissions),
+                        canPutUserProfileImportantInfo,
                         'modBlueSquare',
                         blueSquare._id,
                       );
                     } else {
                       handleBlueSquare(
-                        !hasPermission(role, 'handleBlueSquare', roles, userPermissions),
+                        !canPutUserProfileImportantInfo,
                         'viewBlueSquare',
                         blueSquare._id,
                       );
@@ -47,8 +47,7 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
           : null}
       </div>
 
-      {(hasPermission(role, 'editUserProfile', roles, userPermissions) ||
-        hasPermission(role, 'assignOnlyBlueSquares', roles, userPermissions)) && (
+      {isInfringementAuthorizer && (
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');
@@ -65,4 +64,4 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
   );
 };
 
-export default BlueSquare;
+export default connect(null, { hasPermission })(BlueSquare);
