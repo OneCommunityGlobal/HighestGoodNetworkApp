@@ -154,7 +154,7 @@ const LeaderBoard = ({
       'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
     );
   };
-  const updateLeaderboard = async () => {
+  const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     await getLeaderboardData(userId);
     setIsLoading(false);
@@ -172,7 +172,7 @@ const LeaderBoard = ({
           style={{ fontSize: 24, cursor: 'pointer' }}
           aria-hidden="true"
           className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
-          onClick={updateLeaderboard}
+          onClick={updateLeaderboardHandler}
         />
         &nbsp;&nbsp;
         <i
