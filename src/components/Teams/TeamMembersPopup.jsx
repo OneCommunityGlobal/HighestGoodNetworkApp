@@ -3,6 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } 
 import MembersAutoComplete from './MembersAutoComplete';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 const TeamMembersPopup = React.memo(props => {
   // debugger;
@@ -12,6 +13,8 @@ const TeamMembersPopup = React.memo(props => {
   const [selectedUser, onSelectUser] = useState(undefined);
   const [isValidUser, onValidation] = useState(true);
   const [searchText, setSearchText] = useState('');
+
+  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
   const onAddUser = () => {
     if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
@@ -35,12 +38,7 @@ const TeamMembersPopup = React.memo(props => {
       <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
         <ModalHeader toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
-          {hasPermission(
-            props.requestorRole,
-            'assignTeamToUser',
-            props.roles,
-            props.userPermissions,
-          ) && (
+          {canAssignTeamToUsers && (
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
@@ -64,12 +62,7 @@ const TeamMembersPopup = React.memo(props => {
                 <tr>
                   <th>#</th>
                   <th>User Name</th>
-                  {hasPermission(
-                    props.requestorRole,
-                    'assignTeamToUser',
-                    props.roles,
-                    props.userPermissions,
-                  ) && <th> </th>}
+                  {canAssignTeamToUsers && <th> </th>}
                 </tr>
               </thead>
               <tbody>
@@ -78,12 +71,7 @@ const TeamMembersPopup = React.memo(props => {
                     <tr key={`team_member_${index}`}>
                       <td>{index + 1}</td>
                       <td>{`${user.firstName} ${user.lastName}`}</td>
-                      {hasPermission(
-                        props.requestorRole,
-                        'assignTeamToUser',
-                        props.roles,
-                        props.userPermissions,
-                      ) && (
+                      {canAssignTeamToUsers && (
                         <td>
                           <Button
                             color="danger"
@@ -115,4 +103,4 @@ const TeamMembersPopup = React.memo(props => {
   );
 });
 
-export default TeamMembersPopup;
+export default connect(null, { hasPermission })(TeamMembersPopup);

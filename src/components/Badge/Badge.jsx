@@ -63,7 +63,6 @@ const Badge = props => {
     }
   }, [props.userProfile.badgeCollection, totalBadge]);
 
-  const permissionsUser = props.userProfile?.permissions?.frontPermissions;
   return (
     <>
       <Container className="right-padding-temp-fix">
@@ -105,9 +104,7 @@ const Badge = props => {
                       userId={props.userId}
                       firstName={props.userProfile.firstName}
                       lastName={props.userProfile.lastName}
-                      role={props.role}
                       close={toggle}
-                      permissionsUser={permissionsUser}
                     />
                   </ModalBody>
                 </Modal>
