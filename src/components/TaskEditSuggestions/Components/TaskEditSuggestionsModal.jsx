@@ -24,18 +24,13 @@ export const TaskEditSuggestionsModal = ({
   const dispatch = useDispatch();
 
   const { getState } = useStore();
-  const alldata = getState();
-
-  const [role] = useState(alldata.auth ? alldata.auth.user.role : null);
-  const userPermissions = alldata.auth.user?.permissions?.frontPermissions;
-  const { roles } = alldata.role;
 
   const approveTask = () => {
     console.log('mainproblem', taskEditSuggestion);
     updateTask(
       taskEditSuggestion.taskId,
       taskEditSuggestion.newTask,
-      hasPermission(role, 'editTask', roles, userPermissions),
+      dispatch(hasPermission('updateTask')),
     )(dispatch, getState);
     dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
     handleToggleTaskEditSuggestionModal();
