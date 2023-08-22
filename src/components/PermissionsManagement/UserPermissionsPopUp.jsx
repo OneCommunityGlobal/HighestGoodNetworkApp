@@ -77,7 +77,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
     const newUserInfo = { ...allUserInfo, ...actualUserProfile };
-
+   
     await axios
       .put(url, newUserInfo)
       .then(res => {
@@ -94,7 +94,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       autoClose: 10000,
     });
   };
-
+  const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
   return (
     <Form
       id="manage__user-permissions"
@@ -165,13 +165,16 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       <div>
         <h4 className="user-permissions-pop-up__title">Permissions:</h4>
         <ul className="user-role-tab__permission-list">
-          {Object.entries(permissionLabel).map(([key, value]) => {
+          {Object.entries(permissionLabel).map(([key, value]) => { 
+            const isValueInMainPermissions = mainPermissions.includes(value);
+
+            if (isValueInMainPermissions) {
             return (
               <li key={key} className="user-role-tab__permission">
                 <div
                   style={{
                     color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
-                    padding: '14px',
+                    fontSize: '20px'
                   }}
                 >
                   {value}
@@ -199,7 +202,42 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                 )}
               </li>
             );
-          })}
+          } else {
+            return (<li key={key} className="user-role-tab__permission">
+            <div
+              style={{
+                color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
+                paddingLeft: '30px',
+              }}
+            >
+              {value}
+            </div>
+            {isPermissionDefault(key) ? null : isPermissionChecked(key) ? (
+              <Button
+                type="button"
+                color="danger"
+                onClick={e => onChangeCheck(key)}
+                disabled={actualUserProfile ? false : true}
+                style={boxStyle}
+              >
+                Remove
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                color="success"
+                onClick={e => onChangeCheck(key)}
+                disabled={actualUserProfile ? false : true}
+                style={boxStyle}
+              >
+                Add
+              </Button>
+            )}
+          </li>);
+          }
+            
+          })
+          }
         </ul>
       </div>
       <Button
