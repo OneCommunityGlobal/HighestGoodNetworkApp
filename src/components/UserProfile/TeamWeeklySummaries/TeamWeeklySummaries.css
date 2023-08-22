@@ -9,6 +9,9 @@
   border-radius: 3px;
   background-color: #f7fbfe;
 }
+/* look into css of aligning the button at the end of the text
+add some spacing after wards. 
+or add it at the top of the summary to the right of it */
 
 .team-weekly-header {
   display: flex;
@@ -27,3 +30,12 @@
   align-items: center;
   line-height: 0.8;
 }
+.copy-icon {
+  cursor: pointer;
+}
+/* .team-weekly-summary-data {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  /* max-width: 100%; */
