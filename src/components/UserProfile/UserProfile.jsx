@@ -867,6 +867,9 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
+                  canEditTeamCode={props.hasPermission('putUserProfileImportantInfo')}
+                  setUserProfile={setUserProfile}
+                  userProfile={userProfile}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -1061,6 +1064,9 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
+                    canEditTeamCode={props.hasPermission('putUserProfileImportantInfo')}
+                    setUserProfile={setUserProfile}
+                    userProfile={userProfile}
                   />
                 </ModalBody>
                 <ModalFooter>

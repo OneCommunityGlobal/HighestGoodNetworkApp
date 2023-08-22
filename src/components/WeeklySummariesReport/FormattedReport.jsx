@@ -13,7 +13,9 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
-import { Input } from 'reactstrap';
+import { Row, Input, Col } from 'reactstrap';
+import BioFunction from './BioFunction';
+import TotalValidSummaries from './TotalValidSummaries';
 
 const textColors = {
   Default: '#000000',
@@ -29,7 +31,7 @@ const textColors = {
 };
 
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo, canEditTeamCode }) => {
   const emails = [];
 
   summaries.forEach(summary => {
@@ -126,57 +128,6 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     );
   };
 
-  const getTotalValidWeeklySummaries = summary => {
-
-    const style = {
-      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
-    };
-    
-    const [weeklySummariesCount, setWeeklySummariesCount] = useState(parseInt(summary.weeklySummariesCount));
-    
-    const handleOnChange = async (userProfileSummary, count) => {
-      const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id)
-      try {
-        await axios.patch(url, {key: 'weeklySummariesCount', value: count});
-      } catch (err) {
-        alert('An error occurred while attempting to save the new weekly summaries count change to the profile.');
-      }
-    };
-
-    const handleWeeklySummaryCountChange = e => {
-        setWeeklySummariesCount(e.target.value);
-        handleOnChange(summary, e.target.value);
-      }
-    
-    return (
-      <div className='total-valid-wrapper'>
-        {weeklySummariesCount === 8 ? 
-        <div className='total-valid-text' style={style}>
-          <b>Total Valid Weekly Summaries:</b>{' '}
-        </div> : 
-        <div className='total-valid-text'>
-          <b style={style}>
-            Total Valid Weekly Summaries:
-          </b>{' '}
-        </div>
-        }
-        {canEditSummaryCount ? 
-        <div style={{width: '150px', paddingLeft: "5px"}}>
-          <Input 
-              type='number' 
-              name='weeklySummaryCount' 
-              step='1'
-              value={weeklySummariesCount} 
-              onChange={e => handleWeeklySummaryCountChange(e)}
-              min='0'
-          />
-        </div> : 
-        <div>&nbsp;{weeklySummariesCount || 'No valid submissions yet!'}</div>
-        } 
-      </div>
-    )
-  };
-
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
     if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
@@ -193,65 +144,34 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     }
   };
 
-  const handleChangeBioPosted = async (userId, bioStatus) => {
+  const getUserProfile = async (userId) => {
+    const url = ENDPOINTS.USER_PROFILE(userId);
+    const response = await axios.get(url);
+    return response.data;
+  };
+
+  const handleProfileChange = async (userId, newStatus, mode) => {
+    const userProfile = await getUserProfile(userId);
+    const successMessage = mode == "bio"
+      ? 'You have changed the bio announcement status of this user.'
+      : 'You have changed the team code of this user.';
+
+    const error = mode == "bio"
+      ? 'An error occurred while attempting to save the bioPosted change to the profile.'
+      : 'An error occurred while attempting to save the teamCode change to the profile.';
+
     try {
-      const url = ENDPOINTS.USER_PROFILE(userId);
-      const response = await axios.get(url);
-      const userProfile = response.data;
-      const res = await axios.put(url, {
-        ...userProfile,
-        bioPosted: bioStatus,
-      });
+      const newUserProfile = mode == "bio"
+        ? { ...userProfile, bioPosted: newStatus }
+        : { ...userProfile, teamCode: newStatus }
+      const res = await axios.put(ENDPOINTS.USER_PROFILE(userId), newUserProfile);
       if (res.status === 200) {
-        toast.success('You have changed the bio announcement status of this user.');
+        toast.success(successMessage);
       }
     } catch (err) {
-      alert('An error occurred while attempting to save the bioPosted change to the profile.');
+      alert(error);
     }
   };
-
-  const BioSwitch = (userId, bioPosted, summary, weeklySummaryOption, totalTangibleHrs, daysInTeam) => {
-    const [bioStatus, setBioStatus] = useState(bioPosted);
-    const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== "posted"
-    const style = {
-      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
-    };
-    return (
-      <div style={isMeetCriteria ? {backgroundColor: "yellow"}: {}}> 
-        <div className="bio-toggle">
-          <b style={style}>Bio announcement:</b>
-        </div>
-        <div className="bio-toggle">
-          <ToggleSwitch
-            switchType="bio"
-            state={bioStatus}
-            handleUserProfile={bio => {
-              setBioStatus(bio);
-              handleChangeBioPosted(userId, bio);
-            }}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  const BioLabel = (userId, bioPosted, summary) => {
-    const style = {
-      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
-    };
-    return (
-      <div>
-        <b style={style}>Bio announcement:</b>
-        {bioPosted === 'default'
-          ? ' Not requested/posted'
-          : bioPosted === 'posted'
-          ? ' Posted'
-          : ' Requested'}
-      </div>
-    );
-  };
-
-  const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
 
   return (
     <>
@@ -268,56 +188,92 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={'summary-' + index}
           >
-            <div style={{display:'flex'}}>
-              <b>Name: </b>
-              <Link style={{marginLeft:'5px'}}
-                to={`/userProfile/${summary._id}`} title="View Profile">
-                {summary.firstName} {summary.lastName}
-              </Link>
+            <Row>
+              <Col>
+                <div style={{display:'flex'}}>
+                  <b>Name: </b>
+                  <Link style={{marginLeft:'5px'}}
+                    to={`/userProfile/${summary._id}`} title="View Profile">
+                    {summary.firstName} {summary.lastName}
+                  </Link>
 
-              <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-                <img className="google-doc-icon" src={googleDocIcon } alt="google_doc" />
-              </span>
-              <span>
-                <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
-              </span>
-               <div>
-                    {(summary.role !== 'Volunteer')&& <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />}
-               </div>
-              {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
-                <i
-                  className="fa fa-star"
-                  title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
-                  style={{
-                    color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
-                    fontSize: '55px',
-                    marginLeft: '10px',
-                    verticalAlign: 'middle',
-                    position: 'relative',
-                  }}
-                >
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      color: 'white',
-                      fontWeight: 'bold',
-                      fontSize: '10px',
-                    }}
-                  >
-                    +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+                  <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+                    <img className="google-doc-icon" src={googleDocIcon } alt="google_doc" />
                   </span>
-                </i>
-              )}
-            </div>
+                  <span>
+                    <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+                  </span>
+                  <div>
+                    {(summary.role !== 'Volunteer')&& <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />}
+                  </div>
+                  {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+                    <i
+                      className="fa fa-star"
+                      title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
+                      style={{
+                        color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+                        fontSize: '55px',
+                        marginLeft: '10px',
+                        verticalAlign: 'middle',
+                        position: 'relative',
+                      }}
+                    >
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          color: 'white',
+                          fontWeight: 'bold',
+                          fontSize: '10px',
+                        }}
+                      >
+                        +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+                      </span>
+                    </i>
+                  )}
+                </div>
+              </Col>
+              <Col sm="3" xs="3" style={{padding: "0px"}}>
+                {canEditTeamCode ? (
+                  <Input
+                    type="text"
+                    name="teamCode"
+                    id="teamCode"
+                    key={`code_${summary.teamCode}`}
+                    defaultValue={summary.teamCode}
+                    onBlur={e => {
+                      handleProfileChange(summary._id, e.target.value, "teamCode");
+                    }}
+                    placeholder="format: A-AAA"
+                  />
+                ) : (
+                  `${summary.teamCode == ''? "No assigned team code": summary.teamCode}`
+                )}
+              </Col>
+            </Row>
             <div>
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </div>
-            {bioFunction(summary._id, summary.bioPosted, summary, summary.weeklySummaryOption, summary.totalTangibleHrs, summary.daysInTeam)}
-            {getTotalValidWeeklySummaries(summary)}
+            <BioFunction 
+              key={`bio_${summary.id}_${summary.bioPosted}`}
+              userId={summary._id}
+              bioPosted={summary.bioPosted} 
+              summary={summary}
+              totalTangibleHrs={summary.totalTangibleHrs}
+              daysInTeam={summary.daysInTeam}
+              textColors={textColors}
+              bioCanEdit={bioCanEdit}
+              handleProfileChange={handleProfileChange}
+            />
+            <TotalValidSummaries 
+              key={`count_${summary.weeklySummariesCount}`}
+              summary={summary} 
+              canEditSummaryCount={canEditSummaryCount}
+              textColors={textColors}
+            />
             {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
               <p>
                 <b
