@@ -58,19 +58,19 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit }) => {
     return googleDocLink;
   };
 
-const getWeeklySummaryMessage = summary => {
+  const getWeeklySummaryMessage = summary => {
     const textColors = {
-      "Default": "#000000",
-      "Not Required": "#708090",
-      "Team": "#FF00FF",
-      "Team Fabulous": "#FF00FF",
-      "Team Marigold": "#FF7F00",
-      "Team Luminous": "#C4AF18",
-      "Team Lush": "#00FF00",
-      "Team Sky": "#0000FF",
-      "Team Azure": "#4B0082",
-      "Team Amethyst": "#9400D3"
-    }
+      Default: '#000000',
+      'Not Required': '#708090',
+      Team: '#FF00FF',
+      'Team Fabulous': '#FF00FF',
+      'Team Marigold': '#FF7F00',
+      'Team Luminous': '#C4AF18',
+      'Team Lush': '#00FF00',
+      'Team Sky': '#29C5F6',
+      'Team Azure': '#2B35AF',
+      'Team Amethyst': '#9400D3',
+    };
 
     if (!summary) {
       return (
@@ -82,23 +82,21 @@ const getWeeklySummaryMessage = summary => {
 
     const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
     let summaryDate = moment()
-                        .tz('America/Los_Angeles')
-                        .endOf('week')
-                        .subtract(weekIndex, 'week')
-                        .format('YYYY-MMM-DD')
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .format('YYYY-MMM-DD');
     let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
-   
       if (summaryText) {
-       
         const style = {
-          color: textColors[summary?.weeklySummaryOption] || textColors["Default"]
-        }
+          color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+        };
 
         summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
-                      .tz('America/Los_Angeles')
-                      .format('YYYY-MMM-DD')
-        summaryDateText =`Summary Submitted On (${summaryDate}):`
+          .tz('America/Los_Angeles')
+          .format('YYYY-MMM-DD');
+        summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
         return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
       } else {
@@ -106,7 +104,7 @@ const getWeeklySummaryMessage = summary => {
           summary?.weeklySummaryOption === 'Not Required' ||
           (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
         ) {
-          return <p style={{ color: textColors["Not Required"] }}>Not required for this user</p>;
+          return <p style={{ color: textColors['Not Required'] }}>Not required for this user</p>;
         } else {
           return <span style={{ color: 'red' }}>Not provided!</span>;
         }
