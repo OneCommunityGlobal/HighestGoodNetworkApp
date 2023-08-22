@@ -1,6 +1,17 @@
 .basic-info-tab-tablet {
   display: none;
 }
+@media (max-width: 1200px) {
+  PhoneInput:inputStyle{
+    width: "265px"
+  }
+}
+
+@media (min-width: 1201px) {
+  PhoneInput:inputStyle{
+    width: "325px"
+  }
+}
 
 @media (max-width: 1024px) {
   .basic-info-tab-desktop {
