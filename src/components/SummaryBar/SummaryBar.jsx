@@ -111,8 +111,21 @@ const SummaryBar = props => {
 
   //Get badges count from userProfile
   const getBadges = () => {
-    return userProfile && userProfile.badgeCollection ? userProfile.badgeCollection.reduce((acc, obj) => acc + Number(obj.count), 0) : 0;
-  };
+    if (!userProfile || !userProfile.badgeCollection) {
+      return 0;
+    }
+  
+    let totalBadges = 0;
+    userProfile.badgeCollection.forEach(badge => {
+      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+        totalBadges += 1;
+      } else {
+        totalBadges += Math.round(Number(badge.count));        
+      }
+    });
+  
+    return totalBadges;
+  };  
 
   const getState = useSelector(state => {
     return state;
@@ -294,10 +307,10 @@ const SummaryBar = props => {
               {totalEffort >= weeklyCommittedHours && (
                 <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black" >
+                  <p className="text-center large_text_summary text--black" >
                     ✓
                   </p>
-                  <font size="3">HOURS</font>
+                  <font className="text-center" size="3">HOURS</font>
                   <div className="py-2"> </div>
                 </div>
               )}
@@ -350,10 +363,10 @@ const SummaryBar = props => {
               ) : (
                 <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black" >
+                  <p className="text-center large_text_summary text--black" >
                     ✓
                   </p>
-                  <font className="text--black" size="3">
+                  <font className="text-center text--black" size="3">
                     SUMMARY
                   </font>
                   <div className="py-2"> </div>
