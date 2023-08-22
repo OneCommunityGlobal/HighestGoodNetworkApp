@@ -23,8 +23,8 @@ const textColors = {
   'Team Marigold': '#FF7F00',
   'Team Luminous': '#C4AF18',
   'Team Lush': '#00FF00',
-  'Team Sky': '#0000FF',
-  'Team Azure': '#4B0082',
+  'Team Skye': '#29C5F6',
+  'Team Azure': '#2B35AF',
   'Team Amethyst': '#9400D3',
 };
 
