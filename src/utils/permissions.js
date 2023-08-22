@@ -1,26 +1,40 @@
-const hasPermission = (role, action, roles, userPermissions) => {
-  if (role && roles && roles.length != 0) {
-    const roleIndex = roles?.findIndex(({ roleName }) => roleName === role);
-    let permissions = [];
-    if (roleIndex !== -1) {
-      permissions = roles[roleIndex].permissions;
-    }
 
-    let isAllowed;
-    if (userPermissions && userPermissions.includes(action)) {
-      isAllowed = true;
-    } else if (permissions?.includes(action)) {
-      isAllowed = true;
-    } else {
-      isAllowed = false;
-    }
+const hasPermission = (action) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const rolePermissions = state.role.roles;
+    const userRole = state.auth.user.role;
+    const userPermissions = state.auth.user.permissions?.frontPermissions;
 
-    return isAllowed;
+    if (userRole && rolePermissions && rolePermissions.length != 0) {
+      const roleIndex = rolePermissions?.findIndex(({ roleName }) => roleName === userRole);
+      let permissions = [];
+      if (roleIndex !== -1) {
+        permissions = rolePermissions[roleIndex].permissions;
+      }
+
+      return userPermissions?.includes(action) || permissions?.includes(action);
+    }
+    return false;
   }
-  return false;
 };
 
-export const deactivateOwnerPermission = (user, authRole) => {
+// others cannot change the details for devadmin@hgn.net
+export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
+  const allowedEmails = ['jae@onecommunityglobal.org',
+                         'one.community@me.com',
+                         'jsabol@me.com'
+                        ]
+  const protectedEmails = ['jae@onecommunityglobal.org',
+                           'one.community@me.com',
+                           'jsabol@me.com',
+                           'devadmin@hgn.net'
+                          ]
+  return protectedEmails.includes(devAdminEmail) && !allowedEmails.includes(authEmail);
+};
+
+
+export const cantDeactivateOwner = (user, authRole) => {
   return user.role === 'Owner' && user.isActive && authRole !== 'Owner';
 };
 

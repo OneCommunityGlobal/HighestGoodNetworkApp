@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 /**
  * The body row of the user table
@@ -17,6 +18,7 @@ import { boxStyle } from 'styles';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -26,10 +28,7 @@ const UserTableData = React.memo(props => {
   }, [props.isActive, props.resetLoading]);
 
   const checkPermissionsOnOwner = () => {
-    return (
-      props.user.role === 'Owner' &&
-      !hasPermission(props.role, 'addDeleteEditOwners', props.roles, props.userPermissions)
-    );
+    return props.user.role === 'Owner' && !canAddDeleteEditOwners;
   };
 
   return (
@@ -114,7 +113,7 @@ const UserTableData = React.memo(props => {
             </button>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton user={props.user} isSmallButton />
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton />
           </span>
         </td>
       )}
@@ -122,4 +121,4 @@ const UserTableData = React.memo(props => {
   );
 });
 
-export default UserTableData;
+export default connect(null, { hasPermission })(UserTableData);

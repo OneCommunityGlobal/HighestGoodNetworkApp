@@ -35,7 +35,7 @@ const Badge = props => {
           if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
             count += 1;
           } else {
-            count += badge.count;
+            count += Number(badge.count);
           }
         });
         setTotalBadge(Math.round(count));
@@ -56,14 +56,13 @@ const Badge = props => {
         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
           count += 1;
         } else {
-          count += badge.count;
+          count += Number(badge.count);
         }
       });
       setTotalBadge(Math.round(count));
     }
   }, [props.userProfile.badgeCollection, totalBadge]);
 
-  const permissionsUser = props.userProfile?.permissions?.frontPermissions;
   return (
     <>
       <Container className="right-padding-temp-fix">
@@ -105,9 +104,7 @@ const Badge = props => {
                       userId={props.userId}
                       firstName={props.userProfile.firstName}
                       lastName={props.userProfile.lastName}
-                      role={props.role}
                       close={toggle}
-                      permissionsUser={permissionsUser}
                     />
                   </ModalBody>
                 </Modal>
@@ -149,8 +146,8 @@ const Badge = props => {
           </p>
           <p className="badge_info_icon_text">
             Hours in Category: As you submit hours to a project of a certain category such as
-            &apos;Food&apos;, &apos;Energy&apos;, etc you can earn badges for hitting certain levels of hours worked in
-            each category.
+            &apos;Food&apos;, &apos;Energy&apos;, etc you can earn badges for hitting certain levels
+            of hours worked in each category.
           </p>
           <p className="badge_info_icon_text">
             Hour Multiple: If you earn a multiple of your weekly committed hours you can earn a

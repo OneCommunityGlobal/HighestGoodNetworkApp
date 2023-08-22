@@ -34,7 +34,7 @@ import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklyS
 import DueDateTime from './DueDateTime';
 import moment from 'moment';
 import 'moment-timezone';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
@@ -99,6 +99,7 @@ export class WeeklySummary extends Component {
     loading: true,
     editPopup: false,
     mediaChangeConfirm: false,
+    mediaFirstChange: false,
     moveSelect: '-1',
     movePopup: false,
     moveConfirm: false,
@@ -106,7 +107,9 @@ export class WeeklySummary extends Component {
 
   async componentDidMount() {
     await this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
+
     const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || '';
     const summaryLastWeek =
       (weeklySummaries && weeklySummaries[1] && weeklySummaries[1].summary) || '';
@@ -141,6 +144,7 @@ export class WeeklySummary extends Component {
     const dueDateLastWeek = moment(dueDate)
       .subtract(1, 'weeks')
       .toISOString();
+
     const dueDateBeforeLast = moment(dueDate)
       .subtract(2, 'weeks')
       .toISOString();
@@ -197,6 +201,7 @@ export class WeeklySummary extends Component {
       loading: this.props.loading,
       editPopup: false,
       mediaChangeConfirm: false,
+      mediaFirstChange: false,
     });
   }
 
@@ -313,11 +318,11 @@ export class WeeklySummary extends Component {
       .invalid(false)
       .label('Media Confirm'),
     editorConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Editor Confirm'),
+      .invalid(false)
+      .label('Editor Confirm'),
     proofreadConfirm: Joi.boolean()
-    .invalid(false)
-    .label('Proofread Confirm'),
+      .invalid(false)
+      .label('Proofread Confirm'),
   };
 
   validate = () => {
@@ -363,6 +368,7 @@ export class WeeklySummary extends Component {
   handleMediaChange = event => {
     this.setState({
       mediaChangeConfirm: true,
+      mediaFirstChange: true,
     });
 
     this.toggleShowPopup(this.state.editPopup);
@@ -394,7 +400,7 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
-  handleChangeInSummary = () => {
+  handleChangeInSummary = async() => {
     // Extract state variables for ease of access
     let {
       submittedDate,
@@ -467,6 +473,7 @@ export class WeeklySummary extends Component {
       modifiedWeeklySummaries,
     );
   };
+
   // Updates user profile and weekly summaries
   updateUserData = async userId => {
     await this.props.getUserProfile(userId);
@@ -499,13 +506,9 @@ export class WeeklySummary extends Component {
     if (errors) this.state.moveConfirm = false;
     if (errors) return;
 
-    const updateWeeklySummaries = this.handleChangeInSummary();
-    let saveResult;
-    if (updateWeeklySummaries) {
-      saveResult = await updateWeeklySummaries();
-    }
+    const result = await this.handleChangeInSummary();
 
-    if (saveResult === 200) {
+    if (result === 200) {
       await this.handleSaveSuccess(toastIdOnSave);
       if (closeAfterSave) {
         this.handleClose();
@@ -584,7 +587,7 @@ export class WeeklySummary extends Component {
       return (
         <Container fluid>
           <Row className="text-center" data-testid="loading">
-            <Loading />
+            <SkeletonLoading template="WeeklySummary" />
           </Row>
         </Container>
       );
@@ -708,56 +711,79 @@ export class WeeklySummary extends Component {
             })}
             <Row>
               <Col>
-                <Label for="mediaUrl" className="mt-1">
-                  Dropbox link to your weekly media files. (required){' '}
-                  <MediaURLTooltip />
-                </Label>
-                <Row form>
-                  <Col md={8}>
-                    <FormGroup>
-                      <Input
-                        type="url"
-                        name="mediaUrl"
-                        id="mediaUrl"
-                        data-testid="media-input"
-                        placeholder="Enter a link"
-                        value={formElements.mediaUrl}
-                        onChange={this.handleInputChange}
-                      />
-                    </FormGroup>
-                    {
-                      <Modal isOpen={this.state.editPopup}>
-                        <ModalHeader> Warning!</ModalHeader>
-                        <ModalBody>
-                          Whoa Tiger! Are you sure you want to do that? This link was added by an
-                          Admin when you were set up as a member of the team. Only change this if
-                          you are SURE your new link is more than the one already here.
-                        </ModalBody>
-                        <ModalFooter>
-                          <Button onClick={this.handleMediaChange} style={boxStyle}>
-                            Confirm
-                          </Button>{' '}
-                          <Button
-                            onClick={() => this.toggleShowPopup(this.state.editPopup)}
-                            style={boxStyle}
-                          >
-                            Close
-                          </Button>{' '}
-                        </ModalFooter>
-                      </Modal>
-                    }
-                    {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
+                {formElements.mediaUrl && !this.state.mediaFirstChange ? (
+                  <FormGroup className="media-url">
+                    <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
+                    <Label for="mediaUrl" className="mt-1">
+                      <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
+                        Your DropBox Media Files Link (Share your files here){' '}
+                      </a>
+                      <MediaURLTooltip />
+                    </Label>
+                  </FormGroup>
+                ) : (
+                  <Col>
+                    <Label for="mediaUrl" className="mt-1">
+                      Dropbox link to your weekly media files. (required) <MediaURLTooltip />
+                    </Label>
+                    <Row form>
+                      <Col md={8}>
+                        <FormGroup>
+                          <Input
+                            type="url"
+                            name="mediaUrl"
+                            id="mediaUrl"
+                            data-testid="media-input"
+                            placeholder="Enter a link"
+                            value={formElements.mediaUrl}
+                            onChange={this.handleInputChange}
+                          />
+                        </FormGroup>
+                        {
+                          <Modal isOpen={this.state.editPopup}>
+                            <ModalHeader> Warning!</ModalHeader>
+                            <ModalBody>
+                              Whoa Tiger! Are you sure you want to do that? This link needs to be
+                              added by an Admin when you were set up as a member of the team. Only
+                              Update this if you are SURE your new link is correct.
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button onClick={this.handleMediaChange} style={boxStyle}>
+                                Confirm
+                              </Button>{' '}
+                              <Button
+                                onClick={() => this.toggleShowPopup(this.state.editPopup)}
+                                style={boxStyle}
+                              >
+                                Close
+                              </Button>{' '}
+                            </ModalFooter>
+                          </Modal>
+                        }
+                        {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
+                      </Col>
+                      {formElements.mediaUrl && !errors.mediaUrl && (
+                        <Col md={4}>
+                          <FormGroup className="media-url">
+                            <FontAwesomeIcon
+                              icon={faExternalLinkAlt}
+                              className="mx-1 text--silver"
+                            />
+                            <a
+                              href={formElements.mediaUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Open link
+                            </a>
+                          </FormGroup>
+                        </Col>
+                      )}
+                    </Row>
                   </Col>
-                  {formElements.mediaUrl && !errors.mediaUrl && (
-                    <Col md={4}>
-                      <FormGroup className="media-url">
-                        <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
-                        <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
-                          Open link
-                        </a>
-                      </FormGroup>
-                    </Col>
-                  )}
+                )}
+
+                <Row form>
                   {
                     <Modal isOpen={this.state.movePopup} toggle={this.toggleMovePopup}>
                       <ModalHeader> Warning!</ModalHeader>
@@ -879,7 +905,7 @@ const mapStateToProps = ({ auth, weeklySummaries }) => ({
 const mapDispatchToProps = dispatch => {
   return {
     getWeeklySummaries: getWeeklySummaries,
-    updateWeeklySummaries: updateWeeklySummaries,
+    updateWeeklySummaries:(userId,weeklySummary)=> updateWeeklySummaries(userId,weeklySummary)(dispatch),
     getWeeklySummaries: userId => getWeeklySummaries(userId)(dispatch),
     getUserProfile: userId => getUserProfile(userId)(dispatch),
   };

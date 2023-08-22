@@ -1,6 +1,6 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
-import { useSelector , useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
 import moment from 'moment-timezone';
 import './Timelog.css';
@@ -18,14 +18,14 @@ import axios from 'axios';
 import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
+
+  const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
 
   const toggle = () => setModal(modal => !modal);
 
   const dateOfWork = moment(data.dateOfWork);
   const { user } = useSelector(state => state.auth);
-  const userPermissions = user?.permissions?.frontPermissions;
-  const { roles } = useSelector(state => state.role);
 
   const isOwner = data.personId === user.userid;
   const isSameDay =
@@ -36,23 +36,22 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
 
   const canDelete =
     //permission to Delete time entry from other user's Dashboard
-    hasPermission(role, 'deleteTimeEntryOthers', roles, userPermissions) ||
+    dispatch(hasPermission('deleteTimeEntryOthers')) ||
     //permission to delete any time entry on their own time logs tab
-    hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
+    dispatch(hasPermission('deleteTimeEntry')) ||
     //default permission: delete own sameday tangible entry
     (!data.isTangible && isOwner && isSameDay);
 
   const canEdit =
     //permission to edit any time log entry (from other user's Dashboard
-    hasPermission(role, 'editTimelogInfo', roles, userPermissions) ||
+    dispatch(hasPermission('editTimelogInfo')) ||
     //permission to edit any time entry on their own time logs tab
-    hasPermission(role, 'editTimeEntry', roles, userPermissions) ||
+    dispatch(hasPermission('editTimeEntry')) ||
     //default permission: edit own sameday timelog entry
     (isOwner && isSameDay);
 
   const projectCategory = data.category?.toLowerCase() || '';
   const taskClassification = data.classification?.toLowerCase() || '';
-  const dispatch = useDispatch();
 
   const toggleTangibility = () => {
     const newData = {
@@ -123,7 +122,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             type="checkbox"
             name="isTangible"
             checked={data.isTangible}
-            disabled={!hasPermission(role, 'toggleTangibleTime', roles, userPermissions)}
+            disabled={!canEdit}
             onChange={() => toggleTangibility(data)}
           />
         </Col>
