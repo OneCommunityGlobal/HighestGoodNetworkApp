@@ -3,7 +3,7 @@ import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactst
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
 import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+// import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
@@ -193,6 +193,8 @@ const Phone = props => {
               handleUserProfile={handleUserProfile}
             />
             <PhoneInput
+              inputClass='phone-input-style'
+              inputStyle={{width: "326px"}}
               country={'us'}
               value={phoneNumber}
               onChange={phoneNumber => {
