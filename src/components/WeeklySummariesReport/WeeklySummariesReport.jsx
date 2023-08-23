@@ -76,9 +76,9 @@ export class WeeklySummariesReport extends Component {
           : sessionStorage.getItem('tabSelection'),
     });
     await this.props.getInfoCollections();
-    const { infoCollections,roles } = this.props;
+    const { infoCollections} = this.props;
     const role = this.props.authUser?.role;
-    const roleInfoNames = roles?.map(role => role.roleName + 'Info');
+    const roleInfoNames = this.getAllRoles(summariesCopy);
     const allRoleInfo = [];
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
@@ -108,6 +108,17 @@ export class WeeklySummariesReport extends Component {
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
+  };
+
+    /**
+   * Get the roleNames 
+   * @param {*} summaries
+   * @returns
+   */
+    getAllRoles = summaries => {
+      const roleNames = summaries.map(summary => summary.role+"Info");
+      const uniqueRoleNames = [...new Set(roleNames)];
+      return uniqueRoleNames;
   };
 
   getWeekDates = weekIndex => ({

@@ -1,10 +1,16 @@
 .basic-info-tab-tablet {
   display: none;
 }
+@media (max-width: 1199px) {
+  .phone-input-style.phone-input-style {
+    width: 265px !important;
+  }
+}
 
 @media (max-width: 1024px) {
   .basic-info-tab-desktop {
     display: none;
+    
   }
 
   .basic-info-tab-tablet {
