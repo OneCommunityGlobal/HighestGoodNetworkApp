@@ -77,6 +77,9 @@ function useDeepEffect(effectFunc, deps) {
 
 const Timelog = props => {
   //Main Function component
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canEditTimeEntry = props.hasPermission('editTimeEntry');
+  const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   //access the store states
   const auth = useSelector(state => state.auth);
@@ -319,14 +322,7 @@ const Timelog = props => {
   const [userId, setUserId] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [data, setData] = useState({
-    disabled: !hasPermission(
-      auth.user.role,
-      'disabledDataTimelog',
-      role.roles,
-      auth.user?.permissions?.frontPermissions,
-    )
-      ? false
-      : true,
+    disabled: !props.hasPermission('disabledDataTimelog') ? false : true,
     isTangible: false,
   });
   const initialState = {
@@ -409,7 +405,6 @@ const Timelog = props => {
     });
   }, [state.projectsSelected]);
 
-  const userPermissions = auth.user?.permissions?.frontPermissions;
   const isOwner = auth.user.userid === userId;
   const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
 
@@ -538,12 +533,7 @@ const Timelog = props => {
                           </div>
                         </div>
                       ) : (
-                        hasPermission(
-                          auth.user.role,
-                          'addTimeEntryOthers',
-                          role.roles,
-                          userPermissions,
-                        ) && (
+                        canPutUserProfileImportantInfo && (
                           <div className="float-right">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
@@ -560,6 +550,11 @@ const Timelog = props => {
                           <Button onClick={openInfo} color="primary" style={boxStyle}>
                             Close
                           </Button>
+                          {canEditTimeEntry ? (
+                            <Button onClick={openInfo} color="secondary">
+                              Edit
+                            </Button>
+                          ) : null}
                         </ModalFooter>
                       </Modal>
                       <TimeEntryForm
@@ -765,4 +760,5 @@ export default connect(mapStateToProps, {
   getUserTask,
   updateUserProfile,
   getAllRoles,
+  hasPermission,
 })(Timelog);

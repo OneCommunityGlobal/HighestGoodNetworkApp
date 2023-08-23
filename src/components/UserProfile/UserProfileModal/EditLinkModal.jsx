@@ -12,14 +12,14 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
-import { useSelector } from 'react-redux';
 import styles from './EditLinkModal.css';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 const EditLinkModal = props => {
-  const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
-  const { roles } = useSelector(state => state.role);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+  const { isOpen, closeModal, updateLink, userProfile } = props;
+
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
@@ -133,7 +133,7 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {hasPermission(role, 'adminLinks', roles, userPermissions) && (
+            {canPutUserProfileImportantInfo && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
@@ -365,4 +365,4 @@ EditLinkModal.propTypes = {
   userProfile: PropTypes.object.isRequired,
 };
 
-export default EditLinkModal;
+export default connect(null, { hasPermission })(EditLinkModal);
