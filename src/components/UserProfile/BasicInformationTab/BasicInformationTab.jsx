@@ -194,7 +194,6 @@ const Phone = props => {
             />
             <PhoneInput
               inputClass='phone-input-style'
-              inputStyle={{width: "326px"}}
               country={'us'}
               value={phoneNumber}
               onChange={phoneNumber => {

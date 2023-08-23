@@ -10,7 +10,6 @@ import {
 const RoleInfoModal = ({info}) => {
     const [isOpen, setOpen] = useState(false);  
     const {infoContent, CanRead} = {...info};
-    console.log("here", infoContent)
     const handleMouseOver = () => {
       setOpen(true);
     }
