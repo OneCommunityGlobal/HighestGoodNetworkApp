@@ -65,37 +65,17 @@ const ReportDetails = ({ summary, weekIndex, bioCanEdit, canEditSummaryCount, al
   const ref = useRef(null)
   const isInViewPort = useIsInViewPort(ref)
 
-  const getMediaUrlLink = summary => {
-    if (summary.mediaUrl) {
-      return (
-        <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
-          Open link to media files
-        </a>
-      );
-    }
-    else if(summary.adminLinks) {
-      for (const link of summary.adminLinks) {
-        if (link.Name === 'Media Folder'){
-          return (
-            <a href={link.Link} target="_blank" rel="noopener noreferrer">
-              Open link to media files
-            </a>
-          )
-        }
-      }
-    }
-    return ('Not provided!')
-  };
-
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
   return (
     <li className='list-group-item px-0' ref={ref}>
       <ListGroup className='px-0' flush>
-        <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
+        <ListGroupItem>
+          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
+        </ListGroupItem>
         {isInViewPort && <>
           <ListGroupItem>
-            <b>Media URL:</b> {getMediaUrlLink(summary)}
+            <b>Media URL:</b> <MediaUrlLink summary={summary} />
           </ListGroupItem>
           <ListGroupItem>
             <Bio
@@ -191,6 +171,29 @@ const WeeklySummaryMessage = ({summary, weekIndex}) => {
   );
 };
 
+const MediaUrlLink = ({summary}) => {
+  if (summary.mediaUrl) {
+    return (
+      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
+        Open link to media files
+      </a>
+    );
+  }
+
+  if(summary.adminLinks) {
+    for (const link of summary.adminLinks) {
+      if (link.Name === 'Media Folder'){
+        return (
+          <a href={link.Link} target="_blank" rel="noopener noreferrer">
+            Open link to media files
+          </a>
+        )
+      }
+    }
+  }
+  return ('Not provided!')
+};
+
 const TotalValidWeeklySummaries = ({summary, canEditSummaryCount}) => {
 
   const style = {
@@ -222,11 +225,11 @@ const TotalValidWeeklySummaries = ({summary, canEditSummaryCount}) => {
       <div className='total-valid-text'>
         <b style={style}>
           Total Valid Weekly Summaries:
-        </b>{' '}
+        </b>
       </div>
       }
       {canEditSummaryCount ?
-      <div style={{width: '150px', paddingLeft: "5px"}}>
+      <div className='pl-2' style={{width: '150px'}}>
         <Input
           type='number'
           name='weeklySummaryCount'
@@ -337,7 +340,7 @@ const Index = ({summary, weekIndex, allRoleInfo}) => {
     : google_doc_icon_gray;
 
   return (
-    <ListGroupItem>
+    <>
       <b>Name: </b>
       <Link className='ml-2'
         to={`/userProfile/${summary._id}`} title="View Profile">
@@ -350,9 +353,9 @@ const Index = ({summary, weekIndex, allRoleInfo}) => {
       <span>
         <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
       </span>
-      <div>
-          {(summary.role !== 'Volunteer') && <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />}
-      </div>
+      {summary.role !== 'Volunteer' && <div>
+        <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />
+      </div>}
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"
@@ -380,7 +383,7 @@ const Index = ({summary, weekIndex, allRoleInfo}) => {
           </span>
         </i>
       )}
-    </ListGroupItem>)
+    </>)
 }
 
 FormattedReport.propTypes = {
