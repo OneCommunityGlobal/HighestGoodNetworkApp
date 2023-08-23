@@ -24,12 +24,11 @@ import { formattedDate } from 'utils/formattedDate';
 function SingleTask(props) {
   const {taskId} = props.match.params;
   const { user } = props.auth;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
-  const roles = useSelector(state => state.role.roles);
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
+  const canPostProject = props.hasPermission('postProject');
 
   const history = useHistory();
   useEffect(() => {
@@ -60,7 +59,7 @@ function SingleTask(props) {
     <>
       <ReactTooltip />
       <div className="container-single-task">
-        {hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) && (
+        {canPostProject && (
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
@@ -147,6 +146,7 @@ function SingleTask(props) {
                   parentId3={task.parentId3}
                   mother={task.mother}
                   level={task.level}
+                  setTask={setTask}
                 />
                 {user.role === 'Volunteer' ? (
                     ''
@@ -159,7 +159,7 @@ function SingleTask(props) {
                         onClick={() => showUpDeleteModal()}
                         style={boxStyle}
                       >
-                        Delete 
+                        Delete
                         {' '}
                         <i className="fa fa-trash" aria-hidden="true" />
                       </Button>
@@ -195,7 +195,7 @@ function SingleTask(props) {
                               <img className="img-circle" src={elem.profilePic} />
                             </a>
                           );
-                        } 
+                        }
                           return (
                             <a
                               key={`res_${i}`}
@@ -208,7 +208,7 @@ function SingleTask(props) {
                               <span className="dot">{elem.name.substring(0, 2)}</span>
                             </a>
                           );
-                        
+
                       } catch (err) {}
                     })}
               </td>
@@ -289,4 +289,5 @@ export default connect(mapStateToProps, {
   getUserProfile,
   deleteTask,
   getPopupById,
+  hasPermission,
 })(SingleTask);

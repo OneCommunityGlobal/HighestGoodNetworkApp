@@ -85,3 +85,24 @@
   color: red;
   margin-right: 0.6rem;
 }
+
+.icon-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.icon-button-container i {
+  display: flex;
+  align-items: center; /* This ensures vertical alignment with the button */
+  margin-right: 10px; /* Optional: Adds some spacing between the icon and the button */
+}
+
+.icon-button { /* This is the new class */
+  height: 40px; /* You can adjust this value */
+  line-height: 40px; /* This should be the same as the height */
+  min-width: 80px; /* Optional: Sets a minimum width for the button */
+}
