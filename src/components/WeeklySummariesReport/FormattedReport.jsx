@@ -93,7 +93,9 @@ function FormattedReport({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
         summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
         return (
-          <div style={style}>
+          <div style={style} className="weekly-summary-report-container">
+            <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
+
             <FontAwesomeIcon
               icon={faCopy}
               className="copy-icon"
@@ -105,7 +107,6 @@ function FormattedReport({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
                 toast.success('Summary Copied!');
               }}
             />
-            {ReactHtmlParser(summaryText)}
           </div>
         );
       }

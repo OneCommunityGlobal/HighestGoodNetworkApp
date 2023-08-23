@@ -8,6 +8,7 @@
   border: 1px solid #007bff;
   border-radius: 3px;
   background-color: #f7fbfe;
+  position: relative;
 }
 /* look into css of aligning the button at the end of the text
 add some spacing after wards. 
@@ -30,12 +31,24 @@ or add it at the top of the summary to the right of it */
   align-items: center;
   line-height: 0.8;
 }
+
+/* .copy-icon {
+  /* cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 2px 2px; */
+
 .copy-icon {
-  cursor: pointer;
+  margin: 2px 2px;
 }
-/* .team-weekly-summary-data {
+.team-weekly-summary-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-
-  /* max-width: 100%; */
+  align-items: start;
+  /* justify-content: space-around; */
+}
+.team-week-summary-text {
+  max-width: 100%;
+  margin-right: 20px;
+}

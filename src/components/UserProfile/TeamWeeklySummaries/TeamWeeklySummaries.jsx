@@ -32,8 +32,8 @@ function TeamWeeklySummaries({ name, i, data }) {
         </h6>
       </div>
       {data.summary && (
-        <div>
-          {parse(data.summary)}
+        <div className="team-weekly-summary-container">
+          <div className="team-week-summary-text"> {parse(data.summary)}</div>
           <FontAwesomeIcon
             icon={faCopy}
             className="copy-icon"

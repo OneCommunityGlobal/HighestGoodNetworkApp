@@ -33,3 +33,17 @@
   flex-direction: row;
   white-space: nowrap;
 }
+
+.weekly-summary-report-container {
+  display: flex;
+  flex-direction: row;
+}
+.weekly-summary-text {
+  max-width: 100%;
+  margin-right: 5px;
+}
+
+.copy-icon {
+  cursor: pointer;
+  margin: 2px 2px;
+}
