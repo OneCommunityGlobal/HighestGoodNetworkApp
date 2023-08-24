@@ -45,7 +45,7 @@ or add it at the top of the summary to the right of it */
 .team-weekly-summary-container {
   display: flex;
   flex-direction: row;
-  align-items: start;
+  align-items: flex-start;
   /* justify-content: space-around; */
 }
 .team-week-summary-text {
