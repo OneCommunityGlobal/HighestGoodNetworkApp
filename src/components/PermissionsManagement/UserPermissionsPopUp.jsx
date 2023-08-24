@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Dropdown, Form, Input } from 'reactstrap';
+import { Button, Dropdown, Form, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { getAllUserProfile } from 'actions/userManagement';
 import { permissionLabel } from './UserRoleTab';
-
+import { modalInfo } from './RolePermissions';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
@@ -17,7 +17,8 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
-
+  const [infoRoleModal, setinfoRoleModal] = useState(false);
+  const [modalContent, setContent] = useState(null);
   //no onchange, always change this state;
   const onChangeCheck = data => {
     const actualValue = data;
@@ -47,13 +48,19 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
     });
   };
 
+  const handleModalOpen = idx => {
+    setContent(modalInfo[idx]);
+    setinfoRoleModal(true);
+  };
   const refInput = useRef();
   const getUserData = async userId => {
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
     setActualUserProfile(allUserInfo);
   };
-
+  const toggleInfoRoleModal = () => {
+    setinfoRoleModal(!infoRoleModal);
+  };
   useEffect(() => {
     getAllUsers();
     if (actualUserProfile?.role && roles) {
@@ -96,6 +103,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
   };
   const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
   return (
+    <>
     <Form
       id="manage__user-permissions"
       onSubmit={e => {
@@ -179,8 +187,23 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                 >
                   {value}
                 </div>
-                {isPermissionDefault(key) ? null : isPermissionChecked(key) ? (
+                <div className='infos'>
+                <i
+                id= 'info-icon__permissions'
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={() => {
+                  handleModalOpen(value);
+                }}
+              />
+                  </div>
+                {isPermissionChecked(key) ? (
+                  <div style={{paddingLeft: '15px'}}>
                   <Button
+                    className="info-button"
                     type="button"
                     color="danger"
                     onClick={e => onChangeCheck(key)}
@@ -189,8 +212,11 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                   >
                     Remove
                   </Button>
+                  </div>
                 ) : (
+                  <div style={{paddingLeft: '15px'}}>
                   <Button
+                    className="info-button"
                     type="button"
                     color="success"
                     onClick={e => onChangeCheck(key)}
@@ -199,6 +225,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                   >
                     Add
                   </Button>
+                  </div>
                 )}
               </li>
             );
@@ -212,8 +239,23 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
             >
               {value}
             </div>
-            {isPermissionDefault(key) ? null : isPermissionChecked(key) ? (
+
+            <div className='infos'>
+                <i
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={() => {
+                  handleModalOpen(value);
+                }}
+              />
+              </div>
+            {isPermissionChecked(key) ? (
+              <div style={{paddingLeft: '15px'}}>
               <Button
+                className="info-button"
                 type="button"
                 color="danger"
                 onClick={e => onChangeCheck(key)}
@@ -222,8 +264,11 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
               >
                 Remove
               </Button>
+              </div>
             ) : (
+              <div style={{paddingLeft: '15px'}}>
               <Button
+                className="info-button"
                 type="button"
                 color="success"
                 onClick={e => onChangeCheck(key)}
@@ -232,6 +277,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
               >
                 Add
               </Button>
+              </div>
             )}
           </li>);
           }
@@ -251,7 +297,19 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
         Submit
       </Button>
     </Form>
+    <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal}>
+        <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
+        <ModalBody>{modalContent}</ModalBody>
+        <ModalFooter>
+          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+            {' '}
+            Ok{' '}
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </>
   );
+  
 };
 
 const mapStateToProps = state => ({
