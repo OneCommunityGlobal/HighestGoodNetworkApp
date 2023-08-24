@@ -352,7 +352,7 @@ const BadgeReport = props => {
                         </DropdownToggle>
                         <DropdownMenu>
                           {value.earnedDate.map(date => {
-                            return <DropdownItem>{date}</DropdownItem>;
+                            return <DropdownItem>{formattedDate(date)}</DropdownItem>;
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
