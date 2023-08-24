@@ -3,7 +3,7 @@ import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactst
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
 import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+// import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
@@ -39,7 +39,7 @@ const Name = props => {
             <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
           </FormGroup>
         </Col>
-        <Col md="3" style={{ marginRight: "40px"}}>
+        <Col md="3">
           <FormGroup>
             <Input
               type="text"
@@ -77,7 +77,7 @@ const Title = props => {
   if (canEdit) {
     return (
       <>
-        <Col md="6" style={{ marginRight: "40px"}}>
+        <Col md="6">
           <FormGroup>
             <Input
               type="text"
@@ -112,7 +112,7 @@ const Email = props => {
   if (canEdit) {
     return (
       <>
-        <Col md="6" style={{ marginRight: "40px"}}>
+        <Col md="6">
           <FormGroup>
             <ToggleSwitch
               switchType="email"
@@ -185,15 +185,15 @@ const Phone = props => {
   if (canEdit) {
     return (
       <>
-        <Col>
-          <FormGroup style={{ marginRight: "40px"}}>
+        <Col md="6">
+          <FormGroup>
             <ToggleSwitch
               switchType="phone"
               state={privacySettings?.phoneNumber}
               handleUserProfile={handleUserProfile}
             />
             <PhoneInput
-              inputStyle={{ width: "325px", marginRight: "0px" }}
+              inputClass='phone-input-style'
               country={'us'}
               value={phoneNumber}
               onChange={phoneNumber => {
@@ -243,7 +243,7 @@ const TimeZoneDifference = props => {
   if (!isUserSelf) {
     return (
       <>
-        <Col>
+        <Col md="7">
           <p>{signedOffset} hours</p>
         </Col>
       </>
@@ -252,7 +252,7 @@ const TimeZoneDifference = props => {
 
   return (
     <>
-      <Col>
+      <Col md="7">
         <p>This is your own profile page</p>
       </Col>
     </>
@@ -331,6 +331,7 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
@@ -354,6 +355,7 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
@@ -378,6 +380,7 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
@@ -401,12 +404,13 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
             <Label>Video Call Preference</Label>
           </Col>
-          <Col md="6" style={{ marginRight: "40px"}}>
+          <Col md="6">
             {canEdit ? (
               <FormGroup disabled={!canEdit}>
                 <Input
@@ -424,16 +428,16 @@ const BasicInformationTab = props => {
               `${userProfile.collaborationPreference}`
             )}
           </Col>
+          <Col md="1"></Col>
         </Row>
         <Row>
-          <Col md={{ size: 4, offset: 0 }} style={{marginRight:"76px"}}>
+          <Col>
             <Label>Role</Label>
           </Col>
-          <Col md={{ size: 4, offset: 0 }} style={{marginRight:"68px"}}>
+          <Col md="6">
             {canEditRole && !isUserSelf ? (
               <FormGroup>
                 <select
-                  style={{width:"327px"}}
                   value={userProfile.role}
                   onChange={e => {
                     setUserProfile({
@@ -464,24 +468,27 @@ const BasicInformationTab = props => {
             )}
             </Col>  
             {(
-              <Col md={{size: 1}} style={{marginLeft:"30px", marginTop:topMargin}}>
-                <EditableInfoModal
-                role={role}
-                areaName={'roleInfo'}
-                fontSize={24}
-                />
+              
+              <Col md="1">
+                <div style={{marginTop:topMargin}}>
+                  <EditableInfoModal
+                  role={role}
+                  areaName={'roleInfo'}
+                  fontSize={30}
+                  />
+                </div>
               </Col>
              )}  
              
         </Row>
         {canEdit && (
           <Row>
-            <Col md={{ size: 5}} >
+            <Col md={{ size: 5, offset: 0}} >
               <Label>Location</Label>
             </Col>
-            <Col md="7">
+            <Col>
               <Row className='ml-0'>
-                <Col md="5" className='p-0' style={{marginRight:"10px"}}>
+                <Col className='p-0' style={{marginRight:"10px"}}>
                   <Input
                     onChange={e => {
                       setLocation(e.target.value);
@@ -490,7 +497,7 @@ const BasicInformationTab = props => {
                     value={userProfile.location}
                   />
                 </Col>
-                <Col md="5" className='pr-0' style={{marginRight:"20px"}}>
+                <Col className='p-0'>
                   <Button
                     color="secondary"
                     block
@@ -501,19 +508,20 @@ const BasicInformationTab = props => {
                     Get Time Zone
                   </Button>
                 </Col>
+                
               </Row>
             </Col>
+            <Col md="1"></Col>
           </Row>
         )}
         <Row style={{ marginTop:'15px', marginBottom: '10px'}}>
           <Col>
             <Label>Time Zone</Label>
           </Col>
-          <Col style={{ marginRight:'35px'}}>
+          <Col md="6">
             {!canEdit && <p>{userProfile.timeZone}</p>}
             {canEdit && (
               <TimeZoneDropDown
-
                 filter={timeZoneFilter}
                 onChange={e => {
                   setUserProfile({ ...userProfile, timeZone: e.target.value });
@@ -522,9 +530,10 @@ const BasicInformationTab = props => {
               />
             )}
           </Col>
+          <Col md="1"></Col>
         </Row>
         <Row>
-          <Col>
+          <Col md="5">
             <label>Difference in this Time Zone from Your Local</label>
           </Col>
           <TimeZoneDifference

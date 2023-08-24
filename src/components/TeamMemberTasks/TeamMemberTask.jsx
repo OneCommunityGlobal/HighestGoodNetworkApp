@@ -8,6 +8,8 @@ import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
+import { boxStyle } from 'styles';
+import ReviewButton from './ReviewButton'
 import { useDispatch } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
@@ -20,6 +22,8 @@ const TeamMemberTask = React.memo(({
   handleOpenTaskNotificationModal,
   handleTaskModalOption,
   userRole,
+  userId,
+  updateTask,
 }) => {
   const ref = useRef(null);
 
@@ -167,6 +171,16 @@ const TeamMemberTask = React.memo(({
                             />
                           )}
                           <TeamMemberTaskIconsInfo />
+                          <div>
+                            <ReviewButton 
+                              user={user}
+                              myUserId={userId}
+                              myRole={userRole}
+                              task={task}
+                              updateTask={updateTask}
+                              style={boxStyle}
+                            />
+                          </div>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">

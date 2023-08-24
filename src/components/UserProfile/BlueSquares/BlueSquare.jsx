@@ -3,9 +3,10 @@ import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 
-const BlueSquare = (props, { blueSquares, handleBlueSquare }) => {
+const BlueSquare = (props) => {
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const { blueSquares, handleBlueSquare } = props;
 
   return (
     <div className="blueSquareContainer">
