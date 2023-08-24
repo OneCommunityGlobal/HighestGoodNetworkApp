@@ -50,6 +50,7 @@ export const Header = props => {
 
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
+  const canSeeWeeklySummaryReports = props.hasPermission('seeWeeklySummaryReports');
   // Users
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
@@ -134,7 +135,7 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {canGetWeeklySummaries || canGetWeeklySummaries ? (
+              {canGetWeeklySummaries || canSeeWeeklySummaryReports ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{REPORTS}</span>
