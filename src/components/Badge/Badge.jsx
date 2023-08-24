@@ -49,19 +49,17 @@ const Badge = props => {
   };
 
   useEffect(() => {
-    const userId = props.userId;
-    let count = 0;
+    const uniqueBadges = new Set();
     if (props.userProfile.badgeCollection) {
       props.userProfile.badgeCollection.forEach(badge => {
-        if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-          count += 1;
-        } else {
-          count += Number(badge.count);
+        if (badge?.badge?._id) {
+          uniqueBadges.add(badge.badge._id);
         }
       });
+      const count = uniqueBadges.size;
       setTotalBadge(Math.round(count));
     }
-  }, [props.userProfile.badgeCollection, totalBadge]);
+  }, [props.userProfile.badgeCollection]); 
 
   return (
     <>

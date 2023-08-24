@@ -111,8 +111,18 @@ const SummaryBar = props => {
 
   //Get badges count from userProfile
   const getBadges = () => {
-    return userProfile && userProfile.badgeCollection ? userProfile.badgeCollection.reduce((acc, obj) => acc + Number(obj.count), 0) : 0;
+    if (userProfile && userProfile.badgeCollection) {
+      const uniqueBadges = new Set();
+      userProfile.badgeCollection.forEach(badge => {
+        if (badge?.badge?._id) {
+          uniqueBadges.add(badge.badge._id);
+        }
+      });
+      return uniqueBadges.size;
+    }
+    return 0;
   };
+  
 
   const getState = useSelector(state => {
     return state;
