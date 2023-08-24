@@ -353,9 +353,9 @@ const Index = ({summary, weekIndex, allRoleInfo}) => {
       <span>
         <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
       </span>
-      {summary.role !== 'Volunteer' && <div>
+      {summary.role !== 'Volunteer' &&
         <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />
-      </div>}
+      }
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"
