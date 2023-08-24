@@ -203,15 +203,9 @@ export class EditableInfoModal extends Component {
     }
     await this.mainSaveHandler();
   };
-
   render() {
     const { 
-      loading,
-      fetchError,
-      infoElements,
       infoContent,
-      infoName,
-      visibility,
       editableModalOpen,
       fontSize,
       CanRead,

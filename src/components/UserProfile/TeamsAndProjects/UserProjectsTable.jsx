@@ -293,7 +293,7 @@ const UserProjectsTable = React.memo(props => {
         <div className="projecttable-container">
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Col
-              md={props.edit ? '7' : '12'}
+              md="12"
               style={{
                 backgroundColor: ' #e9ecef',
                 border: '1px solid #ced4da',
@@ -304,7 +304,7 @@ const UserProjectsTable = React.memo(props => {
             </Col>
             {props.edit && props.role && (
               <Col
-                md="5"
+                md="12"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 {canAssignProjectToUsers ? (

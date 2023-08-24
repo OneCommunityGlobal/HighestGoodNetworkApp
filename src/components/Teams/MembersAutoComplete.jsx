@@ -45,6 +45,7 @@ const MemberAutoComplete = props => {
             .map(item => (
               <div
                 className="user-auto-cpmplete"
+                key={item._id}
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);
