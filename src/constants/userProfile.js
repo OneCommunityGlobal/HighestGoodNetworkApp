@@ -20,7 +20,7 @@ export const editFirstName = data => ({
   payload: data,
 });
 
-export const editUserProfile = data => ({
+export const putUserProfile = data => ({
   type: EDIT_USER_PROFILE,
   payload: data,
 });

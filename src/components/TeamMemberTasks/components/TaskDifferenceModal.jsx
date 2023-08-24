@@ -66,7 +66,7 @@ export const TaskDifferenceModal = ({
         taskNotifications.map(
           taskNotification =>
             taskNotification.userId === userId && (
-              <div style={{ textAlign: 'center' }}>
+              <div key={taskNotification.taskId} style={{ textAlign: 'center' }}>
                 <div>
                   <span style={{ color: 'black', fontWeight: 'bold' }}>
                     Black Bold = No Changes

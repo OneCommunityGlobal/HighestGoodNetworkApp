@@ -27,6 +27,9 @@
   display: inline-block;
 }
 
+.name-info{
+  display: flex;
+}
 .total-valid-wrapper {
   display: flex;
   align-items: center;

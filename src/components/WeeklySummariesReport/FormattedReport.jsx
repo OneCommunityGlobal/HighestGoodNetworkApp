@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
+import google_doc_icon from './google_doc_icon.png';
+import google_doc_icon_gray from './google_doc_icon_gray.png'; 
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import { Input } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
@@ -24,12 +27,14 @@ const textColors = {
   'Team Marigold': '#FF7F00',
   'Team Luminous': '#C4AF18',
   'Team Lush': '#00FF00',
-  'Team Sky': '#0000FF',
-  'Team Azure': '#4B0082',
+  'Team Skye': '#29C5F6',
+  'Team Azure': '#2B35AF',
   'Team Amethyst': '#9400D3',
 };
 
 function FormattedReport({ summaries, weekIndex, bioCanEdit, canEditSummaryCount }) {
+
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo }) => {
   const emails = [];
 
   summaries.forEach(summary => {
@@ -53,6 +58,19 @@ function FormattedReport({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
       );
     }
     return 'Not provided!';
+    } 
+    else if(summary.adminLinks) {
+      for (const link of summary.adminLinks) {
+        if (link.Name === 'Media Folder'){
+          return (
+            <a href={link.Link} target="_blank" rel="noopener noreferrer">
+              Open link to media files
+            </a>
+          )
+        }
+      }
+    }
+    return ('Not provided!')
   };
 
   const getGoogleDocLink = summary => {
@@ -66,6 +84,19 @@ function FormattedReport({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
   };
 
   const getWeeklySummaryMessage = summary => {
+    const textColors = {
+      Default: '#000000',
+      'Not Required': '#708090',
+      Team: '#FF00FF',
+      'Team Fabulous': '#FF00FF',
+      'Team Marigold': '#FF7F00',
+      'Team Luminous': '#C4AF18',
+      'Team Lush': '#00FF00',
+      'Team Skye': '#29C5F6',
+      'Team Azure': '#2B35AF',
+      'Team Amethyst': '#9400D3',
+    };
+    
     if (!summary) {
       return (
         <p>
@@ -220,13 +251,15 @@ function FormattedReport({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     }
   };
 
-  function BioSwitch(userId, bioPosted, summary) {
+ function BioSwitch(userId, bioPosted, summary) {
+  const BioSwitch = (userId, bioPosted, summary, weeklySummaryOption, totalTangibleHrs, daysInTeam) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
+    const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== "posted"
     const style = {
       color: textColors[summary?.weeklySummaryOption] || textColors.Default,
     };
     return (
-      <div>
+      <div style={isMeetCriteria ? {backgroundColor: "yellow"}: {}}> 
         <div className="bio-toggle">
           <b style={style}>Bio announcement:</b>
         </div>
@@ -268,19 +301,24 @@ function FormattedReport({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
         const googleDocLink = getGoogleDocLink(summary);
+        // Determine whether to use grayscale or color icon based on googleDocLink
+        const googleDocIcon = googleDocLink && googleDocLink.Link.trim() !== ''
+          ? google_doc_icon
+          : google_doc_icon_gray;
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={`summary-${index}`}
           >
-            <div>
+            <div style={{display:'flex'}}>
               <b>Name: </b>
-              <Link to={`/userProfile/${summary._id}`} title="View Profile">
+              <Link style={{marginLeft:'5px'}}
+                to={`/userProfile/${summary._id}`} title="View Profile">
                 {summary.firstName} {summary.lastName}
               </Link>
 
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-                <img className="google-doc-icon" src={google_doc_icon} alt="google_doc" />
+                <img className="google-doc-icon" src={googleDocIcon } alt="google_doc" />
               </span>
               <span>
                 <b>
@@ -288,6 +326,9 @@ function FormattedReport({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
                   {summary.role !== 'Volunteer' && `(${summary.role})`}
                 </b>
               </span>
+               <div>
+                    {(summary.role !== 'Volunteer')&& <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />}
+               </div>
               {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
                 <i
                   className="fa fa-star"
@@ -320,7 +361,7 @@ function FormattedReport({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
               {' '}
               <b>Media URL:</b> {getMediaUrlLink(summary)}
             </div>
-            {bioFunction(summary._id, summary.bioPosted, summary)}
+            {bioFunction(summary._id, summary.bioPosted, summary, summary.weeklySummaryOption, summary.totalTangibleHrs, summary.daysInTeam)}
             {getTotalValidWeeklySummaries(summary)}
             {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
               <p>

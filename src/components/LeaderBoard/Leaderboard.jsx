@@ -11,6 +11,7 @@ import {
 } from 'utils/leaderboardPermissions';
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+import { toast } from 'react-toastify';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -38,14 +39,12 @@ const LeaderBoard = ({
   organizationData,
   timeEntries,
   isVisible,
-  roles,
   asUser,
   totalTimeMouseoverText,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
-  const userPermissions = loggedInUser.permissions?.frontPermissions;
-  const hasSummaryIndicatorPermission = hasPermission(loggedInUser.role, 'seeSummaryIndicator', roles, userPermissions);
-  const hasVisibilityIconPermission = hasPermission(loggedInUser.role, 'seeVisibilityIcon', roles, userPermissions);
+  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); //??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); //??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
@@ -81,6 +80,7 @@ const LeaderBoard = ({
 
   const [isOpen, setOpen] = useState(false);
   const [modalContent, setContent] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
@@ -154,6 +154,12 @@ const LeaderBoard = ({
       'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
     );
   };
+  const updateLeaderboardHandler = async () => {
+    setIsLoading(true);
+    await getLeaderboardData(userId);
+    setIsLoading(false);
+    toast.success('Successfuly updated leaderboard');
+  };
 
   return (
     <div>
@@ -165,10 +171,8 @@ const LeaderBoard = ({
           title="Click to refresh the leaderboard"
           style={{ fontSize: 24, cursor: 'pointer' }}
           aria-hidden="true"
-          className="fa fa-refresh"
-          onClick={() => {
-            getLeaderboardData(userId);
-          }}
+          className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
+          onClick={updateLeaderboardHandler}
         />
         &nbsp;&nbsp;
         <i
