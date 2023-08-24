@@ -257,7 +257,9 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
                     key={`code_${summary.teamCode}`}
                     defaultValue={summary.teamCode}
                     onBlur={e => {
-                      handleProfileChange(summary._id, e.target.value, "teamCode");
+                      if(e.target.value != summary.teamCode){
+                        handleProfileChange(summary._id, e.target.value, "teamCode");
+                      }
                     }}
                     placeholder="format: A-AAA"
                   />
