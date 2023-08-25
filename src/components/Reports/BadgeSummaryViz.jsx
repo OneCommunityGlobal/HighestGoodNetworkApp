@@ -103,8 +103,8 @@ return (
                         Dates
                       </DropdownToggle>
                       <DropdownMenu>
-                        {value.earnedDate.map(date => {
-                          return <DropdownItem>{date}</DropdownItem>;
+                        {value.earnedDate.map((date, index) => {
+                          return <DropdownItem key={index}>{date}</DropdownItem>;
                         })}
                       </DropdownMenu>
                     </UncontrolledDropdown>
