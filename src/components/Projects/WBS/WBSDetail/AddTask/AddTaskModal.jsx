@@ -27,7 +27,7 @@ function AddTaskModal(props) {
       return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
     }  
   }, []);
-
+  console.log(allMembers)
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
   const [resourceItems, setResourceItems] = useState([]);
