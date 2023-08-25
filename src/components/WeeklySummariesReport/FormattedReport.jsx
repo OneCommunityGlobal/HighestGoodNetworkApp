@@ -15,6 +15,9 @@ import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import { Input } from 'reactstrap';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+
 const textColors = {
   Default: '#000000',
   'Not Required': '#708090',
@@ -119,17 +122,15 @@ const FormattedReport = ({
           .tz('America/Los_Angeles')
           .format('YYYY-MMM-DD');
         summaryDateText = `Summary Submitted On (${summaryDate}):`;
+
         return (
           <div style={style} className="weekly-summary-report-container">
             <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
-
             <FontAwesomeIcon
               icon={faCopy}
               className="copy-icon"
               onClick={() => {
                 const parsedSummary = summaryText.replace(/<[^>]+>/g, '');
-                // console.log(parsedSummary);
-
                 navigator.clipboard.writeText(parsedSummary);
                 toast.success('Summary Copied!');
               }}
@@ -415,4 +416,3 @@ FormattedReport.propTypes = {
 };
 
 export default FormattedReport;
-
