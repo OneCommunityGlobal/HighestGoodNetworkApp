@@ -179,6 +179,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
             if (isValueInMainPermissions) {
             return (
               <li key={key} className="user-role-tab__permission">
+                
                 <div
                   style={{
                     color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
@@ -200,6 +201,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                 }}
               />
                   </div>
+                
                 {isPermissionChecked(key) ? (
                   <div style={{paddingLeft: '15px'}}>
                   <Button
@@ -231,10 +233,11 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
             );
           } else {
             return (<li key={key} className="user-role-tab__permission">
+              
             <div
               style={{
                 color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
-                paddingLeft: '30px',
+                paddingLeft: '30px', paddingBottom: '10px'
               }}
             >
               {value}
@@ -252,6 +255,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                 }}
               />
               </div>
+             
             {isPermissionChecked(key) ? (
               <div style={{paddingLeft: '15px'}}>
               <Button
