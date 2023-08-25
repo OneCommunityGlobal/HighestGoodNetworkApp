@@ -22,7 +22,7 @@ import { boxStyle } from 'styles';
 import '../Badge/BadgeReport.css'
 import './BadgeSummaryViz.css'
 
-const BadgeSummaryViz = ({ badges }) => {
+const BadgeSummaryViz = ({ badges, dashboard }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [sortedBadges, setSortedBadges] = useState([]);
 
@@ -45,8 +45,8 @@ const toggle = () => setIsOpen(prev => !prev)
 
 return (
   <div>
-    <Button onClick={toggle} style={boxStyle}>
-      Show Badges
+    <Button onClick={toggle} style={boxStyle} className={`${dashboard && "btn--dark-sea-green float-right"}`}>
+      {dashboard ? "Badge Report" : "Show Badges"}
     </Button>
     <Modal size="lg" isOpen={isOpen} toggle={toggle}>
       <ModalHeader>Badge Summary</ModalHeader>
