@@ -8,6 +8,7 @@ const LinkModButton = props => {
   const toggleModal = () => {
     setModal(!modal);
   };
+   
   return (
     <React.Fragment>
       <EditLinkModal
@@ -17,6 +18,7 @@ const LinkModButton = props => {
         userProfile={userProfile}
         setChanged={setChanged}
         role={props.role}
+        isUpdated={props.isUpdated}
       />
       <span
         style={{
