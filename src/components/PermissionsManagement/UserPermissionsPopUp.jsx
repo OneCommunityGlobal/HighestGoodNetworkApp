@@ -203,7 +203,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                   </div>
                 
                 {isPermissionChecked(key) ? (
-                  <div style={{paddingLeft: '15px'}}>
+                  <div style={{paddingLeft: '10px'}}>
                   <Button
                     className="info-button"
                     type="button"
@@ -257,7 +257,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
               </div>
              
             {isPermissionChecked(key) ? (
-              <div style={{paddingLeft: '15px'}}>
+              <div style={{paddingLeft: '10px'}}>
               <Button
                 className="info-button"
                 type="button"
