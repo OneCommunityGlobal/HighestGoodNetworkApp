@@ -83,7 +83,7 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       const {mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
       console.log('respon get', response.data)
       // update the changes on weekly summaries link into admin links
-      let doesMediaFolderExist = false;
+      // let doesMediaFolderExist = false;
       // for (const link of adminLinks) {
       //   if (link.Name === 'Media Folder') {
       //     link.Link = mediaUrl;
@@ -91,11 +91,11 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       //     break; 
       //   }
       // }
-      if(!doesMediaFolderExist && mediaUrl){
-        adminLinks.push(
-          {Name:'Media Folder',Link:mediaUrl}
-        )
-      }
+      // if(!doesMediaFolderExist && mediaUrl){
+      //   adminLinks.push(
+      //     {Name:'Media Folder',Link:mediaUrl}
+      //   )
+      // }
       const userProfileUpdated = {
         ...userProfile,
         mediaUrl,
