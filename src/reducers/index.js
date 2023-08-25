@@ -39,6 +39,7 @@ import { roleReducer } from './roleReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { summaryGroupReducer } from './allSummaryGroupReducer';
+import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 
 
@@ -86,6 +87,7 @@ export default combineReducers({
   ownerMessage: ownerMessageReducer,
   ownerStandardMessage: ownerStandardMessageReducer,
   allSummaryGroups: summaryGroupReducer,
+  infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
 
 });

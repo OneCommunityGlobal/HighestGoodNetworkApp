@@ -13,6 +13,7 @@ const MemberAutoComplete = props => {
       style={{ width: '100%', marginRight: '5px' }}
     >
       <Input
+        autoFocus
         type="text"
         value={props.searchText}
         onChange={e => {
@@ -44,6 +45,7 @@ const MemberAutoComplete = props => {
             .map(item => (
               <div
                 className="user-auto-cpmplete"
+                key={item._id}
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);

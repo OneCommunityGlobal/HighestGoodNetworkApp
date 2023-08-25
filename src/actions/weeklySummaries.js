@@ -56,6 +56,7 @@ export const getWeeklySummaries = userId => {
         }
       }
       dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl:summaryDocLink || mediaUrl}));
+      dispatch(getUserProfileActionCreator(response.data));
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesError(error));
@@ -79,17 +80,22 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       const userProfile = await response.data;
 
       // Merge the weekly summaries related changes with the user's profile.
-      const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
-
+      const {mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      console.log('respon get', response.data)
       // update the changes on weekly summaries link into admin links
-      // This piece of code is breaking the submission of weekly summaries in the pr 1033 when merged.
-      // for (const link of adminLinks) {
-      //   if (link.Name === 'Media Folder') {
-      //     link.Link = mediaUrl;
-      //     break; 
-      //   }
-      // }
-
+      let doesMediaFolderExist = false;
+      for (const link of adminLinks) {
+        if (link.Name === 'Media Folder') {
+          link.Link = mediaUrl;
+          doesMediaFolderExist = true;
+          break; 
+        }
+      }
+      if(!doesMediaFolderExist && mediaUrl){
+        adminLinks.push(
+          {Name:'Media Folder',Link:mediaUrl}
+        )
+      }
       const userProfileUpdated = {
         ...userProfile,
         mediaUrl,

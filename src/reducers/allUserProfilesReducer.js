@@ -54,7 +54,6 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
         fetched: true,
         status: '200',
       });
-
     default:
       return userProfiles;
   }

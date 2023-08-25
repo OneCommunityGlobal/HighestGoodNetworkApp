@@ -1,15 +1,17 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table, Progress } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
-import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
+import ReviewButton from './ReviewButton'
+import { useDispatch } from 'react-redux';
+import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -20,8 +22,8 @@ const TeamMemberTask = React.memo(({
   handleOpenTaskNotificationModal,
   handleTaskModalOption,
   userRole,
-  roles,
-  userPermissions,
+  userId,
+  updateTask,
 }) => {
   const ref = useRef(null);
 
@@ -29,55 +31,37 @@ const TeamMemberTask = React.memo(({
     let totalHoursRemaining = 0;
 
     if (user.tasks) {
-      user.tasks = user.tasks.map(task => {
-        task.hoursLogged = task.hoursLogged ? task.hoursLogged : 0;
-        task.estimatedHours = task.estimatedHours ? task.estimatedHours : 0;
-        return task;
-      });
+      totalHoursRemaining = user.tasks.reduce((total, task) => {
+        task.hoursLogged = task.hoursLogged || 0;
+        task.estimatedHours = task.estimatedHours || 0;
 
-      for (const task of user.tasks) {
         if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-          totalHoursRemaining = totalHoursRemaining + (task.estimatedHours - task.hoursLogged);
+          return total + (task.estimatedHours - task.hoursLogged);
         }
-      }
+        return total;
+      }, 0);
     }
 
-    const activeTasks = user.tasks.filter((task) => {
-      let isActiveTaskForUser = true;
-      if (task?.resources) {
-        isActiveTaskForUser = !task.resources?.find(
-          resource => resource.userID === user.personId,
-        ).completedTask;
-      }
-      return task.wbsId && task.projectId && isActiveTaskForUser;
-    });
+    const activeTasks = user.tasks.filter((task) => task.wbsId && task.projectId
+      && !task.resources?.some(resource => resource.userID === user.personId && resource.completedTask));
 
     return [totalHoursRemaining, activeTasks];
   }, [user]);
 
   const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
   const [isTruncated, setIsTruncated] = useState(canTruncate);
-  const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
-
-  const infoTaskIconContent = `Red Bell Icon: When clicked, this will show any task changes\n
-  Green Checkmark Icon: When clicked, this will mark the task as completed\n
-  X Mark Icon: When clicked, this will remove the user from that task`;
 
   const thisWeekHours = user.totaltangibletime_hrs;
+
+  // these need to be changed to actual permissions...
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
   const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
   const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+  //^^^
 
-  const toggleInfoTaskIconModal = () => {
-    setInfoTaskIconModal(!infoTaskIconModal);
-  };
-
-  const handleModalOpen = () => {
-    setInfoTaskIconModal(true);
-  };
-
-  const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles, userPermissions);
+  const dispatch = useDispatch();
+  const canUpdateTask = dispatch(hasPermission('updateTask'));
   const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
   const handleTruncateTasksButtonClick = () => {
@@ -175,7 +159,7 @@ const TeamMemberTask = React.memo(({
                               }}
                             />
                           )}
-                          {hasRemovePermission && (
+                          {canUpdateTask && (
                             <FontAwesomeIcon
                               className="team-member-task-remove"
                               icon={faTimes}
@@ -186,40 +170,17 @@ const TeamMemberTask = React.memo(({
                               }}
                             />
                           )}
-                          <i
-                            className="fa fa-info-circle"
-                            style={{ cursor: 'pointer', marginLeft: '10px' }}
-                            data-tip
-                            data-for="taskIconTip"
-                            aria-hidden="true"
-                            onClick={() => {
-                              handleModalOpen();
-                            }}
-                          />
-                          <ReactTooltip id="taskIconTip" place="bottom" effect="solid">
-                            Click this icon to learn about the task icons
-                          </ReactTooltip>
-                          <Modal isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
-                            <ModalHeader toggle={toggleInfoTaskIconModal}>
-                              Task Icons Info
-                            </ModalHeader>
-                            <ModalBody>
-                              {infoTaskIconContent.split('\n').map((item, i) => (
-                                <p key={i}>{item}</p>
-                              ))}
-                            </ModalBody>
-                            <ModalFooter>
-                              <Button
-                                onClick={toggleInfoTaskIconModal}
-                                color="secondary"
-                                className="float-left"
-                                style={boxStyle}
-                              >
-                                {' '}
-                                Ok{' '}
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
+                          <TeamMemberTaskIconsInfo />
+                          <div>
+                            <ReviewButton 
+                              user={user}
+                              myUserId={userId}
+                              myRole={userRole}
+                              task={task}
+                              updateTask={updateTask}
+                              style={boxStyle}
+                            />
+                          </div>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">

@@ -11,6 +11,7 @@ import {
   CLOSE_ALERT,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
+import moment from 'moment';
 
 const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
@@ -185,21 +186,14 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 
     selectedBadges.forEach(badgeId => {
       let included = false;
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      // Add 1 beacuse the month start at zero
-      let mm = today.getMonth() + 1;
-      let dd = today.getDate();
-
-      mm < 10 ? (mm = `0${  mm}`) : mm;
-      dd < 10 ? (dd = `0${  dd}`) : dd;
-      const formatedDate = `${yyyy  }-${  mm  }-${  dd}`;
+      const formatedDate = moment().format('YYYY-MM-DD')
+    
 
       badgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
-          badgeObj.lastModified = Date.now();
-          badgeObj.earnedDate = [...earnedDate, formatedDate];
+          badgeObj.lastModified = moment().format('YYYY-MM-DD');
+          badgeObj.earnedDate = [...badgeObj.earnedDate, formatedDate];
           included = true;
         }
       });
@@ -210,7 +204,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
           badge: badgeId,
           count: 1,
           earnedDate: dates,
-          lastModified: Date.now(),
+          lastModified: Date(),
         });
       }
     });
