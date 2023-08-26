@@ -2,7 +2,10 @@ import httpService from 'services/httpService';
 
 import {
     FETCH_TIME_OFF_REQUESTS_SUCCESS,
-    FETCH_TIME_OFF_REQUESTS_FAILURE
+    FETCH_TIME_OFF_REQUESTS_FAILURE,
+    ADD_TIME_OF_REQUEST,
+    UPDATE_TIME_OF_REQUEST,
+    DELETE_TIME_OF_REQUEST,
 } from '../constants/timeOffRequestConstants';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -18,6 +21,21 @@ const fetchTimeOffRequestsSuccess = (requests) => ({
 const fetchTimeOffRequestsFailure = (error) => ({
     type: FETCH_TIME_OFF_REQUESTS_FAILURE,
     payload: error
+});
+
+const addTimeOffRequest = (request) => ({
+    type: ADD_TIME_OF_REQUEST,
+    payload: request
+});
+
+const updateTimeRequest = (request) => ({
+    type: UPDATE_TIME_OF_REQUEST,
+    payload: request
+});
+
+const deleteTimeOffRequest = (request) => ({
+    type: DELETE_TIME_OF_REQUEST,
+    payload: request
 });
 
 // Thunk Function
