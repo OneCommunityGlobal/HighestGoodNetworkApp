@@ -1,1 +1,3 @@
-export { default } from './Timelog';
+import Timelog from './Timelog';
+
+export default Timelog;
