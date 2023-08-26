@@ -543,6 +543,7 @@ function UserProfile(props) {
   const authEmail = props.userProfile?.email;
   const isUserSelf = targetUserId === requestorId;
 
+  const canSeeUserManagementFullFunctionality = props.hasPermission('seeUserManagement');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
@@ -556,8 +557,7 @@ function UserProfile(props) {
     : userProfile.role === 'Owner'
     ? canAddDeleteEditOwners
     : canPutUserProfile;
-
-  const canEdit = canEditUserProfile || isUserSelf;
+    const canEdit = canEditUserProfile || isUserSelf || canSeeUserManagementFullFunctionality;
 
   const customStyles = {
     control: (base, state) => ({
@@ -832,7 +832,7 @@ function UserProfile(props) {
                   setFormValid={setFormValid}
                   isUserSelf={isUserSelf}
                   canEdit={canEdit}
-                  canEditRole={canEditUserProfile}
+                  canEditRole={canEditUserProfile || canSeeUserManagementFullFunctionality}
                   roles={roles}
                 />
               </TabPane>

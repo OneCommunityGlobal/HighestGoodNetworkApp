@@ -5,6 +5,7 @@ export const RoutePermissions = {
   inventoryProjectWbs: '',
   weeklySummariesReport: 'getWeeklySummaries',
   projects: 'postProject',
+  userManagementFullFunctionality: 'seeUserManagement',
   userManagement: 'postUserProfile',
   badgeManagement: 'createBadges',
   permissionsManagement: 'putRole',
