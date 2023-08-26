@@ -5,7 +5,7 @@ import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
 import google_doc_icon from './google_doc_icon.png';
-import google_doc_icon_gray from './google_doc_icon_gray.png'; 
+import google_doc_icon_gray from './google_doc_icon_gray.png';
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
@@ -23,7 +23,6 @@ import {
 } from 'reactstrap';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 
-
 const textColors = {
   Default: '#000000',
   'Not Required': '#708090',
@@ -37,7 +36,14 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo, badges }) => {
+const FormattedReport = ({
+  summaries,
+  weekIndex,
+  bioCanEdit,
+  canEditSummaryCount,
+  allRoleInfo,
+  badges,
+}) => {
   const emails = [];
 
   summaries.forEach(summary => {
@@ -59,19 +65,18 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
           Open link to media files
         </a>
       );
-    } 
-    else if(summary.adminLinks) {
+    } else if (summary.adminLinks) {
       for (const link of summary.adminLinks) {
-        if (link.Name === 'Media Folder'){
+        if (link.Name === 'Media Folder') {
           return (
             <a href={link.Link} target="_blank" rel="noopener noreferrer">
               Open link to media files
             </a>
-          )
+          );
         }
       }
     }
-    return ('Not provided!')
+    return 'Not provided!';
   };
 
   const getGoogleDocLink = summary => {
@@ -97,7 +102,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
       'Team Azure': '#2B35AF',
       'Team Amethyst': '#9400D3',
     };
-    
+
     if (!summary) {
       return (
         <p>
@@ -234,14 +239,21 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     }
   };
 
-  const BioSwitch = (userId, bioPosted, summary, weeklySummaryOption, totalTangibleHrs, daysInTeam) => {
+  const BioSwitch = (
+    userId,
+    bioPosted,
+    summary,
+    weeklySummaryOption,
+    totalTangibleHrs,
+    daysInTeam,
+  ) => {
     const [bioStatus, setBioStatus] = useState(bioPosted);
-    const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== "posted"
+    const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
     const style = {
       color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
     };
     return (
-      <div style={isMeetCriteria ? {backgroundColor: "yellow"}: {}}> 
+      <div style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}>
         <div className="bio-toggle">
           <b style={style}>Bio announcement:</b>
         </div>
@@ -311,12 +323,15 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     return (
       <table>
         <tbody>
-          {badgeThisWeek.length > 0
-            ? badgeThisWeek.map(
-                (value, index) =>
-                  value?.showReport && (
-                    <tr key={index + '_' + value._id}>
-                      <td className="badge_image_sm">
+          <tr className="badge-tr" key={weekIndex + 'badge_' + summary._id}>
+            {badgeThisWeek.length > 0
+              ? badgeThisWeek.map(
+                  (value, index) =>
+                    value?.showReport && (
+                      <td
+                        className="badge-td"
+                        key={weekIndex + '_' + summary._id + '_' + index}
+                      >
                         {' '}
                         <img src={value.imageUrl} id={'popover_' + value._id} />
                         <UncontrolledPopover trigger="hover" target={'popover_' + value._id}>
@@ -338,11 +353,10 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
                           </Card>
                         </UncontrolledPopover>
                       </td>
-                      <td>{value.badgeName}</td>
-                    </tr>
-                  ),
-              )
-            : null}
+                    ),
+                )
+              : null}
+          </tr>
         </tbody>
       </table>
     );
@@ -355,30 +369,38 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
 
         const googleDocLink = getGoogleDocLink(summary);
         // Determine whether to use grayscale or color icon based on googleDocLink
-        const googleDocIcon = googleDocLink && googleDocLink.Link.trim() !== ''
-          ? google_doc_icon
-          : google_doc_icon_gray;
+        const googleDocIcon =
+          googleDocLink && googleDocLink.Link.trim() !== ''
+            ? google_doc_icon
+            : google_doc_icon_gray;
         return (
           <div
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={'summary-' + index}
           >
-            <div style={{display:'flex'}}>
+            <div style={{ display: 'flex' }}>
               <b>Name: </b>
-              <Link style={{marginLeft:'5px'}}
-                to={`/userProfile/${summary._id}`} title="View Profile">
+              <Link
+                style={{ marginLeft: '5px' }}
+                to={`/userProfile/${summary._id}`}
+                title="View Profile"
+              >
                 {summary.firstName} {summary.lastName}
               </Link>
 
               <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-                <img className="google-doc-icon" src={googleDocIcon } alt="google_doc" />
+                <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
               </span>
               <span>
                 <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
               </span>
-               <div>
-                    {(summary.role !== 'Volunteer')&& <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} />}
-               </div>
+              <div>
+                {summary.role !== 'Volunteer' && (
+                  <RoleInfoModal
+                    info={allRoleInfo.find(item => item.infoName === `${summary.role}` + 'Info')}
+                  />
+                )}
+              </div>
               {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
                 <i
                   className="fa fa-star"
@@ -407,37 +429,48 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
                 </i>
               )}
             </div>
-            {summary.badgeCollection.length > 0 && getWeeklyBadge(summary)}
-            <div>
-              {' '}
-              <b>Media URL:</b> {getMediaUrlLink(summary)}
+            <div className="nonsummary-wrapper">
+              <div>
+                <div>
+                  {' '}
+                  <b>Media URL:</b> {getMediaUrlLink(summary)}
+                </div>
+                {bioFunction(
+                  summary._id,
+                  summary.bioPosted,
+                  summary,
+                  summary.weeklySummaryOption,
+                  summary.totalTangibleHrs,
+                  summary.daysInTeam,
+                )}
+                {getTotalValidWeeklySummaries(summary)}
+                {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+                  <p>
+                    <b
+                      style={{
+                        color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                      }}
+                    >
+                      Hours logged:{' '}
+                    </b>
+                    {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                  </p>
+                )}
+                {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+                  <p>
+                    <b
+                      style={{
+                        color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                      }}
+                    >
+                      Hours logged:
+                    </b>{' '}
+                    {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                  </p>
+                )}
+              </div>
+              <div>{summary.badgeCollection.length > 0 && getWeeklyBadge(summary)}</div>
             </div>
-            {bioFunction(summary._id, summary.bioPosted, summary, summary.weeklySummaryOption, summary.totalTangibleHrs, summary.daysInTeam)}
-            {getTotalValidWeeklySummaries(summary)}
-            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-              <p>
-                <b
-                  style={{
-                    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
-                  }}
-                >
-                  Hours logged:{' '}
-                </b>
-                {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-              </p>
-            )}
-            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-              <p>
-                <b
-                  style={{
-                    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
-                  }}
-                >
-                  Hours logged:
-                </b>{' '}
-                {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-              </p>
-            )}
             {getWeeklySummaryMessage(summary)}
           </div>
         );
