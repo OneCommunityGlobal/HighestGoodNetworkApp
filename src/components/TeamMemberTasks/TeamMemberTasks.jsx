@@ -126,7 +126,7 @@ const TeamMemberTasks = React.memo(props => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
-    setTaskNotificationModal(!showTaskNotificationModal);
+    setTaskNotificationModal(prev => !prev);
   }, []);
 
   const handleMarkAsDoneModal = useCallback((userId, task) => {

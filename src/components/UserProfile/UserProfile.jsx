@@ -440,10 +440,11 @@ function UserProfile(props) {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const updateLink = (personalLinksUpdate, adminLinksUpdate) => {
+  const updateLink = (personalLinksUpdate, adminLinksUpdate, mediaUrlUpdate) => {
     setShowModal(false);
     setUserProfile({
       ...userProfile,
+      mediaUrl:mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
       personalLinks: personalLinksUpdate,
       adminLinks: adminLinksUpdate,
     });

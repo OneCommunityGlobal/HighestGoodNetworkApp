@@ -110,7 +110,7 @@ const EditLinkModal = props => {
     }
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     const updatable =
       (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
       (googleLink.Link === '' && mediaFolderLink.Link === '') ||
@@ -118,7 +118,12 @@ const EditLinkModal = props => {
       (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
-      updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
+      // Media Folder link should update the mediaUrl in userProfile
+      if (mediaFolderLink.Link){
+        await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks],mediaFolderLink.Link);
+      } else {
+        await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
+      }
       setIsValidLink(true);
       setIsChanged(true);
       closeModal();
