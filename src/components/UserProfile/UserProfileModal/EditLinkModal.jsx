@@ -17,7 +17,7 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 
 const EditLinkModal = props => {
-  const { isOpen, closeModal, updateLink, userProfile } = props;
+  const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
@@ -140,6 +140,7 @@ const EditLinkModal = props => {
       } else {
         await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
       }
+      handleSubmit();
       setIsValidLink(true);
       setIsChanged(true);
       closeModal();
