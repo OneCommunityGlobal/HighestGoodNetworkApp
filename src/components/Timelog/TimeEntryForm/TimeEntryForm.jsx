@@ -29,7 +29,7 @@ import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
-import { getTimeEntryFormData } from './selectors';
+import getTimeEntryFormData from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
 import { boxStyle } from 'styles';
 
