@@ -13,6 +13,7 @@ const MemberAutoComplete = props => {
       style={{ width: '100%', marginRight: '5px' }}
     >
       <Input
+        autoFocus
         type="text"
         value={props.searchText}
         onChange={e => {
@@ -34,8 +35,9 @@ const MemberAutoComplete = props => {
           {props.userProfileData.userProfiles
             .filter(user => {
               if (
-                user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
-                user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1
+                user.isActive &&
+                (user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
+                user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1)
               ) {
                 return user;
               }

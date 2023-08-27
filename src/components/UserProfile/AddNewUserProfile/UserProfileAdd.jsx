@@ -90,6 +90,8 @@ class AddUserProfile extends Component {
       timeZoneFilter: '',
       formSubmitted: false,
     };
+
+    this.canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
   }
 
   popupClose = () => {
@@ -262,12 +264,7 @@ class AddUserProfile extends Component {
                           if (roleName === 'Owner') return;
                           return <option value={roleName}>{roleName}</option>;
                         })}
-                        {hasPermission(
-                          this.props.auth.user.role,
-                          'addDeleteEditOwners',
-                          this.props.role.roles,
-                          this.props.auth.user?.permissions?.frontPermissions,
-                        ) && <option value="Owner">Owner</option>}
+                        {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>
@@ -571,7 +568,7 @@ class AddUserProfile extends Component {
     } = that.state.userProfile;
 
     const userData = {
-      password: '123Welcome!',
+      password: process.env.REACT_APP_DEF_PWD,
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -599,7 +596,7 @@ class AddUserProfile extends Component {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
     if (dropboxDoc) {
-      userData.adminLinks.push({ Name: 'Dropbox Link', Link: dropboxDoc });
+      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
@@ -952,4 +949,5 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
   fetchAllProjects,
+  hasPermission,
 })(AddUserProfile);

@@ -1,20 +1,39 @@
 import React from 'react';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { WeeklySummariesReport } from './WeeklySummariesReport';
+import hasPermission from '../../utils/permissions';
+import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
+import { renderWithProvider } from '../../__tests__/utils';
+import thunk from 'redux-thunk';
+import configureStore from 'redux-mock-store';
+
+const mockStore = configureStore([thunk]);
 
 describe('WeeklySummariesReport page', () => {
+  let store;
+  beforeEach(() => {
+    store = mockStore({
+      auth: authMock,
+      userProfile: userProfileMock,
+      role: rolesMock.role,
+    });
+  });
   describe('On page load', () => {
     it('displays an error message if there is an error on data fetch', async () => {
       const props = {
+        hasPermission: hasPermission,
         getWeeklySummariesReport: jest.fn(),
+        fetchAllBadges: jest.fn(),
         error: { message: 'SOME ERROR CONNECTING!!!' },
         loading: false,
         summaries: [],
         authUser: { role: '' },
         roles: [],
+        badges: [],
+        getInfoCollections: jest.fn(),
       };
-      render(<WeeklySummariesReport {...props} />);
+      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
 
       await waitFor(() => screen.getByTestId('loading'));
 
@@ -23,27 +42,35 @@ describe('WeeklySummariesReport page', () => {
 
     it('displays loading indicator', () => {
       const props = {
+        hasPermission: hasPermission,
         getWeeklySummariesReport: jest.fn(),
+        fetchAllBadges: jest.fn(),
         loading: true,
         summaries: [],
         authUser: { role: '' },
         roles: [],
+        badges: [],
+        getInfoCollections: jest.fn(),
       };
-      render(<WeeklySummariesReport {...props} />);
+      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
       expect(screen.getByTestId('loading')).toBeInTheDocument();
     });
   });
 
   describe('Tabs display', () => {
     const props = {
+      hasPermission: hasPermission,
       getWeeklySummariesReport: jest.fn(),
+      fetchAllBadges: jest.fn(),
+      getInfoCollections: jest.fn(),
       loading: false,
       summaries: [],
       authUser: { role: '' },
       roles: [],
+      badges: [],
     };
     beforeEach(() => {
-      render(<WeeklySummariesReport {...props} />);
+      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
     });
 
     afterEach(() => {
