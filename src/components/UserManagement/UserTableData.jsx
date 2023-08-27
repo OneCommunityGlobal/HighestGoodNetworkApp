@@ -28,10 +28,18 @@ const UserTableData = React.memo(props => {
   }, [props.isActive, props.resetLoading]);
 
   const checkPermissionsOnOwner = () => {
-    return (
-      props.user.role === 'Owner' &&
-      !hasPermission(props.role, 'addDeleteEditOwners', props.roles, props.userPermissions)
-    );
+
+    if (props.user.role === 'Administrator' ){
+      return false
+    } else {
+      
+      return (
+         props.user.role === 'Owner' &&
+        hasPermission(props.role, 'addDeleteEditOwners', props.roles, props.userPermissions)
+      );
+
+    }
+    
   };
 
   return (
@@ -104,7 +112,7 @@ const UserTableData = React.memo(props => {
       {checkPermissionsOnOwner() ? null : (
         <td>
         {
-          props.auth.user.userid === props.user._id ? '': <span className="usermanagement-actions-cell">
+          props.auth.user.userid === props.user._id || props.auth.user.role === "Owner" &&  props.user.role === "Administrator"  ? '': <span className="usermanagement-actions-cell">
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"
@@ -117,9 +125,11 @@ const UserTableData = React.memo(props => {
             </button>
           </span>
         }
-          <span className="usermanagement-actions-cell">
+
+        { props.auth.user.role === "Owner" &&  props.user.role === "Administrator" ? "":  <span className="usermanagement-actions-cell">
             <ResetPasswordButton user={props.user} isSmallButton />
-          </span>
+          </span> }
+         
         </td>
       )}
     </tr>
