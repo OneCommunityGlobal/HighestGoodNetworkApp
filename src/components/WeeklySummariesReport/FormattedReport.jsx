@@ -328,10 +328,7 @@ const FormattedReport = ({
               ? badgeThisWeek.map(
                   (value, index) =>
                     value?.showReport && (
-                      <td
-                        className="badge-td"
-                        key={weekIndex + '_' + summary._id + '_' + index}
-                      >
+                      <td className="badge-td" key={weekIndex + '_' + summary._id + '_' + index}>
                         {' '}
                         <img src={value.imageUrl} id={'popover_' + value._id} />
                         <UncontrolledPopover trigger="hover" target={'popover_' + value._id}>
@@ -429,20 +426,20 @@ const FormattedReport = ({
                 </i>
               )}
             </div>
+            <div>
+              {' '}
+              <b>Media URL:</b> {getMediaUrlLink(summary)}
+            </div>
+            {bioFunction(
+              summary._id,
+              summary.bioPosted,
+              summary,
+              summary.weeklySummaryOption,
+              summary.totalTangibleHrs,
+              summary.daysInTeam,
+            )}
             <div className="nonsummary-wrapper">
               <div>
-                <div>
-                  {' '}
-                  <b>Media URL:</b> {getMediaUrlLink(summary)}
-                </div>
-                {bioFunction(
-                  summary._id,
-                  summary.bioPosted,
-                  summary,
-                  summary.weeklySummaryOption,
-                  summary.totalTangibleHrs,
-                  summary.daysInTeam,
-                )}
                 {getTotalValidWeeklySummaries(summary)}
                 {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
                   <p>
