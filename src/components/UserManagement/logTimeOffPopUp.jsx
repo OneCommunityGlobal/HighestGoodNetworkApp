@@ -1,4 +1,10 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  addTimeOffRequestThunk,
+  updateTimeOffRequestThunk,
+  deleteTimeOffRequestThunk,
+} from '../../actions/timeOffRequestAction';
 import moment from 'moment';
 import {
   Button,
@@ -21,16 +27,52 @@ import {
 import { boxStyle } from 'styles';
 
 const LogTimeOffPopUp = React.memo(props => {
+  const dispatch = useDispatch();
   const today = moment().format('YYYY-MM-DD');
-  const [dateOfLeave, setDateOfLeave] = useState(today);
-  const [numberOfWeeks, setNumberOfWeeks] = useState(1);
-  const [reasonForLeave, setReasonForLeave] = useState('');
-  const [dateOfLeaveError, setDateOfLeaveError] = useState(false);
-  const [numberOfWeeksError, setNumberOfWeeksError] = useState(false);
-  const [reasonForLeaveError, setReasonForLeaveError] = useState(false);
+  const [requestToUpdate, setrequestToUpdate] = useState({});
+
+  const initialRequestData = {
+    dateOfLeave: today,
+    numberOfWeeks: 1,
+    reasonForLeave: '',
+  };
+
+  const initialRequestDataErrors = {
+    dateOfLeaveError: '',
+    numberOfWeeksError: '',
+    reasonForLeaveError: '',
+  };
+
+  const initialUpdateRequestData = {
+    dateOfLeave: requestToUpdate?.dateOfLeave || today,
+    numberOfWeeks: requestToUpdate?.numberOfWeeks || 1,
+    reasonForLeave: requestToUpdate?.reasonForLeave || '',
+  };
+
+  const initialUpdateRequestDataErrors = {
+    dateOfLeaveError: '',
+    numberOfWeeksError: '',
+    reasonForLeaveError: '',
+  };
+
+  const [requestData, setRequestData] = useState(initialRequestData);
+  const [requestDataErrors, setRequestDataErrors] = useState(initialRequestDataErrors);
+  const [updateRequestData, setUpdateRequestData] = useState(initialUpdateRequestData);
+  const [updaterequestDataErrors, setUpdateRequestDataErrors] = useState(
+    initialUpdateRequestDataErrors,
+  );
+
   const [nestedModal, SetNestedModal] = useState(false);
 
+  const resetState = () => {
+    setRequestData(initialRequestData);
+    setRequestDataErrors(initialRequestDataErrors);
+    setUpdateRequestData(initialUpdateRequestData);
+    setUpdateRequestDataErrors(initialUpdateRequestDataErrors);
+  };
+
   const closePopup = e => {
+    resetState();
     props.onClose();
   };
 
@@ -41,39 +83,167 @@ const LogTimeOffPopUp = React.memo(props => {
   const openNested = () => {
     SetNestedModal(true);
   };
-  const handleDateOfLeave = e => {
+
+  const handleAddRequestDataChange = e => {
     e.preventDefault();
-    const DateOfLeave = e.target.value;
-    const isBeforeToday = moment(DateOfLeave).isBefore(moment(), 'day');
-    if (isBeforeToday) {
-      setDateOfLeaveError(prev => true);
-    } else {
-      setDateOfLeaveError(prev => false);
-    }
-    setDateOfLeave(prev => DateOfLeave);
+    const id = e.target.id;
+    const value = e.target.value;
+    setRequestData(prev => ({
+      ...prev,
+      [id]: value,
+    }));
   };
 
-  const handleNumberOfWeeks = e => {
-    e.preventDefault();
-    const NumberOfWeeks = e.target.value;
-    if (NumberOfWeeks <= 0) {
-      setNumberOfWeeksError(prev => true);
+  const validateDateOfLeave = (data, nestedModal) => {
+    if (nestedModal) {
+      if (!data.dateOfLeave) {
+        setUpdateRequestDataErrors(prev => ({
+          ...prev,
+          dateOfLeaveError: 'Date of leave can not be empty',
+        }));
+        return false;
+      }
     } else {
-      setNumberOfWeeksError(prev => false);
+      if (!data.dateOfLeave) {
+        setRequestDataErrors(prev => ({
+          ...prev,
+          dateOfLeaveError: 'Date of leave can not be empty',
+        }));
+        return false;
+      }
     }
-    setNumberOfWeeks(prev => NumberOfWeeks);
+    return true;
   };
 
-  const handleReasonForLeave = e => {
-    e.preventDefault();
-    const reasonForLeave = e.target.value;
-    const words = reasonForLeave.split(' ');
-    if (words.length < 10) {
-      setReasonForLeaveError(prev => true);
+  const validateNumberOfWeeks = (data, nestedModal) => {
+    if ((data, nestedModal)) {
+      if (!data.numberOfWeeks) {
+        setUpdateRequestDataErrors(prev => ({
+          ...prev,
+          numberOfWeeksError: 'Duration can not be empty',
+        }));
+        return false;
+      }
+      if (data.numberOfWeeks < 1) {
+        setUpdateRequestDataErrors(prev => ({
+          ...prev,
+          numberOfWeeksError: 'Duration can not be less than 1 week',
+        }));
+        return false;
+      }
     } else {
-      setReasonForLeaveError(prev => false);
+      if (!data.numberOfWeeks) {
+        setRequestDataErrors(prev => ({
+          ...prev,
+          numberOfWeeksError: 'Duration can not be empty',
+        }));
+        return false;
+      }
+      if (data.numberOfWeeks < 1) {
+        setRequestDataErrors(prev => ({
+          ...prev,
+          numberOfWeeksError: 'Duration can not be less than 1 week',
+        }));
+        return false;
+      }
     }
-    setReasonForLeave(prev => reasonForLeave);
+    return true;
+  };
+
+  const validateReasonForLeave = (data, nestedModal) => {
+    if (nestedModal) {
+      if (!data.reasonForLeave) {
+        setUpdateRequestDataErrors(prev => ({
+          ...prev,
+          reasonForLeaveError: 'Reason for leave can not be empty',
+        }));
+        return false;
+      }
+    } else {
+      if (!data.reasonForLeave) {
+        setRequestDataErrors(prev => ({
+          ...prev,
+          reasonForLeaveError: 'Reason for leave can not be empty',
+        }));
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const validateDateIsNotBeforeToday = (data, nestedModal) => {
+    if (nestedModal) {
+      const isBeforeToday = moment(data.dateOfLeave).isBefore(moment(), 'day');
+      if (isBeforeToday) {
+        setUpdateRequestDataErrors(prev => ({
+          ...prev,
+          dateOfLeaveError: 'Date of leave can not be before today',
+        }));
+        return false;
+      }
+    } else {
+      const isBeforeToday = moment(data.dateOfLeave).isBefore(moment(), 'day');
+      if (isBeforeToday) {
+        setRequestDataErrors(prev => ({
+          ...prev,
+          dateOfLeaveError: 'Date of leave can not be before today',
+        }));
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const validateDateIsNotBeforeEndOfOtherRequests = (data, nestedModal) => {
+    if (props.userTimeOffRequests.length > 0) {
+      const isAnyEndingDateAfterDate = props.userTimeOffRequests.some(request => {
+        const requestDate = moment(request.endingDate);
+        const dateOfLeave = moment(data.dateOfLeave);
+        console.log(requestDate);
+        return requestDate.isAfter(dateOfLeave);
+      });
+
+      if (nestedModal) {
+        if (isAnyEndingDateAfterDate) {
+          setUpdateRequestDataErrors(prev => ({
+            ...prev,
+            dateOfLeaveError: 'Date of leave can not be before the return date of other requests',
+          }));
+          return false;
+        }
+      } else {
+        if (isAnyEndingDateAfterDate) {
+          setRequestDataErrors(prev => ({
+            ...prev,
+            dateOfLeaveError: 'Date of leave can not be before the return date of other requests',
+          }));
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  const handleAddRequest = e => {
+    e.preventDefault();
+    setRequestDataErrors(initialRequestDataErrors);
+
+    if (!validateDateOfLeave(requestData, false)) return;
+    if (!validateNumberOfWeeks(requestData, false)) return;
+    if (!validateReasonForLeave(requestData, false)) return;
+    if (!validateDateIsNotBeforeToday(requestData, false)) return;
+    if (!validateDateIsNotBeforeEndOfOtherRequests(requestData, false)) return;
+
+    console.log(requestData);
+    console.log();
+    const data = {
+      requestFor: props.user._id,
+      reason: requestData.reasonForLeave,
+      startingDate: moment(requestData.dateOfLeave).format('MM/DD/YY'),
+      duration: requestData.numberOfWeeks,
+    };
+
+    dispatch(addTimeOffRequestThunk(data));
   };
 
   return (
@@ -90,12 +260,10 @@ const LogTimeOffPopUp = React.memo(props => {
                     type="date"
                     name="dateOfLeave"
                     id="dateOfLeave"
-                    value={dateOfLeave}
-                    onChange={e => handleDateOfLeave(e)}
+                    value={requestData.dateOfLeave}
+                    onChange={e => handleAddRequestDataChange(e)}
                   />
-                  {dateOfLeaveError && (
-                    <FormText color="danger">{'Please choose a future date.'}</FormText>
-                  )}
+                  {<FormText color="danger">{requestDataErrors.dateOfLeaveError}</FormText>}
                 </FormGroup>
               </Col>
               <Col>
@@ -105,14 +273,10 @@ const LogTimeOffPopUp = React.memo(props => {
                     type="number"
                     name="numberOfWeeks"
                     id="numberOfWeeks"
-                    value={numberOfWeeks}
-                    onChange={e => handleNumberOfWeeks(e)}
+                    value={requestData.numberOfWeeks}
+                    onChange={e => handleAddRequestDataChange(e)}
                   />
-                  {numberOfWeeksError && (
-                    <FormText color="danger">
-                      {'Number of weeks should be greater than 0.'}
-                    </FormText>
-                  )}
+                  {<FormText color="danger">{requestDataErrors.numberOfWeeksError}</FormText>}
                 </FormGroup>
               </Col>
             </Row>
@@ -125,20 +289,22 @@ const LogTimeOffPopUp = React.memo(props => {
                     rows="2"
                     placeholder="Add the reason for requesting time off here"
                     id="reasonForLeave"
-                    value={reasonForLeave}
-                    onChange={e => handleReasonForLeave(e)}
+                    value={requestData.reasonForLeave}
+                    onChange={e => handleAddRequestDataChange(e)}
                   />
-                  {reasonForLeaveError && (
-                    <FormText color="danger">
-                      {'the reason for leave should be at least 10 words.'}
-                    </FormText>
-                  )}
+                  {<FormText color="danger">{requestDataErrors.reasonForLeaveError}</FormText>}
                 </FormGroup>
               </Col>
             </Row>
             <Row>
               <Col>
-                <Button color="primary" style={boxStyle}>
+                <Button
+                  color="primary"
+                  style={boxStyle}
+                  onClick={e => {
+                    handleAddRequest(e);
+                  }}
+                >
                   Save
                 </Button>
               </Col>
@@ -175,6 +341,7 @@ const LogTimeOffPopUp = React.memo(props => {
                         <Button color="primary" onClick={openNested}>
                           Edit
                         </Button>
+                        <Button color="danger ml-1">Delete</Button>
                       </Col>
                     </Row>
                   </CardBody>
@@ -190,21 +357,23 @@ const LogTimeOffPopUp = React.memo(props => {
                       <Col>
                         <FormGroup>
                           <Label for="dateOfLeave">Date of leave</Label>
-                          <Input type="date" />
-                          {dateOfLeaveError && (
-                            <FormText color="danger">{'Please choose a future date.'}</FormText>
-                          )}
+                          <Input type="date" value={updateRequestData.dateOfLeave} />
+                          {
+                            <FormText color="danger">
+                              {updaterequestDataErrors.dateOfLeaveError}
+                            </FormText>
+                          }
                         </FormGroup>
                       </Col>
                       <Col>
                         <FormGroup>
                           <Label for="numberOfWeeks">Duration in weeks</Label>
-                          <Input type="number" />
-                          {numberOfWeeksError && (
+                          <Input type="number" value={updateRequestData.numberOfWeeks} />
+                          {
                             <FormText color="danger">
-                              {'Number of weeks should be greater than 0.'}
+                              {updaterequestDataErrors.numberOfWeeksError}
                             </FormText>
-                          )}
+                          }
                         </FormGroup>
                       </Col>
                     </Row>
@@ -212,12 +381,16 @@ const LogTimeOffPopUp = React.memo(props => {
                       <Col>
                         <FormGroup>
                           <Label for="reasonForLeave">Reason for leave</Label>
-                          <Input type="textarea" rows="2" />
-                          {reasonForLeaveError && (
+                          <Input
+                            type="textarea"
+                            rows="2"
+                            value={updateRequestData.reasonForLeave}
+                          />
+                          {
                             <FormText color="danger">
-                              {'the reason for leave should be at least 10 words.'}
+                              {updaterequestDataErrors.reasonForLeaveError}
                             </FormText>
-                          )}
+                          }
                         </FormGroup>
                       </Col>
                     </Row>

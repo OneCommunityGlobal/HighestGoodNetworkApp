@@ -28,7 +28,7 @@ const addTimeOffRequest = (request) => ({
     payload: request
 });
 
-const updateTimeRequest = (request) => ({
+const updateTimeOffRequest = (request) => ({
     type: UPDATE_TIME_OF_REQUEST,
     payload: request
 });
@@ -46,5 +46,38 @@ export const getAllTimeOffRequests = () => async (dispatch) => {
         dispatch(fetchTimeOffRequestsSuccess(requests));
     } catch (error) {
         dispatch(fetchTimeOffRequestsFailure(error.message));
+    }
+};
+
+
+export const addTimeOffRequestThunk = (request) => async (dispatch) => {
+    try {
+        const response = await httpService.post(ENDPOINTS.ADD_TIME_OFF_REQUEST(), request);
+        const AddedRequest = response.data;
+        console.log(response)
+        dispatch(addTimeOffRequest(AddedRequest));
+    } catch (error) {
+        console.log(error)
+    }
+};
+
+export const updateTimeOffRequestThunk = (id, data) => async (dispatch) => {
+    // data Should include duration, startingDate and reason 
+    try {
+        const response = await httpService.post(ENDPOINTS.UPDATE_TIME_OFF_REQUEST(id), data);
+        const updatedRequest = response.data;
+        dispatch(updateTimeOffRequest(updatedRequest))
+    } catch (error) {
+        console.log(error)
+    }
+};
+
+export const deleteTimeOffRequestThunk = (id) => async (dispatch) => {
+    try {
+        const response = await httpService.delete(ENDPOINTS.DELETE_TIME_OFF_REQUEST(id));
+        const deletedRequest = response.data;
+        dispatch(deleteTimeOffRequest(deletedRequest))
+    } catch (error) {
+        console.log(error)
     }
 };

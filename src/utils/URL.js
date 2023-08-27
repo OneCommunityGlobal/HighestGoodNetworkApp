@@ -89,7 +89,10 @@ export const ENDPOINTS = {
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
-  GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`
+  GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
+  ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
+  UPDATE_TIME_OFF_REQUEST: (id) => `${APIEndpoint}/updateTimeOffRequest/${id}`,
+  DELETE_TIME_OFF_REQUEST: (id) => `${APIEndpoint}/deleteTimeOffRequest/${id}`
 };
 
 export const ApiEndpoint = APIEndpoint;

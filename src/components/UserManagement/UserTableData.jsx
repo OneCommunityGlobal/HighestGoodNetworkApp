@@ -83,7 +83,7 @@ const UserTableData = React.memo(props => {
           className={`btn btn-outline-primary btn-sm${
             props.timeOffRequests.length > 0 ? ` time-off-request-btn-moved` : ''
           }`}
-          onClick={e => props.onLogTimeOffClick(props.timeOffRequests)}
+          onClick={e => props.onLogTimeOffClick(props.timeOffRequests, props.user)}
           id="requested-time-off-btn"
           style={boxStyle}
         >
