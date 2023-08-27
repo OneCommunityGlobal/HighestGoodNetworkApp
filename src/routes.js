@@ -78,7 +78,7 @@ export default (
           UserRole.Owner,
           UserRole.Mentor,
         ]}
-        routePermissions={[RoutePermissions.weeklySummariesReport, RoutePermissions.reports]}
+        routePermissions={[RoutePermissions.weeklySummariesReport, RoutePermissions.reports, RoutePermissions.seeOnlyWeeklySummariesReports]}
       />
       <ProtectedRoute
         path="/reports"

@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 
 export const permissionLabel = {
   seeAllReports: 'See All the Reports Tab',
-  seeWeeklySummaryReports: 'See Only Weekly Summaries Reports Tab',
+  seeOnlyWeeklySummariesReports: 'See Only Weekly Summaries Reports Tab',
   getWeeklySummaries: 'See Weekly Summary Reports Tab',
   seeUserManagement: 'See User Management Tab (Full Functionality)',
   seeUserManagementTab: 'See User Management Tab (ONLY create Users)',
