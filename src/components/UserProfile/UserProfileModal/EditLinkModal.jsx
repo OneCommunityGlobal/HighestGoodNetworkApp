@@ -165,9 +165,9 @@ const EditLinkModal = props => {
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
                   {mediaFolderDiffWarning && (
                     <span className="warning-help-context">
-                      Media Folder link is differnt from mediaUrl:
+                      <strong>Media Folder link must be a working DropBox link</strong>
                       <p>
-                        <a href={userProfile.mediaUrl}>{userProfile.mediaUrl}</a>
+                        Current Media URL: <a href={userProfile.mediaUrl}>{userProfile.mediaUrl}</a>
                       </p>
                     </span>
                   )}
