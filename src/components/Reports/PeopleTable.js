@@ -36,17 +36,8 @@ function PeopleTable(props) {
               </div>
             )}
           </td>
-<<<<<<< HEAD
-          <td className="hide-mobile-start-end">
-            {moment(person.createdDate).format('MM/DD/YYYY')}
-          </td>
-          <td className="hide-mobile-start-end">
-            {moment(person.endDate).format('MM/DD/YYYY') || 'N/A'}
-          </td>
-=======
-          <td style={{width: '110px'}}>{moment(person.createdDate).format('MMM-DD-YY')}</td>
-          <td style={{width: '110px'}}>{moment(person.endDate).format('MMM-DD-YY') || 'N/A'}</td>
->>>>>>> development
+          <td className="hide-mobile-start-end" style={{width: '110px'}}>{moment(person.createdDate).format('MMM-DD-YY')}</td>
+          <td className="hide-mobile-start-end" style={{width: '110px'}}>{moment(person.endDate).format('MMM-DD-YY') || 'N/A'}</td>
           {/* <td>
           {person.blueSquares||"N/A"}
         </td> */}

@@ -168,6 +168,12 @@
     padding: 16px;
     margin: 4px;
   }
+  .total-report-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 1rem;
+  }
 }
 
 @media screen and (max-width: 700px) {
