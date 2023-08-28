@@ -12,6 +12,7 @@ import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
+import { fetchAllBadges } from '../../actions/badgeManagement';
 import { getInfoCollections } from '../../actions/information';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
@@ -25,6 +26,7 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: '2',
+      badges: [],
       selectedCodes: [],
       selectedColors: [],
       filteredSummaries: [],
@@ -38,6 +40,8 @@ export class WeeklySummariesReport extends Component {
   async componentDidMount() {
     // 1. fetch report
     await this.props.getWeeklySummariesReport();
+    await this.props.fetchAllBadges();
+
     this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
@@ -106,6 +110,7 @@ export class WeeklySummariesReport extends Component {
         sessionStorage.getItem('tabSelection') === null
           ? '2'
           : sessionStorage.getItem('tabSelection'),
+      badges: this.props.allBadgeData,
       filteredSummaries: summariesCopy,
     });
     await this.props.getInfoCollections();
@@ -230,7 +235,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab, selectedCodes, selectedColors, filteredSummaries } = this.state;
+    const { error, loading, summaries, activeTab, badges, selectedCodes, selectedColors, filteredSummaries } = this.state;
 
     if (error) {
       return (
@@ -341,6 +346,7 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={filteredSummaries}
                       weekIndex={0}
+                      badges={badges}
                       bioCanEdit={this.bioEditPermission}
                       canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
@@ -372,6 +378,7 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={filteredSummaries}
                       weekIndex={1}
+                      badges={badges}
                       bioCanEdit={this.bioEditPermission}
                       canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
@@ -403,6 +410,7 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={filteredSummaries}
                       weekIndex={2}
+                      badges={badges}
                       bioCanEdit={this.bioEditPermission}
                       canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
@@ -434,6 +442,7 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={filteredSummaries}
                       weekIndex={3}
+                      badges={badges}
                       bioCanEdit={this.bioEditPermission}
                       canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
@@ -453,6 +462,7 @@ export class WeeklySummariesReport extends Component {
 WeeklySummariesReport.propTypes = {
   error: PropTypes.any,
   getWeeklySummariesReport: PropTypes.func.isRequired,
+  fetchAllBadges: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   getInfoCollections: PropTypes.func.isRequired,
@@ -463,7 +473,15 @@ const mapStateToProps = state => ({
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
+  allBadgeData: state.badge.allBadgeData,
   infoCollections:state.infoCollections.infos,
 });
 
-export default connect(mapStateToProps, { getWeeklySummariesReport, hasPermission, getInfoCollections })(WeeklySummariesReport);
+const mapDispatchToProps = dispatch => ({
+  fetchAllBadges: () => dispatch(fetchAllBadges()),
+  getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
+  hasPermission: () => hasPermission(),
+  getInfoCollections: () => getInfoCollections(),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);
