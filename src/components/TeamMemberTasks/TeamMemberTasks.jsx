@@ -126,7 +126,7 @@ const TeamMemberTasks = React.memo(props => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
-    setTaskNotificationModal(!showTaskNotificationModal);
+    setTaskNotificationModal(prev => !prev);
   }, []);
 
   const handleMarkAsDoneModal = useCallback((userId, task) => {
@@ -422,6 +422,7 @@ const TeamMemberTasks = React.memo(props => {
                         updateTask={onUpdateTask}
                         roles={props.roles}
                         userPermissions={props.userPermissions}
+                        userId={userId}
                       />
                     );
                   } else {
@@ -438,6 +439,7 @@ const TeamMemberTasks = React.memo(props => {
                           updateTask={onUpdateTask}
                           roles={props.roles}
                           userPermissions={props.userPermissions}
+                          userId={userId}
                         />
                         {timeEntriesList.length > 0 &&
                           timeEntriesList

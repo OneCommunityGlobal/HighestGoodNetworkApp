@@ -11,6 +11,7 @@ import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
+import { fetchAllBadges } from '../../actions/badgeManagement';
 import { getInfoCollections } from '../../actions/information';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
@@ -24,6 +25,7 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: '2',
+      badges: [],
     };
 
     this.weekDates = Array(4)
@@ -34,7 +36,12 @@ export class WeeklySummariesReport extends Component {
   async componentDidMount() {
     // 1. fetch report
     await this.props.getWeeklySummariesReport();
-    
+    await this.props.fetchAllBadges();
+
+    this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
+    this.bioEditPermission = this.canPutUserProfileImportantInfo;
+    this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
+
     const now = moment().tz('America/Los_Angeles')
 
     const summaryPromise = this.props.summaries.map(async summary => {
@@ -71,11 +78,12 @@ export class WeeklySummariesReport extends Component {
         sessionStorage.getItem('tabSelection') === null
           ? '2'
           : sessionStorage.getItem('tabSelection'),
+      badges: this.props.allBadgeData,
     });
     await this.props.getInfoCollections();
-    const { infoCollections,roles } = this.props;
+    const { infoCollections} = this.props;
     const role = this.props.authUser?.role;
-    const roleInfoNames = roles?.map(role => role.roleName + 'Info');
+    const roleInfoNames = this.getAllRoles(summariesCopy);
     const allRoleInfo = [];
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
@@ -105,6 +113,17 @@ export class WeeklySummariesReport extends Component {
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
+  };
+
+    /**
+   * Get the roleNames 
+   * @param {*} summaries
+   * @returns
+   */
+    getAllRoles = summaries => {
+      const roleNames = summaries.map(summary => summary.role+"Info");
+      const uniqueRoleNames = [...new Set(roleNames)];
+      return uniqueRoleNames;
   };
 
   getWeekDates = weekIndex => ({
@@ -168,14 +187,8 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab} = this.state;
-    const role = this.props.authUser?.role;
-    const userPermissions = this.props.authUser?.permissions?.frontPermissions;
-    const roles = this.props.roles;
-    const bioEditPermission = hasPermission(role, 'changeBioAnnouncement', roles, userPermissions);
+    const { error, loading, summaries, activeTab, badges } = this.state;
 
-    const rolesAllowedToEditSummaryCount = ['Administrator', 'Owner'];
-    const canEditSummaryCount = rolesAllowedToEditSummaryCount.includes(role)
     if (error) {
       return (
         <Container>
@@ -264,10 +277,10 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={0}
-                      bioCanEdit={bioEditPermission}
-                      role={role}
+                      badges={badges}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
-                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -290,10 +303,10 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={1}
-                      bioCanEdit={bioEditPermission}
-                      role={role}
+                      badges={badges}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
-                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -307,7 +320,6 @@ export class WeeklySummariesReport extends Component {
                     <GeneratePdfReport
                       summaries={summaries}
                       weekIndex={2}
-                      role={role}
                       weekDates={this.weekDates[2]}
                     />
                   </Col>
@@ -317,10 +329,10 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={2}
-                      bioCanEdit={bioEditPermission}
-                      role={role}
+                      badges={badges}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
-                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -343,10 +355,10 @@ export class WeeklySummariesReport extends Component {
                     <FormattedReport
                       summaries={summaries}
                       weekIndex={3}
-                      bioCanEdit={bioEditPermission}
-                      role={role}
+                      badges={badges}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
-                      canEditSummaryCount={canEditSummaryCount}
                     />
                   </Col>
                 </Row>
@@ -362,6 +374,7 @@ export class WeeklySummariesReport extends Component {
 WeeklySummariesReport.propTypes = {
   error: PropTypes.any,
   getWeeklySummariesReport: PropTypes.func.isRequired,
+  fetchAllBadges: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   getInfoCollections: PropTypes.func.isRequired,
@@ -369,12 +382,18 @@ WeeklySummariesReport.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  authUser: state.auth.user,
-  roles: state.role.roles,
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
+  allBadgeData: state.badge.allBadgeData,
   infoCollections:state.infoCollections.infos,
 });
 
-export default connect(mapStateToProps, { getWeeklySummariesReport,getInfoCollections })(WeeklySummariesReport);
+const mapDispatchToProps = dispatch => ({
+  fetchAllBadges: () => dispatch(fetchAllBadges()),
+  getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
+  hasPermission: () => hasPermission(),
+  getInfoCollections: () => getInfoCollections(),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);

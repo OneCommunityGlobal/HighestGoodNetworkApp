@@ -8,6 +8,9 @@ import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
+import { boxStyle } from 'styles';
+import ReviewButton from './ReviewButton'
+import { useDispatch } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
@@ -19,8 +22,8 @@ const TeamMemberTask = React.memo(({
   handleOpenTaskNotificationModal,
   handleTaskModalOption,
   userRole,
-  roles,
-  userPermissions,
+  userId,
+  updateTask,
 }) => {
   const ref = useRef(null);
 
@@ -49,12 +52,16 @@ const TeamMemberTask = React.memo(({
   const [isTruncated, setIsTruncated] = useState(canTruncate);
 
   const thisWeekHours = user.totaltangibletime_hrs;
+
+  // these need to be changed to actual permissions...
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
   const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
   const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
   const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+  //^^^
 
-  const hasRemovePermission = hasPermission(userRole, 'removeUserFromTask', roles, userPermissions);
+  const dispatch = useDispatch();
+  const canUpdateTask = dispatch(hasPermission('updateTask'));
   const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
   const handleTruncateTasksButtonClick = () => {
@@ -152,7 +159,7 @@ const TeamMemberTask = React.memo(({
                               }}
                             />
                           )}
-                          {hasRemovePermission && (
+                          {canUpdateTask && (
                             <FontAwesomeIcon
                               className="team-member-task-remove"
                               icon={faTimes}
@@ -164,6 +171,16 @@ const TeamMemberTask = React.memo(({
                             />
                           )}
                           <TeamMemberTaskIconsInfo />
+                          <div>
+                            <ReviewButton 
+                              user={user}
+                              myUserId={userId}
+                              myRole={userRole}
+                              task={task}
+                              updateTask={updateTask}
+                              style={boxStyle}
+                            />
+                          </div>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">

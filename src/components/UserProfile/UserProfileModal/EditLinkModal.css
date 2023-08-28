@@ -15,9 +15,9 @@
 
 .custom-label {
   display: flex;
-  padding: 0.25em 0.4em;
+  padding: 0.6em 0.4em;
   margin: 2px;
-  width: 100%;
+  width: 80%;
   font-weight: 500;
   line-height: 1;
   text-align: center;

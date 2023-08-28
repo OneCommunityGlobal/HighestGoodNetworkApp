@@ -4,12 +4,13 @@ import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en
 import { UserStatus, FinalDay } from '../../utils/enums';
 import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
-import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from 'utils/permissions';
+import hasPermission from 'utils/permissions';
 import Table from 'react-bootstrap/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 /**
  * The body row of the user table
@@ -17,6 +18,7 @@ import { boxStyle } from 'styles';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -26,10 +28,7 @@ const UserTableData = React.memo(props => {
   }, [props.isActive, props.resetLoading]);
 
   const checkPermissionsOnOwner = () => {
-    return (
-      props.user.role === 'Owner' &&
-      !hasPermission(props.role, 'addDeleteEditOwners', props.roles, props.userPermissions)
-    );
+    return props.user.role === 'Owner' && !canAddDeleteEditOwners;
   };
 
   return (
@@ -122,4 +121,4 @@ const UserTableData = React.memo(props => {
   );
 });
 
-export default UserTableData;
+export default connect(null, { hasPermission })(UserTableData);
