@@ -10,6 +10,7 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
+import { useMemo } from 'react';
 
 function AddTaskModal(props) {
   /*
@@ -19,10 +20,18 @@ function AddTaskModal(props) {
   const { tasks, copiedTask, allMembers, allProjects, error } = props;
 
   // states from hooks
+  const defaultCategory = useMemo(() => {
+    if (props.taskId) {
+      return tasks.find(({ _id }) => _id === props.taskId).category;
+    } else {
+      return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
+    }  
+  }, []);
+
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
   const [resourceItems, setResourceItems] = useState([]);
-  const [assigned, setAssigned] = useState(true);
+  const [assigned, setAssigned] = useState(false);
   const [status, setStatus] = useState('Started');
   const [hoursBest, setHoursBest] = useState(0);
   const [hoursMost, setHoursMost] = useState(0);
@@ -30,7 +39,7 @@ function AddTaskModal(props) {
   const [hoursEstimate, setHoursEstimate] = useState(0);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
-  const [category, setCategory] = useState('Housing');
+  const [category, setCategory] = useState(defaultCategory);
   const [whyInfo, setWhyInfo] = useState('');
   const [intentInfo, setIntentInfo] = useState('');
   const [startedDate, setStartedDate] = useState('');
@@ -44,11 +53,12 @@ function AddTaskModal(props) {
   const priorityRef = useRef(null);
 
   const categoryOptions = [
+    { value: 'Unspecified', label: 'Unspecified' },
     { value: 'Housing', label: 'Housing' },
     { value: 'Food', label: 'Food' },
     { value: 'Energy', label: 'Energy' },
     { value: 'Education', label: 'Education' },
-    { value: 'Soceity', label: 'Soceity' },
+    { value: 'Society', label: 'Society' },
     { value: 'Economics', label: 'Economics' },
     { value: 'Stewardship', label: 'Stewardship' },
     { value: 'Other', label: 'Other' },
@@ -94,22 +104,22 @@ function AddTaskModal(props) {
   };
 
   const removeResource = userID => {
-    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
-    setResourceItems([
-      ...resourceItems.slice(0, removeIndex),
-      ...resourceItems.slice(removeIndex + 1),
-    ]);
+    const newResource = resourceItems.filter(item => item.userID !== userID);
+    setResourceItems(newResource);
+    if (!newResource.length) setAssigned(false);
   };
 
   const addResources = (userID, first, last, profilePic) => {
-    setResourceItems([
+    const newResource = [
       {
         userID,
         name: `${first} ${last}`,
         profilePic,
       },
       ...resourceItems,
-    ]);
+    ]
+    setResourceItems(newResource);
+    setAssigned(true);
   };
 
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
@@ -185,7 +195,7 @@ function AddTaskModal(props) {
     setWhyInfo('');
     setIntentInfo('');
     setEndstateInfo('');
-    setCategory('');
+    setCategory(defaultCategory);
   };
 
   const paste = () => {
@@ -241,24 +251,13 @@ function AddTaskModal(props) {
       endstateInfo,
     };
     await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
+    props.load();
     toggle();
   };
 
   /*
   * -------------------------------- useEffects -------------------------------- 
   */
-  useEffect(() => {
-    if (props.level >= 1) {
-      const categoryMother = tasks.find(({ _id }) => _id === props.taskId).category;
-      if (categoryMother) {
-        setCategory(categoryMother);
-      }
-    } else {
-      const res = allProjects.projects.filter(({ _id }) => _id === props.projectId)[0];
-      setCategory(res.category);
-    }
-  }, [props.level]);
-
   useEffect(() => {
     setNewTaskNum(getNewNum());
   }, [modal]);
@@ -359,7 +358,7 @@ function AddTaskModal(props) {
                         name="Assigned"
                         value={true}
                         checked={assigned}
-                        onChange={(e) => setAssigned(e.target.value)}
+                        onChange={() => setAssigned(true)}
                       />
                       <label className="form-check-label" htmlFor="true">
                         Yes
@@ -373,7 +372,7 @@ function AddTaskModal(props) {
                         name="Assigned"
                         value={false}
                         checked={!assigned}
-                        onChange={(e) => setAssigned(e.target.value)}
+                        onChange={() => setAssigned(false)}
                       />
                       <label className="form-check-label" htmlFor="false">
                         No

@@ -44,8 +44,14 @@ import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+const DATE_PICKER_MIN_DATE = '01/01/2010';
+const nextDay = new Date();
+nextDay.setDate(nextDay.getDate()+1);
+
 class AddUserProfile extends Component {
   constructor(props) {
     super(props);
@@ -71,6 +77,7 @@ class AddUserProfile extends Component {
         location: '',
         showphone: true,
         weeklySummaryOption: 'Required',
+        createdDate: nextDay,
       },
       formValid: {},
       formErrors: {
@@ -83,6 +90,8 @@ class AddUserProfile extends Component {
       timeZoneFilter: '',
       formSubmitted: false,
     };
+
+    this.canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
   }
 
   popupClose = () => {
@@ -101,6 +110,7 @@ class AddUserProfile extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
+
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -254,12 +264,7 @@ class AddUserProfile extends Component {
                           if (roleName === 'Owner') return;
                           return <option value={roleName}>{roleName}</option>;
                         })}
-                        {hasPermission(
-                          this.props.auth.user.role,
-                          'addDeleteEditOwners',
-                          this.props.role.roles,
-                          this.props.auth.user?.permissions?.frontPermissions,
-                        ) && <option value="Owner">Owner</option>}
+                        {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>
@@ -360,6 +365,26 @@ class AddUserProfile extends Component {
                         selected={'America/Los_Angeles'}
                         id="timeZone"
                       />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label>Start Date</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                    <div className="date-picker-item">                        
+                      <DatePicker
+                        selected={this.state.userProfile.createdDate}
+                        minDate={new Date(DATE_PICKER_MIN_DATE)}
+                        onChange={date => this.setState({ userProfile: {
+                          ...this.state.userProfile,
+                          createdDate: date,
+                        }})}
+                        className="form-control"
+                      />
+                      </div>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -539,10 +564,11 @@ class AddUserProfile extends Component {
       timeZone,
       location,
       weeklySummaryOption,
+      createdDate,
     } = that.state.userProfile;
 
     const userData = {
-      password: '123Welcome!',
+      password: process.env.REACT_APP_DEF_PWD,
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -561,6 +587,7 @@ class AddUserProfile extends Component {
       timeZone: timeZone,
       location: location,
       allowsDuplicateName: allowsDuplicateName,
+      createdDate: createdDate,
     };
 
     this.setState({ formSubmitted: true });
@@ -922,4 +949,5 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
   fetchAllProjects,
+  hasPermission,
 })(AddUserProfile);

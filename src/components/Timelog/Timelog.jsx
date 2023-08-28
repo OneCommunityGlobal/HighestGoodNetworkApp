@@ -45,6 +45,7 @@ import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
+import { formattedDate } from 'utils/formattedDate';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -58,6 +59,7 @@ const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   }
   return false;
 };
+
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -77,6 +79,9 @@ function useDeepEffect(effectFunc, deps) {
 
 const Timelog = props => {
   //Main Function component
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canEditTimeEntry = props.hasPermission('editTimeEntry');
+  const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   //access the store states
   const auth = useSelector(state => state.auth);
@@ -209,7 +214,15 @@ const Timelog = props => {
       .subtract(offset, 'weeks')
       .format('YYYY-MM-DD');
   };
-
+  // added to have dedicated display date variable due to errors in backend
+  // from changing format of startOfWeek
+  const startOfWeekDisplayDate = offset => {
+    return moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(offset, 'weeks')
+      .format('MMM-DD-YY');
+  };
   // endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
   // For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
   const endOfWeek = offset => {
@@ -218,6 +231,15 @@ const Timelog = props => {
       .endOf('week')
       .subtract(offset, 'weeks')
       .format('YYYY-MM-DD');
+  };
+  // added to have dedicated display date variable due to errors in backend
+  // from changing format of endOfWeek
+  const endOfWeekDisplayDate = offset => {
+    return moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(offset, 'weeks')
+      .format('MMM-DD-YY');
   };
 
   const calculateTotalTime = (data, isTangible) => {
@@ -241,14 +263,14 @@ const Timelog = props => {
     } else if (state.activeTab === 4) {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{state.fromDate}</b> to <b>{state.toDate}</b>
+          Viewing time Entries from <b>{formattedDate(state.fromDate)}</b> to <b>{formattedDate(state.toDate)}</b>
         </p>
       );
     } else {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{startOfWeek(state.activeTab - 1)}</b> to{' '}
-          <b>{endOfWeek(state.activeTab - 1)}</b>
+          Viewing time Entries from <b>{startOfWeekDisplayDate(state.activeTab - 1)}</b> to{' '}
+          <b>{endOfWeekDisplayDate(state.activeTab - 1)}</b>
         </p>
       );
     }
@@ -319,14 +341,7 @@ const Timelog = props => {
   const [userId, setUserId] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [data, setData] = useState({
-    disabled: !hasPermission(
-      auth.user.role,
-      'disabledDataTimelog',
-      role.roles,
-      auth.user?.permissions?.frontPermissions,
-    )
-      ? false
-      : true,
+    disabled: !props.hasPermission('disabledDataTimelog') ? false : true,
     isTangible: false,
   });
   const initialState = {
@@ -409,7 +424,6 @@ const Timelog = props => {
     });
   }, [state.projectsSelected]);
 
-  const userPermissions = auth.user?.permissions?.frontPermissions;
   const isOwner = auth.user.userid === userId;
   const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
 
@@ -538,12 +552,7 @@ const Timelog = props => {
                           </div>
                         </div>
                       ) : (
-                        hasPermission(
-                          auth.user.role,
-                          'addTimeEntryOthers',
-                          role.roles,
-                          userPermissions,
-                        ) && (
+                        canPutUserProfileImportantInfo && (
                           <div className="float-right">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
@@ -560,6 +569,11 @@ const Timelog = props => {
                           <Button onClick={openInfo} color="primary" style={boxStyle}>
                             Close
                           </Button>
+                          {canEditTimeEntry ? (
+                            <Button onClick={openInfo} color="secondary">
+                              Edit
+                            </Button>
+                          ) : null}
                         </ModalFooter>
                       </Modal>
                       <TimeEntryForm
@@ -765,4 +779,5 @@ export default connect(mapStateToProps, {
   getUserTask,
   updateUserProfile,
   getAllRoles,
+  hasPermission,
 })(Timelog);

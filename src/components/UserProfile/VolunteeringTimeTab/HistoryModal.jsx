@@ -7,7 +7,7 @@ const HistoryModal = ({ isOpen, toggle, userName, userHistory }) => {
       <Modal isOpen={isOpen} toggle={toggle}>
         <ModalHeader toggle={toggle}>Past Promised Hours</ModalHeader>
         <ModalBody>
-          {userHistory.length <= 1 ? (
+          {!userHistory || userHistory?.length <= 1 ? (
             <p>{userName} has never made any changes to the promised hours.</p>
           ) : (
             <Table striped>
@@ -18,14 +18,16 @@ const HistoryModal = ({ isOpen, toggle, userName, userHistory }) => {
                 </tr>
               </thead>
               <tbody>
-                {[...userHistory].reverse().map(item => (
-                  <tr key={item._id}>
-                    <td style={{ textAlign: 'center' }}>{item.hours}</td>
-                    <td style={{ textAlign: 'center' }}>
-                      {new Date(item.dateChanged).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
+                {userHistory?.length
+                  ? [...userHistory].reverse().map(item => (
+                      <tr key={item._id}>
+                        <td style={{ textAlign: 'center' }}>{item.hours}</td>
+                        <td style={{ textAlign: 'center' }}>
+                          {new Date(item.dateChanged).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))
+                  : null}
               </tbody>
             </Table>
           )}

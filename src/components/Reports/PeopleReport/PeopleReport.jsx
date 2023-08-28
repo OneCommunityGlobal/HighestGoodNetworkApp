@@ -18,6 +18,7 @@ import Collapse from 'react-bootstrap/Collapse';
 import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
+import BadgeSummaryViz from '../BadgeSummaryViz';
 import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
@@ -25,6 +26,7 @@ import { PeopleTasksPieChart } from './components';
 import { toast } from 'react-toastify';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
+import { formattedDate } from 'utils/formattedDate';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -493,12 +495,12 @@ class PeopleReport extends Component {
 
         <div className="stats">
           <div>
-            <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
+            <h4>{moment(userProfile.createdDate).format('MMM-DD-YY')}</h4>
             <p>Start Date</p>
           </div>
           <div>
             <h4>
-              {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
+              {userProfile.endDate ? formattedDate(userProfile.endDate) : 'N/A'}
             </h4>
             <p>End Date</p>
           </div>
@@ -610,6 +612,9 @@ class PeopleReport extends Component {
               </div>
               <div className="visualizationDiv">
                 <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+              </div>
+              <div className='visualizationDiv'>
+                <BadgeSummaryViz badges={userProfile.badgeCollection} />
               </div>
             </table>
           </div>

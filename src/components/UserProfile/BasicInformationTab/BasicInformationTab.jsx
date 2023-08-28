@@ -3,7 +3,7 @@ import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactst
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
 import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+// import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
@@ -12,16 +12,16 @@ import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
-
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
   const { firstName, lastName } = userProfile;
-
   if (canEdit) {
     return (
       <>
-        <Col md="3">
+        <Col md="3" >
           <FormGroup>
             <Input
               type="text"
@@ -77,7 +77,7 @@ const Title = props => {
   if (canEdit) {
     return (
       <>
-        <Col>
+        <Col md="6">
           <FormGroup>
             <Input
               type="text"
@@ -112,7 +112,7 @@ const Email = props => {
   if (canEdit) {
     return (
       <>
-        <Col>
+        <Col md="6">
           <FormGroup>
             <ToggleSwitch
               switchType="email"
@@ -185,7 +185,7 @@ const Phone = props => {
   if (canEdit) {
     return (
       <>
-        <Col>
+        <Col md="6">
           <FormGroup>
             <ToggleSwitch
               switchType="phone"
@@ -193,6 +193,7 @@ const Phone = props => {
               handleUserProfile={handleUserProfile}
             />
             <PhoneInput
+              inputClass='phone-input-style'
               country={'us'}
               value={phoneNumber}
               onChange={phoneNumber => {
@@ -242,7 +243,7 @@ const TimeZoneDifference = props => {
   if (!isUserSelf) {
     return (
       <>
-        <Col>
+        <Col md="7">
           <p>{signedOffset} hours</p>
         </Col>
       </>
@@ -251,7 +252,7 @@ const TimeZoneDifference = props => {
 
   return (
     <>
-      <Col>
+      <Col md="7">
         <p>This is your own profile page</p>
       </Col>
     </>
@@ -266,17 +267,21 @@ const BasicInformationTab = props => {
     handleUserProfile,
     formValid,
     setFormValid,
-    role,
     canEdit,
     canEditRole,
     roles,
-    userPermissions,
+    role,
     loadUserProfile,
   } = props;
+
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [location, setLocation] = useState('');
+  let topMargin = "6px";
+  if(isUserSelf){
+    topMargin = "0px";
+  }
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
-
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const onClickGetTimeZone = () => {
     if (!location) {
       alert('Please enter valid location');
@@ -326,6 +331,7 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
@@ -349,6 +355,7 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
@@ -373,6 +380,7 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
@@ -396,12 +404,13 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
             <Label>Video Call Preference</Label>
           </Col>
-          <Col>
+          <Col md="6">
             {canEdit ? (
               <FormGroup disabled={!canEdit}>
                 <Input
@@ -419,12 +428,13 @@ const BasicInformationTab = props => {
               `${userProfile.collaborationPreference}`
             )}
           </Col>
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
             <Label>Role</Label>
           </Col>
-          <Col>
+          <Col md="6">
             {canEditRole && !isUserSelf ? (
               <FormGroup>
                 <select
@@ -448,24 +458,37 @@ const BasicInformationTab = props => {
                       </option>
                     );
                   })}
-                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                    <option value="Owner">Owner</option>
+                  {canAddDeleteEditOwners && (
+                    <option value="Owner" style={{marginLeft:"5px"}}>Owner</option>
                   )}
                 </select>
               </FormGroup>
             ) : (
               `${userProfile.role}`
             )}
-          </Col>
+            </Col>  
+            {(
+              
+              <Col md="1">
+                <div style={{marginTop:topMargin}}>
+                  <EditableInfoModal
+                  role={role}
+                  areaName={'roleInfo'}
+                  fontSize={30}
+                  />
+                </div>
+              </Col>
+             )}  
+             
         </Row>
         {canEdit && (
           <Row>
-            <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
+            <Col md={{ size: 5, offset: 0}} >
               <Label>Location</Label>
             </Col>
-            <Col md="6">
-              <Row>
-                <Col md="6">
+            <Col>
+              <Row className='ml-0'>
+                <Col className='p-0' style={{marginRight:"10px"}}>
                   <Input
                     onChange={e => {
                       setLocation(e.target.value);
@@ -474,28 +497,28 @@ const BasicInformationTab = props => {
                     value={userProfile.location}
                   />
                 </Col>
-                <Col md="6">
-                  <div className="w-100 pt-1 mb-2 mx-auto">
-                    <Button
-                      color="secondary"
-                      block
-                      size="sm"
-                      onClick={onClickGetTimeZone}
-                      style={boxStyle}
-                    >
-                      Get Time Zone
-                    </Button>
-                  </div>
+                <Col className='p-0'>
+                  <Button
+                    color="secondary"
+                    block
+                    onClick={onClickGetTimeZone}
+                    style={boxStyle}
+                    className='px-0'
+                  >
+                    Get Time Zone
+                  </Button>
                 </Col>
+                
               </Row>
             </Col>
+            <Col md="1"></Col>
           </Row>
         )}
-        <Row style={{ marginBottom: '10px' }}>
+        <Row style={{ marginTop:'15px', marginBottom: '10px'}}>
           <Col>
             <Label>Time Zone</Label>
           </Col>
-          <Col>
+          <Col md="6">
             {!canEdit && <p>{userProfile.timeZone}</p>}
             {canEdit && (
               <TimeZoneDropDown
@@ -507,9 +530,10 @@ const BasicInformationTab = props => {
               />
             )}
           </Col>
+          <Col md="1"></Col>
         </Row>
         <Row>
-          <Col>
+          <Col md="5">
             <label>Difference in this Time Zone from Your Local</label>
           </Col>
           <TimeZoneDifference
@@ -529,7 +553,7 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                ? 'Paused until ' + moment(userProfile.reactivationDate).format('MMM-DD-YY')
                 : 'Inactive'}
             </Label>
             &nbsp;
@@ -547,7 +571,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>
               {userProfile.endDate
-                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+                ? 'End Date ' + moment(userProfile.endDate).format('MMM-DD-YY')
                 : 'End Date ' + 'N/A'}
             </Label>
           </Col>
@@ -701,9 +725,7 @@ const BasicInformationTab = props => {
                     if (roleName === 'Owner') return;
                     return <option key={roleName} value={roleName}>{roleName}</option>;
                   })}
-                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                    <option value="Owner">Owner</option>
-                  )}
+                  {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>
               </FormGroup>
             ) : (
@@ -725,7 +747,6 @@ const BasicInformationTab = props => {
                   setUserProfile({ ...userProfile, location: e.target.value });
                 }}
                 value={userProfile.location}
-                style={{ marginBottom: '10px' }}
               />
 
               <div>
@@ -736,7 +757,7 @@ const BasicInformationTab = props => {
             </Col>
           </Col>
         )}
-        <Col className="cols">
+        <Col>
           <Col>
             <Label>Time Zone</Label>
           </Col>
@@ -774,7 +795,7 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('MMM-DD-YY')
                   : 'Inactive'}
               </Label>
               &nbsp;
@@ -784,7 +805,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>
               {userProfile.endDate
-                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+                ? 'End Date ' + moment(userProfile.endDate).format('MMM-DD-YY')
                 : 'End Date ' + 'N/A'}
             </Label>
             {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
@@ -794,4 +815,4 @@ const BasicInformationTab = props => {
     </div>
   );
 };
-export default BasicInformationTab;
+export default connect(null, { hasPermission })(BasicInformationTab);

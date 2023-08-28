@@ -19,10 +19,10 @@ import './members.css';
 import hasPermission from '../../../utils/permissions';
 
 const Members = props => {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   const projectId = props.match.params.projectId;
-  const { roles } = props.state.role;
+
+  const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
 
   useEffect(() => {
     props.fetchAllMembers(projectId);
@@ -49,7 +49,7 @@ const Members = props => {
             <div id="member_project__name">PROJECTS {props.projectId}</div>
           </ol>
         </nav>
-        {hasPermission(role, 'findUserInProject', roles, userPermissions) ? (
+        {canGetProjectMembers ? (
           <div className="input-group" id="new_project">
             <div className="input-group-prepend">
               <span className="input-group-text">Find user</span>
@@ -86,7 +86,7 @@ const Members = props => {
                 </th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
-                {hasPermission(role, 'assignUserInProject', roles, userPermissions) ? (
+                {canAssignProjectToUsers ? (
                   <th scope="col">
                     Assign
                     <button
@@ -124,9 +124,7 @@ const Members = props => {
                 #
               </th>
               <th scope="col" id="members__name"></th>
-              {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
-                <th scope="col" id="members__name"></th>
-              ) : null}
+              {canAssignProjectToUsers ? <th scope="col" id="members__name"></th> : null}
             </tr>
           </thead>
           <tbody>
@@ -154,4 +152,5 @@ export default connect(mapStateToProps, {
   findUserProfiles,
   getAllUserProfiles,
   assignProject,
+  hasPermission,
 })(Members);

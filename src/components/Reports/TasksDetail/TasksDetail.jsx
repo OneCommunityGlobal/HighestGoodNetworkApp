@@ -58,7 +58,7 @@ export const TasksDetail = props => {
     <div key={task._id} className="tasks-detail-table-row">
       <div>
         <EditTaskModal
-          key={`editTask_${task._id}`}
+          key={`updateTask_${task._id}`}
           parentNum={task.num}
           taskId={task._id}
           wbsId={task.wbsId}

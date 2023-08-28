@@ -32,6 +32,7 @@ import LinkModButton from './LinkModButton';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import hasPermission from '../../../utils/permissions';
+import { connect } from 'react-redux';
 
 const styleProfile = {};
 class UserProfileEdit extends Component {
@@ -517,7 +518,8 @@ class UserProfileEdit extends Component {
       ? this.props.match.params
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
-    const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
+    const canPutUserProfile = this.props.hasPermission('putUserProfile');
+    const canAddDeleteEditOwners = this.props.hasPermission('addDeleteEditOwners');
 
     const {
       userProfile,
@@ -574,17 +576,9 @@ class UserProfileEdit extends Component {
     const isUserSelf = targetUserId === requestorId;
     let canEditFields;
     if (userProfile.role !== 'Owner') {
-      canEditFields =
-        hasPermission(requestorRole, 'editUserProfile', this.props.role.roles, userPermissions) ||
-        isUserSelf;
+      canEditFields = canPutUserProfile || isUserSelf;
     } else {
-      canEditFields =
-        hasPermission(
-          requestorRole,
-          'addDeleteEditOwners',
-          this.props.role.roles,
-          userPermissions,
-        ) || isUserSelf;
+      canEditFields = canAddDeleteEditOwners || isUserSelf;
     }
 
     const weeklyHoursReducer = (acc, val) =>
@@ -628,9 +622,6 @@ class UserProfileEdit extends Component {
             id={id}
             handleLinkModel={this.handleLinkModel}
             handleSubmit={this.handleSubmit}
-            role={requestorRole}
-            roles={this.props.role.roles}
-            userPermissions={userPermissions}
           />
         )}
 
@@ -705,8 +696,6 @@ class UserProfileEdit extends Component {
                   <BlueSquare
                     blueSquares={infringements}
                     handleBlueSquare={this.handleBlueSquare}
-                    role={requestorRole}
-                    roles={this.props.role.roles}
                   />
                 </div>
               </Col>
@@ -915,7 +904,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.weeklyCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
-                          invalid={/*!hasPermission(requestorRole, 'editUserProfile')*/ true}
+                          invalid={/*!canPutUserProfile*/ true}
                         />
                       </Col>
                     </Row>
@@ -932,14 +921,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.totalCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="totalCommittedHours"
-                          invalid={
-                            !hasPermission(
-                              requestorRole,
-                              'editUserProfile',
-                              this.props.role.roles,
-                              userPermissions,
-                            )
-                          }
+                          invalid={!canPutUserProfile}
                         />
                       </Col>
                     </Row>
@@ -997,4 +979,4 @@ class UserProfileEdit extends Component {
   }
 }
 
-export default UserProfileEdit;
+export default connect(null, { hasPermission })(UserProfileEdit);

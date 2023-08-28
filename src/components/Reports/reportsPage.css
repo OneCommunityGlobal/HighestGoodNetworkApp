@@ -104,6 +104,18 @@
   margin: 8px 0;
 }
 
+.total-report-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.total-report-item {
+  display: flex;
+  flex-direction: row;
+  margin: 0px 25px 0px 0px;
+}
+
 @media screen and (max-width: 1350px) {
   .container-component-wrapper {
     padding: 16px;
