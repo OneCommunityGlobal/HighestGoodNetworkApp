@@ -553,7 +553,7 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                ? 'Paused until ' + moment(userProfile.reactivationDate).format('MMM-DD-YY')
                 : 'Inactive'}
             </Label>
             &nbsp;
@@ -571,7 +571,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>
               {userProfile.endDate
-                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+                ? 'End Date ' + moment(userProfile.endDate).format('MMM-DD-YY')
                 : 'End Date ' + 'N/A'}
             </Label>
           </Col>
@@ -795,7 +795,7 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('MMM-DD-YY')
                   : 'Inactive'}
               </Label>
               &nbsp;
@@ -805,7 +805,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>
               {userProfile.endDate
-                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+                ? 'End Date ' + moment(userProfile.endDate).format('MMM-DD-YY')
                 : 'End Date ' + 'N/A'}
             </Label>
             {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
