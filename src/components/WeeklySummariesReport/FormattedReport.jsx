@@ -288,62 +288,63 @@ const FormattedReport = ({
             style={{ padding: '20px 0', marginTop: '5px', borderBottom: '1px solid #DEE2E6' }}
             key={'summary-' + index}
           >
-            <Row>
-              <Col>
-                <div style={{ display: 'flex' }}>
-                  <b>Name: </b>
-                  <Link 
-                    style={{ marginLeft: '5px' }}
-                    to={`/userProfile/${summary._id}`}
-                    title="View Profile"
+            <div style={{ display: 'flex' }}>
+              <b>Name: </b>
+              <Link 
+                style={{ marginLeft: '5px' }}
+                to={`/userProfile/${summary._id}`}
+                title="View Profile"
+              >
+                {summary.firstName} {summary.lastName}
+              </Link>
+              <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+                <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
+              </span>
+              <span>
+                <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+              </span>
+              <div>
+                {(summary.role !== 'Volunteer') && (
+                  <RoleInfoModal
+                    info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} 
+                  />
+                )}
+              </div>
+              {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+                <i
+                  className="fa fa-star"
+                  title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
+                  style={{
+                    color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+                    fontSize: '55px',
+                    marginLeft: '10px',
+                    verticalAlign: 'middle',
+                    position: 'relative',
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      fontSize: '10px',
+                    }}
                   >
-                    {summary.firstName} {summary.lastName}
-                  </Link>
-
-                  <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-                    <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
+                    +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
                   </span>
-                  <span>
-                    <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
-                  </span>
-                  <div>
-                    {(summary.role !== 'Volunteer') && (
-                      <RoleInfoModal
-                        info={allRoleInfo.find(item => item.infoName === `${summary.role}`+'Info')} 
-                      />
-                    )}
-                  </div>
-                  {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
-                    <i
-                      className="fa fa-star"
-                      title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
-                      style={{
-                        color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
-                        fontSize: '55px',
-                        marginLeft: '10px',
-                        verticalAlign: 'middle',
-                        position: 'relative',
-                      }}
-                    >
-                      <span
-                        style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          color: 'white',
-                          fontWeight: 'bold',
-                          fontSize: '10px',
-                        }}
-                      >
-                        +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
-                      </span>
-                    </i>
-                  )}
-                </div>
-              </Col>
-              <Col sm="3" xs="3" style={{padding: "0px"}}>
-                {canEditTeamCode ? (
+                </i>
+              )}
+            </div>
+            <div className='total-valid-wrapper'>
+              <div>
+                {' '}
+                <b>Media URL:</b>
+              </div>
+              {canEditTeamCode ?
+                <div style={{width: '85px', paddingLeft: "5px"}}>
                   <Input
                     type="text"
                     name="teamCode"
@@ -355,16 +356,17 @@ const FormattedReport = ({
                         handleProfileChange(summary._id, e.target.value, "teamCode");
                       }
                     }}
-                    placeholder="format: A-AAA"
+                    placeholder="X-XXX"
                   />
-                ) : (
-                  `${summary.teamCode == ''? "No assigned team code": summary.teamCode}`
-                )}
-              </Col>
-            </Row>
-            <div>
-              {' '}
-              <b>Media URL:</b> {getMediaUrlLink(summary)}
+                </div>
+               : 
+                <div style={{paddingLeft: "5px"}}>
+                  {summary.teamCode == ''? "No assigned team code!": summary.teamCode}
+                </div>
+              }
+              <div style={{paddingLeft: "5px"}}>
+                {getMediaUrlLink(summary)}
+              </div>
             </div>
             <BioFunction 
               key={`bio_${summary.id}_${summary.bioPosted}`}
