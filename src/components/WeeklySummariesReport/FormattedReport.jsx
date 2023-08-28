@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
@@ -8,7 +8,6 @@ import google_doc_icon from './google_doc_icon.png';
 import google_doc_icon_gray from './google_doc_icon_gray.png';
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
-import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
@@ -20,9 +19,10 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
+  Row,
+  Col,
 } from 'reactstrap';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
-import { Row, Input, Col } from 'reactstrap';
 import BioFunction from './BioFunction';
 import TotalValidSummaries from './TotalValidSummaries';
 
