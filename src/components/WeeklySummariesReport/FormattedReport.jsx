@@ -20,9 +20,10 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
+  ListGroup,
+  ListGroupItem as LGI
 } from 'reactstrap';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
-import { Input, ListGroup, ListGroupItem as LGI } from 'reactstrap';
 import useIsInViewPort from 'utils/useIsInViewPort';
 
 const textColors = {
