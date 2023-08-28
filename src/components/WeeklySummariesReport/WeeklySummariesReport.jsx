@@ -10,6 +10,7 @@ import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
+import { fetchAllBadges } from '../../actions/badgeManagement';
 import { getInfoCollections } from '../../actions/information';
 
 const navItems = [
@@ -38,6 +39,8 @@ export class WeeklySummariesReport extends Component {
   async componentDidMount() {
     // 1. fetch report
     await this.props.getWeeklySummariesReport();
+    await this.props.fetchAllBadges();
+
     this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
@@ -64,6 +67,7 @@ export class WeeklySummariesReport extends Component {
         sessionStorage.getItem('tabSelection') === null
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
+      badges: this.props.allBadgeData,
     });
     await this.props.getInfoCollections();
     const { infoCollections} = this.props;
@@ -101,7 +105,7 @@ export class WeeklySummariesReport extends Component {
   };
 
     /**
-   * Get the roleNames 
+   * Get the roleNames
    * @param {*} summaries
    * @returns
    */
@@ -172,7 +176,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab } = this.state;
+    const { error, loading, summaries, activeTab, badges } = this.state;
 
     if (error) {
       return (
@@ -257,6 +261,7 @@ export class WeeklySummariesReport extends Component {
 WeeklySummariesReport.propTypes = {
   error: PropTypes.any,
   getWeeklySummariesReport: PropTypes.func.isRequired,
+  fetchAllBadges: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   getInfoCollections: PropTypes.func.isRequired,
@@ -267,6 +272,7 @@ const mapStateToProps = state => ({
   error: state.weeklySummariesReport.error,
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
+  allBadgeData: state.badge.allBadgeData,
   infoCollections:state.infoCollections.infos,
 });
 

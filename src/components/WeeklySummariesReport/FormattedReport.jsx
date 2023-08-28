@@ -12,6 +12,15 @@ import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import {
+  Input,
+  Card,
+  CardTitle,
+  CardBody,
+  CardImg,
+  CardText,
+  UncontrolledPopover,
+} from 'reactstrap';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import { Input, ListGroup, ListGroupItem as LGI } from 'reactstrap';
 import useIsInViewPort from 'utils/useIsInViewPort';
@@ -338,6 +347,76 @@ const Index = ({summary, weekIndex, allRoleInfo}) => {
   const googleDocIcon = googleDocLink && googleDocLink.Link.trim() !== ''
     ? google_doc_icon
     : google_doc_icon_gray;
+
+  const getWeeklyBadge = summary => {
+    const badgeEndDate = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .format('YYYY-MM-DD');
+    const badgeStartDate = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(weekIndex, 'week')
+      .format('YYYY-MM-DD');
+    let badgeIdThisWeek = [];
+    let badgeThisWeek = [];
+    summary.badgeCollection.map(badge => {
+      if (badge.earnedDate) {
+        if (badge.earnedDate[0] <= badgeEndDate && badge.earnedDate[0] >= badgeStartDate) {
+          badgeIdThisWeek.push(badge.badge);
+        }
+      } else {
+        const modifiedDate = badge.lastModified.substring(0, 10);
+        if (modifiedDate <= badgeEndDate && modifiedDate >= badgeStartDate) {
+          badgeIdThisWeek.push(badge.badge);
+        }
+      }
+    });
+    if (badgeIdThisWeek.length > 0) {
+      badgeIdThisWeek.forEach(badgeId => {
+        const badge = badges.filter(badge => badge._id === badgeId)[0];
+        badgeThisWeek.push(badge);
+      });
+    }
+    return (
+      <table>
+        <tbody>
+          <tr className="badge-tr" key={weekIndex + 'badge_' + summary._id}>
+            {badgeThisWeek.length > 0
+              ? badgeThisWeek.map(
+                  (value, index) =>
+                    value?.showReport && (
+                      <td className="badge-td" key={weekIndex + '_' + summary._id + '_' + index}>
+                        {' '}
+                        <img src={value.imageUrl} id={'popover_' + value._id} />
+                        <UncontrolledPopover trigger="hover" target={'popover_' + value._id}>
+                          <Card className="text-center">
+                            <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                            <CardBody>
+                              <CardTitle
+                                style={{
+                                  fontWeight: 'bold',
+                                  fontSize: 18,
+                                  color: '#285739',
+                                  marginBottom: 15,
+                                }}
+                              >
+                                {value?.badgeName}
+                              </CardTitle>
+                              <CardText>{value?.description}</CardText>
+                            </CardBody>
+                          </Card>
+                        </UncontrolledPopover>
+                      </td>
+                    ),
+                )
+              : null}
+          </tr>
+        </tbody>
+      </table>
+    );
+  };
 
   return (
     <>

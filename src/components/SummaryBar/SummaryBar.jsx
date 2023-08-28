@@ -294,10 +294,10 @@ const SummaryBar = props => {
               {totalEffort >= weeklyCommittedHours && (
                 <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black" >
+                  <p className="text-center large_text_summary text--black" >
                     ✓
                   </p>
-                  <font size="3">HOURS</font>
+                  <font className="text-center" size="3">HOURS</font>
                   <div className="py-2"> </div>
                 </div>
               )}
@@ -350,10 +350,10 @@ const SummaryBar = props => {
               ) : (
                 <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black" >
+                  <p className="text-center large_text_summary text--black" >
                     ✓
                   </p>
-                  <font className="text--black" size="3">
+                  <font className="text-center text--black" size="3">
                     SUMMARY
                   </font>
                   <div className="py-2"> </div>
