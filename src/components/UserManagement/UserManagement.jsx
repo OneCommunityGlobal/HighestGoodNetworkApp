@@ -326,8 +326,8 @@ class UserManagement extends React.PureComponent {
    * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
    */
   onActiveInactiveClick = user => {
-    const authRole = this.props.state.auth.user.role;
-    const canChangeUserStatus = props.hasPermission('changeUserStatus');
+    const authRole = this?.props?.state?.auth?.user.role||user.role
+    const canChangeUserStatus = hasPermission('changeUserStatus');
     if (!canChangeUserStatus) {
       //permission to change the status of any user on the user profile page or User Management Page.
       //By default only Admin and Owner can access the user management page and they have this permission.
