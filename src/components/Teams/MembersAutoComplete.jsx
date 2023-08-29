@@ -35,8 +35,9 @@ const MemberAutoComplete = props => {
           {props.userProfileData.userProfiles
             .filter(user => {
               if (
-                user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
-                user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1
+                user.isActive &&
+                (user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
+                user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1)
               ) {
                 return user;
               }
@@ -45,7 +46,6 @@ const MemberAutoComplete = props => {
             .map(item => (
               <div
                 className="user-auto-cpmplete"
-                key={item._id}
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);
