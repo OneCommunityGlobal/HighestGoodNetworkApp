@@ -31,7 +31,6 @@ import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
 import './BadgeReport.css';
 import { boxStyle } from 'styles';
-import { formattedDate } from 'utils/formattedDate';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -339,9 +338,9 @@ const BadgeReport = props => {
                       </Card>
                     </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
-                    <td id='badge_date_desktop'>
+                    <td>
                       {typeof value.lastModified == 'string'
-                        ? formattedDate(value.lastModified)
+                        ? value.lastModified.substring(0, 10)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
                     <td>
@@ -352,7 +351,7 @@ const BadgeReport = props => {
                         </DropdownToggle>
                         <DropdownMenu>
                           {value.earnedDate.map(date => {
-                            return <DropdownItem>{formattedDate(date)}</DropdownItem>;
+                            return <DropdownItem>{date}</DropdownItem>;
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
@@ -485,9 +484,9 @@ const BadgeReport = props => {
                       </Card>
                     </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
-                    <td id='badge_date_tablet'>
+                    <td>
                       {typeof value.lastModified == 'string'
-                        ? formattedDate(value.lastModified)
+                        ? value.lastModified.substring(0, 10)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
 
