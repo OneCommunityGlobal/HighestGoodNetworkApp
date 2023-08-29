@@ -335,7 +335,7 @@ export class WeeklySummary extends Component {
     const options = { abortEarly: false };
     const { formElements } = this.state;
     const result = Joi.validate(formElements, this.schema, options);
-    return result?.error.details.reduce((pre, cur) => {
+    return result?.error?.details.reduce((pre, cur) => {
       // eslint-disable-next-line no-param-reassign
       pre[cur.path[0]] = cur.message;
       return pre;
