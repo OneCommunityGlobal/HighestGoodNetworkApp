@@ -24,11 +24,13 @@ describe('WeeklySummariesReport page', () => {
       const props = {
         hasPermission: hasPermission,
         getWeeklySummariesReport: jest.fn(),
+        fetchAllBadges: jest.fn(),
         error: { message: 'SOME ERROR CONNECTING!!!' },
         loading: false,
         summaries: [],
         authUser: { role: '' },
         roles: [],
+        badges: [],
         getInfoCollections: jest.fn(),
       };
       renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
@@ -42,10 +44,12 @@ describe('WeeklySummariesReport page', () => {
       const props = {
         hasPermission: hasPermission,
         getWeeklySummariesReport: jest.fn(),
+        fetchAllBadges: jest.fn(),
         loading: true,
         summaries: [],
         authUser: { role: '' },
         roles: [],
+        badges: [],
         getInfoCollections: jest.fn(),
       };
       renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
@@ -57,11 +61,13 @@ describe('WeeklySummariesReport page', () => {
     const props = {
       hasPermission: hasPermission,
       getWeeklySummariesReport: jest.fn(),
+      fetchAllBadges: jest.fn(),
       getInfoCollections: jest.fn(),
       loading: false,
       summaries: [],
       authUser: { role: '' },
       roles: [],
+      badges: [],
     };
     beforeEach(() => {
       renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
