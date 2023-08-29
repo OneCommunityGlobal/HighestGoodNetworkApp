@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Alert, Container, Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import classnames from 'classnames';
 import moment from 'moment';
@@ -26,6 +27,9 @@ export class WeeklySummariesReport extends Component {
       summaries: [],
       activeTab: '2',
       badges: [],
+      selectedCodes: [],
+      selectedColors: [],
+      filteredSummaries: [],
     };
 
     this.weekDates = Array(4)
@@ -41,6 +45,7 @@ export class WeeklySummariesReport extends Component {
     this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
+    this.codeEditPermission = this.canPutUserProfileImportantInfo;
 
     const now = moment().tz('America/Los_Angeles')
 
@@ -69,6 +74,33 @@ export class WeeklySummariesReport extends Component {
       return { ...summary, promisedHoursByWeek };
     });
 
+    const teamCodeSet = [...new Set(summariesCopy.filter(
+      function(summary) {
+      if(summary.teamCode == ''){
+        return false;
+      }
+      return true;
+    }).map(s => s.teamCode))];
+    this.teamCodes = [];
+
+    const colorOptionSet = [...new Set(summariesCopy.filter(
+      function(summary) {
+      if(summary.weeklySummaryOption == undefined){
+        return false;
+      }
+      return true;
+    }).map(s => s.weeklySummaryOption))];
+    this.colorOptions = [];
+
+    if(teamCodeSet.length != 0) {
+      teamCodeSet.forEach((code, index) => {
+        this.teamCodes[index] = {value: code, label: code};
+      });
+      colorOptionSet.forEach((option, index) => {
+        this.colorOptions[index] = {value: option, label: option};
+      });
+    }
+
     this.setState({
       error: this.props.error,
       loading: this.props.loading,
@@ -79,6 +111,7 @@ export class WeeklySummariesReport extends Component {
           ? '2'
           : sessionStorage.getItem('tabSelection'),
       badges: this.props.allBadgeData,
+      filteredSummaries: summariesCopy,
     });
     await this.props.getInfoCollections();
     const { infoCollections} = this.props;
@@ -186,8 +219,23 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
+  filterWeeklySummaries = () => {
+    const selectedCodesArray = this.state.selectedCodes.map(e => e.value);
+    const selectedColorsArray = this.state.selectedColors.map(e => e.value);
+    const temp = this.state.summaries.filter(summary => (selectedCodesArray.length == 0 || selectedCodesArray.includes(summary.teamCode)) && (selectedColorsArray.length == 0 || selectedColorsArray.includes(summary.weeklySummaryOption)));
+    this.setState({filteredSummaries: temp});
+  };
+
+  handleSelectCodeChange = event => {
+    this.setState({selectedCodes: event}, () => this.filterWeeklySummaries());
+  };
+
+  handleSelectColorChange = event => {
+    this.setState({selectedColors: event}, () => this.filterWeeklySummaries());
+  };
+
   render() {
-    const { error, loading, summaries, activeTab, badges } = this.state;
+    const { error, loading, summaries, activeTab, badges, selectedCodes, selectedColors, filteredSummaries } = this.state;
 
     if (error) {
       return (
@@ -216,6 +264,22 @@ export class WeeklySummariesReport extends Component {
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
+          </Col>
+        </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 5, offset:1 }} xs={{size: 5, offset: 1}}>
+            Select Team Code 
+            <MultiSelect
+              options={this.teamCodes} 
+              value={selectedCodes} 
+              onChange={(e) => {this.handleSelectCodeChange(e)}}/>
+          </Col>
+          <Col lg={{ size: 5 }} xs={{size: 5}}>
+            Select Color 
+            <MultiSelect 
+              options={this.colorOptions} 
+              value={selectedColors} 
+              onChange={(e) => {this.handleSelectColorChange(e)}}/>
           </Col>
         </Row>
         <Row>
@@ -266,7 +330,7 @@ export class WeeklySummariesReport extends Component {
                   </Col>
                   <Col sm="12" md="4">
                     <GeneratePdfReport
-                      summaries={summaries}
+                      summaries={filteredSummaries}
                       weekIndex={0}
                       weekDates={this.weekDates[0]}
                     />
@@ -274,13 +338,19 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
+                    <b>Total Team Members:</b> {filteredSummaries.length}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
                     <FormattedReport
-                      summaries={summaries}
+                      summaries={filteredSummaries}
                       weekIndex={0}
                       badges={badges}
                       bioCanEdit={this.bioEditPermission}
                       canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
+                      canEditTeamCode={this.codeEditPermission}
                     />
                   </Col>
                 </Row>
@@ -292,7 +362,7 @@ export class WeeklySummariesReport extends Component {
                   </Col>
                   <Col sm="12" md="4">
                     <GeneratePdfReport
-                      summaries={summaries}
+                      summaries={filteredSummaries}
                       weekIndex={1}
                       weekDates={this.weekDates[1]}
                     />
@@ -300,13 +370,19 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
+                    <b>Total Team Members:</b> {filteredSummaries.length}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
                     <FormattedReport
-                      summaries={summaries}
+                      summaries={filteredSummaries}
                       weekIndex={1}
                       badges={badges}
                       bioCanEdit={this.bioEditPermission}
                       canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
+                      canEditTeamCode={this.codeEditPermission}
                     />
                   </Col>
                 </Row>
@@ -318,7 +394,7 @@ export class WeeklySummariesReport extends Component {
                   </Col>
                   <Col sm="12" md="4">
                     <GeneratePdfReport
-                      summaries={summaries}
+                      summaries={filteredSummaries}
                       weekIndex={2}
                       weekDates={this.weekDates[2]}
                     />
@@ -326,13 +402,19 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
+                    <b>Total Team Members:</b> {filteredSummaries.length}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
                     <FormattedReport
-                      summaries={summaries}
+                      summaries={filteredSummaries}
                       weekIndex={2}
                       badges={badges}
                       bioCanEdit={this.bioEditPermission}
                       canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
+                      canEditTeamCode={this.codeEditPermission}
                     />
                   </Col>
                 </Row>
@@ -344,7 +426,7 @@ export class WeeklySummariesReport extends Component {
                   </Col>
                   <Col sm="12" md="4">
                     <GeneratePdfReport
-                      summaries={summaries}
+                      summaries={filteredSummaries}
                       weekIndex={3}
                       weekDates={this.weekDates[3]}
                     />
@@ -352,13 +434,19 @@ export class WeeklySummariesReport extends Component {
                 </Row>
                 <Row>
                   <Col>
+                    <b>Total Team Members:</b> {filteredSummaries.length}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
                     <FormattedReport
-                      summaries={summaries}
+                      summaries={filteredSummaries}
                       weekIndex={3}
                       badges={badges}
                       bioCanEdit={this.bioEditPermission}
                       canEditSummaryCount={this.canEditSummaryCount}
                       allRoleInfo={this.state.allRoleInfo}
+                      canEditTeamCode={this.codeEditPermission}
                     />
                   </Col>
                 </Row>
