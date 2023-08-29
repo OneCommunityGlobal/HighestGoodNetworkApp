@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Alert, Container, Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import './WeeklySummariesReport.css';
+import classnames from 'classnames';
 import moment from 'moment';
 import 'moment-timezone';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -12,13 +13,8 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import { getInfoCollections } from '../../actions/information';
-
-const navItems = [
-  'This Week',
-  'Last Week',
-  'Week Before Last',
-  'Three Weeks Ago'
-]
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 
 export class WeeklySummariesReport extends Component {
   constructor(props) {
@@ -28,7 +24,8 @@ export class WeeklySummariesReport extends Component {
       error: null,
       loading: true,
       summaries: [],
-      activeTab: navItems[1],
+      activeTab: '2',
+      badges: [],
     };
 
     this.weekDates = Array(4)
@@ -44,6 +41,20 @@ export class WeeklySummariesReport extends Component {
     this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
+
+    const now = moment().tz('America/Los_Angeles')
+
+    const summaryPromise = this.props.summaries.map(async summary => {
+      const url = ENDPOINTS.USER_PROFILE(summary._id);
+      const response = await axios.get(url);
+      const startDate = moment(response.data.createdDate).tz('America/Los_Angeles')
+      const diff = now.diff(startDate, "days")
+      summary.daysInTeam = diff
+      const totalHours = Object.values(response.data.hoursByCategory).reduce((prev, curr) => prev + curr, 0);
+      summary.totalTangibleHrs = totalHours
+    })
+
+    await Promise.all(summaryPromise)
 
     // 2. shallow copy and sort
     let summariesCopy = [...this.props.summaries];
@@ -65,7 +76,7 @@ export class WeeklySummariesReport extends Component {
       summaries: summariesCopy,
       activeTab:
         sessionStorage.getItem('tabSelection') === null
-          ? navItems[1]
+          ? '2'
           : sessionStorage.getItem('tabSelection'),
       badges: this.props.allBadgeData,
     });
@@ -76,8 +87,8 @@ export class WeeklySummariesReport extends Component {
     const allRoleInfo = [];
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
-        if(roleInfoNames?.includes(info.infoName)) {
-          let visible = (info.visibility === '0') ||
+        if(roleInfoNames.includes(info.infoName)) {
+          let visible = (info.visibility === '0') || 
           (info.visibility === '1' && (role==='Owner' || role==='Administrator')) ||
           (info.visibility=== '2' && (role !== 'Volunteer'));
           info.CanRead = visible;
@@ -105,7 +116,7 @@ export class WeeklySummariesReport extends Component {
   };
 
     /**
-   * Get the roleNames
+   * Get the roleNames 
    * @param {*} summaries
    * @returns
    */
@@ -210,46 +221,148 @@ export class WeeklySummariesReport extends Component {
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
-              {navItems.map(item => (
-                <NavItem key={item}>
-                  <NavLink
-                    href='#'
-                    data-testid={item}
-                    active={item === activeTab}
-                    onClick={() => this.toggleTab(item)}
-                  >
-                    {item}
-                  </NavLink>
-                </NavItem>))}
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: activeTab === '1' })}
+                  data-testid="tab-1"
+                  onClick={() => this.toggleTab('1')}
+                >
+                  This Week
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: activeTab === '2' })}
+                  data-testid="tab-2"
+                  onClick={() => this.toggleTab('2')}
+                >
+                  Last Week
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: activeTab === '3' })}
+                  data-testid="tab-3"
+                  onClick={() => this.toggleTab('3')}
+                >
+                  Week Before Last
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: activeTab === '4' })}
+                  data-testid="tab-4"
+                  onClick={() => this.toggleTab('4')}
+                >
+                  Three Weeks Ago
+                </NavLink>
+              </NavItem>
             </Nav>
             <TabContent activeTab={activeTab} className="p-4">
-              {navItems.map((item, index) => (
-                <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
-                  <Row>
-                    <Col sm="12" md="8" className="mb-2">
-                      From <b>{this.weekDates[index].fromDate}</b> to <b>{this.weekDates[index].toDate}</b>
-                    </Col>
-                    <Col sm="12" md="4">
-                      <GeneratePdfReport
-                        summaries={summaries}
-                        weekIndex={index}
-                        weekDates={this.weekDates[index]}
-                      />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <FormattedReport
-                        summaries={summaries}
-                        weekIndex={index}
-                        bioCanEdit={this.bioEditPermission}
-                        canEditSummaryCount={this.canEditSummaryCount}
-                        allRoleInfo={this.state.allRoleInfo}
-                      />
-                    </Col>
-                  </Row>
-                </WeeklySummariesReportTab>
-              ))}
+              <TabPane tabId="1">
+                <Row>
+                  <Col sm="12" md="8" className="mb-2">
+                    From <b>{this.weekDates[0].fromDate}</b> to <b>{this.weekDates[0].toDate}</b>
+                  </Col>
+                  <Col sm="12" md="4">
+                    <GeneratePdfReport
+                      summaries={summaries}
+                      weekIndex={0}
+                      weekDates={this.weekDates[0]}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={0}
+                      badges={badges}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
+                      allRoleInfo={this.state.allRoleInfo}
+                    />
+                  </Col>
+                </Row>
+              </TabPane>
+              <TabPane tabId="2">
+                <Row>
+                  <Col sm="12" md="8" className="mb-2">
+                    From <b>{this.weekDates[1].fromDate}</b> to <b>{this.weekDates[1].toDate}</b>
+                  </Col>
+                  <Col sm="12" md="4">
+                    <GeneratePdfReport
+                      summaries={summaries}
+                      weekIndex={1}
+                      weekDates={this.weekDates[1]}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={1}
+                      badges={badges}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
+                      allRoleInfo={this.state.allRoleInfo}
+                    />
+                  </Col>
+                </Row>
+              </TabPane>
+              <TabPane tabId="3">
+                <Row>
+                  <Col sm="12" md="8" className="mb-2">
+                    From <b>{this.weekDates[2].fromDate}</b> to <b>{this.weekDates[2].toDate}</b>
+                  </Col>
+                  <Col sm="12" md="4">
+                    <GeneratePdfReport
+                      summaries={summaries}
+                      weekIndex={2}
+                      weekDates={this.weekDates[2]}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={2}
+                      badges={badges}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
+                      allRoleInfo={this.state.allRoleInfo}
+                    />
+                  </Col>
+                </Row>
+              </TabPane>
+              <TabPane tabId="4">
+                <Row>
+                  <Col sm="12" md="8" className="mb-2">
+                    From <b>{this.weekDates[3].fromDate}</b> to <b>{this.weekDates[3].toDate}</b>
+                  </Col>
+                  <Col sm="12" md="4">
+                    <GeneratePdfReport
+                      summaries={summaries}
+                      weekIndex={3}
+                      weekDates={this.weekDates[3]}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <FormattedReport
+                      summaries={summaries}
+                      weekIndex={3}
+                      badges={badges}
+                      bioCanEdit={this.bioEditPermission}
+                      canEditSummaryCount={this.canEditSummaryCount}
+                      allRoleInfo={this.state.allRoleInfo}
+                    />
+                  </Col>
+                </Row>
+              </TabPane>
             </TabContent>
           </Col>
         </Row>
@@ -276,10 +389,11 @@ const mapStateToProps = state => ({
   infoCollections:state.infoCollections.infos,
 });
 
-const WeeklySummariesReportTab = ({tabId, hidden, children}) => {
-  return (
-    <TabPane tabId={tabId}>{!hidden && children}</TabPane>
-  )
-};
+const mapDispatchToProps = dispatch => ({
+  fetchAllBadges: () => dispatch(fetchAllBadges()),
+  getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
+  hasPermission: () => hasPermission(),
+  getInfoCollections: () => getInfoCollections(),
+});
 
-export default connect(mapStateToProps, { getWeeklySummariesReport, hasPermission, getInfoCollections })(WeeklySummariesReport);
+export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);
