@@ -700,11 +700,11 @@ function UserProfile(props) {
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{moment(userProfile.createdDate).format('MMM-DD-YY')}</span>
+              From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
               {'   '}
               To:{' '}
               <span>
-                {userProfile.endDate ? moment(userProfile.endDate).format('MMM-DD-YY') : 'N/A'}
+                {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
               </span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
