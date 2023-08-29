@@ -116,7 +116,7 @@ const FormattedReport = ({
       .tz('America/Los_Angeles')
       .endOf('week')
       .subtract(weekIndex, 'week')
-      .format('MMM-DD-YY');
+      .format('YYYY-MMM-DD');
     let summaryDateText = `Weekly Summary (${summaryDate}):`;
     const summaryContent = (() => {
       if (summaryText) {
@@ -126,7 +126,7 @@ const FormattedReport = ({
 
         summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
           .tz('America/Los_Angeles')
-          .format('MMM-DD-YY');
+          .format('YYYY-MMM-DD');
         summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
         return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
