@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {
+import { 
   Button,
   Modal,
   ModalBody,
@@ -8,7 +8,7 @@ import {
  } from 'reactstrap';
 
 const RoleInfoModal = ({info}) => {
-    const [isOpen, setOpen] = useState(false);
+    const [isOpen, setOpen] = useState(false);  
     const {infoContent, CanRead} = {...info};
     const handleMouseOver = () => {
       setOpen(true);
@@ -18,7 +18,7 @@ const RoleInfoModal = ({info}) => {
       setOpen(false);
     }
     if(CanRead){
-      return (<span>
+      return (<div>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -32,8 +32,8 @@ const RoleInfoModal = ({info}) => {
           <Modal isOpen={isOpen} size="lg">
           <ModalHeader>Welcome to Information Page!</ModalHeader>
           <ModalBody>
-           <div
-              style={{ paddingLeft: '20px' }}
+           <div 
+              style={{ paddingLeft: '20px' }} 
               dangerouslySetInnerHTML={{ __html: infoContent }}/>
           </ModalBody>
           <ModalFooter>
@@ -41,12 +41,12 @@ const RoleInfoModal = ({info}) => {
           </ModalFooter>
           </Modal>
         )}
-      </span>)
+      </div>)
     }
     return (
         <>
         </>
-
+        
     )
 }
 
