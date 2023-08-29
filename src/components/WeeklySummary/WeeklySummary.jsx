@@ -900,7 +900,7 @@ export class WeeklySummary extends Component {
                     <FormGroup className="mt-2">
                       <Button
                         className="px-5 btn--dark-sea-green"
-                        disabled={this.validate()}
+                        disabled={Boolean(this.validate())}
                         onClick={this.handleSave}
                         style={boxStyle}
                       >
