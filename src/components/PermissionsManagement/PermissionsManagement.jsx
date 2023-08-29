@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalBody, ModalHeader, Row, Col } from 'reactstrap';
 import CreateNewRolePopup from './NewRolePopUp';
 import './PermissionsManagement.css';
-import { connect,useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { getAllRoles } from '../../actions/role';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
@@ -51,17 +51,19 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
                   className="role-btn"
                 >
                   {roleName}
-                 </button> 
-                  <div className='infos'>
-                    <EditableInfoModal
+                </button>
+                <div className="infos">
+                  <EditableInfoModal
                     role={role}
-                    areaName={`${roleName}`+'Info'}
+                    areaName={`${roleName}` + 'Info'}
                     fontSize={18}
                     isPermissionPage={true}
-                    /> 
-                  </div>
-              </div>           
-            )})};
+                  />
+                </div>
+              </div>
+            );
+          })}
+          ;
         </div>
         {userProfile?.role === 'Owner' && (
           <div className="buttons-container">
