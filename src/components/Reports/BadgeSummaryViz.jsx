@@ -66,7 +66,7 @@ return (
                   </tr>
                 </thead>
                 <tbody>
-                {sortedBadges && sortedBadges.map((value, index) => (
+                { badges.length ? sortedBadges && sortedBadges.map((value, index) => (
                 <tr key={index}>
                   <td className="badge_image_sm">
                     {' '}
@@ -111,7 +111,7 @@ return (
                   </td>
                   <td>{value.count}</td>
                 </tr>
-                ))}
+                )) : <tr><td colSpan={5} style={{ textAlign: "center" }}>This person has no badges.</td></tr>}
                 </tbody>
               </Table>
             </div>
@@ -129,7 +129,7 @@ return (
                   </tr>
                 </thead>
                 <tbody>
-                {sortedBadges && sortedBadges.map((value, index) => (
+                {badges.length ? sortedBadges && sortedBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
@@ -161,7 +161,7 @@ return (
                     </td>
                     <td>{value.count}</td>
                   </tr>
-                  ))}
+                  )) : <tr><td colSpan={4} style={{ textAlign: "center" }}>This person has no badges.</td></tr>}
                 </tbody>
               </Table>
             </div>
