@@ -7,13 +7,15 @@ import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { boxStyle } from 'styles';
 
-const CreateNewRolePopup = ({ toggle, addNewRole }) => {
+const CreateNewRolePopup = ({ toggle, addNewRole, roleNames }) => {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
+  const [isDuplicateRole, setIsDuplicateRole] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const noSymbolsRegex = /^([a-zA-Z0-9 ]+)$/;
 
+  console.log(roleNames);
   const handleSubmit = async e => {
     e.preventDefault();
 
@@ -33,10 +35,16 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
   const handleRoleName = e => {
     const { value } = e.target;
     const regexTest = noSymbolsRegex.test(value);
+    const duplicateTest = checkIfDuplicate(vale);
     if (value.trim() === '') {
       setNewRoleName(value);
       setErrorMessage('Please enter a role name');
       setIsValidRole(false);
+    } else if (duplicateTest) {
+      setNewRoleName(value);
+
+      setErrorMessage('Please enter a different role name');
+      setIsDuplicateRole(false);
     } else {
       if (regexTest) {
         setNewRoleName(value);
@@ -46,6 +54,18 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
         setIsValidRole(false);
       }
     }
+  };
+
+  const checkIfDuplicate = val => {
+    let duplicateFound = false;
+
+    roleNames.forEach(val => {
+      if (val.localeCompare(newRoleName) === 0) {
+        duplicateFound = true;
+        return true;
+      }
+    });
+    return duplicateFound;
   };
 
   const handleChange = e => {
@@ -67,7 +87,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
           value={newRoleName}
           onChange={handleRoleName}
         />
-        {isValidRole === false ? (
+        {isValidRole === false || isDuplicateRole === false ? (
           <Alert className="createRole__alert" color="danger">
             {errorMessage}
           </Alert>

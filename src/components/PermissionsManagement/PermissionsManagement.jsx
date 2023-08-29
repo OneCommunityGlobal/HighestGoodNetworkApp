@@ -91,7 +91,12 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
         )}
       </div>
       <div className="permissions-management--flex">
-        <Modal isOpen={isNewRolePopUpOpen} toggle={togglePopUpNewRole} id="modal-content__new-role">
+        <Modal
+          isOpen={isNewRolePopUpOpen}
+          toggle={togglePopUpNewRole}
+          roleNames
+          id="modal-content__new-role"
+        >
           <ModalHeader
             toggle={togglePopUpNewRole}
             cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
