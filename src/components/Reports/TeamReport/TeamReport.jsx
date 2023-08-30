@@ -373,7 +373,7 @@ export function TeamReport({ match }) {
                   </div>
                 </div>
                 <div className="active-inactive-container">
-                  <div>
+                  <div className="active-inactive-container-item">
                     <label htmlFor="active">Active</label>
                     <input
                       onChange={event => handleCheckboxChange(event)}
@@ -383,7 +383,7 @@ export function TeamReport({ match }) {
                       checked={searchParams.isActive}
                     />
                   </div>
-                  <div>
+                  <div className="active-inactive-container-item">
                     <label htmlFor="inactive">Inactive</label>
                     <input
                       onChange={event => handleCheckboxChange(event)}

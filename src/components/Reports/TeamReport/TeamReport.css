@@ -78,6 +78,11 @@
   margin-top: .5rem;
 }
 
+.active-inactive-container-item {
+  display: flex;
+  flex-direction: column;
+}
+
 .date-picker-container {
   display: flex;
   align-items: flex-start;
