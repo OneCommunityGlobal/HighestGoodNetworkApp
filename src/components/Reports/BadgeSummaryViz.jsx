@@ -22,7 +22,7 @@ import { boxStyle } from 'styles';
 import '../Badge/BadgeReport.css'
 import './BadgeSummaryViz.css'
 
-const BadgeSummaryViz = ({ badges, dashboard }) => {
+const BadgeSummaryViz = ({ authId, userId, badges, dashboard }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [sortedBadges, setSortedBadges] = useState([]);
 
@@ -42,6 +42,13 @@ const BadgeSummaryViz = ({ badges, dashboard }) => {
   }, [badges]);
   
 const toggle = () => setIsOpen(prev => !prev)
+
+// console.log('dashboard > badgesummaryviz > userId', userId)
+// console.log('dashboard > badgesummaryviz > badges', badges)
+// console.log('dashboard > badgesummaryviz > dashboard', dashboard)
+
+console.log('people report > badgesummaryviz > authId', authId)
+console.log('people report > badgesummaryviz > userId', userId)
 
 return (
   <div>
@@ -66,7 +73,7 @@ return (
                   </tr>
                 </thead>
                 <tbody>
-                { badges.length ? sortedBadges && sortedBadges.map((value, index) => (
+                { badges && badges.length ? sortedBadges && sortedBadges.map((value, index) => (
                 <tr key={index}>
                   <td className="badge_image_sm">
                     {' '}
@@ -111,7 +118,7 @@ return (
                   </td>
                   <td>{value.count}</td>
                 </tr>
-                )) : <tr><td colSpan={5} style={{ textAlign: "center" }}>This person has no badges.</td></tr>}
+                )) : <tr><td colSpan={5} style={{ textAlign: "center" }}>{`${dashboard || authId === userId ? "You have" : "This person has"} no badges.`}</td></tr>}
                 </tbody>
               </Table>
             </div>
@@ -129,7 +136,7 @@ return (
                   </tr>
                 </thead>
                 <tbody>
-                {badges.length ? sortedBadges && sortedBadges.map((value, index) => (
+                {badges && badges.length ? sortedBadges && sortedBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
@@ -161,7 +168,7 @@ return (
                     </td>
                     <td>{value.count}</td>
                   </tr>
-                  )) : <tr><td colSpan={4} style={{ textAlign: "center" }}>This person has no badges.</td></tr>}
+                  )) : <tr><td colSpan={4} style={{ textAlign: "center" }}>{`${dashboard || authId === userId ? "You have" : "This person has"} no badges.`}</td></tr>}
                 </tbody>
               </Table>
             </div>

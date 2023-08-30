@@ -609,7 +609,7 @@ class PeopleReport extends Component {
                 <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
               </div>
               <div className='visualizationDiv'>
-                <BadgeSummaryViz badges={userProfile.badgeCollection} />
+                <BadgeSummaryViz authId={this.props.auth.user.userid} userId={this.props.match.params.userId} badges={userProfile.badgeCollection} />
               </div>
             </table>
           </div>
