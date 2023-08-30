@@ -3,7 +3,6 @@ import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import { FiUsers } from 'react-icons/fi';
-import { BsCheckLg, BsXLg } from 'react-icons/bs';
 import { getTeamDetail } from '../../../actions/team';
 import {
   getAllUserTeams,
@@ -15,7 +14,6 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import { getAllUserProfile } from 'actions/userManagement';
 
 import { getTeamReportData } from './selectors';
 import './TeamReport.css';
@@ -23,7 +21,6 @@ import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
 import Dropdown from 'react-bootstrap/Dropdown';
-import { LoginPrivileges } from './components/LoginPrivileges.jsx';
 
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
@@ -44,7 +41,6 @@ export function TeamReport({ match }) {
   });
 
   const [selectedTeams, setSelectedTeams] = useState([]);
-  const [disableRadio, setDisableRadio] = useState(false);
 
   // Create a state variable to store the selected radio input
   const [selectedInput, setSelectedInput] = useState('isManager');
@@ -286,7 +282,7 @@ export function TeamReport({ match }) {
       renderProfile={() => (
         <ReportPage.ReportHeader isActive={team.isActive} avatar={<FiUsers />} name={team.teamName}>
           <div>
-            <h5>{moment(team.createdDatetime).format('YYYY-MM-DD')}</h5>
+            <h5>{moment(team.createdDatetime).format('MMM-DD-YY')}</h5>
             <p>Created Date</p>
           </div>
         </ReportPage.ReportHeader>
@@ -306,7 +302,7 @@ export function TeamReport({ match }) {
 
           <div className="update-date">
             Last updated:
-            {moment(team.modifiedDatetime).format('YYYY-MM-DD')}
+            {moment(team.modifiedDatetime).format('MMM-DD-YY')}
           </div>
         </div>
       </ReportPage.ReportBlock>
