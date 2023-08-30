@@ -31,7 +31,7 @@ import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
 import './BadgeReport.css';
 import { boxStyle } from 'styles';
-import { formattedDate } from 'utils/formatDate';
+import { formatDate } from 'utils/formatDate';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -487,7 +487,7 @@ const BadgeReport = props => {
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
-                        ? formattedDate(value.lastModified)
+                        ? formatDate(value.lastModified)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
 
