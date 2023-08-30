@@ -345,7 +345,7 @@ class ReportsPage extends Component {
               {this.state.teamSearchData?.length}
             </button> */}
           </div>
-          <div className="mt-4 bg-white p-4 rounded-5">
+          <div className="mt-4 bg-white p-3 rounded-5">
             <div>
               <a>Select a Filter</a>
             </div>
@@ -398,6 +398,7 @@ class ReportsPage extends Component {
                     }
                   }}
                   className="form-control"
+                  popperPlacement="top-start"
                 />
               </div>
               <div id="task_EndDate" className="date-picker-item">
@@ -415,6 +416,7 @@ class ReportsPage extends Component {
                     }
                   }}
                   className="form-control"
+                  popperPlacement="top"
                 />
               </div>
             </div>
