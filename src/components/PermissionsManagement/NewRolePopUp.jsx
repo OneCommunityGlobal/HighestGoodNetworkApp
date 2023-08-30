@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import { FormCheck } from 'react-bootstrap';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
-import { permissionLabel } from './UserRoleTab';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { addNewRole, getAllRoles } from '../../actions/role';
 import { boxStyle } from 'styles';
+import { addNewRole, getAllRoles } from '../../actions/role';
+import { permissionLabel } from './UserRoleTab';
 
-const CreateNewRolePopup = ({ toggle, addNewRole, roleNames }) => {
+function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
-  const [isDuplicateRole, setIsDuplicateRole] = useState(true);
+  const [isNotDuplicateRole, setIsNotDuplicateRole] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const noSymbolsRegex = /^([a-zA-Z0-9 ]+)$/;
 
-  console.log(roleNames);
   const handleSubmit = async e => {
     e.preventDefault();
 
     if (!isValidRole) {
       toast.error('Please enter a valid role name');
+    } else if (!isNotDuplicateRole) {
+      toast.error('Please enter a non duplicate role name');
     } else {
       const newRoleObject = {
         roleName: newRoleName,
@@ -35,32 +36,30 @@ const CreateNewRolePopup = ({ toggle, addNewRole, roleNames }) => {
   const handleRoleName = e => {
     const { value } = e.target;
     const regexTest = noSymbolsRegex.test(value);
-    const duplicateTest = checkIfDuplicate(vale);
+    const duplicateTest = checkIfDuplicate(value);
     if (value.trim() === '') {
       setNewRoleName(value);
       setErrorMessage('Please enter a role name');
       setIsValidRole(false);
     } else if (duplicateTest) {
       setNewRoleName(value);
-
       setErrorMessage('Please enter a different role name');
-      setIsDuplicateRole(false);
+      setIsNotDuplicateRole(false);
+    } else if (regexTest) {
+      setNewRoleName(value);
+      setIsValidRole(true);
+      setIsNotDuplicateRole(true);
     } else {
-      if (regexTest) {
-        setNewRoleName(value);
-        setIsValidRole(true);
-      } else {
-        setErrorMessage('Special character/symbols not allowed');
-        setIsValidRole(false);
-      }
+      setErrorMessage('Special character/symbols not allowed');
+      setIsValidRole(false);
     }
   };
 
-  const checkIfDuplicate = val => {
+  const checkIfDuplicate = value => {
     let duplicateFound = false;
 
     roleNames.forEach(val => {
-      if (val.localeCompare(newRoleName) === 0) {
+      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
         duplicateFound = true;
         return true;
       }
@@ -87,7 +86,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole, roleNames }) => {
           value={newRoleName}
           onChange={handleRoleName}
         />
-        {isValidRole === false || isDuplicateRole === false ? (
+        {isValidRole === false || isNotDuplicateRole === false ? (
           <Alert className="createRole__alert" color="danger">
             {errorMessage}
           </Alert>
@@ -115,7 +114,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole, roleNames }) => {
       </Button>
     </Form>
   );
-};
+}
 
 const mapStateToProps = state => ({ roles: state.role.roles });
 
