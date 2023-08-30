@@ -1,14 +1,25 @@
-import React, { useState, useEffect } from 'react';
-// import { getUserProfile } from '../../actions/userProfile'
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { connect, useDispatch } from 'react-redux';
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  Nav,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { getHeaderData } from '../../actions/authActions';
 import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
-import { Link } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
-  LOGO,
   DASHBOARD,
   TIMELOG,
   REPORTS,
@@ -25,68 +36,54 @@ import {
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
 } from '../../languages/en/ui';
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
 import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
-export const Header = props => {
+export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const { isAuthenticated, user, firstName, profilePic } = auth;
 
   // Reports
-  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
+  const canGetWeeklySummaries = hasPermission('getWeeklySummaries');
   // Users
-  const canPostUserProfile = props.hasPermission('postUserProfile');
-  const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPostUserProfile = hasPermission('postUserProfile');
+  const canDeleteUserProfile = hasPermission('deleteUserProfile');
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
   // Badges
-  const canCreateBadges = props.hasPermission('createBadges');
+  const canCreateBadges = hasPermission('createBadges');
   // Projects
-  const canPostProject = props.hasPermission('postProject');
+  const canPostProject = hasPermission('postProject');
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask');
+  const canUpdateTask = hasPermission('updateTask');
   // Teams
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canDeleteTeam = hasPermission('deleteTeam');
+  const canPutTeam = hasPermission('putTeam');
   // Popups
-  const canCreatePopup = props.hasPermission('createPopup');
-  const canUpdatePopup = props.hasPermission('updatePopup');
+  const canCreatePopup = hasPermission('createPopup');
+  const canUpdatePopup = hasPermission('updatePopup');
   // Roles
-  const canPutRole = props.hasPermission('putRole');
+  const canPutRole = hasPermission('putRole');
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (props.auth.isAuthenticated) {
-      props.getHeaderData(props.auth.user.userid);
-      props.getTimerData(props.auth.user.userid);
-      if (props.auth.user.role === 'Administrator') {
+    if (auth.isAuthenticated) {
+      getHeaderData(auth.user.userid);
+      getTimerData(auth.user.userid);
+      if (auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
     }
-  }, [props.auth.isAuthenticated]);
+  }, [auth.isAuthenticated]);
 
+  const roles = role?.roles;
   useEffect(() => {
     if (roles.length === 0) {
-      props.getAllRoles();
+      getAllRoles();
     }
   }, []);
-  const roles = props.role?.roles;
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
@@ -102,7 +99,7 @@ export const Header = props => {
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
-          style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
+          style={user.role === 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
           {isAuthenticated && <Timer />}
           {isAuthenticated && (
@@ -119,7 +116,7 @@ export const Header = props => {
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">
                     <div className="redBackGroupHeader">
-                      <span>{props.taskEditSuggestionCount}</span>
+                      <span>{taskEditSuggestionCount}</span>
                     </div>
                   </NavLink>
                 </NavItem>
@@ -181,21 +178,17 @@ export const Header = props => {
                     <span className="dashboard-text-link">{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    {canPostUserProfile ||
-                    canDeleteUserProfile ||
-                    canPutUserProfileImportantInfo ? (
+                    {(canPostUserProfile ||
+                      canDeleteUserProfile ||
+                      canPutUserProfileImportantInfo) && (
                       <DropdownItem tag={Link} to="/usermanagement">
                         {USER_MANAGEMENT}
                       </DropdownItem>
-                    ) : (
-                      <React.Fragment></React.Fragment>
                     )}
-                    {canCreateBadges ? (
+                    {canCreateBadges && (
                       <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
-                    ) : (
-                      <React.Fragment></React.Fragment>
                     )}
                     {canPostProject && (
                       <DropdownItem tag={Link} to="/projects">
@@ -210,7 +203,7 @@ export const Header = props => {
                     {canCreatePopup || canUpdatePopup ? (
                       <>
                         <DropdownItem divider />
-                        <DropdownItem tag={Link} to={`/admin/`}>
+                        <DropdownItem tag={Link} to="/admin/">
                           {POPUP_MANAGEMENT}
                         </DropdownItem>
                       </>
@@ -235,17 +228,18 @@ export const Header = props => {
               </NavItem>
               <UncontrolledDropdown nav>
                 <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">
-                    {WELCOME}, {firstName}
-                  </span>
+                  <span className="dashboard-text-link">{`${WELCOME},${firstName}`}</span>
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem header>Hello {firstName}</DropdownItem>
+                  <DropdownItem header>
+                    Hello
+                    {firstName}
+                  </DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
-                  {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                  {!cantUpdateDevAdminDetails(userProfile.email, userProfile.email) && (
                     <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
                       {UPDATE_PASSWORD}
                     </DropdownItem>
@@ -260,7 +254,7 @@ export const Header = props => {
       </Navbar>
     </div>
   );
-};
+}
 
 const mapStateToProps = state => ({
   auth: state.auth,
@@ -268,9 +262,4 @@ const mapStateToProps = state => ({
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
 });
-export default connect(mapStateToProps, {
-  getHeaderData,
-  getTimerData,
-  getAllRoles,
-  hasPermission,
-})(Header);
+export default connect(mapStateToProps)(Header);
