@@ -30,7 +30,6 @@ src/components/ForcePasswordUpdate/**
 src/components/Header/**
 src/components/Inventory/**
 src/components/LeaderBoard/**
-src/components/Login/**
 src/components/Logout/**
 src/components/ManageMemberships/**
 src/components/Memberships/**
