@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { permissionLabel } from './UserRoleTab';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
@@ -12,6 +11,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { permissionLabel } from './UserRoleTab';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
@@ -111,13 +111,20 @@ function RolePermissions(props) {
       'Gives the user permission to submit weekly summary for another user',
     'Change the Bio Announcement Status':
       'GIves the user permission to change the annoucement status',
-    'See Summary Indicator' : 
-      'Gives the user permission to see summary indicator on leaderboard.',
-    'See Visibility Icon' : 
-      'Gives the user permission to see visibility icon on leaderboard.',
-    
+    'See Summary Indicator': 'Gives the user permission to see summary indicator on leaderboard.',
+    'See Visibility Icon': 'Gives the user permission to see visibility icon on leaderboard.',
   };
-  const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
+  const mainPermissions = [
+    'See All the Reports Tab',
+    'See User Management Tab (Full Functionality)',
+    'See Badge Management Tab (Full Functionality)',
+    'See Project Management Tab (Full Functionality)',
+    'Edit Project',
+    'See Teams Management Tab (Full Functionality)',
+    'Edit Timelog Information',
+    'Edit User Profile',
+    'See Permissions Management Tab',
+  ];
 
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
@@ -128,7 +135,7 @@ function RolePermissions(props) {
   const history = useHistory();
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
-  
+
   useEffect(() => {
     setRoleName(props.role);
   }, []);
@@ -175,7 +182,7 @@ function RolePermissions(props) {
     const id = props.roleId;
 
     const updatedRole = {
-      roleName: roleName,
+      roleName,
       permissions: permissionsObjectName,
       roleId: id,
     };
@@ -203,15 +210,23 @@ function RolePermissions(props) {
     <>
       {changed ? (
         <Alert color="warning" className="user-role-tab__alert ">
-          You have unsaved changes! Please click <strong>Save</strong> button to save changes!
-        </Alert>
+          You have unsaved changes! Please click 
+{' '}
+<strong>Save</strong>
+{' '}
+button to save changes!
+</Alert>
       ) : (
         <></>
       )}
       <header>
         <div className="user-role-tab__name-container">
           <div className="name-container__role-name">
-            <h1 className="user-role-tab__h1">Role Name: {roleName}</h1>
+            <h1 className="user-role-tab__h1">
+Role Name:
+{' '}
+{roleName}
+</h1>
             {props?.userRole === 'Owner' && (
               <FontAwesomeIcon
                 icon={faEdit}
@@ -261,8 +276,8 @@ function RolePermissions(props) {
         <h2 className="user-role-tab__h2">Permission List</h2>
       </header>
       <ul className="user-role-tab__permissionList">
-        {props.permissionsList.map((permission) => (
-          mainPermissions.includes(permission) ?
+        {props.permissionsList.map(permission =>
+          mainPermissions.includes(permission) ? (
           <li className="user-role-tab__permissions" key={permission}>
             <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , fontSize: '20px'}}>
               {permission}
@@ -289,7 +304,8 @@ function RolePermissions(props) {
                 {permissions.includes(permission) ? 'Delete' : 'Add'}
               </Button>
             </div>
-          </li>:
+          </li>
+        ): (
            <li className="user-role-tab__permissions" key={permission}>
             <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , paddingLeft: '50px'}}>
               {permission}
@@ -317,7 +333,9 @@ function RolePermissions(props) {
               </Button>
             </div>
           </li>
-        ))}
+         )
+          ),
+        )}
       </ul>
       <Modal isOpen={deleteRoleModal} toggle={toggleDeleteRoleModal}>
         <ModalHeader>
@@ -326,11 +344,19 @@ function RolePermissions(props) {
             size="lg"
             className="user-role-tab__icon warning-icon"
           />
-          Delete {roleName} Role
-        </ModalHeader>
+          Delete 
+{' '}
+{roleName}
+{' '}
+Role
+</ModalHeader>
         <ModalBody>
-          Are you sure you want to delete <strong>{roleName}</strong> role?
-        </ModalBody>
+          Are you sure you want to delete 
+{' '}
+<strong>{roleName}</strong>
+{' '}
+role?
+</ModalBody>
         <ModalFooter>
           <Button onClick={toggleDeleteRoleModal} style={boxStyle}>
             Cancel
@@ -346,7 +372,8 @@ function RolePermissions(props) {
         <ModalFooter>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
             {' '}
-            Ok{' '}
+            Ok
+{' '}
           </Button>
         </ModalFooter>
       </Modal>

@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FormCheck } from 'react-bootstrap';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
-import { permissionLabel } from './UserRoleTab';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { addNewRole, getAllRoles } from '../../actions/role';
 import { boxStyle } from 'styles';
+import { addNewRole, getAllRoles } from '../../actions/role';
+import { permissionLabel } from './UserRoleTab';
 
-const CreateNewRolePopup = ({ toggle, addNewRole }) => {
+function CreateNewRolePopup({ toggle }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
@@ -37,14 +37,12 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
       setNewRoleName(value);
       setErrorMessage('Please enter a role name');
       setIsValidRole(false);
+    } else if (regexTest) {
+      setNewRoleName(value);
+      setIsValidRole(true);
     } else {
-      if (regexTest) {
-        setNewRoleName(value);
-        setIsValidRole(true);
-      } else {
-        setErrorMessage('Special character/symbols not allowed');
-        setIsValidRole(false);
-      }
+      setErrorMessage('Special character/symbols not allowed');
+      setIsValidRole(false);
     }
   };
 
@@ -67,12 +65,10 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
           value={newRoleName}
           onChange={handleRoleName}
         />
-        {isValidRole === false ? (
+        {isValidRole === false && (
           <Alert className="createRole__alert" color="danger">
             {errorMessage}
           </Alert>
-        ) : (
-          <></>
         )}
       </FormGroup>
 
@@ -95,7 +91,7 @@ const CreateNewRolePopup = ({ toggle, addNewRole }) => {
       </Button>
     </Form>
   );
-};
+}
 
 const mapStateToProps = state => ({ roles: state.role.roles });
 

@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Button, Modal, ModalBody, ModalHeader, Row, Col } from 'reactstrap';
-import CreateNewRolePopup from './NewRolePopUp';
+import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import './PermissionsManagement.css';
-import { connect,useSelector } from 'react-redux';
-import { getAllRoles } from '../../actions/role';
+import { connect } from 'react-redux';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
-import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import UserPermissionsPopUp from './UserPermissionsPopUp';
+import { getAllRoles } from '../../actions/role';
+import CreateNewRolePopup from './NewRolePopUp';
 
-const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
+function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
-  let history = useHistory();
+  const history = useHistory();
   const togglePopUpNewRole = () => {
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
@@ -42,7 +42,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
       <div key={`${role}_header`} className="permissions-management__header">
         <div key={`${role}_name`} className="role-name-container">
           {roleNames?.map(roleName => {
-            let roleNameLC = roleName.toLowerCase().replace(' ', '-');
+            const roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
               <div key={roleNameLC} className="role-name">
                 <button
@@ -51,17 +51,19 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
                   className="role-btn"
                 >
                   {roleName}
-                 </button> 
-                  <div className='infos'>
-                    <EditableInfoModal
+                </button>
+                <div className="infos">
+                  <EditableInfoModal
                     role={role}
-                    areaName={`${roleName}`+'Info'}
+                    areaName={`${roleName}` + 'Info'}
                     fontSize={18}
-                    isPermissionPage={true}
-                    /> 
-                  </div>
-              </div>           
-            )})};
+                    isPermissionPage
+                  />
+                </div>
+              </div>
+            );
+          })}
+          ;
         </div>
         {userProfile?.role === 'Owner' && (
           <div className="buttons-container">
@@ -118,7 +120,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
       </div>
     </div>
   );
-};
+}
 
 // export default PermissionsManagement;
 const mapStateToProps = state => ({

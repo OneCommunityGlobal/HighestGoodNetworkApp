@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import RolePermissions from './RolePermissions';
 import { connect } from 'react-redux';
 import './UserRoleTab.css';
@@ -59,17 +59,17 @@ export const permissionLabel = {
   editWeeklySummaryOptions: 'Edit Weekly Summary Options',
   seePopupManagement: 'See Popup Management Tab (create and update popups)',
   dataIsTangibleTimelog: 'Timelog Data is Tangible',
-
 };
 
-const UserRoleTab = props => {
+function UserRoleTab(props) {
+  const { auth, roles, match, userProfile, getUserRole } = props;
   useEffect(() => {
-    props.getUserRole(props.auth?.user.userid);
+    getUserRole(auth?.user.userid);
   }, []);
   const history = useHistory();
 
-  const roleNames = props.roles.map(role => role.roleName);
-  const userRoleParamsURL = props.match.params.userRole;
+  const roleNames = roles.map(role => role.roleName);
+  const userRoleParamsURL = match.params.userRole;
   const roleIndex = roleNames.findIndex(
     roleName => roleName.toLowerCase() === userRoleParamsURL.replace('-', ' '),
   );
@@ -84,9 +84,9 @@ const UserRoleTab = props => {
     );
   }
 
-  const actualRole = props.roles[roleIndex];
-  const permissions = actualRole.permissions;
-  const roleName = actualRole.roleName;
+  const actualRole = roles[roleIndex];
+  const { permissions } = actualRole;
+  const { roleName } = actualRole;
   const roleId = actualRole._id;
 
   const permissionsList = [];
@@ -103,7 +103,7 @@ const UserRoleTab = props => {
         Back
       </button>
       <RolePermissions
-        userRole={props.userProfile.role}
+        userRole={userProfile.role}
         role={roleName}
         roleId={roleId}
         header={`${roleName} Permissions:`}
@@ -112,7 +112,7 @@ const UserRoleTab = props => {
       />
     </div>
   );
-};
+}
 
 // export default UserRoleTab;
 const mapStateToProps = state => ({

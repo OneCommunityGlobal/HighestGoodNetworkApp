@@ -1,24 +1,24 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { addNewRole, getAllRoles } from '../../actions/role';
+import { boxStyle } from 'styles';
+import { ENDPOINTS } from 'utils/URL';
 import { getAllUserProfile } from 'actions/userManagement';
+import axios from 'axios';
+import { addNewRole, getAllRoles } from '../../actions/role';
 import { permissionLabel } from './UserRoleTab';
 
 import './PermissionsManagement.css';
-import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
 
-const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) => {
+function UserPermissionsPopUp({ allUserProfiles, toggle, getAllUsers, roles }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
 
-  //no onchange, always change this state;
+  // no onchange, always change this state;
   const onChangeCheck = data => {
     const actualValue = data;
 
@@ -38,7 +38,6 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       const actualPermissionsFront = isAlreadyChecked
         ? unCheckPermission
         : [...permissionsUserFront, actualValue];
-
 
       const newPermissionsObject = {
         frontPermissions: actualPermissionsFront,
@@ -114,7 +113,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
           type="text"
           value={searchText}
           ref={refInput}
-          onFocus={e => {
+          onFocus={() => {
             setIsInputFocus(true);
             setIsOpen(true);
           }}
@@ -181,7 +180,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                     type="button"
                     color="danger"
                     onClick={e => onChangeCheck(key)}
-                    disabled={actualUserProfile ? false : true}
+                    disabled={!actualUserProfile}
                     style={boxStyle}
                   >
                     Remove
@@ -191,7 +190,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                     type="button"
                     color="success"
                     onClick={e => onChangeCheck(key)}
-                    disabled={actualUserProfile ? false : true}
+                    disabled={!actualUserProfile}
                     style={boxStyle}
                   >
                     Add
@@ -214,7 +213,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       </Button>
     </Form>
   );
-};
+}
 
 const mapStateToProps = state => ({
   roles: state.role.roles,
