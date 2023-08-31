@@ -43,13 +43,6 @@ const BadgeSummaryViz = ({ authId, userId, badges, dashboard }) => {
   
 const toggle = () => setIsOpen(prev => !prev)
 
-// console.log('dashboard > badgesummaryviz > userId', userId)
-// console.log('dashboard > badgesummaryviz > badges', badges)
-// console.log('dashboard > badgesummaryviz > dashboard', dashboard)
-
-console.log('people report > badgesummaryviz > authId', authId)
-console.log('people report > badgesummaryviz > userId', userId)
-
 return (
   <div>
     <Button onClick={toggle} style={boxStyle} className={`${dashboard && "btn--dark-sea-green float-right"}`}>

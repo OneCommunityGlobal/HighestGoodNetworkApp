@@ -312,7 +312,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges &&
+              {sortBadges && sortBadges.length ?
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -400,7 +400,13 @@ const BadgeReport = props => {
                       </FormGroup>
                     </td>
                   </tr>
-                ))}
+                )) : 
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center" }}>
+                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
+                    </td>
+                  </tr>
+              }
             </tbody>
           </Table>
         </div>
@@ -458,7 +464,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges &&
+              {sortBadges && sortBadges.length ?
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -584,7 +590,13 @@ const BadgeReport = props => {
                       </ButtonGroup>
                     </td>
                   </tr>
-                ))}
+                )) : 
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center" }}>
+                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
+                    </td>
+                  </tr>
+              }
             </tbody>
           </Table>
         </div>
