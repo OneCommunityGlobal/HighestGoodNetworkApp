@@ -350,8 +350,8 @@ const BadgeReport = props => {
                           Dates
                         </DropdownToggle>
                         <DropdownMenu>
-                          {value.earnedDate.map(date => {
-                            return <DropdownItem>{date}</DropdownItem>;
+                          {value.earnedDate.map((date, i) => {
+                            return <DropdownItem key={i}>{date}</DropdownItem>;
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
@@ -574,13 +574,12 @@ const BadgeReport = props => {
                               }}
                             >
                               {canDeleteBadges ? (
-                                <button
-                                  type="button"
+                                <div
                                   className="btn btn-danger"
                                   onClick={e => handleDeleteBadge(index)}
                                 >
                                   Delete
-                                </button>
+                                </div>
                               ) : (
                                 []
                               )}
