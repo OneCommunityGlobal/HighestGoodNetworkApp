@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { connect } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { updatePopupEditor, backupPopupEditor } from './../../../actions/popupEditorAction';
-import ModalBackupConfirm from './../../common/Modal';
 import axios from 'axios';
-import { ENDPOINTS } from './../../../utils/URL';
 import './style.css';
-import { boxStyle } from 'styles';
+import { boxStyle } from '../../../styles';
+import { updatePopupEditor, backupPopupEditor } from '../../../actions/popupEditorAction';
+import ModalBackupConfirm from '../../common/Modal';
+import { ENDPOINTS } from '../../../utils/URL';
 
-const PopupText = props => {
+function PopupText({ props }) {
   const [content, setContent] = useState(props.content);
   const [displaySave, setDisplaySave] = useState(true);
   const [pressed, setPressed] = useState(2);
@@ -69,7 +69,7 @@ const PopupText = props => {
               autoresize_bottom_margin: 1,
             }}
             value={content}
-            onEditorChange={content => setContent(content)}
+            onEditorChange={newContent => setContent(newContent)}
           />
         </div>
 
@@ -99,10 +99,8 @@ const PopupText = props => {
 
         <ModalBackupConfirm
           isOpen={isPopup}
-          modalMessage={
-            'Are you sure you want to save this data to backup store. This action can not be undo.'
-          }
-          modalTitle={'Warning'}
+          modalMessage="Are you sure you want to save this data to backup store. This action can not be undo."
+          modalTitle="Warning"
           closeModal={() => {
             setIsPopup(false);
           }}
@@ -115,5 +113,5 @@ const PopupText = props => {
       </div>
     </div>
   );
-};
+}
 export default connect(state => state, { updatePopupEditor, backupPopupEditor })(PopupText);
