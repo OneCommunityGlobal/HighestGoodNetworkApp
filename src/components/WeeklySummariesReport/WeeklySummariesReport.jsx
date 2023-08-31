@@ -45,7 +45,7 @@ export class WeeklySummariesReport extends Component {
     this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission = this.canPutUserProfileImportantInfo;
+    this.codeEditPermission = this.props.hasPermission('editTeamCode') || this.props.auth.user.role == 'Owner';
 
     const now = moment().tz('America/Los_Angeles')
 
@@ -475,12 +475,13 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections:state.infoCollections.infos,
+  auth: state.auth,
 });
 
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
-  hasPermission: () => hasPermission(),
+  hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
 });
 
