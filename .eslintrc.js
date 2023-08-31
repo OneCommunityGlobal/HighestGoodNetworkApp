@@ -21,7 +21,6 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:react/jsx-runtime',
     'plugin:import/recommended',
-    'preitter/react',
     'plugin:prettier/recommended', // use prettier as a eslint rule
   ],
   globals: {

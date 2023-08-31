@@ -28,7 +28,8 @@ function Logout({ setLogoutPopup, open }) {
       <ModalFooter>
         <Button color="danger" onClick={onLogout} style={boxStyle}>
           Logout
-        </Button>{' '}
+        </Button>
+        &nbsp;
         <Button color="primary" onClick={closePopup} style={boxStyle}>
           Cancel
         </Button>
