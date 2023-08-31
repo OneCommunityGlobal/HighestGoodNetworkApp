@@ -1793,6 +1793,7 @@ export default {
             'getWeeklySummaries',
             'getTimeZoneAPIKey',
             'checkLeadTeamOfXplus',
+            'editTeamCode',
           ],
         },
       ]

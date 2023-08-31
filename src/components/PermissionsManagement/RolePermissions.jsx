@@ -115,6 +115,8 @@ function RolePermissions(props) {
       'Gives the user permission to see summary indicator on leaderboard.',
     'See Visibility Icon' : 
       'Gives the user permission to see visibility icon on leaderboard.',
+    'Edit Team 4-Digit Codes' :
+      'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
     
   };
   const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]

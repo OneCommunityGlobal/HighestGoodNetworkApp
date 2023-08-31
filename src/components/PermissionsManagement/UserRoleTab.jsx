@@ -56,9 +56,10 @@ export const permissionLabel = {
   removeUserFromTask: 'View and Interact with Task “X”',
   seeSummaryIndicator: 'See Summary Indicator',
   seeVisibilityIcon: 'See Visibility Icon',
-  editWeeklySummaryOptions: 'Edit Weekly Summary Options',
+  editWeeklySummaryOptions: 'Edit Weekly Summary Options (Team Colors)',
   seePopupManagement: 'See Popup Management Tab (create and update popups)',
   dataIsTangibleTimelog: 'Timelog Data is Tangible',
+  editTeamCode: 'Edit Team 4-Digit Codes',
 
 };
 
