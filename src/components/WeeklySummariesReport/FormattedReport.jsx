@@ -12,19 +12,17 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import {
-  Input,
   Card,
   CardTitle,
   CardBody,
   CardImg,
   CardText,
   UncontrolledPopover,
-  Row,
-  Col,
 } from 'reactstrap';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import BioFunction from './BioFunction';
 import TotalValidSummaries from './TotalValidSummaries';
+import TeamCode from './TeamCode';
 
 const textColors = {
   Default: '#000000',
@@ -343,27 +341,12 @@ const FormattedReport = ({
                 {' '}
                 <b>Media URL:</b>
               </div>
-              {canEditTeamCode ?
-                <div style={{width: '85px', paddingLeft: "5px"}}>
-                  <Input
-                    type="text"
-                    name="teamCode"
-                    id="teamCode"
-                    key={`code_${summary.teamCode}`}
-                    defaultValue={summary.teamCode}
-                    onBlur={e => {
-                      if(e.target.value != summary.teamCode){
-                        handleProfileChange(summary._id, e.target.value, "teamCode");
-                      }
-                    }}
-                    placeholder="X-XXX"
-                  />
-                </div>
-               : 
-                <div style={{paddingLeft: "5px"}}>
-                  {summary.teamCode == ''? "No assigned team code!": summary.teamCode}
-                </div>
-              }
+              <TeamCode 
+                key={`code_${summary.teamCode}`}
+                canEditTeamCode={canEditTeamCode}
+                summary={summary}
+                handleProfileChange={handleProfileChange}
+              />
               <div style={{paddingLeft: "5px"}}>
                 {getMediaUrlLink(summary)}
               </div>
