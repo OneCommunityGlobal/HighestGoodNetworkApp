@@ -91,9 +91,7 @@ class AddUserProfile extends Component {
       formSubmitted: false,
     };
 
-    
-    const { user } = this.props.auth;
-    this.canAddDeleteEditOwners = user && user.role === 'Owner'
+    this.canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
   }
 
   popupClose = () => {
