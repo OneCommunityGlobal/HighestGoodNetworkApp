@@ -26,7 +26,6 @@ import { PeopleTasksPieChart } from './components';
 import { toast } from 'react-toastify';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import { formattedDate } from 'utils/formattedDate';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -472,6 +471,7 @@ class PeopleReport extends Component {
         avatar={this.state.userProfile.profilePic ? undefined : <FiUser />}
         isActive={isActive}
       >
+        <div className="report-stats">
         <p>
           <Link to={`/userProfile/${userProfile._id}`} title="View Profile">
             {userProfile.firstName} {userProfile.lastName}
@@ -494,12 +494,12 @@ class PeopleReport extends Component {
 
         <div className="stats">
           <div>
-            <h4>{moment(userProfile.createdDate).format('MMM-DD-YY')}</h4>
+            <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
             <p>Start Date</p>
           </div>
           <div>
             <h4>
-              {userProfile.endDate ? formattedDate(userProfile.endDate) : 'N/A'}
+              {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
             </h4>
             <p>End Date</p>
           </div>
@@ -518,6 +518,7 @@ class PeopleReport extends Component {
               ) : null}
             </div>
           ) : null}
+        </div>
         </div>
       </ReportPage.ReportHeader>
     );
@@ -539,6 +540,7 @@ class PeopleReport extends Component {
     };
 
     return (
+      <div className="container-people-wrapper">
       <ReportPage renderProfile={renderProfileInfo}>
         <div className="people-report-time-logs-wrapper">
           <ReportPage.ReportBlock
@@ -582,13 +584,14 @@ class PeopleReport extends Component {
         </div>
 
         <PeopleTasksPieChart />
-
+        <div className="mobile-people-table">
         <ReportPage.ReportBlock>
           <div className="intro_date">
             <h4>Tasks contributed</h4>
           </div>
-
+            
           <PeopleDataTable />
+          
 
           <div className="container">
             <table>
@@ -615,7 +618,9 @@ class PeopleReport extends Component {
             </table>
           </div>
         </ReportPage.ReportBlock>
+        </div>
       </ReportPage>
+      </div>
     );
   }
 }
