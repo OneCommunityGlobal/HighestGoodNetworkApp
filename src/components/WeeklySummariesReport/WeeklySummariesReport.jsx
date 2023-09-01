@@ -282,4 +282,4 @@ const WeeklySummariesReportTab = ({tabId, hidden, children}) => {
   )
 };
 
-export default connect(mapStateToProps, { getWeeklySummariesReport, hasPermission, getInfoCollections })(WeeklySummariesReport);
+export default connect(mapStateToProps, { getWeeklySummariesReport, hasPermission, getInfoCollections, fetchAllBadges })(WeeklySummariesReport);
