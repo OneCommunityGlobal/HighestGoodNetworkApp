@@ -4,17 +4,25 @@ import PopupText from './PopupText';
 import { fetchAllPopupEditor } from '../../actions/popupEditorAction';
 import './style.css';
 
-function Admin({ props }) {
+function Admin(props) {
+  const { popupEditor } = props;
   useEffect(() => {
-    // console.log('props', props);
-    props.fetchAllPopupEditor();
+    console.log('props', popupEditor);
+    fetchAllPopupEditor();
   }, [1]);
+
   return (
     <div className="container mt-3">
-      {props.popupEditor.popupItems.map(item => (
-        <PopupText key={item.id} title={item.popupName} content={item.popupContent} id={item._id} />
+      {popupEditor.popupItems.map(item => (
+        <PopupText
+          key={item._id}
+          title={item.popupName}
+          content={item.popupContent}
+          id={item._id}
+        />
       ))}
     </div>
   );
 }
+
 export default connect(state => state, { fetchAllPopupEditor })(Admin);
