@@ -33,6 +33,13 @@
   color: #acacac;
 }
 
+
 .dark .tasks-detail-table-head {
   background-color: #333;
+}
+
+@media (max-width: 1100px) {
+  .tasks-detail-table-row {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) 2fr repeat(9, minmax(0, 2fr));
+  }
 }

@@ -1,12 +1,19 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
+import AutoUpdate from 'components/AutoUpdate';
+import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
+import { RoutePermissions } from 'utils/routePermissions';
+import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
+import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import Timelog from './components/Timelog';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import Dashboard from './components/Dashboard';
-import { Logout } from './components/Logout/Logout';
+import Logout from './components/Logout/Logout';
 import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -19,7 +26,6 @@ import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
 import WBSDetail from './components/Projects/WBS/WBSDetail';
 import SingleTask from './components/Projects/WBS/SingleTask';
-import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
@@ -30,14 +36,10 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
-import AutoUpdate from 'components/AutoUpdate';
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
-import { RoutePermissions } from 'utils/routePermissions';
-import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
-import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 
 export default (
-  <React.Fragment>
+  <>
     <Header />
     <AutoUpdate />
     <ToastContainer />
@@ -89,7 +91,7 @@ export default (
         exact
         component={Projects}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-        routePermissions={RoutePermissions.weeklySummariesReport}
+        routePermissions={RoutePermissions.projects}
       />
       <ProtectedRoute
         path="/projects"
@@ -141,6 +143,8 @@ export default (
 
       <Route path="/login" component={Login} />
       <Route path="/forgotpassword" component={ForgotPassword} />
+      <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
+      <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
       <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
       <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
       <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
@@ -148,5 +152,5 @@ export default (
       <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
       <ProtectedRoute path="/" exact component={Dashboard} />
     </Switch>
-  </React.Fragment>
+  </>
 );

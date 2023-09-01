@@ -14,9 +14,9 @@ const Project = props => {
   const [category, setCategory] = useState(props.category);
   const [active, setActive] = useState(props.active);
   const [firstLoad, setFirstLoad] = useState(true);
-  const role = props.auth.user.role;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
-  const { roles } = props.role;
+
+  const canPutProject = props.hasPermission('putProject');
+  const canDeleteProject = props.hasPermission('deleteProject');
 
   const updateActive = () => {
     props.onClickActive(props.projectId, name, category, active);
@@ -49,7 +49,7 @@ const Project = props => {
         <div>{props.index + 1}</div>
       </th>
       <td className="projects__name--input">
-        {hasPermission(role, 'editProject', roles, userPermissions) ? (
+        {canPutProject ? (
           <input
             type="text"
             className="form-control"
@@ -62,16 +62,14 @@ const Project = props => {
         )}
       </td>
       <td className="projects__category--input">
-        {hasPermission(role, 'editProject', roles, userPermissions) ? (
+        {canPutProject ? (
           <select
             value={props.category}
             onChange={e => {
               setCategory(e.target.value);
             }}
           >
-            <option default value="Unspecified">
-              {category}
-            </option>
+            <option default value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>
             <option value="Housing">Housing</option>
@@ -85,10 +83,7 @@ const Project = props => {
           category
         )}
       </td>
-      <td
-        className="projects__active--input"
-        onClick={hasPermission(role, 'editProject', roles, userPermissions) ? updateActive : null}
-      >
+      <td className="projects__active--input" onClick={canPutProject ? updateActive : null}>
         {props.active ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -124,7 +119,7 @@ const Project = props => {
         </NavItem>
       </td>
 
-      {hasPermission(role, 'deleteProject', roles, userPermissions) ? (
+      {canDeleteProject ? (
         <td>
           <button
             type="button"
@@ -140,4 +135,4 @@ const Project = props => {
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps)(Project);
+export default connect(mapStateToProps, { hasPermission })(Project);

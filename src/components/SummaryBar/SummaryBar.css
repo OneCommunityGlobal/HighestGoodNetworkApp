@@ -153,7 +153,7 @@ body.dark .text--black{
   display: inline-block;
   padding: 5px;
   margin-bottom: 5px;
-  min-width: 70px;
+  min-width: 60px;
 }
 
 .badge-list {
@@ -212,4 +212,9 @@ body.dark .text--black{
   .large_text_summary {
     font-size: 1.5rem;
   }
+}
+
+.text-center{
+  display: flex;
+  justify-content: center;
 }
