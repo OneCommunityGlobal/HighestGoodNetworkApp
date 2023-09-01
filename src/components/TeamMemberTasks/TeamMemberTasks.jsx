@@ -38,6 +38,8 @@ const TeamMemberTasks = React.memo(props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
+  // const [displayData, setDisplayData] = useState([]);
+  // const [hasMore, setHasMore] = useState(true);
 
   //added it to keep track if the renderTeamsList should run
   const [shouldRun, setShouldRun] = useState(false);
@@ -359,58 +361,74 @@ const TeamMemberTasks = React.memo(props => {
           taskModalOption={taskModalOption}
         />
       )}
-      <div className='table-container'>
-          <Table>
-            <thead className="pc-component">
-              <tr>
-                {/* Empty column header for hours completed icon */}
-                <th />
-                <th className="team-member-tasks-headers">
-                  <Table borderless className="team-member-tasks-subtable">
-                    <thead>
-                      <tr>
-                        <th className="team-member-tasks-headers team-member-tasks-user-name">
-                          Team Member
-                        </th>
-                        <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                          <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                          /
-                          <FontAwesomeIcon
-                            style={{ color: 'green' }}
-                            icon={faClock}
-                            title="Total Hours Completed this Week"
-                          />
-                          /
-                          <FontAwesomeIcon
-                            style={{ color: 'red' }}
-                            icon={faClock}
-                            title="Total Remaining Hours"
-                          />
-                        </th>
-                      </tr>
-                    </thead>
-                  </Table>
-                </th>
-                <th className="team-member-tasks-headers">
-                  <Table borderless className="team-member-tasks-subtable">
-                    <thead>
-                      <tr>
-                        <th>Tasks(s)</th>
-                        <th className="team-task-progress">Progress</th>
-                        {userRole === 'Administrator' ? <th>Status</th> : null}
-                      </tr>
-                    </thead>
-                  </Table>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <SkeletonLoading template="TeamMemberTasks" />
-              ) : (
-                teamList.map(user => {
-                  if (!isTimeLogActive) {
-                    return (
+      <div className="table-container">
+        <Table>
+          <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
+            <tr>
+              {/* Empty column header for hours completed icon */}
+              <th />
+              <th className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th className="team-member-tasks-headers team-member-tasks-user-name">
+                        Team Member
+                      </th>
+                      <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                        <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'green' }}
+                          icon={faClock}
+                          title="Total Hours Completed this Week"
+                        />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'red' }}
+                          icon={faClock}
+                          title="Total Remaining Hours"
+                        />
+                      </th>
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+              <th className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th>Tasks(s)</th>
+                      <th className="team-task-progress">Progress</th>
+                      {userRole === 'Administrator' ? <th>Status</th> : null}
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <SkeletonLoading template="TeamMemberTasks" />
+            ) : (
+              teamList.map(user => {
+                if (!isTimeLogActive) {
+                  return (
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                      handleTaskModalOption={handleTaskModalOption}
+                      userRole={userRole}
+                      updateTask={onUpdateTask}
+                      roles={props.roles}
+                      userPermissions={props.userPermissions}
+                    />
+                  );
+                } else {
+                  return (
+                    <>
                       <TeamMemberTask
                         user={user}
                         key={user.personId}
@@ -424,40 +442,23 @@ const TeamMemberTasks = React.memo(props => {
                         userPermissions={props.userPermissions}
                         userId={userId}
                       />
-                    );
-                  } else {
-                    return (
-                      <>
-                        <TeamMemberTask
-                          user={user}
-                          key={user.personId}
-                          handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                          handleMarkAsDoneModal={handleMarkAsDoneModal}
-                          handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                          handleTaskModalOption={handleTaskModalOption}
-                          userRole={userRole}
-                          updateTask={onUpdateTask}
-                          roles={props.roles}
-                          userPermissions={props.userPermissions}
-                          userId={userId}
-                        />
-                        {timeEntriesList.length > 0 &&
-                          timeEntriesList
-                            .filter(timeEntry => timeEntry.personId === user.personId)
-                            .map(timeEntry => (
-                              <tr className="table-row">
-                                <td colSpan={3} style={{ padding: 0 }}>
-                                  <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
-                                </td>
-                              </tr>
-                            ))}
-                      </>
-                    );
-                  }
-                })
-              )}
-            </tbody>
-          </Table>
+                      {timeEntriesList.length > 0 &&
+                        timeEntriesList
+                          .filter(timeEntry => timeEntry.personId === user.personId)
+                          .map(timeEntry => (
+                            <tr className="table-row">
+                              <td colSpan={3} style={{ padding: 0 }}>
+                                <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
+                              </td>
+                            </tr>
+                          ))}
+                    </>
+                  );
+                }
+              })
+            )}
+          </tbody>
+        </Table>
       </div>
     </div>
   );
