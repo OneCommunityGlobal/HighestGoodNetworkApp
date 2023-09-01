@@ -13,6 +13,7 @@ import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
+// import {fetchAllBadges} from
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -270,7 +271,6 @@ export class WeeklySummariesReport extends Component {
 
 WeeklySummariesReport.propTypes = {
   error: PropTypes.any,
-  fetchAllBadges: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   infoCollections: PropTypes.array,

@@ -18,6 +18,7 @@ import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 import { toast } from 'react-toastify';
+// import InfiniteScroll from 'react-infinite-scroller';
 
 const TeamMemberTasks = React.memo(props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -282,6 +283,21 @@ const TeamMemberTasks = React.memo(props => {
       setTeamList([...filteredMembers]);
     }
   };
+
+  // const loadFunc = useCallback(pageNum => {
+  //   if (teamList.length <= displayData.length) {
+  //     setHasMore(false);
+  //     return;
+  //   }
+
+  //   const start = pageNum * 10;
+  //   setDisplayData([...displayData, ...teamList.slice(start, start + 10)]);
+  //   setHasMore(true);
+  // });
+
+  // useEffect(() => {
+  //   loadFunc();
+  // }, [teamList]);
 
   return (
     <div className="container team-member-tasks">
