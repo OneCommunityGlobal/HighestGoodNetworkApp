@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
@@ -7,12 +6,12 @@ import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 import { boxStyle } from 'styles';
 
-const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
+function GeneratePdfReport({ summaries, weekIndex, weekDates }) {
   const generateFormattedReport = () => {
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
-    //Replace any style copied into the weekly summary message.
-    let styleRegex = /<style([\S\s]*?)>([\S\s]*?)<\/style>/gim;
-    let styleInlineRegex = /style="([\S\s]*?)"/gim;
+    // Replace any style copied into the weekly summary message.
+    const styleRegex = /<style([\S\s]*?)>([\S\s]*?)<\/style>/gim;
+    const styleInlineRegex = /style="([\S\s]*?)"/gim;
     const emails = [];
 
     let wsReport = `<h1>Weekly Summaries Report</h1>
@@ -101,7 +100,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
 
     wsReport += '<h2>Emails</h2>';
 
-    //5. elimiates duplicate entries if they're somehow present
+    // 5. elimiates duplicate entries if they're somehow present
     wsReport += [...new Set(emails)].toString().replaceAll(',', ', ');
 
     return wsReport;
@@ -134,9 +133,10 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
       Open PDF
     </Button>
   );
-};
+}
 
 GeneratePdfReport.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekDates: PropTypes.shape({
     fromDate: PropTypes.string,
