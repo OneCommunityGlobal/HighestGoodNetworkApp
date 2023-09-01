@@ -93,6 +93,8 @@ function UserProfile(props) {
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
+  const [userStartDate, setUserStartDate] = useState('');
+  const [userEndDate, setUserEndDate] = useState('');
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
@@ -536,6 +538,13 @@ function UserProfile(props) {
     }
   };
 
+  const onUserVisibilitySwitch = () => {
+    setUserProfile({
+      ...userProfile,
+      isVisible: !userProfile.isVisible ?? true,
+    });
+  };
+
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
       <Container fluid>
@@ -586,6 +595,14 @@ function UserProfile(props) {
       ...base,
       zIndex: 9999,
     }),
+  };
+
+  const handleStartDate = async startDate => {
+    setUserStartDate(startDate);
+  };
+
+  const handleEndDate = async endDate => {
+    setUserEndDate(endDate);
   };
 
   return (
@@ -929,7 +946,7 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteteam={onDeleteTeam}
-                  edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                  edit={canEdit}
                   role={requestorRole}
                   roles={roles}
                   userId={props.match.params.userId}
@@ -1251,7 +1268,7 @@ function UserProfile(props) {
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteteam={onDeleteTeam}
-                    edit={hasPermission(requestorRole, 'editUserProfile', roles, userPermissions)}
+                    edit={canEdit}
                     role={requestorRole}
                     roles={roles}
                     userId={props.match.params.userId}

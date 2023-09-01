@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SummaryComponent from './SummaryReportDisplayComponent';
 
-const SummaryTable = props => {
+function SummaryTable(props) {
   const [data, setData] = useState([]);
 
   const updateData = async () => {
@@ -57,6 +57,7 @@ const SummaryTable = props => {
       {props.summaryGroupId &&
       props.onDisplaySummaryTableVar &&
       (props.currentUserRole === 'Administrator' ||
+        props.currentUserRole === 'Owner' ||
         props.currentUserRole === 'Manager' ||
         props.currentUserRole === 'Mentor') ? (
         <div>
@@ -90,6 +91,6 @@ const SummaryTable = props => {
       )}
     </div>
   );
-};
+}
 
 export default SummaryTable;

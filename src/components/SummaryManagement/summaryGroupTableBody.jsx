@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react';
 import './summarygroup.css';
-import { DELETE, EDIT, VIEW_SUMMARY } from '../../languages/en/ui';
 import { updateBadge } from 'actions/badgeManagement';
+import { DELETE, EDIT, VIEW_SUMMARY } from '../../languages/en/ui';
 
 const summaryGroupTableBody = props => {
   const [seeReports, setSeeReports] = useState(false);
@@ -40,7 +40,11 @@ const summaryGroupTableBody = props => {
       await props.updateUserInfo(id);
     }
   };
-  if (isReceiver || props.currentUserRole === 'Administrator') {
+  if (
+    isReceiver ||
+    props.currentUserRole === 'Administrator' ||
+    props.currentUserRole === 'Owner'
+  ) {
     isASummaryReceiver(props.summaryGroupId);
     return (
       <tr className="summarygroup__tr" id={`tr_${props.summaryGroupId}`}>
@@ -51,7 +55,7 @@ const summaryGroupTableBody = props => {
         <td
           className="summarygroup__active--input"
           onClick={e => {
-            //</tr>hasPermission(props.requestorRole, 'editDeleteTeam', props.roles, props.userPermissions)
+            // </tr>hasPermission(props.requestorRole, 'editDeleteTeam', props.roles, props.userPermissions)
             props.onStatusClick(props.name, props.summaryGroupId, props.active);
           }}
         >
@@ -135,8 +139,7 @@ const summaryGroupTableBody = props => {
         </td>
       </tr>
     );
-  } else {
-    return null;
   }
+  return null;
 };
 export default summaryGroupTableBody;

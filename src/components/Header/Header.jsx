@@ -217,7 +217,7 @@ export const Header = props => {
                       </DropdownItem>
                     )}
 
-                    {(user.role === 'Administrator') && (
+                    {(user.role === 'Administrator' || user.role === 'Owner') && (
                       <DropdownItem tag={Link} to="/summarymanagement">
                         {SUMMARY_MANAGEMENT}
                       </DropdownItem>
