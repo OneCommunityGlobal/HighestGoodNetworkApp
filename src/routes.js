@@ -7,6 +7,7 @@ import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSugg
 import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import Timelog from './components/Timelog';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
@@ -36,7 +37,7 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
-import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
+import Announcements from 'components/Announcements';
 
 export default (
   <>
@@ -90,6 +91,13 @@ export default (
         path="/projects"
         exact
         component={Projects}
+        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+        routePermissions={RoutePermissions.projects}
+      />
+      <ProtectedRoute
+        path="/announcements"
+        exact
+        component={Announcements}
         allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         routePermissions={RoutePermissions.projects}
       />
