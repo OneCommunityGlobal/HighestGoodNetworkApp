@@ -117,7 +117,7 @@ function RolePermissions(props) {
       'Gives the user permission to see visibility icon on leaderboard.',
     
   };
-  const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
+  const mainPermissions = ['See All the Reports Tab (DNE)', 'See User Management Tab (Full Functionality) (DNE)', 'See Badge Management Tab (Full Functionality) (DNE)', 'See Project Management Tab (Full Functionality) (DNE)', 'Edit Project', 'See Teams Management Tab (Full Functionality) (DNE)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab (DNE - postRole/putRole)' ]
 
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
