@@ -39,7 +39,7 @@ export class WeeklySummariesReport extends Component {
   async componentDidMount() {
     // 1. fetch report
     await this.props.getWeeklySummariesReport();
-    await this.props.fetchAllBadges();
+    // await this.props.fetchAllBadges();
 
     this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
@@ -176,7 +176,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab, badges } = this.state;
+    const { error, loading, summaries, activeTab } = this.state;
 
     if (error) {
       return (
