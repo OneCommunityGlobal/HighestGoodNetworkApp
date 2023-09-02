@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import '../../App.css';
 import {
   LOGO,
