@@ -66,13 +66,13 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
         </div>
         }
         {(
-            userProfile.permissions?.frontPermissions.some(permission => permission === 'manageUser') ||
-            userProfile.permissions?.frontPermissions.some(permission => permission === 'addPermissionRole') ||
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'manageUser') ||
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'addPermissionRole') ||
             userProfile?.role === 'Owner'
             ) && (
           <div className="buttons-container">
             {(
-            userProfile.permissions?.frontPermissions.some(permission => permission === 'addPermissionRole') ||
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'addPermissionRole') ||
             userProfile?.role === 'Owner'
             ) &&
             <Button
@@ -85,7 +85,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
               Add New Role
             </Button>}
             {(
-            userProfile.permissions?.frontPermissions.some(permission => permission === 'manageUser') ||
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'manageUser') ||
             userProfile?.role === 'Owner'
             ) &&
             <Button
