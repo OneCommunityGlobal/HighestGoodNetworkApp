@@ -53,7 +53,6 @@ class UserManagement extends React.PureComponent {
       isPaused: false,
       finalDayDateOpen: false,
       logTimeOffPopUpOpen: false,
-      userTimeOffRequests: [],
       userForTimeOff: '',
     };
   }
@@ -163,7 +162,6 @@ class UserManagement extends React.PureComponent {
         <LogTimeOffPopUp
           open={this.state.logTimeOffPopUpOpen}
           onClose={this.logTimeOffPopUpClose}
-          userTimeOffRequests={this.state.userTimeOffRequests}
           user={this.state.userForTimeOff}
         />
       </React.Fragment>
@@ -281,10 +279,9 @@ class UserManagement extends React.PureComponent {
   /**
    * Call back on log time off button click
    */
-  onLogTimeOffClick = (timeOffRequests, user) => {
+  onLogTimeOffClick = user => {
     this.setState({
       logTimeOffPopUpOpen: true,
-      userTimeOffRequests: timeOffRequests,
       userForTimeOff: user,
     });
   };

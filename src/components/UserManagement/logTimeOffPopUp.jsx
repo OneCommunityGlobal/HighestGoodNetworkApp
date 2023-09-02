@@ -28,6 +28,7 @@ import { boxStyle } from 'styles';
 
 const LogTimeOffPopUp = React.memo(props => {
   const dispatch = useDispatch();
+  const allRequests = useSelector(state => state.timeOffRequests.requests);
   const today = moment().format('YYYY-MM-DD');
   const [requestToUpdate, setrequestToUpdate] = useState({});
 
@@ -44,9 +45,10 @@ const LogTimeOffPopUp = React.memo(props => {
   };
 
   const initialUpdateRequestData = {
-    dateOfLeave: requestToUpdate?.dateOfLeave || today,
-    numberOfWeeks: requestToUpdate?.numberOfWeeks || 1,
-    reasonForLeave: requestToUpdate?.reasonForLeave || '',
+    id: '',
+    dateOfLeave: today,
+    numberOfWeeks: 1,
+    reasonForLeave: '',
   };
 
   const initialUpdateRequestDataErrors = {
@@ -80,8 +82,41 @@ const LogTimeOffPopUp = React.memo(props => {
     SetNestedModal(false);
   };
 
-  const openNested = () => {
+  const openNested = request => {
     SetNestedModal(true);
+    setUpdateRequestData({
+      id: request._id,
+      dateOfLeave: moment(request.startingDate).format('YYYY-MM-DD'),
+      numberOfWeeks: request.duration,
+      reasonForLeave: request.reason,
+    });
+  };
+
+  const handleUpdateRequestDataChange = e => {
+    e.preventDefault();
+    const id = e.target.id;
+    const value = e.target.value;
+    setUpdateRequestData(prev => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
+  const handleUpdateRequestSave = e => {
+    e.preventDefault();
+    setRequestDataErrors(initialRequestDataErrors);
+
+    if (!validateDateOfLeave(updateRequestData, true)) return;
+    if (!validateNumberOfWeeks(updateRequestData, true)) return;
+    if (!validateReasonForLeave(updateRequestData, true)) return;
+
+    const data = {
+      reason: updateRequestData.reasonForLeave,
+      startingDate: moment(updateRequestData.dateOfLeave).format('MM/DD/YY'),
+      duration: updateRequestData.numberOfWeeks,
+    };
+
+    dispatch(updateTimeOffRequestThunk(updateRequestData.id, data));
   };
 
   const handleAddRequestDataChange = e => {
@@ -93,7 +128,7 @@ const LogTimeOffPopUp = React.memo(props => {
       [id]: value,
     }));
   };
-
+  // checks if date value is not empty
   const validateDateOfLeave = (data, nestedModal) => {
     if (nestedModal) {
       if (!data.dateOfLeave) {
@@ -114,7 +149,7 @@ const LogTimeOffPopUp = React.memo(props => {
     }
     return true;
   };
-
+  // checks if duration is not empty and is not negative or 0
   const validateNumberOfWeeks = (data, nestedModal) => {
     if ((data, nestedModal)) {
       if (!data.numberOfWeeks) {
@@ -149,7 +184,7 @@ const LogTimeOffPopUp = React.memo(props => {
     }
     return true;
   };
-
+  // checks reason for leave is not empty
   const validateReasonForLeave = (data, nestedModal) => {
     if (nestedModal) {
       if (!data.reasonForLeave) {
@@ -170,7 +205,7 @@ const LogTimeOffPopUp = React.memo(props => {
     }
     return true;
   };
-
+  // checks if date of leave is not before today
   const validateDateIsNotBeforeToday = (data, nestedModal) => {
     if (nestedModal) {
       const isBeforeToday = moment(data.dateOfLeave).isBefore(moment(), 'day');
@@ -193,10 +228,10 @@ const LogTimeOffPopUp = React.memo(props => {
     }
     return true;
   };
-
+  // checks if the date of leave is not befor the date of return of other requests
   const validateDateIsNotBeforeEndOfOtherRequests = (data, nestedModal) => {
-    if (props.userTimeOffRequests.length > 0) {
-      const isAnyEndingDateAfterDate = props.userTimeOffRequests.some(request => {
+    if (allRequests[props.user._id]?.length > 0) {
+      const isAnyEndingDateAfterDate = allRequests[props.user._id].some(request => {
         const requestDate = moment(request.endingDate);
         const dateOfLeave = moment(data.dateOfLeave);
         console.log(requestDate);
@@ -234,8 +269,6 @@ const LogTimeOffPopUp = React.memo(props => {
     if (!validateDateIsNotBeforeToday(requestData, false)) return;
     if (!validateDateIsNotBeforeEndOfOtherRequests(requestData, false)) return;
 
-    console.log(requestData);
-    console.log();
     const data = {
       requestFor: props.user._id,
       reason: requestData.reasonForLeave,
@@ -244,6 +277,10 @@ const LogTimeOffPopUp = React.memo(props => {
     };
 
     dispatch(addTimeOffRequestThunk(data));
+  };
+
+  const handleDeleteRequest = id => {
+    dispatch(deleteTimeOffRequestThunk(id));
   };
 
   return (
@@ -312,12 +349,12 @@ const LogTimeOffPopUp = React.memo(props => {
           </Form>
         </Container>
       </ModalBody>
-      {props.userTimeOffRequests.length > 0 && (
+      {allRequests[props.user._id]?.length > 0 && (
         <>
           <ModalHeader>Time Off Requests</ModalHeader>
           <ModalBody className="Logged-time-off-cards-container">
             <Container>
-              {props.userTimeOffRequests.map(request => (
+              {allRequests[props.user._id].map(request => (
                 <Card className="mb-2" key={request._id}>
                   <CardBody>
                     <Row>
@@ -338,10 +375,15 @@ const LogTimeOffPopUp = React.memo(props => {
                     </Row>
                     <Row>
                       <Col>
-                        <Button color="primary" onClick={openNested}>
+                        <Button color="primary" onClick={() => openNested(request)}>
                           Edit
                         </Button>
-                        <Button color="danger ml-1">Delete</Button>
+                        <Button
+                          color="danger ml-1"
+                          onClick={() => handleDeleteRequest(request._id)}
+                        >
+                          Delete
+                        </Button>
                       </Col>
                     </Row>
                   </CardBody>
@@ -357,7 +399,12 @@ const LogTimeOffPopUp = React.memo(props => {
                       <Col>
                         <FormGroup>
                           <Label for="dateOfLeave">Date of leave</Label>
-                          <Input type="date" value={updateRequestData.dateOfLeave} />
+                          <Input
+                            type="date"
+                            value={updateRequestData.dateOfLeave}
+                            id="dateOfLeave"
+                            onChange={e => handleUpdateRequestDataChange(e)}
+                          />
                           {
                             <FormText color="danger">
                               {updaterequestDataErrors.dateOfLeaveError}
@@ -368,7 +415,12 @@ const LogTimeOffPopUp = React.memo(props => {
                       <Col>
                         <FormGroup>
                           <Label for="numberOfWeeks">Duration in weeks</Label>
-                          <Input type="number" value={updateRequestData.numberOfWeeks} />
+                          <Input
+                            type="number"
+                            value={updateRequestData.numberOfWeeks}
+                            id="numberOfWeeks"
+                            onChange={e => handleUpdateRequestDataChange(e)}
+                          />
                           {
                             <FormText color="danger">
                               {updaterequestDataErrors.numberOfWeeksError}
@@ -385,6 +437,8 @@ const LogTimeOffPopUp = React.memo(props => {
                             type="textarea"
                             rows="2"
                             value={updateRequestData.reasonForLeave}
+                            id="reasonForLeave"
+                            onChange={e => handleUpdateRequestDataChange(e)}
                           />
                           {
                             <FormText color="danger">
@@ -396,7 +450,11 @@ const LogTimeOffPopUp = React.memo(props => {
                     </Row>
                     <Row>
                       <Col>
-                        <Button color="primary" style={boxStyle}>
+                        <Button
+                          color="primary"
+                          style={boxStyle}
+                          onClick={e => handleUpdateRequestSave(e)}
+                        >
                           Save
                         </Button>
                       </Col>
