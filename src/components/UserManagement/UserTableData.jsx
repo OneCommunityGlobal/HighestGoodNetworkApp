@@ -11,6 +11,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { formatDate } from 'utils/formatDate';
 
 /**
  * The body row of the user table
@@ -94,10 +95,10 @@ const UserTableData = React.memo(props => {
       </td>
       <td>
         {props.user.isActive === false && props.user.reactivationDate
-          ? props.user.reactivationDate.toLocaleString().split('T')[0]
+          ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
-      <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
+      <td>{props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}</td>
       {checkPermissionsOnOwner() ? null : (
         <td>
           <span className="usermanagement-actions-cell">
