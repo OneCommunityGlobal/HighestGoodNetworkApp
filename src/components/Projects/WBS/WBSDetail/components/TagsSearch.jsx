@@ -60,8 +60,8 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   };
 
   return (
-    <div className="container-fluid d-flex flex-column px-0">
-      <div className="d-flex flex-column container-fluid mb-1 px-0">
+    <div className="d-flex flex-column px-0">
+      <div className="d-flex flex-column mb-1 px-0">
         <div className="align-items-start justify-content-start w-100 px-0 position-relative">
           <input
             type="text"
