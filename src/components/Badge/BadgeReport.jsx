@@ -341,7 +341,7 @@ const BadgeReport = props => {
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
-                        ? formattedDate(value.lastModified)
+                        ? formatDate(value.lastModified)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
                     <td>
@@ -352,7 +352,7 @@ const BadgeReport = props => {
                         </DropdownToggle>
                         <DropdownMenu>
                           {value.earnedDate.map(date => {
-                            return <DropdownItem>{formattedDate(date)}</DropdownItem>;
+                            return <DropdownItem>{formatDate(date)}</DropdownItem>;
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
