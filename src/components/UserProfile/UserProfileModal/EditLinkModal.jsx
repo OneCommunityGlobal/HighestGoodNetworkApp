@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -8,11 +8,10 @@ import {
   Label,
   CardBody,
   Card,
-  Col,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
-import styles from './EditLinkModal.css';
+import './EditLinkModal.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 
