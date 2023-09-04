@@ -30,6 +30,7 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: navItems[1],
+      badges: [],
       selectedCodes: [],
       selectedColors: [],
       filteredSummaries: [],
@@ -224,7 +225,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab, selectedCodes, selectedColors, filteredSummaries } = this.state;
+    const { error, loading, summaries, activeTab, badges,  selectedCodes, selectedColors, filteredSummaries } = this.state;
 
     if (error) {
       return (
@@ -314,6 +315,7 @@ export class WeeklySummariesReport extends Component {
                         bioCanEdit={this.bioEditPermission}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={this.state.allRoleInfo}
+                        badges={badges}
                         canEditTeamCode={this.codeEditPermission}
                       />
                     </Col>

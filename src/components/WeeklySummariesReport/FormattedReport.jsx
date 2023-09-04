@@ -191,21 +191,21 @@ const WeeklySummaryMessage = ({summary, weekIndex}) => {
 };
 
 const TeamCode = ({canEditTeamCode, summary}) => {
-  const handleCodeChange = async (userId, newStatus) => {
+
+  const [teamCode, setTeamCode] = useState(summary.teamCode);
+
+  const handleOnChange = async (userProfileSummary, newStatus) => {
+    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id)
     try {
-      const url = ENDPOINTS.USER_PROFILE(userId);
-      const response = await axios.get(url);
-      const userProfile = response.data;
-      const res = await axios.put(url, {
-        ...userProfile,
-        teamCode: newStatus,
-      });
-      if (res.status === 200) {
-        toast.success('You have changed the team code of this user.');
-      }
+      await axios.patch(url, {key: 'teamCode', value: newStatus});
     } catch (err) {
-      alert('An error occurred while attempting to save the teamCode change to the profile.');
+      alert('An error occurred while attempting to save the new team code change to the profile.');
     }
+  };
+
+  const handleCodeChange = e => {
+    setTeamCode(e.target.value);
+    handleOnChange(summary, e.target.value);
   };
 
   return (
@@ -216,10 +216,10 @@ const TeamCode = ({canEditTeamCode, summary}) => {
             type="text"
             name="teamCode"
             id="teamCode"
-            defaultValue={summary.teamCode}
-            onBlur={e => {
-              if(e.target.value != summary.teamCode){
-                handleCodeChange(summary._id, e.target.value);
+            value={teamCode}
+            onChange={e => {
+              if(e.target.value != teamCode){
+                handleCodeChange(e);
               }
             }}
             placeholder="X-XXX"
@@ -227,7 +227,7 @@ const TeamCode = ({canEditTeamCode, summary}) => {
         </div>
       : 
         <div style={{paddingLeft: "5px"}}>
-          {summary.teamCode == ''? "No assigned team code!": summary.teamCode}
+          {teamCode == ''? "No assigned team code!": teamCode}
         </div>
       }
     </>
@@ -368,7 +368,7 @@ const BioLabel = ({bioPosted, summary}) => {
   );
 };
 
-const WeeklyBadge = ({summary, weekIndex}) => {
+const WeeklyBadge = ({summary, weekIndex, badges}) => {
   const badgeEndDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
