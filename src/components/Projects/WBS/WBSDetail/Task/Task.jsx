@@ -18,7 +18,7 @@ import './task.css';
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle } from 'styles';
-import { formattedDate } from 'utils/formattedDate';
+import { formatDate } from 'utils/formatDate';
 
 function Task(props) {
   /*
@@ -241,13 +241,13 @@ function Task(props) {
             </td>
             <td className="desktop-view">
               {startedDate.getFullYear() !== 1969
-                ? formattedDate(startedDate)
+                ? formatDate(startedDate)
                 : null}
               <br />
             </td>
             <td className="desktop-view">
               {dueDate.getFullYear() !== 1969
-                ? formattedDate(dueDate)
+                ? formatDate(dueDate)
                 : null}
             </td>
             <td className="desktop-view">

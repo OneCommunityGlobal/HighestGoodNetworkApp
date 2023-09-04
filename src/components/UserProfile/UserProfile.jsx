@@ -51,6 +51,7 @@ import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { formatDate } from 'utils/formatDate';
 
 function UserProfile(props) {
   /* Constant values */
@@ -700,11 +701,11 @@ function UserProfile(props) {
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{moment(userProfile.createdDate).format('MMM-DD-YY')}</span>
+              From : <span>{formatDate(userProfile.createdDate)}</span>
               {'   '}
               To:{' '}
               <span>
-                {userProfile.endDate ? moment(userProfile.endDate).format('MMM-DD-YY') : 'N/A'}
+                {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
               </span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
