@@ -23,7 +23,7 @@ export const Team = props => {
             ? props.onStatusClick(props.name, props.teamId, props.active)
             : null;
         }}
-        style={boxStyle}
+        // style={boxStyle}
         data-testid='active-marker'
       >
         {props.active ? (
