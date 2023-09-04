@@ -68,12 +68,23 @@ thead {
   border: 1px solid #dee2e6;
 }
 
+.isActive {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 .isActive i {
   color: lawngreen;
 }
 
 .isNotActive {
   color: #dee2e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .isDisabled {
