@@ -41,7 +41,7 @@ const textColors = {
 
 const ListGroupItem = ({children}) => <LGI className='px-0 border-0 py-1'>{children}</LGI>
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo, badges }) => {
   const emails = [];
 
   summaries.forEach(summary => {
@@ -61,6 +61,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
             bioCanEdit={bioCanEdit}
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
+            badges={badges}
           />
         ))}
       </ListGroup>
@@ -71,7 +72,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
 }
 
 
-const ReportDetails = ({ summary, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo }) => {
+const ReportDetails = ({ summary, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo, badges }) => {
   const ref = useRef(null)
   const isInViewPort = useIsInViewPort(ref)
 
