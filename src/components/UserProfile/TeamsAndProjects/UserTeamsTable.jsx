@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Col } from 'reactstrap';
+import { React, useState } from 'react';
+import { Button, Input, Col, Tooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 
 const UserTeamsTable = props => {
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+  const [tooltipOpen, setTooltip] = useState(false);
+  const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   return (
     <div>
@@ -30,7 +32,7 @@ const UserTeamsTable = props => {
           )}
           <div className="row" style={{ margin: '0 auto'}}>
             <Col
-              md={props.edit ? '7' : '12'}
+              md={props.edit ? '7' : '10'}
               style={{
                 backgroundColor: ' #e9ecef',
                 border: '1px solid #ced4da',
@@ -40,14 +42,17 @@ const UserTeamsTable = props => {
               <span className="teams-span">Teams</span>
             </Col>
             {props.edit && props.role && (
-              <Col md="5" style={{padding: '0'}}>
+              <Col md="3" style={{padding: '0'}}>
                 {canAssignTeamToUsers ? (
                   props.disabled ? (
-                    <div className="div-addteam" title="Please save changes before assign team">
-                      <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
+                    <>
+                      <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignteam" toggle={toggleTooltip}>
+                        Please save changes before assign team
+                      </Tooltip>
+                      <Button className="btn-addteam" id='btn-assignteam' color="primary" style={boxStyle} disabled>
                         Assign Team
                       </Button>
-                    </div>
+                    </>
                   ) : (
                     <Button
                       className="btn-addteam"
@@ -65,6 +70,23 @@ const UserTeamsTable = props => {
                 )}
               </Col>
             )}
+            <Col md="2" style={{padding: '0'}}>
+              {props.canEditTeamCode ? (
+                <Input
+                  type="text"
+                  name="teamCode"
+                  id="teamCode"
+                  value={props.userProfile.teamCode}
+                  onChange={e => {
+                    props.setUserProfile({ ...props.userProfile, teamCode: e.target.value });
+                  }}
+                  placeholder="format: A-AAA"
+                />
+              ) : (
+                `${props.userProfile.teamCodes || props.userProfile.teamCode == ''
+                ? "No assigned team code": props.userProfile.teamCode}`
+              )}
+            </Col>
           </div>
         </div>
         <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
@@ -133,16 +155,36 @@ const UserTeamsTable = props => {
               </Col>
             </>
           )}
-          <Col
-            md="12"
-            style={{
-              backgroundColor: ' #e9ecef',
-              border: '1px solid #ced4da',
-              marginBottom: '10px',
-            }}
-          >
-            <span className="teams-span">Teams</span>
-          </Col>
+          <div className="row" style={{ paddingLeft: '30px' }}>
+            <Col
+              md="9"
+              xs="12"
+              style={{
+                backgroundColor: ' #e9ecef',
+                border: '1px solid #ced4da',
+                marginBottom: '10px',
+              }}
+            >
+              <span className="teams-span">Teams</span>
+            </Col>
+            <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
+                {props.canEditTeamCode ? (
+                  <Input
+                    type="text"
+                    name="teamCode"
+                    id="teamCode"
+                    value={props.userProfile.teamCode}
+                    onChange={e => {
+                      props.setUserProfile({ ...props.userProfile, teamCode: e.target.value });
+                    }}
+                    placeholder="format: A-AAA"
+                  />
+                ) : (
+                  `${props.userProfile.teamCodes || props.userProfile.teamCode == ''
+                  ? "No assigned team code": props.userProfile.teamCode}`
+                )}
+            </Col>
+          </div>
           {props.edit && props.role && (
             <Col
               md="12"
@@ -150,11 +192,9 @@ const UserTeamsTable = props => {
             >
               {canAssignTeamToUsers ? (
                 props.disabled ? (
-                  <div className="div-addteam" title="Please save changes before assign team">
-                    <Button className="btn-addteam" color="primary" disabled>
-                      Assign Team
-                    </Button>
-                  </div>
+                  <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
+                    Assign Team
+                  </Button>
                 ) : (
                   <Button
                     className="btn-addteam"
