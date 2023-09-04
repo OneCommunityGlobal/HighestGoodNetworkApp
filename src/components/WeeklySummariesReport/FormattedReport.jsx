@@ -86,9 +86,11 @@ const ReportDetails = ({ summary, weekIndex, bioCanEdit, canEditSummaryCount, al
         </ListGroupItem>
         {isInViewPort && <>
           <ListGroupItem>
-            <TeamCode canEditTeamCode={canEditTeamCode} summary={summary} />
-            <b>Media URL:</b>
-            <MediaUrlLink summary={summary} />
+            <div className='teamcode-wrapper'>
+              <TeamCode canEditTeamCode={canEditTeamCode} summary={summary} />
+              <b>Media URL:</b>
+              <MediaUrlLink summary={summary} />
+            </div>
           </ListGroupItem>
           <ListGroupItem>
             <Bio
@@ -205,7 +207,7 @@ const TeamCode = ({canEditTeamCode, summary}) => {
   return (
     <>
       {canEditTeamCode ?
-        <div style={{width: '85px', paddingLeft: "5px"}}>
+        <div style={{width: '85px', paddingRight: "5px"}}>
           <Input
             type="text"
             name="teamCode"
