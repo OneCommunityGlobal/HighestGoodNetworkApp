@@ -10,7 +10,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   const handleClick = (event, member) => {
     addResources(member._id, member.firstName, member.lastName);
     setIsHidden(!isHidden);
-    event.target.closest('.container-fluid').querySelector('input').value = '';
+    event.target.closest(".my-element").previousElementSibling.value = '';
   };
 
   // sorting using the input letter, giving highest priority to first name starting with that letter,
