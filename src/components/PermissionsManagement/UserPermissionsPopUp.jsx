@@ -12,7 +12,6 @@ import { ENDPOINTS } from 'utils/URL';
 import { boxStyle } from 'styles';
 
 const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) => {
-  const mainPermissions = ['See All the Reports Tab (DNE)', 'See User Management Tab (Full Functionality) (DNE)', 'See Badge Management Tab (Full Functionality) (DNE)', 'See Project Management Tab (Full Functionality) (DNE)', 'Edit Task', 'See Teams Management Tab (Full Functionality) (DNE)', 'Edit Timelog Information (DNE)', 'Edit User Profile', 'See Popup Management Tab (create and update popups) (DNE - separate)', 'See Permissions Management Tab (DNE - postRole/putRole)', 'See Summary Indicator (DNE)', 'See Visibility Icon (DNE)'  ]
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [isOpen, setIsOpen] = useState(false);
@@ -170,15 +169,10 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
             return (
               <li key={key} className="user-role-tab__permission">
                 <div
-                  style = { mainPermissions.includes(value) ? {
-                            color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
-                            fontSize: '20px',
-                            padding: '14px',
-                          } : {
-                            color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
-                            padding: '14px',
-                            paddingLeft: '50px',
-                          }}
+                  style={{
+                    color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
+                    padding: '14px',
+                  }}
                 >
                   {value}
                 </div>
