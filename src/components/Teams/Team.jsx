@@ -36,7 +36,7 @@ export const Team = props => {
           </div>
         )}
       </td>
-      <td>
+      <td style={boxStyle}>
         <button
           type="button"
           className="btn btn-outline-info"
