@@ -6,6 +6,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import { useEffect } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
+import { boxStyle } from 'styles';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -85,10 +86,10 @@ const ScheduleReasonModal = ({
           ) : null}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
-          <Button variant="primary" type="submit" disabled={fetchState.isFetching}>
+          <Button variant="primary" type="submit" disabled={fetchState.isFetching} style={boxStyle}>
             {fetchState.isFetching ? <Spinner animation="border" size="sm" /> : 'Save'}
           </Button>
         </Modal.Footer>

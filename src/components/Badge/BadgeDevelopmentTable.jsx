@@ -11,14 +11,16 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
+  Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { deleteBadge, closeAlert } from '../../actions/badgeManagement';
+import { updateBadge, deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import { boxStyle } from 'styles';
+import './Badge.css';
 
 const BadgeDevelopmentTable = props => {
   const [name, setName] = useState('');
@@ -141,6 +143,24 @@ const BadgeDevelopmentTable = props => {
 
   let filteredBadges = filterBadges(props.allBadgeData);
 
+  const reportBadge = badgeValue => {
+    const checkValue = badgeValue.showReport ? true : false;
+    return (
+      <div className="badge_check">
+        <Input
+          type="checkbox"
+          id={badgeValue._id}
+          name="reportable"
+          checked={badgeValue.showReport || false}
+          onChange={e => {
+            const updatedValue = { ...badgeValue, showReport: !checkValue };
+            props.updateBadge(badgeValue._id, updatedValue);
+          }}
+        />
+      </div>
+    );
+  };
+
   return (
     <Container fluid>
       <table className="table table-bordered">
@@ -210,6 +230,7 @@ const BadgeDevelopmentTable = props => {
                   </Button>
                 </span>
               </td>
+              <td>{reportBadge(value)}</td>
             </tr>
           ))}
         </tbody>
@@ -244,6 +265,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   deleteBadge: badgeId => dispatch(deleteBadge(badgeId)),
+  updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
   closeAlert: () => dispatch(closeAlert()),
 });
 

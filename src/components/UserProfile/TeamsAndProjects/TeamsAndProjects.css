@@ -1,13 +1,11 @@
 .teamtable-container,
 .projecttable-container {
   background-color: #fafafa;
-  margin-top: 20px;
 }
 .btn-addteam,
-.btn-postProject {
-  width: 300px;
+.btn-addproject {
+  width: 100%;
   margin-bottom: 10px;
-  margin-left: -15px;
   outline: none;
 }
 .teams-span,
@@ -29,4 +27,15 @@
 }
 .team-auto-complete:hover {
   background: #1d62f0;
+}
+#myTabContent {
+  margin-top: 20px;
+  padding-top: 4px;
+  border-color: #dee2e6 
+}
+@media (max-width: 1024px) {
+  #myTabContent {
+    padding-top: 0px;
+    border-color: #fff #dee2e6 #dee2e6 
+  }
 }
