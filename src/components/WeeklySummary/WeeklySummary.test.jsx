@@ -5,7 +5,7 @@ import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
 import { weeklySummaryMockData1 } from './__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
 import { WeeklySummary } from './WeeklySummary';
-import { CountdownTimer } from './CountdownTimer';
+import CountdownTimer from './CountdownTimer';
 
 describe('WeeklySummary page', () => {
   describe('On page load', () => {

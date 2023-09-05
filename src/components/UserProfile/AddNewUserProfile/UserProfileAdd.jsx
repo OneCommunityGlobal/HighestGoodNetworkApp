@@ -45,6 +45,10 @@ import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { isValidGoogleDocsUrl, isValidDropboxUrl } from 'utils/checkValidURL';
+
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
   constructor(props) {
@@ -564,10 +568,40 @@ class AddUserProfile extends Component {
     this.setState({ formSubmitted: true });
 
     if (googleDoc) {
-      userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
+      if (isValidGoogleDocsUrl(googleDoc)) {
+        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
+      } else{
+        toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
+        this.setState({
+          formValid: {
+            ...that.state.formValid,
+            googleDoc: false,
+          },
+          formErrors: {
+            ...that.state.formErrors,
+            googleDoc: 'Invalid Google Doc URL',
+          },
+        });
+        return;
+      }
     }
     if (dropboxDoc) {
+      if (isValidDropboxUrl(dropboxDoc)) {
       userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
+      } else {
+        toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+        this.setState({
+          formValid: {
+            ...that.state.formValid,
+            dropboxDoc: false,
+          },
+          formErrors: {
+            ...that.state.formErrors,
+            dropboxDoc: 'Invalid Dropbox Link URL',
+          },
+        });
+        return;
+      }
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
