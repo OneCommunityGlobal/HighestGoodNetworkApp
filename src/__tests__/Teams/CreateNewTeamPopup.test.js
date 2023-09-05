@@ -43,4 +43,14 @@ describe('CreateNewTeamPopUp', () => {
     const titleElement = screen.getByText('Create New Team');
     expect(titleElement).toBeInTheDocument();
   });
+
+  it('should update the newTeam state on input change', () => {
+    renderWithProvider(<CreateNewTeamPopup {...defaultProps} />);
+
+    const inputElement = screen.getByPlaceholderText('Please enter a new team name');
+
+    fireEvent.change(inputElement, { target: { value: 'New Team Name' } });
+
+    expect(inputElement.value).toBe('New Team Name');
+  });
 });
