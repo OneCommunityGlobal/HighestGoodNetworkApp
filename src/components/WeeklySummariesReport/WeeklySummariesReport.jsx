@@ -51,20 +51,6 @@ export class WeeklySummariesReport extends Component {
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
     this.codeEditPermission = this.props.hasPermission('editTeamCode') || this.props.auth.user.role == 'Owner';
 
-    const now = moment().tz('America/Los_Angeles')
-
-    const summaryPromise = this.props.summaries.map(async summary => {
-      const url = ENDPOINTS.USER_PROFILE(summary._id);
-      const response = await axios.get(url);
-      const startDate = moment(response.data.createdDate).tz('America/Los_Angeles')
-      const diff = now.diff(startDate, "days")
-      summary.daysInTeam = diff
-      const totalHours = Object.values(response.data.hoursByCategory).reduce((prev, curr) => prev + curr, 0);
-      summary.totalTangibleHrs = totalHours
-    })
-
-    await Promise.all(summaryPromise)
-
     // 2. shallow copy and sort
     let summariesCopy = [...this.props.summaries];
     summariesCopy = this.alphabetize(summariesCopy);

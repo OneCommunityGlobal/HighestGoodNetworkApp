@@ -13,6 +13,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import {
+  Input,
   Card,
   CardTitle,
   CardBody,
@@ -25,7 +26,6 @@ import {
 } from 'reactstrap';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import useIsInViewPort from 'utils/useIsInViewPort';
-import TeamCode from './TeamCode';
 
 const textColors = {
   Default: '#000000',
@@ -241,7 +241,7 @@ const TeamCodeRow = ({canEditTeamCode, summary}) => {
             />
           </div>
           : 
-          <div style={{paddingLeft: "5px"}}>
+          <div style={{paddingRight: "5px"}}>
             {teamCode == ''? "No assigned team code!": teamCode}
           </div>
         }
