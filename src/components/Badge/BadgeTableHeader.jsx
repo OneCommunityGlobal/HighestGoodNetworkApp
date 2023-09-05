@@ -31,7 +31,6 @@ const BadgeTableHeader = () => (
       </UncontrolledTooltip>
     </th>
     <th>Action</th>
-    <th>Reports Page Notification</th>
   </tr>
 );
 

@@ -38,7 +38,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import Logout from '../Logout/Logout';
+import { Logout } from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';

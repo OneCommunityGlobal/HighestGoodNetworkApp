@@ -14,7 +14,6 @@ import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { formatDate } from 'utils/formatDate';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
@@ -554,7 +553,7 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
                 : 'Inactive'}
             </Label>
             &nbsp;
@@ -572,7 +571,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>
               {userProfile.endDate
-                ? 'End Date ' + formatDate(userProfile.endDate)
+                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
                 : 'End Date ' + 'N/A'}
             </Label>
           </Col>
@@ -796,7 +795,7 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
                   : 'Inactive'}
               </Label>
               &nbsp;
@@ -806,7 +805,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>
               {userProfile.endDate
-                ? 'End Date ' + formatDate(userProfile.endDate)
+                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
                 : 'End Date ' + 'N/A'}
             </Label>
             {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}

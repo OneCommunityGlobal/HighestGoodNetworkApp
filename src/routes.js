@@ -13,7 +13,7 @@ import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import Dashboard from './components/Dashboard';
-import Logout from './components/Logout/Logout';
+import { Logout } from './components/Logout/Logout';
 import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';

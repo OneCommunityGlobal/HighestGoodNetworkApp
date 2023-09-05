@@ -44,14 +44,8 @@ import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
-const DATE_PICKER_MIN_DATE = '01/01/2010';
-const nextDay = new Date();
-nextDay.setDate(nextDay.getDate()+1);
-
 class AddUserProfile extends Component {
   constructor(props) {
     super(props);
@@ -77,7 +71,6 @@ class AddUserProfile extends Component {
         location: '',
         showphone: true,
         weeklySummaryOption: 'Required',
-        createdDate: nextDay,
       },
       formValid: {},
       formErrors: {
@@ -91,9 +84,7 @@ class AddUserProfile extends Component {
       formSubmitted: false,
     };
 
-    
-    const { user } = this.props.auth;
-    this.canAddDeleteEditOwners = user && user.role === 'Owner'
+    this.canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
   }
 
   popupClose = () => {
@@ -370,26 +361,6 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Start Date</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                    <div className="date-picker-item">                        
-                      <DatePicker
-                        selected={this.state.userProfile.createdDate}
-                        minDate={new Date(DATE_PICKER_MIN_DATE)}
-                        onChange={date => this.setState({ userProfile: {
-                          ...this.state.userProfile,
-                          createdDate: date,
-                        }})}
-                        className="form-control"
-                      />
-                      </div>
-                    </FormGroup>
-                  </Col>
-                </Row>
               </Form>
             </Col>
           </Row>
@@ -566,7 +537,6 @@ class AddUserProfile extends Component {
       timeZone,
       location,
       weeklySummaryOption,
-      createdDate,
     } = that.state.userProfile;
 
     const userData = {
@@ -589,7 +559,6 @@ class AddUserProfile extends Component {
       timeZone: timeZone,
       location: location,
       allowsDuplicateName: allowsDuplicateName,
-      createdDate: createdDate,
     };
 
     this.setState({ formSubmitted: true });

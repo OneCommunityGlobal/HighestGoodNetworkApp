@@ -679,7 +679,7 @@ function AddTaskModal(props) {
             isLoading ? (
               ' Adding...'
             ) : (
-              <Button color="primary" onClick={addNewTask} disabled={hoursWarning} style={boxStyle}>
+              <Button color="primary" onClick={addNewTask} disabled={hoursWarning}>
                 Save
               </Button>
             )

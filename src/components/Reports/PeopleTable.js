@@ -16,8 +16,9 @@ function PeopleTable(props) {
           </th>
           <td>
             <Link to={`/peoplereport/${person._id}`} personId={person._id}>
-              {person.firstName}{' '}
-              {person.lastName.length > 15 ? person.lastName.slice(0, 15) + '...' : person.lastName}
+              {person.firstName} 
+              {' '}
+              {person.lastName}
             </Link>
           </td>
           <td
@@ -36,8 +37,8 @@ function PeopleTable(props) {
               </div>
             )}
           </td>
-          <td className="hide-mobile-start-end" style={{width: '110px'}}>{moment(person.createdDate).format('MM-DD-YY')}</td>
-          <td className="hide-mobile-start-end" style={{width: '110px'}}>{moment(person.endDate).format('MM-DD-YY') || 'N/A'}</td>
+          <td>{moment(person.createdDate).format('MM/DD/YYYY')}</td>
+          <td>{moment(person.endDate).format('MM/DD/YYYY') || 'N/A'}</td>
           {/* <td>
           {person.blueSquares||"N/A"}
         </td> */}
@@ -46,7 +47,7 @@ function PeopleTable(props) {
   }
 
   return (
-    <table className="table table-bordered">
+    <table className="table table-bordered table-responsive-sm">
       <thead>
         <tr>
           <th scope="col" id="projects__order">
@@ -56,12 +57,8 @@ function PeopleTable(props) {
           <th scope="col" id="projects__active">
             Active
           </th>
-          <th className="hide-mobile-start-end" scope="col">
-            Start Date
-          </th>
-          <th className="hide-mobile-start-end" scope="col">
-            End Date
-          </th>
+          <th scope="col">Start Date</th>
+          <th scope="col">End Date</th>
           {/* <th scope="col">Blue Squares</th> */}
         </tr>
       </thead>

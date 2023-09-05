@@ -4,7 +4,7 @@ import TeamReportLogs from './TeamReportLogs';
 import TeamsReportLogs from './TeamsReportLogs';
 import TeamReportCharts from './TeamReportCharts';
 import TeamsReportCharts from './TeamsReportCharts';
-import './ReportCharts.css';
+import ReportCharts from './ReportCharts';
 
 function UserLoginPrivileges({
   role,
@@ -121,9 +121,10 @@ function UserLoginPrivileges({
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
       />
       {/* Two cards with pie charts with data */}
-      <div className="mobile-chart"
+      <div
         style={{
-          display: 'flex',          
+          display: 'flex',
+          flexDirection: 'row',
           gap: '16px',
         }}
       >

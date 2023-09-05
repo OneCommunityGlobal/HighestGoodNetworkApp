@@ -15,7 +15,6 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById} from '../../../actions/information';
 import styles from './EditableInfoModal.css';
-import { boxStyle } from 'styles';
 
 // New RichTextEditor component
 const RichTextEditor = ({ disabled, value, onEditorChange }) => (
@@ -268,14 +267,13 @@ export class EditableInfoModal extends Component {
               <Col md={{ size: 1}} style={{paddingLeft:'5px'}}>
                 <Button
                   className='saveBtn' 
-                  onClick={this.handleSave}
-                  style={boxStyle}>Save</Button>
+                  onClick={this.handleSave}>Save</Button>
               </Col>)
             }
           <Col 
             md={{ size: 1}}
             >
-            <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
+            <Button onClick={this.handleClose}>Close</Button>
           </Col>
           </Row>
           </ModalFooter>

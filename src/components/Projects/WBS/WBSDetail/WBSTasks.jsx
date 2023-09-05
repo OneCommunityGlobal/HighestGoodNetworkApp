@@ -174,7 +174,7 @@ function WBSTasks(props) {
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-secondary" style={boxStyle}>
+              <button type="button" className="btn btn-secondary">
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
             </NavItem>

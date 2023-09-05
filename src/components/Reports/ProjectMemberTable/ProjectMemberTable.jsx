@@ -39,7 +39,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       </div>
       <Link to={`/userprofile/${member._id}`} title="View Profile">
         <div>
-        {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
+          {member.firstName} {member.lastName}
         </div>
       </Link>
       <div className="projects__active--input">
@@ -53,7 +53,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           </div>
         )}
       </div>
-      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>      
+      <div>{member._id}</div>
     </div>
   ));
 
@@ -64,7 +64,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       </div>
       <Link to={`/userprofile/${member._id}`} title="View Profile">
         <div>
-        {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
+          {member.firstName} {member.lastName}
         </div>
       </Link>
       <div className="projects__active--input">
@@ -78,15 +78,16 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           </div>
         )}
       </div>
-      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>    
+
+      <div>{member._id}</div>
     </div>
   ));
 
   return (
-    <div className="project-member-table test">
+    <div className="project-member-table">
       <h5 className="project-member-table-title">Members</h5>
       <div className="project-member-count-head">
-        <div className="filter-members-mobile"
+        <div
           onChange={e => {
             setMemberFilter(e.target.value);
           }}
@@ -104,11 +105,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
             : handleMemberCount(activeMemberList.length)}
         </div>
       </div>
-      <div className="reports-table-head-members">
-        <div className="reports-table-head-cell">#</div>
-        <div className="reports-table-head-cell">Name</div>
-        <div className="reports-table-head-cell">Active</div>
-        <div className="reports-table-head-cell">ID</div>
+      <div className="project-member-table-row reports-table-head">
+        <div id="projects__order">#</div>
+        <div>Name</div>
+        <div>Active</div>
+        <div>ID</div>
       </div>
       <div>
         {memberFilter == 'all-time' ? (

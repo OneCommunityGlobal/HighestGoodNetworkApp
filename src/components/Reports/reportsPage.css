@@ -96,23 +96,12 @@
   display: flex;
   flex-direction: column;
   margin: 8px 0;
+  margin-right: 24px;
 }
 
 .date-picker-label {
   text-align: left;
   margin: 8px 0;
-}
-
-.total-report-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-}
-
-.total-report-item {
-  display: flex;
-  flex-direction: row;
-  margin: 0px 25px 0px 0px;
 }
 
 @media screen and (max-width: 1350px) {
@@ -157,21 +146,6 @@
   }
   .table-data-container::-webkit-scrollbar {
     display: none;
-  }  
-  .category-container {
-    display: flex;
-    flex-direction: column;    
-  }  
-  .card-category-item {
-    width: 100%;
-    padding: 16px;
-    margin: 4px;
-  }
-  .total-report-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    gap: 1rem;
   }
 }
 
@@ -185,6 +159,11 @@
     flex-direction: column;
     border-radius: 0 0 16px 16px;
     padding: 16px;
+  }
+  .card-category-item {
+    width: calc(100% / 3 - 8px);
+    padding: 16px;
+    margin: 4px;
   }
   .card-category-item img {
     width: 72px;

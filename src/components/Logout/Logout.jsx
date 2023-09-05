@@ -1,14 +1,15 @@
+import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { logoutUser } from '../../actions/authActions';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle } from 'styles';
-import { logoutUser } from '../../actions/authActions';
 
-function Logout({ setLogoutPopup, open }) {
+export const Logout = props => {
   const dispatch = useDispatch();
 
   const closePopup = () => {
-    setLogoutPopup(false);
+    props.setLogoutPopup(false);
   };
 
   const onLogout = () => {
@@ -18,7 +19,7 @@ function Logout({ setLogoutPopup, open }) {
   };
 
   return (
-    <Modal isOpen={open} toggle={closePopup}>
+    <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Are you sure you want to logout?</ModalHeader>
       <ModalBody>
         <div>
@@ -35,6 +36,6 @@ function Logout({ setLogoutPopup, open }) {
       </ModalFooter>
     </Modal>
   );
-}
+};
 
-export default Logout;
+// export default Logout;

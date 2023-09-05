@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
@@ -11,10 +11,12 @@ import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import { Input } from 'reactstrap';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 const textColors = {
   Default: '#000000',
@@ -37,7 +39,6 @@ const FormattedReport = ({
   allRoleInfo,
 }) => {
   const emails = [];
-  //const bioCanEdit = role === 'Owner' || role === 'Administrator';
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -50,13 +51,6 @@ const FormattedReport = ({
   let emailString = [...new Set(emails)].toString();
   while (emailString.includes(',')) emailString = emailString.replace(',', '\n');
   while (emailString.includes('\n')) emailString = emailString.replace('\n', ', ');
-
-  const alphabetize = summaries => {
-    const temp = [...summaries];
-    return temp.sort((a, b) =>
-      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
-    );
-  };
 
   const getMediaUrlLink = summary => {
     if (summary.mediaUrl) {
@@ -221,7 +215,7 @@ const FormattedReport = ({
 
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
-    if (googleDocLink) {
+    if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
       window.open(googleDocLink.Link);
     } else {
       toast.error(
@@ -268,9 +262,7 @@ const FormattedReport = ({
     return (
       <div style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}>
         <div className="bio-toggle">
-          <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
-            Bio announcement:
-          </b>
+          <b style={style}>Bio announcement:</b>
         </div>
         <div className="bio-toggle">
           <ToggleSwitch
@@ -286,10 +278,13 @@ const FormattedReport = ({
     );
   };
 
-  const BioLabel = (userId, bioPosted, weeklySummaryOption) => {
+  const BioLabel = (userId, bioPosted, summary) => {
+    const style = {
+      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    };
     return (
       <div>
-        <b style={weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>Bio announcement:</b>
+        <b style={style}>Bio announcement:</b>
         {bioPosted === 'default'
           ? ' Not requested/posted'
           : bioPosted === 'posted'
@@ -303,8 +298,9 @@ const FormattedReport = ({
 
   return (
     <>
-      {alphabetize(summaries).map((summary, index) => {
+      {summaries.map((summary, index) => {
         const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+
         const googleDocLink = getGoogleDocLink(summary);
         // Determine whether to use grayscale or color icon based on googleDocLink
         const googleDocIcon =
@@ -342,9 +338,9 @@ const FormattedReport = ({
               {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
                 <i
                   className="fa fa-star"
-                  title={`Weekly Committed: ${summary.weeklycommittedHours} hours`}
+                  title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
                   style={{
-                    color: assignStarDotColors(hoursLogged, summary.weeklycommittedHours),
+                    color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
                     fontSize: '55px',
                     marginLeft: '10px',
                     verticalAlign: 'middle',
@@ -362,7 +358,7 @@ const FormattedReport = ({
                       fontSize: '10px',
                     }}
                   >
-                    +{Math.round((hoursLogged / summary.weeklycommittedHours - 1) * 100)}%
+                    +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
                   </span>
                 </i>
               )}
@@ -380,17 +376,28 @@ const FormattedReport = ({
               summary.daysInTeam,
             )}
             {getTotalValidWeeklySummaries(summary)}
-            {hoursLogged >= summary.weeklycommittedHours && (
+            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
               <p>
-                <b style={summary.weeklySummaryOption === 'Team' ? { color: 'magenta' } : {}}>
-                  Hours logged:
+                <b
+                  style={{
+                    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                  }}
+                >
+                  Hours logged:{' '}
                 </b>
-                {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+                {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
               </p>
             )}
-            {hoursLogged < summary.weeklycommittedHours && (
-              <p style={{ color: 'red' }}>
-                <b>Hours logged:</b> {hoursLogged.toFixed(2)} / {summary.weeklycommittedHours}
+            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+              <p>
+                <b
+                  style={{
+                    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                  }}
+                >
+                  Hours logged:
+                </b>{' '}
+                {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
               </p>
             )}
             {getWeeklySummaryMessage(summary)}

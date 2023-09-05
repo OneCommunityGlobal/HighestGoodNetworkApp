@@ -10,7 +10,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   const handleClick = (event, member) => {
     addResources(member._id, member.firstName, member.lastName);
     setIsHidden(!isHidden);
-    event.target.closest(".my-element").previousElementSibling.value = '';
+    event.target.closest('.container-fluid').querySelector('input').value = '';
   };
 
   // sorting using the input letter, giving highest priority to first name starting with that letter,
@@ -60,8 +60,8 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   };
 
   return (
-    <div className="d-flex flex-column px-0">
-      <div className="d-flex flex-column mb-1 px-0">
+    <div className="container-fluid d-flex flex-column px-0">
+      <div className="d-flex flex-column container-fluid mb-1 px-0">
         <div className="align-items-start justify-content-start w-100 px-0 position-relative">
           <input
             type="text"

@@ -4,32 +4,23 @@
 
 .reports-table-head {
   background-color: #eee7f8;
-  margin-bottom: 4px;
+  margin-bottom: 16px;
   border-radius: 4px;
   min-height: 32px;
   padding: 8px 16px;
 }
 
 .people-table-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 2fr 2fr 2fr;
+  column-gap: 4px;
   min-height: 42px;
+  align-items: center;
+  justify-items: start;
   padding: 0 16px;
   cursor: pointer;
   border-bottom: 3px solid #f8f7f8;
-}
-
-.people-table-row > div {
-  flex: 1;
-  max-width: calc((100% - 42px) / 9); 
-  padding: 4px;
-  text-align: center;
-}
-
-.people-table-row:hover {
-  background-color: #fafafa;
 }
 
 .people-table-center-cell {

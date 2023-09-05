@@ -6,7 +6,7 @@ import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 
-export const Team = props => {
+const Team = props => {
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
@@ -24,7 +24,6 @@ export const Team = props => {
             : null;
         }}
         style={boxStyle}
-        data-testid='active-marker'
       >
         {props.active ? (
           <div className="isActive">
@@ -43,7 +42,6 @@ export const Team = props => {
           onClick={e => {
             props.onMembersClick(props.teamId, props.name);
           }}
-          data-testid='members-btn'
         >
           <i className="fa fa-users" aria-hidden="true" />
         </button>

@@ -13,9 +13,9 @@ const UserTeamsTable = props => {
   return (
     <div>
       <div className="teamtable-container desktop">
-        <div className="container" style={{paddingLeft: '4px', paddingRight: '4px'}}>
+        <div className="container">
           {props.canEditVisibility && (
-            <div className="row" >
+            <div className="row">
               <Col md="7">
                 <span className="teams-span">Visibility</span>
               </Col>
@@ -28,7 +28,7 @@ const UserTeamsTable = props => {
               </Col>
             </div>
           )}
-          <div className="row" style={{ margin: '0 auto'}}>
+          <div className="row">
             <Col
               md={props.edit ? '7' : '12'}
               style={{
@@ -40,7 +40,7 @@ const UserTeamsTable = props => {
               <span className="teams-span">Teams</span>
             </Col>
             {props.edit && props.role && (
-              <Col md="5" style={{padding: '0'}}>
+              <Col md="5">
                 {canAssignTeamToUsers ? (
                   props.disabled ? (
                     <div className="div-addteam" title="Please save changes before assign team">
@@ -67,7 +67,7 @@ const UserTeamsTable = props => {
             )}
           </div>
         </div>
-        <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
+        <div style={{ maxHeight: '300px', overflow: 'auto' }}>
           <table className="table table-bordered table-responsive-sm">
             <thead>
               {props.role && (
@@ -85,7 +85,7 @@ const UserTeamsTable = props => {
                     <td>{index + 1}</td>
                     <td>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
-                      <td style={{ textAlign: 'center'}}>
+                      <td>
                         <Button
                           disabled={!canAssignTeamToUsers}
                           color="danger"

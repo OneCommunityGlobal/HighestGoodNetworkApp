@@ -401,7 +401,7 @@ const UserProfileModal = props => {
 
         {type === 'image' && (
           <>
-            <Button color="primary" onClick={closeModal} style={boxStyle}>
+            <Button color="primary" onClick={closeModal}>
               {' '}
               Close{' '}
             </Button>
@@ -410,7 +410,6 @@ const UserProfileModal = props => {
               onClick={() => {
                 window.open('https://picresize.com/');
               }}
-              style={boxStyle}
             >
               {' '}
               Resize{' '}
@@ -419,7 +418,7 @@ const UserProfileModal = props => {
         )}
 
         {type === 'save' ? (
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
+          <Button color="primary" onClick={closeModal}>
             Close
           </Button>
         ) : (
