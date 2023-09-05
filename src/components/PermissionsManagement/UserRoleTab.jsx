@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import './UserRoleTab.css';
 import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
+import { boxStyle } from 'styles';
 
 export const permissionLabel = {
   // Reports
@@ -124,6 +125,7 @@ const UserRoleTab = props => {
       <button
         onClick={() => history.push('/permissionsmanagement')}
         className="userRoleTab__backBtn"
+        style={boxStyle}
       >
         Back
       </button>
