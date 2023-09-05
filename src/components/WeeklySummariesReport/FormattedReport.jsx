@@ -21,7 +21,8 @@ import {
   CardText,
   UncontrolledPopover,
   ListGroup,
-  ListGroupItem as LGI
+  ListGroupItem as LGI,
+  Alert
 } from 'reactstrap';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import useIsInViewPort from 'utils/useIsInViewPort';
@@ -86,11 +87,7 @@ const ReportDetails = ({ summary, weekIndex, bioCanEdit, canEditSummaryCount, al
         </ListGroupItem>
         {isInViewPort && <>
           <ListGroupItem>
-            <div className='teamcode-wrapper'>
-              <TeamCode canEditTeamCode={canEditTeamCode} summary={summary} />
-              <b>Media URL:</b>
-              <MediaUrlLink summary={summary} />
-            </div>
+            <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
           </ListGroupItem>
           <ListGroupItem>
             <Bio
@@ -190,9 +187,11 @@ const WeeklySummaryMessage = ({summary, weekIndex}) => {
   );
 };
 
-const TeamCode = ({canEditTeamCode, summary}) => {
+const TeamCodeRow = ({canEditTeamCode, summary}) => {
 
   const [teamCode, setTeamCode] = useState(summary.teamCode);
+  const [hasError, setHasError] = useState(false);
+  const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id)
@@ -204,32 +203,61 @@ const TeamCode = ({canEditTeamCode, summary}) => {
   };
 
   const handleCodeChange = e => {
-    setTeamCode(e.target.value);
-    handleOnChange(summary, e.target.value);
+    let value = e.target.value;
+    if (e.target.value.length == 1) {
+      value = e.target.value + "-";
+    }
+    if (e.target.value == "-") {
+      value = "";
+    }
+    if (e.target.value.length == 2) {
+      if(e.target.value.includes("-")) {
+        value = e.target.value.replace("-", "");
+      } else {
+        value = e.target.value.charAt(0) + "-" + e.target.value.charAt(1);
+      }
+    }
+
+    const regexTest = fullCodeRegex.test(value);
+    if (regexTest) {
+      setHasError(false);
+      setTeamCode(value);
+      handleOnChange(summary, value);
+    } else {
+      setTeamCode(value);
+      setHasError(true);
+    }
   };
 
   return (
     <>
-      {canEditTeamCode ?
-        <div style={{width: '85px', paddingRight: "5px"}}>
-          <Input
-            type="text"
-            name="teamCode"
-            id="teamCode"
-            value={teamCode}
-            onChange={e => {
-              if(e.target.value != teamCode){
-                handleCodeChange(e);
-              }
-            }}
-            placeholder="X-XXX"
-          />
-        </div>
-      : 
-        <div style={{paddingLeft: "5px"}}>
-          {teamCode == ''? "No assigned team code!": teamCode}
-        </div>
-      }
+      <div className='teamcode-wrapper'>
+        {canEditTeamCode ?
+          <div style={{width: '100px', paddingRight: "5px"}}>
+            <Input
+              id='codeInput'
+              value={teamCode}
+              onChange={e => {
+                if(e.target.value != teamCode){
+                  handleCodeChange(e);
+                }
+              }}
+              placeholder="X-XXX"
+            />
+          </div>
+          : 
+          <div style={{paddingLeft: "5px"}}>
+            {teamCode == ''? "No assigned team code!": teamCode}
+          </div>
+        }
+        <b>Media URL:</b>
+        <MediaUrlLink summary={summary}/>
+      </div>
+      {hasError ? (
+        <Alert className='code-alert' color="danger">
+          Please enter a code in the format of X-XXX
+        </Alert>
+      ) : null}
     </>
   )
 };
@@ -237,7 +265,7 @@ const TeamCode = ({canEditTeamCode, summary}) => {
 const MediaUrlLink = ({summary}) => {
   if (summary.mediaUrl) {
     return (
-      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
+      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
         Open link to media files
       </a>
     );
@@ -247,7 +275,7 @@ const MediaUrlLink = ({summary}) => {
     for (const link of summary.adminLinks) {
       if (link.Name === 'Media Folder'){
         return (
-          <a href={link.Link} target="_blank" rel="noopener noreferrer">
+          <a href={link.Link} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
             Open link to media files
           </a>
         )

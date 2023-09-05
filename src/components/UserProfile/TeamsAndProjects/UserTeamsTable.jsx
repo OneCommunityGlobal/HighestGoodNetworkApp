@@ -8,9 +8,39 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 
 const UserTeamsTable = props => {
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const [tooltipOpen, setTooltip] = useState(false);
+  const [teamCode, setTeamCode] = useState(props.userProfile.teamCode);
+
+  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+  const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
+
+  const handleCodeChange = e => {
+    let value = e.target.value;
+    if (e.target.value.length == 1) {
+      value = e.target.value + "-";
+    }
+    if (e.target.value == "-") {
+      value = "";
+    }
+    if (e.target.value.length == 2) {
+      if(e.target.value.includes("-")) {
+        value = e.target.value.replace("-", "");
+      } else {
+        value = e.target.value.charAt(0) + "-" + e.target.value.charAt(1);
+      }
+    }
+    
+    const regexTest = fullCodeRegex.test(value);
+    if (regexTest) {
+      props.setCodeValid(true);
+      setTeamCode(value);
+      props.setUserProfile({ ...props.userProfile, teamCode: value });
+    } else {
+      setTeamCode(value);
+      props.setCodeValid(false);
+    }
+  };
 
   return (
     <div>
@@ -73,18 +103,13 @@ const UserTeamsTable = props => {
             <Col md="2" style={{padding: '0'}}>
               {props.canEditTeamCode ? (
                 <Input
-                  type="text"
-                  name="teamCode"
                   id="teamCode"
-                  value={props.userProfile.teamCode}
-                  onChange={e => {
-                    props.setUserProfile({ ...props.userProfile, teamCode: e.target.value });
-                  }}
-                  placeholder="format: A-AAA"
+                  value={teamCode}
+                  onChange={handleCodeChange}
+                  placeholder="X-XXX"
                 />
               ) : (
-                `${props.userProfile.teamCodes || props.userProfile.teamCode == ''
-                ? "No assigned team code": props.userProfile.teamCode}`
+                `${teamCode == ''? "No assigned team code": teamCode}`
               )}
             </Col>
           </div>
@@ -170,18 +195,13 @@ const UserTeamsTable = props => {
             <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
                 {props.canEditTeamCode ? (
                   <Input
-                    type="text"
-                    name="teamCode"
                     id="teamCode"
-                    value={props.userProfile.teamCode}
-                    onChange={e => {
-                      props.setUserProfile({ ...props.userProfile, teamCode: e.target.value });
-                    }}
-                    placeholder="format: A-AAA"
+                    value={teamCode}
+                    onChange={handleCodeChange}
+                    placeholder="X-XXX"
                   />
                 ) : (
-                  `${props.userProfile.teamCodes || props.userProfile.teamCode == ''
-                  ? "No assigned team code": props.userProfile.teamCode}`
+                  `${teamCode == ''? "No assigned team code": teamCode}`
                 )}
             </Col>
           </div>
