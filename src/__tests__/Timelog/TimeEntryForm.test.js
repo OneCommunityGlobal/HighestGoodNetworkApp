@@ -187,8 +187,8 @@ describe('<TimeEntryFormEdit />', () => {
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
     fireEvent.click(screen.getByRole('button', { name: /close/i }));
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
-    expect(actions.editTimeEntry).toHaveBeenCalledTimes(1);
     await waitFor(() => {
+      expect(actions.editTimeEntry).toHaveBeenCalledTimes(1);
       expect(toggle).toHaveBeenCalled();
     });
     //expect(screen.getByText(/You are about to edit your time*/i)).toBeInTheDocument();

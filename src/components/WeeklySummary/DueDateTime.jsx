@@ -19,12 +19,8 @@ function DueDateTime({ dueDate, isShow }) {
       )}
       <div className="mx-auto due-section" style={boxStyle}>
         <div className="text-white due-section__date">
-          <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />
-          &nbsp;
-          {displayTime.format('YYYY-MMM-DD')}
-          &nbsp; at
-          {displayTime.format('HH:mm')}
-          PST
+          <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />{' '}
+          {displayTime.format('MMM-DD-YY')} at {displayTime.format('HH:mm')} PST
         </div>
         <CountdownTimer date={dueDate} />
       </div>

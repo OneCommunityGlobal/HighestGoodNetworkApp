@@ -11,6 +11,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import { addReason, patchReason } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
 import {Modal} from 'react-bootstrap';
+import { boxStyle } from 'styles';
 
 const BlueSquareLayout = props => {
   const fetchingReducer = (state, action) => {
@@ -127,7 +128,7 @@ const BlueSquareLayout = props => {
 
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
         <div className="mt-4 w-100">
-          <Button variant="primary" onClick={handleOpen} className="w-100" size="md">
+          <Button variant="primary" onClick={handleOpen} className="w-100" size="md" style={boxStyle}>
             {fetchState.isFetching ? (
               <Spinner size="sm" animation="border" />
             ) : (
