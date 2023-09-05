@@ -53,4 +53,15 @@ describe('CreateNewTeamPopUp', () => {
 
     expect(inputElement.value).toBe('New Team Name');
   });
+
+  it('should show an error message for empty team name', () => {
+    renderWithProvider(<CreateNewTeamPopup {...defaultProps} onOkClick={mock} />);
+
+    const okButton = screen.getByText('OK');
+    fireEvent.click(okButton);
+
+    expect(mock).not.toHaveBeenCalled();
+
+    expect(screen.getByText('Please enter a team name.')).toBeInTheDocument();
+  });
 });
