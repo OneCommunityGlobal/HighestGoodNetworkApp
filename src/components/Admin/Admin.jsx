@@ -7,7 +7,6 @@ import './style.css';
 function Admin(props) {
   const { popupEditor } = props;
   useEffect(() => {
-    console.log('props', popupEditor);
     fetchAllPopupEditor();
   }, [1]);
 
