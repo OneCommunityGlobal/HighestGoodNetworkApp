@@ -13,7 +13,7 @@ import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
-// import {fetchAllBadges} from
+import { fetchAllBadges } from '../../actions/badgeManagement';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -26,6 +26,7 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: navItems[1],
+      badges: [],
     };
 
     this.weekDates = Array(4)
@@ -34,15 +35,7 @@ export class WeeklySummariesReport extends Component {
   }
 
   async componentDidMount() {
-    const {
-      fetchAllBadges,
-      summaries,
-      error,
-      loading,
-      allBadgeData,
-      authUser,
-      infoCollections,
-    } = this.props;
+    const { summaries, error, loading, allBadgeData, authUser, infoCollections } = this.props;
 
     // 1. fetch report
     await getWeeklySummariesReport();
@@ -74,7 +67,6 @@ export class WeeklySummariesReport extends Component {
         sessionStorage.getItem('tabSelection') === null
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
-      // eslint-disable-next-line react/no-unused-state
       badges: allBadgeData,
     });
     await getInfoCollections();
@@ -185,7 +177,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab, allRoleInfo } = this.state;
+    const { error, loading, summaries, activeTab, allRoleInfo, badges } = this.state;
 
     if (error) {
       return (
@@ -256,6 +248,7 @@ export class WeeklySummariesReport extends Component {
                         bioCanEdit={this.bioEditPermission}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={allRoleInfo}
+                        badges={badges}
                       />
                     </Col>
                   </Row>
