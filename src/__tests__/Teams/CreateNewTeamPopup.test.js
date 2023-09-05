@@ -7,20 +7,26 @@ const defaultProps = {
   open: true,
   teamName: 'Example Team',
   isEdit: false,
-  onOkClick: jest.fn(),
-  onClose: jest.fn(),
 };
+
+const mock = jest.fn();
 
 describe('CreateNewTeamPopUp', () => {
   it('should call closePopup function', () => {
-    const onCloseMock = jest.fn();
-    renderWithProvider(<CreateNewTeamPopup {...defaultProps} onClose={onCloseMock} />);
-
-    console.log(screen.debug());
+    renderWithProvider(<CreateNewTeamPopup {...defaultProps} onClose={mock} />);
 
     const closeButton = screen.getByText('Close');
     fireEvent.click(closeButton);
 
-    expect(onCloseMock).toHaveBeenCalledTimes(1);
+    expect(mock).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call OK button function', () => {
+    renderWithProvider(<CreateNewTeamPopup {...defaultProps} onOkClick={mock} />);
+
+    const okButton = screen.getByText('OK');
+    fireEvent.click(okButton);
+
+    expect(mock).toHaveBeenCalledTimes(1);
   });
 });
