@@ -20,7 +20,6 @@ function AddTaskModal(props) {
   const { tasks, copiedTask, allMembers, allProjects, error } = props;
 
   // states from hooks
-<<<<<<< HEAD
   const defaultCategory = useMemo(() => {
     if (props.taskId) {
       return tasks.find(({ _id }) => _id === props.taskId).category;
@@ -33,12 +32,6 @@ function AddTaskModal(props) {
   const [priority, setPriority] = useState('Primary');
   const [resourceItems, setResourceItems] = useState([]);
   const [assigned, setAssigned] = useState(false);
-=======
-  const [taskName, setTaskName] = useState('');
-  const [priority, setPriority] = useState('Primary');
-  const [resourceItems, setResourceItems] = useState([]);
-  const [assigned, setAssigned] = useState(true);
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   const [status, setStatus] = useState('Started');
   const [hoursBest, setHoursBest] = useState(0);
   const [hoursMost, setHoursMost] = useState(0);
@@ -46,11 +39,7 @@ function AddTaskModal(props) {
   const [hoursEstimate, setHoursEstimate] = useState(0);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
-<<<<<<< HEAD
   const [category, setCategory] = useState(defaultCategory);
-=======
-  const [category, setCategory] = useState('Housing');
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   const [whyInfo, setWhyInfo] = useState('');
   const [intentInfo, setIntentInfo] = useState('');
   const [startedDate, setStartedDate] = useState('');
@@ -80,45 +69,10 @@ function AddTaskModal(props) {
   * -------------------------------- functions -------------------------------- 
   */
   const toggle = () => setModal(!modal);
-<<<<<<< HEAD
 
   const openModal = () => {
     if (!props.isOpen && props.setIsOpen) props.setIsOpen(true);
     toggle();
-=======
-
-  const openModal = () => {
-    if (!props.isOpen && props.setIsOpen) props.setIsOpen(true);
-    toggle();
-  };
-
-  const getNewNum = () => {
-    let newNum;
-    if (props.taskId) { 
-      const numOfLastInnerLevelTask = tasks.reduce((num, task) => {
-        if (task.mother === props.taskId) {
-          const numIndexArray = task.num.split('.');
-          const numOfInnerLevel = numIndexArray[props.level];
-          num = +numOfInnerLevel > num ? +numOfInnerLevel : num;
-        }
-        return num;
-      }, 0);
-      const currentLevelIndexes = props.taskNum.replaceAll('.0', '').split('.');
-      currentLevelIndexes[props.level] = `${numOfLastInnerLevelTask + 1}`;
-      newNum = currentLevelIndexes.join('.');
-    } else {
-      const numOfLastLevelOneTask = tasks.reduce((num, task) => {
-        if (task.level === 1) {
-          const numIndexArray = task.num.split('.');
-          const indexOfFirstNum = numIndexArray[0];
-          num = +indexOfFirstNum > num ? +indexOfFirstNum : num;
-        }
-        return num;
-      }, 0)
-      newNum = `${numOfLastLevelOneTask + 1}`;
-    }
-    return newNum;
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   };
 
   const getNewNum = () => {
@@ -297,10 +251,7 @@ function AddTaskModal(props) {
       endstateInfo,
     };
     await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
-<<<<<<< HEAD
     props.load();
-=======
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
     toggle();
   };
 
@@ -308,29 +259,10 @@ function AddTaskModal(props) {
   * -------------------------------- useEffects -------------------------------- 
   */
   useEffect(() => {
-<<<<<<< HEAD
     setNewTaskNum(getNewNum());
   }, [modal]);
 
   useEffect(() => {
-=======
-    if (props.level >= 1) {
-      const categoryMother = tasks.find(({ _id }) => _id === props.taskId).category;
-      if (categoryMother) {
-        setCategory(categoryMother);
-      }
-    } else {
-      const res = allProjects.projects.filter(({ _id }) => _id === props.projectId)[0];
-      setCategory(res.category);
-    }
-  }, [props.level]);
-
-  useEffect(() => {
-    setNewTaskNum(getNewNum());
-  }, [modal]);
-
-  useEffect(() => {
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
     ReactTooltip.rebuild();
   }, [links]);
 
@@ -426,11 +358,7 @@ function AddTaskModal(props) {
                         name="Assigned"
                         value={true}
                         checked={assigned}
-<<<<<<< HEAD
                         onChange={() => setAssigned(true)}
-=======
-                        onChange={(e) => setAssigned(e.target.value)}
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
                       />
                       <label className="form-check-label" htmlFor="true">
                         Yes
@@ -444,11 +372,7 @@ function AddTaskModal(props) {
                         name="Assigned"
                         value={false}
                         checked={!assigned}
-<<<<<<< HEAD
                         onChange={() => setAssigned(false)}
-=======
-                        onChange={(e) => setAssigned(e.target.value)}
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
                       />
                       <label className="form-check-label" htmlFor="false">
                         No
@@ -755,11 +679,7 @@ function AddTaskModal(props) {
             isLoading ? (
               ' Adding...'
             ) : (
-<<<<<<< HEAD
               <Button color="primary" onClick={addNewTask} disabled={hoursWarning} style={boxStyle}>
-=======
-              <Button color="primary" onClick={addNewTask} disabled={hoursWarning}>
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
                 Save
               </Button>
             )

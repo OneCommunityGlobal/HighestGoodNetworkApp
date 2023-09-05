@@ -23,19 +23,11 @@ import { boxStyle } from 'styles';
 
 function WBSTasks(props) {
   /*
-<<<<<<< HEAD
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
   const { tasks, fetched } = props;
 
-=======
-  * -------------------------------- variable declarations -------------------------------- 
-  */
-  // props from store
-  const { role, roles, userPermissions, tasks, fetched } = props;
-  
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
   const { wbsName } = props.match.params;
@@ -51,16 +43,11 @@ function WBSTasks(props) {
   const [pageLoadTime, setPageLoadTime] = useState(Date.now());
   const myRef = useRef(null);
 
-<<<<<<< HEAD
   // permissions
   const canPostTask = props.hasPermission('postTask');
 
   /*
   * -------------------------------- functions --------------------------------
-=======
-  /*
-  * -------------------------------- functions -------------------------------- 
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   */
   const load = async () => {
     const levelList = [0, 1, 2, 3, 4];
@@ -182,11 +169,7 @@ function WBSTasks(props) {
 
   return (
     <>
-<<<<<<< HEAD
       <ReactTooltip delayShow={300} />
-=======
-      <ReactTooltip delayShow={300} html={true}/>
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
       <div className="container-tasks">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
@@ -199,11 +182,7 @@ function WBSTasks(props) {
           </ol>
         </nav>
         <div className='mb-2'>
-<<<<<<< HEAD
           {canPostTask ? (
-=======
-          {hasPermission(role, 'addTask', roles, userPermissions) ? (
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
             <AddTaskModal
               key="task_modal_null"
               taskNum={null}
@@ -216,15 +195,9 @@ function WBSTasks(props) {
           ) : null}
 
           {!isLoading && showImport ? (
-<<<<<<< HEAD
             <ImportTask
               wbsId={wbsId}
               projectId={projectId}
-=======
-            <ImportTask 
-              wbsId={wbsId} 
-              projectId={projectId} 
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
               load={load}
               setIsLoading={setIsLoading}
             />
@@ -414,14 +387,7 @@ function WBSTasks(props) {
   );
 }
 
-<<<<<<< HEAD
 const mapStateToProps = state => ({
-=======
-const mapStateToProps = state => ({ 
-  role: state.auth ? state.auth.user.role : null,
-  roles: state.role.roles,
-  userPermissions: state.auth.user?.permissions?.frontPermissions,
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   tasks: state.tasks.taskItems,
   fetched: state.tasks.fetched,
 });

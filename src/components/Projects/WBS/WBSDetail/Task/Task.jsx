@@ -22,19 +22,11 @@ import { formatDate } from 'utils/formatDate';
 
 function Task(props) {
   /*
-<<<<<<< HEAD
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
   const { tasks } = props;
 
-=======
-  * -------------------------------- variable declarations -------------------------------- 
-  */
-  // props from store
-  const { tasks } = props;
-  
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   const startedDate = new Date(props.startedDatetime);
   const dueDate = new Date(props.dueDatetime);
 
@@ -47,21 +39,12 @@ function Task(props) {
   const [children, setChildren] = useState([]);
   const [showMoreResources, setShowMoreResources] = useState(false);
   const tableRowRef = useRef();
-<<<<<<< HEAD
 
   /*
   * -------------------------------- functions --------------------------------
   */
   const toggleModel = () => setModal(!modal);
 
-=======
-  
-  /*
-  * -------------------------------- functions -------------------------------- 
-  */
-  const toggleModel = () => setModal(!modal);
-
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   const openChild = () => {
     setIsOpen(!isOpen);
   };
@@ -87,11 +70,7 @@ function Task(props) {
   };
 
   /*
-<<<<<<< HEAD
   * -------------------------------- useEffects --------------------------------
-=======
-  * -------------------------------- useEffects -------------------------------- 
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   */
   useEffect(() => {
     if (props.controllerId !== props.taskId) setControllerRow(false);
@@ -194,25 +173,15 @@ function Task(props) {
                         target="_blank"
                         rel="noreferrer"
                       >
-<<<<<<< HEAD
                         {!elm.profilePic || elm.profilePic === "/defaultprofilepic.png"
                           ? <span className="dot">{elm.name.split(' ').map(n => n[0]).join('').toUpperCase()}</span>
-=======
-                        {!elm.profilePic || elm.profilePic === "/defaultprofilepic.png" 
-                          ? <span className="dot">{elm.name.split(' ').map(n => n[0]).join('').toUpperCase()}</span> 
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
                           : <img className="img-circle" src={elm.profilePic} />}
                       </a>
                     );
                   })
                 : null}
-<<<<<<< HEAD
               {props.resources.length > 2
                 ? <a
-=======
-              {props.resources.length > 2 
-                ? <a 
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
                     className="resourceMoreToggle"
                     onClick={() => setShowMoreResources(!showMoreResources)}
                   >
@@ -340,11 +309,7 @@ function Task(props) {
             </Modal>
           </tr>
           {controllerRow ? (
-<<<<<<< HEAD
             <ControllerRow
-=======
-            <ControllerRow 
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
               tableColNum={tableColNum}
               num={props.num}
               taskId={props.taskId}
@@ -358,10 +323,6 @@ function Task(props) {
               level={props.level}
               isOpen={isOpen}
               setIsOpen={setIsOpen}
-<<<<<<< HEAD
-=======
-              hasPermission={true}
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
               siblings={props.siblings}
               load={props.load}
               pageLoadTime={props.pageLoadTime}
@@ -415,11 +376,7 @@ function Task(props) {
   );
 }
 
-<<<<<<< HEAD
 const mapStateToProps = state => ({
-=======
-const mapStateToProps = state => ({ 
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   tasks: state.tasks.taskItems,
  });
 

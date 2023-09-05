@@ -29,10 +29,7 @@ export const fetchTeamMembersTask = (
   authenticatedUserId,
   shouldReload = true,
 ) => async (dispatch, getState) => {
-<<<<<<< HEAD
 
-=======
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   try {
     const state = getState();
     // The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store

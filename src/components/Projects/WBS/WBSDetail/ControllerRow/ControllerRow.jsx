@@ -25,17 +25,12 @@ import { boxStyle } from 'styles';
 
 function ControllerRow (props) {
   /*
-<<<<<<< HEAD
   * -------------------------------- variable declarations --------------------------------
   */
   // permissions
   const canDeleteTask = props.hasPermission('deleteTask');
   const canPostTask = props.hasPermission('postTask');
 
-=======
-  * -------------------------------- variable declarations -------------------------------- 
-  */
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   // props from store
   const { role, userPermissions, roles, popupContent } = props;
 
@@ -43,17 +38,10 @@ function ControllerRow (props) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-<<<<<<< HEAD
 
 
   /*
   * -------------------------------- functions --------------------------------
-=======
-  
-
-  /*
-  * -------------------------------- functions -------------------------------- 
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   */
   const showUpDeleteModal = () => {
     setModalDelete(true);
@@ -83,21 +71,13 @@ function ControllerRow (props) {
   };
 
   /*
-<<<<<<< HEAD
   * -------------------------------- useEffects --------------------------------
-=======
-  * -------------------------------- useEffects -------------------------------- 
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
   */
 
   return (
     <tr className="wbsTaskController desktop-view" id={`controller_${props.taskId}`}>
       <td colSpan={props.tableColNum} className="controlTd">
-<<<<<<< HEAD
         {props.level < 4 && canPostTask ? (
-=======
-        {props.level < 4 && hasPermission(role, 'addTask', roles, userPermissions) ? (
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
           <AddTaskModal
             key={`addTask_${props.taskId}`}
             taskNum={props.num}
@@ -114,10 +94,6 @@ function ControllerRow (props) {
             pageLoadTime={props.pageLoadTime}
             isOpen={props.isOpen}
             setIsOpen={props.setIsOpen}
-<<<<<<< HEAD
-=======
-            hasPermission={true}
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
           />
         ) : null}
         <EditTaskModal
@@ -134,11 +110,7 @@ function ControllerRow (props) {
           load={props.load}
           setIsLoading={props.setIsLoading}
         />
-<<<<<<< HEAD
         {canDeleteTask ? (
-=======
-        {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
           <>
             <Button
               color="danger"
@@ -211,9 +183,6 @@ export default connect(mapStateToProps, {
   copyTask,
   getPopupById,
   deleteChildrenTasks,
-<<<<<<< HEAD
   hasPermission,
-=======
->>>>>>> 3645e303 (overhaul task system logic, improve task import, move, copy, delete and add functionality)
 })(ControllerRow);
 
