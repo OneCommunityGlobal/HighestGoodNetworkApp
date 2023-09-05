@@ -14,9 +14,9 @@ import { useMemo } from 'react';
 
 function AddTaskModal(props) {
   /*
-  * -------------------------------- variable declarations -------------------------------- 
-  */
-  // props from store 
+   * -------------------------------- variable declarations --------------------------------
+   */
+  // props from store
   const { tasks, copiedTask, allMembers, allProjects, error } = props;
 
   // states from hooks
@@ -25,7 +25,7 @@ function AddTaskModal(props) {
       return tasks.find(({ _id }) => _id === props.taskId).category;
     } else {
       return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
-    }  
+    }
   }, []);
 
   const [taskName, setTaskName] = useState('');
@@ -66,8 +66,8 @@ function AddTaskModal(props) {
   const FORMAT = 'MM/dd/yy';
 
   /*
-  * -------------------------------- functions -------------------------------- 
-  */
+   * -------------------------------- functions --------------------------------
+   */
   const toggle = () => setModal(!modal);
 
   const openModal = () => {
@@ -77,7 +77,7 @@ function AddTaskModal(props) {
 
   const getNewNum = () => {
     let newNum;
-    if (props.taskId) { 
+    if (props.taskId) {
       const numOfLastInnerLevelTask = tasks.reduce((num, task) => {
         if (task.mother === props.taskId) {
           const numIndexArray = task.num.split('.');
@@ -97,7 +97,7 @@ function AddTaskModal(props) {
           num = +indexOfFirstNum > num ? +indexOfFirstNum : num;
         }
         return num;
-      }, 0)
+      }, 0);
       newNum = `${numOfLastLevelOneTask + 1}`;
     }
     return newNum;
@@ -117,7 +117,7 @@ function AddTaskModal(props) {
         profilePic,
       },
       ...resourceItems,
-    ]
+    ];
     setResourceItems(newResource);
     setAssigned(true);
   };
@@ -199,7 +199,7 @@ function AddTaskModal(props) {
   };
 
   const paste = () => {
-    setTaskName(copiedTask.taskName)
+    setTaskName(copiedTask.taskName);
 
     setPriority(copiedTask.priority);
     priorityRef.current.value = copiedTask.priority;
@@ -240,7 +240,7 @@ function AddTaskModal(props) {
       dueDatetime: dueDate,
       links,
       category,
-      parentId1: props.level === 1 ? props.taskId : props.parentId1, 
+      parentId1: props.level === 1 ? props.taskId : props.parentId1,
       parentId2: props.level === 2 ? props.taskId : props.parentId2,
       parentId3: props.level === 3 ? props.taskId : props.parentId3,
       mother: props.taskId,
@@ -256,8 +256,8 @@ function AddTaskModal(props) {
   };
 
   /*
-  * -------------------------------- useEffects -------------------------------- 
-  */
+   * -------------------------------- useEffects --------------------------------
+   */
   useEffect(() => {
     setNewTaskNum(getNewNum());
   }, [modal]);
@@ -273,13 +273,13 @@ function AddTaskModal(props) {
     } else {
       clear();
     }
-  }, [error, tasks])
+  }, [error, tasks]);
 
   return (
     <>
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle} className="w-100 align-items-center">
-          <ReactTooltip delayShow={300}/>
+          <ReactTooltip delayShow={300} />
           <p className="fs-2 d-inline mr-3">Add New Task</p>
           <button
             type="button"
@@ -325,7 +325,11 @@ function AddTaskModal(props) {
               <tr>
                 <td scope="col">Priority</td>
                 <td scope="col">
-                  <select id="priority" onChange={e => setPriority(e.target.value)} ref={priorityRef}>
+                  <select
+                    id="priority"
+                    onChange={e => setPriority(e.target.value)}
+                    ref={priorityRef}
+                  >
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
                     <option value="Tertiary">Tertiary</option>
@@ -349,7 +353,7 @@ function AddTaskModal(props) {
               <tr>
                 <td scope="col">Assigned</td>
                 <td scope="col">
-                  <div className="flex-row d-inline align-items-center" >
+                  <div className="flex-row d-inline align-items-center">
                     <div className="form-check form-check-inline">
                       <input
                         className="form-check-input"
@@ -384,7 +388,7 @@ function AddTaskModal(props) {
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  <div className="flex-row  d-inline align-items-center" >
+                  <div className="flex-row  d-inline align-items-center">
                     <div className="form-check form-check-inline">
                       <input
                         className="form-check-input"
@@ -393,7 +397,7 @@ function AddTaskModal(props) {
                         name="status"
                         value="Active"
                         checked={status === 'Active' || status === 'Started'}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={e => setStatus(e.target.value)}
                       />
                       <label className="form-check-label" htmlFor="active">
                         Active
@@ -407,7 +411,7 @@ function AddTaskModal(props) {
                         name="status"
                         value="Not Started"
                         checked={status === 'Not Started'}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={e => setStatus(e.target.value)}
                       />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
@@ -421,7 +425,7 @@ function AddTaskModal(props) {
                         name="status"
                         value="Paused"
                         checked={status === 'Paused'}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={e => setStatus(e.target.value)}
                       />
                       <label className="form-check-label" htmlFor="paused">
                         Paused
@@ -435,7 +439,7 @@ function AddTaskModal(props) {
                         name="status"
                         value="Complete"
                         checked={status === 'Complete'}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={e => setStatus(e.target.value)}
                       />
                       <label className="form-check-label" htmlFor="complete">
                         Complete
@@ -548,7 +552,12 @@ function AddTaskModal(props) {
                     {links.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i}>
-                          <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)} ></i>
+                          <i
+                            className="fa fa-trash-o remove-link"
+                            aria-hidden="true"
+                            data-tip="delete"
+                            onClick={() => removeLink(i)}
+                          ></i>
                           <a href={link} className="task-link" target="_blank" rel="noreferrer">
                             {link}
                           </a>
@@ -693,11 +702,11 @@ function AddTaskModal(props) {
   );
 }
 
-const mapStateToProps = state => ({ 
+const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
   error: state.tasks.error,
- });
+});
 export default connect(mapStateToProps, { addNewTask })(AddTaskModal);
