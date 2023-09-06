@@ -53,11 +53,12 @@ export const teamsDeleteAction = (team) => ({
 /**
  * Action for updating the status of a team
  */
-export const updateTeamAction = (teamId, isActive, teamName) => ({
+export const updateTeamAction = (teamId, isActive, teamName, teamCode) => ({
   type: UPDATE_TEAM,
   teamId,
   isActive,
   teamName,
+  teamCode,
 });
 
 /**
@@ -149,12 +150,12 @@ export const deleteTeam = (teamId) => {
 /**
  * updating the team status
  */
-export const updateTeam = (teamName, teamId, isActive) => {
-  const requestData = { teamName, isActive };
+export const updateTeam = (teamName, teamId, isActive, teamCode) => {
+  const requestData = { teamName, isActive, teamCode };
   const deleteTeamPromise = axios.put(ENDPOINTS.TEAM_DATA(teamId), requestData);
   return async (dispatch) => {
     deleteTeamPromise.then(() => {
-      dispatch(updateTeamAction(teamId, isActive, teamName));
+      dispatch(updateTeamAction(teamId, isActive, teamName, teamCode));
     });
   };
 };

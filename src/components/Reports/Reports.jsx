@@ -20,6 +20,8 @@ import ReactTooltip from 'react-tooltip';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
 import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
+import hasPermission from 'utils/permissions';
+import { updateTeam } from '../../actions/allTeamsAction';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -505,7 +507,14 @@ class ReportsPage extends Component {
         <div className="table-data-container mt-5">
           {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
           {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
-          {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
+          {this.state.showTeams && 
+            <TeamTable 
+              allTeams={this.state.teamSearchData}
+              auth={this.props.state.auth}
+              hasPermission={this.props.hasPermission}
+              updateTeam={this.props.updateTeam}
+            />
+          }
           {this.state.showTotalProject && (
             <TotalProjectReport
               startDate={this.state.startDate}
@@ -543,4 +552,6 @@ export default connect(mapStateToProps, {
   getAllUserTeams,
   getAllUserProfile,
   fetchAllTasks,
+  hasPermission,
+  updateTeam,
 })(ReportsPage);

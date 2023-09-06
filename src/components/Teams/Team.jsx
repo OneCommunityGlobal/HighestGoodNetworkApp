@@ -20,7 +20,7 @@ const Team = props => {
         className="teams__active--input"
         onClick={e => {
           canDeleteTeam || canPutTeam
-            ? props.onStatusClick(props.name, props.teamId, props.active)
+            ? props.onStatusClick(props.name, props.teamId, props.active, props.teamCode)
             : null;
         }}
         style={boxStyle}
@@ -40,7 +40,7 @@ const Team = props => {
           type="button"
           className="btn btn-outline-info"
           onClick={e => {
-            props.onMembersClick(props.teamId, props.name);
+            props.onMembersClick(props.teamId, props.name, props.teamCode);
           }}
         >
           <i className="fa fa-users" aria-hidden="true" />
@@ -53,7 +53,7 @@ const Team = props => {
               type="button"
               className="btn btn-outline-success"
               onClick={() => {
-                props.onEditTeam(props.name, props.teamId, props.active);
+                props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={boxStyle}
             >
@@ -65,7 +65,7 @@ const Team = props => {
               type="button"
               className="btn btn-outline-danger"
               onClick={() => {
-                props.onDeleteClick(props.name, props.teamId, props.active);
+                props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={boxStyle}
             >

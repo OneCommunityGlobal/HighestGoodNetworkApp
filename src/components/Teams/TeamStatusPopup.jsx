@@ -21,6 +21,7 @@ const TeamStatusPopup = React.memo(props => {
               props.selectedTeamName,
               props.selectedTeamId,
               !props.selectedStatus,
+              props.selectedTeamCode,
             );
           }}
         >
