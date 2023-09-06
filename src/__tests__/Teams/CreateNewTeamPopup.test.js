@@ -54,20 +54,41 @@ describe('CreateNewTeamPopUp', () => {
     expect(inputElement.value).toBe('New Team Name');
   });
 
-  it('should show an error message for empty team name', () => {
+  it('should not show an error message and call onOkClick when team name is not empty', () => {
+    renderWithProvider(
+      <CreateNewTeamPopup {...defaultProps} onOkClick={mock} isValidTeam={true} />,
+    );
+
+    const okButton = screen.getByText('OK');
+    const inputElement = screen.getByPlaceholderText('Please enter a new team name');
+
+    fireEvent.change(inputElement, { target: { value: 'New Team Name' } });
+
+    fireEvent.click(okButton);
+
+    const errorMessage = screen.queryByText('Please enter a team name.');
+    expect(errorMessage).toBeNull();
+    expect(mock).toHaveBeenCalledWith('New Team Name', false);
+  });
+
+  it('should clear the error message when a valid team name is entered after an invalid attempt', () => {
     renderWithProvider(
       <CreateNewTeamPopup {...defaultProps} onOkClick={mock} isValidTeam={false} />,
     );
 
     const okButton = screen.getByText('OK');
-
     const inputElement = screen.getByPlaceholderText('Please enter a new team name');
+
     fireEvent.change(inputElement, { target: { value: '' } });
-    expect(inputElement.value).toBe('');
 
     fireEvent.click(okButton);
 
-    const errorMessage = screen.getByText('Please enter a team name.');
+    let errorMessage = screen.getByText('Please enter a team name.');
     expect(errorMessage).toBeInTheDocument();
+
+    fireEvent.change(inputElement, { target: { value: 'New Team Name' } });
+
+    errorMessage = screen.queryByText('Please enter a team name.');
+    expect(errorMessage).toBeNull();
   });
 });
