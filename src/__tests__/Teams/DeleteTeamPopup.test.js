@@ -3,15 +3,15 @@ import DeleteTeamPopup from 'components/Teams/DeleteTeamPopup';
 import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProvider } from '../../__tests__/utils';
 
+const mock = jest.fn();
+
 const defaultProps = {
   open: true,
   teamName: 'Example Team',
   isEdit: false,
-  onDeleteClick: jest.fn(),
-  onSetInactiveClick: jest.fn(),
+  onDeleteClick: mock,
+  onSetInactiveClick: mock,
 };
-
-const mock = jest.fn();
 
 describe('DeleteTeamPopup', () => {
   it('should call closePopup function', () => {
@@ -30,5 +30,17 @@ describe('DeleteTeamPopup', () => {
     fireEvent.click(setInactiveButton);
 
     expect(defaultProps.onSetInactiveClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call onDeleteClick when "Confirm" button is clicked', () => {
+    renderWithProvider(
+      <DeleteTeamPopup {...defaultProps} onDeleteClick={mock} selectedTeamId={1} />,
+    );
+
+    const confirmButton = screen.getByText('Confirm');
+    fireEvent.click(confirmButton);
+
+    expect(defaultProps.onDeleteClick).toHaveBeenCalledTimes(1);
+    expect(defaultProps.onDeleteClick).toHaveBeenCalledWith(1);
   });
 });
