@@ -119,7 +119,7 @@ function RolePermissions(props) {
       'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
     
   };
-  const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
+  const mainPermissions = ['See All the Reports Tab (DNE)', 'See User Management Tab (Full Functionality) (DNE)', 'See Badge Management Tab (Full Functionality) (DNE)', 'See Project Management Tab (Full Functionality) (DNE)', 'Edit Task', 'See Teams Management Tab (Full Functionality) (DNE)', 'Edit Timelog Information (DNE)', 'Edit User Profile', 'See Popup Management Tab (create and update popups) (DNE - separate)', 'See Permissions Management Tab (DNE - postRole/putRole)', 'See Summary Indicator (DNE)', 'See Visibility Icon (DNE)'  ]
 
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
@@ -225,10 +225,10 @@ function RolePermissions(props) {
           </div>
           {props?.userRole === 'Owner' && (
             <div className="name-container__btns">
-              <Button className="btn_save" color="success" onClick={() => updateInfo()}>
+              <Button className="btn_save" color="success" onClick={() => updateInfo()} style={boxStyle}>
                 Save
               </Button>
-              <Button color="danger" onClick={toggleDeleteRoleModal}>
+              <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
                 Delete Role
               </Button>
             </div>

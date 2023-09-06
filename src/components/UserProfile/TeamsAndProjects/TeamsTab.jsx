@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Row, Label, Input, Col, FormGroup } from 'reactstrap';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 
@@ -19,6 +18,8 @@ const TeamsTab = props => {
     canEditTeamCode,
     setUserProfile,
     userProfile,
+    codeValid,
+    setCodeValid,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -60,31 +61,12 @@ const TeamsTab = props => {
         edit={edit}
         role={role}
         disabled={disabled}
+        canEditTeamCode={canEditTeamCode}
+        setUserProfile={setUserProfile}
+        userProfile={userProfile}
+        codeValid={codeValid}
+        setCodeValid={setCodeValid}
       />
-      <Row>
-        <Col>
-          <Label>Team Code</Label>
-        </Col>
-        <Col>
-          {canEditTeamCode ? (
-            <FormGroup disabled={!canEditTeamCode}>
-              <Input
-                type="text"
-                name="teamCode"
-                id="teamCode"
-                value={userProfile.teamCode}
-                onChange={e => {
-                  setUserProfile({ ...userProfile, teamCode: e.target.value });
-                }}
-                placeholder="format: A-AAA"
-              />
-            </FormGroup>
-          ) : (
-            `${userProfile.teamCodes || userProfile.teamCode == ''
-              ? "No assigned team code": userProfile.teamCode}`
-          )}
-        </Col>
-      </Row>
     </React.Fragment>
   );
 };

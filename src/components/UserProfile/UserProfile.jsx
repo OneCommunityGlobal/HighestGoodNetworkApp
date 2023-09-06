@@ -51,6 +51,7 @@ import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { formatDate } from 'utils/formatDate';
 
 function UserProfile(props) {
   /* Constant values */
@@ -99,6 +100,7 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
+  const [codeValid, setCodeValid] = useState(true);
 
   /* useEffect functions */
 
@@ -624,7 +626,7 @@ function UserProfile(props) {
                 className="profilePicture"
               />
               {canEdit ? (
-                <div className="image-button file btn btn-lg btn-primary">
+                <div className="image-button file btn btn-lg btn-primary" style={boxStyle}>
                   Change Photo
                   <Input
                     style={{ width: '100%', height: '100%', zIndex: '2' }}
@@ -642,6 +644,11 @@ function UserProfile(props) {
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
+              </Alert>
+            ) : null}
+            {!codeValid ? (
+              <Alert color="danger">
+                Please enter a code in the format of X-XXX
               </Alert>
             ) : null}
             <div className="profile-head">
@@ -700,11 +707,11 @@ function UserProfile(props) {
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
+              From : <span>{formatDate(userProfile.createdDate)}</span>
               {'   '}
               To:{' '}
               <span>
-                {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
+                {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
               </span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
@@ -872,6 +879,8 @@ function UserProfile(props) {
                   canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
+                  codeValid={codeValid}
+                  setCodeValid={setCodeValid}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -967,6 +976,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1021,6 +1031,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1069,6 +1080,8 @@ function UserProfile(props) {
                     canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
+                    codeValid={codeValid}
+                    setCodeValid={setCodeValid}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1083,6 +1096,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1142,6 +1156,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1188,6 +1203,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1253,6 +1269,7 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
+                      !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
