@@ -43,4 +43,11 @@ describe('DeleteTeamPopup', () => {
     expect(defaultProps.onDeleteClick).toHaveBeenCalledTimes(1);
     expect(defaultProps.onDeleteClick).toHaveBeenCalledWith(1);
   });
+
+  it('should render the modal when open is true', () => {
+    renderWithProvider(<DeleteTeamPopup {...defaultProps} />);
+
+    const modal = screen.getByText('Delete');
+    expect(modal).toBeInTheDocument();
+  });
 });
