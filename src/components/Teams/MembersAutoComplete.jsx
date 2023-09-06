@@ -16,6 +16,7 @@ export const MemberAutoComplete = props => {
         autoFocus
         type="text"
         value={props.searchText}
+        data-testid='input-search'
         onChange={e => {
           props.setSearchText(e.target.value);
           toggle(true);
