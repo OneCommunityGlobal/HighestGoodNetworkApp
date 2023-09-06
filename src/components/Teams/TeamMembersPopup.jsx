@@ -27,20 +27,16 @@ const TeamMembersPopup = React.memo(props => {
       if (!isDuplicate) {
         props.onAddUser(selectedUser);
         setSearchText('');
-        setDuplicateUserAlert(false);
       } else {
         setSearchText('');
-        setDuplicateUserAlert(true);
       }
     } else {
-      setDuplicateUserAlert(false);
       onValidation(false);
     }
   };
   const selectUser = user => {
     onSelectUser(user);
     onValidation(true);
-    setDuplicateUserAlert(false);
   };
 
   /**
@@ -103,7 +99,6 @@ const TeamMembersPopup = React.memo(props => {
 
   useEffect(() => {
     onValidation(true);
-    setDuplicateUserAlert(false);
   }, [props.open]);
 
   return (
