@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 
-const MemberAutoComplete = props => {
+export const MemberAutoComplete = props => {
   const [isOpen, toggle] = useState(false);
 
   return (
