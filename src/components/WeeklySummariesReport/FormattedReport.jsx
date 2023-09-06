@@ -15,6 +15,7 @@ import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import {
   Input,
   Card,
+  Button,
   CardTitle,
   CardBody,
   CardImg,
@@ -25,6 +26,8 @@ import {
 } from 'reactstrap';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import useIsInViewPort from 'utils/useIsInViewPort';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 
 const textColors = {
   Default: '#000000',
@@ -88,8 +91,11 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
           />
         ))}
       </ListGroup>
+      <div className="d-flex align-items-center">
       <h4>Emails</h4>
-      <button onClick={handleEmailButtonClick}>SEND EMAILS</button>
+      <Button className="ml-2" color="info" size="sm" onClick={handleEmailButtonClick}>Send Email to everyone</Button>
+      <FontAwesomeIcon className="ml-2" onClick={handleEmailButtonClick} icon={faMailBulk} size='lg' style={{color: "#0f8aa9", cursor: "pointer"}}/>
+      </div>
       <p>{emails.join(', ')}</p>
     </>
   )
