@@ -46,17 +46,17 @@
 }
 
 /* This is just only for displaying 'Personal Max hours' badge hours position */
-.badge_featured_count_personalmax {
+.badge_featured_count_personalmax { 
   padding-top: 5px;
-  border-radius: 50%;
-  width: 29px;
+  border-radius: 45%;
+  width: 55px;
   height: 29px;
-  background: #007bff;
+  background: #800080;
   color: #fff;
   text-align: center;
   font: 15px Arial, sans-serif;
   position: absolute;
-  right: 44px;
+  right: 25px;
   bottom: 10px;
   z-index: 0;
 }

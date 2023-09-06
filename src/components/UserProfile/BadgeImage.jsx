@@ -24,7 +24,10 @@ const BadgeImage = props => {
                 : 'badge_featured_count'
             }
           >
-            {Math.round(props.count)}
+            {/* TODO: Get personal max hours in a week data from somewhere else */}
+            {props.badgeData.type == 'Personal Max'
+              ? `${Math.round(props.count)} ${Math.round(props.count) <= 1 ? ' hr' : ' hrs'}`
+              : Math.round(props.count)}
           </span>
         ) : (
           <span className="badge_featured_count_3_digit">{Math.round(props.count)}</span>
