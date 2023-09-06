@@ -15,7 +15,6 @@ import hasPermission from '../../../utils/permissions';
 import styles from './EditLinkModal.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
-import { isValidGoogleDocsUrl, isValidDropboxUrl } from 'utils/checkValidURL';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
@@ -124,14 +123,11 @@ const EditLinkModal = props => {
   };
 
   const handleUpdate = async () => {
-    const isGoogleDocsValid = isValidGoogleDocsUrl(googleLink.Link);
-    const isDropboxValid = isValidDropboxUrl(mediaFolderLink.Link);
     const updatable =
-      (isGoogleDocsValid && isDropboxValid) ||
+      (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
       (googleLink.Link === '' && mediaFolderLink.Link === '') ||
-      (isGoogleDocsValid && mediaFolderLink.Link === '') ||
-      (isDropboxValid && googleLink.Link === '');
-
+      (isValidUrl(googleLink.Link) && mediaFolderLink.Link === '') ||
+      (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
       // Media Folder link should update the mediaUrl in userProfile
