@@ -157,16 +157,6 @@ export default (
           <ProtectedRoute path="/" exact component={Dashboard} />
         </Switch>
       </>
-      <Route path="/login" component={Login} />
-      <Route path="/forgotpassword" component={ForgotPassword} />
-      <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
-      <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
-      <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-      <Route path="/Logout" component={Logout} />
-      <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-      <ProtectedRoute path="/" exact component={Dashboard} />
     </Switch>
-  </>
-    </Switch >
   </>
 );
