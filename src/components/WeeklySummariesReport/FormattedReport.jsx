@@ -15,7 +15,7 @@ import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import {
   Input,
   Card,
-  Button,
+  Tooltip,
   CardTitle,
   CardBody,
   CardImg,
@@ -77,6 +77,12 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     });
   };
 
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const toggleTooltip = () => {
+    setTooltipOpen(!tooltipOpen);
+  };
+
   return (
     <>
       <ListGroup flush>
@@ -93,8 +99,23 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
       </ListGroup>
       <div className="d-flex align-items-center">
       <h4>Emails</h4>
-      <Button className="ml-2" color="info" size="sm" onClick={handleEmailButtonClick}>Send Email to everyone</Button>
-      <FontAwesomeIcon className="ml-2" onClick={handleEmailButtonClick} icon={faMailBulk} size='lg' style={{color: "#0f8aa9", cursor: "pointer"}}/>
+      <Tooltip
+          placement="top"
+          isOpen={tooltipOpen}
+          target="emailIcon"
+          toggle={toggleTooltip}
+        >
+          Launch the email client, organizing the recipient email addresses into batches, each containing a maximum of 90 addresses.
+        </Tooltip>
+        <FontAwesomeIcon
+          className="ml-2"
+          onClick={handleEmailButtonClick}
+          icon={faMailBulk}
+          size='lg'
+          style={{ color: "#0f8aa9", cursor: "pointer" }}
+          id="emailIcon"
+        />
+
       </div>
       <p>{emails.join(', ')}</p>
     </>
