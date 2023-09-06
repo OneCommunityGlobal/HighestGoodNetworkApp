@@ -1,35 +1,88 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
-import { updateRole, getAllRoles } from '../../actions/role';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { permissionLabel } from './UserRoleTab';
+import { ENDPOINTS } from '../../utils/URL';
+import { updateRole, getAllRoles } from '../../actions/role';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
 }
 
-const mapPermissionToLabel = permissions => {
-  const label = [];
+export const permissionLabel = {
+  seeAllReports: 'See All the Reports Tab',
+  getWeeklySummaries: 'See Weekly Summary Reports Tab',
+  seeUserManagement: 'See User Management Tab (Full Functionality)',
+  seeUserManagementTab: 'See User Management Tab (ONLY create Users)',
+  seeBadgeManagement: 'See Badge Management Tab (Full Functionality)',
+  deleteOwnBadge: 'Delete Badge',
+  modifyOwnBadgeAmount: 'Modify Badge Amount',
+  assignBadgeOthers: 'Assign Badges',
+  seeProjectManagement: 'See Project Management Tab (Full Functionality)',
+  addProject: 'Add Project',
+  deleteProject: 'Delete Project',
+  editProject: 'Edit Project',
+  seeUserProfileInProjects: 'See User Profiles in Projects',
+  findUserInProject: 'Find User in Project',
+  assignUserInProject: 'Assign User in Project',
+  unassignUserInProject: 'Unassign User in Project',
+  addWbs: 'Add WBS',
+  deleteWbs: 'Delete WBS',
+  addTask: 'Add Task',
+  editTask: 'Edit Task',
+  deleteTask: 'Delete Task',
+  suggestTask: 'Suggest Changes on a task',
+  viewInteractTask: 'View and Interact with Task',
+  seeTeamsManagement: 'See Teams Management Tab (Full Functionality)',
+  createTeam: 'Create Team',
+  editDeleteTeam: 'Edit/Delete Team',
+  assignTeamToUser: 'Assign Team to User',
+  editTimelogInfo: 'Edit Timelog Information',
+  addTimeEntryOthers: 'Add Time Entry (Others)',
+  deleteTimeEntryOthers: 'Delete Time Entry (Others)',
+  toggleTangibleTime: 'Toggle Tangible Time',
+  changeIntangibleTimeEntryDate: 'Change Date on Intangible Time Entry',
+  editTimeEntry: 'Edit Own Time Entry',
+  deleteTimeEntry: 'Delete Own Time Entry',
+  editUserProfile: 'Edit User Profile',
+  changeUserStatus: 'Change User Status',
+  handleBlueSquare: 'Handle Blue Squares',
+  assignOnlyBlueSquares: 'Only Assign Blue Squares',
+  adminLinks: 'Manage Admin Links in User Profile',
+  assignTeam: "Assign User's Team",
+  resetPasswordOthers: 'Reset Password (Others)',
+  toggleSubmitForm: 'Toggle Summary Submit Form (Others)',
+  submitWeeklySummaryForOthers: 'Submit Weekly Summary For Others',
+  seePermissionsManagement: 'See Permissions Management Tab',
+  manageUser: 'Manage User Permissions',
+  addPermissionRole: 'Add New User Permissions Role',
+  changeBioAnnouncement: 'Change the Bio Announcement Status',
+  removeUserFromTask: 'View and Interact with Task “X”',
+  seeSummaryIndicator: 'See Summary Indicator',
+  seeVisibilityIcon: 'See Visibility Icon',
+  editWeeklySummaryOptions: 'Edit Weekly Summary Options',
+  seePopupManagement: 'See Popup Management Tab (create and update popups)',
+  dataIsTangibleTimelog: 'Timelog Data is Tangible',
+};
 
-  permissions.map(permission => {
+const mapPermissionToLabel = permissions => {
+  return permissions.reduce((label, permission) => {
     if (permissionLabel[permission]) {
       label.push(permissionLabel[permission]);
     }
-  });
-
-  return label;
+    return label;
+  }, []);
 };
 
 function RolePermissions(props) {
+  const { role, roleId, userRole, permissionsList, permissions } = props;
   const modalInfo = {
     'See Weekly Summary Reports Tab':
       'Make the "Other Links" -> "Reports" button appear/accessible.',
@@ -126,7 +179,7 @@ function RolePermissions(props) {
     'See Permissions Management Tab',
   ];
 
-  const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
+  const [userPermissions, setUserPermissions] = useState(mapPermissionToLabel(permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
   const [roleName, setRoleName] = useState('');
@@ -137,7 +190,7 @@ function RolePermissions(props) {
   const [modalContent, setContent] = useState(null);
 
   useEffect(() => {
-    setRoleName(props.role);
+    setRoleName(role);
   }, []);
 
   const toggleDeleteRoleModal = () => {
@@ -162,24 +215,28 @@ function RolePermissions(props) {
   };
 
   useEffect(() => {
-    roleName !== props.role ? setDisabled(false) : setDisabled(true);
+    if (roleName !== role) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
   }, [roleName]);
 
   const onRemovePermission = permission => {
-    const newPermissions = permissions.filter(perm => perm !== permission);
-    setPermissions(newPermissions);
+    const newPermissions = userPermissions.filter(perm => perm !== permission);
+    setUserPermissions(newPermissions);
   };
 
   const onAddPermission = permission => {
-    setPermissions(previous => [...previous, permission]);
+    setUserPermissions(previous => [...previous, permission]);
   };
 
   const updateInfo = async () => {
-    const permissionsObjectName = permissions.map(perm => {
+    const permissionsObjectName = userPermissions.map(perm => {
       return getKeyByValue(permissionLabel, perm);
     });
 
-    const id = props.roleId;
+    const id = roleId;
 
     const updatedRole = {
       roleName,
@@ -187,7 +244,7 @@ function RolePermissions(props) {
       roleId: id,
     };
     try {
-      await props.updateRole(id, updatedRole);
+      await updateRole(id, updatedRole);
       history.push('/permissionsmanagement');
       toast.success('Role updated successfully');
       setChanged(false);
@@ -198,8 +255,8 @@ function RolePermissions(props) {
 
   const deleteRole = async () => {
     try {
-      const URL = ENDPOINTS.ROLES_BY_ID(props.roleId);
-      const res = await axios.delete(URL);
+      const URL = ENDPOINTS.ROLES_BY_ID(roleId);
+      await axios.delete(URL);
       history.push('/permissionsmanagement');
     } catch (error) {
       console.log(error.message);
@@ -208,26 +265,21 @@ function RolePermissions(props) {
 
   return (
     <>
-      {changed ? (
+      {changed && (
         <Alert color="warning" className="user-role-tab__alert ">
-          You have unsaved changes! Please click 
-{' '}
-<strong>Save</strong>
-{' '}
-button to save changes!
-</Alert>
-      ) : (
-        <></>
+          You have unsaved changes! Please click
+          <strong>Save</strong>
+          button to save changes!
+        </Alert>
       )}
       <header>
         <div className="user-role-tab__name-container">
           <div className="name-container__role-name">
             <h1 className="user-role-tab__h1">
-Role Name:
-{' '}
-{roleName}
-</h1>
-            {props?.userRole === 'Owner' && (
+              Role Name:
+              {roleName}
+            </h1>
+            {userRole === 'Owner' && (
               <FontAwesomeIcon
                 icon={faEdit}
                 size="lg"
@@ -236,7 +288,7 @@ Role Name:
               />
             )}
           </div>
-          {props?.userRole === 'Owner' && (
+          {userRole === 'Owner' && (
             <div className="name-container__btns">
               <Button className="btn_save" color="success" onClick={() => updateInfo()}>
                 Save
@@ -276,64 +328,79 @@ Role Name:
         <h2 className="user-role-tab__h2">Permission List</h2>
       </header>
       <ul className="user-role-tab__permissionList">
-        {props.permissionsList.map(permission =>
+        {permissionsList.map(permission =>
           mainPermissions.includes(permission) ? (
-          <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , fontSize: '20px'}}>
-              {permission}
-            </p>
-            <div className="icon-button-container">
-              <div style={{paddingRight: "1rem"}}>
-                  <EditableInfoModal
-                    role={props?.userRole}
-                    areaName={`${permission}`+'Info'}
-                    fontSize={24} />{' '}
-               </div>
-              <Button
-                className="icon-button"
-                color={permissions.includes(permission) ? 'danger' : 'success'}
-                onClick={() => {
-                  permissions.includes(permission)
-                    ? onRemovePermission(permission)
-                    : onAddPermission(permission);
-                  setChanged(true);
+            <li className="user-role-tab__permissions" key={permission}>
+              <p
+                style={{
+                  color: userPermissions.includes(permission) ? 'green' : 'red',
+                  fontSize: '20px',
                 }}
-                disabled={props?.userRole !== 'Owner'}
-                style={boxStyle}
               >
-                {permissions.includes(permission) ? 'Delete' : 'Add'}
-              </Button>
-            </div>
-          </li>
-        ): (
-           <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , paddingLeft: '50px'}}>
-              {permission}
-            </p>
-            <div className="icon-button-container">
-              <div style={{paddingRight: "1rem"}}>
+                {permission}
+              </p>
+              <div className="icon-button-container">
+                <div style={{ paddingRight: '1rem' }}>
                   <EditableInfoModal
-                    role={props?.userRole}
-                    areaName={`${permission}`+'Info'}
-                    fontSize={24} />{' '}
-               </div>
-              <Button
-                className="icon-button"
-                color={permissions.includes(permission) ? 'danger' : 'success'}
-                onClick={() => {
-                  permissions.includes(permission)
-                    ? onRemovePermission(permission)
-                    : onAddPermission(permission);
-                  setChanged(true);
+                    role={userRole}
+                    areaName={`${permission} Info`}
+                    fontSize={24}
+                  />
+                </div>
+                <Button
+                  className="icon-button"
+                  color={userPermissions.includes(permission) ? 'danger' : 'success'}
+                  onClick={() => {
+                    if (userPermissions.includes(permission)) {
+                      onRemovePermission(permission);
+                    } else {
+                      onAddPermission(permission);
+                    }
+                    setChanged(true);
+                  }}
+                  disabled={userRole !== 'Owner'}
+                  style={boxStyle}
+                >
+                  {userPermissions.includes(permission) ? 'Delete' : 'Add'}
+                </Button>
+              </div>
+            </li>
+          ) : (
+            <li className="user-role-tab__permissions" key={permission}>
+              <p
+                style={{
+                  color: userPermissions.includes(permission) ? 'green' : 'red',
+                  paddingLeft: '50px',
                 }}
-                disabled={props?.userRole !== 'Owner'}
-                style={boxStyle}
               >
-                {permissions.includes(permission) ? 'Delete' : 'Add'}
-              </Button>
-            </div>
-          </li>
-         )
+                {permission}
+              </p>
+              <div className="icon-button-container">
+                <div style={{ paddingRight: '1rem' }}>
+                  <EditableInfoModal
+                    role={userRole}
+                    areaName={`${permission} Info`}
+                    fontSize={24}
+                  />
+                </div>
+                <Button
+                  className="icon-button"
+                  color={userPermissions.includes(permission) ? 'danger' : 'success'}
+                  onClick={() => {
+                    if (userPermissions.includes(permission)) {
+                      onRemovePermission(permission);
+                    } else {
+                      onAddPermission(permission);
+                    }
+                    setChanged(true);
+                  }}
+                  disabled={userRole !== 'Owner'}
+                  style={boxStyle}
+                >
+                  {userPermissions.includes(permission) ? 'Delete' : 'Add'}
+                </Button>
+              </div>
+            </li>
           ),
         )}
       </ul>
@@ -344,19 +411,15 @@ Role Name:
             size="lg"
             className="user-role-tab__icon warning-icon"
           />
-          Delete 
-{' '}
-{roleName}
-{' '}
-Role
-</ModalHeader>
+          Delete
+          {roleName}
+          Role
+        </ModalHeader>
         <ModalBody>
-          Are you sure you want to delete 
-{' '}
-<strong>{roleName}</strong>
-{' '}
-role?
-</ModalBody>
+          Are you sure you want to delete
+          <strong>{roleName}</strong>
+          role?
+        </ModalBody>
         <ModalFooter>
           <Button onClick={toggleDeleteRoleModal} style={boxStyle}>
             Cancel
@@ -371,9 +434,7 @@ role?
         <ModalBody>{modalContent}</ModalBody>
         <ModalFooter>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
-            {' '}
             Ok
-{' '}
           </Button>
         </ModalFooter>
       </Modal>

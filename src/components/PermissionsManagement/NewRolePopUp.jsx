@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { boxStyle } from 'styles';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { permissionLabel } from './UserRoleTab';
+import { permissionLabel } from './RolePermissions';
 
 function CreateNewRolePopup({ toggle }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);

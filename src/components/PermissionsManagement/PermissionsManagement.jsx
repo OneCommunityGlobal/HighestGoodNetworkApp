@@ -12,7 +12,7 @@ import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
 import CreateNewRolePopup from './NewRolePopUp';
 
-function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile }) {
+function PermissionsManagement({ roles, auth, getUserRole, userProfile }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
@@ -21,9 +21,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
 
-  roles = roles.filter(role => {
-    if (role != null) return role;
-  });
+  const filteredRoles = roles.filter(role => role !== null);
 
   useEffect(() => {
     getAllRoles();
@@ -34,7 +32,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     setIsUserPermissionsOpen(previousState => !previousState);
   };
   const role = userProfile?.role;
-  const roleNames = roles?.map(role => role.roleName);
+  const roleNames = filteredRoles?.map(role => role.roleName);
 
   return (
     <div key={`${role}+permission`} className="permissions-management">
@@ -46,6 +44,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
             return (
               <div key={roleNameLC} className="role-name">
                 <button
+                  type="button"
                   onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                   key={roleName}
                   className="role-btn"
@@ -55,7 +54,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                 <div className="infos">
                   <EditableInfoModal
                     role={role}
-                    areaName={`${roleName}` + 'Info'}
+                    areaName={`${roleName} Info`}
                     fontSize={18}
                     isPermissionPage
                   />

@@ -7,11 +7,11 @@ import { ENDPOINTS } from 'utils/URL';
 import { getAllUserProfile } from 'actions/userManagement';
 import axios from 'axios';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { permissionLabel } from './UserRoleTab';
+import { permissionLabel } from './RolePermissions';
 
 import './PermissionsManagement.css';
 
-function UserPermissionsPopUp({ allUserProfiles, toggle, getAllUsers, roles }) {
+function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [isOpen, setIsOpen] = useState(false);
