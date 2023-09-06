@@ -162,7 +162,7 @@ const TeamMemberTasks = React.memo(props => {
     //1, fetch data of past timelogs
     const fromDate = moment()
       .tz('America/Los_Angeles')
-      .subtract(Number.MAX_VALUE, 'hours')
+      .subtract(96, 'hours')
       .format('YYYY-MM-DD');
     const toDate = moment()
       .tz('America/Los_Angeles')
@@ -339,6 +339,7 @@ const TeamMemberTasks = React.memo(props => {
             >
               72h
             </button>
+            {/*actually is 96hours instead of 72+*/}
             <button
               type="button"
               className="circle-border 72h+"
