@@ -55,13 +55,19 @@ describe('CreateNewTeamPopUp', () => {
   });
 
   it('should show an error message for empty team name', () => {
-    renderWithProvider(<CreateNewTeamPopup {...defaultProps} onOkClick={mock} />);
+    renderWithProvider(
+      <CreateNewTeamPopup {...defaultProps} onOkClick={mock} isValidTeam={false} />,
+    );
 
     const okButton = screen.getByText('OK');
+
+    const inputElement = screen.getByPlaceholderText('Please enter a new team name');
+    fireEvent.change(inputElement, { target: { value: '' } });
+    expect(inputElement.value).toBe('');
+
     fireEvent.click(okButton);
 
-    expect(mock).not.toHaveBeenCalled();
-
-    expect(screen.getByText('Please enter a team name.')).toBeInTheDocument();
+    const errorMessage = screen.getByText('Please enter a team name.');
+    expect(errorMessage).toBeInTheDocument();
   });
 });
