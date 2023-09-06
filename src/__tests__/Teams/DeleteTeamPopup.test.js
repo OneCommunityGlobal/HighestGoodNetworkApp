@@ -7,6 +7,8 @@ const defaultProps = {
   open: true,
   teamName: 'Example Team',
   isEdit: false,
+  onDeleteClick: jest.fn(),
+  onSetInactiveClick: jest.fn(),
 };
 
 const mock = jest.fn();
@@ -19,5 +21,14 @@ describe('DeleteTeamPopup', () => {
     fireEvent.click(closeButton);
 
     expect(mock).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call onSetInactiveClick when "Set Inactive" button is clicked', () => {
+    renderWithProvider(<DeleteTeamPopup {...defaultProps} />);
+
+    const setInactiveButton = screen.getByText('Set Inactive');
+    fireEvent.click(setInactiveButton);
+
+    expect(defaultProps.onSetInactiveClick).toHaveBeenCalledTimes(1);
   });
 });
