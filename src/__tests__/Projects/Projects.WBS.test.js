@@ -16,7 +16,7 @@ const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
 const leaderboardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
 const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
-let deleteWBSCalled = false;
+let deleteWbsCalled = false;
 let addedWBSCalled = false;
 
 const server = setupServer(
@@ -47,7 +47,7 @@ const server = setupServer(
   }),
   rest.delete(projectWBSUrl, (req, res, ctx) => {
     console.log('Got Here');
-    deleteWBSCalled = true;
+    deleteWbsCalled = true;
     return res(ctx.status(200), ctx.json({}));
   }),
   rest.get(userProjectsUrl, (req, res, ctx) => {
@@ -122,8 +122,8 @@ describe('Project WBS behavior', () => {
     // fireEvent.click(table.getByRole('button'));
     // await waitFor(() => expect(screen.getByText('Confirm')).toBeTruthy());
     // fireEvent.click(screen.getByText('Confirm'));
-    // // await waitFor(() => expect(deleteWBSCalled).toBeTruthy());
-    // deleteWBSCalled = false;
+    // // await waitFor(() => expect(deleteWbsCalled).toBeTruthy());
+    // deleteWbsCalled = false;
     // await waitFor(() => expect(screen.queryAllByText('Fake WBS').length).toBe(0));
   });
 

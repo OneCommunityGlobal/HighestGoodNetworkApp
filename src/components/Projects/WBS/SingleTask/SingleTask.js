@@ -18,17 +18,17 @@ import { deleteTask } from '../../../../actions/task';
 import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
+import { formatDate } from 'utils/formatDate';
 
 
 function SingleTask(props) {
   const {taskId} = props.match.params;
   const { user } = props.auth;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
-  const roles = useSelector(state => state.role.roles);
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
+  const canPostProject = props.hasPermission('postProject');
 
   const history = useHistory();
   useEffect(() => {
@@ -59,7 +59,7 @@ function SingleTask(props) {
     <>
       <ReactTooltip />
       <div className="container-single-task">
-        {hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) && (
+        {canPostProject && (
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
@@ -225,8 +225,8 @@ function SingleTask(props) {
               <td>{task.hoursMost}</td>
               <td>{parseFloat(task.estimatedHours).toFixed(2)}</td>
               <td>{parseFloat(task.hoursLogged).toFixed(2)}</td>
-              <td>{task.startedDatetime ? task.startedDatetime.slice(0, 10) : 'N/A'}</td>
-              <td>{task.dueDatetime ? task.dueDatetime.slice(0, 10) : 'N/A'}</td>
+              <td>{task.startedDatetime ? formatDate(task.startedDatetime) : 'N/A'}</td>
+              <td>{task.dueDatetime ? formatDate(task.dueDatetime) : 'N/A'}</td>
               <td>{task.links}</td>
               <td className="desktop-view" onClick={toggleModel}>
                 <i className="fa fa-book" aria-hidden="true" />
@@ -289,4 +289,5 @@ export default connect(mapStateToProps, {
   getUserProfile,
   deleteTask,
   getPopupById,
+  hasPermission,
 })(SingleTask);

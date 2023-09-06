@@ -58,7 +58,7 @@ export const TasksDetail = props => {
     <div key={task._id} className="tasks-detail-table-row">
       <div>
         <EditTaskModal
-          key={`editTask_${task._id}`}
+          key={`updateTask_${task._id}`}
           parentNum={task.num}
           taskId={task._id}
           wbsId={task.wbsId}
@@ -108,8 +108,7 @@ export const TasksDetail = props => {
   return (
     <div>
       <div className="tasks-detail-total">Total: {tasksList.length}</div>
-      <div className="tasks-detail-table-row tasks-detail-table-head">
-        <div></div>
+      <div className="tasks-detail-table-row tasks-detail-table-head">        
         <div>#</div>
         <div>Task</div>
         <div>Priority</div>

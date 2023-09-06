@@ -29,7 +29,6 @@ src/components/Header/**
 src/components/Inventory/**
 src/components/LeaderBoard/**
 src/components/Login/**
-src/components/Logout/**
 src/components/ManageMemberships/**
 src/components/Memberships/**
 src/components/MonthlyEffort/**
@@ -51,5 +50,4 @@ src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/WeeklySummariesReport/**
-src/components/WeeklySummary/**
 src/components/MouseoverText/**
