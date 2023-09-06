@@ -91,4 +91,11 @@ describe('CreateNewTeamPopUp', () => {
     errorMessage = screen.queryByText('Please enter a team name.');
     expect(errorMessage).toBeNull();
   });
+
+  it('should focus the input field when modal is opened', () => {
+    renderWithProvider(<CreateNewTeamPopup open={true} teamName="Example Team" isEdit={false} />);
+
+    const inputElement = screen.getByPlaceholderText('Please enter a new team name');
+    expect(document.activeElement).toBe(inputElement);
+  });
 });
