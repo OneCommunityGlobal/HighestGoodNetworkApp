@@ -377,7 +377,7 @@ const SummaryBar = props => {
                 className="col-8 border-black bg--white-smoke d-flex align-items-center"
 
               >
-                <div className="m-auto p-2 text-justify">
+                <div className="m-auto p-2 text-center">
                   <font className="text--black med_text_summary align-middle" size="3">
                     {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
