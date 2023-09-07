@@ -1,7 +1,7 @@
 import React from 'react';
 import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
 import { renderWithProvider } from '__tests__/utils';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 
 const mock = jest.fn();
 
