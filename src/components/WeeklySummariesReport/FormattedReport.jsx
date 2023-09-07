@@ -140,23 +140,23 @@ const WeeklySummaryMessage = ({summary, weekIndex}) => {
     );
   }
 
-  const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
-  let summaryDate = moment()
-    .tz('America/Los_Angeles')
-    .endOf('week')
-    .subtract(weekIndex, 'week')
-    .format('YYYY-MMM-DD');
-  let summaryDateText = `Weekly Summary (${summaryDate}):`;
-  const summaryContent = (() => {
-    if (summaryText) {
-      const style = {
-        color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
-      };
+    const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+    let summaryDate = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .format('MMM-DD-YY');
+    let summaryDateText = `Weekly Summary (${(summaryDate)}):`;
+    const summaryContent = (() => {
+      if (summaryText) {
+        const style = {
+          color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+        };
 
-      summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
-        .tz('America/Los_Angeles')
-        .format('YYYY-MMM-DD');
-      summaryDateText = `Summary Submitted On (${summaryDate}):`;
+        summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
+          .tz('America/Los_Angeles')
+          .format('MMM-DD-YY');
+        summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
       return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
     } else {

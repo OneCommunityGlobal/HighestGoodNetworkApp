@@ -111,8 +111,21 @@ const SummaryBar = props => {
 
   //Get badges count from userProfile
   const getBadges = () => {
-    return userProfile && userProfile.badgeCollection ? userProfile.badgeCollection.reduce((acc, obj) => acc + Number(obj.count), 0) : 0;
-  };
+    if (!userProfile || !userProfile.badgeCollection) {
+      return 0;
+    }
+  
+    let totalBadges = 0;
+    userProfile.badgeCollection.forEach(badge => {
+      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+        totalBadges += 1;
+      } else {
+        totalBadges += Math.round(Number(badge.count));        
+      }
+    });
+  
+    return totalBadges;
+  };  
 
   const getState = useSelector(state => {
     return state;
@@ -364,7 +377,7 @@ const SummaryBar = props => {
                 className="col-8 border-black bg--white-smoke d-flex align-items-center"
 
               >
-                <div className="m-auto p-2">
+                <div className="m-auto p-2 text-center">
                   <font className="text--black med_text_summary align-middle" size="3">
                     {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
