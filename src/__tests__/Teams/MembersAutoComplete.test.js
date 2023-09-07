@@ -1,7 +1,7 @@
 import React from 'react';
 import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
 import { renderWithProvider } from '__tests__/utils';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 
 const mock = jest.fn();
 
@@ -51,5 +51,23 @@ describe('MembersAutoComplete', () => {
 
     const dropdownMenu = screen.queryByRole('menu');
     expect(dropdownMenu).toBeInTheDocument();
+  });
+
+  it('should call onAddUser with the correct user when a result is clicked', () => {
+    const selectedUser = {
+      isActive: true,
+      firstName: 'Eduardo',
+      lastName: 'ADM',
+    };
+
+    renderWithProvider(<MemberAutoComplete {...dropdownProps} />);
+
+    const inputElement = screen.getByTestId('input-search');
+    fireEvent.change(inputElement, { target: { value: 'Eduardo' } });
+
+    const userAutoCompleteElement = screen.getByText('Eduardo ADM');
+    fireEvent.click(userAutoCompleteElement);
+
+    expect(defaultProps.onAddUser).toHaveBeenCalledWith(selectedUser);
   });
 });
