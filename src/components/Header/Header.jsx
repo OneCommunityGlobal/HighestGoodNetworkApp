@@ -218,7 +218,7 @@ export const Header = props => {
                         </DropdownItem>
                       </>
                     ) : null}
-                    {canPutRole || canManageUser && (
+                    {(canPutRole || canManageUser) && (
                       <DropdownItem tag={Link} to="/permissionsmanagement">
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>
