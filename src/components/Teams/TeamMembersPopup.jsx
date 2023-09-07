@@ -41,11 +41,12 @@ const TeamMembersPopup = React.memo(props => {
    * 0: alphabetized order by name
    * 1: descending order by date
   */
+
   const sortList = (sort = 0) => {
     let sortedList = []
 
     if (sort === 0) {
-      sortedList = props.members.teamMembers.toSorted(sortByAlpha)
+      sortedList = sortByRole(props?.members?.teamMembers)
     } else {
       const sortByDateList = props.members.teamMembers.toSorted((a, b) => {
         return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
@@ -65,6 +66,26 @@ const TeamMembersPopup = React.memo(props => {
     setMemberList(sortedList);
   }
 
+  const sortByRole = (args) => {
+    let roleArr = [{ priority: 1, role: "owner" }, { priority: 2, role: "administrator" },
+    { priority: 3, role: "core team" }, { priority: 4, role: "manager" },
+    { priority: 5, role: "assistant manager" }, { priority: 6, role: "volunteer" }]
+
+    let newArr = [];
+    args.length > 0 && args.map((elem, i) => {
+      roleArr.map(role => {
+        if (elem.role && elem.role.toLowerCase() == role.role) {
+          let mergedOptions = {
+            ...elem, ...{ priority: role?.priority }
+          };
+          newArr.push(mergedOptions)
+        }
+      })
+    });
+    newArr.sort((a, b) => a.priority - b.priority)
+    return newArr
+  }
+
   const sortByAlpha = useCallback((a, b) => {
     const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
     const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
@@ -72,9 +93,9 @@ const TeamMembersPopup = React.memo(props => {
   })
 
   const icons = {
-    '-1': {icon: faSortUp},
-    '0': {icon: faSort, style: {color: 'lightgrey'}},
-    '1': {icon: faSortDown}
+    '-1': { icon: faSortUp },
+    '0': { icon: faSort, style: { color: 'lightgrey' } },
+    '1': { icon: faSortDown }
   }
 
   const toggleOrder = useCallback(() => {
@@ -93,6 +114,11 @@ const TeamMembersPopup = React.memo(props => {
   useEffect(() => {
     onValidation(true);
   }, [props.open]);
+
+  let returnUserRole = (user) => {
+    let rolesArr = ["Manager", "Mentor", "Assistant Manager"]
+    if (rolesArr.includes(user.role)) return true
+  }
 
   return (
     <Container fluid>
@@ -118,7 +144,7 @@ const TeamMembersPopup = React.memo(props => {
               <tr>
                 <th>#</th>
                 <th>User Name</th>
-                <th style={{cursor: 'pointer'}} onClick={toggleOrder}>Date Added <FontAwesomeIcon {...icons[sortOrder]} /></th>
+                <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>Date Added <FontAwesomeIcon {...icons[sortOrder]} /></th>
                 {canAssignTeamToUsers && <th />}
               </tr>
             </thead>
@@ -127,7 +153,7 @@ const TeamMembersPopup = React.memo(props => {
                 memberList.toSorted().map((user, index) => (
                   <tr key={`team_member_${index}`}>
                     <td>{index + 1}</td>
-                    <td>{`${user.firstName} ${user.lastName}`}</td>
+                    <td>{returnUserRole(user)? <b>{user.firstName} {user.lastName} ({user.role})</b>: <span>{user.firstName} {user.lastName} ({user.role})</span>} </td>
                     <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
                     {canAssignTeamToUsers && (
                       <td>
