@@ -52,6 +52,7 @@ function FormattedReport({
   canEditSummaryCount,
   allRoleInfo,
   badges,
+  loadBadges,
 }) {
   const emails = [];
 
@@ -73,6 +74,7 @@ function FormattedReport({
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
             badges={badges}
+            loadBadges={loadBadges}
           />
         ))}
       </ListGroup>
@@ -89,6 +91,7 @@ function ReportDetails({
   canEditSummaryCount,
   allRoleInfo,
   badges,
+  loadBadges,
 }) {
   const ref = useRef(null);
   const isInViewPort = useIsInViewPort(ref);
@@ -150,7 +153,7 @@ function ReportDetails({
                 </span>
               </ListGroupItem>
             )}
-            {summary.badgeCollection.length > 0 && (
+            {loadBadges && summary.badgeCollection?.length > 0 && (
               <ListGroupItem>
                 <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
               </ListGroupItem>

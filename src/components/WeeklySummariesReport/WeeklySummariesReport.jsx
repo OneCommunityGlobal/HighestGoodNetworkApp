@@ -3,10 +3,22 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Alert, Container, Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import {
+  Alert,
+  Container,
+  Row,
+  Col,
+  TabContent,
+  TabPane,
+  Nav,
+  NavItem,
+  NavLink,
+  Button,
+} from 'reactstrap';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
+import { boxStyle } from 'styles';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -27,6 +39,7 @@ export class WeeklySummariesReport extends Component {
       summaries: [],
       activeTab: navItems[1],
       badges: [],
+      loadBadges: false,
     };
 
     this.weekDates = Array(4)
@@ -177,7 +190,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab, allRoleInfo, badges } = this.state;
+    const { error, loading, summaries, activeTab, allRoleInfo, badges, loadBadges } = this.state;
 
     if (error) {
       return (
@@ -228,16 +241,26 @@ export class WeeklySummariesReport extends Component {
               {navItems.map((item, index) => (
                 <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
                   <Row>
-                    <Col sm="12" md="8" className="mb-2">
+                    <Col sm="12" md="6" className="mb-2">
                       From <b>{this.weekDates[index].fromDate}</b> to{' '}
                       <b>{this.weekDates[index].toDate}</b>
                     </Col>
-                    <Col sm="12" md="4">
+                    <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                       <GeneratePdfReport
                         summaries={summaries}
                         weekIndex={index}
                         weekDates={this.weekDates[index]}
                       />
+                      <Button
+                        className="btn--dark-sea-green"
+                        style={boxStyle}
+                        onClick={() => this.setState({ loadBadges: !loadBadges })}
+                      >
+                        {loadBadges ? 'Hide Badges' : 'Load Badges'}
+                      </Button>
+                      <Button className="btn--dark-sea-green" style={boxStyle}>
+                        Load Trophies
+                      </Button>
                     </Col>
                   </Row>
                   <Row>
@@ -249,6 +272,7 @@ export class WeeklySummariesReport extends Component {
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={allRoleInfo}
                         badges={badges}
+                        loadBadges={loadBadges}
                       />
                     </Col>
                   </Row>

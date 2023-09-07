@@ -125,11 +125,7 @@ function GeneratePdfReport({ summaries, weekIndex, weekDates }) {
   };
 
   return (
-    <Button
-      className="px-5 btn--dark-sea-green float-right"
-      onClick={generateAndDownloadPdf}
-      style={boxStyle}
-    >
+    <Button className="btn--dark-sea-green" onClick={generateAndDownloadPdf} style={boxStyle}>
       Open PDF
     </Button>
   );
