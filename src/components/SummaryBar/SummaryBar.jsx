@@ -363,7 +363,7 @@ const SummaryBar = props => {
               ) : (
                 <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p style={{cursor: 'pointer'}} onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
+                  <p onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
                     ✓
                   </p>
                   <font className="text-center text--black" size="3">
