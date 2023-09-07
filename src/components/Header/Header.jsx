@@ -54,6 +54,7 @@ export const Header = props => {
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canSeeUserManagementTab = props.hasPermission('seeUserManagement') || props.hasPermission('seeUserManagementTab')
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
   // Projects
@@ -168,6 +169,7 @@ export const Header = props => {
                 </NavLink>
               </NavItem>
               {(canPostUserProfile ||
+                canSeeUserManagementTab || 
                 canDeleteUserProfile ||
                 canPutUserProfileImportantInfo ||
                 canCreateBadges ||
@@ -182,6 +184,7 @@ export const Header = props => {
                   </DropdownToggle>
                   <DropdownMenu>
                     {canPostUserProfile ||
+                    canSeeUserManagementTab ||
                     canDeleteUserProfile ||
                     canPutUserProfileImportantInfo ? (
                       <DropdownItem tag={Link} to="/usermanagement">
