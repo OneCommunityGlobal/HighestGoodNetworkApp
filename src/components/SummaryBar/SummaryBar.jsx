@@ -363,7 +363,7 @@ const SummaryBar = props => {
               ) : (
                 <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p className="text-center large_text_summary text--black" >
+                  <p onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
                     ✓
                   </p>
                   <font className="text-center text--black" size="3">
@@ -378,7 +378,7 @@ const SummaryBar = props => {
 
               >
                 <div className="m-auto p-2 text-center">
-                  <font className="text--black med_text_summary align-middle" size="3">
+                  <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
                     {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
                     ) : matchUser ? (
