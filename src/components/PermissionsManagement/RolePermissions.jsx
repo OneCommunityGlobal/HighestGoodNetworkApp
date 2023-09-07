@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { permissionLabel } from './UserRoleTab';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -128,6 +129,7 @@ function RolePermissions(props) {
   const history = useHistory();
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
+  const userProfile = useSelector(state => state.userProfile);
   
   useEffect(() => {
     setRoleName(props.role);
@@ -180,7 +182,8 @@ function RolePermissions(props) {
       roleId: id,
     };
     try {
-      await props.updateRole(id, updatedRole);
+      delete userProfile.permissions  // prevent overriding 'permissions' key-value pair
+      await props.updateRole(id, {...updatedRole, ...userProfile});
       history.push('/permissionsmanagement');
       toast.success('Role updated successfully');
       setChanged(false);
