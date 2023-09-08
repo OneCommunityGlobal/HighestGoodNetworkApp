@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import {
+  Button,
+  Modal,
+  Label,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  Alert,
+} from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -201,10 +210,6 @@ function RolePermissions(props) {
     setEditRoleNameModal(!editRoleNameModal);
   };
 
-  const toggleInfoRoleModal = () => {
-    setinfoRoleModal(!infoRoleModal);
-  };
-
   const handleChangeRoleName = e => {
     setRoleName(e.target.value);
   };
@@ -212,6 +217,11 @@ function RolePermissions(props) {
   const handleModalOpen = idx => {
     setContent(modalInfo[idx]);
     setinfoRoleModal(true);
+  };
+
+  const toggleInfoRoleModal = () => {
+    handleModalOpen();
+    setinfoRoleModal(!infoRoleModal);
   };
 
   useEffect(() => {
@@ -301,7 +311,7 @@ function RolePermissions(props) {
           <Modal isOpen={editRoleNameModal} toggle={toggleEditRoleNameModal}>
             <ModalHeader>Edit Role Name</ModalHeader>
             <ModalBody>
-              <label htmlFor="editRoleName">New Role Name</label>
+              <Label htmlFor="editRoleName">New Role Name</Label>
               <Input
                 type="text"
                 name="editRoleName"
