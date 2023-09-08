@@ -1,0 +1,139 @@
+.toggle-switch {
+    position: absolute;
+    width: 43%;
+    top: 0.5rem;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    text-align: left;
+  }
+  .toggle-switch-checkbox {
+    display: none;
+  }
+  .toggle-switch-label {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    border: 0 solid #bbb;
+    border-radius: 20px;
+    margin: 0;
+  }
+  .toggle-switch-inner {
+    display: block;
+    width: 200%;
+    margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+  }
+  .toggle-switch-inner:before,
+  .toggle-switch-inner:after {
+    display: block;
+    float: left;
+    width: 50%;
+    height: 24px;
+    padding: 0;
+    line-height: 25px;
+    font-size: 0.8rem;
+    color: white;
+    font-weight: bolder;
+    box-sizing: border-box;
+  }
+  .toggle-switch-inner:before {
+    content: 'Stopwatch';
+    text-transform: uppercase;
+    padding-left: 10px;
+    background: linear-gradient(200deg, #fad774 0%, #f19958 100%);
+    color: #fff;
+  }
+  .toggle-switch-disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  .toggle-switch-disabled:before {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  .toggle-switch-inner:after {
+    content: 'Countdown';
+    text-transform: uppercase;
+    padding-right: 10px;
+    background: linear-gradient(99.85deg, #ed688a 0%, #d264a9 100%);
+    color: #fff;
+    text-align: right;
+  }
+  .toggle-switch-switch {
+    display: block;
+    width: 14px;
+    margin: 5px;
+    background: #fff;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 5.5rem;
+    border: 0 solid #bbb;
+    border-radius: 20px;
+    transition: all 0.3s ease-in 0s;
+  }
+  .toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-inner {
+    margin-left: 0;
+  }
+  .toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-switch {
+    right: 0px;
+  }
+  
+  .timer .alert {
+    position: absolute;
+    z-index: 40;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-evenly;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  .alert .actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  
+  .actions button {
+    border-radius: 0.75rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 1rem;
+    border: none;
+    color: white;
+  }
+  
+  .actions .yes {
+    background: #a76ad1;
+  }
+  
+  .yes:hover {
+    background: rgba(237, 104, 138, 1);
+  }
+  
+  .actions .no {
+    background-color: #343a40;
+  }
+  
+  .no:hover {
+    background-color: #525c66;
+  }

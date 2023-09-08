@@ -18,7 +18,7 @@ import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
-import Header from './components/Header';
+import Header from './components/HeaderNew';
 import Projects from './components/Projects';
 import Teams from './components/Teams/Teams';
 import UserManagement from './components/UserManagement';
