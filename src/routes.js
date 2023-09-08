@@ -38,6 +38,10 @@ import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 
+// BM Dashboard
+import BMDashboard from 'components/BMDashboard';
+import BMLogin from 'components/BMDashboard/Login';
+
 export default (
   <>
     <Header />
@@ -140,6 +144,15 @@ export default (
         routePermissions={RoutePermissions.teams}
       />
       <ProtectedRoute path="/project/members/:projectId" component={Members} />
+
+      {/* ----- BEGIN BM Dashboard Routing ----- */}
+
+      <ProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
+      <Route path="/bmdashboard/login" component={BMLogin} />
+      {/* Temporary route to redirect all subdirectories to login */}
+      <ProtectedRoute path="/bmdashboard/:path" exact component={BMDashboard} />
+      
+      {/* ----- END BM Dashboard Routing ----- */}
 
       <Route path="/login" component={Login} />
       <Route path="/forgotpassword" component={ForgotPassword} />

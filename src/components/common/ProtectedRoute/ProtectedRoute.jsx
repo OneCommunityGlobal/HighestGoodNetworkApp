@@ -32,8 +32,15 @@ const ProtectedRoute = ({
     <Route
       {...rest}
       render={props => {
+        console.log("🚀 ~ file: ProtectedRoute.jsx:35 ~ props:", props)
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
+        } 
+        // bm dashboard login
+        else if (props.match.path === '/bmdashboard' ||
+          props.match.path === '/bmdashboard/:path'
+          && !auth.isMainAuthenticated) {
+          return <Redirect to={{ pathname: '/bmdashboard/login', state: { from: props.location } }} />;
         } else if (routePermissions && !hasPermissionToAccess) {
           return <Redirect to={{ pathname: '/dashboard', state: { from: props.location } }} />;
         }
