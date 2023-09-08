@@ -36,8 +36,8 @@ export const Team = props => {
           </div>
         )}
       </td>
-      <td style={boxStyle} className="centered-cell">
-        <button
+      <td className="centered-cell">
+        <button style={boxStyle}
           type="button"
           className="btn btn-outline-info"
           onClick={e => {
