@@ -4,11 +4,13 @@ import LogBar from './LogBar';
 import RentedTools from './RentedTools/RentedTools';
 import Materials from './Materials/Materials';
 import ProjectLog from './ProjectLog';
+import './ProjectDetails.css';
+//import { boxStyle } from 'styles';
 
 function ProjectDetails() {
   return (
-    <Container>
-      <h2>Project A Dashboard</h2>
+    <Container className='project-details'>
+      <h3>Project A Dashboard</h3>
       <Row>
         <LogBar />
       </Row>

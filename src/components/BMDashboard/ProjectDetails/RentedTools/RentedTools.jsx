@@ -5,7 +5,7 @@ import ToolCard from './ToolCard';
 function RentedTools() {
   return (
     <Card style={{ margin: 20 }}>
-      <h5>Rented Tools or equipment to be returned in 3 days.</h5>
+      <h6>Rented Tools or equipment to be returned in 3 days.</h6>
       <ToolCard />
     </Card>
   );
