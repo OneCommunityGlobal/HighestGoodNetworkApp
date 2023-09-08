@@ -37,6 +37,7 @@ import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
+import ProjectDetails from 'components/BMDashboard/ProjectDetails/ProjectDetails';
 
 export default (
   <>
@@ -151,6 +152,7 @@ export default (
       <Route path="/Logout" component={Logout} />
       <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
       <ProtectedRoute path="/" exact component={Dashboard} />
+      <Route path="/BMDashboard/:projectId" component={ProjectDetails} />
     </Switch>
   </>
 );
