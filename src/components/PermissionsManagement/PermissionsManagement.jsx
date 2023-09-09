@@ -66,7 +66,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
         </div>
         }
         {(
-            userProfile?.permissions?.frontPermissions.some(permission => permission === 'manageUser') ||
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'putUserProfilePermissions') ||
             userProfile?.permissions?.frontPermissions.some(permission => permission === 'addPermissionRole') ||
             userProfile?.role === 'Owner'
             ) && (
@@ -85,7 +85,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
               Add New Role
             </Button>}
             {(
-            userProfile?.permissions?.frontPermissions.some(permission => permission === 'manageUser') ||
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'putUserProfilePermissions') ||
             userProfile?.role === 'Owner'
             ) &&
             <Button

@@ -43,6 +43,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       const newPermissionsObject = {
         frontPermissions: actualPermissionsFront,
       };
+      console.log(newPermissionsObject.frontPermissions)
       return { ...previous, permissions: newPermissionsObject };
     });
   };

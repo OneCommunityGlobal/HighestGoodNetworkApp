@@ -69,7 +69,7 @@ export const Header = props => {
   // Roles
   const canPutRole = props.hasPermission('putRole');
   // Permissions 
-  const canManageUser = props.hasPermission('manageUser');
+  const canManageUser = props.hasPermission('putUserProfilePermissions');
 
   const dispatch = useDispatch();
 
