@@ -18,14 +18,8 @@ src/styles.js
 src/utils/**
 src/__tests__/**
 
-src/jest.config.json
-src/store.js
-src/styles.js
-src/routes.js
-src/registerServiceWorker.js
-src/index.js
 
-# src/components/Admin/**
+
 src/components/App.jsx
 src/components/AutoReload/**
 src/components/AutoUpdate/**
@@ -63,7 +57,4 @@ src/components/WeeklySummary/**
 src/components/MouseoverText/**
 
 
-public/**
-node_modules/**
-images/**
 build/**
