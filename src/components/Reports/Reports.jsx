@@ -20,10 +20,12 @@ import ReactTooltip from 'react-tooltip';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
 import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -267,6 +269,7 @@ class ReportsPage extends Component {
   }
 
   render() {
+    const userRole = this.props.state.userProfile.role;
     const { projects } = this.props.state.allProjects;
     const { allTeams } = this.props.state.allTeamsData;
     const { userProfiles } = this.props.state.allUserProfiles;
@@ -294,7 +297,16 @@ class ReportsPage extends Component {
     return (
       <Container fluid className="mb-5 container-component-wrapper">
         <div className="container-component-category">
-          <h2 className="mt-3 mb-5">Reports Page</h2>
+          <h2 className="mt-3 mb-5">
+            Reports Page
+            <EditableInfoModal
+            // Pass any necessary props to EditableInfoModal
+            areaName="ReportsPage" // Example areaName
+            role={userRole} // Example role
+            fontSize={24} // Example fontSize
+            isPermissionPage={true} // Example isPermissionPage
+            />
+          </h2>
           <div>
             <p>Select a Category</p>
           </div>

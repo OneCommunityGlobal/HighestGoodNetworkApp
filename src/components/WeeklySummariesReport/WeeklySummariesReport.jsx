@@ -12,6 +12,7 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import { getInfoCollections } from '../../actions/information';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const navItems = [
   'This Week',
@@ -69,6 +70,7 @@ export class WeeklySummariesReport extends Component {
           : sessionStorage.getItem('tabSelection'),
       badges: this.props.allBadgeData,
     });
+
     await this.props.getInfoCollections();
     const { infoCollections} = this.props;
     const role = this.props.authUser?.role;
@@ -177,7 +179,8 @@ export class WeeklySummariesReport extends Component {
 
   render() {
     const { error, loading, summaries, activeTab } = this.state;
-
+    const role = this.props.role;
+    console.log(role)
     if (error) {
       return (
         <Container>
@@ -199,12 +202,19 @@ export class WeeklySummariesReport extends Component {
         </Container>
       );
     }
-
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
-            <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
+            <h3 className="mt-3 mb-5">Weekly Summaries Reports page
+            <EditableInfoModal
+            // Pass any necessary props to EditableInfoModal
+            areaName="WeeklySummariesReport" // Example areaName
+            role={role} // Example role    
+            fontSize={24} // Example fontSize
+            isPermissionPage={true} // Example isPermissionPage
+            />
+            </h3>
           </Col>
         </Row>
         <Row>
@@ -274,6 +284,7 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections:state.infoCollections.infos,
+  role: state.userProfile.role,
 });
 
 const WeeklySummariesReportTab = ({tabId, hidden, children}) => {

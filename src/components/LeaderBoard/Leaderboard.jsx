@@ -12,6 +12,7 @@ import {
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -220,7 +221,15 @@ const LeaderBoard = ({
           <thead>
             <tr>
               <th>Status</th>
-              <th>Name</th>
+              <th>Name
+                <EditableInfoModal
+                  // Pass any necessary props to EditableInfoModal
+                  areaName="Leaderboard" // Example areaName
+                  role={loggedInUser.role} // Example role
+                  fontSize={24} // Example fontSize
+                  isPermissionPage={true} // Example isPermissionPage
+                />
+              </th>
               <th>
                 <span className="d-sm-none">Tan. Time</span>
                 <span className="d-none d-sm-block">Tangible Time</span>

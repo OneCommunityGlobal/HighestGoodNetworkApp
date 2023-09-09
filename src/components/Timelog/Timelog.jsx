@@ -46,6 +46,7 @@ import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -408,7 +409,6 @@ const Timelog = props => {
 
   const isOwner = auth.user.userid === userId;
   const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
-
   return (
     <div>
       {!props.isDashboard ? (
@@ -424,6 +424,12 @@ const Timelog = props => {
       ) : (
         ''
       )}
+      <EditableInfoModal
+          areaName="DashboardTimelog"
+          fontSize={24}
+          isPermissionPage={true}
+          role={auth.user.role} // Pass the 'role' prop to EditableInfoModal
+      />
       {state.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
