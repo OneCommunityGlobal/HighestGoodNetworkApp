@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
+import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
 
 /**
  * Modal popup to show the user profile in create mode
@@ -21,7 +21,7 @@ const NewUserPopup = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} className={'modal-dialog modal-lg'}>
+    <Modal isOpen={props.open} toggle={closePopup} className="modal-dialog modal-lg">
       <ModalHeader
         toggle={closePopup}
         cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
@@ -31,7 +31,7 @@ const NewUserPopup = React.memo(props => {
       <ModalBody>
         <AddNewUserProfile
           closePopup={closePopup}
-          isAddNewUser={true}
+          isAddNewUser
           history={history}
           userCreated={userCreated}
           userProfiles={props.userProfiles}

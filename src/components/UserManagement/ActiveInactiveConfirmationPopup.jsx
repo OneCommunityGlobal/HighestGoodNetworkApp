@@ -6,7 +6,7 @@ import { USER_STATUS_CHANGE_CONFIRMATION } from '../../languages/en/messages';
  * Modal popup to show the user profile to confirm activation/deactivtion
  */
 const ActiveInactiveConfirmationPopup = React.memo(props => {
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
   const setActiveInactive = () => {

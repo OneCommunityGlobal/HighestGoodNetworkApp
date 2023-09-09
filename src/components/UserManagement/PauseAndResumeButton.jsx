@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Button } from 'reactstrap';
+import { toast } from 'react-toastify';
+import { boxStyle } from 'styles';
 import { PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActivationDatePopup from './ActivationDatePopup';
 import { updateUserStatus } from '../../actions/userManagement';
-import { Button } from 'reactstrap';
-import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
 
 /**
  * @param {*} props
@@ -14,7 +14,7 @@ import { boxStyle } from 'styles';
  * @param {*} props.userProfile
  * @returns
  */
-const PauseAndResumeButton = props => {
+function PauseAndResumeButton(props) {
   const [activationDateOpen, setActivationDateOpen] = useState(false);
   const [isActive, setIsActive] = useState(true);
 
@@ -58,7 +58,7 @@ const PauseAndResumeButton = props => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <ActivationDatePopup
         open={activationDateOpen}
         onClose={activationDatePopupClose}
@@ -70,14 +70,14 @@ const PauseAndResumeButton = props => {
         className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
-        onClick={e => {
+        onClick={() => {
           onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
         }}
         style={boxStyle}
       >
         {isActive ? PAUSE : RESUME}
       </Button>
-    </React.Fragment>
+    </>
   );
-};
+}
 export default PauseAndResumeButton;
