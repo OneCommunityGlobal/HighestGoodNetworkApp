@@ -5,7 +5,7 @@ import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import Timer from '../Timer/Timer';
+import { NewTimer as Timer } from '../Timer/NewTimer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
   LOGO,
