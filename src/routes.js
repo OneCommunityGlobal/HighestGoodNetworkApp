@@ -91,13 +91,14 @@ export default (
             component={Reports}
             routePermissions={RoutePermissions.reports}
           />
+
           <ProtectedRoute
-        path="/teamlocations"
-        exact
-        component={TeamLocations}
-        routePermissions={RoutePermissions.reports}
-      />
-      <ProtectedRoute
+            path="/teamlocations"
+            exact
+            component={TeamLocations}
+            routePermissions={RoutePermissions.reports}
+          />
+          <ProtectedRoute
             path="/projects"
             exact
             component={Projects}

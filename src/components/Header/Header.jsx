@@ -13,6 +13,7 @@ import {
   TIMELOG,
   REPORTS,
   WEEKLY_SUMMARIES_REPORT,
+  TEAM_LOCATIONS,
   OTHER_LINKS,
   USER_MANAGEMENT,
   BADGE_MANAGEMENT,
@@ -24,7 +25,6 @@ import {
   LOGOUT,
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
-  TEAM_LOCATIONS,
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -159,7 +159,7 @@ export const Header = props => {
                       </DropdownItem>
                     )}
                   </DropdownMenu>
-                </UncontrolledDropdown>
+              </UncontrolledDropdown>
               ) : null}
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
