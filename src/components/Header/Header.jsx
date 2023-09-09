@@ -23,6 +23,7 @@ import {
   LOGOUT,
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
+  TEAM_LOCATIONS,
 } from '../../languages/en/ui';
 import {
   Collapse,

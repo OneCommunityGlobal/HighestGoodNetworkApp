@@ -51,7 +51,7 @@ import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 const nextDay = new Date();
-nextDay.setDate(nextDay.getDate()+1);
+nextDay.setDate(nextDay.getDate() + 1);
 
 class AddUserProfile extends Component {
   constructor(props) {
@@ -75,7 +75,12 @@ class AddUserProfile extends Component {
         googleDoc: '',
         dropboxDoc: '',
         timeZone: '',
-        location: '',
+        location: {
+          userProvided: '',
+          coords: { lat: '', lng: '' },
+          country: '',
+          city: '',
+        },
         showphone: true,
         weeklySummaryOption: 'Required',
         createdDate: nextDay,
@@ -87,16 +92,14 @@ class AddUserProfile extends Component {
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
       },
-      location: '',
       timeZoneFilter: '',
       formSubmitted: false,
       teamCode: '',
       codeValid: false,
     };
 
-    
     const { user } = this.props.auth;
-    this.canAddDeleteEditOwners = user && user.role === 'Owner'
+    this.canAddDeleteEditOwners = user && user.role === 'Owner';
   }
 
   popupClose = () => {
@@ -385,16 +388,20 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                    <div className="date-picker-item">                        
-                      <DatePicker
-                        selected={this.state.userProfile.createdDate}
-                        minDate={new Date(DATE_PICKER_MIN_DATE)}
-                        onChange={date => this.setState({ userProfile: {
-                          ...this.state.userProfile,
-                          createdDate: date,
-                        }})}
-                        className="form-control"
-                      />
+                      <div className="date-picker-item">
+                        <DatePicker
+                          selected={this.state.userProfile.createdDate}
+                          minDate={new Date(DATE_PICKER_MIN_DATE)}
+                          onChange={date =>
+                            this.setState({
+                              userProfile: {
+                                ...this.state.userProfile,
+                                createdDate: date,
+                              },
+                            })
+                          }
+                          className="form-control"
+                        />
                       </div>
                     </FormGroup>
                   </Col>
@@ -444,7 +451,9 @@ class AddUserProfile extends Component {
                   color="primary"
                   block
                   size="lg"
-                  onClick={() => this.createUserProfile(false)}
+                  onClick={() => {
+                    this.createUserProfile(false);
+                  }}
                   style={boxStyle}
                 >
                   Create
@@ -509,7 +518,7 @@ class AddUserProfile extends Component {
 
   // Function to call TimeZoneService with location and key
   onClickGetTimeZone = () => {
-    const location = this.state.location;
+    const location = this.state.userProfile.location.userProvided;
     const key = this.props.timeZoneKey;
     if (!location) {
       alert('Please enter valid location');
@@ -524,11 +533,20 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+            let currentLocation = {
+              coords: {
+                lat: response.data.results[0].geometry.lat,
+                lan: response.data.results[0].geometry.lng,
+              },
+              country: response.data.results[0].components.country,
+              city: response.data.results[0].components.city,
+            };
             this.setState({
               ...this.state,
               timeZoneFilter: timezone,
               userProfile: {
                 ...this.state.userProfile,
+                location: { ...this.state.userProfile.location, ...currentLocation },
                 timeZone: timezone,
               },
             });
@@ -801,7 +819,13 @@ class AddUserProfile extends Component {
   };
 
   handleLocation = e => {
-    this.setState({ ...this.state, location: e.target.value });
+    this.setState({
+      ...this.state,
+      userProfile: {
+        ...this.state.userProfile,
+        location: { ...this.state.location, userProvided: e.target.value },
+      },
+    });
     this.handleUserProfile(e);
   };
 
@@ -862,7 +886,7 @@ class AddUserProfile extends Component {
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim(),
+            [event.target.id]: { ...userProfile.location, userProvided: event.target.value.trim() },
           },
           formValid: {
             ...formValid,

@@ -29,6 +29,7 @@ export const INVENTORY = 'Inventory';
 export const REPORTS = 'Reports';
 export const WEEKLY_SUMMARIES_REPORT = 'Weekly Summaries Report';
 export const TEAMS = 'Teams';
+export const TEAM_LOCATIONS = 'Team locations';
 export const PERMISSIONS_MANAGEMENT = 'Permissions Management';
 export const TIMELOG = 'Timelog';
 export const UPDATE_PASSWORD = 'Update Password';
