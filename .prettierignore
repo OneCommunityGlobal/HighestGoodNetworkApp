@@ -17,7 +17,6 @@ src/utils/**
 src/__tests__/**
 
 
-# src/components/Admin/**
 src/components/App.jsx
 src/components/AutoReload/**
 src/components/AutoUpdate/**
@@ -53,6 +52,5 @@ src/components/UserProfile/**
 src/components/WeeklySummariesReport/**
 src/components/WeeklySummary/**
 src/components/MouseoverText/**
-
 
 build/**
