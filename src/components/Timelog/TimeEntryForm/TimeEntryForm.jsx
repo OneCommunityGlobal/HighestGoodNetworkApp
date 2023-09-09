@@ -453,6 +453,7 @@ const TimeEntryForm = props => {
     }
 
     //Update userprofile hoursByCategory
+    await dispatch(getUserProfile(userId));
 
     //Send the time entry to the server
     setSubmitting(true);

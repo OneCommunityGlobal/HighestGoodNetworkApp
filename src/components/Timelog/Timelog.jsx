@@ -45,7 +45,7 @@ import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
-import { formattedDate } from 'utils/formattedDate';
+import { formatDate } from 'utils/formatDate';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -59,7 +59,6 @@ const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   }
   return false;
 };
-
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -214,15 +213,7 @@ const Timelog = props => {
       .subtract(offset, 'weeks')
       .format('YYYY-MM-DD');
   };
-  // added to have dedicated display date variable due to errors in backend
-  // from changing format of startOfWeek
-  const startOfWeekDisplayDate = offset => {
-    return moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(offset, 'weeks')
-      .format('MMM-DD-YY');
-  };
+
   // endOfWeek returns the date of the end of the week based on offset. Offset is the number of weeks before.
   // For example, if offset is 0, returns the end of this week. If offset is 1, returns the end of last week.
   const endOfWeek = offset => {
@@ -231,15 +222,6 @@ const Timelog = props => {
       .endOf('week')
       .subtract(offset, 'weeks')
       .format('YYYY-MM-DD');
-  };
-  // added to have dedicated display date variable due to errors in backend
-  // from changing format of endOfWeek
-  const endOfWeekDisplayDate = offset => {
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(offset, 'weeks')
-      .format('MMM-DD-YY');
   };
 
   const calculateTotalTime = (data, isTangible) => {
@@ -263,14 +245,14 @@ const Timelog = props => {
     } else if (state.activeTab === 4) {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{formattedDate(state.fromDate)}</b> to <b>{formattedDate(state.toDate)}</b>
+          Viewing time Entries from <b>{formatDate(state.fromDate)}</b> to <b>{formatDate(state.toDate)}</b>
         </p>
       );
     } else {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{startOfWeekDisplayDate(state.activeTab - 1)}</b> to{' '}
-          <b>{endOfWeekDisplayDate(state.activeTab - 1)}</b>
+          Viewing time Entries from <b>{formatDate(startOfWeek(state.activeTab - 1))}</b> to{' '}
+          <b>{formatDate(endOfWeek(state.activeTab - 1))}</b>
         </p>
       );
     }

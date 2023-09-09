@@ -5,9 +5,11 @@ import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
 import RolePermissions from './RolePermissions';
 import { permissionLabel } from './RolePermissions';
+import { boxStyle } from 'styles';
 
 function UserRoleTab(props) {
   const { auth, roles, match, userProfile, getUserRole } = props;
+  
   useEffect(() => {
     getUserRole(auth?.user.userid);
   }, []);
@@ -43,6 +45,7 @@ function UserRoleTab(props) {
         type="button"
         onClick={() => history.push('/permissionsmanagement')}
         className="userRoleTab__backBtn"
+        style={boxStyle}
       >
         Back
       </button>

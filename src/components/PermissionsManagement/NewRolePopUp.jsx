@@ -11,6 +11,7 @@ function CreateNewRolePopup({ toggle }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
+  const [isNotDuplicateRole, setIsNotDuplicateRole] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const noSymbolsRegex = /^([a-zA-Z0-9 ]+)$/;
 
@@ -19,6 +20,8 @@ function CreateNewRolePopup({ toggle }) {
 
     if (!isValidRole) {
       toast.error('Please enter a valid role name');
+    } else if (!isNotDuplicateRole) {
+      toast.error('Please enter a non duplicate role name');
     } else {
       const newRoleObject = {
         roleName: newRoleName,
@@ -33,6 +36,7 @@ function CreateNewRolePopup({ toggle }) {
   const handleRoleName = e => {
     const { value } = e.target;
     const regexTest = noSymbolsRegex.test(value);
+    const duplicateTest = checkIfDuplicate(value);
     if (value.trim() === '') {
       setNewRoleName(value);
       setErrorMessage('Please enter a role name');
@@ -44,6 +48,18 @@ function CreateNewRolePopup({ toggle }) {
       setErrorMessage('Special character/symbols not allowed');
       setIsValidRole(false);
     }
+  };
+
+  const checkIfDuplicate = value => {
+    let duplicateFound = false;
+
+    roleNames.forEach(val => {
+      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
+        duplicateFound = true;
+        return true;
+      }
+    });
+    return duplicateFound;
   };
 
   const handleChange = e => {

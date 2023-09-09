@@ -13,6 +13,7 @@ import { getAllRoles } from '../../actions/role';
 import CreateNewRolePopup from './NewRolePopUp';
 
 function PermissionsManagement({ roles, auth, getUserRole, userProfile }) {
+
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
@@ -98,7 +99,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile }) {
             Create New Role
           </ModalHeader>
           <ModalBody id="modal-body_new-role--padding">
-            <CreateNewRolePopup toggle={togglePopUpNewRole} />
+            <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} />
           </ModalBody>
         </Modal>
         <Modal
