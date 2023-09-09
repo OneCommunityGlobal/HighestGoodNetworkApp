@@ -17,6 +17,7 @@ import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';
 import hasPermission from '../../../utils/permissions';
+import { boxStyle } from 'styles';
 
 const Members = props => {
   const projectId = props.match.params.projectId;
@@ -41,7 +42,7 @@ const Members = props => {
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <NavItem tag={Link} to={`/projects/`}>
-              <button type="button" className="btn btn-secondary">
+              <button type="button" className="btn btn-secondary" style={boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
               </button>
             </NavItem>
@@ -93,6 +94,7 @@ const Members = props => {
                       className="btn btn-outline-primary"
                       type="button"
                       onClick={() => assignAll()}
+                      style={boxStyle}
                     >
                       +All
                     </button>
