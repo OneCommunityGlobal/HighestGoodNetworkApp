@@ -11,11 +11,13 @@ const defaultProps = {
   isEdit: false,
   onDeleteClick: mock,
   onSetInactiveClick: mock,
+  onClose: mock,
+  selectedTeamId: 1,
 };
 
 describe('DeleteTeamPopup', () => {
   it('should call closePopup function', () => {
-    renderWithProvider(<DeleteTeamPopup {...defaultProps} onClose={mock} />);
+    renderWithProvider(<DeleteTeamPopup {...defaultProps} />);
 
     const closeButton = screen.getByText('Close');
     fireEvent.click(closeButton);
@@ -33,9 +35,7 @@ describe('DeleteTeamPopup', () => {
   });
 
   it('should call onDeleteClick when "Confirm" button is clicked', () => {
-    renderWithProvider(
-      <DeleteTeamPopup {...defaultProps} onDeleteClick={mock} selectedTeamId={1} />,
-    );
+    renderWithProvider(<DeleteTeamPopup {...defaultProps} />);
 
     const confirmButton = screen.getByText('Confirm');
     fireEvent.click(confirmButton);
