@@ -24,6 +24,7 @@ import {
   LOGOUT,
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
+  TEAM_LOCATIONS,
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -147,6 +148,9 @@ export const Header = props => {
                         </DropdownItem>
                         <DropdownItem tag={Link} to="/weeklysummariesreport">
                           {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                        <DropdownItem tag={Link} to="/teamlocations">
+                          {TEAM_LOCATIONS}
                         </DropdownItem>
                       </>
                     ) : (
