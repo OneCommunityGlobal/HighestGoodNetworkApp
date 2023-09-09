@@ -124,7 +124,7 @@ export const  modalInfo = {
 function RolePermissions(props) {
   
   const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
-  //console.log(props.permissions)
+
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
@@ -275,12 +275,18 @@ function RolePermissions(props) {
               {permission}
             </p>
             <div className="icon-button-container">
-              <div style={{paddingRight: "1rem"}}>
-                  <EditableInfoModal
-                    role={props?.userRole}
-                    areaName={`${permission}`+'Info'}
-                    fontSize={24} />{' '}
-               </div>
+            <div className='infos'>
+              <i
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={() => {
+                  handleModalOpen(permission);
+                }}
+              />
+              </div>
               <Button
                 className="icon-button"
                 color={permissions.includes(permission) ? 'danger' : 'success'}
@@ -302,7 +308,7 @@ function RolePermissions(props) {
               {permission}
             </p>
             <div className="icon-button-container">
-              <div style={{paddingRight: '27px'}}>
+              <div className='infos'>
               <i
                 data-toggle="tooltip"
                 data-placement="center"
