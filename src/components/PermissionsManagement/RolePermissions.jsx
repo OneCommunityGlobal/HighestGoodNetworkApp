@@ -277,18 +277,13 @@ function RolePermissions(props) {
     <>
       {changed && (
         <Alert color="warning" className="user-role-tab__alert ">
-          You have unsaved changes! Please click
-          <strong>Save</strong>
-          button to save changes!
+          You have unsaved changes! Please click <strong>Save</strong> button to save changes!
         </Alert>
       )}
       <header>
         <div className="user-role-tab__name-container">
           <div className="name-container__role-name">
-            <h1 className="user-role-tab__h1">
-              Role Name:
-              {roleName}
-            </h1>
+            <h1 className="user-role-tab__h1">Role Name: {roleName}</h1>
             {userRole === 'Owner' && (
               <FontAwesomeIcon
                 icon={faEdit}
@@ -421,14 +416,10 @@ function RolePermissions(props) {
             size="lg"
             className="user-role-tab__icon warning-icon"
           />
-          Delete
-          {roleName}
-          Role
+          Delete {roleName} Role
         </ModalHeader>
         <ModalBody>
-          Are you sure you want to delete
-          <strong>{roleName}</strong>
-          role?
+          Are you sure you want to delete <strong>{roleName}</strong> role?
         </ModalBody>
         <ModalFooter>
           <Button onClick={toggleDeleteRoleModal} style={boxStyle}>

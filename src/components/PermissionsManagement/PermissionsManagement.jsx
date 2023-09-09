@@ -31,14 +31,14 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile }) {
   const togglePopUpUserPermissions = () => {
     setIsUserPermissionsOpen(previousState => !previousState);
   };
-  const role = userProfile?.role;
+  const userRole = userProfile?.role;
   const roleNames = filteredRoles?.map(role => role.roleName);
 
   return (
-    <div key={`${role}+permission`} className="permissions-management">
+    <div key={`${userRole}+permission`} className="permissions-management">
       <h1 className="permissions-management__title">User Roles</h1>
-      <div key={`${role}_header`} className="permissions-management__header">
-        <div key={`${role}_name`} className="role-name-container">
+      <div key={`${userRole}_header`} className="permissions-management__header">
+        <div key={`${userRole}_name`} className="role-name-container">
           {roleNames?.map(roleName => {
             const roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
@@ -53,7 +53,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile }) {
                 </button>
                 <div className="infos">
                   <EditableInfoModal
-                    role={role}
+                    role={userRole}
                     areaName={`${roleName} Info`}
                     fontSize={18}
                     isPermissionPage

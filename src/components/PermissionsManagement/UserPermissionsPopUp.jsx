@@ -79,9 +79,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
 
     await axios
       .put(url, newUserInfo)
-      .then(res => {
-        res.data;
-      })
+      .then()
       .catch(err => console.log(err));
     getAllUsers();
 
@@ -122,7 +120,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
             setIsOpen(true);
           }}
         />
-        {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
+        {(isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0)) && (
           <div
             tabIndex="-1"
             role="menu"
@@ -132,33 +130,33 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
           >
             {allUserProfiles
               .filter(user => {
-                if (
+                return (
                   user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
                   user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
                   `${user.firstName} ${user.lastName}`
                     .toLowerCase()
                     .includes(searchText.toLowerCase())
-                ) {
-                  return user;
-                }
+                );
               })
               .map(user => (
-                <div
-                  className="user__auto-complete"
-                  key={user._id}
-                  onClick={() => {
-                    onInputChange(`${user.firstName} ${user.lastName}`);
-                    setIsOpen(false);
-                    setActualUserProfile(user);
-                    getUserData(user._id);
-                  }}
-                >
-                  {`${user.firstName} ${user.lastName}`}
+                <div>
+                  <button
+                    type="button"
+                    className="user__auto-complete"
+                    style={{ width: '100%', textAlign: 'left' }}
+                    key={user._id}
+                    onClick={() => {
+                      onInputChange(`${user.firstName} ${user.lastName}`);
+                      setIsOpen(false);
+                      setActualUserProfile(user);
+                      getUserData(user._id);
+                    }}
+                  >
+                    {`${user.firstName} ${user.lastName}`}
+                  </button>
                 </div>
               ))}
           </div>
-        ) : (
-          <></>
         )}
       </Dropdown>
       <div>
@@ -175,25 +173,15 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
                 >
                   {value}
                 </div>
-                {isPermissionDefault(key) ? null : isPermissionChecked(key) ? (
+                {!isPermissionDefault(key) && (
                   <Button
                     type="button"
-                    color="danger"
-                    onClick={e => onChangeCheck(key)}
+                    onClick={() => onChangeCheck(key)}
                     disabled={!actualUserProfile}
                     style={boxStyle}
+                    color={isPermissionChecked(key) ? 'danger' : 'success'}
                   >
-                    Remove
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    color="success"
-                    onClick={e => onChangeCheck(key)}
-                    disabled={!actualUserProfile}
-                    style={boxStyle}
-                  >
-                    Add
+                    {isPermissionChecked(key) ? 'Remove' : 'Add'}
                   </Button>
                 )}
               </li>
