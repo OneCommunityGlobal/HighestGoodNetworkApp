@@ -51,6 +51,7 @@ import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { formatDate } from 'utils/formatDate';
 
 function UserProfile(props) {
   /* Constant values */
@@ -440,10 +441,11 @@ function UserProfile(props) {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const updateLink = (personalLinksUpdate, adminLinksUpdate) => {
+  const updateLink = (personalLinksUpdate, adminLinksUpdate, mediaUrlUpdate) => {
     setShowModal(false);
     setUserProfile({
       ...userProfile,
+      mediaUrl:mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
       personalLinks: personalLinksUpdate,
       adminLinks: adminLinksUpdate,
     });
@@ -623,7 +625,7 @@ function UserProfile(props) {
                 className="profilePicture"
               />
               {canEdit ? (
-                <div className="image-button file btn btn-lg btn-primary">
+                <div className="image-button file btn btn-lg btn-primary" style={boxStyle}>
                   Change Photo
                   <Input
                     style={{ width: '100%', height: '100%', zIndex: '2' }}
@@ -699,11 +701,11 @@ function UserProfile(props) {
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
+              From : <span>{formatDate(userProfile.createdDate)}</span>
               {'   '}
               To:{' '}
               <span>
-                {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
+                {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
               </span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
@@ -748,6 +750,7 @@ function UserProfile(props) {
                 userProfile={userProfile}
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
+                handleSubmit={handleSubmit}
                 role={requestorRole}
                 canEdit={canEdit}
               />

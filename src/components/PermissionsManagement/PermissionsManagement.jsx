@@ -33,9 +33,8 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
   const togglePopUpUserPermissions = () => {
     setIsUserPermissionsOpen(previousState => !previousState);
   };
-
-  const roleNames = roles?.map(role => role.roleName);
   const role = userProfile?.role;
+  const roleNames = roles?.map(role => role.roleName);
 
   return (
     <div key={`${role}+permission`} className="permissions-management">

@@ -111,8 +111,21 @@ const SummaryBar = props => {
 
   //Get badges count from userProfile
   const getBadges = () => {
-    return userProfile && userProfile.badgeCollection ? userProfile.badgeCollection.reduce((acc, obj) => acc + Number(obj.count), 0) : 0;
-  };
+    if (!userProfile || !userProfile.badgeCollection) {
+      return 0;
+    }
+  
+    let totalBadges = 0;
+    userProfile.badgeCollection.forEach(badge => {
+      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+        totalBadges += 1;
+      } else {
+        totalBadges += Math.round(Number(badge.count));        
+      }
+    });
+  
+    return totalBadges;
+  };  
 
   const getState = useSelector(state => {
     return state;
@@ -294,10 +307,10 @@ const SummaryBar = props => {
               {totalEffort >= weeklyCommittedHours && (
                 <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black" >
+                  <p className="text-center large_text_summary text--black" >
                     ✓
                   </p>
-                  <font size="3">HOURS</font>
+                  <font className="text-center" size="3">HOURS</font>
                   <div className="py-2"> </div>
                 </div>
               )}
@@ -350,10 +363,10 @@ const SummaryBar = props => {
               ) : (
                 <div className="border-green col-4 bg--dark-green" >
                   <div className="py-1"> </div>
-                  <p className="large_text_summary text--black" >
+                  <p onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
                     ✓
                   </p>
-                  <font className="text--black" size="3">
+                  <font className="text-center text--black" size="3">
                     SUMMARY
                   </font>
                   <div className="py-2"> </div>
@@ -364,8 +377,8 @@ const SummaryBar = props => {
                 className="col-8 border-black bg--white-smoke d-flex align-items-center"
 
               >
-                <div className="m-auto p-2">
-                  <font className="text--black med_text_summary align-middle" size="3">
+                <div className="m-auto p-2 text-center">
+                  <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
                     {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
                     ) : matchUser ? (

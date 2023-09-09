@@ -108,8 +108,7 @@ export const TasksDetail = props => {
   return (
     <div>
       <div className="tasks-detail-total">Total: {tasksList.length}</div>
-      <div className="tasks-detail-table-row tasks-detail-table-head">
-        <div></div>
+      <div className="tasks-detail-table-row tasks-detail-table-head">        
         <div>#</div>
         <div>Task</div>
         <div>Priority</div>

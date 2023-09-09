@@ -230,10 +230,10 @@ function RolePermissions(props) {
           </div>
           {props?.userRole === 'Owner' && (
             <div className="name-container__btns">
-              <Button className="btn_save" color="success" onClick={() => updateInfo()}>
+              <Button className="btn_save" color="success" onClick={() => updateInfo()} style={boxStyle}>
                 Save
               </Button>
-              <Button color="danger" onClick={toggleDeleteRoleModal}>
+              <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
                 Delete Role
               </Button>
             </div>
@@ -275,17 +275,12 @@ function RolePermissions(props) {
               {permission}
             </p>
             <div className="icon-button-container">
-              <i
-                data-toggle="tooltip"
-                data-placement="center"
-                title="Click for more information"
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={() => {
-                  handleModalOpen(permission);
-                }}
-              />
-              &nbsp;&nbsp;
+              <div style={{paddingRight: "1rem"}}>
+                  <EditableInfoModal
+                    role={props?.userRole}
+                    areaName={`${permission}`+'Info'}
+                    fontSize={24} />{' '}
+               </div>
               <Button
                 className="icon-button"
                 color={permissions.includes(permission) ? 'danger' : 'success'}

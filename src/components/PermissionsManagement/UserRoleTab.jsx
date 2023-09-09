@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import './UserRoleTab.css';
 import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
+import { boxStyle } from 'styles';
 
 export const permissionLabel = {
   seeWeeklySummaryReports: 'See Weekly Summary Reports Tab',
@@ -36,8 +37,9 @@ export const permissionLabel = {
   editDeleteTeam: 'Edit/Delete Team',
   addWbs: 'Add WBS',
   deleteWbs: 'Delete WBS',
-  addTask: 'Add Task',
-  editTask: 'Edit Task',
+  // Tasks
+  postTask: 'Add Task',
+  updateTask: 'Edit Task',
   deleteTask: 'Delete Task',
   suggestTask: 'Suggest Changes on a task',
   seeTeamsManagement: 'See Teams Management Tab (Full Functionality)',
@@ -116,6 +118,7 @@ const UserRoleTab = props => {
       <button
         onClick={() => history.push('/permissionsmanagement')}
         className="userRoleTab__backBtn"
+        style={boxStyle}
       >
         Back
       </button>
