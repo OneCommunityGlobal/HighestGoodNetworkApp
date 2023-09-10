@@ -18,7 +18,7 @@ const ResetPasswordPopup = React.memo(props => {
   const [newPassword, onNewPasswordChange] = useState({ password: '', isValid: false });
   const [confirmPassword, onConfirmPasswordChange] = useState({ password: '', isValid: false });
   const [errorMessage, setError] = useState('');
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
 
@@ -85,7 +85,7 @@ const ResetPasswordPopup = React.memo(props => {
         </FormGroup>
       </ModalBody>
       <ModalFooter>
-        {errorMessage === '' ? <React.Fragment /> : <Alert color="danger">{errorMessage}</Alert>}
+        {errorMessage && errorMessage !== '' ? <Alert color="danger">{errorMessage}</Alert> : ''}
         <Button color="primary" onClick={resetPassword} style={boxStyle}>
           Reset Password
         </Button>

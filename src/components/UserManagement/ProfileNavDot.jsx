@@ -1,8 +1,7 @@
-import { React } from 'react';
 import { useHistory } from 'react-router';
 
 // pass userId of an account to navigate to user profile onClick of icon
-export const ProfileNavDot = ({ userId }) => {
+export default function ProfileNavDot({ userId }) {
   const history = useHistory();
   return (
     <span
@@ -15,4 +14,4 @@ export const ProfileNavDot = ({ userId }) => {
       <i className="fa fa-user" />
     </span>
   );
-};
+}

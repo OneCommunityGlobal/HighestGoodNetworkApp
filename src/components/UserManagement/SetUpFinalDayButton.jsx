@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
-import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
-import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { updateUserFinalDayStatus } from 'actions/userManagement';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
+import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
+import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 
 /**
  * @param {*} props
@@ -13,18 +13,19 @@ import { boxStyle } from 'styles';
  * @param {*} props.userProfile.isSet
  * @returns
  */
-const SetUpFinalDayButton = props => {
+function SetUpFinalDayButton(props) {
   const [isSet, setIsSet] = useState(false);
   const [finalDayDateOpen, setFinalDayDateOpen] = useState(false);
   const dispatch = useDispatch();
+  const { userProfile } = props;
 
   useEffect(() => {
-    if (props.userProfile?.endDate !== undefined) setIsSet(true);
+    if (userProfile?.endDate !== undefined) setIsSet(true);
   }, []);
 
   const onFinalDayClick = async (user, status) => {
     if (isSet) {
-      await updateUserFinalDayStatus(props.userProfile, 'Active', undefined)(dispatch);
+      await updateUserFinalDayStatus(userProfile, 'Active', undefined)(dispatch);
       setIsSet(!isSet);
       setTimeout(async () => {
         await props.loadUserProfile();
@@ -40,7 +41,7 @@ const SetUpFinalDayButton = props => {
   };
 
   const deactiveUser = async finalDayDate => {
-    await updateUserFinalDayStatus(props.userProfile, 'Active', finalDayDate)(dispatch);
+    await updateUserFinalDayStatus(userProfile, 'Active', finalDayDate)(dispatch);
     setIsSet(true);
     setFinalDayDateOpen(false);
     setTimeout(async () => {
@@ -50,7 +51,7 @@ const SetUpFinalDayButton = props => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <SetUpFinalDayPopUp
         open={finalDayDateOpen}
         onClose={setUpFinalDayPopupClose}
@@ -63,13 +64,13 @@ const SetUpFinalDayButton = props => {
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={e => {
-          onFinalDayClick(props.userProfile, isSet);
+          onFinalDayClick(userProfile, isSet);
         }}
         style={boxStyle}
       >
         {isSet ? CANCEL : SET_FINAL_DAY}
       </Button>
-    </React.Fragment>
+    </>
   );
-};
+}
 export default SetUpFinalDayButton;
