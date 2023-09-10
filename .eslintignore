@@ -19,7 +19,7 @@ src/utils/**
 src/__tests__/**
 
 
-src/components/Admin/**
+
 src/components/App.jsx
 src/components/AutoReload/**
 src/components/AutoUpdate/**
