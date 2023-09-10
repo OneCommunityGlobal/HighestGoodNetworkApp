@@ -6,9 +6,9 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
  * @param {Boolean} props.visible
  * @param {Func} props.setVisible
  */
-const AboutModal = props => {
+function AboutModal({ visible, setVisible }) {
   return (
-    <Modal isOpen={props.visible}>
+    <Modal isOpen={visible}>
       <ModalHeader>Info</ModalHeader>
       <ModalBody>
         <p>
@@ -66,12 +66,12 @@ const AboutModal = props => {
         </p>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={() => props.setVisible(false)} color="primary">
+        <Button onClick={() => setVisible(false)} color="primary">
           Close
         </Button>
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default AboutModal;
