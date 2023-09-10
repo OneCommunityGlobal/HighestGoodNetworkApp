@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Container,
   Row,
@@ -32,6 +32,8 @@ import ReactTooltip from 'react-tooltip';
 import ActiveCell from 'components/UserManagement/ActiveCell';
 import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from 'components/TeamMemberTasks';
+import { boxStyle } from 'styles';
+import { formatDate } from 'utils/formatDate';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTask } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
@@ -44,14 +46,12 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
-import { boxStyle } from 'styles';
-import { formatDate } from 'utils/formatDate';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
 
-  for (let task of tasks) {
-    for (let resource of task.resources) {
+  for (const task of tasks) {
+    for (const resource of task.resources) {
       if (resource.userID == userId && resource.completedTask == false) {
         return true;
       }
@@ -65,7 +65,7 @@ function useDeepEffect(effectFunc, deps) {
   const prevDeps = useRef(deps);
   useEffect(() => {
     const isSame = prevDeps.current.every((obj, index) => {
-      let isItEqual = isEqual(obj, deps[index]);
+      const isItEqual = isEqual(obj, deps[index]);
       return isItEqual;
     });
     if (isFirst.current || !isSame) {
@@ -76,13 +76,13 @@ function useDeepEffect(effectFunc, deps) {
   }, deps);
 }
 
-const Timelog = props => {
-  //Main Function component
+function Timelog(props) {
+  // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
-  //access the store states
+  // access the store states
   const auth = useSelector(state => state.auth);
   const userProfile = useSelector(state => state.userProfile);
   const timeEntries = useSelector(state => state.timeEntries);
@@ -93,8 +93,8 @@ const Timelog = props => {
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
 
   const defaultTab = () => {
-    //change default to time log tab(1) in the following cases:
-    const role = auth.user.role;
+    // change default to time log tab(1) in the following cases:
+    const { role } = auth.user;
     let tab = 0;
     const UserHaveTask = doesUserHaveTaskWithWBS(userTask, userIdByState);
     /* To set the Task tab as defatult this.userTask is being watched.
@@ -102,9 +102,9 @@ const Timelog = props => {
     Accounts assigned with tasks with no wbs return and empty array.
     Accounts assigned with tasks with wbs return an array with that wbs data.
     The problem: even after unassigning tasks the array keeps the wbs data.
-    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
+    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks. */
 
-    //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
+    // if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
     if (role === 'Volunteer' && !UserHaveTask) {
       tab = 1;
     }
@@ -117,7 +117,7 @@ const Timelog = props => {
   };
 
   const timeLogFunction = () => {
-    //build the time log component
+    // build the time log component
     buildOptions()
       .then(response => {
         setProjectOrTaskOptions(response);
@@ -133,7 +133,7 @@ const Timelog = props => {
   };
 
   const loadAsyncData = async userId => {
-    //load the timelog data
+    // load the timelog data
     setState({ ...state, isTimeEntriesLoading: true });
     try {
       await Promise.all([
@@ -149,7 +149,7 @@ const Timelog = props => {
       setError(e);
     }
 
-    //setState({...state,activeTab:defaultTabValue});
+    // setState({...state,activeTab:defaultTabValue});
   };
 
   const toggle = () => {
@@ -204,7 +204,6 @@ const Timelog = props => {
     props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate);
   };
 
-
   const startOfWeek = offset => {
     return moment()
       .tz('America/Los_Angeles')
@@ -241,20 +240,21 @@ const Timelog = props => {
   const renderViewingTimeEntriesFrom = () => {
     if (state.activeTab === 0 || state.activeTab === 5) {
       return <></>;
-    } else if (state.activeTab === 4) {
+    }
+    if (state.activeTab === 4) {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{formatDate(state.fromDate)}</b> to <b>{formatDate(state.toDate)}</b>
-        </p>
-      );
-    } else {
-      return (
-        <p className="ml-1">
-          Viewing time Entries from <b>{formatDate(startOfWeek(state.activeTab - 1))}</b> to{' '}
-          <b>{formatDate(endOfWeek(state.activeTab - 1))}</b>
+          Viewing time Entries from <b>{formatDate(state.fromDate)}</b> to{' '}
+          <b>{formatDate(state.toDate)}</b>
         </p>
       );
     }
+    return (
+      <p className="ml-1">
+        Viewing time Entries from <b>{formatDate(startOfWeek(state.activeTab - 1))}</b> to{' '}
+        <b>{formatDate(endOfWeek(state.activeTab - 1))}</b>
+      </p>
+    );
   };
 
   const generateAllTimeEntries = async () => {
@@ -266,7 +266,7 @@ const Timelog = props => {
   };
 
   const makeBarData = userId => {
-    //pass the data to summary bar
+    // pass the data to summary bar
     const weekEffort = calculateTotalTime(timeEntries.weeks[0], true);
     setState({ ...state, currentWeekEffort: weekEffort });
     if (props.isDashboard) {
@@ -276,20 +276,21 @@ const Timelog = props => {
     }
   };
 
-
   const buildOptions = async () => {
-    //build options for the project and task
+    // build options for the project and task
     let projects = [];
     if (!isEmpty(userProjects.projects)) {
       projects = userProjects.projects;
     }
-    const options = projects.map(project => (
-      (project?.projectId != undefined) &&
-      <option value={project.projectId} key={project.projectId}>
-        {' '}
-        {project.projectName}{' '}
-      </option>
-    ));
+    const options = projects.map(
+      project =>
+        project?.projectId != undefined && (
+          <option value={project.projectId} key={project.projectId}>
+            {' '}
+            {project.projectName}{' '}
+          </option>
+        ),
+    );
     options.unshift(
       <option value="all" key="all">
         All Projects and Tasks (Default)
@@ -324,7 +325,7 @@ const Timelog = props => {
   const [userId, setUserId] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [data, setData] = useState({
-    disabled: !props.hasPermission('disabledDataTimelog') ? false : true,
+    disabled: !!props.hasPermission('disabledDataTimelog'),
     isTangible: false,
   });
   const initialState = {
@@ -347,7 +348,7 @@ const Timelog = props => {
 
   useEffect(() => {
     // Does not run again (except once in development): load data
-    const userId = props?.match?.params?.userId || props.asUser; //Including fix for "undefined"
+    const userId = props?.match?.params?.userId || props.asUser; // Including fix for "undefined"
     setUserId(userId);
     if (userProfile._id !== userId) {
       props.getUserProfile(userId);
@@ -729,10 +730,7 @@ const Timelog = props => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks
-                        asUser={props.asUser}
-                        handleUpdateTask={handleUpdateTask}
-                      />
+                      <TeamMemberTasks asUser={props.asUser} handleUpdateTask={handleUpdateTask} />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>
@@ -750,7 +748,7 @@ const Timelog = props => {
       )}
     </div>
   );
-};
+}
 
 const mapStateToProps = state => state;
 
