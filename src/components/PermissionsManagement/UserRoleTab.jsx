@@ -15,6 +15,7 @@ export const permissionLabel = {
   seeUserManagementTab: 'See User Management Tab (ONLY create Users) (DNE - postUserProfile)',
   // Badges
   seeBadgeManagement: 'See Badge Management Tab (Full Functionality) (DNE)',
+  seeBadgeManagementTab: 'See Badge Management Tab (ONLY create Badges)',
   seeBadges: 'See Badges',
   createBadges: 'Create Badges',
   deleteBadges: 'Delete Badges',

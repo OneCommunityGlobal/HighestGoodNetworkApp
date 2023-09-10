@@ -37,6 +37,8 @@ function RolePermissions(props) {
       'Make the "Other Links" -> "User Management" button appear/accessible and be able to create, delete, and update users.',
     'See Badge Management Tab (create badges)':
       'Make the "Other Links" -> "Badge Management" button appear and then have the ability to create, delete, and update badges. ',
+    'See Badge Management Tab (ONLY create Badges)': 
+      'Make the "Other Links" -> "Badge Management" button appear and then have the ability to create (but not edit or delete) badges.',
     'Delete Badge':
       'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
     'Modify Badge Amount':
