@@ -8,26 +8,27 @@ class TextSearchBox extends React.PureComponent {
     };
   }
 
-  render() {
-    return (
-      <input
-        type="text"
-        value={this.props.value}
-        id={'search_' + this.props.id}
-        style={this.props.style}
-        onChange={this.onTextChange}
-        placeholder={this.props.placeholder}
-        className={this.props.className}
-      ></input>
-    );
-  }
-
   onTextChange = event => {
     this.props.searchCallback(event.target.value);
     this.setState({
       text: event.target.value,
     });
   };
+
+  render() {
+    const { value, id, style, placeholder, className } = this.props;
+    return (
+      <input
+        type="text"
+        value={value}
+        id={`search_${id}`}
+        style={style}
+        onChange={this.onTextChange}
+        placeholder={placeholder}
+        className={className}
+      />
+    );
+  }
 }
 
 export default TextSearchBox;

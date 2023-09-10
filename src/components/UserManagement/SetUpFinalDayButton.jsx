@@ -63,7 +63,7 @@ function SetUpFinalDayButton(props) {
         className={`btn btn-outline-${isSet ? 'warning' : 'success'} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
-        onClick={e => {
+        onClick={() => {
           onFinalDayClick(userProfile, isSet);
         }}
         style={boxStyle}

@@ -1,18 +1,19 @@
-/*****************************************************************
+/** ***************************************************************
  * Component   : USER MANAGEMENT
  * Author      : Nithesh A N - TEKTalent
  * Created on  : 05/27/2020
  * List the users in the application for administrator.
- *****************************************************************/
+ **************************************************************** */
 import React from 'react';
+import { connect } from 'react-redux';
+import { Container } from 'reactstrap';
+import { Table } from 'react-bootstrap';
 import {
   getAllUserProfile,
   updateUserStatus,
   updateUserFinalDayStatusIsSet,
   deleteUser,
 } from '../../actions/userManagement';
-import { connect } from 'react-redux';
-import Loading from '../common/Loading';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
@@ -26,9 +27,7 @@ import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
-import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
-import { Table } from 'react-bootstrap';
 import SetupNewUserPopup from './setupNewUserPopup';
 
 class UserManagement extends React.PureComponent {
@@ -60,59 +59,6 @@ class UserManagement extends React.PureComponent {
     this.props.getAllUserProfile();
   }
 
-  render() {
-    let { userProfiles, fetching } = this.props.state.allUserProfiles;
-    const { roles: rolesPermissions } = this.props.state.role;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions);
-    let roles = [...new Set(userProfiles.map(item => item.role))];
-    return (
-      <Container fluid>
-        {fetching ? (
-          <SkeletonLoading template="UserManagement" />
-        ) : (
-          <React.Fragment>
-            {this.popupElements()}
-            <UserSearchPanel
-              onSearch={this.onWildCardSearch}
-              searchText={this.state.wildCardSearchText}
-              onActiveFiter={this.onActiveFiter}
-              onNewUserClick={this.onNewUserClick}
-              handleNewUserSetupPopup={this.handleNewUserSetupPopup}
-            />
-            <div className="table-responsive" id="user-management-table">
-              <Table className="table table-bordered noWrap">
-                <thead>
-                  <UserTableHeader
-                    authRole={this.props.state.auth.user.role}
-                    roleSearchText={this.state.roleSearchText}
-                  />
-                  <UserTableSearchHeader
-                    onFirstNameSearch={this.onFirstNameSearch}
-                    onLastNameSearch={this.onLastNameSearch}
-                    onRoleSearch={this.onRoleSearch}
-                    onEmailSearch={this.onEmailSearch}
-                    onWeeklyHrsSearch={this.onWeeklyHrsSearch}
-                    roles={roles}
-                    authRole={this.props.state.auth.user.role}
-                    roleSearchText={this.state.roleSearchText}
-                  />
-                </thead>
-                <tbody>{userTable}</tbody>
-              </Table>
-            </div>
-            <UserTableFooter
-              datacount={this.filteredUserDataCount}
-              selectedPage={this.state.selectedPage}
-              onPageSelect={this.onSelectPage}
-              onSelectPageSize={this.onSelectPageSize}
-              pageSize={this.state.pageSize}
-            />
-          </React.Fragment>
-        )}
-      </Container>
-    );
-  }
-
   /**
    * Returns the differenet popup components to render
    * 1. Popup to show the reactivation date selection
@@ -123,7 +69,7 @@ class UserManagement extends React.PureComponent {
    */
   popupElements = () => {
     return (
-      <React.Fragment>
+      <>
         <ActivationDatePopup
           open={this.state.activationDateOpen}
           onClose={this.activationDatePopupClose}
@@ -144,7 +90,7 @@ class UserManagement extends React.PureComponent {
           isActive={this.state.selectedUser ? this.state.selectedUser.isActive : false}
           fullName={
             this.state.selectedUser
-              ? this.state.selectedUser.firstName + ' ' + this.state.selectedUser.lastName
+              ? `${this.state.selectedUser.firstName} ${this.state.selectedUser.lastName}`
               : ''
           }
           open={this.state.activeInactivePopupOpen}
@@ -160,7 +106,7 @@ class UserManagement extends React.PureComponent {
           open={this.state.setupNewUserPopupOpen}
           onClose={this.handleNewUserSetupPopup}
         />
-      </React.Fragment>
+      </>
     );
   };
 
@@ -169,9 +115,9 @@ class UserManagement extends React.PureComponent {
    */
   userTableElements = (userProfiles, rolesPermissions) => {
     if (userProfiles && userProfiles.length > 0) {
-      let usersSearchData = this.filteredUserList(userProfiles);
+      const usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
-      let that = this;
+      const that = this;
       /* Builiding the table body for users based on the page size and selected page number and returns
        * the rows for currently selected page .
        * Applying the Default sort in the order of created date as well
@@ -189,7 +135,7 @@ class UserManagement extends React.PureComponent {
         .map((user, index) => {
           return (
             <UserTableData
-              key={'user_' + index}
+              key={`user_${index}`}
               index={index}
               isActive={user.isActive}
               isSet={user.isSet}
@@ -215,8 +161,8 @@ class UserManagement extends React.PureComponent {
   };
 
   filteredUserList = userProfiles => {
-    let filteredList = userProfiles.filter(user => {
-      //Applying the search filters before creating each table data element
+    const filteredList = userProfiles.filter(user => {
+      // Applying the search filters before creating each table data element
       if (
         (user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
           user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
@@ -227,7 +173,7 @@ class UserManagement extends React.PureComponent {
           (this.state.isActive === undefined || user.isActive === this.state.isActive) &&
           (this.state.isPaused === false || user.reactivationDate) &&
           this.state.wildCardSearchText === '') ||
-        //the wild card serach, the search text can be match with any item
+        // the wild card serach, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
           (user.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
             user.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
@@ -333,16 +279,16 @@ class UserManagement extends React.PureComponent {
    * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
    */
   onActiveInactiveClick = user => {
-    const authRole = this?.props?.state?.auth?.user.role||user.role
+    const authRole = this?.props?.state?.auth?.user.role || user.role;
     const canChangeUserStatus = hasPermission('changeUserStatus');
     if (!canChangeUserStatus) {
-      //permission to change the status of any user on the user profile page or User Management Page.
-      //By default only Admin and Owner can access the user management page and they have this permission.
+      // permission to change the status of any user on the user profile page or User Management Page.
+      // By default only Admin and Owner can access the user management page and they have this permission.
       alert('You are not authorized to change the active status.');
       return;
     }
     if (cantDeactivateOwner(user, authRole)) {
-      //Owner user cannot be deactivated by another user that is not an Owner.
+      // Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');
       return;
     }
@@ -474,7 +420,7 @@ class UserManagement extends React.PureComponent {
    */
   onSelectPageSize = pageSize => {
     this.setState({
-      pageSize: pageSize,
+      pageSize,
       selectedPage: 1,
     });
   };
@@ -493,7 +439,7 @@ class UserManagement extends React.PureComponent {
    * call back for active/inactive search filter
    */
   onActiveFiter = value => {
-    let active = undefined;
+    let active;
     let paused = false;
 
     switch (value) {
@@ -541,6 +487,59 @@ class UserManagement extends React.PureComponent {
       newUserPopupOpen: false,
     });
   };
+
+  render() {
+    const { userProfiles, fetching } = this.props.state.allUserProfiles;
+    const { roles: rolesPermissions } = this.props.state.role;
+    const userTable = this.userTableElements(userProfiles, rolesPermissions);
+    const roles = [...new Set(userProfiles.map(item => item.role))];
+    return (
+      <Container fluid>
+        {fetching ? (
+          <SkeletonLoading template="UserManagement" />
+        ) : (
+          <>
+            {this.popupElements()}
+            <UserSearchPanel
+              onSearch={this.onWildCardSearch}
+              searchText={this.state.wildCardSearchText}
+              onActiveFiter={this.onActiveFiter}
+              onNewUserClick={this.onNewUserClick}
+              handleNewUserSetupPopup={this.handleNewUserSetupPopup}
+            />
+            <div className="table-responsive" id="user-management-table">
+              <Table className="table table-bordered noWrap">
+                <thead>
+                  <UserTableHeader
+                    authRole={this.props.state.auth.user.role}
+                    roleSearchText={this.state.roleSearchText}
+                  />
+                  <UserTableSearchHeader
+                    onFirstNameSearch={this.onFirstNameSearch}
+                    onLastNameSearch={this.onLastNameSearch}
+                    onRoleSearch={this.onRoleSearch}
+                    onEmailSearch={this.onEmailSearch}
+                    onWeeklyHrsSearch={this.onWeeklyHrsSearch}
+                    roles={roles}
+                    authRole={this.props.state.auth.user.role}
+                    roleSearchText={this.state.roleSearchText}
+                  />
+                </thead>
+                <tbody>{userTable}</tbody>
+              </Table>
+            </div>
+            <UserTableFooter
+              datacount={this.filteredUserDataCount}
+              selectedPage={this.state.selectedPage}
+              onPageSelect={this.onSelectPage}
+              onSelectPageSize={this.onSelectPageSize}
+              pageSize={this.state.pageSize}
+            />
+          </>
+        )}
+      </Container>
+    );
+  }
 }
 
 const mapStateToProps = state => {
