@@ -290,7 +290,7 @@ const EditTaskModal = props => {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={allMembers}
+                      members={allMembers.filter(user=>user.isActive)}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
