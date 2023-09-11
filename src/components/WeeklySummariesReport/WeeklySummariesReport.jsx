@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
 import { Component } from 'react';
@@ -48,7 +49,18 @@ export class WeeklySummariesReport extends Component {
   }
 
   async componentDidMount() {
-    const { summaries, error, loading, allBadgeData, authUser, infoCollections } = this.props;
+    const {
+      summaries,
+      error,
+      loading,
+      allBadgeData,
+      authUser,
+      infoCollections,
+      getWeeklySummariesReport,
+      fetchAllBadges,
+      getInfoCollections,
+      hasPermission,
+    } = this.props;
 
     // 1. fetch report
     await getWeeklySummariesReport();
@@ -301,8 +313,15 @@ const mapStateToProps = state => ({
   infoCollections: state.infoCollections.infos,
 });
 
+const mapDispatchToProps = dispatch => ({
+  fetchAllBadges: () => dispatch(fetchAllBadges()),
+  getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
+  hasPermission: () => hasPermission(),
+  getInfoCollections: () => getInfoCollections(),
+});
+
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
   return <TabPane tabId={tabId}>{!hidden && children}</TabPane>;
 }
 
-export default connect(mapStateToProps)(WeeklySummariesReport);
+export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);

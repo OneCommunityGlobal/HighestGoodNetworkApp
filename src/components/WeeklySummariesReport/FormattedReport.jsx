@@ -154,9 +154,7 @@ function ReportDetails({
               </ListGroupItem>
             )}
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <ListGroupItem>
-                <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
-              </ListGroupItem>
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
             )}
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
@@ -396,11 +394,12 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
     });
   }
   return (
-    <table>
-      <tbody>
-        <tr className="badge-tr" key={`${weekIndex}badge_${summary._id}`}>
-          {badgeThisWeek.length > 0
-            ? badgeThisWeek.map(
+    badgeThisWeek.length > 0 && (
+      <ListGroupItem>
+        <table>
+          <tbody>
+            <tr className="badge-tr" key={`${weekIndex}badge_${summary._id}`}>
+              {badgeThisWeek.map(
                 (value, index) =>
                   value?.showReport && (
                     // eslint-disable-next-line react/no-array-index-key
@@ -427,11 +426,12 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
                       </UncontrolledPopover>
                     </td>
                   ),
-              )
-            : null}
-        </tr>
-      </tbody>
-    </table>
+              )}
+            </tr>
+          </tbody>
+        </table>
+      </ListGroupItem>
+    )
   );
 }
 
