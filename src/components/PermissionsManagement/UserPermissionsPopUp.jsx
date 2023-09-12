@@ -18,6 +18,12 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
 
+  const setToDefault = () => {
+    setActualUserProfile(previous => {
+      return { ...previous, permissions: {frontPermissions: [],} };
+    });
+  }
+
   //no onchange, always change this state;
   const onChangeCheck = data => {
     const actualValue = data;
@@ -102,7 +108,21 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
         updateProfileOnSubmit(e);
       }}
     >
-      <h4 className="user-permissions-pop-up__title">User name:</h4>
+      <div style={{display: 'flex', justifyContent: 'space-between', paddingBottom: '5px'}}>
+        <h4 className="user-permissions-pop-up__title">User name:</h4>
+        <Button
+          type="button"
+          color="success"
+          onClick={e => {
+            setToDefault();
+            updateProfileOnSubmit(e);
+          }}
+          disabled={actualUserProfile ? false : true}
+          style={boxStyle}
+        >
+          Reset to Default
+        </Button>
+      </div>
       <Dropdown
         isOpen={isOpen}
         toggle={() => {
