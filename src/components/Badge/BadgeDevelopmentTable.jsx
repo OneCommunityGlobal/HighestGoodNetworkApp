@@ -21,6 +21,7 @@ import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import { boxStyle } from 'styles';
 import './Badge.css';
+import hasPermission from '../../utils/permissions';
 
 const BadgeDevelopmentTable = props => {
   const [name, setName] = useState('');
@@ -33,7 +34,8 @@ const BadgeDevelopmentTable = props => {
 
   const [editBadgeValues, setEditBadgeValues] = useState('');
   const [editPopup, setEditPopup] = useState(false);
-
+  const onlyCreateBadgePermission = props.hasPermission('seeBadgeManagementTab');
+  console.log('props',props)
   const detailsText = badegValue => {
     let returnText = '';
     if (badegValue.type) {
@@ -73,7 +75,7 @@ const BadgeDevelopmentTable = props => {
     }
     return returnText;
   };
-
+  console.log('123canOnlyCreateBadge', onlyCreateBadgePermission);
   const onEditButtonClick = badgeValues => {
     setEditBadgeValues(badgeValues);
     setEditPopup(true);
@@ -215,6 +217,8 @@ const BadgeDevelopmentTable = props => {
                     color="info"
                     onClick={() => onEditButtonClick(value)}
                     style={boxStyle}
+                    disabled={onlyCreateBadgePermission}
+
                   >
                     Edit
                   </Button>{' '}
@@ -225,6 +229,7 @@ const BadgeDevelopmentTable = props => {
                     color="danger"
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
                     style={boxStyle}
+                    disabled={onlyCreateBadgePermission}
                   >
                     Delete
                   </Button>
@@ -267,6 +272,7 @@ const mapDispatchToProps = dispatch => ({
   deleteBadge: badgeId => dispatch(deleteBadge(badgeId)),
   updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
   closeAlert: () => dispatch(closeAlert()),
+  hasPermission:(action)=> dispatch(hasPermission(action)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeDevelopmentTable);
