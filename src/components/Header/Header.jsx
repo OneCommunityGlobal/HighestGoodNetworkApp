@@ -42,7 +42,6 @@ import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
 export function Header(props) {
-  // export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
   const {
     auth,
     role,
