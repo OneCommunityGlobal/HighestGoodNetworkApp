@@ -1,3 +1,5 @@
+import { enCA } from 'date-fns/locale';
+
 /** *******************************************************************************
  * LANGUAGE - UI - CONST
  * Stores all variables that display texts on the UI
@@ -7,9 +9,11 @@ export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
 export const DASHBOARD = 'Dashboard';
 export const DELETE = 'Delete';
+export const EDIT = 'Edit';
 export const LOGO = 'Time Tracking Tool';
 export const LOGOUT = 'Logout';
 export const MEMBERS = 'Members';
+export const MANAGER = 'Team Manager';
 export const OTHER_LINKS = 'Other Links';
 export const PROJECTS = 'Projects';
 export const PROJECT_NAME = 'Project Name';
@@ -50,4 +54,14 @@ export const POPUP_MANAGEMENT = 'Popup Management';
 export const CANCEL = 'Delete Final Day';
 export const SET_FINAL_DAY = 'Set Final Day';
 export const MANAGE_FINAL_DAY = 'Manage Final Day';
+export const SUMMARY_MANAGEMENT = 'Summary Management';
+export const TEAM_MEMBER = 'Team Member';
+export const SUMMARY_RECEIVER = 'Summary Receiver';
+export const SUMMARY_GROUP = 'Summary Group';
+export const ACTIONS = 'Actions';
+export const CREATE_SUMMARY_GROUP = 'Create Summary Group';
+export const TOTAL_SUMMARY = 'Summary';
+export const ACTIVE_SUMMARY = 'Active Summary';
+export const VIEW_SUMMARY = 'View Reports';
 export const SEND_SETUP_LINK = 'Send Setup Link';
+
