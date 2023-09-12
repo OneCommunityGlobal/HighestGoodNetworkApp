@@ -27,4 +27,20 @@ describe('TeamTableHeader Component', () => {
 
     expect(wrapper.find('#teams__delete')).toHaveLength(0);
   });
+
+  it('should be memoized', () => {
+    const wrapper1 = shallow(
+      <Provider store={store}>
+        <TeamTableHeader hasPermission={() => true} />
+      </Provider>,
+    );
+
+    const wrapper2 = shallow(
+      <Provider store={store}>
+        <TeamTableHeader hasPermission={() => true} />
+      </Provider>,
+    );
+
+    expect(wrapper1.instance() === wrapper2.instance()).toBe(true);
+  });
 });
