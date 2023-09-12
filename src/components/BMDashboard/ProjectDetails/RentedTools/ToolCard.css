@@ -1,6 +1,17 @@
+/* .toolCard{
+ max-width: 30%;
+} */
 
 .infoDiv{
-  font-size: 0.3rem;
+  font-size: 0.5rem;
+  margin: -1em 0.5em;
+  border-radius: 10px; 
+  background-color: #f2c897 ;
+}
+
+.infoDiv .warning{
+  color: white;
+  background-color: #980101; 
 }
 
 

@@ -14,10 +14,10 @@ function ProjectDetails() {
         <LogBar />
       </Row>
       <Row>
-        <Col md="6" sm="12">
+        <Col lg="5" md="12">
           <RentedToolsDisplay />
         </Col>
-        <Col md="6" sm="12">
+        <Col lg="5" md="12">
           <MaterialsDisplay />
         </Col>
       </Row>

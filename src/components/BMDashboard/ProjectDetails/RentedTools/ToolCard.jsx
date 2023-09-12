@@ -9,10 +9,11 @@ function ToolCard() {
         alt=""
         src="https://www.theforkliftcenter.com/images/forklift-hero-left.png"
         top
+        width="100%"
       />
       <CardBody>
         <CardTitle tag="h6">Card title</CardTitle>
-        <div className='infoDiv'>Term ends in __ hours.</div>
+        <div className="infoDiv">Term ends in __ hours.</div>
       </CardBody>
     </Card>
   );

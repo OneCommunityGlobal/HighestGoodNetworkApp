@@ -1,4 +1,6 @@
 import { Card, CardImg, CardBody, CardTitle } from 'reactstrap';
+import './MaterialCard.css';
+
 
 function MaterialCard() {
   return (
