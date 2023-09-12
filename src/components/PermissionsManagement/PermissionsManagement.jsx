@@ -51,17 +51,17 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
                   className="role-btn"
                 >
                   {roleName}
-                 </button> 
+                 </button>
                   <div className='infos'>
                     <EditableInfoModal
                     role={role}
                     areaName={`${roleName}`+'Info'}
                     fontSize={18}
                     isPermissionPage={true}
-                    /> 
+                    />
                   </div>
-              </div>           
-            )})};
+              </div>
+            )})}
         </div>
         {userProfile?.role === 'Owner' && (
           <div className="buttons-container">
