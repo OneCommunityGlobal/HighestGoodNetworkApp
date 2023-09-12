@@ -35,4 +35,13 @@ describe('TeamStatusPopup', () => {
 
     expect(mock).toHaveBeenCalledTimes(1);
   });
+
+  it('should call onConfirmClick when "Confirm" button is clicked', () => {
+    renderWithProvider(<TeamStatusPopup {...defaultProps} />);
+
+    const confirmButton = screen.getByText('Confirm');
+    fireEvent.click(confirmButton);
+
+    expect(defaultProps.onConfirmClick).toHaveBeenCalledTimes(1);
+  });
 });
