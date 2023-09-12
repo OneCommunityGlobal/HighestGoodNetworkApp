@@ -44,4 +44,13 @@ describe('TeamStatusPopup', () => {
 
     expect(defaultProps.onConfirmClick).toHaveBeenCalledTimes(1);
   });
+
+  it('should not re-render with the same props', () => {
+    const { rerender } = renderWithProvider(<TeamStatusPopup {...defaultProps} />);
+    const originalRenderCount = TeamStatusPopup.renderCount;
+
+    rerender(<TeamStatusPopup {...defaultProps} />);
+
+    expect(TeamStatusPopup.renderCount).toBe(originalRenderCount);
+  });
 });
