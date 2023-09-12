@@ -206,15 +206,18 @@ export class WeeklySummariesReport extends Component {
       <Container fluid className="bg--white-smoke py-3 mb-5">
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
-            <h3 className="mt-3 mb-5">Weekly Summaries Reports page
-            <EditableInfoModal
-            // Pass any necessary props to EditableInfoModal
-            areaName="WeeklySummariesReport" // Example areaName
-            role={role} // Example role    
-            fontSize={24} // Example fontSize
-            isPermissionPage={true} // Example isPermissionPage
-            />
-            </h3>
+          <h3 className="mt-3 mb-5">
+            <div className="d-flex align-items-center">
+              <span className="mr-2">Weekly Summaries Reports page</span>
+              <EditableInfoModal
+                areaName="WeeklySummariesReport"
+                role={role}
+                fontSize={24}
+                isPermissionPage={true}
+                className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+              />
+            </div>
+          </h3>
           </Col>
         </Row>
         <Row>

@@ -35,13 +35,16 @@ const ProjectTableHeader = props => {
         {MEMBERS}
       </th>
       <th scope="col" id="projects__wbs">
-        {WBS}
-        <EditableInfoModal
-          areaName="ProjectTableHeaderWBS"
-          fontSize={24}
-          isPermissionPage={true}
-          role={role} // Pass the 'role' prop to EditableInfoModal
-        />
+        <div className="d-flex align-items-center">
+          <span className="mr-2">{WBS}</span>
+          <EditableInfoModal
+            areaName="ProjectTableHeaderWBS"
+            fontSize={24}
+            isPermissionPage={true}
+            role={role}
+            className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+          />
+        </div>
       </th>
       {canDeleteProject ? (
         <th scope="col" id="projects__delete">

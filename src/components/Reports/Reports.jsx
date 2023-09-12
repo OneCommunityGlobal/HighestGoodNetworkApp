@@ -297,16 +297,18 @@ class ReportsPage extends Component {
     return (
       <Container fluid className="mb-5 container-component-wrapper">
         <div className="container-component-category">
-          <h2 className="mt-3 mb-5">
-            Reports Page
+        <h2 className="mt-3 mb-5">
+          <div className="d-flex align-items-center">
+            <span className="mr-2">Reports Page</span>
             <EditableInfoModal
-            // Pass any necessary props to EditableInfoModal
-            areaName="ReportsPage" // Example areaName
-            role={userRole} // Example role
-            fontSize={24} // Example fontSize
-            isPermissionPage={true} // Example isPermissionPage
+              areaName="ReportsPage"
+              role={userRole}
+              fontSize={26}
+              isPermissionPage={true}
+              className="p-2" // Add Bootstrap padding class to the EditableInfoModal
             />
-          </h2>
+          </div>
+        </h2>
           <div>
             <p>Select a Category</p>
           </div>

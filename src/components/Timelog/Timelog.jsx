@@ -424,12 +424,14 @@ const Timelog = props => {
       ) : (
         ''
       )}
-      <EditableInfoModal
+      <div className="text-center">
+        <EditableInfoModal
           areaName="DashboardTimelog"
-          fontSize={24}
+          fontSize={30}
           isPermissionPage={true}
-          role={auth.user.role} // Pass the 'role' prop to EditableInfoModal
-      />
+          role={auth.user.role}
+        />
+      </div>
       {state.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
@@ -448,14 +450,15 @@ const Timelog = props => {
                   <Row>
                     <Col md={11}>
                       <CardTitle tag="h4">
-                        Tasks and Timelogs &nbsp;
-                        <i
-                          className="fa fa-info-circle"
-                          data-tip
-                          data-for="registerTip"
-                          aria-hidden="true"
-                          onClick={openInfo}
+                      <div className="d-flex align-items-center">
+                        <span className="mb-1 mr-2">Tasks and Timelogs</span>
+                        <EditableInfoModal
+                          areaName="Timelog"
+                          fontSize={22}
+                          isPermissionPage={true}
+                          role={auth.user.role} // Pass the 'role' prop to EditableInfoModal
                         />
+                      </div>
                         <span style={{ padding: '0 5px' }}>
                           <ActiveCell
                             isActive={userProfile.isActive}
