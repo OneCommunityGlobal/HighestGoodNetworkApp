@@ -116,61 +116,65 @@ const TeamMemberTask = React.memo(({
                   return (
                       <tr key={`${task._id}${index}`} className="task-break">
                         <td data-label="Task(s)" className="task-align">
+                          <div className="team-member-tasks-content">
                           <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
                             <span>{`${task.num} ${task.taskName}`} </span>
                           </Link>
                           <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
-                          {task.taskNotifications.length > 0 &&
-                          task.taskNotifications.some(
-                            notification =>
-                              notification.hasOwnProperty('userId') &&
-                              notification.userId === user.personId,
-                          ) ? (
-                            <>
+                          </div>
+                          <div className="team-member-tasks-icons">
+                            {task.taskNotifications.length > 0 &&
+                            task.taskNotifications.some(
+                              notification =>
+                                notification.hasOwnProperty('userId') &&
+                                notification.userId === user.personId,
+                            ) ? (
+                              <>
+                                <FontAwesomeIcon
+                                  className="team-member-tasks-bell"
+                                  title="Task Info Changes"
+                                  icon={faBell}
+                                  onClick={() => {
+                                    const taskNotificationId = task.taskNotifications.filter(
+                                      taskNotification => {
+                                        if (taskNotification.userId === user.personId) {
+                                          return taskNotification;
+                                        }
+                                      },
+                                    );
+                                    handleOpenTaskNotificationModal(
+                                      user.personId,
+                                      task,
+                                      taskNotificationId,
+                                    );
+                                  }}
+                                />
+                              </>
+                            ) : null}
+                            {isAllowedToResolveTasks && (
                               <FontAwesomeIcon
-                                className="team-member-tasks-bell"
-                                title="Task Info Changes"
-                                icon={faBell}
+                                className="team-member-tasks-done"
+                                icon={faCheck}
+                                title="Mark as Done"
                                 onClick={() => {
-                                  const taskNotificationId = task.taskNotifications.filter(
-                                    taskNotification => {
-                                      if (taskNotification.userId === user.personId) {
-                                        return taskNotification;
-                                      }
-                                    },
-                                  );
-                                  handleOpenTaskNotificationModal(
-                                    user.personId,
-                                    task,
-                                    taskNotificationId,
-                                  );
+                                  handleMarkAsDoneModal(user.personId, task);
+                                  handleTaskModalOption('Checkmark');
                                 }}
                               />
-                            </>
-                          ) : null}
-                          {isAllowedToResolveTasks && (
-                            <FontAwesomeIcon
-                              className="team-member-tasks-done"
-                              icon={faCheck}
-                              title="Mark as Done"
-                              onClick={() => {
-                                handleMarkAsDoneModal(user.personId, task);
-                                handleTaskModalOption('Checkmark');
-                              }}
-                            />
-                          )}
-                          {canUpdateTask && (
-                            <FontAwesomeIcon
-                              className="team-member-task-remove"
-                              icon={faTimes}
-                              title="Remove User from Task"
-                              onClick={() => {
-                                handleRemoveFromTaskModal(user.personId, task);
-                                handleTaskModalOption('XMark');
-                              }}
-                            />
-                          )}
+                            )}
+                            {canUpdateTask && (
+                              <FontAwesomeIcon
+                                className="team-member-task-remove"
+                                icon={faTimes}
+                                title="Remove User from Task"
+                                onClick={() => {
+                                  handleRemoveFromTaskModal(user.personId, task);
+                                  handleTaskModalOption('XMark');
+                                }}
+                              />
+                            )}
                           <TeamMemberTaskIconsInfo />
+                          </div>
                           <div>
                             <ReviewButton 
                               user={user}

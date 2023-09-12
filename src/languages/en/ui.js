@@ -63,3 +63,5 @@ export const CREATE_SUMMARY_GROUP = 'Create Summary Group';
 export const TOTAL_SUMMARY = 'Summary';
 export const ACTIVE_SUMMARY = 'Active Summary';
 export const VIEW_SUMMARY = 'View Reports';
+export const SEND_SETUP_LINK = 'Send Setup Link';
+

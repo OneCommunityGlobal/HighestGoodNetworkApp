@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState, useReducer, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -17,7 +17,7 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 
 const EditLinkModal = props => {
-  const { isOpen, closeModal, updateLink, userProfile } = props;
+  const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
@@ -52,6 +52,7 @@ const EditLinkModal = props => {
   );
 
   const [isChanged, setIsChanged] = useState(false);
+  const [mediaFolderDiffWarning, setMediaFolderDiffWarning] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
 
   const handleNameChanges = (e, links, index, setLinks) => {
@@ -68,7 +69,10 @@ const EditLinkModal = props => {
   };
 
   const addNewLink = (links, setLinks, newLink, clearInput) => {
-    if (isDuplicateLink([googleLink,mediaFolderLink,...links], newLink) || !isValidUrl(newLink.Link)) {
+    if (
+      isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink) ||
+      !isValidUrl(newLink.Link)
+    ) {
       setIsValidLink(false);
     } else {
       const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
@@ -85,6 +89,14 @@ const EditLinkModal = props => {
     });
     setLinks(newLinks);
     setIsChanged(true);
+  };
+
+  const isDifferentMediaUrl = () => {
+    if (userProfile.mediaUrl !== mediaFolderLink.Link) {
+      setMediaFolderDiffWarning(true);
+    } else {
+      setMediaFolderDiffWarning(false);
+    }
   };
 
   const isDuplicateLink = (links, newLink) => {
@@ -119,11 +131,16 @@ const EditLinkModal = props => {
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
       // Media Folder link should update the mediaUrl in userProfile
-      if (mediaFolderLink.Link){
-        await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks],mediaFolderLink.Link);
+      if (mediaFolderLink.Link) {
+        await updateLink(
+          personalLinks,
+          [googleLink, mediaFolderLink, ...adminLinks],
+          mediaFolderLink.Link,
+        );
       } else {
         await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
       }
+      handleSubmit();
       setIsValidLink(true);
       setIsChanged(true);
       closeModal();
@@ -131,6 +148,10 @@ const EditLinkModal = props => {
       setIsValidLink(false);
     }
   };
+
+  useEffect(() => {
+    isDifferentMediaUrl();
+  }, [mediaFolderLink.Link, userProfile.mediaUrl]);
 
   return (
     <React.Fragment>
@@ -142,6 +163,14 @@ const EditLinkModal = props => {
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
+                  {mediaFolderDiffWarning && (
+                    <span className="warning-help-context">
+                      <strong>Media Folder link must be a working DropBox link</strong>
+                      <p>
+                        Current Media URL: <a href={userProfile.mediaUrl}>{userProfile.mediaUrl}</a>
+                      </p>
+                    </span>
+                  )}
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
                       <input

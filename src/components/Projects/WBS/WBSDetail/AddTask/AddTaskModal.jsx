@@ -27,7 +27,6 @@ function AddTaskModal(props) {
       return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
     }  
   }, []);
-
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
   const [resourceItems, setResourceItems] = useState([]);
@@ -338,7 +337,7 @@ function AddTaskModal(props) {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={allMembers}
+                      members={allMembers.filter(user=>user.isActive)}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -679,7 +678,7 @@ function AddTaskModal(props) {
             isLoading ? (
               ' Adding...'
             ) : (
-              <Button color="primary" onClick={addNewTask} disabled={hoursWarning}>
+              <Button color="primary" onClick={addNewTask} disabled={hoursWarning} style={boxStyle}>
                 Save
               </Button>
             )

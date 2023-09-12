@@ -18,6 +18,7 @@ import { deleteTask } from '../../../../actions/task';
 import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
+import { formatDate } from 'utils/formatDate';
 
 
 function SingleTask(props) {
@@ -224,8 +225,8 @@ function SingleTask(props) {
               <td>{task.hoursMost}</td>
               <td>{parseFloat(task.estimatedHours).toFixed(2)}</td>
               <td>{parseFloat(task.hoursLogged).toFixed(2)}</td>
-              <td>{task.startedDatetime ? task.startedDatetime.slice(0, 10) : 'N/A'}</td>
-              <td>{task.dueDatetime ? task.dueDatetime.slice(0, 10) : 'N/A'}</td>
+              <td>{task.startedDatetime ? formatDate(task.startedDatetime) : 'N/A'}</td>
+              <td>{task.dueDatetime ? formatDate(task.dueDatetime) : 'N/A'}</td>
               <td>{task.links}</td>
               <td className="desktop-view" onClick={toggleModel}>
                 <i className="fa fa-book" aria-hidden="true" />

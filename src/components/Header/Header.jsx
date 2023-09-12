@@ -39,7 +39,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import { Logout } from '../Logout/Logout';
+import Logout from '../Logout/Logout';
 import './Header.css';
 import SummaryManagement from 'components/SummaryManagement/SummaryManagement';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
