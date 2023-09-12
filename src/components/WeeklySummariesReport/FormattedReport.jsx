@@ -53,27 +53,23 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
     }
   });
   const handleEmailButtonClick = () => {
-    const batchSize = 90; // Number of email addresses in each batch
+    const batchSize = 90;
     const emailChunks = [];
-  
-    // Split email addresses into batches of 90
+      
     for (let i = 0; i < emails.length; i += batchSize) {
-      emailChunks.push(emails.slice(i, i + batchSize));
-      console.log(emails.length);
-    }
+      emailChunks.push(emails.slice(i, i + batchSize));      
+    }  
   
-    // Function to open email client with a batch in a new tab
     const openEmailClientWithBatchInNewTab = (batch) => {
       const emailAddresses = batch.join(', ');
       const mailtoLink = `mailto:${emailAddresses}`;
       window.open(mailtoLink, '_blank');
-    };
-  
-    // Open email client for each batch in a new tab with a delay
+    };  
+    
     emailChunks.forEach((batch, index) => {
       setTimeout(() => {
         openEmailClientWithBatchInNewTab(batch);
-      }, index * 2000); // Delay each batch by 2 seconds (adjust as needed)
+      }, index * 2000);
     });
   };
 
