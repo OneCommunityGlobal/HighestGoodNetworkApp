@@ -69,11 +69,3 @@
 .right-padding-temp-fix {
   padding-right: 0px !important;
 }
-
-.activeUser {
-  color: lawngreen;
-}
-
-.notActiveUser {
-  color: #dee2e6;
-}
