@@ -1,8 +1,15 @@
-import React from 'react';
-import { Card } from 'reactstrap';
+import { Card, CardImg, CardBody, CardTitle } from 'reactstrap';
 
 function MaterialCard() {
-  return <Card style={{ margin: '20px', width: '30%' }}>MaterialCard</Card>;
+  return (
+    <Card className="materialCard">
+      <CardImg alt="" src="https://www.theforkliftcenter.com/images/forklift-hero-left.png" top />
+      <CardBody>
+        <CardTitle tag="h6">Card title</CardTitle>
+        <div className="infoDiv">Term ends in __ hours.</div>
+      </CardBody>
+    </Card>
+  );
 }
 
 export default MaterialCard;

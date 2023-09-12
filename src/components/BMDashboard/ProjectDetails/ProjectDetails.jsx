@@ -1,25 +1,24 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import LogBar from './LogBar';
-import RentedTools from './RentedTools/RentedTools';
-import Materials from './Materials/Materials';
+import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
+import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
 import './ProjectDetails.css';
-//import { boxStyle } from 'styles';
 
 function ProjectDetails() {
   return (
-    <Container className='project-details'>
+    <Container fluid className="project-details">
       <h3>Project A Dashboard</h3>
       <Row>
         <LogBar />
       </Row>
       <Row>
-        <Col>
-          <RentedTools />
+        <Col md="6" sm="12">
+          <RentedToolsDisplay />
         </Col>
-        <Col>
-          <Materials />
+        <Col md="6" sm="12">
+          <MaterialsDisplay />
         </Col>
       </Row>
       <Row>
