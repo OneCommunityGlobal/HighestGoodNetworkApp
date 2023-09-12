@@ -113,7 +113,7 @@ export default (
         path="/badgemanagement"
         exact
         component={BadgeManagement}
-        routePermissions={RoutePermissions.badgeManagement}
+        routePermissions={[RoutePermissions.badgeManagement, RoutePermissions.badgeManagementTab]}
       />
       <ProtectedRoute
         path="/permissionsmanagement"

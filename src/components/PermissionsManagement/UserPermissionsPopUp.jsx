@@ -162,6 +162,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
           <></>
         )}
       </Dropdown>
+
       <div>
         <h4 className="user-permissions-pop-up__title">Permissions:</h4>
         <ul className="user-role-tab__permission-list">

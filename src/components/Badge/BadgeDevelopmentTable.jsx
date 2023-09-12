@@ -35,7 +35,7 @@ const BadgeDevelopmentTable = props => {
   const [editBadgeValues, setEditBadgeValues] = useState('');
   const [editPopup, setEditPopup] = useState(false);
   const onlyCreateBadgePermission = props.hasPermission('seeBadgeManagementTab');
-  console.log('props',props)
+  
   const detailsText = badegValue => {
     let returnText = '';
     if (badegValue.type) {
@@ -75,7 +75,6 @@ const BadgeDevelopmentTable = props => {
     }
     return returnText;
   };
-  console.log('123canOnlyCreateBadge', onlyCreateBadgePermission);
   const onEditButtonClick = badgeValues => {
     setEditBadgeValues(badgeValues);
     setEditPopup(true);
