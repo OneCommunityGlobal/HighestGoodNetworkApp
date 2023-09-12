@@ -53,4 +53,14 @@ describe('TeamStatusPopup', () => {
 
     expect(TeamStatusPopup.renderCount).toBe(originalRenderCount);
   });
+
+  it('should render dynamic content', () => {
+    const { getByText } = renderWithProvider(
+      <TeamStatusPopup {...defaultProps} selectedTeamName="Team 2" selectedStatus={false} />,
+    );
+
+    expect(
+      getByText('Are you sure you want to change the status of this team Team 2'),
+    ).toBeInTheDocument();
+  });
 });
