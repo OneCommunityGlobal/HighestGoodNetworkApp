@@ -1,6 +1,7 @@
+/* eslint-disable no-shadow */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import {
   Collapse,
   Navbar,
@@ -13,7 +14,6 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { getHeaderData } from '../../actions/authActions';
 import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
@@ -29,6 +29,7 @@ import {
   BADGE_MANAGEMENT,
   PROJECTS,
   TEAMS,
+  SUMMARY_MANAGEMENT,
   WELCOME,
   VIEW_PROFILE,
   UPDATE_PASSWORD,
@@ -36,15 +37,27 @@ import {
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
 } from '../../languages/en/ui';
-import { Logout } from '../Logout/Logout';
+import Logout from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
-export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
+export function Header(props) {
+  // export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
+  const {
+    auth,
+    role,
+    taskEditSuggestionCount,
+    userProfile,
+    getAllRoles,
+    hasPermission,
+    getHeaderData,
+    getTimerData,
+  } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = auth;
 
+  // const userPermissions = auth.user?.permissions?.frontPermissions;
   // Reports
   const canGetWeeklySummaries = hasPermission('getWeeklySummaries');
   // Users
@@ -66,17 +79,12 @@ export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
   // Roles
   const canPutRole = hasPermission('putRole');
 
-  const dispatch = useDispatch();
-
   useEffect(() => {
     if (auth.isAuthenticated) {
       getHeaderData(auth.user.userid);
       getTimerData(auth.user.userid);
-      if (auth.user.role === 'Administrator') {
-        dispatch(fetchTaskEditSuggestions());
-      }
     }
-  }, [auth.isAuthenticated]);
+  }, []);
 
   const roles = role?.roles;
   useEffect(() => {
@@ -95,7 +103,7 @@ export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
@@ -131,6 +139,13 @@ export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
+              {(user.role === 'Mentor' || user.role === 'Manager') && (
+                <NavItem>
+                  <NavLink tag={Link} to="/summarymanagement">
+                    <span className="dashboard-text-link">{SUMMARY_MANAGEMENT}</span>
+                  </NavLink>
+                </NavItem>
+              )}
               {canGetWeeklySummaries || canGetWeeklySummaries ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
@@ -154,6 +169,7 @@ export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               ) : null}
+
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">
@@ -164,6 +180,7 @@ export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
                   </i>
                 </NavLink>
               </NavItem>
+
               {(canPostUserProfile ||
                 canDeleteUserProfile ||
                 canPutUserProfileImportantInfo ||
@@ -200,6 +217,13 @@ export function Header({ auth, role, taskEditSuggestionCount, userProfile }) {
                         {TEAMS}
                       </DropdownItem>
                     )}
+
+                    {(user.role === 'Administrator' || user.role === 'Owner') && (
+                      <DropdownItem tag={Link} to="/summarymanagement">
+                        {SUMMARY_MANAGEMENT}
+                      </DropdownItem>
+                    )}
+
                     {canCreatePopup || canUpdatePopup ? (
                       <>
                         <DropdownItem divider />
@@ -262,4 +286,9 @@ const mapStateToProps = state => ({
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
 });
-export default connect(mapStateToProps)(Header);
+export default connect(mapStateToProps, {
+  getHeaderData,
+  getTimerData,
+  getAllRoles,
+  hasPermission,
+})(Header);

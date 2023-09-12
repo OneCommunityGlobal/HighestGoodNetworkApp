@@ -29,6 +29,7 @@ import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { Table } from 'react-bootstrap';
+import SetupNewUserPopup from './setupNewUserPopup';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -50,6 +51,7 @@ class UserManagement extends React.PureComponent {
       deletePopupOpen: false,
       isPaused: false,
       finalDayDateOpen: false,
+      setupNewUserPopupOpen: false,
     };
   }
 
@@ -75,8 +77,9 @@ class UserManagement extends React.PureComponent {
               searchText={this.state.wildCardSearchText}
               onActiveFiter={this.onActiveFiter}
               onNewUserClick={this.onNewUserClick}
+              handleNewUserSetupPopup={this.handleNewUserSetupPopup}
             />
-            <div className="table-responsive">
+            <div className="table-responsive" id="user-management-table">
               <Table className="table table-bordered noWrap">
                 <thead>
                   <UserTableHeader
@@ -152,6 +155,10 @@ class UserManagement extends React.PureComponent {
           open={this.state.finalDayDateOpen}
           onClose={this.setUpFinalDayPopupClose}
           onSave={this.deactiveUser}
+        />
+        <SetupNewUserPopup
+          open={this.state.setupNewUserPopupOpen}
+          onClose={this.handleNewUserSetupPopup}
         />
       </React.Fragment>
     );
@@ -515,6 +522,15 @@ class UserManagement extends React.PureComponent {
     this.setState({
       newUserPopupOpen: true,
     });
+  };
+  /**
+   *  set up new user button click handler
+   */
+
+  handleNewUserSetupPopup = () => {
+    this.setState(prevState => ({
+      setupNewUserPopupOpen: !prevState.setupNewUserPopupOpen,
+    }));
   };
 
   /**

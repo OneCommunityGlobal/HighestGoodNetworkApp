@@ -1,0 +1,51 @@
+thead {
+  background: aliceblue;
+}
+
+#new_team {
+  margin-bottom: 10px;
+}
+
+#summary__order {
+  width: 5px;
+}
+
+#summary_receiver {
+  width: 10px;
+}
+
+#summary_team__member {
+  width: 15px;
+}
+
+#summary_type {
+  width: 105px;
+}
+
+#summary_actions {
+  width: 20px;
+}
+
+.summary__tr {
+  text-align: start;
+}
+
+.teams__overview--top {
+  background: gray;
+}
+
+.teams__overview--top .card {
+  width: 200px;
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+#card_team {
+  background: #1d62f0;
+  color: white;
+}
+
+#card_active {
+  background: #fbad4c;
+  color: white;
+}

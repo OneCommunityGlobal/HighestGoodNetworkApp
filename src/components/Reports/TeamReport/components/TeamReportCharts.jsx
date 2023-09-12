@@ -61,10 +61,10 @@ function TeamReportCharts({
   return (
     <section className="team-report-chart-wrapper">
       <div className="team-report-chart-teams">
-        <h4>{title}</h4>
-        <div className="team-report-chart-info-wrapper">
+        <h4 style={{ textAlign: 'center'}}>{title}</h4>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyItems: 'center', alignItems: 'center'}} className="team-report-chart-info-wrapper mobile-pie-chart">
           <div className="team-report-chart-info">
-            <div className="pie-chart-wrapper">
+            <div className="pie-chart-wrapper mobile-pie-chart">
               <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
               <div className="pie-chart-info-detail">
                 <div className="pie-chart-info-detail-title">
