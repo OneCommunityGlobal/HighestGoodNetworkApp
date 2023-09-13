@@ -20,7 +20,6 @@ function TeamTable(props) {
   
     const handleCodeChange = e => {
       let value = e.target.value;
-      console.log(value);
       if (e.target.value.length == 1) {
         value = e.target.value + "-";
       }
