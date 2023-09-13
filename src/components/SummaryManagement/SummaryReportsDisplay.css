@@ -1,0 +1,71 @@
+.date-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.buttons {
+  right: 0;
+  bottom: 0;
+  position: absolute;
+}
+
+.red .progress-bar {
+  background-color: red;
+}
+
+.orange .progress-bar {
+  background-color: orange;
+}
+
+.green .progress-bar {
+  background-color: green;
+}
+
+.blue .progress-bar {
+  background-color: blue;
+}
+
+.indigo .progress-bar {
+  background-color: #000066;
+}
+
+.violet .progress-bar {
+  background-color: #990099;
+}
+
+.purple .progress-bar {
+  background-color: #660099;
+}
+
+.navbar-border {
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+@media (max-width: 544px) {
+  .tab-pane {
+    height: 300px;
+    overflow-y: scroll;
+    width: 100%;
+  }
+
+  .right-padding-temp-fix {
+    padding-right: 0px !important;
+  }
+}
+
+#projectSelected {
+  max-width: 100%;
+}
+
+#projectSelected option {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.right-padding-temp-fix {
+  padding-right: 0px !important;
+}
