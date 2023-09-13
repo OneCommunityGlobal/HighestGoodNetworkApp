@@ -20,7 +20,6 @@ const BadgeImage = props => {
 
         {props.badgeData.type == 'Personal Max' ? (
           <span className={'badge_count_personalmax'}>
-            {/* TODO: Need to get correct hours of personal max (WIP FE PR#826) */}
             {`${Math.round(props.count)} ${Math.round(props.count) <= 1 ? ' hr' : ' hrs'}`}
           </span>
         ) : props.count < 100 ? (

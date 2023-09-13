@@ -102,7 +102,7 @@ const Badge = props => {
                             } in a week`
                           : ''
                       }! `
-                    : 'You have no badges.'}
+                    : 'You have no badges. '}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
                 <Button
