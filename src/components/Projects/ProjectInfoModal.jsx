@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
+import { boxStyle } from 'styles';
 
 const ProjectInfoModal = ({ isOpen, toggle }) => (
   <div>
@@ -48,7 +49,7 @@ const ProjectInfoModal = ({ isOpen, toggle }) => (
         </ol>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={toggle} color="secondary" className="float-left">
+        <Button onClick={toggle} color="secondary" className="float-left" style={boxStyle}>
           {' '}
           Ok{' '}
         </Button>

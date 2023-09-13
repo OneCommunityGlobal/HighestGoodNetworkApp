@@ -7,11 +7,11 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 import { updateRole, getAllRoles } from '../../actions/role';
 import { toast } from 'react-toastify';
-import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
@@ -115,7 +115,9 @@ function RolePermissions(props) {
       'Gives the user permission to see summary indicator on leaderboard.',
     'See Visibility Icon' : 
       'Gives the user permission to see visibility icon on leaderboard.',
+    
   };
+  const mainPermissions = ['See All the Reports Tab (DNE)', 'See User Management Tab (Full Functionality) (DNE)', 'See Badge Management Tab (Full Functionality) (DNE)', 'See Project Management Tab (Full Functionality) (DNE)', 'Edit Task', 'See Teams Management Tab (Full Functionality) (DNE)', 'Edit Timelog Information (DNE)', 'Edit User Profile', 'See Popup Management Tab (create and update popups) (DNE - separate)', 'See Permissions Management Tab (DNE - postRole/putRole)', 'See Summary Indicator (DNE)', 'See Visibility Icon (DNE)'  ]
 
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
@@ -126,7 +128,7 @@ function RolePermissions(props) {
   const history = useHistory();
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
-
+  
   useEffect(() => {
     setRoleName(props.role);
   }, []);
@@ -170,16 +172,11 @@ function RolePermissions(props) {
       return getKeyByValue(permissionLabel, perm);
     });
 
-    const permissionsBackEnd = permissionsObjectName.map(permission =>
-      permissionFrontToBack(permission),
-    );
-
     const id = props.roleId;
 
     const updatedRole = {
       roleName: roleName,
       permissions: permissionsObjectName,
-      permissionsBackEnd: permissionsBackEnd.flat(),
       roleId: id,
     };
     try {
@@ -226,10 +223,10 @@ function RolePermissions(props) {
           </div>
           {props?.userRole === 'Owner' && (
             <div className="name-container__btns">
-              <Button className="btn_save" color="success" onClick={() => updateInfo()}>
+              <Button className="btn_save" color="success" onClick={() => updateInfo()} style={boxStyle}>
                 Save
               </Button>
-              <Button color="danger" onClick={toggleDeleteRoleModal}>
+              <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
                 Delete Role
               </Button>
             </div>
@@ -265,22 +262,45 @@ function RolePermissions(props) {
       </header>
       <ul className="user-role-tab__permissionList">
         {props.permissionsList.map((permission) => (
+          mainPermissions.includes(permission) ?
           <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' }}>
+            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , fontSize: '20px'}}>
               {permission}
             </p>
             <div className="icon-button-container">
-              <i
-                data-toggle="tooltip"
-                data-placement="center"
-                title="Click for more information"
-                aria-hidden="true"
-                className="fa fa-info-circle"
+              <div style={{paddingRight: "1rem"}}>
+                  <EditableInfoModal
+                    role={props?.userRole}
+                    areaName={`${permission}`+'Info'}
+                    fontSize={24} />{' '}
+               </div>
+              <Button
+                className="icon-button"
+                color={permissions.includes(permission) ? 'danger' : 'success'}
                 onClick={() => {
-                  handleModalOpen(permission);
+                  permissions.includes(permission)
+                    ? onRemovePermission(permission)
+                    : onAddPermission(permission);
+                  setChanged(true);
                 }}
-              />
-              &nbsp;&nbsp;
+                disabled={props?.userRole !== 'Owner'}
+                style={boxStyle}
+              >
+                {permissions.includes(permission) ? 'Delete' : 'Add'}
+              </Button>
+            </div>
+          </li>:
+           <li className="user-role-tab__permissions" key={permission}>
+            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , paddingLeft: '50px'}}>
+              {permission}
+            </p>
+            <div className="icon-button-container">
+              <div style={{paddingRight: "1rem"}}>
+                  <EditableInfoModal
+                    role={props?.userRole}
+                    areaName={`${permission}`+'Info'}
+                    fontSize={24} />{' '}
+               </div>
               <Button
                 className="icon-button"
                 color={permissions.includes(permission) ? 'danger' : 'success'}

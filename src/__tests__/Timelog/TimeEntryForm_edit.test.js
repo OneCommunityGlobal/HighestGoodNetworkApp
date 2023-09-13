@@ -14,7 +14,6 @@ import {
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
 import * as actions from '../../actions/timeEntries';
-import { MemoryRouter } from 'react-router-dom';
 
 const mockStore = configureStore([thunk]);
 function sleep(ms) {
@@ -35,9 +34,7 @@ describe('<TimeEntryForm edit/>', () => {
     store.dispatch = jest.fn();
     // useDispatch.mockReturnValue(jest.fn());
     renderWithProvider(
-      <MemoryRouter initialEntries={['/']}>
-        <TimeEntryForm userId={data.personId} data={data} edit toggle={toggle} isOpen />
-      </MemoryRouter>,
+      <TimeEntryForm userId={data.personId} data={data} edit toggle={toggle} isOpen />,
       {
         store,
       },

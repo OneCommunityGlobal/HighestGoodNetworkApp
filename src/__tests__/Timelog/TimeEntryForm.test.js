@@ -4,30 +4,23 @@ import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
-import {
-  authMock,
-  userProfileMock,
-  timeEntryMock,
-  userProjectMock,
-  rolesMock,
-} from '../mockStates';
+import { authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock } from '../mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
 import * as actions from '../../actions/timeEntries';
 import { icon } from '@fortawesome/fontawesome-svg-core';
-import { MemoryRouter } from 'react-router-dom';
 
 const mockStore = configureStore([thunk]);
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 describe('<TimeEntryForm />', () => {
   let store;
   let toggle;
   let userProfile;
-  let role;
+  let role
   const data = timeEntryMock.weeks[0][0];
   beforeEach(() => {
     store = mockStore({
@@ -40,20 +33,17 @@ describe('<TimeEntryForm />', () => {
     role = jest.fn();
 
     toggle = jest.fn();
-    store.dispatch = jest.fn();
     renderWithProvider(
-      <MemoryRouter initialEntries={['/']}>
-        <TimeEntryForm
-          userId={data.personId}
-          edit={false}
-          data={data}
-          isOpen
-          toggle={toggle}
-          timer
-          userProfile={userProfile}
-          resetTimer
-        />
-      </MemoryRouter>,
+      <TimeEntryForm
+        userId={data.personId}
+        edit={false}
+        data={data}
+        isOpen
+        toggle={toggle}
+        timer
+        userProfile={userProfile}
+        resetTimer
+      />,
       {
         store,
       },
@@ -141,24 +131,22 @@ describe('<TimeEntryFormEdit />', () => {
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock,
+      role: rolesMock
     });
     userProfile = jest.fn();
     toggle = jest.fn();
     store.dispatch = jest.fn();
     renderWithProvider(
-      <MemoryRouter initialEntries={['/']}>
-        <TimeEntryForm
-          userId={data.personId}
-          edit={true}
-          data={data}
-          isOpen
-          toggle={toggle}
-          timer
-          userProfile={userProfile}
-          resetTimer
-        />
-      </MemoryRouter>,
+      <TimeEntryForm
+        userId={data.personId}
+        edit={true}
+        data={data}
+        isOpen
+        toggle={toggle}
+        timer
+        userProfile={userProfile}
+        resetTimer
+      />,
       {
         store,
       },
@@ -199,8 +187,8 @@ describe('<TimeEntryFormEdit />', () => {
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
     fireEvent.click(screen.getByRole('button', { name: /close/i }));
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
-    expect(actions.editTimeEntry).toHaveBeenCalledTimes(1);
     await waitFor(() => {
+      expect(actions.editTimeEntry).toHaveBeenCalledTimes(1);
       expect(toggle).toHaveBeenCalled();
     });
     //expect(screen.getByText(/You are about to edit your time*/i)).toBeInTheDocument();

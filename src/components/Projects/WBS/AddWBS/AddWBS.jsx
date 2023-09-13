@@ -9,11 +9,9 @@ import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from 'utils/permissions';
 
 const AddWBS = props => {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
-  const { roles } = props.state.role;
+  const canPostWBS = props.hasPermission('postWBS');
 
   const changeNewName = newName => {
     if (newName.length !== 0) {
@@ -26,7 +24,7 @@ const AddWBS = props => {
 
   return (
     <>
-      {hasPermission(role, 'addWbs', roles, userPermissions) ? (
+      {canPostWBS ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
             <span className="input-group-text">Add new WBS</span>
@@ -59,4 +57,7 @@ const AddWBS = props => {
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { addNewWBS })(AddWBS);
+export default connect(mapStateToProps, {
+  addNewWBS,
+  hasPermission,
+})(AddWBS);

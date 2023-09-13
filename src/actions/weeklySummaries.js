@@ -1,9 +1,12 @@
 import axios from 'axios';
 import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
+import { filter } from 'lodash';
+import { strip } from 'joi/lib/types/lazy';
 import {
   getUserProfile as getUserProfileActionCreator,
 } from '../constants/userProfile';
+
 
 /**
  * Action to set the 'loading' flag to true.
@@ -53,6 +56,7 @@ export const getWeeklySummaries = userId => {
         }
       }
       dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl:summaryDocLink || mediaUrl}));
+      dispatch(getUserProfileActionCreator(response.data));
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesError(error));
@@ -69,39 +73,74 @@ export const getWeeklySummaries = userId => {
  */
 export const updateWeeklySummaries = (userId, weeklySummariesData) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
-  return async (dispatch) => {
+  return async () => {
     try {
       // Get the user's profile from the server.
       let response = await axios.get(url);
       const userProfile = await response.data;
-      const adminLinks = userProfile.adminLinks || [];
 
       // Merge the weekly summaries related changes with the user's profile.
-      const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      const {mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      console.log('respon get', response.data)
       // update the changes on weekly summaries link into admin links
-      for (const link of adminLinks) {
-        if (link.Name === 'Media Folder') {
-          link.Link = mediaUrl;
-          break; 
-        }
-      }
+      // let doesMediaFolderExist = false;
+      // for (const link of adminLinks) {
+      //   if (link.Name === 'Media Folder') {
+      //     link.Link = mediaUrl;
+      //     doesMediaFolderExist = true;
+      //     break; 
+      //   }
+      // }
+      // if(!doesMediaFolderExist && mediaUrl){
+      //   adminLinks.push(
+      //     {Name:'Media Folder',Link:mediaUrl}
+      //   )
+      // }
       const userProfileUpdated = {
         ...userProfile,
-        adminLinks,
         mediaUrl,
         weeklySummaries,
         weeklySummariesCount,
       };
 
-
       // Update the user's profile on the server.
-      response = await axios.put(url, userProfileUpdated);
-      if (response.status === 200) {
-        await dispatch(getUserProfileActionCreator(userProfileUpdated));
-      }
-      return response.status;
-    } catch (error) {
-      return error.response.status;
+      let updateResponse = await axios.put(url, userProfileUpdated);
+      return updateResponse.status;
+    } 
+    catch (error) {
+  if (error.response) {
+    return error.response.status;
+  } else {
+    return 404; 
+  }
+}
+  };
+};
+
+export const extractWeeklySummaries = userIds => {
+  return async (dispatch, getState) => {
+    try {
+      const summarydata = getState().weeklySummariesReport;
+      const summaryreports = summarydata.summaries;
+      const filteredmembers = summaryreports.filter(member => userIds.includes(member._id));
+      // console.log("filteredMembers: ", filteredmembers)
+      
+      const filteredSummaries = filteredmembers.map((member) => ({
+        _id: member._id,
+        report: member.weeklySummaries[0]?.summary ?? "No summary available",
+      }));
+      
+      // console.log (
+      //   "filterdsummaries", filteredSummaries);
+      const strippedSummaries = filteredSummaries.map(member => ({
+        _id: member._id,
+        report: member.report.replace(/<\/?p>/g, ''),
+      }));
+
+      return { finallist: strippedSummaries };
+    } catch (err) {
+      console.error('extractWeeklySummaries:', err);
+      return null;
     }
   };
 };
