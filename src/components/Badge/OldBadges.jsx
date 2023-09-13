@@ -7,7 +7,6 @@ import {
 import BadgeHistory from './BadgeHistory';
 
 function OldBadges({badges}) {
-
   return (
     <>
       <Card style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
