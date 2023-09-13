@@ -81,7 +81,7 @@ function TeamTable(props) {
           <div>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/teamreport/${team._id}`} teamId={team._id} teamName={team.teamName}>
+          <Link to={`/teamreport/${team._id}`}>
             {team.teamName}
           </Link>
         </td>
