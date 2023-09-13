@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Form,
   FormGroup,
   Label,
   FormText,
-  Row,
-  Col,
   Modal,
   ModalHeader,
   ModalBody,
@@ -14,6 +12,8 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { connect } from 'react-redux';
+import Autosuggest from 'react-autosuggest';
+import { boxStyle } from '../../styles';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,
@@ -24,10 +24,9 @@ import {
   validateBadges,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
-import Autosuggest from 'react-autosuggest';
-import { boxStyle } from 'styles';
 
-const AssignBadge = props => {
+
+function AssignBadge(props) {
   const [isOpen, setOpen] = useState(false);
   const [firstSuggestions, setFirstSuggestions] = useState([]);
   const [lastSuggestions, setLastSuggestions] = useState([]);
@@ -44,7 +43,7 @@ const AssignBadge = props => {
 
   const getSuggestions = value => {
     const escapedValue = escapeRegexCharacters(value.trim());
-    const regex = new RegExp('^' + escapedValue, 'i');
+    const regex = new RegExp(`^${  escapedValue}`, 'i');
     return activeUsers.filter(user => regex.test(user.firstName) || regex.test(user.lastName));
   };
 
@@ -96,7 +95,7 @@ const AssignBadge = props => {
     const { firstName, lastName, selectedBadges } = props;
     if (isOpen) {
       props.assignBadges(firstName, lastName, selectedBadges);
-      setOpen(isOpen => !isOpen);
+      setOpen(!isOpen);
       props.clearNameAndSelected();
     } else {
       if (firstName && lastName) {
@@ -210,7 +209,7 @@ const AssignBadge = props => {
       {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
     </Form>
   );
-};
+}
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,

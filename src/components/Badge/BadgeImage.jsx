@@ -1,42 +1,43 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
 
-const BadgeImage = props => {
+function BadgeImage(props) {
+  const { count, badgeData, time, index } = props;
   const [isOpen, setOpen] = useState(false);
 
-  const toggle = () => setOpen(isOpen => !isOpen);
+  const toggle = () => setOpen(!isOpen);
 
   return (
     <>
       <div className="badge_image_container">
         <div className="badge_image_sm">
           <img
-            src={props?.badgeData?.imageUrl}
-            id={'popover_' + props.time + props.index.toString()}
+            src={badgeData?.imageUrl}
+            id={`popover_${  time  }${index.toString()}`}
             alt=""
             loading="lazy"
           />
         </div>
-        {props.count < 100 ? (
+        {count < 100 ? (
           <span
             className={
-              props.badgeData.type == 'Personal Max' ? 'badge_count_personalmax' : 'badge_count'
+              badgeData.type === 'Personal Max' ? 'badge_count_personalmax' : 'badge_count'
             }
           >
-            {Math.round(props.count)}
+            {Math.round(count)}
           </span>
         ) : (
-          <span className="badge_count_3_digit">{Math.round(props.count)}</span>
+          <span className="badge_count_3_digit">{Math.round(count)}</span>
         )}
       </div>
       <Popover
         trigger="hover"
         isOpen={isOpen}
         toggle={toggle}
-        target={'popover_' + props.time + props.index.toString()}
+        target={`popover_${  time  }${index.toString()}`}
       >
         <Card className="text-center">
-          <CardImg className="badge_image_lg" src={props?.badgeData?.imageUrl} />
+          <CardImg className="badge_image_lg" src={badgeData?.imageUrl} />
           <CardBody>
             <CardTitle
               style={{
@@ -46,14 +47,14 @@ const BadgeImage = props => {
                 marginBottom: 15,
               }}
             >
-              {props.badgeData?.badgeName}
+              {badgeData?.badgeName}
             </CardTitle>
-            <CardText>{props.badgeData?.description}</CardText>
+            <CardText>{badgeData?.description}</CardText>
           </CardBody>
         </Card>
       </Popover>
     </>
   );
-};
+}
 
 export default BadgeImage;

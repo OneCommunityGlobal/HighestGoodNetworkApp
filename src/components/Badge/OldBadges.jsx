@@ -1,20 +1,12 @@
-import React, { useState } from 'react';
 import {
   Card,
   CardTitle,
   CardBody,
-  Button,
-  Modal,
-  ModalBody,
-  ModalHeader,
   UncontrolledTooltip,
 } from 'reactstrap';
 import BadgeHistory from './BadgeHistory';
 
-const OldBadges = props => {
-  const [isOpen, setOpen] = useState(false);
-
-  const toggle = () => setOpen(isOpen => !isOpen);
+function OldBadges({badges}) {
 
   return (
     <>
@@ -29,14 +21,9 @@ const OldBadges = props => {
             }}
           >
             Badges Earned Before Last Week <i className="fa fa-info-circle" id="OldBadgeInfo" />
-            {/* <Button className="btn--dark-sea-green float-right" onClick={toggle}>Full View</Button>
-            <Modal isOpen={isOpen} toggle={toggle}>
-              <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-              <ModalBody><BadgeHistory badges={props.badges} /></ModalBody>
-            </Modal> */}
           </CardTitle>
           <div className="old_badges">
-            <BadgeHistory badges={props.badges} />
+            <BadgeHistory badges={badges} />
           </div>
         </CardBody>
       </Card>
@@ -67,6 +54,6 @@ const OldBadges = props => {
       </UncontrolledTooltip>
     </>
   );
-};
+}
 
 export default OldBadges;

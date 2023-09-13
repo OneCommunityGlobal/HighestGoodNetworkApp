@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   Container,
@@ -15,20 +15,18 @@ import {
   ModalHeader,
 } from 'reactstrap';
 import './Badge.css';
+import { boxStyle } from 'styles';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
 import BadgeReport from './BadgeReport';
-import { getUserProfile } from '../../actions/userProfile';
-import { boxStyle } from 'styles';
 
-const Badge = props => {
+function Badge(props) {
   const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
 
   const toggle = () => {
     if (isOpen) {
-      const userId = props.userId;
       let count = 0;
       if (props.userProfile.badgeCollection) {
         props.userProfile.badgeCollection.forEach(badge => {
@@ -41,15 +39,16 @@ const Badge = props => {
         setTotalBadge(Math.round(count));
       }
     }
-    setOpen(isOpen => !isOpen);
+    setOpen(!isOpen);
   };
 
   const toggleTypes = () => {
-    setOpenTypes(isOpenTypes => !isOpenTypes);
+    setOpenTypes(!isOpenTypes);
   };
 
+
+
   useEffect(() => {
-    const userId = props.userId;
     let count = 0;
     if (props.userProfile.badgeCollection) {
       props.userProfile.badgeCollection.forEach(badge => {
@@ -70,7 +69,8 @@ const Badge = props => {
           <Col md={12}>
             <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
               <CardHeader tag="h3">
-                Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
+                {/* eslint-disable-next-line */}
+                Badges <i onClick={toggleTypes} className="fa fa-info-circle" id="BadgeInfo" />
               </CardHeader>
               <CardBody>
                 <NewBadges badges={props.userProfile.badgeCollection || []} />
@@ -83,9 +83,8 @@ const Badge = props => {
                   }}
                 >
                   {totalBadge
-                    ? `Bravo! You have earned ${totalBadge} ${
-                        totalBadge == 1 ? 'badge' : 'badges'
-                      }! `
+                    ? `Bravo! You have earned ${totalBadge} ${totalBadge === 1 ? 'badge' : 'badges'
+                    }! `
                     : 'You have no badges. '}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
@@ -96,12 +95,12 @@ const Badge = props => {
                 >
                   Badge Report
                 </Button>
-                <Modal size={'lg'} isOpen={isOpen} toggle={toggle}>
+                <Modal size="lg" isOpen={isOpen} toggle={toggle}>
                   <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
                   <ModalBody>
-                    <BadgeReport
+                  <BadgeReport
                       badges={props.userProfile.badgeCollection || []}
-                      userId={props.userId}
+                      userId={userId}
                       firstName={props.userProfile.firstName}
                       lastName={props.userProfile.lastName}
                       close={toggle}
@@ -181,7 +180,7 @@ const Badge = props => {
       </Modal>
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,

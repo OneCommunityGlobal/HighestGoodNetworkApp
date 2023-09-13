@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { changeBadgesByUserID } from '../../actions/badgeManagement';
+import { useState, useEffect } from 'react';
 import {
   Table,
   Button,
@@ -20,24 +19,26 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
-import { getUserProfile } from '../../actions/userProfile';
 import { toast } from 'react-toastify';
-import hasPermission from '../../utils/permissions';
-import './BadgeReport.css';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import htmlToPdfmake from 'html-to-pdfmake';
 import { boxStyle } from 'styles';
+import hasPermission from '../../utils/permissions';
+import { changeBadgesByUserID } from '../../actions/badgeManagement';
+import './BadgeReport.css';
+import { getUserProfile } from '../../actions/userProfile';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
-const BadgeReport = props => {
-  let [sortBadges, setSortBadges] = useState(props.badges.slice() || []);
+function BadgeReport(props) {
+  const { badges, userId, firstName, lastName, close } = props;
+  const [sortBadges, setSortBadges] = useState(badges.slice() || []);
   let [numFeatured, setNumFeatured] = useState(0);
-  let [showModal, setShowModal] = useState(false);
-  let [badgesToDelete, setBadgesToDelete] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [badgesToDelete, setBadgesToDelete] = useState([]);
 
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
@@ -45,31 +46,28 @@ const BadgeReport = props => {
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    let base_image = new Image();
-    base_image.crossOrigin = 'anonymous';
-    base_image.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
-    base_image.src = base_image.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
-    base_image.onload = function() {
-      canvas.width = base_image.width;
-      canvas.height = base_image.height;
-
-      ctx.drawImage(base_image, 0, 0);
-      let uri = canvas.toDataURL('image/png');
+    const baseImage = new Image();
+    baseImage.crossOrigin = 'anonymous';
+    baseImage.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
+    baseImage.src = baseImage.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+    baseImage.onload = ()=>{
+      canvas.width = baseImage.width;
+      canvas.height = baseImage.height;
+      ctx.drawImage(baseImage, 0, 0);
+      const uri = canvas.toDataURL('image/png');
       callback(uri);
-
       canvas.remove();
     };
   }
 
-  const FormatReportForPdf = (badges, callback) => {
-    let bgReport = [];
+  const FormatReportForPdf = (badgesArr, callback) => {
+    const bgReport = [];
     bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-      props.lastName
-    }</h4></div>
+    <div style="margin-bottom: 20px; color: orange;"><h4>For ${firstName} ${lastName
+      }</h4></div>
     <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
-    for (let i = 0; i < badges.length; i++) {
-      imageToUri(badges[i].badge.imageUrl, function(uri) {
+    for (let i = 0; i < badgesArr.length; i++) {
+      imageToUri(badgesArr[i].badge.imageUrl, function (uri) {
         bgReport[i + 1] = `
         <table>
           <thead>
@@ -84,25 +82,23 @@ const BadgeReport = props => {
                 <div><img height="150" width="150" src=${uri}/></div>
               </td>
               <td style="width:500px">
-                <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
-                <div><b>Count:</b> ${badges[i].count}</div>
-                <div><b>Description:</b> ${badges[i].badge.description}</div>
+                <div><b>Name:</b> <span class="name">${badgesArr[i].badge.badgeName}</span></div>
+                <div><b>Count:</b> ${badgesArr[i].count}</div>
+                <div><b>Description:</b> ${badgesArr[i].badge.description}</div>
               </td>
             </tr>
           </tbody>
       </table>
-      ${
-        (i + 1) % 4 == 0 && i + 1 !== badges.length
-          ? `</br></br></br>
-      <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(badges.length / 4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-              props.lastName
+      ${(i + 1) % 4 === 0 && i + 1 !== badgesArr.length
+            ? `</br></br></br>
+      <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(badgesArr.length / 4)})</h3>
+    <div style="margin-bottom: 20px; color: orange;"><h4>For ${firstName} ${lastName
             }</h4></div>
     <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
       `
-          : ''
-      }`;
-        if (i == badges.length - 1) {
+            : ''
+          }`;
+        if (i === badgesArr.length - 1) {
           setTimeout(() => {
             callback(bgReport.join('\n'));
           }, 100);
@@ -112,15 +108,15 @@ const BadgeReport = props => {
   };
 
   const pdfDocGenerator = async () => {
-    let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
-    let badges = sortBadges.slice();
-    FormatReportForPdf(badges, formattedReport => {
+    const CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
+    const sortedBadges = sortBadges.slice();
+    FormatReportForPdf(sortedBadges, formattedReport => {
       const html = htmlToPdfmake(formattedReport, {
         tableAutoSize: true,
       });
-      let docDefinition = {
+      const docDefinition = {
         content: [html],
-        pageBreakBefore: function(currentNode) {
+        pageBreakBefore(currentNode) {
           return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
         },
         styles: {
@@ -135,21 +131,21 @@ const BadgeReport = props => {
   };
 
   const pdfFeaturedDocGenerator = async () => {
-    let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
-    let badges = sortBadges.slice();
-    badges = badges.filter(badge => {
+    const CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
+    let sortedBadges = sortBadges.slice();
+    sortedBadges = sortedBadges.filter(badge => {
       if (badge.featured) {
         return true;
-      } else {
-        return false;
       }
+      return false;
+
     });
 
-    FormatReportForPdf(badges, formattedReport => {
+    FormatReportForPdf(sortedBadges, formattedReport => {
       const html = htmlToPdfmake(formattedReport, { tableAutoSize: true });
-      let docDefinition = {
+      const docDefinition = {
         content: [html],
-        pageBreakBefore: function(currentNode) {
+        pageBreakBefore(currentNode) {
           return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
         },
         styles: {
@@ -164,8 +160,8 @@ const BadgeReport = props => {
   };
 
   useEffect(() => {
-    setSortBadges(props.badges.slice() || []);
-    let newBadges = sortBadges.slice();
+    setSortBadges(badges.slice() || []);
+    const newBadges = sortBadges.slice();
     newBadges.sort((a, b) => {
       if (a.badge.ranking === 0) return 1;
       if (b.badge.ranking === 0) return -1;
@@ -186,11 +182,11 @@ const BadgeReport = props => {
       }
     });
     setSortBadges(newBadges);
-  }, [props.badges]);
+  }, [badges]);
 
   const countChange = (badge, index, newValue) => {
-    let newBadges = sortBadges.slice();
-    let value = newValue.length === 0 ? 0 : parseInt(newValue);
+    const newBadges = sortBadges.slice();
+    const value = newValue.length === 0 ? 0 : parseInt(newValue);
     newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
     if (
       (value === 0 && badgesToDelete.indexOf(index) === -1) ||
@@ -199,7 +195,7 @@ const BadgeReport = props => {
       setBadgesToDelete(prevBadges => [...prevBadges, index]);
     }
     if (value > 0) {
-      setBadgesToDelete(prevBadges => prevBadges.filter(badge => badge !== index));
+      setBadgesToDelete(prevBadges => prevBadges.filter(prevBadge => prevBadge !== index));
     }
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -207,16 +203,17 @@ const BadgeReport = props => {
     let mm = today.getMonth() + 1;
     let dd = today.getDate();
 
-    mm < 10 ? (mm = '0' + mm) : mm;
-    dd < 10 ? (dd = '0' + dd) : dd;
+    mm < 10 ? (mm = `0${  mm}`) : mm;
+    dd < 10 ? (dd = `0${  dd}`) : dd;
     const formatedDate = `${yyyy}-${mm}-${dd}`;
-    
+
     newBadges.map((bdg, i) => {
       if (newValue > bdg.count && i === index) {
         bdg.earnedDate.push(formatedDate);
       } else if (newValue < bdg.count && i === index) {
         bdg.earnedDate.pop();
       }
+      return null;
     });
 
     newBadges[index].count = newValue;
@@ -224,13 +221,13 @@ const BadgeReport = props => {
   };
 
   const featuredChange = (badge, index, e) => {
-    let newBadges = sortBadges.slice();
+    const newBadges = sortBadges.slice();
     if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
       let count = 0;
       setNumFeatured(count);
       newBadges[index].featured = e.target.checked;
-      newBadges.forEach((badge, index) => {
-        if (badge.featured) {
+      newBadges.forEach(newBadge => {
+        if (newBadge.featured) {
           setNumFeatured(++count);
         }
       });
@@ -252,9 +249,9 @@ const BadgeReport = props => {
   };
 
   const handleDeleteAfterSave = () => {
-    let newBadges = sortBadges;
+    const newBadges = sortBadges;
     let indexToDelete = badgesToDelete;
-    badgesToDelete.forEach(index => {
+    badgesToDelete.forEach(i => {
       indexToDelete = indexToDelete.filter(index => index !== null);
       newBadges.splice(indexToDelete[0], 1);
       indexToDelete = indexToDelete.map(index => (index === 0 ? null : index - 1));
@@ -264,7 +261,7 @@ const BadgeReport = props => {
   };
 
   const deleteBadge = () => {
-    let newBadges = sortBadges.slice();
+    const newBadges = sortBadges.slice();
     const [deletedBadge] = newBadges.splice(badgesToDelete, 1);
     if (deletedBadge.featured) {
       setNumFeatured(--numFeatured);
@@ -276,13 +273,13 @@ const BadgeReport = props => {
 
   const saveChanges = async () => {
     badgesToDelete.length > 0 && handleDeleteAfterSave();
-    let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
+    const newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
     }
 
-    await props.changeBadgesByUserID(props.userId, newBadgeCollection);
-    await props.getUserProfile(props.userId);
+    await props.changeBadgesByUserID(userId, newBadgeCollection);
+    await props.getUserProfile(userId);
 
     props.setUserProfile(prevProfile => {
       return { ...prevProfile, badgeCollection: sortBadges };
@@ -291,8 +288,8 @@ const BadgeReport = props => {
       return { ...prevProfile, badgeCollection: sortBadges };
     });
     props.handleSubmit();
-    //close the modal
-    props.close();
+    // close the modal
+    close();
   };
 
   return (
@@ -314,12 +311,12 @@ const BadgeReport = props => {
             <tbody>
               {sortBadges &&
                 sortBadges.map((value, index) => (
-                  <tr key={index}>
+                  <tr key={value._id}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <img src={value.badge.imageUrl} id={`popover_${index.toString()}`} alt=""/>
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
+                    <UncontrolledPopover trigger="hover" target={`popover_${index.toString()}`}>
                       <Card className="text-center">
                         <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
                         <CardBody>
@@ -339,7 +336,7 @@ const BadgeReport = props => {
                     </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
-                      {typeof value.lastModified == 'string'
+                      {typeof value.lastModified === 'string'
                         ? value.lastModified.substring(0, 10)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
@@ -366,7 +363,7 @@ const BadgeReport = props => {
                           onChange={e => {
                             countChange(value, index, e.target.value);
                           }}
-                        ></Input>
+                        />
                       ) : (
                         Math.round(value.count)
                       )}
@@ -376,7 +373,7 @@ const BadgeReport = props => {
                         <button
                           type="button"
                           className="btn btn-outline-danger"
-                          onClick={e => handleDeleteBadge(index)}
+                          onClick={() => handleDeleteBadge(index)}
                         >
                           Delete
                         </button>
@@ -407,9 +404,7 @@ const BadgeReport = props => {
         <Button
           className="btn--dark-sea-green float-right"
           style={{ ...boxStyle, margin: 5 }}
-          onClick={e => {
-            saveChanges();
-          }}
+          onClick={saveChanges}
         >
           Save Changes
         </Button>
@@ -460,12 +455,12 @@ const BadgeReport = props => {
             <tbody>
               {sortBadges &&
                 sortBadges.map((value, index) => (
-                  <tr key={index}>
+                  <tr key={value._id}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <img src={value.badge.imageUrl} id={`popover_${index.toString()}`} alt="" />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
+                    <UncontrolledPopover trigger="hover" target={`popover_${index.toString()}`}>
                       <Card className="text-center">
                         <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
                         <CardBody>
@@ -485,7 +480,7 @@ const BadgeReport = props => {
                     </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
-                      {typeof value.lastModified == 'string'
+                      {typeof value.lastModified === 'string'
                         ? value.lastModified.substring(0, 10)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
@@ -527,7 +522,7 @@ const BadgeReport = props => {
                                     countChange(value, index, e.target.value);
                                   }}
                                   style={{ width: '70px' }}
-                                ></Input>
+                                />
                               ) : (
                                 Math.round(value.count)
                               )}
@@ -571,7 +566,7 @@ const BadgeReport = props => {
                                 <button
                                   type="button"
                                   className="btn btn-danger"
-                                  onClick={e => handleDeleteBadge(index)}
+                                  onClick={() => handleDeleteBadge(index)}
                                 >
                                   Delete
                                 </button>
@@ -592,9 +587,7 @@ const BadgeReport = props => {
           <Button
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
-            onClick={e => {
-              saveChanges();
-            }}
+            onClick={saveChanges}
           >
             <span>Save Changes</span>
           </Button>
@@ -634,7 +627,7 @@ const BadgeReport = props => {
       </div>
     </div>
   );
-};
+}
 
 const mapStateToProps = state => {
   return { state };

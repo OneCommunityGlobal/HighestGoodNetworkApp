@@ -4,11 +4,12 @@ import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
 import { boxStyle } from 'styles';
 
-const BadgeDevelopment = props => {
+function BadgeDevelopment(props){
+  let {allBadgeData} = props
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
 
   const toggle = () =>
-    setCreateNewBadgePopupOpen(isCreateNewBadgePopupOpen => !isCreateNewBadgePopupOpen);
+    setCreateNewBadgePopupOpen(!isCreateNewBadgePopupOpen);
 
   return (
     <div>
@@ -21,7 +22,7 @@ const BadgeDevelopment = props => {
           <CreateNewBadgePopup toggle={toggle} />
         </ModalBody>
       </Modal>
-      <BadgeDevelopmentTable allBadgeData={props.allBadgeData} />
+      <BadgeDevelopmentTable allBadgeData={allBadgeData} />
     </div>
   );
 };

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
+// import { boxStyle } from 'styles';
+import { boxStyle } from '../../styles';
 import AssignTableRow from './AssignTableRow';
-import { boxStyle } from 'styles';
 
-const AssignBadgePopup = props => {
+function AssignBadgePopup({ allBadgeData, toggle }) {
   const [searchedName, setSearchedName] = useState('');
 
   const onSearch = text => {
@@ -11,15 +12,16 @@ const AssignBadgePopup = props => {
   };
 
   const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
+    const filteredList = allBadges.filter(badge => {
       if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
         return badge;
       }
+      return null;
     });
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(props.allBadgeData);
+  const filteredBadges = filterBadges(allBadgeData);
 
   return (
     <div>
@@ -65,12 +67,12 @@ const AssignBadgePopup = props => {
       <Button
         className="btn--dark-sea-green float-right"
         style={{ ...boxStyle, margin: 5 }}
-        onClick={props.toggle}
+        onClick={toggle}
       >
         Confirm
       </Button>
     </div>
   );
-};
+}
 
 export default AssignBadgePopup;

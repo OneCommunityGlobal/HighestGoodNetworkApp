@@ -1,8 +1,7 @@
-import React from 'react';
 import { UncontrolledTooltip } from 'reactstrap';
 
-const BadgeTableHeader = () => (
-  <tr>
+function BadgeTableHeader() {
+  return <tr>
     <th>Badge</th>
     <th>Name</th>
     <th>Description</th>
@@ -33,6 +32,6 @@ const BadgeTableHeader = () => (
     <th>Action</th>
     <th>Reports Page Notification</th>
   </tr>
-);
+}
 
 export default BadgeTableHeader;

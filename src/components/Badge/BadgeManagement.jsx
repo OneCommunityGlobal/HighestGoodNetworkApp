@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges } from '../../actions/badgeManagement';
-import { boxStyle } from 'styles';
 
-const BadgeManagement = props => {
+function BadgeManagement(props) {
   const [activeTab, setActiveTab] = useState('1');
 
   const toggle = tab => {
@@ -58,7 +58,7 @@ const BadgeManagement = props => {
       </TabContent>
     </div>
   );
-};
+}
 
 const mapStateToProps = state => ({ allBadgeData: state.badge.allBadgeData });
 
