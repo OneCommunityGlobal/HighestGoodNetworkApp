@@ -48,6 +48,28 @@ const Badge = props => {
     setOpenTypes(isOpenTypes => !isOpenTypes);
   };
 
+  const checkIfNewPersonalMaxEarned = badgeCollection => {
+    const targetBadge = badgeCollection.find(
+      badgeObj => badgeObj.badge._id === '64ee76a4a2de3e0d0c717841',
+    );
+
+    if (!targetBadge) {
+      return false;
+    }
+
+    // Extract the lastModified date of the target badge
+    const targetBadgeDate = new Date(targetBadge.lastModified);
+
+    // Find the most recent lastModified date among all badges
+    const latestBadgeDate = badgeCollection.reduce((latest, currentBadge) => {
+      const currentBadgeDate = new Date(currentBadge.lastModified);
+      return currentBadgeDate > latest ? currentBadgeDate : latest;
+    }, new Date(0)); // Initializing with an early date for comparison
+
+    // Return true if the target badge's date is the most recent, false otherwise
+    return targetBadgeDate.getTime() === latestBadgeDate.getTime();
+  };
+
   useEffect(() => {
     const userId = props.userId;
     let count = 0;
@@ -74,6 +96,25 @@ const Badge = props => {
               </CardHeader>
               <CardBody>
                 <NewBadges badges={props.userProfile.badgeCollection || []} />
+
+                {checkIfNewPersonalMaxEarned(props.userProfile.badgeCollection) && (
+                  <CardText
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: 18,
+                      color: '#285739',
+                      paddingTop: 15,
+                    }}
+                  >
+                    {/* TODO: Need to find the hours of personal best in a week. Now it counts the number of this badge. */}
+                    {`You earned a personal best of ${
+                      props.userProfile.badgeCollection.find(
+                        badgeObj => badgeObj.badge._id === '64ee76a4a2de3e0d0c717841',
+                      ).count
+                    } hours in a week!`}
+                  </CardText>
+                )}
+
                 <OldBadges badges={props.userProfile.badgeCollection || []} />
                 <CardText
                   style={{
