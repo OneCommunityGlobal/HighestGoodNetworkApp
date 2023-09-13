@@ -62,6 +62,8 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
             bioCanEdit={bioCanEdit}
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
+            canEditTeamCode={canEditTeamCode}
+            badges={badges}
           />
         ))}
       </ListGroup>
