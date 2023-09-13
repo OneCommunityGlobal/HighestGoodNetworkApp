@@ -660,18 +660,18 @@ function UserProfile(props) {
             </div>
           </Col>
           <Col md="8">
-            <div className="profile-head">
-              {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
-                <Alert color="warning">
-                  Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
-                </Alert>
-              ) : null}
+            {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
+              <Alert color="warning">
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
+              </Alert>
+            ) : null}
               {!codeValid ? (
               <Alert color="danger">
                 Please enter a code in the format of X-XXX
               </Alert>
             ) : null}
-            <h5 style={{ display: 'inline-block', marginRight: 10 }}>
+            <div className="profile-head">
+              <h5 style={{ display: 'inline-block', marginRight: 10 }}>
                 {`${firstName} ${lastName}`}
               </h5>
               <i
@@ -717,15 +717,6 @@ function UserProfile(props) {
               >
                 Team Weekly Summaries
               </Button>
-              <h6>{jobTitle}</h6>
-              <p className="proile-rating">
-                From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
-                {'   '}
-                To:{' '}
-                <span>
-                  {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
-                </span>
-              </p>
             </div>
 
             <h6 className="job-title">{jobTitle}</h6>
