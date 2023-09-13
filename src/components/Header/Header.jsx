@@ -54,7 +54,8 @@ export const Header = props => {
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
-  const canSeeUserManagement = props.hasPermission('seeUserManagement');
+  // const canSeeUserManagement = props.hasPermission('seeUserManagement');
+  const canSeeUserManagementTab = props.hasPermission('seeUserManagement') || props.hasPermission('seeUserManagementTab')
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
@@ -176,7 +177,7 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
-              {(canSeeUserManagement ||
+              {(canSeeUserManagementTab ||
                 canPostUserProfile ||
                 canDeleteUserProfile ||
                 canPutUserProfileImportantInfo ||
@@ -191,7 +192,7 @@ export const Header = props => {
                     <span className="dashboard-text-link">{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    {canSeeUserManagement ||
+                    {canSeeUserManagementTab ||
                     canPostUserProfile ||
                     canDeleteUserProfile ||
                     canPutUserProfileImportantInfo ? (

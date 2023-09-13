@@ -111,7 +111,7 @@ export default (
             path="/usermanagement"
             exact
             component={UserManagement}
-            routePermissions={[RoutePermissions.userManagement, RoutePermissions.userManagementFullFunctionality]}
+            routePermissions={[RoutePermissions.userManagement, RoutePermissions.userManagement_fullFunctionality, RoutePermissions.userManagement_onlyCreateUsers]}
           />
           <ProtectedRoute
             path="/badgemanagement"
