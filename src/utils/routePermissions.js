@@ -12,4 +12,5 @@ export const RoutePermissions = {
   permissionsManagementRole: 'putRole',
   teams: 'putTeam',
   reports: 'getWeeklySummaries',
+  summaryGroups: 'seeSummaryGroup',
 };

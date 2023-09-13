@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 
-export const MemberAutoComplete = props => {
+const MemberAutoComplete = props => {
   const [isOpen, toggle] = useState(false);
 
   return (
@@ -13,14 +13,11 @@ export const MemberAutoComplete = props => {
       style={{ width: '100%', marginRight: '5px' }}
     >
       <Input
-        autoFocus
         type="text"
         value={props.searchText}
-        data-testid='input-search'
         onChange={e => {
           props.setSearchText(e.target.value);
           toggle(true);
-          props.onAddUser(undefined);
         }}
       />
 
@@ -37,9 +34,8 @@ export const MemberAutoComplete = props => {
           {props.userProfileData.userProfiles
             .filter(user => {
               if (
-                user.isActive &&
-                (user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
-                user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1)
+                user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
+                user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1
               ) {
                 return user;
               }
@@ -47,6 +43,7 @@ export const MemberAutoComplete = props => {
             .slice(0, 10)
             .map(item => (
               <div
+                key={item._id}
                 className="user-auto-cpmplete"
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);

@@ -21,6 +21,7 @@ import UpdatePassword from './components/UpdatePassword';
 import Header from './components/Header';
 import Projects from './components/Projects';
 import Teams from './components/Teams/Teams';
+import SummaryManagement from 'components/SummaryManagement/SummaryManagement';
 import UserManagement from './components/UserManagement';
 import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
@@ -38,6 +39,7 @@ import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
+
 
 export default (
   <>
@@ -59,7 +61,6 @@ export default (
           <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
           <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
           <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
-
           <ProtectedRoute
             path="/inventory/:projectId"
             component={Inventory}
@@ -70,7 +71,6 @@ export default (
             component={Inventory}
             routePermissions={RoutePermissions.inventoryProjectWbs}
           />
-
           <ProtectedRoute
             path="/weeklysummariesreport"
             exact
