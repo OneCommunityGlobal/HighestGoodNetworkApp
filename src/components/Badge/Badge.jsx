@@ -24,6 +24,7 @@ function Badge(props) {
   const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
+  let { userId } = props;
 
   const toggle = () => {
     if (isOpen) {
@@ -98,7 +99,7 @@ function Badge(props) {
                 <Modal size="lg" isOpen={isOpen} toggle={toggle}>
                   <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
                   <ModalBody>
-                  <BadgeReport
+                    <BadgeReport
                       badges={props.userProfile.badgeCollection || []}
                       userId={userId}
                       firstName={props.userProfile.firstName}
