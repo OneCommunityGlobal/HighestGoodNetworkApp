@@ -80,4 +80,17 @@ describe('TeamMembersPopup', () => {
     const addButton = screen.getByText('Add');
     expect(addButton).toBeInTheDocument();
   });
+
+  it('display "Delete" button if user has permission to delete members', () => {
+    initialProps.hasPermission.mockReturnValue(true);
+
+    render(
+      <Provider store={store}>
+        <TeamMembersPopup {...initialProps} />
+      </Provider>,
+    );
+
+    const deleteButton = screen.queryByText('Delete');
+    expect(deleteButton).toBeNull();
+  });
 });
