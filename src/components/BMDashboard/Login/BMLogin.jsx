@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi';
 
+import { loginBMUser } from 'actions/authActions';
+
 const BMLogin = (props) => {
   // console.log("🚀 ~ file: BMLogin.jsx:2 ~ BMLogin ~ props:", props)
+  const { auth, history } = props
   // state
   const [enteredEmail, setEnteredEmail] = useState("")
   const [enterPassword, setEnteredPassword] = useState("")
@@ -12,7 +16,7 @@ const BMLogin = (props) => {
 
   // push to dashboard if user is authenticated
   useEffect(() => {
-    if(props.auth.isBMAuthenticated) props.history.push('/')
+    if(auth.isBMAuthenticated) history.push('/')
   },[])
 
   // Note email input type="text" to validate with Joi
@@ -43,15 +47,17 @@ const BMLogin = (props) => {
         msg: validate.error.details[0].message
       })
     }
+    loginBMUser({ email: enteredEmail, password: enterPassword })
+  }
+
+  if(!auth.isAuthenticated) {
+    return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
   }
   
   return (
     <div className='container mt-5'>
       <h2>Log In To Building Management Dashboard</h2>
       <Form onSubmit={handleSubmit}>
-        <FormText>
-          Note: You must enter your Main account credentials to access the Building Management Dashboard
-        </FormText>
         <FormGroup>
           <Label for="email">Email</Label>
           <Input

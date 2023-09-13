@@ -109,6 +109,9 @@ export const ENDPOINTS = {
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
+
+  // bm dashboard endpoints
+  BM_LOGIN: `${APIEndpoint}/bm/login`,
 };
 
 export const ApiEndpoint = APIEndpoint;
