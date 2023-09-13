@@ -51,6 +51,7 @@ return (
         {/* --- DESKTOP VERSION OF MODAL --- */}
           <div className="desktop">
             <div style={{display: 'flex', flexWrap: 'wrap'}}> 
+            {!!sortedBadges && <div>No badges to show</div>}
             {sortedBadges && sortedBadges.map((value, index)=> (
               <div className='badge_image_md'>
               <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
