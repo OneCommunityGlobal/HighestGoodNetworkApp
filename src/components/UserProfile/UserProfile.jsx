@@ -29,10 +29,11 @@ import hasPermission, {
 } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
-import SkeletonLoading from '../common/SkeletonLoading';
+import Loading from '../common/Loading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
+import SummaryTeamsTab from './SummaryTeam/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
 import InfoModal from './InfoModal';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
@@ -47,6 +48,7 @@ import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
+import { faSleigh, faCamera } from '@fortawesome/free-solid-svg-icons';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
@@ -92,32 +94,30 @@ function UserProfile(props) {
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
-
-  const userProfileRef = useRef();
+  const [userStartDate, setUserStartDate] = useState('');
+  const [userEndDate, setUserEndDate] = useState('');
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
-
-  const [userStartDate, setUserStartDate] = useState('');
-  const [userEndDate, setUserEndDate] = useState('');
   const [codeValid, setCodeValid] = useState(true);
 
   /* useEffect functions */
-
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
-
-  useEffect(() => {
-    userProfileRef.current = userProfile;
-  });
-
   useEffect(() => {
     checkIsTeamsEqual();
     checkIsProjectsEqual();
     setUserProfile({ ...userProfile, teams, projects });
     setOriginalUserProfile({ ...originalUserProfile, teams, projects });
   }, [teams, projects]);
+
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldRefresh) return;
+    setShouldRefresh(false);
+    loadUserProfile();
+  }, [shouldRefresh]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -132,7 +132,6 @@ function UserProfile(props) {
   }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
-    setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
@@ -164,7 +163,6 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects);
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -231,7 +229,6 @@ function UserProfile(props) {
         phoneNumber: newUserProfile.phoneNumber[0],
         createdDate: newUserProfile?.createdDate.split('T')[0],
       });
-      setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -244,10 +241,23 @@ function UserProfile(props) {
       setShowSummary(false);
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const user = response.data;
-      const userSummaries = user.weeklySummaries;
-
-      setSummarySelected(userSummaries);
-      setShowSummary(true);
+      const summaries = user.weeklySummaries;
+      console.log('summaryName:', summaryName);
+      console.log('summaries:', summaries);
+      if (summaries && Array.isArray(summaries) && summaries.length >= 3) {
+        setSummarySelected([summaries[0].summary, summaries[1].summary, summaries[2].summary]);
+        setShowSummary(true);
+      } else if (summaries && Array.isArray(summaries) && summaries.length === 2) {
+        setSummarySelected([summaries[0].summary, summaries[1].summary, '']);
+        setShowSummary(true);
+      } else if (summaries && Array.isArray(summaries) && summaries.length === 1) {
+        setSummarySelected([summaries[0].summary, '', '']);
+        setShowSummary(true);
+      } else {
+        setSummarySelected(['', '', '']);
+        setShowSummary(true);
+      }
+      console.log('summarySelected', summarySelected);
     } catch (err) {
       setShowLoading(false);
     }
@@ -269,6 +279,7 @@ function UserProfile(props) {
           label: `View ${leaderBoardData[i].name}'s summary.`,
         });
       }
+      // console.log('allSummaries:', allSummaries);
       setSummaries(allSummaries);
       return;
     } catch (err) {
@@ -381,10 +392,7 @@ function UserProfile(props) {
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
       const newBlueSquare = { date: dateStamp, description: summary };
-      setOriginalUserProfile({
-        ...originalUserProfile,
-        infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
+      setShowModal(false);
       setUserProfile({
         ...userProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
@@ -399,17 +407,16 @@ function UserProfile(props) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
+      setShowModal(false);
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
-      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements !== []) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
-        setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
+        setShowModal(false);
       }
     }
-    setShowModal(false);
     setBlueSquareChanged(true);
   };
 
@@ -420,7 +427,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
+      await props.updateUserProfile(props.match.params.userId, userProfile);
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -430,6 +437,8 @@ function UserProfile(props) {
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
+    setShouldRefresh(true);
+    window.location.reload();
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
@@ -479,6 +488,17 @@ function UserProfile(props) {
     setShouldRefresh(false);
     loadUserProfile();
   }, [shouldRefresh]);
+
+  useEffect(() => {
+    setShowLoading(true);
+    loadUserProfile();
+  }, [props?.match?.params?.userId]);
+
+  useEffect(() => {
+    if (!blueSquareChanged) return;
+    setBlueSquareChanged(false);
+    handleSubmit();
+  }, [blueSquareChanged]);
 
   /**
    *
@@ -531,7 +551,7 @@ function UserProfile(props) {
     return (
       <Container fluid>
         <Row className="text-center" data-test="loading">
-          <SkeletonLoading template="UserProfile" />
+          <Loading />
         </Row>
       </Container>
     );
@@ -541,7 +561,6 @@ function UserProfile(props) {
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
-
   const authEmail = props.userProfile?.email;
   const isUserSelf = targetUserId === requestorId;
 
@@ -646,13 +665,15 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
-            {!codeValid ? (
+              {!codeValid ? (
               <Alert color="danger">
                 Please enter a code in the format of X-XXX
               </Alert>
             ) : null}
             <div className="profile-head">
-              <h5>{`${firstName} ${lastName}`}</h5>
+              <h5 style={{ display: 'inline-block', marginRight: 10 }}>
+                {`${firstName} ${lastName}`}
+              </h5>
               <i
                 data-toggle="tooltip"
                 data-placement="right"
@@ -682,14 +703,7 @@ function UserProfile(props) {
                   aria-hidden="true"
                   style={{ fontSize: 24, cursor: 'pointer' }}
                   title="Click to see user's timelog"
-                  onClick={e => {
-                    if (e.metaKey || e.ctrlKey) {
-                      window.open(`/timelog/${targetUserId}`, '_blank');
-                    } else {
-                      e.preventDefault();
-                      props.history.push(`/timelog/${targetUserId}`);
-                    }
-                  }}
+                  onClick={() => props.history.push(`/timelog/${targetUserId}`)}
                 />
               )}
               <Button
@@ -700,11 +714,11 @@ function UserProfile(props) {
                 }}
                 color="primary"
                 size="sm"
-                style={boxStyle}
               >
-                {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
+                Team Weekly Summaries
               </Button>
             </div>
+
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
               From : <span>{formatDate(userProfile.createdDate)}</span>
@@ -714,6 +728,7 @@ function UserProfile(props) {
                 {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
               </span>
             </p>
+
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
               <div>
@@ -729,19 +744,47 @@ function UserProfile(props) {
             ) : (
               <div />
             )}
-            {summarySelected &&
-              showSelect &&
-              showSummary &&
-              summarySelected.map((data, i) => {
-                return (
-                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} />
-                );
-              })}
+            {summarySelected && showSelect && showSummary ? (
+              <div>
+                {summarySelected[0] && summarySelected[0].length > 0 ? (
+                  <div>
+                    <h5>{'Viewing ' + summaryName + "'s summary."}</h5>
+                    {typeof summarySelected[0] === 'string'
+                      ? parse(summarySelected[0])
+                      : summarySelected[0]}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary for this week.</h5>
+                )}
+
+                {summarySelected[1] && summarySelected[1].length > 0 ? (
+                  <div>
+                    <h5>{'Viewing ' + summaryName + "'s last week's summary."}</h5>
+                    {typeof summarySelected[1] === 'string'
+                      ? parse(summarySelected[1])
+                      : summarySelected[1]}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary for last week.</h5>
+                )}
+
+                {summarySelected[2] && summarySelected[2].length > 0 ? (
+                  <div>
+                    <h5>{'Viewing ' + summaryName + ' summary from two weeks ago.'}</h5>
+                    {typeof summarySelected[2] === 'string'
+                      ? parse(summarySelected[2])
+                      : summarySelected[2]}
+                  </div>
+                ) : (
+                  <h5>{summaryName} did not submit a submit a summary two weeks ago.</h5>
+                )}
+              </div>
+            ) : (
+              <div />
+            )}
             <Badges
-              isUserSelf={isUserSelf}
               userProfile={userProfile}
               setUserProfile={setUserProfile}
-              setOriginalUserProfile={setOriginalUserProfile}
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleSubmit}
@@ -821,6 +864,15 @@ function UserProfile(props) {
                     Edit History
                   </NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: activeTab === '6' }, 'nav-link')}
+                    onClick={() => toggleTab('6')}
+                    id="nabLink-summaryteams"
+                  >
+                    Summary Teams
+                  </NavLink>
+                </NavItem>
               </Nav>
             </div>
             <TabContent
@@ -834,11 +886,11 @@ function UserProfile(props) {
                   role={requestorRole}
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
-                  loadUserProfile={loadUserProfile}
                   handleUserProfile={handleUserProfile}
                   formValid={formValid}
                   setFormValid={setFormValid}
                   isUserSelf={isUserSelf}
+                  setShouldRefresh={setShouldRefresh}
                   canEdit={canEdit}
                   canEditRole={canEditUserProfile}
                   roles={roles}
@@ -894,13 +946,6 @@ function UserProfile(props) {
                   role={requestorRole}
                   userId={props.match.params.userId}
                   updateTask={onUpdateTask}
-                  handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
-                  }
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -908,6 +953,19 @@ function UserProfile(props) {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   role={requestorRole}
+                />
+              </TabPane>
+              <TabPane tabId="6">
+                <SummaryTeamsTab
+                  userTeams={teams || []}
+                  teamsData={props?.allTeams?.allTeamsData || []}
+                  onAssignTeam={onAssignTeam}
+                  onDeleteteam={onDeleteTeam}
+                  edit={canEdit}
+                  role={requestorRole}
+                  roles={roles}
+                  userId={props.match.params.userId}
+                  fullName={`${userProfile.firstName} ${userProfile.lastName}`}
                 />
               </TabPane>
             </TabContent>
@@ -932,6 +990,7 @@ function UserProfile(props) {
                     formValid={formValid}
                     setFormValid={setFormValid}
                     isUserSelf={isUserSelf}
+                    setShouldRefresh={setShouldRefresh}
                     canEdit={canEdit}
                     canEditRole={canEdit}
                     roles={roles}
@@ -1135,13 +1194,6 @@ function UserProfile(props) {
                     role={requestorRole}
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
-                    handleSubmit={handleSubmit}
-                    disabled={
-                      !formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
-                    }
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1225,6 +1277,30 @@ function UserProfile(props) {
                     </div>
                   </Row>
                 </ModalFooter>
+              </Modal>
+              <Button
+                className="list-button"
+                onClick={() => toggle('Summary Teams')}
+                color="secondary"
+              >
+                Summary Teams
+              </Button>
+              <Modal isOpen={menuModalTabletScreen === 'Summary Teams'} toggle={toggle}>
+                <ModalHeader toggle={toggle}>Summary Teams</ModalHeader>
+                <ModalBody>
+                  <SummaryTeamsTab
+                    userTeams={teams || []}
+                    teamsData={props?.allTeams?.allTeamsData || []}
+                    onAssignTeam={onAssignTeam}
+                    onDeleteteam={onDeleteTeam}
+                    edit={canEdit}
+                    role={requestorRole}
+                    roles={roles}
+                    userId={props.match.params.userId}
+                    fullName={`${userProfile.firstName} ${userProfile.lastName}`}
+                  />
+                </ModalBody>
+                <ModalFooter></ModalFooter>
               </Modal>
             </List>
           </Col>
