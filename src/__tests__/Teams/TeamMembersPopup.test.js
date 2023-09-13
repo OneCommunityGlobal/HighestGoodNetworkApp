@@ -67,4 +67,17 @@ describe('TeamMembersPopup', () => {
 
     expect(initialProps.onClose).toHaveBeenCalledTimes(1);
   });
+
+  it('displays "Add" button if user has "assignTeamToUsers" permission', () => {
+    initialProps.hasPermission.mockReturnValue(true);
+
+    render(
+      <Provider store={store}>
+        <TeamMembersPopup {...initialProps} />
+      </Provider>,
+    );
+
+    const addButton = screen.getByText('Add');
+    expect(addButton).toBeInTheDocument();
+  });
 });
