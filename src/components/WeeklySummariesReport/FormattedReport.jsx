@@ -41,7 +41,7 @@ const textColors = {
 
 const ListGroupItem = ({children}) => <LGI className='px-0 border-0 py-1'>{children}</LGI>
 
-const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo }) => {
+const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo, badges }) => {
   const emails = [];
 
   summaries.forEach(summary => {
@@ -61,6 +61,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
             bioCanEdit={bioCanEdit}
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
+            badges={badges}
           />
         ))}
       </ListGroup>
@@ -71,7 +72,7 @@ const FormattedReport = ({ summaries, weekIndex, bioCanEdit, canEditSummaryCount
 }
 
 
-const ReportDetails = ({ summary, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo }) => {
+const ReportDetails = ({ summary, weekIndex, bioCanEdit, canEditSummaryCount, allRoleInfo, badges }) => {
   const ref = useRef(null)
   const isInViewPort = useIsInViewPort(ref)
 
@@ -122,6 +123,10 @@ const ReportDetails = ({ summary, weekIndex, bioCanEdit, canEditSummaryCount, al
               <span className='ml-2'>{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</span>
             </ListGroupItem>
           )}
+          {summary.badgeCollection.length > 0 && (
+            <ListGroupItem>
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+            </ListGroupItem>)}
           <ListGroupItem>
             <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
           </ListGroupItem>
@@ -205,7 +210,6 @@ const MediaUrlLink = ({summary}) => {
 };
 
 const TotalValidWeeklySummaries = ({summary, canEditSummaryCount}) => {
-
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
   };
@@ -316,6 +320,76 @@ const BioLabel = ({bioPosted, summary}) => {
   );
 };
 
+const WeeklyBadge = ({summary, weekIndex}) => {
+  const badgeEndDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+  const badgeStartDate = moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+  let badgeIdThisWeek = [];
+  let badgeThisWeek = [];
+  summary.badgeCollection.map(badge => {
+    if (badge.earnedDate) {
+      if (badge.earnedDate[0] <= badgeEndDate && badge.earnedDate[0] >= badgeStartDate) {
+        badgeIdThisWeek.push(badge.badge);
+      }
+    } else {
+      const modifiedDate = badge.lastModified.substring(0, 10);
+      if (modifiedDate <= badgeEndDate && modifiedDate >= badgeStartDate) {
+        badgeIdThisWeek.push(badge.badge);
+      }
+    }
+  });
+  if (badgeIdThisWeek.length > 0) {
+    badgeIdThisWeek.forEach(badgeId => {
+      const badge = badges.filter(badge => badge._id === badgeId)[0];
+      badgeThisWeek.push(badge);
+    });
+  }
+  return (
+    <table>
+      <tbody>
+        <tr className="badge-tr" key={weekIndex + 'badge_' + summary._id}>
+          {badgeThisWeek.length > 0
+            ? badgeThisWeek.map(
+                (value, index) =>
+                  value?.showReport && (
+                    <td className="badge-td" key={weekIndex + '_' + summary._id + '_' + index}>
+                      {' '}
+                      <img src={value.imageUrl} id={'popover_' + value._id} />
+                      <UncontrolledPopover trigger="hover" target={'popover_' + value._id}>
+                        <Card className="text-center">
+                          <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                          <CardBody>
+                            <CardTitle
+                              style={{
+                                fontWeight: 'bold',
+                                fontSize: 18,
+                                color: '#285739',
+                                marginBottom: 15,
+                              }}
+                            >
+                              {value?.badgeName}
+                            </CardTitle>
+                            <CardText>{value?.description}</CardText>
+                          </CardBody>
+                        </Card>
+                      </UncontrolledPopover>
+                    </td>
+                  ),
+              )
+            : null}
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
 const Index = ({summary, weekIndex, allRoleInfo}) => {
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
@@ -348,76 +422,6 @@ const Index = ({summary, weekIndex, allRoleInfo}) => {
   const googleDocIcon = googleDocLink && googleDocLink.Link.trim() !== ''
     ? google_doc_icon
     : google_doc_icon_gray;
-
-  const getWeeklyBadge = summary => {
-    const badgeEndDate = moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(weekIndex, 'week')
-      .format('YYYY-MM-DD');
-    const badgeStartDate = moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(weekIndex, 'week')
-      .format('YYYY-MM-DD');
-    let badgeIdThisWeek = [];
-    let badgeThisWeek = [];
-    summary.badgeCollection.map(badge => {
-      if (badge.earnedDate) {
-        if (badge.earnedDate[0] <= badgeEndDate && badge.earnedDate[0] >= badgeStartDate) {
-          badgeIdThisWeek.push(badge.badge);
-        }
-      } else {
-        const modifiedDate = badge.lastModified.substring(0, 10);
-        if (modifiedDate <= badgeEndDate && modifiedDate >= badgeStartDate) {
-          badgeIdThisWeek.push(badge.badge);
-        }
-      }
-    });
-    if (badgeIdThisWeek.length > 0) {
-      badgeIdThisWeek.forEach(badgeId => {
-        const badge = badges.filter(badge => badge._id === badgeId)[0];
-        badgeThisWeek.push(badge);
-      });
-    }
-    return (
-      <table>
-        <tbody>
-          <tr className="badge-tr" key={weekIndex + 'badge_' + summary._id}>
-            {badgeThisWeek.length > 0
-              ? badgeThisWeek.map(
-                  (value, index) =>
-                    value?.showReport && (
-                      <td className="badge-td" key={weekIndex + '_' + summary._id + '_' + index}>
-                        {' '}
-                        <img src={value.imageUrl} id={'popover_' + value._id} />
-                        <UncontrolledPopover trigger="hover" target={'popover_' + value._id}>
-                          <Card className="text-center">
-                            <CardImg className="badge_image_lg" src={value?.imageUrl} />
-                            <CardBody>
-                              <CardTitle
-                                style={{
-                                  fontWeight: 'bold',
-                                  fontSize: 18,
-                                  color: '#285739',
-                                  marginBottom: 15,
-                                }}
-                              >
-                                {value?.badgeName}
-                              </CardTitle>
-                              <CardText>{value?.description}</CardText>
-                            </CardBody>
-                          </Card>
-                        </UncontrolledPopover>
-                      </td>
-                    ),
-                )
-              : null}
-          </tr>
-        </tbody>
-      </table>
-    );
-  };
 
   return (
     <>
