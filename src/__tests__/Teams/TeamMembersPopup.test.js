@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import TeamMembersPopup from 'components/Teams/TeamMembersPopup';
 import configureStore from 'redux-mock-store';
-import { render } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
 
@@ -53,5 +53,18 @@ describe('TeamMembersPopup', () => {
 
     const addButton = getByText('Add');
     expect(addButton).toBeInTheDocument();
+  });
+
+  it('should call closePopup function', () => {
+    render(
+      <Provider store={store}>
+        <TeamMembersPopup {...initialProps} />
+      </Provider>,
+    );
+
+    const closeButton = screen.getByText('Close');
+    fireEvent.click(closeButton);
+
+    expect(initialProps.onClose).toHaveBeenCalledTimes(1);
   });
 });
