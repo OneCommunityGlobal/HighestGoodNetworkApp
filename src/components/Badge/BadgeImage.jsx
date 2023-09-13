@@ -17,17 +17,14 @@ const BadgeImage = props => {
             loading="lazy"
           />
         </div>
-        {props.count < 100 ? (
-          <span
-            className={
-              props.badgeData.type == 'Personal Max' ? 'badge_count_personalmax' : 'badge_count'
-            }
-          >
-            {/* TODO: Get personal max hours in a week data from somewhere else */}
-            {props.badgeData.type == 'Personal Max'
-              ? `${Math.round(props.count)} ${Math.round(props.count) <= 1 ? ' hr' : ' hrs'}`
-              : Math.round(props.count)}
+
+        {props.badgeData.type == 'Personal Max' ? (
+          <span className={'badge_count_personalmax'}>
+            {/* TODO: Need to get correct hours of personal max (WIP FE PR#826) */}
+            {`${Math.round(props.count)} ${Math.round(props.count) <= 1 ? ' hr' : ' hrs'}`}
           </span>
+        ) : props.count < 100 ? (
+          <span className={'badge_count'}>{Math.round(props.count)}</span>
         ) : (
           <span className="badge_count_3_digit">{Math.round(props.count)}</span>
         )}
