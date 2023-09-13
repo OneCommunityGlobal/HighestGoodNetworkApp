@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 
-const TeamMembersPopup = React.memo(props => {
+export const TeamMembersPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
     setSortOrder(0);
