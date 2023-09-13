@@ -93,4 +93,17 @@ describe('TeamMembersPopup', () => {
     const deleteButton = screen.queryByText('Delete');
     expect(deleteButton).toBeNull();
   });
+
+  it('does not display "Delete" button if user does not have permission to delete members', () => {
+    initialProps.hasPermission.mockReturnValue(false);
+
+    render(
+      <Provider store={store}>
+        <TeamMembersPopup {...initialProps} />
+      </Provider>,
+    );
+
+    const deleteButton = screen.queryByText('Delete');
+    expect(deleteButton).not.toBeInTheDocument();
+  });
 });
