@@ -26,8 +26,6 @@ const Badge = props => {
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
 
-  console.log(props.userProfile);
-
   const toggle = () => {
     if (isOpen) {
       const userId = props.userId;
@@ -64,8 +62,6 @@ const Badge = props => {
       setTotalBadge(Math.round(count));
     }
   }, [props.userProfile.badgeCollection, totalBadge]);
-
-  
 
   return (
     <>
