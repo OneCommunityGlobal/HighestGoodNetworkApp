@@ -26,6 +26,8 @@ const Badge = props => {
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
 
+  console.log(props.userProfile);
+
   const toggle = () => {
     if (isOpen) {
       const userId = props.userId;
@@ -63,6 +65,8 @@ const Badge = props => {
     }
   }, [props.userProfile.badgeCollection, totalBadge]);
 
+  
+
   return (
     <>
       <Container className="right-padding-temp-fix">
@@ -73,8 +77,14 @@ const Badge = props => {
                 Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
               </CardHeader>
               <CardBody>
-                <NewBadges badges={props.userProfile.badgeCollection || []} />
-                <OldBadges badges={props.userProfile.badgeCollection || []} />
+                <NewBadges
+                  personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
+                  badges={props.userProfile.badgeCollection || []}
+                />
+                <OldBadges
+                  personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
+                  badges={props.userProfile.badgeCollection || []}
+                />
                 <CardText
                   style={{
                     fontWeight: 'bold',
@@ -89,16 +99,8 @@ const Badge = props => {
                         props.userProfile.badgeCollection.find(
                           badgeObj => badgeObj.badge._id === '64ee76a4a2de3e0d0c717841',
                         )
-                          ? ` and a personal best of ${
-                              props.userProfile.badgeCollection.find(
-                                badgeObj => badgeObj.badge._id === '64ee76a4a2de3e0d0c717841',
-                              ).count
-                            } ${
-                              props.userProfile.badgeCollection.find(
-                                badgeObj => badgeObj.badge._id === '64ee76a4a2de3e0d0c717841',
-                              ).count === 1
-                                ? 'hour'
-                                : 'hours'
+                          ? ` and a personal best of ${props.userProfile.personalBestMaxHrs} ${
+                              props.userProfile.personalBestMaxHrs === 1 ? 'hour' : 'hours'
                             } in a week`
                           : ''
                       }! `

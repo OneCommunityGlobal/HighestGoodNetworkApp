@@ -111,7 +111,7 @@ export const Badges = props => {
           </div>
         </CardHeader>
         <CardBody style={{ overflow: 'auto' }}>
-          <FeaturedBadges badges={props.userProfile.badgeCollection} />
+          <FeaturedBadges personalBestMaxHrs={props.userProfile.personalBestMaxHrs} badges={props.userProfile.badgeCollection} />
         </CardBody>
         <CardFooter
           style={{

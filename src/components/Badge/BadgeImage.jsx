@@ -20,7 +20,9 @@ const BadgeImage = props => {
 
         {props.badgeData.type == 'Personal Max' ? (
           <span className={'badge_count_personalmax'}>
-            {`${Math.round(props.count)} ${Math.round(props.count) <= 1 ? ' hr' : ' hrs'}`}
+            {`${Math.round(props.personalBestMaxHrs)} ${
+              Math.round(props.personalBestMaxHrs) <= 1 ? ' hr' : ' hrs'
+            }`}
           </span>
         ) : props.count < 100 ? (
           <span className={'badge_count'}>{Math.round(props.count)}</span>
