@@ -1,10 +1,10 @@
-import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
@@ -17,8 +17,9 @@ import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
+import { toast } from 'react-toastify';
 
-const TeamMemberTasks = props => {
+const TeamMemberTasks = React.memo(props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
@@ -56,7 +57,6 @@ const TeamMemberTasks = props => {
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
-  
 
   useEffect(() => {
     const initialFetching = async () => {
@@ -103,7 +103,7 @@ const TeamMemberTasks = props => {
     setCurrentUserId('');
   };
 
-  const onUpdateTask = (taskId, updatedTask) => {
+  const onUpdateTask = useCallback((taskId, updatedTask) => {
     const newTask = {
       updatedTask,
       taskId,
@@ -111,39 +111,39 @@ const TeamMemberTasks = props => {
     submitTasks(newTask);
     dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
     props.handleUpdateTask();
-  };
+  }, []);
 
   const submitTasks = async updatedTasks => {
     const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
     try {
       await axios.put(url, updatedTasks.updatedTask);
     } catch (error) {
-      toast.error("Failed to update task")
+      toast.error('Failed to update task');
     }
   };
 
-  const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
+  const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
-    setTaskNotificationModal(!showTaskNotificationModal);
-  };
+    setTaskNotificationModal(prev => !prev);
+  }, []);
 
-  const handleMarkAsDoneModal = (userId, task) => {
+  const handleMarkAsDoneModal = useCallback((userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  };
+  }, []);
 
-  const handleRemoveFromTaskModal = (userId, task) => {
+  const handleRemoveFromTaskModal = useCallback((userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  }
+  }, []);
 
-  const handleTaskModalOption = (option) => {
+  const handleTaskModalOption = useCallback(option => {
     setTaskModalOption(option);
-  }
+  }, []);
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     //if the authentitated user is seeing it's own notification
@@ -167,14 +167,14 @@ const TeamMemberTasks = props => {
       .format('YYYY-MM-DD');
 
     const userIds = teamList.map(user => user.personId);
-    
+
     const userListTasksRequest = async userList => {
       const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
       return axios.post(url, { users: userList, fromDate, toDate });
     };
 
     const taskResponse = await userListTasksRequest(userIds);
-    const usersListTasks = taskResponse.data
+    const usersListTasks = taskResponse.data;
 
     //2. Generate array of past 24/48 hrs timelogs
     usersListTasks.map(entry => {
@@ -280,7 +280,7 @@ const TeamMemberTasks = props => {
       setTeamList([...filteredMembers]);
     }
   };
-  
+
   return (
     <div className="container team-member-tasks">
       <header className="header-box">
@@ -330,7 +330,7 @@ const TeamMemberTasks = props => {
             </button>
           </div>
         ) : (
-          <Loading />
+          <SkeletonLoading template="TimelogFilter" />
         )}
       </header>
       <TaskDifferenceModal
@@ -359,63 +359,58 @@ const TeamMemberTasks = props => {
           taskModalOption={taskModalOption}
         />
       )}
-      <div className="table-container">
-        <Table>
-          <thead className="pc-component">
-            <tr>
-              {/* Empty column header for hours completed icon */}
-              <th />
-              <th className="team-member-tasks-headers">
-                <Table borderless className="team-member-tasks-subtable">
-                  <thead>
-                    <tr>
-                      <th className="team-member-tasks-headers team-member-tasks-user-name">
-                        Team Member
-                      </th>
-                      <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                        <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                        /
-                        <FontAwesomeIcon
-                          style={{ color: 'green' }}
-                          icon={faClock}
-                          title="Total Hours Completed this Week"
-                        />
-                        /
-                        <FontAwesomeIcon
-                          style={{ color: 'red' }}
-                          icon={faClock}
-                          title="Total Remaining Hours"
-                        />
-                      </th>
-                    </tr>
-                  </thead>
-                </Table>
-              </th>
-              <th className="team-member-tasks-headers">
-                <Table borderless className="team-member-tasks-subtable">
-                  <thead>
-                    <tr>
-                      <th>Tasks(s)</th>
-                      <th className="team-task-progress">Progress</th>
-                      {userRole === 'Administrator' ? <th>Status</th> : null}
-                    </tr>
-                  </thead>
-                </Table>
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {isLoading ? (
+      <div className='table-container'>
+          <Table>
+            <thead className="pc-component">
               <tr>
-                <td>
-                  <Loading />
-                </td>
+                {/* Empty column header for hours completed icon */}
+                <th />
+                <th className="team-member-tasks-headers">
+                  <Table borderless className="team-member-tasks-subtable">
+                    <thead>
+                      <tr>
+                        <th className="team-member-tasks-headers team-member-tasks-user-name">
+                          Team Member
+                        </th>
+                        <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                          <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                          /
+                          <FontAwesomeIcon
+                            style={{ color: 'green' }}
+                            icon={faClock}
+                            title="Total Hours Completed this Week"
+                          />
+                          /
+                          <FontAwesomeIcon
+                            style={{ color: 'red' }}
+                            icon={faClock}
+                            title="Total Remaining Hours"
+                          />
+                        </th>
+                      </tr>
+                    </thead>
+                  </Table>
+                </th>
+                <th className="team-member-tasks-headers">
+                  <Table borderless className="team-member-tasks-subtable">
+                    <thead>
+                      <tr>
+                        <th>Tasks(s)</th>
+                        <th className="team-task-progress">Progress</th>
+                        {userRole === 'Administrator' ? <th>Status</th> : null}
+                      </tr>
+                    </thead>
+                  </Table>
+                </th>
               </tr>
-            ) : (
-              teamList.map(user => {
-                if (!isTimeLogActive) {
-                  return (
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <SkeletonLoading template="TeamMemberTasks" />
+              ) : (
+                teamList.map(user => {
+                  if (!isTimeLogActive) {
+                    return (
                       <TeamMemberTask
                         user={user}
                         key={user.personId}
@@ -427,50 +422,54 @@ const TeamMemberTasks = props => {
                         updateTask={onUpdateTask}
                         roles={props.roles}
                         userPermissions={props.userPermissions}
+                        userId={userId}
                       />
-                  );
-                } else {
-                  return (
-                    <>
-                      <TeamMemberTask
-                        user={user}
-                        key={user.personId}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                        handleTaskModalOption={handleTaskModalOption}
-                        userRole={userRole}
-                        updateTask={onUpdateTask}
-                        roles={props.roles}
-                        userPermissions={props.userPermissions}
-                      />
-                      {timeEntriesList.length > 0 &&
-                        timeEntriesList
-                          .filter(timeEntry => timeEntry.personId === user.personId)
-                          .map(timeEntry => (
-                            <tr className="table-row">
-                              <td colSpan={3} style={{ padding: 0 }}>
-                                <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
-                              </td>
-                            </tr>
-                          ))}
-                    </>
-                  );
-                }
-              })
-            )}
-          </tbody>
-        </Table>
+                    );
+                  } else {
+                    return (
+                      <>
+                        <TeamMemberTask
+                          user={user}
+                          key={user.personId}
+                          handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                          handleMarkAsDoneModal={handleMarkAsDoneModal}
+                          handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                          handleTaskModalOption={handleTaskModalOption}
+                          userRole={userRole}
+                          updateTask={onUpdateTask}
+                          roles={props.roles}
+                          userPermissions={props.userPermissions}
+                          userId={userId}
+                        />
+                        {timeEntriesList.length > 0 &&
+                          timeEntriesList
+                            .filter(timeEntry => timeEntry.personId === user.personId)
+                            .map(timeEntry => (
+                              <tr className="table-row">
+                                <td colSpan={3} style={{ padding: 0 }}>
+                                  <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
+                                </td>
+                              </tr>
+                            ))}
+                      </>
+                    );
+                  }
+                })
+              )}
+            </tbody>
+          </Table>
       </div>
     </div>
   );
-};
+});
 
 const mapStateToProps = state => ({
   auth: state.auth,
   userId: state.userProfile.id,
   managingTeams: state.userProfile.teams,
   teamsInfo: state.managingTeams,
+  roles: state.role.roles,
+  userPermissions: state.auth?.permissions?.frontPermissions,
 });
 
 export default connect(mapStateToProps, {

@@ -1,21 +1,22 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
-import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
-import CreateNewRolePopup from './NewRolePopUp';
+import React, { useEffect, useState } from 'react';
+
+import { Button, Modal, ModalBody, ModalHeader, Row, Col } from 'reactstrap';
 import './PermissionsManagement.css';
-import { connect } from 'react-redux';
-import { getAllRoles } from '../../actions/role';
+import { connect, useSelector } from 'react-redux';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
-import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import UserPermissionsPopUp from './UserPermissionsPopUp';
+import { getAllRoles } from '../../actions/role';
+import CreateNewRolePopup from './NewRolePopUp';
 
-const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProfile }) => {
+function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
-  let history = useHistory();
 
+  const history = useHistory();
   const togglePopUpNewRole = () => {
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
@@ -32,24 +33,34 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
   const togglePopUpUserPermissions = () => {
     setIsUserPermissionsOpen(previousState => !previousState);
   };
-
+  const role = userProfile?.role;
   const roleNames = roles?.map(role => role.roleName);
 
   return (
-    <div className="permissions-management">
+    <div key={`${role}+permission`} className="permissions-management">
       <h1 className="permissions-management__title">User Roles</h1>
-      <div className="permissions-management__header">
-        <div className="role-name-container">
+      <div key={`${role}_header`} className="permissions-management__header">
+        <div key={`${role}_name`} className="role-name-container">
           {roleNames?.map(roleName => {
-            let roleNameLC = roleName.toLowerCase().replace(' ', '-');
+            const roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
-              <button
-                onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
-                key={roleName}
-                className="role-name"
-              >
-                {roleName}
-              </button>
+              <div key={roleNameLC} className="role-name">
+                <button
+                  onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
+                  key={roleName}
+                  className="role-btn"
+                >
+                  {roleName}
+                </button>
+                <div className="infos">
+                  <EditableInfoModal
+                    role={role}
+                    areaName={`${roleName}` + 'Info'}
+                    fontSize={18}
+                    isPermissionPage
+                  />
+                </div>
+              </div>
             );
           })}
         </div>
@@ -87,7 +98,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
             Create New Role
           </ModalHeader>
           <ModalBody id="modal-body_new-role--padding">
-            <CreateNewRolePopup toggle={togglePopUpNewRole} />
+            <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} />
           </ModalBody>
         </Modal>
         <Modal
@@ -108,7 +119,7 @@ const PermissionsManagement = ({ getAllRoles, roles, auth, getUserRole, userProf
       </div>
     </div>
   );
-};
+}
 
 // export default PermissionsManagement;
 const mapStateToProps = state => ({

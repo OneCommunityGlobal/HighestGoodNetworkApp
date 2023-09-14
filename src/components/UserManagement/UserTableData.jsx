@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
-import { connect, useDispatch } from 'react-redux';
 
 /**
  * The body row of the user table
@@ -18,6 +17,7 @@ import { connect, useDispatch } from 'react-redux';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -28,18 +28,10 @@ const UserTableData = React.memo(props => {
   }, [props.isActive, props.resetLoading]);
 
   const checkPermissionsOnOwner = () => {
-
-    if (props.user.role === 'Administrator' ){
-      return false
-    } else {
-      
-      return (
-         props.user.role === 'Owner' &&
-        hasPermission(props.role, 'addDeleteEditOwners', props.roles, props.userPermissions)
-      );
-
-    }
-    
+    return (
+      props.user.role === 'Owner' &&
+      !hasPermission(props.role, 'addDeleteEditOwners', props.roles, props.userPermissions)
+    );
   };
 
   return (
@@ -105,10 +97,10 @@ const UserTableData = React.memo(props => {
       </td>
       <td>
         {props.user.isActive === false && props.user.reactivationDate
-          ? props.user.reactivationDate.toLocaleString().split('T')[0]
+          ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
-      <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
+      <td>{props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}</td>
       {checkPermissionsOnOwner() ? null : (
         <td>
         {
@@ -124,27 +116,13 @@ const UserTableData = React.memo(props => {
               {DELETE}
             </button>
           </span>
-        }
-
-        { props.auth.user.role === "Owner" &&  props.user.role === "Administrator" ? "":  <span className="usermanagement-actions-cell">
+          <span className="usermanagement-actions-cell">
             <ResetPasswordButton user={props.user} isSmallButton />
-          </span> }
-         
+          </span>
         </td>
       )}
     </tr>
   );
 });
 
-const mapStateToProps = state => ({
-  auth: state.auth,
-  userProfile: state.userProfile,
-  taskEditSuggestionCount: state.taskEditSuggestions.count,
-  role: state.role,
-});
-
-export default connect(mapStateToProps, {
-})(UserTableData);
-
-
-
+export default UserTableData;

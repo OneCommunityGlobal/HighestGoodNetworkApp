@@ -5,7 +5,11 @@ import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
-import { updateUserProfileProperty, getUserProfile, getUserTask } from '../../../actions/userProfile';
+import {
+  updateUserProfileProperty,
+  getUserProfile,
+  getUserTask,
+} from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import moment from 'moment';
@@ -14,13 +18,15 @@ import Collapse from 'react-bootstrap/Collapse';
 import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
+import BadgeSummaryViz from '../BadgeSummaryViz';
 import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import { toast } from 'react-toastify';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
-import { Checkbox } from 'components/common/Checkbox';
+import { Checkbox } from '../../common/Checkbox';
+import { formatDate } from 'utils/formatDate';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -148,7 +154,11 @@ class PeopleReport extends Component {
     });
 
     try {
-      await this.props.updateUserProfileProperty(this.props.userProfile, 'isRehireable',rehireValue);
+      await this.props.updateUserProfileProperty(
+        this.props.userProfile,
+        'isRehireable',
+        rehireValue,
+      );
       toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
     } catch (err) {
       alert('An error occurred while attempting to save the rehireable status of this user.');
@@ -254,11 +264,13 @@ class PeopleReport extends Component {
       toDate,
       timeEntries,
     } = this.state;
-    const { firstName, lastName, weeklycommittedHours, totalTangibleHrs } = userProfile;
+    const { firstName, lastName, weeklycommittedHours,hoursByCategory } = userProfile;
 
+  
     var totalTangibleHrsRound = 0;
-    if (totalTangibleHrs) {
-      totalTangibleHrsRound = totalTangibleHrs.toFixed(2);
+    if (hoursByCategory) {
+      const hours = hoursByCategory ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0):0;
+      totalTangibleHrsRound = hours.toFixed(2);
     }
 
     const UserProject = props => {
@@ -460,6 +472,7 @@ class PeopleReport extends Component {
         avatar={this.state.userProfile.profilePic ? undefined : <FiUser />}
         isActive={isActive}
       >
+        <div className="report-stats">
         <p>
           <Link to={`/userProfile/${userProfile._id}`} title="View Profile">
             {userProfile.firstName} {userProfile.lastName}
@@ -482,12 +495,12 @@ class PeopleReport extends Component {
 
         <div className="stats">
           <div>
-            <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
+            <h4>{formatDate(userProfile.createdDate)}</h4>
             <p>Start Date</p>
           </div>
           <div>
             <h4>
-              {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
+              {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
             </h4>
             <p>End Date</p>
           </div>
@@ -507,10 +520,11 @@ class PeopleReport extends Component {
             </div>
           ) : null}
         </div>
+        </div>
       </ReportPage.ReportHeader>
     );
 
-    const onChangeBioPosted = async (bio) => {
+    const onChangeBioPosted = async bio => {
       const bioStatus = bio;
       this.setState(state => {
         return {
@@ -519,15 +533,15 @@ class PeopleReport extends Component {
       });
 
       try {
-        await  this.props.updateUserProfileProperty(this.props.userProfile, 'bioPosted',bioStatus);
+        await this.props.updateUserProfileProperty(this.props.userProfile, 'bioPosted', bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
         alert('An error occurred while attempting to save the bioPosted change to the profile.');
       }
     };
 
-
     return (
+      <div className="container-people-wrapper">
       <ReportPage renderProfile={renderProfileInfo}>
         <div className="people-report-time-logs-wrapper">
           <ReportPage.ReportBlock
@@ -571,13 +585,14 @@ class PeopleReport extends Component {
         </div>
 
         <PeopleTasksPieChart />
-
+        <div className="mobile-people-table">
         <ReportPage.ReportBlock>
           <div className="intro_date">
             <h4>Tasks contributed</h4>
           </div>
-
+            
           <PeopleDataTable />
+          
 
           <div className="container">
             <table>
@@ -598,10 +613,15 @@ class PeopleReport extends Component {
               <div className="visualizationDiv">
                 <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
               </div>
+              <div className='visualizationDiv'>
+                <BadgeSummaryViz authId={this.props.auth.user.userid} userId={this.props.match.params.userId} badges={userProfile.badgeCollection} />
+              </div>
             </table>
           </div>
         </ReportPage.ReportBlock>
+        </div>
       </ReportPage>
+      </div>
     );
   }
 }

@@ -1,23 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { getAllUserProfile } from 'actions/userManagement';
 import { permissionLabel } from './UserRoleTab';
-import { useRef } from 'react';
 
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle } from 'styles';
 
-const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
+const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) => {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
+  const [actualUserRolePermission, setActualUserRolePermission] = useState();
 
   //no onchange, always change this state;
   const onChangeCheck = data => {
@@ -40,15 +39,9 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
         ? unCheckPermission
         : [...permissionsUserFront, actualValue];
 
-      let permissionsBackEnd = actualPermissionsFront
-        .map(permission => {
-          permissionFrontToBack(permission);
-        })
-        .filter(e => e != undefined);
 
       const newPermissionsObject = {
         frontPermissions: actualPermissionsFront,
-        backPermissions: permissionsBackEnd,
       };
       return { ...previous, permissions: newPermissionsObject };
     });
@@ -60,12 +53,22 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
     const allUserInfo = await axios.get(url).then(res => res.data);
     setActualUserProfile(allUserInfo);
   };
+
   useEffect(() => {
     getAllUsers();
+    if (actualUserProfile?.role && roles) {
+      const roleIndex = roles?.findIndex(({ roleName }) => roleName === actualUserProfile?.role);
+      const permissions = roleIndex !== -1 ? roles[roleIndex].permissions : [];
+      setActualUserRolePermission(permissions);
+    }
   }, [actualUserProfile]);
 
   const isPermissionChecked = permission =>
     actualUserProfile?.permissions?.frontPermissions.some(perm => perm === permission);
+
+  const isPermissionDefault = permission => {
+    return actualUserRolePermission?.includes(permission);
+  };
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
@@ -165,10 +168,15 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
           {Object.entries(permissionLabel).map(([key, value]) => {
             return (
               <li key={key} className="user-role-tab__permission">
-                <div style={{ color: isPermissionChecked(key) ? 'green' : 'red', padding: '14px' }}>
+                <div
+                  style={{
+                    color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
+                    padding: '14px',
+                  }}
+                >
                   {value}
                 </div>
-                {isPermissionChecked(key) ? (
+                {isPermissionDefault(key) ? null : isPermissionChecked(key) ? (
                   <Button
                     type="button"
                     color="danger"

@@ -1,9 +1,8 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle } from 'styles';
 
-const DeleteTeamPopup = React.memo(props => {
+export const DeleteTeamPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };

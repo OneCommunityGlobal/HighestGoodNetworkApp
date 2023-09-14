@@ -43,8 +43,15 @@ import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
+import WeeklySummaryOptions from './WeeklySummaryOptions';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+const DATE_PICKER_MIN_DATE = '01/01/2010';
+const nextDay = new Date();
+nextDay.setDate(nextDay.getDate()+1);
+
 class AddUserProfile extends Component {
   constructor(props) {
     super(props);
@@ -70,6 +77,7 @@ class AddUserProfile extends Component {
         location: '',
         showphone: true,
         weeklySummaryOption: 'Required',
+        createdDate: nextDay,
       },
       formValid: {},
       formErrors: {
@@ -82,6 +90,10 @@ class AddUserProfile extends Component {
       timeZoneFilter: '',
       formSubmitted: false,
     };
+
+    
+    const { user } = this.props.auth;
+    this.canAddDeleteEditOwners = user && user.role === 'Owner'
   }
 
   popupClose = () => {
@@ -100,6 +112,7 @@ class AddUserProfile extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
+
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -112,7 +125,7 @@ class AddUserProfile extends Component {
           <Row>
             <Col md="12">
               <Form>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Name</Label>
                   </Col>
@@ -145,7 +158,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Job Title</Label>
                   </Col>
@@ -162,7 +175,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Email</Label>
                   </Col>
@@ -186,7 +199,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Phone</Label>
                   </Col>
@@ -212,7 +225,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Weekly Committed Hours</Label>
                   </Col>
@@ -236,7 +249,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Role</Label>
                   </Col>
@@ -253,37 +266,20 @@ class AddUserProfile extends Component {
                           if (roleName === 'Owner') return;
                           return <option value={roleName}>{roleName}</option>;
                         })}
-                        {hasPermission(
-                          this.props.auth.user.role,
-                          'addDeleteEditOwners',
-                          this.props.role.roles,
-                          this.props.auth.user?.permissions?.frontPermissions,
-                        ) && <option value="Owner">Owner</option>}
+                        {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'> 
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="select"
-                        name="weeklySummaryOption"
-                        id="weeklySummaryOption"
-                        defaultValue="Required"
-                        onChange={this.handleUserProfile}
-                      >
-                        <option value="Required">Required</option>
-                        <option value="Not Required">Not Required</option>
-                        <option value="Team">Team</option>
-                      </Input>
-                    </FormGroup>
+                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Video Call Preference</Label>
                   </Col>
@@ -300,8 +296,8 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
-                  <Col md={{ size: 4}} className="text-md-right my-2">
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Admin Document</Label>
                   </Col>
                   <Col md="6">
@@ -317,7 +313,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Link to Media Files</Label>
                   </Col>
@@ -334,7 +330,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
                     <Label>Location</Label>
                   </Col>
@@ -359,7 +355,7 @@ class AddUserProfile extends Component {
                     </Row>
                   </Col>
                 </Row>
-                <Row className='user-add-row'>
+                <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Time Zone</Label>
                   </Col>
@@ -371,6 +367,26 @@ class AddUserProfile extends Component {
                         selected={'America/Los_Angeles'}
                         id="timeZone"
                       />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label>Start Date</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                    <div className="date-picker-item">                        
+                      <DatePicker
+                        selected={this.state.userProfile.createdDate}
+                        minDate={new Date(DATE_PICKER_MIN_DATE)}
+                        onChange={date => this.setState({ userProfile: {
+                          ...this.state.userProfile,
+                          createdDate: date,
+                        }})}
+                        className="form-control"
+                      />
+                      </div>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -550,10 +566,11 @@ class AddUserProfile extends Component {
       timeZone,
       location,
       weeklySummaryOption,
+      createdDate,
     } = that.state.userProfile;
 
     const userData = {
-      password: '123Welcome!',
+      password: process.env.REACT_APP_DEF_PWD,
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -572,6 +589,7 @@ class AddUserProfile extends Component {
       timeZone: timeZone,
       location: location,
       allowsDuplicateName: allowsDuplicateName,
+      createdDate: createdDate,
     };
 
     this.setState({ formSubmitted: true });
@@ -579,8 +597,8 @@ class AddUserProfile extends Component {
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
     }
-    if(dropboxDoc) {
-      userData.adminLinks.push({ Name: 'Dropbox Link', Link: dropboxDoc });
+    if (dropboxDoc) {
+      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
@@ -877,13 +895,13 @@ class AddUserProfile extends Component {
         });
         break;
       case 'dropboxDoc':
-          this.setState({
-            userProfile: {
-              ...userProfile,
-              [event.target.id]: event.target.value,
-            },
-          });
-          break;
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value,
+          },
+        });
+        break;
       case 'emailPubliclyAccessible':
         this.setState({
           userProfile: {
@@ -933,4 +951,5 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
   fetchAllProjects,
+  hasPermission,
 })(AddUserProfile);

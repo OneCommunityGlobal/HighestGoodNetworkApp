@@ -4,7 +4,14 @@ import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
-import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import {
+  hasLeaderboardPermissions,
+  assignStarDotColors,
+  showStar,
+} from 'utils/leaderboardPermissions';
+import hasPermission from 'utils/permissions';
+import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+import { toast } from 'react-toastify';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -26,16 +33,30 @@ function useDeepEffect(effectFunc, deps) {
 const LeaderBoard = ({
   getLeaderboardData,
   getOrgData,
+  getMouseoverText,
   leaderBoardData,
   loggedInUser,
   organizationData,
   timeEntries,
   isVisible,
   asUser,
+  totalTimeMouseoverText,
 }) => {
   const userId = asUser ? asUser : loggedInUser.userId;
-  const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
+  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); //??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); //??? this permission doesn't exist?
+  const isOwner = ['Owner'].includes(loggedInUser.role);
 
+  const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
+
+  useEffect(() => {
+    getMouseoverText();
+    setMouseoverTextValue(totalTimeMouseoverText);
+  }, [totalTimeMouseoverText]);
+
+  const handleMouseoverTextUpdate = text => {
+    setMouseoverTextValue(text);
+  };
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
@@ -59,6 +80,7 @@ const LeaderBoard = ({
 
   const [isOpen, setOpen] = useState(false);
   const [modalContent, setContent] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
@@ -77,7 +99,7 @@ const LeaderBoard = ({
           total hours they have completed.
           {/*The color and length of that bar
           changes based on what percentage of the total committed hours for the week have been
-          completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo, 
+          completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo,
           and Equal or More than 100%: Purple.*/}
         </li>
         <li>
@@ -100,8 +122,8 @@ const LeaderBoard = ({
     </>,
     <>
       <p>
-        An Admin has made it so you can see your team but they can't see you. We recommend you keep
-        this setting as it is.
+        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you
+        keep this setting as it is.
       </p>
       <p>
         If you want to change this setting so your team/everyone can see and access your time log
@@ -132,6 +154,12 @@ const LeaderBoard = ({
       'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
     );
   };
+  const updateLeaderboardHandler = async () => {
+    setIsLoading(true);
+    await getLeaderboardData(userId);
+    setIsLoading(false);
+    toast.success('Successfuly updated leaderboard');
+  };
 
   return (
     <div>
@@ -143,10 +171,8 @@ const LeaderBoard = ({
           title="Click to refresh the leaderboard"
           style={{ fontSize: 24, cursor: 'pointer' }}
           aria-hidden="true"
-          className="fa fa-refresh"
-          onClick={() => {
-            getLeaderboardData(userId);
-          }}
+          className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
+          onClick={updateLeaderboardHandler}
         />
         &nbsp;&nbsp;
         <i
@@ -200,18 +226,28 @@ const LeaderBoard = ({
                 <span className="d-none d-sm-block">Tangible Time</span>
               </th>
               <th>Progress</th>
-              <th>
-                <span className="d-sm-none">Tot. Time</span>
-                <span className="d-none d-sm-block">Total Time</span>
+
+              <th style={{ textAlign: 'right' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <span className="d-sm-none">Tot. Time</span>
+                    <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>
+                      Total Time{' '}
+                    </span>
+                  </div>
+                  {isOwner && (
+                    <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
+                  )}
+                </div>
               </th>
             </tr>
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr>
-              <td/>
+              <td />
               <th scope="row">{organizationData.name}</th>
               <td className="align-middle">
-                <span title="Tangible time">{organizationData.tangibletime}</span>
+                <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
               <td className="align-middle">
                 <Progress
@@ -245,24 +281,32 @@ const LeaderBoard = ({
                       </ModalFooter>
                     </Modal>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: isAdmin ? 'space-between' : 'center' }}>
-
-                  {/* <Link to={`/dashboard/${item.personId}`}> */}
-                  <div onClick={() => dashboardToggle(item)}>
-                    {
-                      hasLeaderboardPermissions(loggedInUser.role) && 
-                    showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center',
+                    }}
+                  >
+                    {/* <Link to={`/dashboard/${item.personId}`}> */}
+                    <div onClick={() => dashboardToggle(item)}>
+                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                      showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
-                        className="fa fa-star"
-                        title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                        style={{
-                          color: assignStarDotColors(item.tangibletime, item.weeklycommittedHours),
-                          fontSize: '20px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      />) : (
+                          className="fa fa-star"
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                          style={{
+                            color: assignStarDotColors(
+                              item.tangibletime,
+                              item.weeklycommittedHours,
+                            ),
+                            fontSize: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        />
+                      ) : (
                         <div
                           title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                           style={{
@@ -275,21 +319,19 @@ const LeaderBoard = ({
                             verticalAlign: 'middle',
                           }}
                         />
-                      )
-                    }
-                  </div>
-                  {
-                    isAdmin && item.hasSummary && 
-                    <div
-                      title={`Weekly Summary Submitted`}
-                      style={{
-                        color: '#32a518',
-                        cursor: 'default',
-                      }}
-                    >
-                      <strong>✓</strong>
+                      )}
                     </div>
-                  }
+                    {hasSummaryIndicatorPermission && item.hasSummary && (
+                      <div
+                        title={`Weekly Summary Submitted`}
+                        style={{
+                          color: '#32a518',
+                          cursor: 'default',
+                        }}
+                      >
+                        <strong>✓</strong>
+                      </div>
+                    )}
                   </div>
                   {/* </Link> */}
                 </td>
@@ -298,7 +340,9 @@ const LeaderBoard = ({
                     {item.name}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
-                  {isAdmin && !item.isVisible && <i className="fa fa-eye-slash" title="User is invisible"></i>}
+                  {hasVisibilityIconPermission && !item.isVisible && (
+                    <i className="fa fa-eye-slash" title="User is invisible"></i>
+                  )}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
@@ -312,7 +356,13 @@ const LeaderBoard = ({
                   </Link>
                 </td>
                 <td className="align-middle">
-                  <span title="Total time">{item.totaltime}</span>
+                  <span
+                    title={mouseoverTextValue}
+                    id="Total time"
+                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                  >
+                    {item.totaltime}
+                  </span>
                 </td>
               </tr>
             ))}

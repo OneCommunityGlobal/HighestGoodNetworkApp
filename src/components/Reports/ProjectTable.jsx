@@ -7,12 +7,12 @@ const ProjectTable = props => {
   let ProjectsList = [];
   if (props.projects.length > 0) {
     ProjectsList = props.projects.map((project, index) => (
-      <tr id={'tr_' + project._id}>
+      <tr id={'tr_' + project._id} key={project._id}>
         <th scope="row">
           <div>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/projectreport/${project._id}`} projectId={project._id}>
+          <Link to={`/projectreport/${project._id}`}>
             {project.projectName}
           </Link>
         </td>
@@ -32,7 +32,7 @@ const ProjectTable = props => {
   }
 
   return (
-    <table className="table table-bordered table-responsive-sm">
+    <table className="table table-bordered">
       <thead>
         <tr>
           <th scope="col" id="projects__order">
