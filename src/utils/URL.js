@@ -89,6 +89,8 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
 
+  // emails endpoint
+  POST_EMAILS: `${APIEndpoint}/send-emails`,
 
   //reasons endpoints
   CREATEREASON: () => {

@@ -1,14 +1,5 @@
 /* EmailUpdateComponent.css */
 
-.email-update-container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  }
   
   h2, h3 {
     color: #4285f4;
@@ -35,9 +26,43 @@
     border-radius: 4px;
     padding: 10px 20px;
     cursor: pointer;
+    margin-top: 20px;
   }
   
   button.send-button:hover {
     background-color: #357ae8;
   }
+
+  .ck-editor__editable {
+    min-height: 500px;
+  }  
+
+  .email-update-container {
+    padding: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .editor {
+    flex: 1; /* Editor takes up remaining space */
+    margin-right: 20px; /* Add some spacing between editor and email inputs */
+  }
+  
+  .editor h2 {
+    margin-top: 0; /* Remove top margin for the heading */
+  }
+  
+  .emails {
+    margin-top: 65px;
+    padding: 20px;
+    border: solid 1px #cacaca;
+    border-radius: 20px;
+    width: 300px; /* Set a fixed width for the email inputs container */
+  }
+  
+  .emails h3 {
+    margin-top: 0; /* Remove top margin for the email input headings */
+  }
+  
   
