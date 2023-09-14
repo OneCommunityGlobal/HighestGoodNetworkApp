@@ -2,26 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col, Button, FormGroup } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
-import style from '../UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import HistoryModal from './HistoryModal';
 import './timeTab.css';
+import { boxStyle } from 'styles';
+import { formatDate } from 'utils/formatDate';
+
+const MINIMUM_WEEK_HOURS = 0;
+const MAXIMUM_WEEK_HOURS = 168;
+
+const startEndDateValidation = props => {
+  return (
+    props.userProfile.createdDate > props.userProfile.endDate && props.userProfile.endDate !== ''
+  );
+};
 
 const StartDate = props => {
   if (!props.canEdit) {
-    return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
+    return <p>{formatDate(props.userProfile.createdDate)}</p>;
   }
   return (
     <Input
       type="date"
       name="StartDate"
       id="startDate"
+      className={startEndDateValidation(props) ? 'border-error-validation' : null}
       value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
+        props.onStartDateComponent(e.target.value);
       }}
       placeholder="Start Date"
       invalid={!props.canEdit}
+      max={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
     />
   );
 };
@@ -31,13 +45,15 @@ const EndDate = props => {
     return (
       <p>
         {props.userProfile.endDate
-          ? props.userProfile.endDate.toLocaleString().split('T')[0]
+          ? formatDate(props.userProfile.endDate)
           : 'N/A'}
       </p>
     );
   }
+
   return (
     <Input
+      className={startEndDateValidation(props) ? 'border-error-validation' : null}
       type="date"
       name="EndDate"
       id="endDate"
@@ -46,17 +62,52 @@ const EndDate = props => {
       }
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
+        props.onEndDateComponent(e.target.value);
       }}
       placeholder="End Date"
       invalid={!props.canEdit}
+      min={
+        props.userProfile.createdDate
+          ? moment(props.userProfile.createdDate).format('YYYY-MM-DD')
+          : ''
+      }
     />
   );
 };
 
 const WeeklySummaryOptions = props => {
   if (!props.canEdit) {
-    return <p>{props.userProfile.weeklySummaryOption??(props.userProfile.weeklySummaryNotReq?'Not Required':'Required')}</p>
+    return (
+      <p>
+        {props.userProfile.weeklySummaryOption ??
+          (props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required')}
+      </p>
+    );
   }
+
+  const summaryOptions = [
+    { value: 'Required', text: 'Required' },
+    { value: 'Not Required', text: 'Not Required (Slate Gray)' },
+    { value: 'Team Fabulous', text: 'Team Fabulous (Fuschia)' },
+    { value: 'Team Marigold', text: 'Team Marigold (Orange)' },
+    { value: 'Team Luminous', text: 'Team Luminous (Yellow)' },
+    { value: 'Team Lush', text: 'Team Lush (Green)' },
+    { value: 'Team Skye', text: 'Team Skye (Blue)' },
+    { value: 'Team Azure', text: 'Team Azure (Indigo)' },
+    { value: 'Team Amethyst', text: 'Team Amethyst (Purple)' },
+  ];
+
+  const handleOnChange = e => {
+    let temp = { ...props.userProfile };
+    temp.weeklySummaryOption = e.target.value;
+    if (e.target.value === 'Not Required') {
+      temp.weeklySummaryNotReq = true;
+    } else {
+      temp.weeklySummaryNotReq = false;
+    }
+    props.setUserProfile(temp);
+  };
+
   return (
     <FormGroup>
       <select
@@ -64,37 +115,56 @@ const WeeklySummaryOptions = props => {
         id="weeklySummaryOptions"
         className="form-control"
         disabled={!props.canEdit}
-        value={props.userProfile.weeklySummaryOption??(props.userProfile.weeklySummaryNotReq?'Not Required':'Required')}
-        onChange={e => {
-          props.setUserProfile({ ...props.userProfile, weeklySummaryOption: e.target.value });
-        }}
+        value={
+          props.userProfile.weeklySummaryOption ??
+          (props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required')
+        }
+        onChange={handleOnChange}
       >
-        <option value="Required">Required</option>
-        <option value="Not Required">Not Required</option>
-        <option value="Team">Team</option>
+        {summaryOptions.map(({ value, text }) => (
+          <option key={value} value={value}>
+            {text}
+          </option>
+        ))}
       </select>
     </FormGroup>
-  )
-}
+  );
+};
 
 const WeeklyCommittedHours = props => {
+  //Do Not change the property name "weeklycommittedHours"
+  //Otherwise it will not update in the backend.
   if (!props.canEdit) {
     return <p>{props.userProfile.weeklycommittedHours}</p>;
   }
+  const handleChange = e => {
+    // Max: 168 hrs  Min: 0 hr
+    // Convert value from string into easy number
+    const value = parseInt(e.target.value);
+    if (value > MAXIMUM_WEEK_HOURS) {
+      // Check if Value is greater than maximum hours and set it to maximum hours if needed
+      alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
+      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MAXIMUM_WEEK_HOURS });
+    } else if (value < MINIMUM_WEEK_HOURS) {
+      //Check if value is less than minimum hours and set it to minimum hours if needed
+      alert(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
+      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MINIMUM_WEEK_HOURS });
+    } else {
+      //update weekly hours whatever numbers in the input
+      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: value });
+    }
+  };
+
   return (
     <Input
       type="number"
-      name="weeklyComittedHours"
-      id="weeklyComittedHours"
-      min="0"
-      data-testid="weeklyCommittedHours"
+      min={MINIMUM_WEEK_HOURS - 1}
+      max={MAXIMUM_WEEK_HOURS + 1}
+      name="weeklycommittedHours"
+      id="weeklycommittedHours"
+      data-testid="weeklycommittedHours"
       value={props.userProfile.weeklycommittedHours}
-      onChange={e => {
-        props.setUserProfile({
-          ...props.userProfile,
-          weeklycommittedHours: Math.max(Number(e.target.value), 0),
-        });
-      }}
+      onChange={e => handleChange(e)}
       placeholder="Weekly Committed Hours"
     />
   );
@@ -112,7 +182,10 @@ const MissedHours = props => {
       data-testid="missedHours"
       value={props.userProfile.missedHours ?? 0}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, missedHours: Math.max(Number(e.target.value), 0) });
+        props.setUserProfile({
+          ...props.userProfile,
+          missedHours: Math.max(Number(e.target.value), 0),
+        });
       }}
       placeholder="Additional Make-up Hours This Week"
     />
@@ -137,7 +210,7 @@ const TotalIntangibleHours = props => {
           totalIntangibleHrs: Math.max(Number(e.target.value), 0),
         });
       }}
-      placeholder='Total Intangible Hours'
+      placeholder="Total Intangible Hours"
     />
   );
 };
@@ -155,6 +228,15 @@ const ViewTab = props => {
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
+  const [historyModal, setHistoryModal] = useState(false);
+
+  const handleStartDates = async startDate => {
+    props.onStartDate(startDate);
+  };
+
+  const handleEndDates = async endDate => {
+    props.onEndDate(endDate);
+  };
 
   useEffect(() => {
     sumOfCategoryHours();
@@ -180,6 +262,10 @@ const ViewTab = props => {
   const sumOfCategoryHours = () => {
     const hours = Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0);
     setTotalTangibleHours(hours.toFixed(2));
+  };
+
+  const toggleHistoryModal = () => {
+    setHistoryModal(!historyModal);
   };
 
   useEffect(() => {
@@ -247,6 +333,7 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            onStartDateComponent={handleStartDates}
           />
         </Col>
       </Row>
@@ -261,6 +348,7 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            onEndDateComponent={handleEndDates}
           />
         </Col>
       </Row>
@@ -291,13 +379,22 @@ const ViewTab = props => {
         <Col md="6">
           <Label className="hours-label">Weekly Committed Hours </Label>
         </Col>
-        <Col md="6">
+        <Col md="6" className="d-flex align-items-center">
           <WeeklyCommittedHours
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
           />
+          <HistoryModal
+            isOpen={historyModal}
+            toggle={toggleHistoryModal}
+            userName={userProfile.firstName}
+            userHistory={userProfile.weeklycommittedHoursHistory}
+          />
+          <span className="history-icon">
+            <i className="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal}></i>
+          </span>
         </Col>
       </Row>
       {userProfile.role === 'Core Team' && (
@@ -338,6 +435,7 @@ const ViewTab = props => {
             color="info"
             className="refresh-btn"
             onClick={() => props.loadUserProfile()}
+            style={boxStyle}
           >
             Refresh
           </Button>

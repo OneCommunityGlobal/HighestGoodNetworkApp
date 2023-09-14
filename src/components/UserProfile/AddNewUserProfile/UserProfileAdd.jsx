@@ -42,8 +42,16 @@ import TimeZoneDropDown from '../TimeZoneDropDown';
 import { getUserTimeZone } from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
+import { boxStyle } from 'styles';
+import WeeklySummaryOptions from './WeeklySummaryOptions';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+const DATE_PICKER_MIN_DATE = '01/01/2010';
+const nextDay = new Date();
+nextDay.setDate(nextDay.getDate()+1);
+
 class AddUserProfile extends Component {
   constructor(props) {
     super(props);
@@ -53,7 +61,6 @@ class AddUserProfile extends Component {
       weeklyCommittedHours: 10,
       teams: [],
       projects: [],
-      activeTab: '1',
       userProfile: {
         firstName: '',
         lastName: '',
@@ -65,10 +72,12 @@ class AddUserProfile extends Component {
         privacySettings: { blueSquares: true, email: true, phoneNumber: true },
         jobTitle: '',
         googleDoc: '',
+        dropboxDoc: '',
         timeZone: '',
         location: '',
         showphone: true,
         weeklySummaryOption: 'Required',
+        createdDate: nextDay,
       },
       formValid: {},
       formErrors: {
@@ -81,6 +90,10 @@ class AddUserProfile extends Component {
       timeZoneFilter: '',
       formSubmitted: false,
     };
+
+    
+    const { user } = this.props.auth;
+    this.canAddDeleteEditOwners = user && user.role === 'Owner'
   }
 
   popupClose = () => {
@@ -99,6 +112,7 @@ class AddUserProfile extends Component {
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
+
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -111,7 +125,7 @@ class AddUserProfile extends Component {
           <Row>
             <Col md="12">
               <Form>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Name</Label>
                   </Col>
@@ -144,7 +158,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Job Title</Label>
                   </Col>
@@ -161,7 +175,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Email</Label>
                   </Col>
@@ -185,7 +199,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Phone</Label>
                   </Col>
@@ -211,7 +225,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Weekly Committed Hours</Label>
                   </Col>
@@ -235,7 +249,7 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
                     <Label>Role</Label>
                   </Col>
@@ -252,37 +266,20 @@ class AddUserProfile extends Component {
                           if (roleName === 'Owner') return;
                           return <option value={roleName}>{roleName}</option>;
                         })}
-                        {hasPermission(
-                          this.props.auth.user.role,
-                          'addDeleteEditOwners',
-                          this.props.role.roles,
-                          this.props.auth.user?.permissions?.frontPermissions,
-                        ) && <option value="Owner">Owner</option>}
+                        {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className="weeklySummaryOptionsLabel" >Weekly Summary Options</Label>
+                    <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="select"
-                        name="weeklySummaryOption"
-                        id="weeklySummaryOption"
-                        defaultValue="Required"
-                        onChange={this.handleUserProfile}
-                      >
-                        <option value="Required">Required</option>
-                        <option value="Not Required">Not Required</option>
-                        <option value="Team">Team</option>
-                      </Input>
-                    </FormGroup>
+                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label>Video Call Preference</Label>
                   </Col>
@@ -299,9 +296,9 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
-                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Google Doc</Label>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label>Admin Document</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -311,12 +308,29 @@ class AddUserProfile extends Component {
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
                         onChange={this.handleUserProfile}
-                        placeholder="Admin Document"
+                        placeholder="Google Doc"
                       />
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label>Link to Media Files</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <Input
+                        type="text"
+                        name="dropboxDoc"
+                        id="dropboxDoc"
+                        value={this.state.userProfile.dropboxDoc}
+                        onChange={this.handleUserProfile}
+                        placeholder="DropBox Folder"
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
                     <Label>Location</Label>
                   </Col>
@@ -332,6 +346,7 @@ class AddUserProfile extends Component {
                             block
                             size="sm"
                             onClick={this.onClickGetTimeZone}
+                            style={boxStyle}
                           >
                             Get Time Zone
                           </Button>
@@ -340,7 +355,7 @@ class AddUserProfile extends Component {
                     </Row>
                   </Col>
                 </Row>
-                <Row>
+                <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
                     <Label>Time Zone</Label>
                   </Col>
@@ -355,42 +370,33 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label>Start Date</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                    <div className="date-picker-item">                        
+                      <DatePicker
+                        selected={this.state.userProfile.createdDate}
+                        minDate={new Date(DATE_PICKER_MIN_DATE)}
+                        onChange={date => this.setState({ userProfile: {
+                          ...this.state.userProfile,
+                          createdDate: date,
+                        }})}
+                        className="form-control"
+                      />
+                      </div>
+                    </FormGroup>
+                  </Col>
+                </Row>
               </Form>
             </Col>
           </Row>
           <Row>
             <Col md="12">
-              <div className="profile-tabs">
-                <Nav tabs>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === '1' }, 'nav-link')}
-                      onClick={() => {
-                        this.toggleTab('1');
-                      }}
-                    >
-                      Project
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: this.state.activeTab === '2' }, 'nav-link')}
-                      onClick={() => {
-                        this.toggleTab('2');
-                      }}
-                    >
-                      Team
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-              </div>
-              <TabContent
-                activeTab={this.state.activeTab}
-                className="tab-content profile-tab"
-                id="myTabContent"
-                style={{ border: 0 }}
-              >
-                <TabPane tabId="1">
+              <TabContent id="myTabContent">
+                <TabPane>
                   <ProjectsTab
                     userProjects={this.state.projects}
                     projectsData={this.props ? this.props.allProjects.projects : []}
@@ -401,12 +407,12 @@ class AddUserProfile extends Component {
                     edit
                   />
                 </TabPane>
-                <TabPane tabId="2">
+                <TabPane>
                   <TeamsTab
                     userTeams={this.state.teams}
                     teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                     onAssignTeam={this.onAssignTeam}
-                    onDeleteteam={this.onDeleteTeam}
+                    onDeleteTeam={this.onDeleteTeam}
                     isUserAdmin={true}
                     role={this.props.auth.user.role}
                     edit
@@ -424,6 +430,7 @@ class AddUserProfile extends Component {
                   block
                   size="lg"
                   onClick={() => this.createUserProfile(false)}
+                  style={boxStyle}
                 >
                   Create
                 </Button>
@@ -554,14 +561,16 @@ class AddUserProfile extends Component {
       privacySettings,
       collaborationPreference,
       googleDoc,
+      dropboxDoc,
       jobTitle,
       timeZone,
       location,
       weeklySummaryOption,
+      createdDate,
     } = that.state.userProfile;
 
     const userData = {
-      password: '123Welcome!',
+      password: process.env.REACT_APP_DEF_PWD,
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -580,12 +589,16 @@ class AddUserProfile extends Component {
       timeZone: timeZone,
       location: location,
       allowsDuplicateName: allowsDuplicateName,
+      createdDate: createdDate,
     };
 
     this.setState({ formSubmitted: true });
 
     if (googleDoc) {
       userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
+    }
+    if (dropboxDoc) {
+      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
@@ -684,7 +697,7 @@ class AddUserProfile extends Component {
 
     if (filesizeKB > 50) {
       imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either
-														choose a different file, or use an online file compressor.`;
+                            choose a different file, or use an online file compressor.`;
       isValid = false;
 
       return this.setState({
@@ -708,14 +721,6 @@ class AddUserProfile extends Component {
         },
       });
     };
-  };
-
-  toggleTab = tab => {
-    if (this.state.activeTab !== tab) {
-      this.setState({
-        activeTab: tab,
-      });
-    }
   };
 
   phoneChange = phone => {
@@ -889,6 +894,14 @@ class AddUserProfile extends Component {
           },
         });
         break;
+      case 'dropboxDoc':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value,
+          },
+        });
+        break;
       case 'emailPubliclyAccessible':
         this.setState({
           userProfile: {
@@ -938,4 +951,5 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
   fetchAllProjects,
+  hasPermission,
 })(AddUserProfile);

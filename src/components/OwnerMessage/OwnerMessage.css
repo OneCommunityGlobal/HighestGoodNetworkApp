@@ -28,7 +28,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: .25rem;
+  padding: 0.25rem;
   border-radius: 4px;
   margin-left: 1rem;
 }
@@ -53,7 +53,7 @@ button > img:hover {
   flex-direction: column;
 }
 
-@media(max-width: 1400px) {
+@media (max-width: 1400px) {
   .message-container {
     align-items: center;
     justify-content: center;
@@ -63,5 +63,4 @@ button > img:hover {
   .message {
     color: black;
   }
-  
 }

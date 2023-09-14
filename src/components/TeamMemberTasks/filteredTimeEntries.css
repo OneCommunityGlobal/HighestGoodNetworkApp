@@ -44,6 +44,20 @@
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
+/* time log layout */
+.filtered-timelog-container {
+  display: flex;
+}
+
+.timelog-card {
+  flex: 1;
+}
+
+.color-bar {
+  width: 12px;
+  margin-bottom: 4px;
+}
+
 @media (max-width: 544px) {
   .tab-pane {
     height: 300px;

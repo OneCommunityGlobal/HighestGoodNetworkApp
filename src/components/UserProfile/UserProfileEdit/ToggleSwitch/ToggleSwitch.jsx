@@ -1,7 +1,8 @@
 import React from 'react';
 import style from './ToggleSwitch.module.scss';
+import TriStateToggleSwitch from './TriStateToggleSwitch';
 
-const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
+const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
   switch (switchType) {
     case 'bluesquares':
       if (state) {
@@ -173,18 +174,13 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile }) => {
     case 'bio':
       return (
         <div className="blueSqare">
-          <div className={style.switchSection}>
-            <div className={style.switchContainer}>
-              posted
-              <input
-                data-testid="bio-switch"
-                id="bioPosted"
-                type="checkbox"
-                className={style.toggle}
-                onChange={handleUserProfile}
-                checked={state}
-              />
-              requested
+          <div className={style.switchSection} style={{fontSize:fontSize}}>
+            <div style={{ wordBreak: 'keep-all'}} className={style.switchContainer}>
+            posted
+            <TriStateToggleSwitch  
+            pos={state || 'default'} 
+            onChange={handleUserProfile}/>
+            requested
             </div>
           </div>
         </div>

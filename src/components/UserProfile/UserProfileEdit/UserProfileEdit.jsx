@@ -32,6 +32,7 @@ import LinkModButton from './LinkModButton';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import hasPermission from '../../../utils/permissions';
+import { connect } from 'react-redux';
 
 const styleProfile = {};
 class UserProfileEdit extends Component {
@@ -79,7 +80,6 @@ class UserProfileEdit extends Component {
         }
       }
     }
-
   }
 
   toggleTab = tab => {
@@ -326,7 +326,6 @@ class UserProfileEdit extends Component {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-
       this.setState({
         imageUploadError: '',
         userProfile: {
@@ -361,7 +360,6 @@ class UserProfileEdit extends Component {
   };
 
   handleNullState = kind => {
-
     switch (kind) {
       case 'settings':
         this.setState(() => ({
@@ -516,12 +514,12 @@ class UserProfileEdit extends Component {
   };
 
   render() {
-
     const { userId: targetUserId } = this.props.match
       ? this.props.match.params
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
-    const userPermissions = this.props.auth.user?.permissions?.frontPermissions;
+    const canPutUserProfile = this.props.hasPermission('putUserProfile');
+    const canAddDeleteEditOwners = this.props.hasPermission('addDeleteEditOwners');
 
     const {
       userProfile,
@@ -554,8 +552,8 @@ class UserProfileEdit extends Component {
                   zIndex: '9',
                 }}
               >
-                Reminder: You must click "Save Changes" at the bottom of this page. If you don't,
-                changes to your profile will not be saved.
+                Reminder: You must click &quot;Save Changes&quot; at the bottom of this page. If you
+                don&apos;t, changes to your profile will not be saved.
               </h6>
             )}
           </Sticky>
@@ -578,17 +576,9 @@ class UserProfileEdit extends Component {
     const isUserSelf = targetUserId === requestorId;
     let canEditFields;
     if (userProfile.role !== 'Owner') {
-      canEditFields =
-        hasPermission(requestorRole, 'editUserProfile', this.props.role.roles, userPermissions) ||
-        isUserSelf;
+      canEditFields = canPutUserProfile || isUserSelf;
     } else {
-      canEditFields =
-        hasPermission(
-          requestorRole,
-          'addDeleteEditOwners',
-          this.props.role.roles,
-          userPermissions,
-        ) || isUserSelf;
+      canEditFields = canAddDeleteEditOwners || isUserSelf;
     }
 
     const weeklyHoursReducer = (acc, val) =>
@@ -632,9 +622,6 @@ class UserProfileEdit extends Component {
             id={id}
             handleLinkModel={this.handleLinkModel}
             handleSubmit={this.handleSubmit}
-            role={requestorRole}
-            roles={this.props.role.roles}
-            userPermissions={userPermissions}
           />
         )}
 
@@ -709,8 +696,6 @@ class UserProfileEdit extends Component {
                   <BlueSquare
                     blueSquares={infringements}
                     handleBlueSquare={this.handleBlueSquare}
-                    role={requestorRole}
-                    roles={this.props.role.roles}
                   />
                 </div>
               </Col>
@@ -794,7 +779,7 @@ class UserProfileEdit extends Component {
                               placeholder="First Name"
                               invalid={!this.state.formValid.firstName}
                             />
-                            <FormFeedback>First Name Can't be null</FormFeedback>
+                            <FormFeedback>First Name Can&apos;t be null</FormFeedback>
                           </FormGroup>
                         </Col>
                         <Col md="3">
@@ -809,7 +794,7 @@ class UserProfileEdit extends Component {
                               placeholder="Last Name"
                               invalid={!this.state.formValid.lastName}
                             />
-                            <FormFeedback>Last Name Can't be Null</FormFeedback>
+                            <FormFeedback>Last Name Can&apos;t be Null</FormFeedback>
                           </FormGroup>
                         </Col>
                       </Row>
@@ -919,7 +904,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.weeklyCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
-                          invalid={/*!hasPermission(requestorRole, 'editUserProfile')*/ true}
+                          invalid={/*!canPutUserProfile*/ true}
                         />
                       </Col>
                     </Row>
@@ -936,14 +921,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.totalCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="totalCommittedHours"
-                          invalid={
-                            !hasPermission(
-                              requestorRole,
-                              'editUserProfile',
-                              this.props.role.roles,
-                              userPermissions,
-                            )
-                          }
+                          invalid={!canPutUserProfile}
                         />
                       </Col>
                     </Row>
@@ -953,7 +931,7 @@ class UserProfileEdit extends Component {
                       userTeams={this.state ? this.state.userProfile.teams : []}
                       teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                       onAssignTeam={this.onAssignTeam}
-                      onDeleteteam={this.onDeleteTeam}
+                      onDeleteTeam={this.onDeleteTeam}
                       role={requestorRole}
                       edit
                     />
@@ -1001,4 +979,4 @@ class UserProfileEdit extends Component {
   }
 }
 
-export default UserProfileEdit;
+export default connect(null, { hasPermission })(UserProfileEdit);

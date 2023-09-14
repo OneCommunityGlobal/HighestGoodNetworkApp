@@ -22,3 +22,34 @@
   height: 20px;
   margin-left: 10px;
 }
+
+.bio-toggle {
+  display: inline-block;
+}
+
+.name-info{
+  display: flex;
+}
+.total-valid-wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  white-space: nowrap;
+}
+
+.badge-tr {
+  margin-left: 20px;
+  display: block;
+}
+
+.badge-td> img{
+  float: left;
+  height: 45px;
+  width: 45px;
+  margin: 5px;
+}
+
+.nonsummary-wrapper{
+  display: flex;
+  flex-direction: row;
+}

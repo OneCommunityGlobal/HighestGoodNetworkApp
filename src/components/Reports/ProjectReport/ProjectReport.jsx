@@ -3,7 +3,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
 import { getProjectDetail } from '../../../actions/project';
-import { fetchAllMembers } from '../../../actions/projectMembers';
+import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -15,6 +15,7 @@ import '../../Teams/Team.css';
 import './ProjectReport.css';
 
 export const ProjectReport = ({ match }) => {
+  const [memberCount, setMemberCount] = useState(0);
   const dispatch = useDispatch();
   const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(
     projectReportViewData,
@@ -27,6 +28,16 @@ export const ProjectReport = ({ match }) => {
       dispatch(fetchAllMembers(match.params.projectId));
     }
   }, []);
+
+  useEffect(() => {
+    if (projectMembers.members) {
+      dispatch(getProjectActiveUser());
+    }
+  }, [projectMembers.members]);
+
+  const handleMemberCount = elementCount => {
+    setMemberCount(elementCount);
+  };
 
   return (
     <ReportPage
@@ -41,14 +52,19 @@ export const ProjectReport = ({ match }) => {
           </Paging>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
-          <Paging totalElementsCount={projectMembers.members.length}>
-            <ProjectMemberTable projectMembers={projectMembers} />
+          <Paging totalElementsCount={memberCount}>
+            <ProjectMemberTable
+              projectMembers={projectMembers}
+              handleMemberCount={handleMemberCount}
+            />
           </Paging>
         </ReportPage.ReportBlock>
       </div>
+      <div className="tasks-block">
       <ReportPage.ReportBlock>
         <TasksTable WbsTasksID={wbsTasksID} />
       </ReportPage.ReportBlock>
+      </div>
     </ReportPage>
   );
 };

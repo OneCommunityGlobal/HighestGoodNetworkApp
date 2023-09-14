@@ -1,6 +1,9 @@
 import axios from 'axios';
 import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
+import {
+  getUserProfile as getUserProfileActionCreator,
+} from '../constants/userProfile';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -41,8 +44,16 @@ export const getWeeklySummaries = userId => {
     try {
       const response = await axios.get(url);
       // Only pick the fields related to weekly summaries from the userProfile.
-      const { weeklySummariesCount, weeklySummaries, mediaUrl } = response.data;
-      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl }));
+      const { weeklySummariesCount, weeklySummaries, mediaUrl, adminLinks } = response.data;
+      let summaryDocLink;
+      for (const link in adminLinks) {
+        if (adminLinks[link].Name === 'Media Folder') {
+          summaryDocLink = adminLinks[link].Link;
+          break; 
+        }
+      }
+      dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl:summaryDocLink || mediaUrl}));
+      dispatch(getUserProfileActionCreator(response.data));
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesError(error));
@@ -59,23 +70,44 @@ export const getWeeklySummaries = userId => {
  */
 export const updateWeeklySummaries = (userId, weeklySummariesData) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
-  return async () => {
+  return async (dispatch) => {
     try {
       // Get the user's profile from the server.
       let response = await axios.get(url);
       const userProfile = await response.data;
+      const adminLinks = userProfile.adminLinks || [];
 
       // Merge the weekly summaries related changes with the user's profile.
-      const { mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      const {mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
+      console.log('respon get', response.data)
+      // update the changes on weekly summaries link into admin links
+      let doesMediaFolderExist = false;
+      for (const link of adminLinks) {
+        if (link.Name === 'Media Folder') {
+          link.Link = mediaUrl;
+          doesMediaFolderExist = true;
+          break; 
+        }
+      }
+      if(!doesMediaFolderExist && mediaUrl){
+        adminLinks.push(
+          {Name:'Media Folder',Link:mediaUrl}
+        )
+      }
       const userProfileUpdated = {
         ...userProfile,
+        adminLinks,
         mediaUrl,
         weeklySummaries,
         weeklySummariesCount,
       };
 
+
       // Update the user's profile on the server.
       response = await axios.put(url, userProfileUpdated);
+      if (response.status === 200) {
+        await dispatch(getUserProfileActionCreator(userProfileUpdated));
+      }
       return response.status;
     } catch (error) {
       return error.response.status;

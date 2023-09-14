@@ -1,10 +1,10 @@
-import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
@@ -16,8 +16,10 @@ import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
+import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
+import { toast } from 'react-toastify';
 
-const TeamMemberTasks = props => {
+const TeamMemberTasks = React.memo(props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
@@ -35,6 +37,10 @@ const TeamMemberTasks = props => {
   const [fortyEightHoursTimeEntries, setFortyEightHoursTimeEntries] = useState([]);
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
+  const [taskModalOption, setTaskModalOption] = useState('');
+
+  //added it to keep track if the renderTeamsList should run
+  const [shouldRun, setShouldRun] = useState(false);
 
   //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
   const [userRole, setUserRole] = useState('');
@@ -51,26 +57,31 @@ const TeamMemberTasks = props => {
   const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
 
   const dispatch = useDispatch();
+
   useEffect(() => {
-    //Passed the userid as argument to fetchTeamMembersTask
-    //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
-    //so, before it gets from the store, it'll see if the userId is provided.
-    //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
-    //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
-    //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
-    //if it's not differente, it'll attribute the current authenticated user's role.
-    //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
-    if (userId !== props.auth.user.userid) {
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
-      const currentUserRole = getUserRole(userId)
-        .then(resp => resp)
-        .then(user => {
-          setUserRole(user.data.role);
-        });
-    } else {
-      dispatch(fetchTeamMembersTask(userId, null));
-      setUserRole(props.auth.user.role);
-    }
+    const initialFetching = async () => {
+      //Passed the userid as argument to fetchTeamMembersTask
+      //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
+      //so, before it gets from the store, it'll see if the userId is provided.
+      //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
+      //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
+      //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
+      //if it's not differente, it'll attribute the current authenticated user's role.
+      //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
+      if (userId !== props.auth.user.userid) {
+        await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+        const currentUserRole = getUserRole(userId)
+          .then(resp => resp)
+          .then(user => {
+            setUserRole(user.data.role);
+          });
+      } else {
+        await dispatch(fetchTeamMembersTask(userId, null));
+        setUserRole(props.auth.user.role);
+      }
+      setShouldRun(true);
+    };
+    initialFetching();
   }, []);
 
   useEffect(() => {
@@ -80,70 +91,69 @@ const TeamMemberTasks = props => {
   }, [currentUserId]);
 
   useEffect(() => {
-    renderTeamsList();
-  }, []);
-
-  useEffect(() => {
-    submitTasks();
-    if (userId !== props.auth.user.userid) {
-      dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
-      const currentUserRole = getUserRole(userId)
-        .then(resp => resp)
-        .then(user => {
-          setUserRole(user.data.role);
-        });
-    } else {
-      dispatch(fetchTeamMembersTask(userId, null));
-      setUserRole(props.auth.user.role);
+    if (isLoading === false && shouldRun) {
+      renderTeamsList();
+      closeMarkAsDone();
     }
-  }, [updatedTasks]);
+  }, [usersWithTasks, shouldRun]);
 
   const closeMarkAsDone = () => {
+    setClickedToShowModal(false);
     setMarkAsDoneModal(false);
+    setCurrentUserId('');
   };
 
-  const onUpdateTask = (taskId, updatedTask) => {
+  const onUpdateTask = useCallback((taskId, updatedTask) => {
     const newTask = {
       updatedTask,
       taskId,
     };
-    setTasks(tasks => {
-      const tasksWithoutTheUpdated = [...tasks];
-      const taskIndex = tasks.findIndex(task => task._id === taskId);
-      tasksWithoutTheUpdated[taskIndex] = updatedTask;
-      return tasksWithoutTheUpdated;
-    });
-    setUpdatedTasks(tasks => [...tasks, newTask]);
-  };
+    submitTasks(newTask);
+    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
+    props.handleUpdateTask();
+  }, []);
 
-  const submitTasks = async () => {
-    for (let i = 0; i < updatedTasks.length; i += 1) {
-      const updatedTask = updatedTasks[i];
-      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+  const submitTasks = async updatedTasks => {
+    const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
+    try {
+      await axios.put(url, updatedTasks.updatedTask);
+    } catch (error) {
+      toast.error('Failed to update task');
     }
   };
 
-  const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
+  const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
-    setTaskNotificationModal(!showTaskNotificationModal);
-  };
+    setTaskNotificationModal(prev => !prev);
+  }, []);
 
-  const handleMarkAsDoneModal = (userId, task) => {
+  const handleMarkAsDoneModal = useCallback((userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  };
+  }, []);
+
+  const handleRemoveFromTaskModal = useCallback((userId, task) => {
+    setCurrentUserId(userId);
+    setCurrentTask(task);
+    setClickedToShowModal(true);
+  }, []);
+
+  const handleTaskModalOption = useCallback(option => {
+    setTaskModalOption(option);
+  }, []);
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
-    dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    //if the authentitated user is seeing it's own notification
+    if (currentUserId === props.auth.user.userid) {
+      dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
+    }
     handleOpenTaskNotificationModal();
   };
 
   const getTimeEntriesForPeriod = async teamList => {
-    let newList = [];
     let twentyFourList = [];
     let fortyEightList = [];
 
@@ -152,22 +162,22 @@ const TeamMemberTasks = props => {
       .tz('America/Los_Angeles')
       .subtract(72, 'hours')
       .format('YYYY-MM-DD');
-
     const toDate = moment()
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD');
 
-    const requests = teamList.map(async user => {
-      const url = ENDPOINTS.TIME_ENTRIES_PERIOD(user.personId, fromDate, toDate);
-      return axios.get(url);
-    });
-    const responses = await Promise.all(requests);
-    for (const response of responses) {
-      if (response.data.length > 0) newList.push(...response.data);
-    }
+    const userIds = teamList.map(user => user.personId);
+
+    const userListTasksRequest = async userList => {
+      const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+      return axios.post(url, { users: userList, fromDate, toDate });
+    };
+
+    const taskResponse = await userListTasksRequest(userIds);
+    const usersListTasks = taskResponse.data;
 
     //2. Generate array of past 24/48 hrs timelogs
-    newList.map(entry => {
+    usersListTasks.map(entry => {
       const threeDaysAgo = moment()
         .tz('America/Los_Angeles')
         .subtract(72, 'hours')
@@ -186,13 +196,11 @@ const TeamMemberTasks = props => {
     });
 
     //3. set three array of time logs
-    setSeventyTwoHoursTimeEntries([...newList]);
+    setSeventyTwoHoursTimeEntries([...usersListTasks]);
     setFortyEightHoursTimeEntries([...fortyEightList]);
     setTwentyFourHoursTimeEntries([...twentyFourList]);
 
-    if (newList && twentyFourList && fortyEightList) {
-      setFinishLoading(true);
-    }
+    setFinishLoading(true);
   };
 
   //Display timelogs based on selected period
@@ -212,7 +220,7 @@ const TeamMemberTasks = props => {
     }
   };
 
-  const renderTeamsList = () => {
+  const renderTeamsList = async () => {
     if (usersWithTasks && usersWithTasks.length > 0) {
       // give different users different views
       let filteredMembers = usersWithTasks.filter(member => {
@@ -284,8 +292,9 @@ const TeamMemberTasks = props => {
               className="circle-border 24h"
               title="Timelogs submitted in the past 24 hours"
               style={{
-                color: selectedPeriod === 24 && isTimeLogActive ? 'white' : '#DC143C',
-                backgroundColor: selectedPeriod === 24 && isTimeLogActive ? '#DC143C' : 'white',
+                color: selectedPeriod === 24 && isTimeLogActive ? 'white' : hrsFilterBtnRed,
+                backgroundColor:
+                  selectedPeriod === 24 && isTimeLogActive ? hrsFilterBtnRed : 'white',
                 border: '1px solid #DC143C',
               }}
               onClick={() => selectPeriod(24)}
@@ -297,8 +306,9 @@ const TeamMemberTasks = props => {
               className="circle-border 48h"
               title="Timelogs submitted in the past 48 hours"
               style={{
-                color: selectedPeriod === 48 && isTimeLogActive ? 'white' : '#6495ED',
-                backgroundColor: selectedPeriod === 48 && isTimeLogActive ? '#6495ED' : 'white',
+                color: selectedPeriod === 48 && isTimeLogActive ? 'white' : hrsFilterBtnBlue,
+                backgroundColor:
+                  selectedPeriod === 48 && isTimeLogActive ? hrsFilterBtnBlue : 'white',
                 border: '1px solid #6495ED',
               }}
               onClick={() => selectPeriod(48)}
@@ -320,7 +330,7 @@ const TeamMemberTasks = props => {
             </button>
           </div>
         ) : (
-          <Loading />
+          <SkeletonLoading template="TimelogFilter" />
         )}
       </header>
       <TaskDifferenceModal
@@ -346,108 +356,120 @@ const TeamMemberTasks = props => {
           task={currentTask}
           setCurrentUserId={setCurrentUserId}
           setClickedToShowModal={setClickedToShowModal}
+          taskModalOption={taskModalOption}
         />
       )}
-      <div className="table-container">
-        <Table>
-          <thead className="pc-component">
-            <tr>
-              {/* Empty column header for hours completed icon */}
-              <th />
-              <th className="team-member-tasks-headers">
-                <Table borderless className="team-member-tasks-subtable">
-                  <thead>
-                    <tr>
-                      <th className="team-member-tasks-headers team-member-tasks-user-name">
-                        Team Member
-                      </th>
-                      <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                        <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                        /
-                        <FontAwesomeIcon
-                          style={{ color: 'green' }}
-                          icon={faClock}
-                          title="Total Hours Completed this Week"
-                        />
-                        /
-                        <FontAwesomeIcon
-                          style={{ color: 'red' }}
-                          icon={faClock}
-                          title="Total Remaining Hours"
-                        />
-                      </th>
-                    </tr>
-                  </thead>
-                </Table>
-              </th>
-              <th className="team-member-tasks-headers">
-                <Table borderless className="team-member-tasks-subtable">
-                  <thead>
-                    <tr>
-                      <th>Tasks(s)</th>
-                      <th className="team-task-progress">Progress</th>
-                      {userRole === 'Administrator' ? <th>Status</th> : null}
-                    </tr>
-                  </thead>
-                </Table>
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {isLoading ? (
-              <Loading />
-            ) : (
-              teamList.map(user => {
-                if (!isTimeLogActive) {
-                  return (
-                    <>
+      <div className='table-container'>
+          <Table>
+            <thead className="pc-component">
+              <tr>
+                {/* Empty column header for hours completed icon */}
+                <th />
+                <th className="team-member-tasks-headers">
+                  <Table borderless className="team-member-tasks-subtable">
+                    <thead>
+                      <tr>
+                        <th className="team-member-tasks-headers team-member-tasks-user-name">
+                          Team Member
+                        </th>
+                        <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                          <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                          /
+                          <FontAwesomeIcon
+                            style={{ color: 'green' }}
+                            icon={faClock}
+                            title="Total Hours Completed this Week"
+                          />
+                          /
+                          <FontAwesomeIcon
+                            style={{ color: 'red' }}
+                            icon={faClock}
+                            title="Total Remaining Hours"
+                          />
+                        </th>
+                      </tr>
+                    </thead>
+                  </Table>
+                </th>
+                <th className="team-member-tasks-headers">
+                  <Table borderless className="team-member-tasks-subtable">
+                    <thead>
+                      <tr>
+                        <th>Tasks(s)</th>
+                        <th className="team-task-progress">Progress</th>
+                        {userRole === 'Administrator' ? <th>Status</th> : null}
+                      </tr>
+                    </thead>
+                  </Table>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <SkeletonLoading template="TeamMemberTasks" />
+              ) : (
+                teamList.map(user => {
+                  if (!isTimeLogActive) {
+                    return (
                       <TeamMemberTask
                         user={user}
                         key={user.personId}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
+                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                        handleTaskModalOption={handleTaskModalOption}
                         userRole={userRole}
+                        updateTask={onUpdateTask}
+                        roles={props.roles}
+                        userPermissions={props.userPermissions}
+                        userId={userId}
                       />
-                    </>
-                  );
-                } else {
-                  return (
-                    <>
-                      <TeamMemberTask
-                        user={user}
-                        key={user.personId}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        userRole={userRole}
-                      />
-                      {timeEntriesList.length > 0 &&
-                        timeEntriesList
-                          .filter(timeEntry => timeEntry.personId === user.personId)
-                          .map(timeEntry => (
-                            <tr className="table-row">
-                              <td colSpan={3} style={{ padding: 0 }}>
-                                <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
-                              </td>
-                            </tr>
-                          ))}
-                    </>
-                  );
-                }
-              })
-            )}
-          </tbody>
-        </Table>
+                    );
+                  } else {
+                    return (
+                      <>
+                        <TeamMemberTask
+                          user={user}
+                          key={user.personId}
+                          handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                          handleMarkAsDoneModal={handleMarkAsDoneModal}
+                          handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                          handleTaskModalOption={handleTaskModalOption}
+                          userRole={userRole}
+                          updateTask={onUpdateTask}
+                          roles={props.roles}
+                          userPermissions={props.userPermissions}
+                          userId={userId}
+                        />
+                        {timeEntriesList.length > 0 &&
+                          timeEntriesList
+                            .filter(timeEntry => timeEntry.personId === user.personId)
+                            .map(timeEntry => (
+                              <tr className="table-row">
+                                <td colSpan={3} style={{ padding: 0 }}>
+                                  <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
+                                </td>
+                              </tr>
+                            ))}
+                      </>
+                    );
+                  }
+                })
+              )}
+            </tbody>
+          </Table>
       </div>
     </div>
   );
-};
+});
 
 const mapStateToProps = state => ({
   auth: state.auth,
   userId: state.userProfile.id,
   managingTeams: state.userProfile.teams,
   teamsInfo: state.managingTeams,
+  roles: state.role.roles,
+  userPermissions: state.auth?.permissions?.frontPermissions,
 });
 
 export default connect(mapStateToProps, {

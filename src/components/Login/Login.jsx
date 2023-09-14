@@ -5,6 +5,7 @@ import { Link, withRouter } from 'react-router-dom';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
+import { boxStyle } from 'styles';
 
 export class Login extends Form {
   state = {
@@ -34,8 +35,7 @@ export class Login extends Form {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
         this.props.history.push(url);
       } else if (this.props.auth.isAuthenticated) {
-        const { state } = this.props.location;
-        this.props.history.push(state ? state.from.pathname : '/dashboard');
+        this.props.history.push('/dashboard');
       }
     }
 
@@ -52,6 +52,7 @@ export class Login extends Form {
     const email = this.state.data.email;
     const password = this.state.data.password;
     this.props.loginUser({ email, password });
+    this.setState({ errors: this.props.errors });
   };
 
   render() {
