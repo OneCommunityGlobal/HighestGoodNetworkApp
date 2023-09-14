@@ -20,6 +20,7 @@ const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canEditUserProfiles = props.hasPermission('seeUserManagement')
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -74,6 +75,7 @@ const UserTableData = React.memo(props => {
             );
           }}
           style={boxStyle}
+          disabled={!canEditUserProfiles}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
@@ -89,6 +91,7 @@ const UserTableData = React.memo(props => {
             );
           }}
           style={boxStyle}
+          disabled={!canEditUserProfiles}
         >
           {props.isSet ? CANCEL : SET_FINAL_DAY}
         </button>
@@ -109,12 +112,13 @@ const UserTableData = React.memo(props => {
                 props.onDeleteClick(props.user, 'archive');
               }}
               style={boxStyle}
+              disabled={!canEditUserProfiles}
             >
               {DELETE}
             </button>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton />
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton hasPermission={!canEditUserProfiles} />
           </span>
         </td>
       )}
