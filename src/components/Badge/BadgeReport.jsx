@@ -31,6 +31,7 @@ import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
 import './BadgeReport.css';
 import { boxStyle } from 'styles';
+import { formatDate } from 'utils/formatDate';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -312,7 +313,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges &&
+              {sortBadges && sortBadges.length ?
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -340,7 +341,7 @@ const BadgeReport = props => {
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
-                        ? value.lastModified.substring(0, 10)
+                        ? formatDate(value.lastModified)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
                     <td>
@@ -350,8 +351,8 @@ const BadgeReport = props => {
                           Dates
                         </DropdownToggle>
                         <DropdownMenu>
-                          {value.earnedDate.map(date => {
-                            return <DropdownItem>{date}</DropdownItem>;
+                          {value.earnedDate.map((date, i) => {
+                            return <DropdownItem key={i}>{formatDate(date)}</DropdownItem>;
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
@@ -400,7 +401,13 @@ const BadgeReport = props => {
                       </FormGroup>
                     </td>
                   </tr>
-                ))}
+                )) : 
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center" }}>
+                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
+                    </td>
+                  </tr>
+              }
             </tbody>
           </Table>
         </div>
@@ -458,7 +465,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges &&
+              {sortBadges && sortBadges.length ?
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -486,7 +493,7 @@ const BadgeReport = props => {
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
-                        ? value.lastModified.substring(0, 10)
+                        ? formatDate(value.lastModified)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
 
@@ -568,13 +575,12 @@ const BadgeReport = props => {
                               }}
                             >
                               {canDeleteBadges ? (
-                                <button
-                                  type="button"
+                                <div
                                   className="btn btn-danger"
                                   onClick={e => handleDeleteBadge(index)}
                                 >
                                   Delete
-                                </button>
+                                </div>
                               ) : (
                                 []
                               )}
@@ -584,7 +590,13 @@ const BadgeReport = props => {
                       </ButtonGroup>
                     </td>
                   </tr>
-                ))}
+                )) : 
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center" }}>
+                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
+                    </td>
+                  </tr>
+              }
             </tbody>
           </Table>
         </div>

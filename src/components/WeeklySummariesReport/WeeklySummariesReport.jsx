@@ -39,7 +39,7 @@ export class WeeklySummariesReport extends Component {
   async componentDidMount() {
     // 1. fetch report
     await this.props.getWeeklySummariesReport();
-    await this.props.fetchAllBadges();
+    // await this.props.fetchAllBadges();
 
     this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
@@ -245,6 +245,7 @@ export class WeeklySummariesReport extends Component {
                         bioCanEdit={this.bioEditPermission}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={this.state.allRoleInfo}
+                        badges={badges}
                       />
                     </Col>
                   </Row>
@@ -282,4 +283,4 @@ const WeeklySummariesReportTab = ({tabId, hidden, children}) => {
   )
 };
 
-export default connect(mapStateToProps, { getWeeklySummariesReport, hasPermission, getInfoCollections })(WeeklySummariesReport);
+export default connect(mapStateToProps, { getWeeklySummariesReport, hasPermission, getInfoCollections, fetchAllBadges })(WeeklySummariesReport);

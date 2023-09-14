@@ -74,6 +74,30 @@ const Team = props => {
             {DELETE}
           </button>
         </span>
+        style={boxStyle}
+        data-testid='active-marker'
+      >
+        {props.active ? (
+          <div className="isActive">
+            <i className="fa fa-circle" aria-hidden="true" />
+          </div>
+        ) : (
+          <div className="isNotActive">
+            <i className="fa fa-circle-o" aria-hidden="true" />
+          </div>
+        )}
+      </td>
+      <td className="centered-cell">
+        <button style={boxStyle}
+          type="button"
+          className="btn btn-outline-info"
+          onClick={e => {
+            props.onMembersClick(props.teamId, props.name);
+          }}
+          data-testid='members-btn'
+        >
+          <i className="fa fa-users" aria-hidden="true" />
+        </button>
       </td>
     )}
   </tr>)
