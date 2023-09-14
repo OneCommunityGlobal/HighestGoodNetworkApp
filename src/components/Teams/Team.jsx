@@ -49,43 +49,43 @@ const Team = props => {
       </button>
     </td>
     {hasPermission(props.requestorRole, 'editDeleteTeam', props.roles, props.userPermissions) && (
-      <td>
-        <span className="usermanagement-actions-cell">
-          <button
-            type="button"
-            className="btn btn-outline-success"
-            onClick={() => {
-              props.onEditTeam(props.name, props.teamId, props.active);
-            }}
-            style={boxStyle}
-          >
-            Edit
-          </button>
-        </span>
-        <span className="usermanagement-actions-cell">
-          <button
-            type="button"
-            className="btn btn-outline-danger"
-            onClick={() => {
-              props.onDeleteClick(props.name, props.teamId, props.active);
-            }}
-            style={boxStyle}
-          >
-            {DELETE}
-          </button>
-        </span>
-        style={boxStyle}
-        data-testid='active-marker'
-      >
-        {props.active ? (
-          <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true" />
-          </div>
-        ) : (
-          <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true" />
-          </div>
-        )}
+      <>
+        <td>
+          <span className="usermanagement-actions-cell">
+            <button
+              type="button"
+              className="btn btn-outline-success"
+              onClick={() => {
+                props.onEditTeam(props.name, props.teamId, props.active);
+              }}
+              style={boxStyle}
+            >
+              Edit
+            </button>
+          </span>
+          <span className="usermanagement-actions-cell">
+            <button
+              type="button"
+              className="btn btn-outline-danger"
+              onClick={() => {
+                props.onDeleteClick(props.name, props.teamId, props.active);
+              }}
+              style={boxStyle}
+            >
+              {DELETE}
+            </button>
+          </span>
+
+          {
+          props.active ? (<div className="isActive">
+              <i className="fa fa-circle" aria-hidden="true" />
+            </div>
+          ) : (
+            <div className="isNotActive">
+              <i className="fa fa-circle-o" aria-hidden="true" />
+            </div>
+          )
+          }
       </td>
       <td className="centered-cell">
         <button style={boxStyle}
@@ -99,7 +99,9 @@ const Team = props => {
           <i className="fa fa-users" aria-hidden="true" />
         </button>
       </td>
+      </>
     )}
+    
   </tr>)
 }
 export default Team;
