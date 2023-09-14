@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
 import moment from 'moment-timezone';
 import './Timelog.css';
@@ -8,24 +8,24 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
-import { useDispatch } from 'react-redux';
+
 import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
 import { updateUserProfile } from '../../actions/userProfile';
 import hasPermission from 'utils/permissions';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { useEffect } from 'react';
+
 import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = ({ data, displayYear, userProfile }) => {
+
+  const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
 
   const toggle = () => setModal(modal => !modal);
 
   const dateOfWork = moment(data.dateOfWork);
   const { user } = useSelector(state => state.auth);
-  const userPermissions = user?.permissions?.frontPermissions;
-  const { roles } = useSelector(state => state.role);
 
   const isOwner = data.personId === user.userid;
   const isSameDay =
@@ -33,9 +33,25 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD') === data.dateOfWork;
   const role = user.role;
+
+  const canDelete =
+    //permission to Delete time entry from other user's Dashboard
+    dispatch(hasPermission('deleteTimeEntryOthers')) ||
+    //permission to delete any time entry on their own time logs tab
+    dispatch(hasPermission('deleteTimeEntry')) ||
+    //default permission: delete own sameday tangible entry
+    (!data.isTangible && isOwner && isSameDay);
+
+  const canEdit =
+    //permission to edit any time log entry (from other user's Dashboard
+    dispatch(hasPermission('editTimelogInfo')) ||
+    //permission to edit any time entry on their own time logs tab
+    dispatch(hasPermission('editTimeEntry')) ||
+    //default permission: edit own sameday timelog entry
+    (isOwner && isSameDay);
+
   const projectCategory = data.category?.toLowerCase() || '';
   const taskClassification = data.classification?.toLowerCase() || '';
-  const dispatch = useDispatch();
 
   const toggleTangibility = () => {
     const newData = {
@@ -106,7 +122,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
             type="checkbox"
             name="isTangible"
             checked={data.isTangible}
-            disabled={!hasPermission(role, 'toggleTangibleTime', roles, userPermissions)}
+            disabled={!canEdit}
             onChange={() => toggleTangibility(data)}
           />
         </Col>
@@ -114,8 +130,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
           <div className="text-muted">Notes:</div>
           {ReactHtmlParser(data.notes)}
           <div className="buttons">
-            {(hasPermission(role, 'editTimeEntry', roles, userPermissions) ||
-              (isOwner && isSameDay)) && (
+            {canEdit && (
               <span>
                 <FontAwesomeIcon
                   icon={faEdit}
@@ -124,7 +139,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                   onClick={toggle}
                 />
                 <TimeEntryForm
-                  edit
+                  edit={true}
                   userId={data.personId}
                   data={data}
                   toggle={toggle}
@@ -133,8 +148,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                 />
               </span>
             )}
-            {(hasPermission(role, 'deleteTimeEntry', roles, userPermissions) ||
-              (!data.isTangible && isOwner && isSameDay)) && (
+            {canDelete && (
               <DeleteModal
                 timeEntry={data}
                 userProfile={userProfile}

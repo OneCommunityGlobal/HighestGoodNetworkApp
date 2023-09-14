@@ -12,7 +12,9 @@ import {
   Card,
   Col,
 } from 'reactstrap';
+import { boxStyle } from 'styles';
 import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 
 const UserProfileModal = props => {
   const {
@@ -25,9 +27,6 @@ const UserProfileModal = props => {
     type,
     userProfile,
     id,
-    role,
-    roles,
-    userPermissions,
   } = props;
   let blueSquare = [
     {
@@ -42,6 +41,8 @@ const UserProfileModal = props => {
       blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
     }
   }
+
+  const canPutUserProfile = props.hasPermission('putUserProfile');
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -144,7 +145,7 @@ const UserProfileModal = props => {
       <ModalBody>
         {type === 'updateLink' && (
           <div>
-            {hasPermission(role, 'editUserProfile', roles, userPermissions) && (
+            {canPutUserProfile && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
@@ -358,6 +359,7 @@ const UserProfileModal = props => {
             onClick={() => {
               modifyBlueSquares('', dateStamp, summary, 'add');
             }}
+            style={boxStyle}
           >
             Submit
           </Button>
@@ -370,6 +372,7 @@ const UserProfileModal = props => {
               onClick={() => {
                 modifyBlueSquares(id, dateStamp, summary, 'update');
               }}
+              style={boxStyle}
             >
               Update
             </Button>
@@ -378,6 +381,7 @@ const UserProfileModal = props => {
               onClick={() => {
                 modifyBlueSquares(id, dateStamp, summary, 'delete');
               }}
+              style={boxStyle}
             >
               Delete
             </Button>
@@ -397,7 +401,7 @@ const UserProfileModal = props => {
 
         {type === 'image' && (
           <>
-            <Button color="primary" onClick={closeModal}>
+            <Button color="primary" onClick={closeModal} style={boxStyle}>
               {' '}
               Close{' '}
             </Button>
@@ -406,6 +410,7 @@ const UserProfileModal = props => {
               onClick={() => {
                 window.open('https://picresize.com/');
               }}
+              style={boxStyle}
             >
               {' '}
               Resize{' '}
@@ -414,11 +419,11 @@ const UserProfileModal = props => {
         )}
 
         {type === 'save' ? (
-          <Button color="primary" onClick={closeModal}>
+          <Button color="primary" onClick={closeModal} style={boxStyle}>
             Close
           </Button>
         ) : (
-          <Button color="primary" onClick={closeModal}>
+          <Button color="primary" onClick={closeModal} style={boxStyle}>
             Cancel
           </Button>
         )}
@@ -427,4 +432,4 @@ const UserProfileModal = props => {
   );
 };
 
-export default UserProfileModal;
+export default connect(null, { hasPermission })(UserProfileModal);

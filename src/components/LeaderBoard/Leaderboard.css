@@ -24,3 +24,21 @@
     border-top-color: rgb(222, 226, 230);
   }
 }
+
+.boldClass {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.animation {
+  animation: l-animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+@keyframes l-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { Button } from 'react-bootstrap';
+import { boxStyle } from 'styles';
 
 const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
   const [show, setShow] = React.useState(false);
@@ -261,7 +262,7 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
 
   return (
     <div>
-      <Button onClick={() => setShow(!show)} aria-expanded={show}>
+      <Button onClick={() => setShow(!show)} aria-expanded={show} style={boxStyle}>
         Show Time Entries Graph
       </Button>
       <div id="tlplot"></div>
