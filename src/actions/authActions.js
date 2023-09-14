@@ -32,15 +32,12 @@ export const loginUser = credentials => dispatch => {
     });
 };
 
-export const loginBMUser = (credentials) => {
+export const loginBMUser = async credentials => {
   return httpService
     .post(ENDPOINTS.BM_LOGIN, credentials)
-    .then(res => {
-      console.log(res)
-      return res.data
-    })
-    .catch(err => err.response)
-}
+    .then(res => res)
+    .catch(err => err.response);
+};
 
 export const getHeaderData = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);

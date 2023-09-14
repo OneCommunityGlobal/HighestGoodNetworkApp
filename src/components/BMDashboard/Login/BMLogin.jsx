@@ -7,7 +7,6 @@ import Joi from 'joi';
 import { loginBMUser } from 'actions/authActions';
 
 const BMLogin = (props) => {
-  // console.log("🚀 ~ file: BMLogin.jsx:2 ~ BMLogin ~ props:", props)
   const { auth, history } = props
   // state
   const [enteredEmail, setEnteredEmail] = useState("")
@@ -37,17 +36,26 @@ const BMLogin = (props) => {
   }
 
   // submit login
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     // Note: Joi by default stops validation on first error
     const validate = schema.validate({ email: enteredEmail, password: enterPassword })
     if(validate.error) {
       return setValidationError({ 
         label: validate.error.details[0].context.label,
-        msg: validate.error.details[0].message
+        message: validate.error.details[0].message
       })
     }
-    loginBMUser({ email: enteredEmail, password: enterPassword })
+    const res = await loginBMUser({ email: enteredEmail, password: enterPassword })
+    if(res.statusText !== "OK") {
+      if(res.status === 422) {
+        return setValidationError({ 
+          label: res.data.label,
+          message: res.data.message,
+        })
+      }
+      return alert(res.data.message)
+    }
   }
 
   if(!auth.isAuthenticated) {
@@ -69,7 +77,7 @@ const BMLogin = (props) => {
           />
           { validationError && validationError.label === "email" && (
             <FormFeedback>
-              {validationError.msg}
+              {validationError.message}
             </FormFeedback>)
           }
         </FormGroup>
@@ -84,7 +92,7 @@ const BMLogin = (props) => {
           />
           { validationError && validationError.label === "password" && (
             <FormFeedback>
-              {validationError.msg}
+              {validationError.message}
             </FormFeedback>)
           }
         </FormGroup>
