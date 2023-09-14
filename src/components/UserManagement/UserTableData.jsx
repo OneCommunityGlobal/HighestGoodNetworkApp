@@ -104,21 +104,24 @@ const UserTableData = React.memo(props => {
       {checkPermissionsOnOwner() ? null : (
         <td>
         {
-          props.auth.user.userid === props.user._id || props.auth.user.role === "Owner" &&  props.user.role === "Administrator"  ? '': <span className="usermanagement-actions-cell">
-            <button
-              type="button"
-              className="btn btn-outline-danger btn-sm"
-              onClick={e => {
-                props.onDeleteClick(props.user, 'archive');
-              }}
-              style={boxStyle}
-            >
-              {DELETE}
-            </button>
-          </span>
-          <span className="usermanagement-actions-cell">
-            <ResetPasswordButton user={props.user} isSmallButton />
-          </span>
+          props.auth.user.userid === props.user._id || props.auth.user.role === "Owner" &&  props.user.role === "Administrator"  ? '': 
+                  <><span className="usermanagement-actions-cell">
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={e => {
+                          props.onDeleteClick(props.user, 'archive');
+                        }}
+                        style={boxStyle}
+                      >
+                        {DELETE}
+                      </button>
+                    </span>
+                    <span className="usermanagement-actions-cell">
+                      <ResetPasswordButton user={props.user} isSmallButton />
+                    </span>
+                    </>
+          }
         </td>
       )}
     </tr>
