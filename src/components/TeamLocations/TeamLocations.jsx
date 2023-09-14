@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import mockAPIResponse from './mockData';
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -13,8 +12,10 @@ const TeamLocations = () => {
 
   useEffect(() => {
     async function getUserProfiles() {
-      const users = mockAPIResponse; // await axios.get(ENDPOINTS.USER_PROFILES);
-      setUserProfiles(users.data);
+      const users = await axios.get(ENDPOINTS.USER_PROFILES);
+      const validUsers = users.data.filter(item => item.location?.country);
+      console.log(validUsers)
+      setUserProfiles(validUsers);
     }
     getUserProfiles();
   }, []);

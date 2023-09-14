@@ -313,7 +313,7 @@ const BasicInformationTab = props => {
               userProvided: userProfile.location.userProvided,
               coords: {
                 lat: response.data.results[0].geometry.lat,
-                lan: response.data.results[0].geometry.lng,
+                lng: response.data.results[0].geometry.lng,
               },
               country: response.data.results[0].components.country,
               city: response.data.results[0].components.city,
@@ -509,7 +509,7 @@ const BasicInformationTab = props => {
                 <Col className="p-0" style={{ marginRight: '10px' }}>
                   <Input
                     onChange={handleLocation}
-                    value={userProfile.location.userProvided || userProfile.location}
+                    value={userProfile.location.userProvided || ''}
                   />
                 </Col>
                 <Col className="p-0">
@@ -761,7 +761,7 @@ const BasicInformationTab = props => {
             <Col className="cols">
               <Input
                 onChange={handleLocation}
-                value={userProfile.location.userProvided || userProfile.location}
+                value={userProfile.location.userProvided || ''}
               />
 
               <div>

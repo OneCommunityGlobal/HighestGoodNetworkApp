@@ -50,7 +50,12 @@ const SetupProfileUserEntry = ({ token }) => {
     privacySettings: { email: true, phoneNumber: true },
     jobTitle: '',
     timeZone: '',
-    location: '',
+    location: {
+      userProvided: '',
+      coords: { lat: '', lng: '' },
+      country: '',
+      city: '',
+    },
     timeZoneFilter: '',
     token,
   });
@@ -91,7 +96,16 @@ const SetupProfileUserEntry = ({ token }) => {
       [id]: value,
     }));
   };
-
+  const handleLocation = event => {
+    const { id, value } = event.target;
+    setUserProfile(prevProfile => ({
+      ...prevProfile,
+      [id]: {
+        ...prevProfile.location,
+        userProvided: value
+      },
+    }));
+  }
   const handleToggle = event => {
     const { id } = event.target;
     const key = id === 'emailPubliclyAccessible' ? 'email' : 'phoneNumber';
@@ -114,7 +128,7 @@ const SetupProfileUserEntry = ({ token }) => {
       timeZoneFilterClicked: '',
     }));
 
-    if (!userProfile.location) {
+    if (!userProfile.userProvided.location) {
       alert('Please enter valid location');
       return;
     }
@@ -123,7 +137,7 @@ const SetupProfileUserEntry = ({ token }) => {
       return;
     }
 
-    getUserTimeZone(userProfile.location, APIkey)
+    getUserTimeZone(userProfile.userProvided.location, APIkey)
       .then(response => {
         if (
           response.data.status.code === 200 &&
@@ -131,11 +145,19 @@ const SetupProfileUserEntry = ({ token }) => {
           response.data.results.length
         ) {
           let timezone = response.data.results[0].annotations.timezone.name;
-
+          let currentLocation = {
+            coords: {
+              lat: response.data.results[0].geometry.lat,
+              lng: response.data.results[0].geometry.lng,
+            },
+            country: response.data.results[0].components.country,
+            city: response.data.results[0].components.city,
+          };
           setUserProfile(prevProfile => ({
             ...prevProfile,
             timeZoneFilter: timezone,
             timeZone: timezone,
+            location: currentLocation
           }));
         } else {
           alert('Invalid location or ' + response.data.status.message);
@@ -302,7 +324,7 @@ const SetupProfileUserEntry = ({ token }) => {
 
     // Validate Location
 
-    if (userProfile.location.trim() === '') {
+    if (userProfile.location.userProvided.trim() === '') {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         location: 'Location is required',
@@ -344,7 +366,7 @@ const SetupProfileUserEntry = ({ token }) => {
         },
         jobTitle: userProfile.jobTitle.trim(),
         timeZone: userProfile.timeZone.trim(),
-        location: userProfile.location.trim(),
+        location: userProfile.location,
         token,
       };
 
@@ -614,9 +636,9 @@ const SetupProfileUserEntry = ({ token }) => {
                           name="location"
                           id="location"
                           placeholder="Location"
-                          value={userProfile.location}
+                          value={userProfile.location.userProvided}
                           onChange={e => {
-                            handleChange(e);
+                            handleLocation(e);
                           }}
                           invalid={formErrors.location !== ''}
                         />

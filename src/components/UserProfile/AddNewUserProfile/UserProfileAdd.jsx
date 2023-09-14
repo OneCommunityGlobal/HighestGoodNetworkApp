@@ -514,9 +514,10 @@ class AddUserProfile extends Component {
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
             let currentLocation = {
+              userProvided: location,
               coords: {
                 lat: response.data.results[0].geometry.lat,
-                lan: response.data.results[0].geometry.lng,
+                lng: response.data.results[0].geometry.lng,
               },
               country: response.data.results[0].components.country,
               city: response.data.results[0].components.city,
@@ -526,7 +527,7 @@ class AddUserProfile extends Component {
               timeZoneFilter: timezone,
               userProfile: {
                 ...this.state.userProfile,
-                location: { ...this.state.userProfile.location, ...currentLocation },
+                location: currentLocation,
                 timeZone: timezone,
               },
             });
