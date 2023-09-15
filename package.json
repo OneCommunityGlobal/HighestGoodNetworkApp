@@ -80,8 +80,8 @@
     "test:coverage": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen --coverage",
     "eject": "react-scripts eject",
     "start:local": "react-scripts start",
-    "lint": "eslint . --ext .jsx --ext .js",
-    "lint:fix": "eslint --fix .",
+    "lint": "eslint . --ext .jsx,.js",
+    "lint:fix": "eslint --fix . --ext .jsx,.js",
     "prepare": "husky install"
   },
   "browserslist": [
