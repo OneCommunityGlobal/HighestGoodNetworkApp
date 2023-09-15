@@ -175,7 +175,8 @@ export const Header = props => {
                 canDeleteTeam ||
                 canPutTeam ||
                 canCreatePopup ||
-                canUpdatePopup) && (
+                canUpdatePopup || 
+                canPutRole) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{OTHER_LINKS}</span>

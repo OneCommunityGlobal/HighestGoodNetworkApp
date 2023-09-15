@@ -40,6 +40,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     <div key={`${role}+permission`} className="permissions-management">
       <h1 className="permissions-management__title">User Roles</h1>
       <div key={`${role}_header`} className="permissions-management__header">
+      {userProfile?.role === 'Owner' &&
         <div key={`${role}_name`} className="role-name-container">
           {roleNames?.map(roleName => {
             const roleNameLC = roleName.toLowerCase().replace(' ', '-');
@@ -64,8 +65,17 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
             );
           })}
         </div>
-        {userProfile?.role === 'Owner' && (
+        }
+        {(
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'putUserProfilePermissions') ||
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'addPermissionRole') ||
+            userProfile?.role === 'Owner'
+            ) && (
           <div className="buttons-container">
+            {(
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'addPermissionRole') ||
+            userProfile?.role === 'Owner'
+            ) &&
             <Button
               className="permissions-management__button"
               type="button"
@@ -74,7 +84,11 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
               style={boxStyle}
             >
               Add New Role
-            </Button>
+              </Button>}
+            {(
+            userProfile?.permissions?.frontPermissions.some(permission => permission === 'putUserProfilePermissions') ||
+            userProfile?.role === 'Owner'
+            ) &&
             <Button
               color="primary"
               className="permissions-management__button"
@@ -85,7 +99,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
               style={boxStyle}
             >
               Manage User Permissions
-            </Button>
+            </Button>}
           </div>
         )}
       </div>
