@@ -123,7 +123,7 @@ export default (
             path="/permissionsmanagement"
             exact
             component={PermissionsManagement}
-            routePermissions={[RoutePermissions.permissionsManagement,RoutePermissions.userPermissionsrManagement]}
+            routePermissions={[RoutePermissions.permissionsManagement,RoutePermissions.userPermissionsManagement]}
           />
           <ProtectedRoute
             path="/permissionsmanagement/:userRole"
