@@ -34,7 +34,7 @@ export const getAllUserProfile = () => {
  * @param {*} status  - Active/InActive
  */
 export const updateUserStatus = (user, status, reactivationDate) => {
-  const userProfile = { ...user};
+  const userProfile = { ...user };
   userProfile.isActive = status === UserStatus.Active;
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status, reactivationDate };
@@ -46,6 +46,26 @@ export const updateUserStatus = (user, status, reactivationDate) => {
     userProfile.endDate = undefined;
   }
 
+  const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+  return async dispatch => {
+    updateProfilePromise.then(res => {
+      dispatch(userProfileUpdateAction(userProfile));
+    });
+  };
+};
+
+/**
+ * update the user profile picture
+ * @param {*} user - the user to be updated
+ * @param {*} pic  - profile picture url
+ */
+export const updateUserProfilePic = (user, pic, status) => {
+  const userProfile = { ...user };
+  const patchData = { status, profilePic: pic };
+  if (pic) {
+    patchData.profilePic = pic;
+    userProfile.profilePic = pic;
+  }
   const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
   return async dispatch => {
     updateProfilePromise.then(res => {
@@ -134,7 +154,7 @@ export const userProfileDeleteAction = user => {
  * @param {*} finalDate  - the date to be inactive
  */
 export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
-  const userProfile = { ...user};
+  const userProfile = { ...user };
   userProfile.endDate = finalDayDate;
   userProfile.isActive = status === 'Active';
   const patchData = { status, endDate: finalDayDate };
@@ -155,7 +175,7 @@ export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
 };
 
 export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet) => {
-  const userProfile = { ...user};
+  const userProfile = { ...user };
   userProfile.endDate = finalDayDate;
   userProfile.isActive = status === 'Active';
   userProfile.isSet = isSet === 'FinalDay';
