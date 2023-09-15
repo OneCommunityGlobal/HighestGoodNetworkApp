@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   Collapse,
   Navbar,
@@ -14,6 +14,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { getHeaderData } from '../../actions/authActions';
 import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
@@ -29,7 +30,6 @@ import {
   BADGE_MANAGEMENT,
   PROJECTS,
   TEAMS,
-  SUMMARY_MANAGEMENT,
   WELCOME,
   VIEW_PROFILE,
   UPDATE_PASSWORD,
@@ -56,7 +56,6 @@ export function Header(props) {
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = auth;
 
-  // const userPermissions = auth.user?.permissions?.frontPermissions;
   // Reports
   const canGetWeeklySummaries = hasPermission('getWeeklySummaries');
   // Users
@@ -78,12 +77,16 @@ export function Header(props) {
   // Roles
   const canPutRole = hasPermission('putRole');
 
+  const dispatch = useDispatch();
   useEffect(() => {
     if (auth.isAuthenticated) {
       getHeaderData(auth.user.userid);
       getTimerData(auth.user.userid);
+      if (auth.user.role === 'Administrator') {
+        dispatch(fetchTaskEditSuggestions());
+      }
     }
-  }, []);
+  }, [auth.isAuthenticated]);
 
   const roles = role?.roles;
   useEffect(() => {
@@ -102,7 +105,7 @@ export function Header(props) {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
@@ -138,13 +141,6 @@ export function Header(props) {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {(user.role === 'Mentor' || user.role === 'Manager') && (
-                <NavItem>
-                  <NavLink tag={Link} to="/summarymanagement">
-                    <span className="dashboard-text-link">{SUMMARY_MANAGEMENT}</span>
-                  </NavLink>
-                </NavItem>
-              )}
               {canGetWeeklySummaries || canGetWeeklySummaries ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
@@ -168,7 +164,6 @@ export function Header(props) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               ) : null}
-
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">
@@ -179,7 +174,6 @@ export function Header(props) {
                   </i>
                 </NavLink>
               </NavItem>
-
               {(canPostUserProfile ||
                 canDeleteUserProfile ||
                 canPutUserProfileImportantInfo ||
@@ -216,13 +210,6 @@ export function Header(props) {
                         {TEAMS}
                       </DropdownItem>
                     )}
-
-                    {(user.role === 'Administrator' || user.role === 'Owner') && (
-                      <DropdownItem tag={Link} to="/summarymanagement">
-                        {SUMMARY_MANAGEMENT}
-                      </DropdownItem>
-                    )}
-
                     {canCreatePopup || canUpdatePopup ? (
                       <>
                         <DropdownItem divider />

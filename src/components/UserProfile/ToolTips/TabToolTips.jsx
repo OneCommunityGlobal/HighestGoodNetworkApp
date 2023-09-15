@@ -6,12 +6,10 @@ const TabToolTips = () => {
   const [timeOpen, setTimeOpen] = useState(false);
   const [teamsOpen, setTeamsOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
-  const [summaryTeamsOpen, setSummaryTeamsOpen] = useState(false);
   const toggleBasic = () => setBasicOpen(!basicOpen);
   const toggleTime = () => setTimeOpen(!timeOpen);
   const toggleTeams = () => setTeamsOpen(!teamsOpen);
   const toggleProjects = () => setProjectsOpen(!projectsOpen);
-  const toggleSummaryTeams = () => setSummaryTeamsOpen(!summaryTeamsOpen);
   return (
     <div>
       <Tooltip placement="top" isOpen={basicOpen} target="nabLink-basic" toggle={toggleBasic}>
@@ -31,15 +29,6 @@ const TabToolTips = () => {
         toggle={toggleProjects}
       >
         This shows all the projects and tasks you are assigned to.
-      </Tooltip>
-      <Tooltip
-        placement="top"
-        isOpen={summaryTeamsOpen}
-        target="nabLink-summaryteams"
-        toggle={toggleSummaryTeams}
-      >
-        This shows the summary teams to which you belong. The manager for this team will receive
-        your reports at the end of the every week.
       </Tooltip>
     </div>
   );
