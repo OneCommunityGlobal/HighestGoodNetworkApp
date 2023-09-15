@@ -10,7 +10,8 @@ import { useReducer } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import { addReason, patchReason } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
-import {Modal} from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { boxStyle } from 'styles';
 
 const BlueSquareLayout = props => {
   const fetchingReducer = (state, action) => {
@@ -47,12 +48,7 @@ const BlueSquareLayout = props => {
     }
   };
 
-  const {
-    userProfile,
-    handleUserProfile,
-    handleBlueSquare,
-    canEdit,
-  } = props;
+  const { userProfile, handleUserProfile, handleBlueSquare, canEdit } = props;
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [reason, setReason] = useState('');
@@ -74,12 +70,11 @@ const BlueSquareLayout = props => {
 
   const handleOpen = useCallback(() => {
     setShow(true);
-  }, [])
+  }, []);
 
   const handleClose = useCallback(() => {
-    setShow(false)
-  }, [])
-
+    setShow(false);
+  }, []);
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -127,7 +122,15 @@ const BlueSquareLayout = props => {
 
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
         <div className="mt-4 w-100">
-          <Button variant="primary" onClick={handleOpen} className="w-100" size="md">
+          <Button
+            variant="primary"
+            onClick={handleOpen}
+            className="w-100"
+            size="md"
+            style={boxStyle}
+            disabled={true} //  disabled the Schedule Blue Square button.
+            title="This functionality doesn't work currently. Please contact your manager."
+          >
             {fetchState.isFetching ? (
               <Spinner size="sm" animation="border" />
             ) : (

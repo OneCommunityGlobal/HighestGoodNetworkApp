@@ -1,0 +1,17 @@
+/* public/index.css */
+/* Fix the position of the header at the top */
+.top {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+  }
+  
+  /* Allow the page content to scroll horizontally */
+  .container-fluid {
+    overflow-x: auto;
+  }
+  
+  /* Hide the horizontal scrollbar */
+  .container-fluid::-webkit-scrollbar {
+    display: none;
+  }
