@@ -78,7 +78,7 @@ describe('WeeklySummary Redux related actions', () => {
         }),
       );
       const response = await store.dispatch(updateWeeklySummaries('1', weeklySummariesMockData));
-      expect(response).toBe(200 || 404);
+      expect(response).toBe(200);
     });
 
     it('should return status 404 on record is not found', async () => {
