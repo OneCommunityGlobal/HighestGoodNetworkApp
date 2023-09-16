@@ -5,7 +5,7 @@
  * @param {func} props.onClick
  * @param {bool} props.canChange The permission to change the status via onClick
  */
-const ActiveCell = props => {
+function ActiveCell(props) {
   return (
     <span
       style={{ fontSize: '1.5rem', cursor: props.canChange ? 'pointer' : 'default' }}
@@ -23,6 +23,6 @@ const ActiveCell = props => {
       <i className="fa fa-circle" aria-hidden="true" />
     </span>
   );
-};
+}
 
 export default ActiveCell;

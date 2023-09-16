@@ -9,7 +9,7 @@ const SetUpFinalDayPopUp = React.memo(props => {
   const [finalDayDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
 
@@ -37,7 +37,7 @@ const SetUpFinalDayPopUp = React.memo(props => {
           }}
           data-testid="date-input"
         />
-        {dateError && <Alert color="danger">{'Please choose a future date.'}</Alert>}
+        {dateError && <Alert color="danger">Please choose a future date.</Alert>}
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={deactiveUser} style={boxStyle}>

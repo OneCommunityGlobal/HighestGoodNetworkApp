@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { boxStyle } from 'styles';
 import { UserDeleteType } from '../../utils/enums';
 import {
   USER_DELETE_CONFIRMATION_FIRST_LINE,
@@ -10,12 +11,11 @@ import {
   USER_DELETE_OPTION_HEADING,
 } from '../../languages/en/messages';
 import { CLOSE } from '../../languages/en/ui';
-import { boxStyle } from 'styles';
 /**
  * Modal popup to delete the user profile
  */
 const DeleteUserPopup = React.memo(props => {
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
 
@@ -67,7 +67,7 @@ const DeleteUserPopup = React.memo(props => {
 });
 
 const DivSpacer = React.memo(() => {
-  return <div style={{ padding: '5px' }}></div>;
+  return <div style={{ padding: '5px' }} />;
 });
 
 export default DeleteUserPopup;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
+import httpService from '../../services/httpService';
 
 const SetupNewUserPopup = React.memo(props => {
   const [email, setEmail] = useState('');
@@ -9,16 +9,14 @@ const SetupNewUserPopup = React.memo(props => {
   const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
   const baseUrl = window.location.origin;
 
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
 
   const handelSendLink = () => {
     setAlert({ visibility: 'hidden', message: '', state: 'success' });
     if (!email.match(patt)) {
-      {
-        setAlert({ visibility: 'visible', message: 'Please enter a valid email', state: 'error' });
-      }
+      setAlert({ visibility: 'visible', message: 'Please enter a valid email', state: 'error' });
     } else {
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER(), { baseUrl, email })
@@ -41,7 +39,7 @@ const SetupNewUserPopup = React.memo(props => {
     }
   };
   return (
-    <Modal isOpen={props.open} toggle={closePopup} className={'modal-dialog modal-lg'}>
+    <Modal isOpen={props.open} toggle={closePopup} className="modal-dialog modal-lg">
       <ModalHeader
         toggle={closePopup}
         cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
@@ -64,6 +62,7 @@ const SetupNewUserPopup = React.memo(props => {
             placeholder="Please enter the email address for the new user"
           />
           <button
+            type="button"
             className="btn btn-primary"
             id="setup-new-user-popup-btn"
             onClick={handelSendLink}
