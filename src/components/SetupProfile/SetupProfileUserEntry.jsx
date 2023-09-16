@@ -127,8 +127,8 @@ const SetupProfileUserEntry = ({ token }) => {
       ...prevErrors,
       timeZoneFilterClicked: '',
     }));
-
-    if (!userProfile.userProvided.location) {
+    const location = userProfile.location.userProvided;
+    if (!location) {
       alert('Please enter valid location');
       return;
     }
@@ -136,8 +136,7 @@ const SetupProfileUserEntry = ({ token }) => {
       console.log('Geocoding API key missing');
       return;
     }
-
-    getUserTimeZone(userProfile.userProvided.location, APIkey)
+    getUserTimeZone(location, APIkey)
       .then(response => {
         if (
           response.data.status.code === 200 &&
@@ -146,6 +145,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ) {
           let timezone = response.data.results[0].annotations.timezone.name;
           let currentLocation = {
+            userProvided: location,
             coords: {
               lat: response.data.results[0].geometry.lat,
               lng: response.data.results[0].geometry.lng,
