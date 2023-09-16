@@ -8,7 +8,7 @@ import {
   Input,
   Label,
   Alert,
-  FormGroup,
+  Form,
 } from 'reactstrap';
 import { boxStyle } from 'styles';
 /**
@@ -50,7 +50,7 @@ const ResetPasswordPopup = React.memo(props => {
     <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
       <ModalHeader toggle={closePopup}>Reset Password</ModalHeader>
       <ModalBody>
-        <FormGroup>
+        <Form>
           <Label for="newpassword">New Password</Label>
           <Input
             autoFocus
@@ -66,8 +66,6 @@ const ResetPasswordPopup = React.memo(props => {
               setError('');
             }}
           />
-        </FormGroup>
-        <FormGroup>
           <Label for="confirmpassword">Confirm Password</Label>
           <Input
             type="password"
@@ -82,7 +80,7 @@ const ResetPasswordPopup = React.memo(props => {
               setError('');
             }}
           />
-        </FormGroup>
+        </Form>
       </ModalBody>
       <ModalFooter>
         {errorMessage === '' ? <React.Fragment /> : <Alert color="danger">{errorMessage}</Alert>}

@@ -176,7 +176,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab } = this.state;
+    const { error, loading, summaries, activeTab, badges } = this.state;
 
     if (error) {
       return (
@@ -245,6 +245,7 @@ export class WeeklySummariesReport extends Component {
                         bioCanEdit={this.bioEditPermission}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={this.state.allRoleInfo}
+                        badges={badges}
                       />
                     </Col>
                   </Row>

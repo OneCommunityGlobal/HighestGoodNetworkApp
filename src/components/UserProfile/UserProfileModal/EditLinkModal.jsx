@@ -175,17 +175,9 @@ const EditLinkModal = props => {
                   )}
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                      <label className='custom-label'>Google Doc</label>
                       <input
                         className="customEdit"
-                        id="linkName1"
-                        placeholder="Google Doc"
-                        value="Google Doc"
-                        disabled
-                      />
-
-                      <input
-                        className="customEdit"
-                        id="linkURL1"
                         placeholder="Enter Google Doc link"
                         value={googleLink.Link}
                         onChange={e => {
@@ -195,14 +187,8 @@ const EditLinkModal = props => {
                       />
                     </div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <input
-                        className="customEdit"
-                        id="linkName2"
-                        placeholder="Media Folder"
-                        value="Media Folder"
-                        disabled
-                      />
 
+                      <label className='custom-label'>Media Folder</label>
                       <input
                         className="customEdit"
                         id="linkURL2"
@@ -248,7 +234,7 @@ const EditLinkModal = props => {
                               })
                             }
                           >
-                            X
+                            x
                           </button>
                         </div>
                       );
@@ -326,7 +312,7 @@ const EditLinkModal = props => {
                           })
                         }
                       >
-                        X
+                        x
                       </button>
                     </div>
                   ))}
