@@ -313,7 +313,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges &&
+              {sortBadges && sortBadges.length ?
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -351,8 +351,8 @@ const BadgeReport = props => {
                           Dates
                         </DropdownToggle>
                         <DropdownMenu>
-                          {value.earnedDate.map(date => {
-                            return <DropdownItem>{formatDate(date)}</DropdownItem>;
+                          {value.earnedDate.map((date, i) => {
+                            return <DropdownItem key={i}>{formatDate(date)}</DropdownItem>;
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
@@ -401,7 +401,13 @@ const BadgeReport = props => {
                       </FormGroup>
                     </td>
                   </tr>
-                ))}
+                )) : 
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center" }}>
+                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
+                    </td>
+                  </tr>
+              }
             </tbody>
           </Table>
         </div>
@@ -459,7 +465,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges &&
+              {sortBadges && sortBadges.length ?
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -569,13 +575,12 @@ const BadgeReport = props => {
                               }}
                             >
                               {canDeleteBadges ? (
-                                <button
-                                  type="button"
+                                <div
                                   className="btn btn-danger"
                                   onClick={e => handleDeleteBadge(index)}
                                 >
                                   Delete
-                                </button>
+                                </div>
                               ) : (
                                 []
                               )}
@@ -585,7 +590,13 @@ const BadgeReport = props => {
                       </ButtonGroup>
                     </td>
                   </tr>
-                ))}
+                )) : 
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center" }}>
+                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
+                    </td>
+                  </tr>
+              }
             </tbody>
           </Table>
         </div>
