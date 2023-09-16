@@ -68,6 +68,7 @@ export const Header = props => {
   const canUpdatePopup = props.hasPermission('updatePopup');
   // Roles
   const canPutRole = props.hasPermission('putRole');
+  const canPostRole = props.hasPermission('postRole');
 
   const dispatch = useDispatch();
 
@@ -176,7 +177,8 @@ export const Header = props => {
                 canPutTeam ||
                 canCreatePopup ||
                 canUpdatePopup || 
-                canPutRole) && (
+                canPutRole ||
+                canPostRole) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{OTHER_LINKS}</span>
@@ -216,7 +218,7 @@ export const Header = props => {
                         </DropdownItem>
                       </>
                     ) : null}
-                    {canPutRole && (
+                    {(canPutRole || canPostRole) && (
                       <DropdownItem tag={Link} to="/permissionsmanagement">
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>

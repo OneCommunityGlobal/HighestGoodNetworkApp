@@ -9,6 +9,7 @@ export const RoutePermissions = {
   badgeManagement: 'createBadges',
   permissionsManagement: 'putRole',
   permissionsManagementRole: 'putRole',
+  addNewPermissionRole: 'postRole',
   teams: 'putTeam',
   reports: 'getWeeklySummaries',
 };
