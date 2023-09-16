@@ -27,13 +27,12 @@ describe('<TimeEntryForm />', () => {
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock.role
+      role: rolesMock.role,
     });
     userProfile = jest.fn();
     role = jest.fn();
 
     toggle = jest.fn();
-    store.dispatch = jest.fn();
     renderWithProvider(
       <TimeEntryForm
         userId={data.personId}
@@ -188,8 +187,8 @@ describe('<TimeEntryFormEdit />', () => {
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
     fireEvent.click(screen.getByRole('button', { name: /close/i }));
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
-    expect(actions.editTimeEntry).toHaveBeenCalledTimes(1);
     await waitFor(() => {
+      expect(actions.editTimeEntry).toHaveBeenCalledTimes(1);
       expect(toggle).toHaveBeenCalled();
     });
     //expect(screen.getByText(/You are about to edit your time*/i)).toBeInTheDocument();

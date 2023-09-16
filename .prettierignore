@@ -17,7 +17,6 @@ src/utils/**
 src/__tests__/**
 
 
-src/components/Admin/**
 src/components/App.jsx
 src/components/AutoReload/**
 src/components/AutoUpdate/**
@@ -29,7 +28,6 @@ src/components/Header/**
 src/components/Inventory/**
 src/components/LeaderBoard/**
 src/components/Login/**
-src/components/Logout/**
 src/components/ManageMemberships/**
 src/components/Memberships/**
 src/components/MonthlyEffort/**
@@ -41,7 +39,9 @@ src/components/ProfileLinks/**
 src/components/Projects/**
 src/components/RenderInfringement/**
 src/components/Reports/**
+src/components/SetupProfile/**
 src/components/SummaryBar/**
+src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
@@ -51,5 +51,4 @@ src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/WeeklySummariesReport/**
-src/components/WeeklySummary/**
 src/components/MouseoverText/**

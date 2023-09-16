@@ -5,17 +5,15 @@ import hasPermission from '../../utils/permissions';
 import { useSelector } from 'react-redux';
 
 const UserLinkLayout = props => {
-  const { userProfile, updateLink, handleLinkModel, role} = props;
-  const { roles } = useSelector(state => state.role);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
-  const canEdit = hasPermission(role, 'adminLinks', roles, userPermissions, 'editLink');
+  const { userProfile, updateLink, handleLinkModel, handleSubmit } = props;
+
   const { adminLinks, personalLinks } = userProfile;
 
   return (
     <div data-testid="user-link">
       <p style={{ display: 'inline-block', marginRight: 10 }}>LINKS </p>
-      {canEdit ? (
-        <LinkModButton userProfile={userProfile} updateLink={updateLink} />
+      {props.canEdit ? (
+        <LinkModButton userProfile={userProfile} updateLink={updateLink} role={props.role} handleSubmit={handleSubmit}/>
       ) : null}
       <UserLinks linkSection="user" links={personalLinks} handleLinkModel={handleLinkModel} />
       <UserLinks linkSection="user" links={adminLinks} handleLinkModel={handleLinkModel} />

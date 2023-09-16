@@ -21,17 +21,16 @@ function AddTaskModal(props) {
 
   // states from hooks
   const defaultCategory = useMemo(() => {
-    if (props.level >= 1) {
+    if (props.taskId) {
       return tasks.find(({ _id }) => _id === props.taskId).category;
     } else {
       return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
     }  
   }, []);
-
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
   const [resourceItems, setResourceItems] = useState([]);
-  const [assigned, setAssigned] = useState(true);
+  const [assigned, setAssigned] = useState(false);
   const [status, setStatus] = useState('Started');
   const [hoursBest, setHoursBest] = useState(0);
   const [hoursMost, setHoursMost] = useState(0);
@@ -104,22 +103,22 @@ function AddTaskModal(props) {
   };
 
   const removeResource = userID => {
-    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
-    setResourceItems([
-      ...resourceItems.slice(0, removeIndex),
-      ...resourceItems.slice(removeIndex + 1),
-    ]);
+    const newResource = resourceItems.filter(item => item.userID !== userID);
+    setResourceItems(newResource);
+    if (!newResource.length) setAssigned(false);
   };
 
   const addResources = (userID, first, last, profilePic) => {
-    setResourceItems([
+    const newResource = [
       {
         userID,
         name: `${first} ${last}`,
         profilePic,
       },
       ...resourceItems,
-    ]);
+    ]
+    setResourceItems(newResource);
+    setAssigned(true);
   };
 
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
@@ -183,7 +182,7 @@ function AddTaskModal(props) {
     setTaskName('');
     setPriority('Primary');
     setResourceItems([]);
-    setAssigned(true);
+    setAssigned(false);
     setStatus('Started');
     setHoursBest(0);
     setHoursWorst(0);
@@ -251,6 +250,7 @@ function AddTaskModal(props) {
       endstateInfo,
     };
     await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
+    props.load();
     toggle();
   };
 
@@ -337,7 +337,7 @@ function AddTaskModal(props) {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={allMembers}
+                      members={allMembers.filter(user=>user.isActive)}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -357,7 +357,7 @@ function AddTaskModal(props) {
                         name="Assigned"
                         value={true}
                         checked={assigned}
-                        onChange={(e) => setAssigned(e.target.value)}
+                        onChange={() => setAssigned(true)}
                       />
                       <label className="form-check-label" htmlFor="true">
                         Yes
@@ -371,7 +371,7 @@ function AddTaskModal(props) {
                         name="Assigned"
                         value={false}
                         checked={!assigned}
-                        onChange={(e) => setAssigned(e.target.value)}
+                        onChange={() => setAssigned(false)}
                       />
                       <label className="form-check-label" htmlFor="false">
                         No
@@ -678,7 +678,7 @@ function AddTaskModal(props) {
             isLoading ? (
               ' Adding...'
             ) : (
-              <Button color="primary" onClick={addNewTask} disabled={hoursWarning}>
+              <Button color="primary" onClick={addNewTask} disabled={hoursWarning} style={boxStyle}>
                 Save
               </Button>
             )

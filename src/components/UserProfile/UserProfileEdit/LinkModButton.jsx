@@ -3,7 +3,7 @@ import EditLinkModal from '../UserProfileModal/EditLinkModal';
 import './UserProfileEdit.scss';
 
 const LinkModButton = props => {
-  const { updateLink, userProfile, setChanged } = props;
+  const { updateLink, userProfile, setChanged, handleSubmit } = props;
   const [modal, setModal] = useState(false);
   const toggleModal = () => {
     setModal(!modal);
@@ -15,6 +15,7 @@ const LinkModButton = props => {
         isOpen={modal}
         closeModal={toggleModal}
         userProfile={userProfile}
+        handleSubmit={handleSubmit}
         setChanged={setChanged}
       />
       <span
