@@ -23,17 +23,25 @@ import {
   CardBody,
   CardTitle,
   Form,
+  Alert,
 } from 'reactstrap';
 import { boxStyle } from 'styles';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const LogTimeOffPopUp = React.memo(props => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const today = moment().format('YYYY-MM-DD');
-  const [requestToUpdate, setrequestToUpdate] = useState({});
+  const nextSundayStr = moment()
+    .tz('America/Los_Angeles')
+    .startOf('isoWeek')
+    .add(7, 'days')
+    .format('YYYY-MM-DD');
+  const nextSundayDate = new Date(nextSundayStr);
 
   const initialRequestData = {
-    dateOfLeave: today,
+    dateOfLeave: nextSundayDate,
     numberOfWeeks: 1,
     reasonForLeave: '',
   };
@@ -52,7 +60,6 @@ const LogTimeOffPopUp = React.memo(props => {
   };
 
   const initialUpdateRequestDataErrors = {
-    dateOfLeaveError: '',
     numberOfWeeksError: '',
     reasonForLeaveError: '',
   };
@@ -65,6 +72,7 @@ const LogTimeOffPopUp = React.memo(props => {
   );
 
   const [nestedModal, SetNestedModal] = useState(false);
+  const [showSuccessfulUpdateAllert, setShowSuccessfulUpdateAllert] = useState(false);
 
   const resetState = () => {
     setRequestData(initialRequestData);
@@ -84,6 +92,7 @@ const LogTimeOffPopUp = React.memo(props => {
 
   const openNested = request => {
     SetNestedModal(true);
+    setShowSuccessfulUpdateAllert(false);
     setUpdateRequestData({
       id: request._id,
       dateOfLeave: moment(request.startingDate).format('YYYY-MM-DD'),
@@ -102,21 +111,9 @@ const LogTimeOffPopUp = React.memo(props => {
     }));
   };
 
-  const handleUpdateRequestSave = e => {
-    e.preventDefault();
-    setRequestDataErrors(initialRequestDataErrors);
-
-    if (!validateDateOfLeave(updateRequestData, true)) return;
-    if (!validateNumberOfWeeks(updateRequestData, true)) return;
-    if (!validateReasonForLeave(updateRequestData, true)) return;
-
-    const data = {
-      reason: updateRequestData.reasonForLeave,
-      startingDate: moment(updateRequestData.dateOfLeave).format('MM/DD/YY'),
-      duration: updateRequestData.numberOfWeeks,
-    };
-
-    dispatch(updateTimeOffRequestThunk(updateRequestData.id, data));
+  const filterSunday = date => {
+    const losAngelesDate = moment(date).tz('America/Los_Angeles');
+    return losAngelesDate.day() === 6; // Sunday
   };
 
   const handleAddRequestDataChange = e => {
@@ -129,23 +126,13 @@ const LogTimeOffPopUp = React.memo(props => {
     }));
   };
   // checks if date value is not empty
-  const validateDateOfLeave = (data, nestedModal) => {
-    if (nestedModal) {
-      if (!data.dateOfLeave) {
-        setUpdateRequestDataErrors(prev => ({
-          ...prev,
-          dateOfLeaveError: 'Date of leave can not be empty',
-        }));
-        return false;
-      }
-    } else {
-      if (!data.dateOfLeave) {
-        setRequestDataErrors(prev => ({
-          ...prev,
-          dateOfLeaveError: 'Date of leave can not be empty',
-        }));
-        return false;
-      }
+  const validateDateOfLeave = data => {
+    if (!data.dateOfLeave) {
+      setRequestDataErrors(prev => ({
+        ...prev,
+        dateOfLeaveError: 'Date of leave can not be empty',
+      }));
+      return false;
     }
     return true;
   };
@@ -206,30 +193,20 @@ const LogTimeOffPopUp = React.memo(props => {
     return true;
   };
   // checks if date of leave is not before today
-  const validateDateIsNotBeforeToday = (data, nestedModal) => {
-    if (nestedModal) {
-      const isBeforeToday = moment(data.dateOfLeave).isBefore(moment(), 'day');
-      if (isBeforeToday) {
-        setUpdateRequestDataErrors(prev => ({
-          ...prev,
-          dateOfLeaveError: 'Date of leave can not be before today',
-        }));
-        return false;
-      }
-    } else {
-      const isBeforeToday = moment(data.dateOfLeave).isBefore(moment(), 'day');
-      if (isBeforeToday) {
-        setRequestDataErrors(prev => ({
-          ...prev,
-          dateOfLeaveError: 'Date of leave can not be before today',
-        }));
-        return false;
-      }
+  const validateDateIsNotBeforeToday = data => {
+    const isBeforeToday = moment(data.dateOfLeave).isBefore(moment(), 'day');
+    if (isBeforeToday) {
+      setRequestDataErrors(prev => ({
+        ...prev,
+        dateOfLeaveError: 'Date of leave can not be before today',
+      }));
+      return false;
     }
+
     return true;
   };
   // checks if the date of leave is not befor the date of return of other requests
-  const validateDateIsNotBeforeEndOfOtherRequests = (data, nestedModal) => {
+  const validateDateIsNotBeforeEndOfOtherRequests = data => {
     if (allRequests[props.user._id]?.length > 0) {
       const isAnyEndingDateAfterDate = allRequests[props.user._id].some(request => {
         const requestDate = moment(request.endingDate);
@@ -238,22 +215,12 @@ const LogTimeOffPopUp = React.memo(props => {
         return requestDate.isAfter(dateOfLeave);
       });
 
-      if (nestedModal) {
-        if (isAnyEndingDateAfterDate) {
-          setUpdateRequestDataErrors(prev => ({
-            ...prev,
-            dateOfLeaveError: 'Date of leave can not be before the return date of other requests',
-          }));
-          return false;
-        }
-      } else {
-        if (isAnyEndingDateAfterDate) {
-          setRequestDataErrors(prev => ({
-            ...prev,
-            dateOfLeaveError: 'Date of leave can not be before the return date of other requests',
-          }));
-          return false;
-        }
+      if (isAnyEndingDateAfterDate) {
+        setRequestDataErrors(prev => ({
+          ...prev,
+          dateOfLeaveError: 'Date of leave can not be before the return date of other requests',
+        }));
+        return false;
       }
     }
     return true;
@@ -263,11 +230,11 @@ const LogTimeOffPopUp = React.memo(props => {
     e.preventDefault();
     setRequestDataErrors(initialRequestDataErrors);
 
-    if (!validateDateOfLeave(requestData, false)) return;
+    if (!validateDateOfLeave(requestData)) return;
     if (!validateNumberOfWeeks(requestData, false)) return;
     if (!validateReasonForLeave(requestData, false)) return;
-    if (!validateDateIsNotBeforeToday(requestData, false)) return;
-    if (!validateDateIsNotBeforeEndOfOtherRequests(requestData, false)) return;
+    if (!validateDateIsNotBeforeToday(requestData)) return;
+    if (!validateDateIsNotBeforeEndOfOtherRequests(requestData)) return;
 
     const data = {
       requestFor: props.user._id,
@@ -275,8 +242,24 @@ const LogTimeOffPopUp = React.memo(props => {
       startingDate: moment(requestData.dateOfLeave).format('MM/DD/YY'),
       duration: requestData.numberOfWeeks,
     };
-
     dispatch(addTimeOffRequestThunk(data));
+  };
+
+  const handleUpdateRequestSave = e => {
+    e.preventDefault();
+    setUpdateRequestDataErrors(initialUpdateRequestDataErrors);
+
+    if (!validateNumberOfWeeks(updateRequestData, true)) return;
+    if (!validateReasonForLeave(updateRequestData, true)) return;
+
+    const data = {
+      reason: updateRequestData.reasonForLeave,
+      startingDate: moment(updateRequestData.dateOfLeave).format('MM/DD/YY'),
+      duration: updateRequestData.numberOfWeeks,
+    };
+
+    dispatch(updateTimeOffRequestThunk(updateRequestData.id, data));
+    setShowSuccessfulUpdateAllert(true);
   };
 
   const handleDeleteRequest = id => {
@@ -293,13 +276,21 @@ const LogTimeOffPopUp = React.memo(props => {
               <Col>
                 <FormGroup>
                   <Label for="dateOfLeave">Date of leave</Label>
-                  <Input
-                    type="date"
-                    name="dateOfLeave"
+                  <DatePicker
+                    selected={requestData.dateOfLeave}
+                    onChange={date =>
+                      setRequestData(prev => ({
+                        ...prev,
+                        ['dateOfLeave']: date,
+                      }))
+                    }
+                    filterDate={filterSunday}
+                    dateFormat="yyyy/MM/dd"
+                    placeholderText="Select a Sunday"
                     id="dateOfLeave"
-                    value={requestData.dateOfLeave}
-                    onChange={e => handleAddRequestDataChange(e)}
+                    className="date-of-leave-datepicker"
                   />
+
                   {<FormText color="danger">{requestDataErrors.dateOfLeaveError}</FormText>}
                 </FormGroup>
               </Col>
@@ -398,22 +389,6 @@ const LogTimeOffPopUp = React.memo(props => {
                     <Row>
                       <Col>
                         <FormGroup>
-                          <Label for="dateOfLeave">Date of leave</Label>
-                          <Input
-                            type="date"
-                            value={updateRequestData.dateOfLeave}
-                            id="dateOfLeave"
-                            onChange={e => handleUpdateRequestDataChange(e)}
-                          />
-                          {
-                            <FormText color="danger">
-                              {updaterequestDataErrors.dateOfLeaveError}
-                            </FormText>
-                          }
-                        </FormGroup>
-                      </Col>
-                      <Col>
-                        <FormGroup>
                           <Label for="numberOfWeeks">Duration in weeks</Label>
                           <Input
                             type="number"
@@ -449,7 +424,7 @@ const LogTimeOffPopUp = React.memo(props => {
                       </Col>
                     </Row>
                     <Row>
-                      <Col>
+                      <Col xs="auto" className="d-flex align-items-start">
                         <Button
                           color="primary"
                           style={boxStyle}
@@ -457,6 +432,11 @@ const LogTimeOffPopUp = React.memo(props => {
                         >
                           Save
                         </Button>
+                      </Col>
+                      <Col>
+                        {showSuccessfulUpdateAllert && (
+                          <Alert className="time-off-request-alert">Updated !</Alert>
+                        )}
                       </Col>
                     </Row>
                   </Form>
