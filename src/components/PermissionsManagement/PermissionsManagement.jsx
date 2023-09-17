@@ -13,7 +13,6 @@ import { getAllRoles } from '../../actions/role';
 import CreateNewRolePopup from './NewRolePopUp';
 
 function PermissionsManagement({ roles, auth, getUserRole, userProfile }) {
-
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 

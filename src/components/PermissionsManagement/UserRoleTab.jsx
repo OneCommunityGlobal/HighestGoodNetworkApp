@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import './UserRoleTab.css';
 import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
+import { boxStyle } from 'styles';
 import RolePermissions from './RolePermissions';
 import { permissionLabel } from './RolePermissions';
-import { boxStyle } from 'styles';
 
 function UserRoleTab(props) {
   const { auth, roles, match, userProfile, getUserRole } = props;
-  
+
   useEffect(() => {
     getUserRole(auth?.user.userid);
   }, []);

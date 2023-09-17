@@ -295,7 +295,12 @@ function RolePermissions(props) {
           </div>
           {userRole === 'Owner' && (
             <div className="name-container__btns">
-              <Button className="btn_save" color="success" onClick={() => updateInfo()} style={boxStyle}>
+              <Button
+                className="btn_save"
+                color="success"
+                onClick={() => updateInfo()}
+                style={boxStyle}
+              >
                 Save
               </Button>
               <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
