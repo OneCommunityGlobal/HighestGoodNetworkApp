@@ -1,0 +1,105 @@
+form-control {
+  width: 0;
+}
+
+.saveChangesWarning {
+  display: block;
+  position: fixed;
+  top: 7vh;
+  left: 0;
+  width: 100%;
+  color: white;
+  background-color: red;
+  border: 1px solid #a8a8a8;
+  text-align: center;
+  z-index: 9;
+  opacity: 70%;
+}
+
+.profileEditTitleCenter {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 5px;
+  font-weight: bold;
+  text-align: center;
+  color: lightblue;
+}
+
+.profileEditTitle {
+  color: lightblue;
+  display: flex;
+  margin: 5px;
+  font-weight: bold;
+}
+
+.detailEditSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  width: 300px;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.inputSections {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  width: 300px;
+}
+
+.profileViewButtonContainer {
+  position: absolute;
+  display: flex;
+  right: 1%;
+  justify-content: flex-end;
+}
+
+.profileViewButton {
+  display: flex;
+  padding: 0.25em 0.4em;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 20px;
+  background-color: dodgerblue;
+  color: white;
+}
+.profileViewButton:hover {
+  text-decoration: none;
+}
+
+.modLinkButton {
+  display: flex;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+  color: white;
+  border-radius: 25%;
+  align-items: center;
+  justify-content: center;
+  background-color: #6d757d;
+  border: none;
+}
+
+.teamsView {
+  display: flex;
+}
+
+.blueSquareSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  color: orange;
+  font-weight: bold;
+  margin: 5px;
+}
+
+.tab-pane .row {
+  padding: 15 px;
+}/*# sourceMappingURL=UserProfileEdit.css.map */

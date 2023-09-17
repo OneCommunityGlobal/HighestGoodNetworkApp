@@ -1,0 +1,293 @@
+.desktop-profile-page {
+  z-index: -100;
+}
+
+.profileContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 10px;
+  padding-bottom: 50px;
+  margin-left: 10vw;
+  margin-right: 10vw;
+  font-weight: bold;
+  background-color: white;
+}
+
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
+}
+
+.red {
+  color: grey;
+}
+
+.green {
+  color: green;
+}
+
+.emp-profile {
+  padding-top: 20px;
+  padding-left: 3%;
+  padding-right: 3%;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.profile-img {
+  text-align: center;
+}
+
+.profile-img img {
+  width: 70%;
+  height: 100%;
+}
+
+.profile-img .file {
+  position: relative;
+  overflow: hidden;
+  margin-top: -10%;
+  width: 70%;
+  border: none;
+  border-radius: 0;
+  font-size: 15px;
+  background: red;
+}
+
+.profile-img .file input {
+  position: absolute;
+  opacity: 0;
+  right: 0;
+  top: 0;
+}
+
+.profile-head h5 {
+  color: #333;
+  margin: 0;
+}
+
+.job-title {
+  color: #0062cc;
+}
+
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.profile-edit-btn {
+  border: none;
+  border-radius: 1.5rem;
+  width: 70%;
+  padding: 2%;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.proile-rating {
+  font-size: 12px;
+  color: #818182;
+  margin-top: 5%;
+}
+
+.proile-rating span {
+  color: #495057;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.profile-tabs .nav-tabs {
+  margin-bottom: 5%;
+}
+
+.profile-tabs .nav-tabs .nav-link {
+  font-weight: 600;
+  border: none;
+}
+
+.profile-tabs .nav-tabs .nav-link.active {
+  border: none;
+  border-bottom: 2px solid #0062cc;
+}
+
+.profile-work {
+  padding: 5% 14% 14% 14%;
+}
+
+.profile-work p {
+  font-size: 12px;
+  color: #818182;
+  font-weight: 600;
+  margin-top: 10%;
+}
+
+.profile-work a {
+  text-decoration: none;
+  color: #495057;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.profile-work ul {
+  list-style: none;
+}
+
+.profile-tab label {
+  font-weight: 600;
+}
+
+.profile-tab p {
+  font-weight: 600;
+  color: #0062cc;
+}
+
+.profile-work .blueSquare-toggle {
+  font-size: 12px;
+  color: #818182;
+  font-weight: 600;
+  margin-top: 16px;
+}
+
+.iconContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.icon {
+  padding-right: 10px;
+}
+
+.profileEditButton {
+  border: none;
+  border-radius: 1.5rem;
+  width: 70%;
+  padding: 2%;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.btn-bottom {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.profilePicture {
+  width: 150px;
+  height: 150px;
+}
+
+.whoSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 5vh;
+  padding: 5vh;
+}
+
+.detailSectionContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 10vh;
+  margin-left: 10vh;
+}
+
+.detailSection {
+  width: 300px;
+}
+
+.profileLinks {
+  display: flex;
+  width: 80%;
+  align-items: center;
+  padding: 5px;
+}
+
+.linkIconSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  color: orange;
+  font-weight: bold;
+  margin: 5px;
+}
+
+.profile-functions-tablet {
+  display: none;
+}
+
+@media only screen and (max-width: 1024px) {
+  .profileContainer {
+    justify-content: space-around;
+    margin: 0;
+    padding: 0;
+  }
+  .profile-work {
+    padding: 0;
+  }
+  .profile-work p {
+    margin: 0;
+  }
+  .profile-functions-desktop {
+    display: none;
+  }
+  .profile-functions-tablet {
+    display: block;
+  }
+  .profile-functions-list {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+  .profile-functions-list {
+    margin-top: 16px;
+    border-top: 2px solid #0275d8;
+  }
+  .list-button {
+    display: flex;
+    margin: 4px 0;
+    padding: 8px 0;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .list-button:nth-child(1) {
+    margin-top: 16px;
+  }
+  .desktop-panel {
+    display: none;
+  }
+  .whoSection {
+    width: 250px;
+  }
+  .detailSection {
+    width: 250px;
+  }
+}
+@media only screen and (max-width: 767px) {
+  .emp-profile {
+    margin-top: 0;
+  }
+}
+@media only screen and (max-height: 650px) {
+  .profileContainer {
+    justify-content: space-around;
+  }
+  .whoSection {
+    width: 240px;
+  }
+  .detailSection {
+    width: 240px;
+  }
+}/*# sourceMappingURL=UserProfile.css.map */

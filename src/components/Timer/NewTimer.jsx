@@ -21,6 +21,8 @@ import Stopwatch from './Stopwatch';
 import TimerStatus from './TimerStatus';
 
 export const NewTimer = () => {
+  // state to detect fresh timer, so alert doesn't pop
+  const [hasNotStartedTimer, setHasNotStartedTimer] = useState(true);
   const [logModal, setLogModal] = useState(false);
   const [oneMinuteMinimumModal, setOneMinuteMinimumModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
@@ -111,6 +113,8 @@ export const NewTimer = () => {
   };
 
   const handleStartButton = useCallback(() => {
+    // set fresh timer to false to let remove goal know it now has to function normally. - Kurt
+    setHasNotStartedTimer(false);
     const now = moment();
     const lastAccess = moment(message?.lastAccess);
     const elapsed = moment.duration(now.diff(lastAccess)).asMilliseconds();
@@ -119,7 +123,7 @@ export const NewTimer = () => {
     const lastTimeAdded = moment.utc(remainingTime).format('HH:mm').replace('00:0', '');
 
     if (remaining <= 0) {
-      handleAddGoal(1000 * 60 * (Number(lastTimeAdded) > 0 ? Number(lastTimeAdded) : 5));
+      handleAddGoal(1000 * 60 * (Number(lastTimeAdded) > 0 ? Number(lastTimeAdded) : 0));
     }
 
     setElapsedTime(elapsed);
@@ -149,22 +153,35 @@ export const NewTimer = () => {
 const handleRemoveGoal = useCallback((time) => {
   const now = moment();
   const lastAccess = moment(message?.lastAccess);
+  
   const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
   let remaining = message?.time - elapsedTime;
-
-  if (remaining <= 900000) {
+  console.log('message.time',message?.time);
+  console.log('elapsed', elapsedTime)
+  console.log('preview timer', previewTimer);
+  console.log('freshtimer', hasNotStartedTimer)
+  console.log('message goal', message.goal)
+  console.log('remaining', remaining)
+  if (remaining <= 1800000 && !hasNotStartedTimer ) {
+  //if (remaining <= 900000 ) {
+  // possible solution to prevent flickering when at 20 minutes and trying to subtract time
     alert('Timer cannot be set to less than fifteen minutes!');
     return;
-  }
+  }  
 
   if (message?.countdown) {
     // Adjust the remaining time based on the removed goal
     const adjustedRemaining = remaining + time;
+    // enables condition to receive alert when timer is fresh unstarted & user tries to decrease time below 15 mins
+    // if user had time paused due to page refresh, does not interfere with normal functionality there
+    if (message?.goal <  1800000 && hasNotStartedTimer) {
+      alert('Timer cannot be set to less than fifteen minutes! initial');
+      return
+    } else if (adjustedRemaining <= message?.goal) { 
 
-    if (adjustedRemaining <= message?.goal) {
       // If the adjusted remaining time is less than or equal to the goal, set the goal as the new remaining time
       setRemainingTime(message?.goal);
-    } else {
+    } else { 
       // If the adjusted remaining time is greater than the goal, subtract the removed goal from the remaining time
       setRemainingTime(adjustedRemaining - time);
     }
