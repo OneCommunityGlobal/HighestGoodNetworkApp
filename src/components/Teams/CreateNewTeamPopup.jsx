@@ -53,3 +53,12 @@ const CreateNewTeamPopup = React.memo(props => {
   );
 });
 export default CreateNewTeamPopup;
+
+
+/**
+ * Create “Limit See-All” option for teams (WIP Ramya)
+Other Links>Teams
+When this option is turned on for a team, only selected people in the team should be able to see all other members of the team
+This is needed so that I can create teams with members that need additional support in a managed group. This should keep them from seeing each other, even if they are on different teams where they CAN see all their other team members
+
+ */

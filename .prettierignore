@@ -51,3 +51,6 @@ src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/WeeklySummariesReport/**
 src/components/MouseoverText/**
+
+
+build/**
