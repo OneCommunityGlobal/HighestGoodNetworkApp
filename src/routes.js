@@ -39,7 +39,8 @@ import BadgeManagement from './components/Badge/BadgeManagement';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 
 // BM Dashboard
-import ProtectedBMRoute from 'components/common/ProtectedBMRoute/ProtectedBMRoute';
+// import ProtectedBMRoute from 'components/common/BMDashboard/BMProtectedRoute/ProtectedBMRoute';
+import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
 
@@ -148,10 +149,10 @@ export default (
 
       {/* ----- BEGIN BM Dashboard Routing ----- */}
 
-      <ProtectedBMRoute path="/bmdashboard" exact component={BMDashboard} />
+      <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
       <Route path="/bmdashboard/login" component={BMLogin} />
       {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-      <ProtectedBMRoute path="/bmdashboard/:path" component={BMDashboard} />
+      <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
       
       {/* ----- END BM Dashboard Routing ----- */}
 

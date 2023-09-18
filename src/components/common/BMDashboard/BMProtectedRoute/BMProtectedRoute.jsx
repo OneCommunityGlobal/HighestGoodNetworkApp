@@ -2,7 +2,7 @@ import React from "react"
 import { Redirect, Route } from "react-router-dom"
 import { connect } from 'react-redux'
 
-const ProtectedBMRoute = ({ component: Component, render, auth, ...rest}) => {
+const BMProtectedRoute = ({ component: Component, render, auth, ...rest}) => {
 return <Route
         {...rest}
         render={props => {
@@ -23,4 +23,4 @@ const mapStateToProps = state => ({
   roles: state.role.roles,
 });
 
-export default connect(mapStateToProps)(ProtectedBMRoute)
+export default connect(mapStateToProps)(BMProtectedRoute)
