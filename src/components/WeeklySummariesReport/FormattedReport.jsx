@@ -396,7 +396,7 @@ const BioLabel = ({bioPosted, summary}) => {
   );
 };
 
-const WeeklyBadge = ({summary, weekIndex}) => {
+const WeeklyBadge = ({summary, weekIndex, badges}) => {
   const badgeEndDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
