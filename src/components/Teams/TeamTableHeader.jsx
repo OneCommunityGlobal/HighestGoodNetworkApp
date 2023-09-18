@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 /**
  * The header row of the team table.
  */
-const TeamTableHeader = React.memo(props => {
+export const TeamTableHeader = React.memo(props => {
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
   return (

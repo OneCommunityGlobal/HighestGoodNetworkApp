@@ -11,6 +11,12 @@
   margin: 5px;
 }
 
+.badge_image_md > img {
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+}
+
 .badge_image_lg > img {
   border-radius: 50%;
   height: 200px;
