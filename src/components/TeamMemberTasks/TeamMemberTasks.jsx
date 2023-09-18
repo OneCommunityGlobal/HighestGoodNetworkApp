@@ -18,6 +18,7 @@ import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 import { toast } from 'react-toastify';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 const TeamMemberTasks = React.memo(props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -38,6 +39,8 @@ const TeamMemberTasks = React.memo(props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
+  const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
+  const allRequests = useSelector(state => state.timeOffRequests.requests);
 
   //added it to keep track if the renderTeamsList should run
   const [shouldRun, setShouldRun] = useState(false);
@@ -96,6 +99,10 @@ const TeamMemberTasks = React.memo(props => {
       closeMarkAsDone();
     }
   }, [usersWithTasks, shouldRun]);
+
+  useEffect(() => {
+    dispatch(getAllTimeOffRequests());
+  }, []);
 
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
@@ -281,12 +288,51 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
+  const handleshowWhoHasTimeOff = () => {
+    setShowWhoHasTimeOff(prev => !prev);
+  };
+
   return (
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
+
         {finishLoading ? (
           <div className="hours-btn-container">
+            <button
+              type="button"
+              className={`show-time-off-btn ${
+                showWhoHasTimeOff ? 'show-time-off-btn-selected' : ''
+              }`}
+              onClick={handleshowWhoHasTimeOff}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="19"
+                viewBox="0 0 448 512"
+                className={`show-time-off-calender-svg ${
+                  showWhoHasTimeOff ? 'show-time-off-calender-svg-selected' : ''
+                }`}
+              >
+                <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
+              </svg>
+              <i
+                className={`show-time-off-icon ${
+                  showWhoHasTimeOff ? 'show-time-off-icon-selected' : ''
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 512 512"
+                  className="show-time-off-icon-svg"
+                >
+                  <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+                </svg>
+              </i>
+            </button>
             <button
               type="button"
               className="circle-border 24h"
@@ -359,58 +405,76 @@ const TeamMemberTasks = React.memo(props => {
           taskModalOption={taskModalOption}
         />
       )}
-      <div className='table-container'>
-          <Table>
-            <thead className="pc-component">
-              <tr>
-                {/* Empty column header for hours completed icon */}
-                <th />
-                <th className="team-member-tasks-headers">
-                  <Table borderless className="team-member-tasks-subtable">
-                    <thead>
-                      <tr>
-                        <th className="team-member-tasks-headers team-member-tasks-user-name">
-                          Team Member
-                        </th>
-                        <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                          <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                          /
-                          <FontAwesomeIcon
-                            style={{ color: 'green' }}
-                            icon={faClock}
-                            title="Total Hours Completed this Week"
-                          />
-                          /
-                          <FontAwesomeIcon
-                            style={{ color: 'red' }}
-                            icon={faClock}
-                            title="Total Remaining Hours"
-                          />
-                        </th>
-                      </tr>
-                    </thead>
-                  </Table>
-                </th>
-                <th className="team-member-tasks-headers">
-                  <Table borderless className="team-member-tasks-subtable">
-                    <thead>
-                      <tr>
-                        <th>Tasks(s)</th>
-                        <th className="team-task-progress">Progress</th>
-                        {userRole === 'Administrator' ? <th>Status</th> : null}
-                      </tr>
-                    </thead>
-                  </Table>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <SkeletonLoading template="TeamMemberTasks" />
-              ) : (
-                teamList.map(user => {
-                  if (!isTimeLogActive) {
-                    return (
+      <div className="table-container">
+        <Table>
+          <thead className="pc-component">
+            <tr>
+              {/* Empty column header for hours completed icon */}
+              <th />
+              <th className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th className="team-member-tasks-headers team-member-tasks-user-name">
+                        Team Member
+                      </th>
+                      <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                        <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'green' }}
+                          icon={faClock}
+                          title="Total Hours Completed this Week"
+                        />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'red' }}
+                          icon={faClock}
+                          title="Total Remaining Hours"
+                        />
+                      </th>
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+              <th className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th>Tasks(s)</th>
+                      <th className="team-task-progress">Progress</th>
+                      {userRole === 'Administrator' ? <th>Status</th> : null}
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <SkeletonLoading template="TeamMemberTasks" />
+            ) : (
+              teamList.map(user => {
+                if (!isTimeLogActive) {
+                  return (
+                    <TeamMemberTask
+                      user={user}
+                      key={user.personId}
+                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                      handleMarkAsDoneModal={handleMarkAsDoneModal}
+                      handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                      handleTaskModalOption={handleTaskModalOption}
+                      userRole={userRole}
+                      updateTask={onUpdateTask}
+                      roles={props.roles}
+                      userPermissions={props.userPermissions}
+                      showWhoHasTimeOff={showWhoHasTimeOff}
+                      timeOffRequests={allRequests[user.personId]}
+                    />
+                  );
+                } else {
+                  return (
+                    <>
                       <TeamMemberTask
                         user={user}
                         key={user.personId}
@@ -422,40 +486,25 @@ const TeamMemberTasks = React.memo(props => {
                         updateTask={onUpdateTask}
                         roles={props.roles}
                         userPermissions={props.userPermissions}
+                        showWhoHasTimeOff={showWhoHasTimeOff}
                       />
-                    );
-                  } else {
-                    return (
-                      <>
-                        <TeamMemberTask
-                          user={user}
-                          key={user.personId}
-                          handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                          handleMarkAsDoneModal={handleMarkAsDoneModal}
-                          handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                          handleTaskModalOption={handleTaskModalOption}
-                          userRole={userRole}
-                          updateTask={onUpdateTask}
-                          roles={props.roles}
-                          userPermissions={props.userPermissions}
-                        />
-                        {timeEntriesList.length > 0 &&
-                          timeEntriesList
-                            .filter(timeEntry => timeEntry.personId === user.personId)
-                            .map(timeEntry => (
-                              <tr className="table-row">
-                                <td colSpan={3} style={{ padding: 0 }}>
-                                  <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
-                                </td>
-                              </tr>
-                            ))}
-                      </>
-                    );
-                  }
-                })
-              )}
-            </tbody>
-          </Table>
+                      {timeEntriesList.length > 0 &&
+                        timeEntriesList
+                          .filter(timeEntry => timeEntry.personId === user.personId)
+                          .map(timeEntry => (
+                            <tr className="table-row">
+                              <td colSpan={3} style={{ padding: 0 }}>
+                                <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
+                              </td>
+                            </tr>
+                          ))}
+                    </>
+                  );
+                }
+              })
+            )}
+          </tbody>
+        </Table>
       </div>
     </div>
   );

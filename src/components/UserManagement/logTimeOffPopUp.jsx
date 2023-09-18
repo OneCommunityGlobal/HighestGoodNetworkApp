@@ -5,7 +5,7 @@ import {
   updateTimeOffRequestThunk,
   deleteTimeOffRequestThunk,
 } from '../../actions/timeOffRequestAction';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   Button,
   Modal,
@@ -211,7 +211,6 @@ const LogTimeOffPopUp = React.memo(props => {
       const isAnyEndingDateAfterDate = allRequests[props.user._id].some(request => {
         const requestDate = moment(request.endingDate);
         const dateOfLeave = moment(data.dateOfLeave);
-        console.log(requestDate);
         return requestDate.isAfter(dateOfLeave);
       });
 
@@ -233,15 +232,18 @@ const LogTimeOffPopUp = React.memo(props => {
     if (!validateDateOfLeave(requestData)) return;
     if (!validateNumberOfWeeks(requestData, false)) return;
     if (!validateReasonForLeave(requestData, false)) return;
-    if (!validateDateIsNotBeforeToday(requestData)) return;
+    // if (!validateDateIsNotBeforeToday(requestData)) return;
     if (!validateDateIsNotBeforeEndOfOtherRequests(requestData)) return;
 
     const data = {
       requestFor: props.user._id,
       reason: requestData.reasonForLeave,
-      startingDate: moment(requestData.dateOfLeave).format('MM/DD/YY'),
+      startingDate: moment(requestData.dateOfLeave)
+        .tz('America/Los_Angeles')
+        .format('YYYY-MM-DD'),
       duration: requestData.numberOfWeeks,
     };
+    console.log(data);
     dispatch(addTimeOffRequestThunk(data));
   };
 
@@ -254,7 +256,9 @@ const LogTimeOffPopUp = React.memo(props => {
 
     const data = {
       reason: updateRequestData.reasonForLeave,
-      startingDate: moment(updateRequestData.dateOfLeave).format('MM/DD/YY'),
+      startingDate: moment(updateRequestData.dateOfLeave)
+        .tz('America/Los_Angeles')
+        .format('YYYY-MM-DD'),
       duration: updateRequestData.numberOfWeeks,
     };
 
