@@ -32,12 +32,18 @@ export const loginUser = credentials => dispatch => {
     });
 };
 
-export const loginBMUser = async credentials => {
+export const loginBMUser = (credentials) => async dispatch => {
   return httpService
-    .post(ENDPOINTS.BM_LOGIN, credentials)
-    .then(res => res)
-    .catch(err => err.response);
-};
+    .post (ENDPOINTS.BM_LOGIN, credentials)
+    .then((res) => {
+      localStorage.setItem(tokenKey, res.data.token);
+      httpService.setjwt(res.data.token);
+      const decoded = jwtDecode(res.data.token)
+      dispatch(setCurrentUser(decoded));
+      return res
+    })
+    .catch(err => err.response)
+}
 
 export const getHeaderData = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);

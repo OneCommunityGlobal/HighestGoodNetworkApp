@@ -150,8 +150,8 @@ export default (
 
       <ProtectedBMRoute path="/bmdashboard" exact component={BMDashboard} />
       <Route path="/bmdashboard/login" component={BMLogin} />
-      {/* Temporary route to redirect all subdirectories to login */}
-      <ProtectedBMRoute path="/bmdashboard/:path" exact component={BMDashboard} />
+      {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
+      <ProtectedBMRoute path="/bmdashboard/:path" component={BMDashboard} />
       
       {/* ----- END BM Dashboard Routing ----- */}
 

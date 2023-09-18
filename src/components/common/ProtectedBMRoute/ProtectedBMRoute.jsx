@@ -9,7 +9,7 @@ return <Route
           if (!auth.isAuthenticated) {
             return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
           }
-          else if (!auth.isBMAuthenticated) {
+          else if (auth.user.access && !auth.user.access.canAccessBMPortal) {
             return <Redirect to={{ pathname: '/bmdashboard/login', state: { from: props.location } }} />
           }
           return Component ? <Component {...props} /> : render(props);
@@ -19,6 +19,7 @@ return <Route
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  // Note: roles props won't be used until permissions added to BM Dashboard
   roles: state.role.roles,
 });
 

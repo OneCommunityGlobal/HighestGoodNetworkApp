@@ -1,24 +1,32 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi';
 
 import { loginBMUser } from 'actions/authActions';
 
 const BMLogin = (props) => {
-  const { auth, history } = props
+  const { dispatch, auth, history } = props
   // state
   const [enteredEmail, setEnteredEmail] = useState("")
   const [enterPassword, setEnteredPassword] = useState("")
-  const [validationError, setValidationError] = useState(null) 
+  const [validationError, setValidationError] = useState(null)
+  const [hasAccess, setHasAccess] = useState(false) 
 
   // push to dashboard if user is authenticated
   useEffect(() => {
-    if(auth.isBMAuthenticated) history.push('/')
-  },[])
+    if(auth.user.access && auth.user.access.canAccessBMPortal) {
+      history.push('/bmdashboard')
+    }
+  }, []);
+  useEffect(() => {
+    if(hasAccess) {
+      history.push('/bmdashboard');
+    }
+  },[hasAccess])
 
-  // Note email input type="text" to validate with Joi
+  // Note: email input type="text" to validate with Joi
   const schema = Joi.object({
     email: Joi.string()
       .email()
@@ -27,17 +35,23 @@ const BMLogin = (props) => {
       .min(8)
   })
 
-
   const handleChange = ({ target }) => {
     // clears validationError only if error input is being edited
-    if(validationError && target.name === validationError.label) setValidationError(null)
-    if(target.name === "email") setEnteredEmail(target.value)
-    else setEnteredPassword(target.value)
+    if(validationError && target.name === validationError.label) {
+      setValidationError(null)
+    }
+    if(target.name === "email") {
+      setEnteredEmail(target.value)
+    }
+    else {
+      setEnteredPassword(target.value)
+    }
   }
 
   // submit login
   const handleSubmit = async (e) => {
     e.preventDefault()
+    // client side error validation
     // Note: Joi by default stops validation on first error
     const validate = schema.validate({ email: enteredEmail, password: enterPassword })
     if(validate.error) {
@@ -46,7 +60,8 @@ const BMLogin = (props) => {
         message: validate.error.details[0].message
       })
     }
-    const res = await loginBMUser({ email: enteredEmail, password: enterPassword })
+    const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
+    // server side error validation
     if(res.statusText !== "OK") {
       if(res.status === 422) {
         return setValidationError({ 
@@ -56,8 +71,11 @@ const BMLogin = (props) => {
       }
       return alert(res.data.message)
     }
+    // initiate push to BM Dashboard if validated (ie received token)
+    setHasAccess(!!res.data.token)
   }
 
+  // push Dashboard if not authenticated
   if(!auth.isAuthenticated) {
     return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
   }
@@ -66,6 +84,7 @@ const BMLogin = (props) => {
     <div className='container mt-5'>
       <h2>Log In To Building Management Dashboard</h2>
       <Form onSubmit={handleSubmit}>
+        <FormText>Enter your current user credentials to access the Building Management Dashboard</FormText>
         <FormGroup>
           <Label for="email">Email</Label>
           <Input
@@ -96,7 +115,7 @@ const BMLogin = (props) => {
             </FormFeedback>)
           }
         </FormGroup>
-        <Button>
+        <Button disabled={!enteredEmail || !enterPassword}>
           Submit
         </Button>
       </Form>
@@ -104,7 +123,7 @@ const BMLogin = (props) => {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth,
+  auth: state.auth
 });
 
-export default connect(mapStateToProps)(BMLogin)
+export default connect (mapStateToProps)(BMLogin);

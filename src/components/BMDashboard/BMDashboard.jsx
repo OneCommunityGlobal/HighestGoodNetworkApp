@@ -1,5 +1,7 @@
 export const BMDashboard = () => {
-  return <div><h2>Dashboard: User Authentication Required</h2></div>
+  return <div style={{ textAlign: 'center', marginTop: '5rem' }}>
+    <h2>Building and Inventory Management Dashboard</h2>
+  </div>
 }
 
 export default BMDashboard;
