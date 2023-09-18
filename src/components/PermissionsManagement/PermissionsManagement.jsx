@@ -68,14 +68,10 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
         }
         {(
             userProfile?.permissions?.frontPermissions.some(permission => permission === 'putUserProfilePermissions') ||
-            userProfile?.permissions?.frontPermissions.some(permission => permission === 'addPermissionRole') ||
             userProfile?.role === 'Owner'
             ) && (
           <div className="buttons-container">
-            {(
-            userProfile?.permissions?.frontPermissions.some(permission => permission === 'addPermissionRole') ||
-            userProfile?.role === 'Owner'
-            ) &&
+            {userProfile?.role === 'Owner' &&
             <Button
               className="permissions-management__button"
               type="button"
