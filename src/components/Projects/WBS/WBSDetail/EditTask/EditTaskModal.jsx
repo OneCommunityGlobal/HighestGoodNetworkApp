@@ -203,6 +203,9 @@ const EditTaskModal = props => {
   */
   useEffect(() => {
     const fetchTaskData = async () => {
+      if (!props.taskId) {
+        return;
+      }
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
