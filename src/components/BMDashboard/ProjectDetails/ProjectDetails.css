@@ -7,3 +7,129 @@
   margin-bottom: 20px;
   font-weight: bold;
 }
+
+/* styling for the logBar component - i.e. dashboard with buttons */
+
+.logBar-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 2em;
+  padding: 1em 2em;
+  width: 100%;
+  background-color: #eaeeef;
+}
+
+.logBar-section{
+  width: 100%;
+  margin-top: 1em;
+}
+
+
+.logBar-btnGroup{
+ margin-top: -0.5em;
+}
+
+
+@media (min-width:600px){
+.logBar-container{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 2em;  
+}
+
+/* .logBar-container .logBar-section:first-of-type{
+  background-color: red;
+  
+  
+} */
+
+.logBar-section{
+  width: 40%;
+
+}
+
+.logBar-btnGroup{
+ margin-top: -0.5em;
+ width: 100%;
+}
+}
+
+/* styling for containers with cards */
+.cards-container{
+  align-items: center;
+  margin: 1em 2em;
+  padding: 1em 2em;
+}
+
+.cards-container_content{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* styling for single card element */
+.singleCard{
+  border: 1px solid #eaeeef;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 0.5em; 
+  cursor: pointer; 
+}
+
+.singleCard:hover{
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  transform: translate3d(0.5px,0.5px,0.5px);
+}
+
+.cardBody{
+margin-top: 0.5em;
+}
+
+.cardBody h6{
+margin-bottom: -0.2em;
+}
+
+@media (min-width:600px){
+.cards-container_content{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* styling for single card element */
+.singleCard{
+  margin-right: 0.5em;
+}
+}
+
+/* button on a card */
+.infoDiv{
+  font-size: 0.5rem;
+  padding: 1em;
+  margin: 0.5em;
+  border-radius: 10px; 
+  background-color: #f2c897 ;
+}
+
+/* TO DO: dynamic value to be added */
+.infoDiv .warning{
+  color: white;
+  background-color: #980101; 
+}
+
+/* styling for project log - i.e.table at the bottom */
+.projectLog-container{
+  margin: 2em;
+  padding: 1em 2em;
+  width: 100%;
+  font-weight: lighter;
+}
+
+.projectLog-container h6{
+  font-weight: bold;
+}

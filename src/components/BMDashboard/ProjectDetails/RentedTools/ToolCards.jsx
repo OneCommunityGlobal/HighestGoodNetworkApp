@@ -1,15 +1,13 @@
-import './ToolCards.css';
-import { CardGroup } from 'reactstrap';
 import ToolCard from './ToolCard';
 
 
 const ToolCards = () => {
   return (
-    <CardGroup>
+    <div className="cards-container_content">
       <ToolCard />
       <ToolCard />
       <ToolCard />
-    </CardGroup>
+    </div>
   );
 }
 

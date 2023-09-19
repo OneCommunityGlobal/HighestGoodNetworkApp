@@ -1,13 +1,12 @@
-import { CardGroup } from 'reactstrap';
 import MaterialCard from './MaterialCard';
 
 function Materials() {
   return (
-    <CardGroup>
+    <div className="cards-container_content">
       <MaterialCard />
       <MaterialCard />
       <MaterialCard />
-    </CardGroup>
+    </div>
   );
 }
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from 'reactstrap';
-import './LogBar.css';
 
 function LogBar() {
   return (
@@ -29,17 +28,17 @@ function LogBar() {
         <p>Add a new item:</p>
         <div className="logBar-btnGroup">
           <Button
-            style={{ backgroundColor: '#0d5675', border: 0, borderRadius: '10px', margin: '0.1em' }}
+            style={{ backgroundColor: '#0f6386', border: 0, borderRadius: '10px', margin: '0.1em' }}
           >
             Team
           </Button>{' '}
           <Button
-            style={{ backgroundColor: '#0d5675', border: 0, borderRadius: '10px', margin: '0.1em' }}
+            style={{ backgroundColor: '#0f6386', border: 0, borderRadius: '10px', margin: '0.1em' }}
           >
             Material
           </Button>{' '}
           <Button
-            style={{ backgroundColor: '#0d5675', border: 0, borderRadius: '10px', margin: '0.1em' }}
+            style={{ backgroundColor: '#0f6386', border: 0, borderRadius: '10px', margin: '0.1em' }}
           >
             Tool/Equipment
           </Button>
@@ -58,12 +57,9 @@ function LogBar() {
           >
             Edit Existing Team
           </Button>{' '}
-        </div>
-      </div>
-      <div className="logBar-section">
-        <p style={{ visibility: 'hidden' }}>Invisible</p>
-        <div className="logBar-btnGroup">
-          <Button style={{ backgroundColor: '#980101', border: 0, borderRadius: '10px', margin: '0.1em' }}>
+          <Button
+            style={{ backgroundColor: '#980101', border: 0, borderRadius: '10px', margin: '0.1em' }}
+          >
             Log Issue
           </Button>
         </div>

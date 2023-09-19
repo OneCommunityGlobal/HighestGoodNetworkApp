@@ -8,16 +8,16 @@ import './ProjectDetails.css';
 
 function ProjectDetails() {
   return (
-    <Container fluid className="project-details">
+    <Container className="project-details" fluid>
       <h3>Project A Dashboard</h3>
       <Row>
         <LogBar />
       </Row>
       <Row>
-        <Col lg="5" md="12">
+        <Col lg="6" md="12">
           <RentedToolsDisplay />
         </Col>
-        <Col lg="5" md="12">
+        <Col lg="6" md="12">
           <MaterialsDisplay />
         </Col>
       </Row>

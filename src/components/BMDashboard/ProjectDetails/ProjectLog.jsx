@@ -1,7 +1,5 @@
 import React from 'react';
 import { Card, Table } from 'reactstrap';
-import './ProjectLog.css';
-
 
 const DummyData = [
   {
