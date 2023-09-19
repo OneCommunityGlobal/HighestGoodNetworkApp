@@ -46,7 +46,7 @@ import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { isValidGoogleDocsUrl, isValidUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
@@ -597,7 +597,7 @@ class AddUserProfile extends Component {
 
     if (googleDoc) {
       if (isValidGoogleDocsUrl(googleDoc)) {
-        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
+        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
       } else{
         toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
         this.setState({
@@ -614,8 +614,8 @@ class AddUserProfile extends Component {
       }
     }
     if (dropboxDoc) {
-      if (isValidUrl(dropboxDoc)) {
-          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
+      if (isValidMediaUrl(dropboxDoc)) {
+          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
         } else {
           toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
           this.setState({

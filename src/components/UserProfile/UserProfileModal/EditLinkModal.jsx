@@ -14,7 +14,7 @@ import hasPermission from '../../../utils/permissions';
 import './EditLinkModal.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
-import { isValidGoogleDocsUrl, isValidUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
@@ -124,7 +124,7 @@ const EditLinkModal = props => {
 
   const handleUpdate = async () => {
     const isGoogleDocsValid = isValidGoogleDocsUrl(googleLink.Link);
-    const isDropboxValid = isValidUrl(mediaFolderLink.Link);
+    const isDropboxValid = isValidMediaUrl(mediaFolderLink.Link);
     const updatable =
       (isGoogleDocsValid && isDropboxValid) ||
       (googleLink.Link === '' && mediaFolderLink.Link === '') ||
