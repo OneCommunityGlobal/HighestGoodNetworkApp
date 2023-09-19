@@ -24,7 +24,7 @@ function LogBar() {
           <Button className="lightBlueBtn">Tool/Equipment</Button>
         </div>
       </div>
-      <div className="logBar-section">
+      <div className="logBar-section thirdSection">
         <p>Team:</p>
         <div className="logBar-btnGroup">
           <Button className="darkBlueBtn">Create New Team</Button>{' '}

@@ -26,14 +26,11 @@
 }
 
 
-.logBar-btnGroup{
- margin-top: -0.5em;
-}
-
 button.btn.btn-secondary{
   border: 0;
   border-radius: 10px;
-  margin: 0.1em
+  margin: 0.1em;
+  width: 100%;
 }
 
 /* buttons custom colors */
@@ -51,6 +48,7 @@ button.btn.btn-secondary.darkBlueBtn{
 
 button.btn.btn-secondary.redBtn{
   background-color: #980101;
+  margin-top: 2em;
 }
 
 @media (min-width:600px){
@@ -59,24 +57,30 @@ button.btn.btn-secondary.redBtn{
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 2em; 
-  text-align: left; 
+  margin: 2em;  
 }
 
-/* .logBar-container .logBar-section:first-of-type{
-  background-color: red;
-  
-  
-} */
 
 .logBar-section{
-  width: 40%;
+  width: 50%;
+}
 
+ .thirdSection{
+  width:fit-content; 
 }
 
 .logBar-btnGroup{
- margin-top: -0.5em;
- 
+ margin-top: -0.5em; 
+ display: flex;
+ justify-content: center;
+}
+
+button.btn.btn-secondary{
+  width: auto;
+}
+
+button.btn.btn-secondary.redBtn{
+  margin-top: auto;
 }
 }
 
