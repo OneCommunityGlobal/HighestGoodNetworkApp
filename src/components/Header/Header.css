@@ -1,6 +1,6 @@
 .header-wrapper {
   height: fit-content;
-  width: clamp(100vw, 0.1rem + 1vw, 100%);
+  width: 100%;
 }
 
 .navbar {
