@@ -79,6 +79,7 @@ export const Badges = props => {
                         setUserProfile={props.setUserProfile}
                         setOriginalUserProfile={props.setOriginalUserProfile}
                         handleSubmit={props.handleSubmit}
+                        isUserSelf={props.isUserSelf}
                       />
                     </ModalBody>
                   </Modal>
