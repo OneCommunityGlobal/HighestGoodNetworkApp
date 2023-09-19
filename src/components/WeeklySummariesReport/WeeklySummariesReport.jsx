@@ -95,6 +95,7 @@ export class WeeklySummariesReport extends Component {
           : sessionStorage.getItem('tabSelection'),
       badges: allBadgeData,
     });
+
     await getInfoCollections();
     const role = authUser?.role;
     const roleInfoNames = this.getAllRoles(summariesCopy);
@@ -203,9 +204,9 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab } = this.state;
+    const { error, loading, summaries, activeTab, allRoleInfo, badges, loadBadges } = this.state;
     const { role } = this.props;
-    console.log(role);
+
     if (error) {
       return (
         <Container>
