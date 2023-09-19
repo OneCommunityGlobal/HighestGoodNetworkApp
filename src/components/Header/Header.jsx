@@ -51,7 +51,6 @@ export const Header = props => {
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
-  // const canSeeUserManagement = props.hasPermission('seeUserManagement');
   const canSeeUserManagementTab = props.hasPermission('seeUserManagement') || props.hasPermission('seeUserManagementTab')
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
