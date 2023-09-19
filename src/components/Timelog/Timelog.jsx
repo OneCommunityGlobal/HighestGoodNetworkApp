@@ -453,7 +453,7 @@ const Timelog = props => {
                       <div className="d-flex align-items-center">
                         <span className="mb-1 mr-2">Tasks and Timelogs</span>
                         <EditableInfoModal
-                          areaName="Timelog"
+                          areaName="TasksAndTimelogInfoPoint"
                           fontSize={22}
                           isPermissionPage={true}
                           role={auth.user.role} // Pass the 'role' prop to EditableInfoModal

@@ -85,10 +85,7 @@ const LeaderBoard = ({
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
-  const handleModalOpen = idx => {
-    setContent(modalInfos[idx]);
-    setOpen(true);
-  };
+
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
@@ -133,18 +130,17 @@ const LeaderBoard = ({
       </h3>
       {!isVisible && (
         <Alert color="warning">
+        <div className="d-flex align-items-center">
+
           Note: You are currently invisible to the team(s) you are on.&nbsp;&nbsp;
-          <i
-            data-toggle="tooltip"
-            data-placement="right"
-            title="Click for more information"
-            style={{ fontSize: 20, cursor: 'pointer' }}
-            aria-hidden="true"
-            className="fa fa-info-circle"
-            onClick={() => {
-              handleModalOpen(1);
-            }}
+          <EditableInfoModal
+            areaName="LeaderboardInvisibleInfoPoint"
+            role={loggedInUser.role}
+            fontSize={24}
+            isPermissionPage={true}
           />
+                  </div>
+
         </Alert>
       )}
       <span className="leaderboard">

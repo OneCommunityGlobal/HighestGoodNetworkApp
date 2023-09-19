@@ -441,26 +441,14 @@ class ReportsPage extends Component {
                     ? 'Hide Total Project Report'
                     : 'Show Total Project Report'}
                 </Button>
-                <i
-                  className="fa fa-info-circle"
-                  data-tip
-                  data-for="totalProjectTip"
-                  data-delay-hide="0"
-                  aria-hidden="true"
-                  title=""
-                  style={{ paddingLeft: '.32rem' }}
+                <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                <EditableInfoModal
+                  areaName="totalProjectReportInfoPoint"
+                  role={userRole}
+                  fontSize={15}
+                  isPermissionPage={true}
                 />
-                <ReactTooltip id="totalProjectTip" place="bottom" effect="solid">
-                  Click this button to see exactly how many new projects have been worked on for a
-                  designated time period.
-                  <br />
-                  Projects must have had at least 1 hour logged to them to be included.
-                  <br />
-                  A 'Total Hours' section will show the total tangible time logged to all projects
-                  during the selected period.
-                  <br />A detail report will list all the projects and hours contributed by each
-                  during that time period.
-                </ReactTooltip>
+                </div>
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalPeople}>
@@ -468,50 +456,27 @@ class ReportsPage extends Component {
                     ? 'Hide Total People Report'
                     : 'Show Total People Report'}
                 </Button>
-                <i
-                  className="fa fa-info-circle"
-                  data-tip
-                  data-for="totalPeopleTip"
-                  data-delay-hide="0"
-                  aria-hidden="true"
-                  style={{ paddingLeft: '.32rem' }}
+                <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                <EditableInfoModal
+                  areaName="totalPeopleReportInfoPoint"
+                  role={userRole}
+                  fontSize={15}
+                  isPermissionPage={true}
                 />
-                <ReactTooltip id="totalPeopleTip" place="bottom" effect="solid">
-                  Click this button to see exactly how many total people have contributed time to
-                  the projects for a designated time period.
-                  <br />
-                  Peole must have had at least 10 hours logged for them to be included.
-                  <br />
-                  A 'Total Hours' section will show the total tangible time logged by all people
-                  during the selected period.
-                  <br />A detail report will list all the people and hours contributed by each
-                  during that time period.
-                </ReactTooltip>
+                </div>
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalTeam}>
                   {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
                 </Button>
-                <i
-                  className="fa fa-info-circle"
-                  data-tip
-                  data-for="totalTeamTip"
-                  data-delay-hide="0"
-                  aria-hidden="true"
-                  title=""
-                  style={{ paddingLeft: '.32rem' }}
+                <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                <EditableInfoModal
+                  areaName="totalTeamReportInfoPoint"
+                  role={userRole}
+                  fontSize={15}
+                  isPermissionPage={true}
                 />
-                <ReactTooltip id="totalTeamTip" place="bottom" effect="solid">
-                  Click this button to see exactly how many total teams have contributed time to the
-                  projects for a designated time period.
-                  <br />
-                  The team must have had at least 10 hours logged for them to be included.
-                  <br />
-                  A 'Total Hours' section will show the total tangible time logged by all the teams
-                  during the selected period.
-                  <br />A detail report will list all the teams and hours contributed by each during
-                  that time period.
-                </ReactTooltip>
+                </div>
               </div>
             </div>
           </div>
