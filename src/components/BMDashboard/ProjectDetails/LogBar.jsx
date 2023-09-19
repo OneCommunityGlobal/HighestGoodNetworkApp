@@ -7,58 +7,30 @@ function LogBar() {
       <div className="logBar-section">
         <p>Daily Logging:</p>
         <div className="logBar-btnGroup">
-          <Button
-            style={{ backgroundColor: '#015d4a', border: 0, borderRadius: '10px', margin: '0.1em' }}
-          >
-            Time
-          </Button>{' '}
-          <Button
-            style={{ backgroundColor: '#015d4a', border: 0, borderRadius: '10px', margin: '0.1em' }}
-          >
-            Material
-          </Button>{' '}
-          <Button
-            style={{ backgroundColor: '#015d4a', border: 0, borderRadius: '10px', margin: '0.1em' }}
-          >
-            Tool/Equipment
-          </Button>
+          <Button className="greenBtn">Time</Button> <Button className="greenBtn">Material</Button>{' '}
+          <Button className="greenBtn">Tool/Equipment</Button>
         </div>
       </div>
       <div className="logBar-section">
         <p>Add a new item:</p>
         <div className="logBar-btnGroup">
           <Button
-            style={{ backgroundColor: '#0f6386', border: 0, borderRadius: '10px', margin: '0.1em' }}
+            className="lightBlueBtn"
+            // style={{ backgroundColor: '#0f6386', border: 0, borderRadius: '10px', margin: '0.1em' }}
           >
             Team
           </Button>{' '}
-          <Button
-            style={{ backgroundColor: '#0f6386', border: 0, borderRadius: '10px', margin: '0.1em' }}
-          >
-            Material
-          </Button>{' '}
-          <Button
-            style={{ backgroundColor: '#0f6386', border: 0, borderRadius: '10px', margin: '0.1em' }}
-          >
-            Tool/Equipment
-          </Button>
+          <Button className="lightBlueBtn">Material</Button>{' '}
+          <Button className="lightBlueBtn">Tool/Equipment</Button>
         </div>
       </div>
       <div className="logBar-section">
         <p>Team:</p>
         <div className="logBar-btnGroup">
+          <Button className="darkBlueBtn">Create New Team</Button>{' '}
+          <Button className="darkBlueBtn">Edit Existing Team</Button>{' '}
           <Button
-            style={{ backgroundColor: '#203844', border: 0, borderRadius: '10px', margin: '0.1em' }}
-          >
-            Create New Team
-          </Button>{' '}
-          <Button
-            style={{ backgroundColor: '#203844', border: 0, borderRadius: '10px', margin: '0.1em' }}
-          >
-            Edit Existing Team
-          </Button>{' '}
-          <Button
-            style={{ backgroundColor: '#980101', border: 0, borderRadius: '10px', margin: '0.1em' }}
+            className="redBtn"
           >
             Log Issue
           </Button>
