@@ -22,6 +22,8 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
+  Row,
+  Col,
 } from 'reactstrap';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
@@ -106,56 +108,62 @@ function ReportDetails({
         </ListGroupItem>
         {isInViewPort && (
           <>
-            <ListGroupItem>
-              <b>Media URL:</b> <MediaUrlLink summary={summary} />
-            </ListGroupItem>
-            <ListGroupItem>
-              <Bio
-                bioCanEdit={bioCanEdit}
-                userId={summary._id}
-                bioPosted={summary.bioPosted}
-                summary={summary}
-                totalTangibleHrs={summary.totalTangibleHrs}
-                daysInTeam={summary.daysInTeam}
-              />
-            </ListGroupItem>
-            <ListGroupItem>
-              <TotalValidWeeklySummaries
-                summary={summary}
-                canEditSummaryCount={canEditSummaryCount}
-              />
-            </ListGroupItem>
-            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <p>
-                  <b
-                    style={{
-                      color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                    }}
-                  >
-                    Hours logged:{' '}
-                  </b>
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              </ListGroupItem>
-            )}
-            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <b
-                  style={{
-                    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                  }}
-                >
-                  Hours logged:
-                </b>
-                <span className="ml-2">
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
-              </ListGroupItem>
-            )}
-            {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
-            )}
+            <Row>
+              <Col className="flex-grow-0">
+                <ListGroupItem>
+                  <b>Media URL:</b> <MediaUrlLink summary={summary} />
+                </ListGroupItem>
+                <ListGroupItem>
+                  <Bio
+                    bioCanEdit={bioCanEdit}
+                    userId={summary._id}
+                    bioPosted={summary.bioPosted}
+                    summary={summary}
+                    totalTangibleHrs={summary.totalTangibleHrs}
+                    daysInTeam={summary.daysInTeam}
+                  />
+                </ListGroupItem>
+                <ListGroupItem>
+                  <TotalValidWeeklySummaries
+                    summary={summary}
+                    canEditSummaryCount={canEditSummaryCount}
+                  />
+                </ListGroupItem>
+                {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+                  <ListGroupItem>
+                    <p>
+                      <b
+                        style={{
+                          color: textColors[summary?.weeklySummaryOption] || textColors.Default,
+                        }}
+                      >
+                        Hours logged:{' '}
+                      </b>
+                      {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                    </p>
+                  </ListGroupItem>
+                )}
+                {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+                  <ListGroupItem>
+                    <b
+                      style={{
+                        color: textColors[summary?.weeklySummaryOption] || textColors.Default,
+                      }}
+                    >
+                      Hours logged:
+                    </b>
+                    <span className="ml-2">
+                      {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                    </span>
+                  </ListGroupItem>
+                )}
+              </Col>
+              <Col>
+                {loadBadges && summary.badgeCollection?.length > 0 && (
+                  <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+                )}
+              </Col>
+            </Row>
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
