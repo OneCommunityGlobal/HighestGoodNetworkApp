@@ -18,7 +18,6 @@ import {
   BADGE_MANAGEMENT,
   PROJECTS,
   TEAMS,
-  SUMMARY_MANAGEMENT,
   WELCOME,
   VIEW_PROFILE,
   UPDATE_PASSWORD,
@@ -41,7 +40,6 @@ import {
 } from 'reactstrap';
 import Logout from '../Logout/Logout';
 import './Header.css';
-import SummaryManagement from 'components/SummaryManagement/SummaryManagement';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
@@ -50,7 +48,6 @@ export const Header = props => {
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
@@ -78,8 +75,11 @@ export const Header = props => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
+      if (props.auth.user.role === 'Administrator') {
+        dispatch(fetchTaskEditSuggestions());
+      }
     }
-  }, []);
+  }, [props.auth.isAuthenticated]);
 
   useEffect(() => {
     if (roles.length === 0) {
@@ -98,7 +98,7 @@ export const Header = props => {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
@@ -134,13 +134,6 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {(user.role === 'Mentor' || user.role === 'Manager') && (
-                <NavItem>
-                  <NavLink tag={Link} to="/summarymanagement">
-                    <span className="dashboard-text-link">{SUMMARY_MANAGEMENT}</span>
-                  </NavLink>
-                </NavItem>
-              )}
               {canGetWeeklySummaries || canGetWeeklySummaries ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
@@ -164,7 +157,6 @@ export const Header = props => {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               ) : null}
-
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">
@@ -175,7 +167,6 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
-
               {(canPostUserProfile ||
                 canDeleteUserProfile ||
                 canPutUserProfileImportantInfo ||
@@ -216,13 +207,6 @@ export const Header = props => {
                         {TEAMS}
                       </DropdownItem>
                     )}
-
-                    {(user.role === 'Administrator' || user.role === 'Owner') && (
-                      <DropdownItem tag={Link} to="/summarymanagement">
-                        {SUMMARY_MANAGEMENT}
-                      </DropdownItem>
-                    )}
-
                     {canCreatePopup || canUpdatePopup ? (
                       <>
                         <DropdownItem divider />

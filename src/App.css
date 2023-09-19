@@ -116,3 +116,7 @@ nav ul.navbar-nav li:last-child>div {
   bottom: 10px;
   white-space: nowrap
 }
+
+tr {
+  content-visibility: auto;
+}
