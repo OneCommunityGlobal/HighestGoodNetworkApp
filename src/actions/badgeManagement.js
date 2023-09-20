@@ -18,9 +18,17 @@ const getAllBadges = allBadges => ({
   allBadges,
 });
 
-export const fetchAllBadges = () => async dispatch => {
-  const { data } = await axios.get(ENDPOINTS.BADGE());
-  dispatch(getAllBadges(data));
+export const fetchAllBadges = () => {
+  const url = ENDPOINTS.BADGE();
+  return async (dispatch) => {
+    try {
+      const response = await axios.get(ENDPOINTS.BADGE());
+      dispatch(getAllBadges(response.data));
+      return response.status;
+    } catch(err) {
+      return err.response.status;
+    }
+  }
 };
 
 export const closeAlert = () => {
