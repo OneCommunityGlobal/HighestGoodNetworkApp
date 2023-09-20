@@ -15,7 +15,7 @@ const defaultProps = {
 
 describe('TeamStatusPopup', () => {
   it('should render correctly', () => {
-    const { getByText } = renderWithProvider(<TeamStatusPopup {...defaultProps} />);
+    const { getByText, getByRole } = renderWithProvider(<TeamStatusPopup {...defaultProps} />);
 
     expect(getByText('Status Popup')).toBeInTheDocument();
 
@@ -23,15 +23,17 @@ describe('TeamStatusPopup', () => {
       getByText('Are you sure you want to change the status of this team Team 1'),
     ).toBeInTheDocument();
 
-    expect(getByText('Confirm')).toBeInTheDocument();
-    expect(getByText('Close')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Confirm' })).toBeInTheDocument();
+
+    const closeButtons = screen.getAllByRole('button', { name: 'Close' });
+    expect(closeButtons[1]).toBeInTheDocument();
   });
 
   it('should call closePopup function', () => {
     renderWithProvider(<TeamStatusPopup {...defaultProps} />);
 
-    const closeButton = screen.getByText('Close');
-    fireEvent.click(closeButton);
+    const closeButtons = screen.getAllByRole('button', { name: 'Close' });
+    fireEvent.click(closeButtons[1]);
 
     expect(mock).toHaveBeenCalledTimes(1);
   });
@@ -39,7 +41,7 @@ describe('TeamStatusPopup', () => {
   it('should call onConfirmClick when "Confirm" button is clicked', () => {
     renderWithProvider(<TeamStatusPopup {...defaultProps} />);
 
-    const confirmButton = screen.getByText('Confirm');
+    const confirmButton = screen.getByRole('button', { name: 'Confirm' });
     fireEvent.click(confirmButton);
 
     expect(defaultProps.onConfirmClick).toHaveBeenCalledTimes(1);
