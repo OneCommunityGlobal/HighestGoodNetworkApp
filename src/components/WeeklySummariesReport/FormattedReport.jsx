@@ -17,16 +17,20 @@ import {
   ListGroup,
   ListGroupItem as LGI,
   Card,
+  Tooltip,
   CardTitle,
   CardBody,
   CardImg,
   CardText,
   UncontrolledPopover,
 } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
+
 
 const textColors = {
   Default: '#000000',
@@ -61,6 +65,32 @@ function FormattedReport({
       emails.push(summary.email);
     }
   });
+  const handleEmailButtonClick = () => {
+    const batchSize = 90;
+    const emailChunks = [];
+      
+    for (let i = 0; i < emails.length; i += batchSize) {
+      emailChunks.push(emails.slice(i, i + batchSize));      
+    }  
+  
+    const openEmailClientWithBatchInNewTab = (batch) => {
+      const emailAddresses = batch.join(', ');
+      const mailtoLink = `mailto:${emailAddresses}`;
+      window.open(mailtoLink, '_blank');
+    };  
+    
+    emailChunks.forEach((batch, index) => {
+      setTimeout(() => {
+        openEmailClientWithBatchInNewTab(batch);
+      }, index * 2000);
+    });
+  };
+
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const toggleTooltip = () => {
+    setTooltipOpen(!tooltipOpen);
+  };
 
   return (
     <>
@@ -78,7 +108,26 @@ function FormattedReport({
           />
         ))}
       </ListGroup>
+      <div className="d-flex align-items-center">
       <h4>Emails</h4>
+      <Tooltip
+          placement="top"
+          isOpen={tooltipOpen}
+          target="emailIcon"
+          toggle={toggleTooltip}
+        >
+          Launch the email client, organizing the recipient email addresses into batches, each containing a maximum of 90 addresses.
+        </Tooltip>
+        <FontAwesomeIcon
+          className="ml-2"
+          onClick={handleEmailButtonClick}
+          icon={faMailBulk}
+          size='lg'
+          style={{ color: "#0f8aa9", cursor: "pointer" }}
+          id="emailIcon"
+        />
+
+      </div>
       <p>{emails.join(', ')}</p>
     </>
   );
