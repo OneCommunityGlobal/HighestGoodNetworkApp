@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
+import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
 import { allUserProfilesReducer } from './allUserProfilesReducer';
@@ -9,7 +11,7 @@ import { allProjectsReducer } from './allProjectsReducer';
 import { projectReportReducer } from './projectReportReducer';
 import { userProjectsReducer } from './userProjectsReducer';
 import { projectMembershipReducer } from './projectMembershipReducer';
-import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer';
+import { allUserTeamsReducer } from './allTeamsReducer';
 import { teamByIdReducer } from './teamByIdReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
@@ -21,11 +23,11 @@ import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { timeZoneAPIReducer } from './timezoneApiReducer';
-import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
-import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { roleReducer } from './roleReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
+import { infoCollectionsReducer} from './informationReducer';
+import { mouseoverTextReducer } from './mouseoverTextReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -56,5 +58,7 @@ export default combineReducers({
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
   ownerMessage: ownerMessageReducer,
-  ownerStandardMessage: ownerStandardMessageReducer
+  ownerStandardMessage: ownerStandardMessageReducer,
+  infoCollections: infoCollectionsReducer,
+  mouseoverText: mouseoverTextReducer,
 });

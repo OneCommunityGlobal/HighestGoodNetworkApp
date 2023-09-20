@@ -9,6 +9,9 @@ import Table from 'react-bootstrap/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
+import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
+import { formatDate } from 'utils/formatDate';
 
 /**
  * The body row of the user table
@@ -16,6 +19,7 @@ import { toast } from 'react-toastify';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -25,13 +29,9 @@ const UserTableData = React.memo(props => {
   }, [props.isActive, props.resetLoading]);
 
   const checkPermissionsOnOwner = () => {
-    return (props.user.role === 'Owner' && !hasPermission(
-      props.role,
-      'addDeleteEditOwners',
-      props.roles,
-      props.userPermissions)
-    )}
-     
+    return props.user.role === 'Owner' && !canAddDeleteEditOwners;
+  };
+
   return (
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
@@ -56,7 +56,7 @@ const UserTableData = React.memo(props => {
           className="copy_icon"
           icon={faCopy}
           onClick={() => {
-            navigator.clipboard.writeText(props.user.email)
+            navigator.clipboard.writeText(props.user.email);
             toast.success('Email Copied!');
           }}
         />
@@ -73,6 +73,7 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
+          style={boxStyle}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
@@ -87,36 +88,38 @@ const UserTableData = React.memo(props => {
               props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
             );
           }}
+          style={boxStyle}
         >
           {props.isSet ? CANCEL : SET_FINAL_DAY}
         </button>
       </td>
       <td>
         {props.user.isActive === false && props.user.reactivationDate
-          ? props.user.reactivationDate.toLocaleString().split('T')[0]
+          ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
-      <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
+      <td>{props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}</td>
       {checkPermissionsOnOwner() ? null : (
-      <td>
-        <span className="usermanagement-actions-cell">
+        <td>
+          <span className="usermanagement-actions-cell">
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
               }}
+              style={boxStyle}
             >
               {DELETE}
             </button>
-        </span>
-        <span className="usermanagement-actions-cell">
-          <ResetPasswordButton user={props.user} isSmallButton />
-        </span>
-      </td>
+          </span>
+          <span className="usermanagement-actions-cell">
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton />
+          </span>
+        </td>
       )}
     </tr>
   );
 });
 
-export default UserTableData;
+export default connect(null, { hasPermission })(UserTableData);

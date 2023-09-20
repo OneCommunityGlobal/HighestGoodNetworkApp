@@ -2,70 +2,164 @@
  * Component: TASK
  * Author: Henry Ng - 21/03/20 ≢
  ********************************************************************************/
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import hasPermission from 'utils/permissions';
-import { fetchAllTasks, emptyAllTaskItems, updateNumList, deleteTask } from '../../../../actions/task';
+import {
+  fetchAllTasks,
+  emptyTaskItems,
+  updateNumList,
+  deleteTask,
+} from '../../../../actions/task';
 import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
+import { boxStyle } from 'styles';
 
 function WBSTasks(props) {
-  // modal
-  const [modal, setModal] = useState(false);
-  const toggle = () => setModal(!modal);
-  const { roles } = props.state.role;
+  /*
+  * -------------------------------- variable declarations --------------------------------
+  */
+  // props from store
+  const { tasks, fetched } = props;
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
   const { wbsName } = props.match.params;
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
 
-  const [isShowImport, setIsShowImport] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
+  // states from hooks
+  const [showImport, setShowImport] = useState(false);
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
-  const [loadAll, setLoadAll] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [levelOneTasks, setLevelOneTasks] = useState([]);
+  const [controllerId, setControllerId] = useState(null);
+  const [pageLoadTime, setPageLoadTime] = useState(Date.now());
+  const myRef = useRef(null);
 
+  // permissions
+  const canPostTask = props.hasPermission('postTask');
+
+  /*
+  * -------------------------------- functions --------------------------------
+  */
   const load = async () => {
     const levelList = [0, 1, 2, 3, 4];
     await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
-    AutoOpenAll(false);
-    setLoadAll(true);
+    setPageLoadTime(Date.now());
   };
 
+  const filterTasks = (tasks, filterState) => {
+    switch (filterState) {
+      case 'all': return tasks
+      case 'assigned': return tasks.filter(task => task.isAssigned === true)
+      case 'unassigned': return tasks.filter(task => task.isAssigned === false)
+      case 'active': return tasks.filter(task => ['Active', 'Started'].includes(task.status))
+      case 'inactive': return tasks.filter(task => task.status === 'Not Started')
+      case 'complete': return tasks.filter(task => task.status === 'Complete')
+    }
+  }
+
+  
+  const refresh = async () => {
+    setIsLoading(true);
+    props.emptyTaskItems();
+    await load();
+    setOpenAll(false)
+    setIsLoading(false)
+  };
+  
+  const deleteWBSTask = (taskId, mother) => {
+    props.deleteTask(taskId, mother);
+    setIsDeleted(true);
+  };
+
+  /**
+   * Drag and drop is not being used anywhere, and it seems to be replaced by the copy and paste functionality,
+   * so here comments it out for future reference if such functionality is desired again.  
+   */
+
+  // let drag = '';
+  // let dragParent = '';
+  // const dragTask = (taskIdFrom, parentId) => {
+  //   drag = taskIdFrom;
+  //   dragParent = parentId;
+  // };
+  
+  // const dropTask = (taskIdTo, parentId) => {
+  //   const tasksClass = document.getElementsByClassName('taskDrop');
+  //   for (let i = 0; i < tasks.length; i++) {
+  //     tasksClass[i].style.display = 'none';
+  //   }
+    
+  //   const list = [];
+  //   const target = tasks.find(task => task._id === taskIdTo);
+  //   const siblings = tasks.filter(task => task.parentId === dragParent);
+    
+  //   let modifiedList = false;
+  //   if (dragParent === target._id) {
+  //     list.push({
+  //       id: drag,
+  //       num: siblings[0].num,
+  //     });
+  //     modifiedList = true;
+  //   }
+  //   for (let i = 0; i < siblings.length - 1; i++) {
+  //     if (siblings[i]._id === drag) {
+  //       modifiedList = false;
+  //     }
+  //     if (modifiedList) {
+  //       list.push({
+  //         id: siblings[i]._id,
+  //         num: siblings[i + 1].num,
+  //       });
+  //     }
+  //     if (siblings[i]._id === target._id) {
+  //       list.push({
+  //         id: drag,
+  //         num: siblings[i + 1].num,
+  //       });
+  //       modifiedList = true;
+  //     }
+  //   }
+  // };
+
+  /*
+  * -------------------------------- useEffects -------------------------------- 
+  */
   useEffect(() => {
+    const observer = new MutationObserver(ReactTooltip.rebuild);
+    const observerOptions = {
+      childList: true,
+      subtree: true,
+    }
+    observer.observe(myRef.current, observerOptions); // only rebuild ReactTooltip when DOM tree changes
     return () => {
-      props.emptyAllTaskItems();
+      observer.disconnect();
+      props.emptyTaskItems();
     };
-  }, [])
-
+  }, []);
+  
   useEffect(() => {
-    load().then(setOpenAll(false));
+    load();
     props.fetchAllMembers(projectId);
-    setTimeout(() => setIsShowImport(true), 1000);
+    setShowImport(tasks.length === 0);
+    setIsLoading(false);
   }, [wbsId, projectId]);
-
-  const refresh = () => {
-    setLoadAll(false);
-    setIsShowImport(false);
-    props.fetchAllTasks(wbsId, -1);
-    setTimeout(() => {
-      load().then(setOpenAll(false));
-    }, 100);
-    setTimeout(() => setIsShowImport(true), 1000);
-  };
-
+  
   useEffect(() => {
-    AutoOpenAll(openAll);
-  }, [openAll]);
-
+    const newLevelOneTasks = tasks.filter(task => task.level === 1);
+    const filteredTasks = filterTasks(newLevelOneTasks, filterState);
+    setShowImport(tasks.length === 0);
+    setLevelOneTasks(filteredTasks);
+  }, [tasks, filterState])
+  
   useEffect(() => {
     if (isDeleted) {
       refresh();
@@ -73,234 +167,125 @@ function WBSTasks(props) {
     setIsDeleted(false);
   }, [isDeleted]);
 
-  const AutoOpenAll = openflag => {
-    if (openflag) {
-      //console.log('open the folder');
-      for (let i = 2; i < 5; i++) {
-        const subItems = [...document.getElementsByClassName(`lv_${i}`)];
-        for (let i = 0; i < subItems.length; i++) {
-          subItems[i].style.display = 'table-row';
-        }
-      }
-    } else {
-      //console.log('close the folder');
-      for (let i = 2; i < 5; i++) {
-        const subItems = [...document.getElementsByClassName(`lv_${i}`)];
-        for (let i = 0; i < subItems.length; i++) {
-          subItems[i].style.display = 'none';
-        }
-      }
-    }
-  };
-
-  const selectTaskFunc = id => {
-    setSelectedId(id);
-  };
-
-  let drag = '';
-  let dragParent = '';
-  const dragTask = (taskIdFrom, parentId) => {
-    drag = taskIdFrom;
-    dragParent = parentId;
-  };
-
-  const dropTask = (taskIdTo, parentId) => {
-    const tasks = props.state.tasks.taskItems;
-
-    const tasksClass = document.getElementsByClassName('taskDrop');
-    for (let i = 0; i < tasks.length; i++) {
-      tasksClass[i].style.display = 'none';
-    }
-
-    const list = [];
-    const target = tasks.find(task => task._id === taskIdTo);
-    const siblings = tasks.filter(task => task.parentId === dragParent);
-
-    let modifiedList = false;
-    if (dragParent === target._id) {
-      list.push({
-        id: drag,
-        num: siblings[0].num,
-      });
-      modifiedList = true;
-    }
-    for (let i = 0; i < siblings.length - 1; i++) {
-      if (siblings[i]._id === drag) {
-        modifiedList = false;
-      }
-      if (modifiedList) {
-        list.push({
-          id: siblings[i]._id,
-          num: siblings[i + 1].num,
-        });
-      }
-      if (siblings[i]._id === target._id) {
-        list.push({
-          id: drag,
-          num: siblings[i + 1].num,
-        });
-        modifiedList = true;
-      }
-    }
-  };
-
-  const deleteWBSTask = (taskId, mother) => {
-    props.deleteTask(taskId, mother);
-    setIsDeleted(true);
-  };
-
-  const filterTasks = (allTaskItems, filter) => {
-    if (filter === 'all') {
-      return allTaskItems;
-    } else if (filter === 'assigned') {
-      return allTaskItems.filter(taskItem => {
-        if (taskItem.isAssigned === true) {
-          return taskItem;
-        }
-      });
-    } else if (filter === 'unassigned') {
-      return allTaskItems.filter(taskItem => {
-        if (taskItem.isAssigned === false) {
-          return taskItem;
-        }
-      });
-    } else if (filter === 'active') {
-      return allTaskItems.filter(taskItem => {
-        if (taskItem.status === 'Active' || taskItem.status === 'Started') {
-          return taskItem;
-        }
-      });
-    } else if (filter === 'inactive') {
-      return allTaskItems.filter(taskItem => {
-        if (taskItem.status === 'Not Started') {
-          return taskItem;
-        }
-      });
-    } else if (filter === 'complete') {
-      return allTaskItems.filter(taskItem => {
-        if (taskItem.status === 'Complete') {
-          return taskItem;
-        }
-      });
-    }
-  };
-
-  const LoadTasks = props.state.tasks.taskItems.slice(0).sort((a, b) => {
-    var former = a.num.split('.');
-    var latter = b.num.split('.');
-    for (var i = 0; i < 4; i++) {
-      var _former = +former[i] || 0;
-      var _latter = +latter[i] || 0;
-      if (_former === _latter) continue;
-      else return _former > _latter ? 1 : -1;
-    }
-    return 0;
-  });
-  const filteredTasks = filterTasks(LoadTasks, filterState);
-
   return (
     <>
-      <ReactTooltip />
+      <ReactTooltip delayShow={300} />
       <div className="container-tasks">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-secondary">
+              <button type="button" className="btn btn-secondary" style={boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
             </NavItem>
             <div id="member_project__name">{wbsName}</div>
           </ol>
         </nav>
+        <div className='mb-2'>
+          {canPostTask ? (
+            <AddTaskModal
+              key="task_modal_null"
+              taskNum={null}
+              taskId={null}
+              wbsId={wbsId}
+              projectId={projectId}
+              load={load}
+              pageLoadTime={pageLoadTime}
+            />
+          ) : null}
 
-        {hasPermission(props.state.auth.user.role, 'addTask', roles, userPermissions) ? (
-          <AddTaskModal
-            key="task_modal_null"
-            parentNum={null}
-            taskId={null}
-            wbsId={wbsId}
-            projectId={projectId}
-          />
-        ) : null}
-
-        {props.state.tasks.taskItems.length === 0 && isShowImport === true ? (
-          <ImportTask wbsId={wbsId} projectId={projectId} />
-        ) : null}
-        <Button
-          color="primary"
-          className="btn-success"
-          size="sm"
-          onClick={() => {
-            refresh();
-          }}
-        >
-          Refresh{' '}
-        </Button>
-
-        {loadAll === false ? (
-
-          <Button color="warning" size="sm" className="ml-3">
-
-            {' '}
-            Task Loading......{' '}
-          </Button>
-        ) : null}
-
-        <div className="toggle-all">
-          <Button
-            color="primary"
-            size="sm"
-            className="ml-3"
-            onClick={() => {
-              setFilterState('all');
-              setOpenAll(!openAll);
-            }}
-          >
-            All
-          </Button>
-          <Button
-            color="secondary"
-            size="sm"
-            onClick={() => setFilterState('assigned')}
-            className="ml-2"
-          >
-            Assigned
-          </Button>
+          {!isLoading && showImport ? (
+            <ImportTask
+              wbsId={wbsId}
+              projectId={projectId}
+              load={load}
+              setIsLoading={setIsLoading}
+            />
+          ) : null}
           <Button
             color="success"
-            size="sm"
-            onClick={() => setFilterState('unassigned')}
             className="ml-2"
-          >
-            Unassigned
-          </Button>
-          <Button
-            color="info"
             size="sm"
-            onClick={() => setFilterState('active')}
-            className="ml-2"
+            onClick={refresh}
+            style={boxStyle}
           >
-            Active
+            Refresh{' '}
           </Button>
-          <Button
-            color="warning"
-            size="sm"
-            onClick={() => setFilterState('inactive')}
-            className="ml-2"
-          >
-            Inactive
-          </Button>
-          <Button
-            color="danger"
-            size="sm"
-            onClick={() => setFilterState('complete')}
-            className="ml-2"
-          >
-            Complete
-          </Button>
+          {isLoading ? (
+            <Button color="warning" size="sm" className="ml-3" style={boxStyle}>
+              {' '}
+              Task Loading......{' '}
+            </Button>
+          ) : null}
+
+          <div className="toggle-all">
+            <Button
+              color="light"
+              size="sm"
+              className="ml-2 mr-4"
+              onClick={() => setOpenAll(!openAll)}
+              style={boxStyle}
+            >
+              {openAll ? 'fold All' : 'Unfold All'}
+            </Button>
+            <Button
+              color="primary"
+              size="sm"
+              className="ml-3"
+              onClick={() => setFilterState('all')}
+              style={boxStyle}
+            >
+              All
+            </Button>
+            <Button
+              color="secondary"
+              size="sm"
+              onClick={() => setFilterState('assigned')}
+              className="ml-2"
+              style={boxStyle}
+            >
+              Assigned
+            </Button>
+            <Button
+              color="success"
+              size="sm"
+              onClick={() => setFilterState('unassigned')}
+              className="ml-2"
+              style={boxStyle}
+            >
+              Unassigned
+            </Button>
+            <Button
+              color="info"
+              size="sm"
+              onClick={() => setFilterState('active')}
+              className="ml-2"
+              style={boxStyle}
+            >
+              Active
+            </Button>
+            <Button
+              color="warning"
+              size="sm"
+              onClick={() => setFilterState('inactive')}
+              className="ml-2"
+              style={boxStyle}
+            >
+              Inactive
+            </Button>
+            <Button
+              color="danger"
+              size="sm"
+              onClick={() => setFilterState('complete')}
+              className="ml-2"
+              style={boxStyle}
+            >
+              Complete
+            </Button>
+          </div>
         </div>
 
-        <table className="table table-bordered tasks-table">
+        <table className="table table-bordered tasks-table" ref={myRef}>
           <thead>
             <tr>
               <th scope="col" data-tip="Action" colSpan="2">
@@ -351,14 +336,13 @@ function WBSTasks(props) {
             </tr>
           </thead>
           <tbody>
-            <tr className="taskDrop">
+            {/* <tr className="taskDrop">   // Drag and drop functionality is deserted for now
               <td colSpan={14} />
-            </tr>
-
-            {props.state.tasks.fetched && filteredTasks.map((task, i) => (
+            </tr> */}
+            {fetched && levelOneTasks.map((task, i) => (
               <Task
                 key={`${task._id}${i}`}
-                id={task._id}
+                taskId={task._id}
                 level={task.level}
                 num={task.num}
                 name={task.taskName}
@@ -375,25 +359,25 @@ function WBSTasks(props) {
                 links={task.links}
                 projectId={projectId}
                 wbsId={wbsId}
-                selectTask={selectTaskFunc}
-                isNew={!!task.new}
                 parentId1={task.parentId1}
                 parentId2={task.parentId2}
                 parentId3={task.parentId3}
                 mother={task.mother}
-                isOpen={openAll}
-                drop={dropTask}
-                drag={dragTask}
+                openAll={openAll}
                 deleteWBSTask={deleteWBSTask}
-                hasChildren={task.hasChild}
-                siblings={props.state.tasks.taskItems.filter(item => item.mother === task.mother)}
-                taskId={task.taskId}
+                hasChildren={task.hasChildren}
+                siblings={levelOneTasks}
                 whyInfo={task.whyInfo}
                 intentInfo={task.intentInfo}
                 endstateInfo={task.endstateInfo}
                 childrenQty={task.childrenQty}
-                filteredTasks={filteredTasks}
-
+                filterTasks={filterTasks}
+                filterState={filterState}
+                controllerId={controllerId}
+                setControllerId={setControllerId}
+                load={load}
+                pageLoadTime={pageLoadTime}
+                setIsLoading={setIsLoading}
               />
             ))}
           </tbody>
@@ -401,14 +385,18 @@ function WBSTasks(props) {
       </div>
     </>
   );
-};
+}
 
-const mapStateToProps = state => ({ state });
+const mapStateToProps = state => ({
+  tasks: state.tasks.taskItems,
+  fetched: state.tasks.fetched,
+});
 
 export default connect(mapStateToProps, {
   fetchAllTasks,
-  emptyAllTaskItems,
+  emptyTaskItems,
   updateNumList,
   deleteTask,
   fetchAllMembers,
+  hasPermission,
 })(WBSTasks);

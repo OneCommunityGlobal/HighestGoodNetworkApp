@@ -8,9 +8,9 @@ import {
   Input,
   Label,
   Alert,
-  FormGroup,
+  Form,
 } from 'reactstrap';
-
+import { boxStyle } from 'styles';
 /**
  * Modal popup to show the reset password action
  */
@@ -47,12 +47,13 @@ const ResetPasswordPopup = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
+    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
       <ModalHeader toggle={closePopup}>Reset Password</ModalHeader>
       <ModalBody>
-        <FormGroup>
+        <Form>
           <Label for="newpassword">New Password</Label>
           <Input
+            autoFocus
             type="password"
             name="newpassword"
             id="newpassword"
@@ -65,8 +66,6 @@ const ResetPasswordPopup = React.memo(props => {
               setError('');
             }}
           />
-        </FormGroup>
-        <FormGroup>
           <Label for="confirmpassword">Confirm Password</Label>
           <Input
             type="password"
@@ -81,14 +80,14 @@ const ResetPasswordPopup = React.memo(props => {
               setError('');
             }}
           />
-        </FormGroup>
+        </Form>
       </ModalBody>
       <ModalFooter>
         {errorMessage === '' ? <React.Fragment /> : <Alert color="danger">{errorMessage}</Alert>}
-        <Button color="primary" onClick={resetPassword}>
+        <Button color="primary" onClick={resetPassword} style={boxStyle}>
           Reset Password
         </Button>
-        <Button color="secondary" onClick={closePopup}>
+        <Button color="secondary" onClick={closePopup} style={boxStyle}>
           Close
         </Button>
       </ModalFooter>

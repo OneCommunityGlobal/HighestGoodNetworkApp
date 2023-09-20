@@ -29,5 +29,5 @@ export function LoginPrivileges({ selectedInput, handleInputChange }) {
         </div>
       </div>
     </form>
-);
+  );
 }

@@ -31,7 +31,7 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
       });
 
     case types.USER_PROFILE_UPDATE:
-      let index = userProfiles.userProfiles.findIndex(user => user._id === action.user._id);
+      const index = userProfiles.userProfiles.findIndex(user => user._id === action.user._id);
       return updateObject(userProfiles, {
         userProfiles: Object.assign([
           ...userProfiles.userProfiles.slice(0, index),
@@ -44,7 +44,7 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
       });
 
     case types.USER_PROFILE_DELETE:
-      let deletedIndex = userProfiles.userProfiles.findIndex(user => user._id === action.user._id);
+      const deletedIndex = userProfiles.userProfiles.findIndex(user => user._id === action.user._id);
       return updateObject(userProfiles, {
         userProfiles: Object.assign([
           ...userProfiles.userProfiles.slice(0, deletedIndex),
@@ -54,7 +54,6 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
         fetched: true,
         status: '200',
       });
-
     default:
       return userProfiles;
   }

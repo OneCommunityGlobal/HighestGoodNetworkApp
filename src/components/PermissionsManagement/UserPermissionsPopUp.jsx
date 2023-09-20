@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Dropdown, Form, Input } from 'reactstrap';
+import React, { useEffect, useState, useRef } from 'react';
+import { Button, Dropdown, Form, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { getAllUserProfile } from 'actions/userManagement';
 import { permissionLabel } from './UserRoleTab';
-import { useRef } from 'react';
-
+import { modalInfo } from './RolePermissions';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
+import { boxStyle } from 'styles';
 
-const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
+const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) => {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
-
+  const [actualUserRolePermission, setActualUserRolePermission] = useState();
+  const [infoRoleModal, setinfoRoleModal] = useState(false);
+  const [modalContent, setContent] = useState(null);
   //no onchange, always change this state;
   const onChangeCheck = data => {
     const actualValue = data;
@@ -39,32 +40,42 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
         ? unCheckPermission
         : [...permissionsUserFront, actualValue];
 
-      let permissionsBackEnd = actualPermissionsFront
-        .map(permission => {
-          permissionFrontToBack(permission);
-        })
-        .filter(e => e != undefined);
 
       const newPermissionsObject = {
         frontPermissions: actualPermissionsFront,
-        backPermissions: permissionsBackEnd,
       };
       return { ...previous, permissions: newPermissionsObject };
     });
   };
 
+  const handleModalOpen = idx => {
+    setContent(modalInfo[idx]);
+    setinfoRoleModal(true);
+  };
   const refInput = useRef();
   const getUserData = async userId => {
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
     setActualUserProfile(allUserInfo);
   };
+  const toggleInfoRoleModal = () => {
+    setinfoRoleModal(!infoRoleModal);
+  };
   useEffect(() => {
     getAllUsers();
+    if (actualUserProfile?.role && roles) {
+      const roleIndex = roles?.findIndex(({ roleName }) => roleName === actualUserProfile?.role);
+      const permissions = roleIndex !== -1 ? roles[roleIndex].permissions : [];
+      setActualUserRolePermission(permissions);
+    }
   }, [actualUserProfile]);
 
   const isPermissionChecked = permission =>
     actualUserProfile?.permissions?.frontPermissions.some(perm => perm === permission);
+
+  const isPermissionDefault = permission => {
+    return actualUserRolePermission?.includes(permission);
+  };
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
@@ -73,7 +84,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
     const newUserInfo = { ...allUserInfo, ...actualUserProfile };
-
+   
     await axios
       .put(url, newUserInfo)
       .then(res => {
@@ -90,8 +101,9 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
       autoClose: 10000,
     });
   };
-
+  const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
   return (
+    <>
     <Form
       id="manage__user-permissions"
       onSubmit={e => {
@@ -161,34 +173,121 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
       <div>
         <h4 className="user-permissions-pop-up__title">Permissions:</h4>
         <ul className="user-role-tab__permission-list">
-          {Object.entries(permissionLabel).map(([key, value]) => {
+          {Object.entries(permissionLabel).map(([key, value]) => { 
+            const isValueInMainPermissions = mainPermissions.includes(value);
+
+            if (isValueInMainPermissions) {
             return (
               <li key={key} className="user-role-tab__permission">
-                <div style={{ color: isPermissionChecked(key) ? 'green' : 'red', padding: '14px' }}>
+                
+                <div
+                  style={{
+                    color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
+                    fontSize: '20px'
+                  }}
+                >
                   {value}
                 </div>
+                <div className='infos'>
+                <i
+                id= 'info-icon__permissions'
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={() => {
+                  handleModalOpen(value);
+                }}
+              />
+                  </div>
+                
                 {isPermissionChecked(key) ? (
+                  <div style={{paddingLeft: '15px'}}>
                   <Button
+                    className="info-button"
                     type="button"
                     color="danger"
                     onClick={e => onChangeCheck(key)}
                     disabled={actualUserProfile ? false : true}
+                    style={boxStyle}
                   >
                     Remove
                   </Button>
+                  </div>
                 ) : (
+                  <div style={{paddingLeft: '15px'}}>
                   <Button
+                    className="info-button"
                     type="button"
                     color="success"
                     onClick={e => onChangeCheck(key)}
                     disabled={actualUserProfile ? false : true}
+                    style={boxStyle}
                   >
                     Add
                   </Button>
+                  </div>
                 )}
               </li>
             );
-          })}
+          } else {
+            return (<li key={key} className="user-role-tab__permission">
+              
+            <div
+              style={{
+                color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
+                paddingLeft: '30px', paddingBottom: '10px'
+              }}
+            >
+              {value}
+            </div>
+
+            <div className='infos'>
+                <i
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
+                onClick={() => {
+                  handleModalOpen(value);
+                }}
+              />
+              </div>
+             
+            {isPermissionChecked(key) ? (
+              <div style={{paddingLeft: '15px'}}>
+              <Button
+                className="info-button"
+                type="button"
+                color="danger"
+                onClick={e => onChangeCheck(key)}
+                disabled={actualUserProfile ? false : true}
+                style={boxStyle}
+              >
+                Remove
+              </Button>
+              </div>
+            ) : (
+              <div style={{paddingLeft: '15px'}}>
+              <Button
+                className="info-button"
+                type="button"
+                color="success"
+                onClick={e => onChangeCheck(key)}
+                disabled={actualUserProfile ? false : true}
+                style={boxStyle}
+              >
+                Add
+              </Button>
+              </div>
+            )}
+          </li>);
+          }
+            
+          })
+          }
         </ul>
       </div>
       <Button
@@ -197,12 +296,24 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers }) => {
         color="primary"
         size="lg"
         block
-        style={{ marginTop: '1rem' }}
+        style={{ ...boxStyle, marginTop: '1rem' }}
       >
         Submit
       </Button>
     </Form>
+    <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal}>
+        <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
+        <ModalBody>{modalContent}</ModalBody>
+        <ModalFooter>
+          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+            {' '}
+            Ok{' '}
+          </Button>
+        </ModalFooter>
+      </Modal>
+    </>
   );
+  
 };
 
 const mapStateToProps = state => ({

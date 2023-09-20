@@ -53,7 +53,7 @@
 }
 
 .tableHeader {
-  background-color: #EEE7F7;
+  background-color: #eee7f7;
 }
 
 .table-row {
@@ -64,9 +64,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .input-wrapper + .input-wrapper {
   margin-left: 1rem;
+}
+
+.active-inactive-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: .5rem;
+}
+
+.active-inactive-container-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-picker-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
 }

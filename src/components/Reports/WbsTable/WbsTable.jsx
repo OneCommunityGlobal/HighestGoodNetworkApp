@@ -49,19 +49,20 @@ export const WbsTable = ({ wbs, skip, take }) => {
           <div className='wbs_id' onClick={()=>copyContent(item._id)} onMouseEnter={()=>setCopyMessage("Copy id to clipboard")}>{item._id}
           <div>{copyMessage}</div>
           </div>
+          <div>{window.innerWidth >= 1100 ? item._id : item._id.substring(0, 10)}</div>
         </div>
     )});
     }
   }
 
   return (
-    <div>
-      <h5 className="wbs-table-title">WBS</h5>
-      <div className="reports-table-head wbs-table-row">
-        <div id="projects__order">#</div>
-        <div>Name</div>
-        <div id="projects__active">Active</div>
-        <div id="projects__active">ID</div>
+    <div className="wbs-table">
+      <h5 style={{marginBottom: '2.125rem'}} className="wbs-table-title">WBS</h5>
+      <div style={{marginBottom: '0px'}} className="reports-table-head wbs-table-row">
+        <div className="wbs-table-cell">#</div>
+        <div className="wbs-table-cell">Name</div>
+        <div className="wbs-table-cell">Active</div>
+        <div className="wbs-table-cell">ID</div>
       </div>
       <div className='scroll_x'>{WbsList.length > 0 ? WbsList : <Stub />}</div>
     </div>
