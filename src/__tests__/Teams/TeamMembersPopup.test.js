@@ -128,4 +128,15 @@ describe('TeamMembersPopup', () => {
     const deleteButton = screen.queryByText('Delete');
     expect(deleteButton).not.toBeInTheDocument();
   });
+
+  it('displays the team name in the modal header', () => {
+    render(
+      <Provider store={store}>
+        <TeamMembersPopup {...initialProps} />
+      </Provider>,
+    );
+
+    const modalHeader = screen.getByText(`Members of ${initialProps.selectedTeamName}`);
+    expect(modalHeader).toBeInTheDocument();
+  });
 });
