@@ -56,6 +56,8 @@ export const Header = props => {
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
+  const canOnlyCreateBadges = props.hasPermission('seeBadgeManagementTab');
+  console.log('canOnlyCreateBadges', canOnlyCreateBadges)
   // Projects
   const canPostProject = props.hasPermission('postProject');
   // Tasks
@@ -168,6 +170,7 @@ export const Header = props => {
                 </NavLink>
               </NavItem>
               {(canPostUserProfile ||
+                canOnlyCreateBadges ||
                 canDeleteUserProfile ||
                 canPutUserProfileImportantInfo ||
                 canCreateBadges ||
@@ -190,7 +193,7 @@ export const Header = props => {
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {canCreateBadges ? (
+                    {(canCreateBadges || canOnlyCreateBadges) ? (
                       <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
