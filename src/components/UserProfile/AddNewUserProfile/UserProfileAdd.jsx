@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import { get } from 'lodash';
+import { assign, get } from 'lodash';
 import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
@@ -107,13 +107,13 @@ class AddUserProfile extends Component {
     this.state.showphone = true;
     this.onCreateNewUser();
   }
-
+  
+  
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
-
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -469,6 +469,10 @@ class AddUserProfile extends Component {
     });
   };
 
+  onAddTeamMember = (teamId, userId, firstName, lastName) => {
+    this.props.addTeamMember(teamId, userId, firstName, lastName);
+  }
+
   onAssignProject = assignedProject => {
     const projects = [...this.state.projects];
     projects.push(assignedProject);
@@ -650,6 +654,7 @@ class AddUserProfile extends Component {
               return;
             } else {
               toast.success('User profile created.');
+              this.onAddTeamMember(this.state.teams[0]._id, res.data._id, this.state.userProfile.firstName, this.state.userProfile.lastName);
             }
             this.props.userCreated();
           })
