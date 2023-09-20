@@ -9,7 +9,7 @@ import { boxStyle } from 'styles';
 
 const Project = props => {
   const [originName] = useState(props.name);
-  const [originCategory] = useState(props.category);
+  const [originCategory, setOriginCategory] = useState(props.category);
   const [name, setName] = useState(props.name);
   const [category, setCategory] = useState(props.category);
   const [active, setActive] = useState(props.active);
@@ -40,6 +40,7 @@ const Project = props => {
       setName(originName);
     } else if (originName !== name || category != originCategory) {
       props.onUpdateProjectName(props.projectId, name, category, active);
+      setOriginCategory(category);
     }
   };
 

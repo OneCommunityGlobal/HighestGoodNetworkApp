@@ -14,6 +14,7 @@
   background-color: #faf7fc;
   margin: 0px;
 }
+
 body.dark .container-component-wrapper {
   background-color: #333;
 }
@@ -199,3 +200,5 @@ body.dark .container-component-wrapper {
     margin: 8px 0;
   }
 }
+}
+

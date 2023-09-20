@@ -375,3 +375,7 @@ input:checked + .slider:before {
   color: white !important;
 }
 
+tr {
+  content-visibility: auto;
+}
+
