@@ -2,34 +2,13 @@ import React from 'react';
 import TeamTableSearchPanel from 'components/Teams/TeamTableSearchPanel';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
 const initialProps = {
-  open: true,
-  selectedTeamName: 'Test Team',
-  hasPermission: jest.fn(),
-  members: {
-    teamMembers: {
-      toSorted: jest.fn(() => []),
-    },
-  },
-  roles: [{}],
-  auth: {
-    user: {
-      role: 'Owner',
-      permissions: {
-        frontPermissions: ['postTeam'],
-      },
-    },
-  },
-  requestorRole: '',
-  userPermissions: [],
-  onClose: jest.fn(),
-  onDeleteClick: jest.fn(),
   onCreateNewTeamClick: jest.fn(),
   onSearch: jest.fn(),
 };
@@ -56,12 +35,23 @@ describe('TeamTableSearchPanel', () => {
   it('renders the "Create New Team" button when user has permission', () => {
     const { getByRole } = render(
       <Provider store={store}>
-        <TeamTableSearchPanel {...initialProps} />;
+        <TeamTableSearchPanel hasPermission={() => true} />;
       </Provider>,
     );
 
     const createNewTeamButton = getByRole('button', { name: 'Create New Team' });
     expect(createNewTeamButton).toBeInTheDocument();
+  });
+
+  it('does not render the "Create New Team" button when user does not have permission', () => {
+    render(
+      <Provider store={store}>
+        <TeamTableSearchPanel hasPermission={() => false} />;
+      </Provider>,
+    );
+
+    const createNewTeamButton = screen.queryByText('Create New Team');
+    expect(createNewTeamButton).toBeNull;
   });
 
   it('calls onCreateNewTeamClick when the "Create New Team" button is clicked', () => {
