@@ -26,4 +26,26 @@ describe('TeamTableSearchPanel', () => {
       </Provider>,
     );
   });
+
+  it('renders the "Create New Team" button when user has permission', () => {
+    const hasPermissionProps = {
+      open: true,
+      selectedTeamName: 'Test Team',
+      hasPermission: jest.fn(),
+      members: {
+        teamMembers: {
+          toSorted: jest.fn(() => []),
+        },
+      },
+    };
+
+    const { getByRole } = render(
+      <Provider store={store}>
+        <TeamTableSearchPanel {...hasPermissionProps} />;
+      </Provider>,
+    );
+
+    const createNewTeamButton = getByRole('button', { name: 'Create New Team' });
+    expect(createNewTeamButton).toBeInTheDocument();
+  });
 });
