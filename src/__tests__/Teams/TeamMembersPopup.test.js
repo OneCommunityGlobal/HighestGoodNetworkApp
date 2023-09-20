@@ -81,6 +81,28 @@ describe('TeamMembersPopup', () => {
     expect(addButton).toBeInTheDocument();
   });
 
+  it('does not display "Add" button if user does not have "assignTeamToUsers" permission', () => {
+    const noPermissionProps = {
+      open: true,
+      selectedTeamName: 'Test Team',
+      hasPermission: null,
+      members: {
+        teamMembers: {
+          toSorted: jest.fn(() => []),
+        },
+      },
+    };
+
+    render(
+      <Provider store={store}>
+        <TeamMembersPopup {...noPermissionProps} />
+      </Provider>,
+    );
+
+    const addButton = screen.queryByText('Add');
+    expect(addButton).toBeNull;
+  });
+
   it('display "Delete" button if user has permission to delete members', () => {
     initialProps.hasPermission.mockReturnValue(true);
 
