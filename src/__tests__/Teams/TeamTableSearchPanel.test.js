@@ -31,6 +31,7 @@ const initialProps = {
   onClose: jest.fn(),
   onDeleteClick: jest.fn(),
   onCreateNewTeamClick: jest.fn(),
+  onSearch: jest.fn(),
 };
 
 let store;
@@ -73,5 +74,17 @@ describe('TeamTableSearchPanel', () => {
     const createNewTeamButton = getByRole('button', { name: 'Create New Team' });
     fireEvent.click(createNewTeamButton);
     expect(initialProps.onCreateNewTeamClick).toHaveBeenCalled();
+  });
+
+  it('calls onSearch when the input value changes', () => {
+    const { getByPlaceholderText } = render(
+      <Provider store={store}>
+        <TeamTableSearchPanel {...initialProps} />;
+      </Provider>,
+    );
+
+    const searchInput = getByPlaceholderText('Search Text');
+    fireEvent.change(searchInput, { target: { value: 'search query' } });
+    expect(initialProps.onSearch).toHaveBeenCalledWith('search query');
   });
 });
