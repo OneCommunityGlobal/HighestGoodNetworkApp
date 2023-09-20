@@ -24,16 +24,12 @@ function LogBar() {
           <Button className="lightBlueBtn">Tool/Equipment</Button>
         </div>
       </div>
-      <div className="logBar-section thirdSection">
+      <div className="logBar-section">
         <p>Team:</p>
-        <div className="logBar-btnGroup">
+        <div className="logBar-btnGroup thirdSection">
           <Button className="darkBlueBtn">Create New Team</Button>{' '}
           <Button className="darkBlueBtn">Edit Existing Team</Button>{' '}
-          <Button
-            className="redBtn"
-          >
-            Log Issue
-          </Button>
+          <Button className="redBtn">Log Issue</Button>
         </div>
       </div>
     </div>

@@ -51,23 +51,37 @@ button.btn.btn-secondary.redBtn{
   margin-top: 2em;
 }
 
-@media (min-width:600px){
+@media (min-width:550px){
+ .logBar-container{
+  display: flex;
+  flex-direction: column;  
+}
+
+button.btn.btn-secondary{
+  width: auto;
+}
+
+button.btn.btn-secondary.redBtn{
+  margin-top: auto;
+}
+
+}
+
+@media (min-width:750px){
 .logBar-container{
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 2em;  
+  margin: 2em; 
 }
 
 
 .logBar-section{
   width: 50%;
+  flex: auto;
 }
 
- .thirdSection{
-  width:fit-content; 
-}
 
 .logBar-btnGroup{
  margin-top: -0.5em; 
@@ -81,6 +95,7 @@ button.btn.btn-secondary{
 
 button.btn.btn-secondary.redBtn{
   margin-top: auto;
+  margin-left: 2em;
 }
 }
 
@@ -120,7 +135,7 @@ margin-top: 0.5em;
 margin-bottom: -0.2em;
 }
 
-@media (min-width:600px){
+@media (min-width:650px){
 .cards-container_content{
   display: flex;
   flex-direction: row;
