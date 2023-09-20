@@ -1,5 +1,5 @@
-.add-materials-form {
-  max-width: 600px;
+.add-materials-page form {
+  max-width: 700px;
   border-radius: 1rem;
   padding: 2rem;
   margin: 2rem auto 0 auto;
@@ -7,9 +7,5 @@
 }
 
 .add-materials-page {
-  background-color: rgb(199, 235, 255);
-}
-
-.add-materials-form h1 {
-  font-size: 1.5rem;
+  background-color: rgb(232, 244, 249);
 }

@@ -1,0 +1,9 @@
+.total-price {
+  font-size: 1.3rem;
+  background-color: rgb(245, 230, 230);
+  border-radius: .5rem;
+  padding: .3rem 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}

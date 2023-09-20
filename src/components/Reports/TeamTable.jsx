@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './TeamTable.css';
+// These styles were not being used
+// import './TeamTable.css';
 
 function TeamTable(props) {
   // Display project lists

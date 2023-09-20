@@ -1,5 +1,6 @@
 import React from 'react';
-import './reports.css';
+// These styles were not being used
+// import './reports.css';
 import { Link } from 'react-router-dom';
 
 const ProjectTable = props => {
