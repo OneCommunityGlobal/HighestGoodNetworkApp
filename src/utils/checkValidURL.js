@@ -3,11 +3,7 @@ export const isValidGoogleDocsUrl = url => {
   return googleDocsPattern.test(url);
 };
 
-export const isValidDropboxUrl = url => {
-  const dropboxPattern = /^https:\/\/(?:www\.)?dropbox\.com\/home(?:\/[^\s/][^\s]+)?$/;
-  const validDropboxPattern = /^https:\/\/(?:www\.)?dropbox\.com\/home\/[^\s/]+\/?$/;
-  const dropboxPattern2 = /^https:\/\/(?:www\.)?dropbox\.com\/(s(?:cl)?\/[a-zA-Z0-9]+(?:\/[^\s/?#]+)?)|(home\/[^\s/]+)$/;
-
-
-  return (dropboxPattern.test(url) && validDropboxPattern.test(url)) || dropboxPattern2.test(url);
-};
+export const isValidUrl = url => {
+  var urlPattern = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)?$/;
+  return urlPattern.test(url);
+}
