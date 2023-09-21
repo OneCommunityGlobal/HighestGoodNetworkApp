@@ -38,6 +38,7 @@ import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
+import AddMaterials from 'components/BMDashboard/AddMaterials';
 
 export default (
   <>
@@ -155,6 +156,7 @@ export default (
           <Route path="/Logout" component={Logout} />
           <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
           <ProtectedRoute path="/" exact component={Dashboard} />
+          <Route path="/bmdashboard/addMaterials" component={AddMaterials} />
         </Switch>
       </>
     </Switch>
