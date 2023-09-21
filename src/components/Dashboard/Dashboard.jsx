@@ -14,7 +14,7 @@ export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [userProfile, setUserProfile] = useState(undefined);
-  let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
+  // let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
   const { match, auth } = props;
   const userId = match.params.userId || auth.user.userid;
 
@@ -66,8 +66,7 @@ export function Dashboard(props) {
             >
               <WeeklySummary isDashboard isPopup={popup} asUser={userId} />
             </div>
-            <div>
-            </div>
+            <div />
           </div>
         </Col>
       </Row>
