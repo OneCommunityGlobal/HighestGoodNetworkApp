@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+
 import "./PermissionChangeLogTable.css";
+import { formatDate, formatted_AM_PM_Time } from 'utils/formatDate';
 
 
 const PermissionChangeLogTable = ({ changeLogs }) => {
@@ -11,27 +13,28 @@ const PermissionChangeLogTable = ({ changeLogs }) => {
 
   const paginate = pageNumber => setCurrentPage(pageNumber);
 
+
   return (
     <>
       <table className='permission-change-log-table' style={{ borderCollapse: 'collapse', width: '100%' }}>
         <thead>
           <tr>
-            <th className='permission-change-log-table--header'>Log Date Time</th>
-            <th className='permission-change-log-table--header'>Role ID</th>
+            <th className='permission-change-log-table--header'>Log Date and Time (PST)</th>
+            <th className='permission-change-log-table--header'>Role ID Changed</th>
             <th className='permission-change-log-table--header'>Role Name</th>
             <th className='permission-change-log-table--header'>Permissions</th>
             <th className='permission-change-log-table--header'>Permissions Added</th>
             <th className='permission-change-log-table--header'>Permissions Removed</th>
-            <th className='permission-change-log-table--header'>Requestor ID</th>
-            <th className='permission-change-log-table--header'>Requestor Role</th>
-            <th className='permission-change-log-table--header'>Requestor Email</th>
+            <th className='permission-change-log-table--header'>Editor ID</th>
+            <th className='permission-change-log-table--header'>Editor Role</th>
+            <th className='permission-change-log-table--header'>Editor Email</th>
           </tr>
         </thead>
         <tbody>
           {currentItems.map(log => (
             <tr key={log._id}>
               {/* ... (same as before) */}
-              <td className='permission-change-log-table--cell'>{log.logDateTime}</td>
+              <td className='permission-change-log-table--cell'>{`${formatDate(log.logDateTime)} ${formatted_AM_PM_Time(log.logDateTime)}`}</td>
               <td className='permission-change-log-table--cell'>{log.roleId}</td>
               <td className='permission-change-log-table--cell'>{log.roleName}</td>
               <td className='permission-change-log-table--cell'>{log.permissions.join(', ')}</td>

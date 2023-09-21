@@ -37,7 +37,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     // added. call getChangeLogs
     const getChangeLogs = async () => {
       try {
-        const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS)
+        const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid))
         console.log("🚀 ~ file: PermissionsManagement.jsx:38 ~ getChangeLogs ~ response.data:", response.data)
         setChangeLogs(response.data)
         setLoading(false);
@@ -143,11 +143,8 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
           </Modal>
         </div>
       </div>
-      {loading ? (
-        <p className='loading-message'>Loading...</p>
-      ) : (
-        <PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} />
-      )}
+      {loading && (<p className='loading-message'>Loading...</p>)}
+      {changeLogs?.length > 0 && (<PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} />)}
       <br />
       <br />
     </>
