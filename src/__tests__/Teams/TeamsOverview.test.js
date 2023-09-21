@@ -1,6 +1,7 @@
 import React from 'react';
 import TeamsOverview from 'components/Teams/TeamsOverview';
 import { renderWithProvider } from '__tests__/utils';
+import { TOTAL_TEAMS, ACTIVE_TEAMS } from '../../languages/en/ui';
 
 describe('TeamsOverview', () => {
   it('should render correctly', () => {
@@ -35,5 +36,15 @@ describe('TeamsOverview', () => {
   it('displays the circle icon', () => {
     const { getByTestId } = renderWithProvider(<TeamsOverview />);
     expect(getByTestId('card_active')).toBeInTheDocument();
+  });
+
+  it('displays the correct localization for total teams', () => {
+    const { getByText } = renderWithProvider(<TeamsOverview />);
+    expect(getByText(TOTAL_TEAMS)).toBeInTheDocument();
+  });
+
+  it('displays the correct localization for active teams', () => {
+    const { getByText } = renderWithProvider(<TeamsOverview />);
+    expect(getByText(ACTIVE_TEAMS)).toBeInTheDocument();
   });
 });
