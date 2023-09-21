@@ -7,7 +7,7 @@ import {
   BsArrowCounterclockwise,
 } from 'react-icons/bs';
 import { FaSave } from 'react-icons/fa';
-import { Input } from 'reactstrap';
+import { Input, Button } from 'reactstrap';
 import './Countdown.css';
 import moment from 'moment';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -44,10 +44,10 @@ const Countdown = ({
     let time;
     if (add) {
       time = moment.duration(message?.goal ?? 0, 'milliseconds').add(min, 'minutes');
-      return time.asHours() > 10 ? true : false;
+      return time.asHours() > 10;
     }
     time = moment.duration(message?.goal ?? 0, 'milliseconds').subtract(min, 'minutes');
-    return time.asMinutes() < 15 ? true : false;
+    return time.asMinutes() < 15;
   };
 
   /*
@@ -139,7 +139,7 @@ const Countdown = ({
         resetCounter();
       }
     },
-    [message, running, setTimerIsOverModalIsOpen],
+    [message, running, setTimerIsOverModalIsOpen]
   );
 
   const resetCounter = () => {
@@ -267,34 +267,34 @@ const Countdown = ({
         {time < message.goal || running ? (
           <>
             <div className="add-grid transition-color">
-              <button
-                style={{ cursor: `${shouldDisableBtn(15, false) ? 'not-allowed' : ''}` }}
+              <Button
+                size="sm"
                 disabled={shouldDisableBtn(15, false)}
                 onClick={() => handleRemoveGoal(1000 * 60 * 15)}
               >
                 -15 m
-              </button>
-              <button
-                style={{ cursor: `${shouldDisableBtn(15) && 'not-allowed'}` }}
+              </Button>
+              <Button
+                size="sm"
                 disabled={shouldDisableBtn(15)}
                 onClick={() => handleAddGoal(1000 * 60 * 15)}
               >
-                15 m
-              </button>
-              <button
-                style={{ cursor: `${shouldDisableBtn(30) && 'not-allowed'}` }}
+                +15 m
+              </Button>
+              <Button
+                size="sm"
                 disabled={shouldDisableBtn(30)}
                 onClick={() => handleAddGoal(1000 * 60 * 30)}
               >
-                30 m
-              </button>
-              <button
-                style={{ cursor: `${shouldDisableBtn(60) && 'not-allowed'}` }}
+                +30 m
+              </Button>
+              <Button
+                size="sm"
                 disabled={shouldDisableBtn(60)}
                 onClick={() => handleAddGoal(1000 * 60 * 60)}
               >
-                1 h
-              </button>
+                +1 h
+              </Button>
             </div>
           </>
         ) : (

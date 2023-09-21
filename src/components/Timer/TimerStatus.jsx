@@ -22,12 +22,8 @@ const TimerStatus = ({ readyState, message }) => {
   or when there is no message from the server
   */
   return (
-    <div className="timer-status">
-      {readyState !== ReadyState.OPEN
-        ? connectionStatus
-        : message?.error
-          ? `Error:\n ${message.error}`
-          : 'Waiting for messages from server'}
+    <div className="timer-status text-wrap">
+      {connectionStatus}
     </div>
   );
 };

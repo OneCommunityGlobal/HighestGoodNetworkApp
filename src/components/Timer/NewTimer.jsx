@@ -17,7 +17,6 @@ import { useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
-import Stopwatch from './Stopwatch';
 import TimerStatus from './TimerStatus';
 
 export const NewTimer = () => {
@@ -82,7 +81,7 @@ export const NewTimer = () => {
     STOP_TIMER: 'STOP_TIMER',
     CLEAR_TIMER: 'CLEAR_TIMER',
     GET_TIMER: 'GET_TIMER',
-    SWITCH_MODE: 'SWITCH_MODE',
+    // SWITCH_MODE: 'SWITCH_MODE',
     SET_GOAL: 'SET_GOAL=',
     ADD_GOAL: 'ADD_GOAL=',
     REMOVE_GOAL: 'REMOVE_GOAL=',
@@ -139,8 +138,6 @@ export const NewTimer = () => {
     sendMessage(action.CLEAR_TIMER); 
     setRemainingTime(0); // Reset the remaining time to 0
   }, [sendMessage]);
-  const handleSwitch = useCallback(() => sendMessage(action.SWITCH_MODE), [sendMessage]);
-  const handleGetTimer = useCallback(() => sendMessage(action.GET_TIMER), [sendMessage]);
   const handleSetGoal = useCallback(time => sendMessage(action.SET_GOAL.concat(time)), [sendMessage]);
   const handleAddGoal = useCallback(time => {
   sendMessage(action.ADD_GOAL.concat(time));
@@ -149,6 +146,7 @@ export const NewTimer = () => {
 const handleRemoveGoal = useCallback((time) => {
   const now = moment();
   const lastAccess = moment(message?.lastAccess);
+  console.log(message.lastAccess);
   const elapsedTime = moment.duration(now.diff(lastAccess)).asMilliseconds();
   let remaining = message?.time - elapsedTime;
 
@@ -294,12 +292,10 @@ const handleRemoveGoal = useCallback((time) => {
       )}
       <button
         type="button"
-        onClick={() => {
-          handleUserCanStop()
-        }}
+        onClick={handleUserCanStop}
       >
         <BsStopCircleFill
-          className={`${'btn-white transition-color'}`}
+          className="btn-white transition-color"
           fontSize="1.5rem"
         />
       </button>
@@ -388,41 +384,27 @@ const handleRemoveGoal = useCallback((time) => {
       <div className={`timer ${!showTimer && 'hide-me'}`}>
         <div className="timer-content">
           <BsXLg className="transition-color btn-white cross" onClick={toggleTimer} />
-          {/* <SwitchTimer message={message} handleSwitch={handleSwitch} /> */}
-          {readyState === ReadyState.OPEN && message && !message?.error ? (
-            message?.countdown ? (
-              <Countdown
-                message={message}
-                handlePause={handlePause}
-                handleStart={handleStartButton}
-                handleStop={handleStop}
-                timer={{ hours, minutes }}
-                handleSetGoal={handleSetGoal}
-                handleAddGoal={handleAddGoal}
-                handleRemoveGoal={handleRemoveGoal}
-                handleUserCanStop={handleUserCanStop}
-                setPreviewTimer={setPreviewTimer}
-                handleClear={() => setConfirmationResetModal(true)}
-                toggleModal={() => {
-                  setLogModal(true);
-                }}
-                alarm={handleStartAlarm}
-                handlePauseAlarm={handleStopAlarm}
-                logModal={logModal}
-                triggerAudio={triggerAudio}
-                setTimerIsOverModalIsOpen={setTimerIsOverModalIsOpen}
-                userIsRunningTimerAndHasAtLeastOneMinute={userCanStop}
-              />
-            ) : (
-              <Stopwatch
-                message={message}
-                handlePause={handlePause}
-                handleStart={handleStart}
-                handleStop={handleStop}
-                handleClear={handleClear}
-                setPreviewTimer={setPreviewTimer}
-              />
-            )
+          {readyState === ReadyState.OPEN && message ? (
+            <Countdown
+              message={message}
+              handlePause={handlePause}
+              handleStart={handleStartButton}
+              handleStop={handleStop}
+              timer={{ hours, minutes }}
+              handleSetGoal={handleSetGoal}
+              handleAddGoal={handleAddGoal}
+              handleRemoveGoal={handleRemoveGoal}
+              handleUserCanStop={handleUserCanStop}
+              setPreviewTimer={setPreviewTimer}
+              handleClear={() => setConfirmationResetModal(true)}
+              toggleModal={() => setLogModal(true)}
+              alarm={handleStartAlarm}
+              handlePauseAlarm={handleStopAlarm}
+              logModal={logModal}
+              triggerAudio={triggerAudio}
+              setTimerIsOverModalIsOpen={setTimerIsOverModalIsOpen}
+              userIsRunningTimerAndHasAtLeastOneMinute={userCanStop}
+            />
           ) : (
             <TimerStatus readyState={readyState} message={message} />
           )}
