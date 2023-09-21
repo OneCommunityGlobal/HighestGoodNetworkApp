@@ -117,7 +117,7 @@ export const ENDPOINTS = {
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
-  PERMISSION_CHANGE_LOGS: () => `${APIEndpoint}/permissionChangeLogs`,
+  PERMISSION_CHANGE_LOGS: `${APIEndpoint}/permissionChangeLogs`,
 };
 
 export const ApiEndpoint = APIEndpoint;
