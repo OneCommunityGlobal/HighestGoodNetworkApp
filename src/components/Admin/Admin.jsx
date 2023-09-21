@@ -10,19 +10,18 @@ function Admin(props) {
     fetchAllPopupEditor();
   }, [1]);
 
-  const [keyword, setKeyword] = useState('');
-  const [data, setData] = useState();
+  // const [keyword, setKeyword] = useState('');
+  // const [data, setData] = useState();
 
-  const search = () => {
-    if (keyword.length > 0) {
-      setData(data.filter(d => d.title.includes(keyword) || d.content.includes(keyword)));
-    }
-  };
+  // const search = () => {
+  //   if (keyword.length > 0) {
+  //     setData(data.filter(d => d.title.includes(keyword) || d.content.includes(keyword)));
+  //   }
+  // };
 
   useEffect(() => {
     const mode = localStorage.getItem('mode');
     document.body.className = mode;
-
   }, []);
 
   return (
