@@ -30,7 +30,7 @@
 .reports-table-head-members {
   background-color: #eee7f8;  
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr 3fr;
+  grid-template-columns: 10% 25% 15% 50%;
   column-gap: 4px;
   min-height: 42px;
   align-items: center;
@@ -42,8 +42,7 @@
 .project-member-table-row {
   display: grid;
   grid-auto-flow: column;
-/*   grid-template-columns: 20px 150px 60px 230px; */
-  grid-template-columns: 1fr 2fr 1fr 3fr;
+  grid-template-columns: 10% 25% 15% 50%;
 
   column-gap: 4px;
   min-height: 42px;
@@ -80,9 +79,9 @@
     text-align: center;
   }
   .project-member-table-row {    
-    grid-template-columns: 1fr 3fr 1fr 3fr;
+    grid-template-columns: 10% 25% 15% 50%;
   }
   .reports-table-head-members {
-    grid-template-columns: 1fr 3fr 1fr 3fr;
+    grid-template-columns: 10% 25% 15% 50%;
   }
 }
