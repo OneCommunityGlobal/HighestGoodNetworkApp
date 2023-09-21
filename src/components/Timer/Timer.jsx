@@ -162,6 +162,7 @@ const Timer = () => {
         >
           {isActive ? 'Pause' : 'Start'}
         </Button>
+        
         <Button
           onClick={seconds !== 0 ? handleStop : null}
           color="danger"
