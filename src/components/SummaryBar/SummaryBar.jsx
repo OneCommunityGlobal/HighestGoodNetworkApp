@@ -296,7 +296,7 @@ const SummaryBar = props => {
             </div>
           </Col>
           <Col className="d-flex col-lg-3 col-12 no-gutters">
-            <Row className="no-gutters">
+            <Row className="no-gutters w-100">
               {totalEffort < weeklyCommittedHours && (
                 <div className="border-red col-4 bg--white-smoke">
                   <div className="py-1"> </div>
@@ -334,7 +334,7 @@ const SummaryBar = props => {
           </Col>
 
           <Col className="d-flex col-lg-3 col-12 no-gutters">
-            <Row className="no-gutters">
+            <Row className="no-gutters w-100">
               {!weeklySummary ? (
                 <div className="border-red col-4 bg--white-smoke no-gutters">
                   <div className="py-1"> </div>
