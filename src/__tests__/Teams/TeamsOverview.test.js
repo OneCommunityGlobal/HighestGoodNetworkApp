@@ -26,4 +26,14 @@ describe('TeamsOverview', () => {
     const { getByText } = renderWithProvider(<TeamsOverview />);
     expect(getByText('Active Teams')).toBeInTheDocument();
   });
+
+  it('displays the user icon', () => {
+    const { getByTestId } = renderWithProvider(<TeamsOverview />);
+    expect(getByTestId('card_team')).toBeInTheDocument();
+  });
+
+  it('displays the circle icon', () => {
+    const { getByTestId } = renderWithProvider(<TeamsOverview />);
+    expect(getByTestId('card_active')).toBeInTheDocument();
+  });
 });
