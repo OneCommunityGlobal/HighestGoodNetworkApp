@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
+import { addTeamMember } from 'actions/allTeamsAction';
 
 const TeamsTab = props => {
   const {
@@ -15,6 +16,7 @@ const TeamsTab = props => {
     canEditVisibility,
     handleSubmit,
     disabled,
+    userProfile,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -31,6 +33,9 @@ const TeamsTab = props => {
   };
 
   const onSelectAssignTeam = team => {
+    if(userProfile._id){
+      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName)
+    }
     onAssignTeam(team);
     setRenderedOn(Date.now());
   };

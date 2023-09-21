@@ -870,6 +870,7 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
+                  userProfile={userProfile}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -1064,6 +1065,7 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
+                    userProfile={userProfile}
                   />
                 </ModalBody>
                 <ModalFooter>

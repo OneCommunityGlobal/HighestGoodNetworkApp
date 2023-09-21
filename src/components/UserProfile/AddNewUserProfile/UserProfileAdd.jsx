@@ -417,6 +417,7 @@ class AddUserProfile extends Component {
                     isUserAdmin={true}
                     role={this.props.auth.user.role}
                     edit
+                    userProfile={this.state.userProfile}
                   />
                 </TabPane>
               </TabContent>
@@ -463,15 +464,10 @@ class AddUserProfile extends Component {
   onAssignTeam = assignedTeam => {
     const teams = [...this.state.teams];
     teams.push(assignedTeam);
-
     this.setState({
       teams: teams,
     });
   };
-
-  onAddTeamMember = (teamId, userId, firstName, lastName) => {
-    this.props.addTeamMember(teamId, userId, firstName, lastName);
-  }
 
   onAssignProject = assignedProject => {
     const projects = [...this.state.projects];
@@ -654,7 +650,12 @@ class AddUserProfile extends Component {
               return;
             } else {
               toast.success('User profile created.');
-              this.onAddTeamMember(this.state.teams[0]._id, res.data._id, this.state.userProfile.firstName, this.state.userProfile.lastName);
+              this.state.userProfile._id = res.data._id;
+              if(this.state.teams.length > 0){
+                this.state.teams.forEach((team) => {
+                  this.props.addTeamMember(team._id, res.data._id, res.data.firstName, res.data.lastName)
+                })
+              }
             }
             this.props.userCreated();
           })
