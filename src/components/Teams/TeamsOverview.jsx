@@ -1,7 +1,7 @@
 import React from 'react';
 import { TOTAL_TEAMS, ACTIVE_TEAMS } from '../../languages/en/ui';
 
-const TeamsOverview = props => {
+export const TeamsOverview = props => {
   return (
     <div className="teams__overview--top">
       <div className="card" id="card_team">
