@@ -1,4 +1,4 @@
-.project-details{
+.project-details {
   text-align: center;
   padding-top: 20px;
   padding-left: 3%;
@@ -10,7 +10,7 @@
 
 /* styling for the logBar component - i.e. dashboard with buttons */
 
-.logBar-container{
+.logBar-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -20,13 +20,12 @@
   background-color: #eaeeef;
 }
 
-.logBar-section{
+.logBar-section {
   width: 100%;
   margin-top: 1em;
 }
 
-
-button.btn.btn-secondary{
+button.btn.btn-secondary {
   border: 0;
   border-radius: 10px;
   margin: 0.1em;
@@ -34,79 +33,76 @@ button.btn.btn-secondary{
 }
 
 /* buttons custom colors */
-button.btn.btn-secondary.greenBtn{
+button.btn.btn-secondary.greenBtn {
   background-color: #015d4a;
 }
 
-button.btn.btn-secondary.lightBlueBtn{
+button.btn.btn-secondary.lightBlueBtn {
   background-color: #0f6386;
 }
 
-button.btn.btn-secondary.darkBlueBtn{
+button.btn.btn-secondary.darkBlueBtn {
   background-color: #203844;
 }
 
-button.btn.btn-secondary.redBtn{
+button.btn.btn-secondary.redBtn {
   background-color: #980101;
   margin-top: 2em;
 }
 
-@media (min-width:550px){
- .logBar-container{
-  display: flex;
-  flex-direction: column;  
+@media (min-width: 550px) {
+  .logBar-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  button.btn.btn-secondary {
+    width: auto;
+  }
+
+  button.btn.btn-secondary.redBtn {
+    margin-top: auto;
+  }
 }
 
-button.btn.btn-secondary{
-  width: auto;
-}
+@media (min-width: 750px) {
+  .logBar-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 2em;
+  }
 
-button.btn.btn-secondary.redBtn{
-  margin-top: auto;
-}
+  .logBar-section {
+    width: 50%;
+    flex: auto;
+  }
 
-}
+  .logBar-btnGroup {
+    margin-top: -0.5em;
+    display: flex;
+    justify-content: center;
+  }
 
-@media (min-width:750px){
-.logBar-container{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 2em; 
-}
+  button.btn.btn-secondary {
+    width: auto;
+  }
 
-
-.logBar-section{
-  width: 50%;
-  flex: auto;
-}
-
-
-.logBar-btnGroup{
- margin-top: -0.5em; 
- display: flex;
- justify-content: center;
-}
-
-button.btn.btn-secondary{
-  width: auto;
-}
-
-button.btn.btn-secondary.redBtn{
-  margin-top: auto;
-  margin-left: 2em;
-}
+  button.btn.btn-secondary.redBtn {
+    margin-top: auto;
+    margin-left: 2em;
+  }
 }
 
 /* styling for containers with cards */
-.cards-container{
+.card.cards-container {
   align-items: center;
   margin: 1em 2em;
   padding: 1em 2em;
 }
 
-.cards-container_content{
+.cards-container_content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -114,64 +110,69 @@ button.btn.btn-secondary.redBtn{
 }
 
 /* styling for single card element */
-.singleCard{
+.singleCard {
   border: 1px solid #eaeeef;
   border-radius: 5px;
   text-align: center;
-  margin-bottom: 0.5em; 
-  cursor: pointer; 
+  margin-bottom: 0.5em;
+  cursor: pointer;
 }
 
-.singleCard:hover{
+.singleCard:hover {
   box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
-  transform: translate3d(0.5px,0.5px,0.5px);
+  transform: translate3d(0.5px, 0.5px, 0.5px);
 }
 
-.cardBody{
-margin-top: 0.5em;
+.cardBody {
+  margin-top: 0.5em;
 }
 
-.cardBody h6{
-margin-bottom: -0.2em;
-}
-
-@media (min-width:650px){
-.cards-container_content{
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-
-/* styling for single card element */
-.singleCard{
-  margin-right: 0.5em;
-}
+.cardBody h6 {
+  margin-bottom: -0.2em;
 }
 
 /* button on a card */
-.infoDiv{
+.infoDiv {
   font-size: 0.5rem;
   padding: 1em;
   margin: 0.5em;
-  border-radius: 10px; 
-  background-color: #f2c897 ;
+  border-radius: 10px;
+  background-color: #f2c897;
 }
 
 /* TO DO: dynamic value to be added */
-.infoDiv .warning{
+/* .infoDiv .warning{
   color: white;
   background-color: #980101; 
+} */
+
+@media (min-width: 600px) {
+  .cards-container_header {
+    height: 38px;
+  }
+
+  .cards-container_content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+  }
+
+  /* styling for single card element */
+  .singleCard {
+    margin: auto 0.2em;
+    flex: none;
+  }
 }
 
 /* styling for project log - i.e.table at the bottom */
-.projectLog-container{
+.projectLog-container {
   margin: 2em;
   padding: 1em 2em;
   width: 100%;
   font-weight: lighter;
 }
 
-.projectLog-container h6{
+.projectLog-container h6 {
   font-weight: bold;
 }
