@@ -20,6 +20,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
   // Added permissionChangeLogs state management
   const [changeLogs, setChangeLogs] = useState([])
+  const [loading, setLoading] = useState(true);
 
   const history = useHistory();
   const togglePopUpNewRole = () => {
@@ -36,10 +37,10 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     // added. call getChangeLogs
     const getChangeLogs = async () => {
       try {
-        // const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS)
-        const response = await axios.get('http://localhost:4500/api/permissionChangeLogs')
+        const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS)
         console.log("🚀 ~ file: PermissionsManagement.jsx:38 ~ getChangeLogs ~ response.data:", response.data)
         setChangeLogs(response.data)
+        setLoading(false);
       }
       catch (error) {
         console.error('Error fetching change logs:', error)
@@ -55,6 +56,10 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
   const role = userProfile?.role;
   const roleNames = roles?.map(role => role.roleName);
 
+  // console.log("🚀 ~ file: PermissionsManagement.jsx:58 ~ PermissionsManagement ~ changeLogs.slice().sort((a,b) => a.logDateTime - b.logDateTime):", changeLogs.slice().sort((a,b) => b.logDateTime - a.logDateTime))
+  if (changeLogs) {
+    console.log("🚀 ~ file: PermissionsManagement.jsx:60 ~ PermissionsManagement ~ changeLogs.slice().reverse():", changeLogs.slice().reverse())
+  }
   return (
     <>
       <div key={`${role}+permission`} className="permissions-management">
@@ -138,7 +143,11 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
           </Modal>
         </div>
       </div>
-      {changeLogs && <PermissionChangeLogTable changeLogs={changeLogs} />}
+      {loading ? (
+        <p className='loading-message'>Loading...</p>
+      ) : (
+        <PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} />
+      )}
       <br />
       <br />
     </>

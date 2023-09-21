@@ -122,6 +122,10 @@
   background-color: lightgrey;
 }
 
+.loading-message {
+  font-size: 30px;
+}
+
 @media only screen and (max-width: 1199px) {
   .permissions-management__header {
     flex-direction: column;
