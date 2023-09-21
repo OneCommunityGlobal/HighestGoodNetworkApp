@@ -16,4 +16,14 @@ describe('TeamsOverview', () => {
     const { getByText } = renderWithProvider(<TeamsOverview numberOfActiveTeams={5} />);
     expect(getByText('5')).toBeInTheDocument();
   });
+
+  it('has a card for total teams', () => {
+    const { getByText } = renderWithProvider(<TeamsOverview />);
+    expect(getByText('Teams')).toBeInTheDocument();
+  });
+
+  it('has a card for active teams', () => {
+    const { getByText } = renderWithProvider(<TeamsOverview />);
+    expect(getByText('Active Teams')).toBeInTheDocument();
+  });
 });
