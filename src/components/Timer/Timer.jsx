@@ -157,7 +157,7 @@ const Timer = () => {
         <Button
           id="start"
           onClick={isActive ? handlePause : handleStart}
-          color={isActive ? 'info' : 'success'}
+          color={isActive ? 'primary' : 'success'}
           className="ml-xs-1 align-middle start-btn"
         >
           {isActive ? 'Pause' : 'Start'}
