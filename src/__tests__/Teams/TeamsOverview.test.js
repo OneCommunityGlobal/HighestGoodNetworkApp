@@ -6,4 +6,14 @@ describe('TeamsOverview', () => {
   it('should render correctly', () => {
     renderWithProvider(<TeamsOverview />);
   });
+
+  it('displays the correct number of teams', () => {
+    const { getByText } = renderWithProvider(<TeamsOverview numberOfTeams={10} />);
+    expect(getByText('10')).toBeInTheDocument();
+  });
+
+  it('displays the correct number of active teams', () => {
+    const { getByText } = renderWithProvider(<TeamsOverview numberOfActiveTeams={5} />);
+    expect(getByText('5')).toBeInTheDocument();
+  });
 });
