@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
 import { updateUserFinalDayStatus } from 'actions/userManagement';
@@ -23,7 +23,7 @@ function SetUpFinalDayButton(props) {
     if (userProfile?.endDate !== undefined) setIsSet(true);
   }, []);
 
-  const onFinalDayClick = async (user, status) => {
+  const onFinalDayClick = async () => {
     if (isSet) {
       await updateUserFinalDayStatus(userProfile, 'Active', undefined)(dispatch);
       setIsSet(!isSet);

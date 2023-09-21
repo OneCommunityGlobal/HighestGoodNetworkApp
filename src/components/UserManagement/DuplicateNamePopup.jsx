@@ -6,10 +6,6 @@ import { boxStyle } from 'styles';
  * Modal popup to delete the user profile
  */
 const DuplicateNamePopup = React.memo(props => {
-  const closePopup = () => {
-    props.onClose();
-  };
-
   return (
     <Modal isOpen={props.open} toggle={() => props.popupClose()}>
       <ModalHeader toggle={() => props.popupClose()}>Duplicate Names</ModalHeader>

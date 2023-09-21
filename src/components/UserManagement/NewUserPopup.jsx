@@ -8,7 +8,7 @@ import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
  * Modal popup to show the user profile in create mode
  */
 const NewUserPopup = React.memo(props => {
-  const closePopup = e => {
+  const closePopup = () => {
     props.onUserPopupClose();
   };
   const history = useHistory();

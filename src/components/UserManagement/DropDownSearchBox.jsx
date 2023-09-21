@@ -9,7 +9,8 @@ class DropDownSearchBox extends React.PureComponent {
   }
 
   onSelectionChange = event => {
-    this.props.searchCallback(event.target.value);
+    const { searchCallback } = this.props;
+    searchCallback(event.target.value);
     this.setState({
       selectedValue: event.target.value,
     });

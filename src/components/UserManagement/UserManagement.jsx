@@ -68,44 +68,49 @@ class UserManagement extends React.PureComponent {
    * 5. Popup to show the last day selection
    */
   popupElements = () => {
+    const { props } = this;
+    const {
+      activationDateOpen,
+      newUserPopupOpen,
+      deletePopupOpen,
+      selectedUser,
+      activeInactivePopupOpen,
+      finalDayDateOpen,
+      setupNewUserPopupOpen,
+    } = this.state;
+
+    const { allUserProfiles } = props.state;
     return (
       <>
         <ActivationDatePopup
-          open={this.state.activationDateOpen}
+          open={activationDateOpen}
           onClose={this.activationDatePopupClose}
           onPause={this.pauseUser}
         />
         <NewUserPopup
-          open={this.state.newUserPopupOpen}
-          userProfiles={this.props.state.allUserProfiles}
+          open={newUserPopupOpen}
+          userProfiles={allUserProfiles}
           onUserPopupClose={this.onUserPopupClose}
           userCreated={this.userCreated}
         />
         <DeleteUserPopup
-          open={this.state.deletePopupOpen}
+          open={deletePopupOpen}
           onClose={this.deletePopupClose}
           onDelete={this.onDeleteUser}
         />
         <ActiveInactiveConfirmationPopup
-          isActive={this.state.selectedUser ? this.state.selectedUser.isActive : false}
-          fullName={
-            this.state.selectedUser
-              ? `${this.state.selectedUser.firstName} ${this.state.selectedUser.lastName}`
-              : ''
-          }
-          open={this.state.activeInactivePopupOpen}
+          isActive={selectedUser ? selectedUser.isActive : false}
+          fullName={selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : ''}
+          open={activeInactivePopupOpen}
           setActiveInactive={this.setActiveInactive}
           onClose={this.activeInactivePopupClose}
         />
         <SetUpFinalDayPopUp
-          open={this.state.finalDayDateOpen}
+          open={finalDayDateOpen}
           onClose={this.setUpFinalDayPopupClose}
           onSave={this.deactiveUser}
         />
-        <SetupNewUserPopup
-          open={this.state.setupNewUserPopupOpen}
-          onClose={this.handleNewUserSetupPopup}
-        />
+        <SetupNewUserPopup open={setupNewUserPopupOpen} onClose={this.handleNewUserSetupPopup} />
       </>
     );
   };
@@ -452,6 +457,8 @@ class UserManagement extends React.PureComponent {
       case 'paused':
         active = false;
         paused = true;
+        break;
+      default:
     }
 
     this.setState({
@@ -489,10 +496,11 @@ class UserManagement extends React.PureComponent {
   };
 
   render() {
-    const { userProfiles, fetching } = this.props.state.allUserProfiles;
-    const { roles: rolesPermissions } = this.props.state.role;
-    const userTable = this.userTableElements(userProfiles, rolesPermissions);
-    const roles = [...new Set(userProfiles.map(item => item.role))];
+    const { state } = this.props;
+    const { allUserProfiles, fetching } = state;
+    const { roles: rolesPermissions } = state.role;
+    const userTable = this.userTableElements(allUserProfiles, rolesPermissions);
+    const roles = [...new Set(allUserProfiles.map(item => item.role))];
     return (
       <Container fluid>
         {fetching ? (
@@ -502,7 +510,7 @@ class UserManagement extends React.PureComponent {
             {this.popupElements()}
             <UserSearchPanel
               onSearch={this.onWildCardSearch}
-              searchText={this.state.wildCardSearchText}
+              searchText={state.wildCardSearchText}
               onActiveFiter={this.onActiveFiter}
               onNewUserClick={this.onNewUserClick}
               handleNewUserSetupPopup={this.handleNewUserSetupPopup}
@@ -511,8 +519,8 @@ class UserManagement extends React.PureComponent {
               <Table className="table table-bordered noWrap">
                 <thead>
                   <UserTableHeader
-                    authRole={this.props.state.auth.user.role}
-                    roleSearchText={this.state.roleSearchText}
+                    authRole={state.auth.user.role}
+                    roleSearchText={state.roleSearchText}
                   />
                   <UserTableSearchHeader
                     onFirstNameSearch={this.onFirstNameSearch}
@@ -521,8 +529,8 @@ class UserManagement extends React.PureComponent {
                     onEmailSearch={this.onEmailSearch}
                     onWeeklyHrsSearch={this.onWeeklyHrsSearch}
                     roles={roles}
-                    authRole={this.props.state.auth.user.role}
-                    roleSearchText={this.state.roleSearchText}
+                    authRole={state.auth.user.role}
+                    roleSearchText={state.roleSearchText}
                   />
                 </thead>
                 <tbody>{userTable}</tbody>
@@ -530,10 +538,10 @@ class UserManagement extends React.PureComponent {
             </div>
             <UserTableFooter
               datacount={this.filteredUserDataCount}
-              selectedPage={this.state.selectedPage}
+              selectedPage={state.selectedPage}
               onPageSelect={this.onSelectPage}
               onSelectPageSize={this.onSelectPageSize}
-              pageSize={this.state.pageSize}
+              pageSize={state.pageSize}
             />
           </>
         )}

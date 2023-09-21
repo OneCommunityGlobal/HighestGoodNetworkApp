@@ -1,4 +1,5 @@
 import React from 'react';
+import userTableDataPermissions from 'utils/userTableDataPermissions';
 import {
   ACTIVE,
   FIRST_NAME,
@@ -10,7 +11,6 @@ import {
   USER_RESUME_DATE,
   MANAGE_FINAL_DAY,
 } from '../../languages/en/ui';
-import userTableDataPermissions from 'utils/userTableDataPermissions';
 
 /**
  * The header row of the user table.
@@ -49,7 +49,7 @@ const UserTableHeader = React.memo(props => {
         End Date
       </th>
       {userTableDataPermissions(props.authRole, props.roleSearchText) && (
-        <th scope="col" id="usermanagement_delete"></th>
+        <th scope="col" id="usermanagement_delete" />
       )}
     </tr>
   );

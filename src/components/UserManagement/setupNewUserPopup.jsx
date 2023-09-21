@@ -6,7 +6,7 @@ import httpService from '../../services/httpService';
 const SetupNewUserPopup = React.memo(props => {
   const [email, setEmail] = useState('');
   const [alert, setAlert] = useState({ visibility: 'hidden', message: '', state: 'success' });
-  const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+  const patt = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
   const baseUrl = window.location.origin;
 
   const closePopup = () => {
