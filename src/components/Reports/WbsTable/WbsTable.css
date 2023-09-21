@@ -8,8 +8,7 @@
   border-radius: 4px;
   min-height: 32px;
   padding: 8px 16px;  
-  display: grid;
-  grid-template-columns: 20% 20% 20% 40%;
+  display: flex;
 }
 
 iframe {
@@ -48,14 +47,14 @@ iframe {
 .wbs-table-row {
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: 20% 20% 20% 40%;
+/*   grid-template-columns: 10% 25% 15% 50%; */
+  grid-template-columns: 1fr 2fr 1fr 3fr;
   column-gap: 4px;
   min-height: 42px;
   align-items: center;
   padding: 0 16px;
   border-bottom: 3px solid #f8f7f8;
 }
-
 
 .scroll_x {
   overflow: scroll;
@@ -77,4 +76,3 @@ iframe {
     justify-content: center;
   }  
 }
-

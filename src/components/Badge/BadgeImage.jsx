@@ -17,14 +17,11 @@ const BadgeImage = props => {
             loading="lazy"
           />
         </div>
-        {props.count < 100 ? (
-          <span
-            className={
-              props.badgeData.type == 'Personal Max' ? 'badge_count_personalmax' : 'badge_count'
-            }
-          >
-            {Math.round(props.count)}
-          </span>
+
+        {props.badgeData.type == 'Personal Max' ? (
+          <span className={'badge_count_personalmax'}>{Math.round(props.personalBestMaxHrs)}</span>
+        ) : props.count < 100 ? (
+          <span className={'badge_count'}>{Math.round(props.count)}</span>
         ) : (
           <span className="badge_count_3_digit">{Math.round(props.count)}</span>
         )}
