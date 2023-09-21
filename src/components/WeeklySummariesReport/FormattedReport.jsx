@@ -17,16 +17,22 @@ import {
   ListGroup,
   ListGroupItem as LGI,
   Card,
+  Tooltip,
   CardTitle,
   CardBody,
   CardImg,
   CardText,
   UncontrolledPopover,
+  Row,
+  Col,
 } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
+
 
 const textColors = {
   Default: '#000000',
@@ -61,6 +67,32 @@ function FormattedReport({
       emails.push(summary.email);
     }
   });
+  const handleEmailButtonClick = () => {
+    const batchSize = 90;
+    const emailChunks = [];
+      
+    for (let i = 0; i < emails.length; i += batchSize) {
+      emailChunks.push(emails.slice(i, i + batchSize));      
+    }  
+  
+    const openEmailClientWithBatchInNewTab = (batch) => {
+      const emailAddresses = batch.join(', ');
+      const mailtoLink = `mailto:${emailAddresses}`;
+      window.open(mailtoLink, '_blank');
+    };  
+    
+    emailChunks.forEach((batch, index) => {
+      setTimeout(() => {
+        openEmailClientWithBatchInNewTab(batch);
+      }, index * 2000);
+    });
+  };
+
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const toggleTooltip = () => {
+    setTooltipOpen(!tooltipOpen);
+  };
 
   return (
     <>
@@ -78,7 +110,26 @@ function FormattedReport({
           />
         ))}
       </ListGroup>
+      <div className="d-flex align-items-center">
       <h4>Emails</h4>
+      <Tooltip
+          placement="top"
+          isOpen={tooltipOpen}
+          target="emailIcon"
+          toggle={toggleTooltip}
+        >
+          Launch the email client, organizing the recipient email addresses into batches, each containing a maximum of 90 addresses.
+        </Tooltip>
+        <FontAwesomeIcon
+          className="ml-2"
+          onClick={handleEmailButtonClick}
+          icon={faMailBulk}
+          size='lg'
+          style={{ color: "#0f8aa9", cursor: "pointer" }}
+          id="emailIcon"
+        />
+
+      </div>
       <p>{emails.join(', ')}</p>
     </>
   );
@@ -106,56 +157,62 @@ function ReportDetails({
         </ListGroupItem>
         {isInViewPort && (
           <>
-            <ListGroupItem>
-              <b>Media URL:</b> <MediaUrlLink summary={summary} />
-            </ListGroupItem>
-            <ListGroupItem>
-              <Bio
-                bioCanEdit={bioCanEdit}
-                userId={summary._id}
-                bioPosted={summary.bioPosted}
-                summary={summary}
-                totalTangibleHrs={summary.totalTangibleHrs}
-                daysInTeam={summary.daysInTeam}
-              />
-            </ListGroupItem>
-            <ListGroupItem>
-              <TotalValidWeeklySummaries
-                summary={summary}
-                canEditSummaryCount={canEditSummaryCount}
-              />
-            </ListGroupItem>
-            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <p>
-                  <b
-                    style={{
-                      color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                    }}
-                  >
-                    Hours logged:{' '}
-                  </b>
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              </ListGroupItem>
-            )}
-            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <b
-                  style={{
-                    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                  }}
-                >
-                  Hours logged:
-                </b>
-                <span className="ml-2">
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
-              </ListGroupItem>
-            )}
-            {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
-            )}
+            <Row className="flex-nowrap">
+              <Col className="flex-grow-0">
+                <ListGroupItem>
+                  <b>Media URL:</b> <MediaUrlLink summary={summary} />
+                </ListGroupItem>
+                <ListGroupItem>
+                  <Bio
+                    bioCanEdit={bioCanEdit}
+                    userId={summary._id}
+                    bioPosted={summary.bioPosted}
+                    summary={summary}
+                    totalTangibleHrs={summary.totalTangibleHrs}
+                    daysInTeam={summary.daysInTeam}
+                  />
+                </ListGroupItem>
+                <ListGroupItem>
+                  <TotalValidWeeklySummaries
+                    summary={summary}
+                    canEditSummaryCount={canEditSummaryCount}
+                  />
+                </ListGroupItem>
+                {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+                  <ListGroupItem>
+                    <p>
+                      <b
+                        style={{
+                          color: textColors[summary?.weeklySummaryOption] || textColors.Default,
+                        }}
+                      >
+                        Hours logged:{' '}
+                      </b>
+                      {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                    </p>
+                  </ListGroupItem>
+                )}
+                {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+                  <ListGroupItem>
+                    <b
+                      style={{
+                        color: textColors[summary?.weeklySummaryOption] || textColors.Default,
+                      }}
+                    >
+                      Hours logged:
+                    </b>
+                    <span className="ml-2">
+                      {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                    </span>
+                  </ListGroupItem>
+                )}
+              </Col>
+              <Col>
+                {loadBadges && summary.badgeCollection?.length > 0 && (
+                  <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+                )}
+              </Col>
+            </Row>
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
@@ -395,41 +452,35 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   }
   return (
     badgeThisWeek.length > 0 && (
-      <ListGroupItem>
-        <table>
-          <tbody>
-            <tr className="badge-tr" key={`${weekIndex}badge_${summary._id}`}>
-              {badgeThisWeek.map(
-                (value, index) =>
-                  value?.showReport && (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <td className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
-                      {' '}
-                      <img src={value.imageUrl} id={`popover_${value._id}`} alt='""' />
-                      <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                        <Card className="text-center">
-                          <CardImg className="badge_image_lg" src={value?.imageUrl} />
-                          <CardBody>
-                            <CardTitle
-                              style={{
-                                fontWeight: 'bold',
-                                fontSize: 18,
-                                color: '#285739',
-                                marginBottom: 15,
-                              }}
-                            >
-                              {value?.badgeName}
-                            </CardTitle>
-                            <CardText>{value?.description}</CardText>
-                          </CardBody>
-                        </Card>
-                      </UncontrolledPopover>
-                    </td>
-                  ),
-              )}
-            </tr>
-          </tbody>
-        </table>
+      <ListGroupItem className="row">
+        {badgeThisWeek.map(
+          (value, index) =>
+            value?.showReport && (
+              // eslint-disable-next-line react/no-array-index-key
+              <div className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
+                {' '}
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt='""' />
+                <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                  <Card className="text-center">
+                    <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                    <CardBody>
+                      <CardTitle
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: 18,
+                          color: '#285739',
+                          marginBottom: 15,
+                        }}
+                      >
+                        {value?.badgeName}
+                      </CardTitle>
+                      <CardText>{value?.description}</CardText>
+                    </CardBody>
+                  </Card>
+                </UncontrolledPopover>
+              </div>
+            ),
+        )}
       </ListGroupItem>
     )
   );

@@ -25,7 +25,6 @@ src/components/AutoReload/**
 src/components/AutoUpdate/**
 src/components/Badge/**
 src/components/common/**
-src/components/Dashboard/**
 src/components/ForcePasswordUpdate/**
 src/components/Header/**
 src/components/Inventory/**
@@ -55,3 +54,4 @@ src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/WeeklySummary/**
 src/components/MouseoverText/**
+src/components/WeeklySummariesReport/**

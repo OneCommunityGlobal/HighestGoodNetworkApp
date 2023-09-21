@@ -41,6 +41,7 @@ export class WeeklySummariesReport extends Component {
       activeTab: navItems[1],
       badges: [],
       loadBadges: false,
+      hasSeeBadgePermission: false,
     };
 
     this.weekDates = Array(4)
@@ -64,7 +65,7 @@ export class WeeklySummariesReport extends Component {
 
     // 1. fetch report
     await getWeeklySummariesReport();
-    await fetchAllBadges();
+    const badgeStatusCode = await fetchAllBadges();
 
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
@@ -93,6 +94,7 @@ export class WeeklySummariesReport extends Component {
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
       badges: allBadgeData,
+      hasSeeBadgePermission: badgeStatusCode === 200,
     });
     await getInfoCollections();
     const role = authUser?.role;
@@ -202,7 +204,16 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { error, loading, summaries, activeTab, allRoleInfo, badges, loadBadges } = this.state;
+    const {
+      error,
+      loading,
+      summaries,
+      activeTab,
+      allRoleInfo,
+      badges,
+      loadBadges,
+      hasSeeBadgePermission,
+    } = this.state;
 
     if (error) {
       return (
@@ -263,13 +274,15 @@ export class WeeklySummariesReport extends Component {
                         weekIndex={index}
                         weekDates={this.weekDates[index]}
                       />
-                      <Button
-                        className="btn--dark-sea-green"
-                        style={boxStyle}
-                        onClick={() => this.setState({ loadBadges: !loadBadges })}
-                      >
-                        {loadBadges ? 'Hide Badges' : 'Load Badges'}
-                      </Button>
+                      {hasSeeBadgePermission && (
+                        <Button
+                          className="btn--dark-sea-green"
+                          style={boxStyle}
+                          onClick={() => this.setState({ loadBadges: !loadBadges })}
+                        >
+                          {loadBadges ? 'Hide Badges' : 'Load Badges'}
+                        </Button>
+                      )}
                       <Button className="btn--dark-sea-green" style={boxStyle}>
                         Load Trophies
                       </Button>

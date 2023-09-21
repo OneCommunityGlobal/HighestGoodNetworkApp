@@ -57,10 +57,17 @@
 }
 
 .user-role-tab__permission {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   border-bottom: solid 1px #ced4da;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+#info-icon__permissions {
+  cursor: pointer;
+  align-self: flex-end;
 }
 
 .permissions-management--flex {
@@ -119,6 +126,7 @@
   margin-left: auto;
   text-align: center;
   align-items: center;
+  padding-bottom: 8px;
 }
 
 
