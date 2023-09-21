@@ -17,8 +17,10 @@ import { boxStyle } from 'styles';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
 
+
+  console.log("user table", props)
   /**
    * reset the changing state upon rerender with new isActive status
    */
@@ -104,7 +106,8 @@ const UserTableData = React.memo(props => {
       {checkPermissionsOnOwner() ? null : (
         <td>
         {
-          props.auth.user.userid === props.user._id || props.auth.user.role === "Owner" &&  props.user.role === "Administrator"  ? '': 
+          props.auth.user.userid === props.user._id || props.auth.user.role === "Owner" && 
+           props.user.role === "Administrator"  ? '': 
                   <><span className="usermanagement-actions-cell">
                       <button
                         type="button"
@@ -117,11 +120,12 @@ const UserTableData = React.memo(props => {
                         {DELETE}
                       </button>
                     </span>
-                    <span className="usermanagement-actions-cell">
-                      <ResetPasswordButton user={props.user} isSmallButton />
-                    </span>
+                    
                     </>
           }
+          <span className="usermanagement-actions-cell">
+                      <ResetPasswordButton user={props.user} isSmallButton />
+                    </span>
         </td>
       )}
     </tr>

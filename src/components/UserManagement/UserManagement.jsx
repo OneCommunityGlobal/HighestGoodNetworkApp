@@ -206,6 +206,7 @@ class UserManagement extends React.PureComponent {
               onResetClick={that.onResetClick}
               authEmail={this.props.state.userProfile.email}
               user={user}
+              auth={this.props.state.auth}
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
             />
@@ -544,6 +545,8 @@ class UserManagement extends React.PureComponent {
 }
 
 const mapStateToProps = state => {
+
+  console.log("is user data in here?", state)
   return { state };
 };
 export default connect(mapStateToProps, {
