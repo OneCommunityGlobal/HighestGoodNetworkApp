@@ -95,13 +95,15 @@ export default (
             exact
             component={Projects}
             allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-            routePermissions={RoutePermissions.projects}
+            routePermissions={[RoutePermissions.projects, RoutePermissions.projectManagement_fullFunctionality, 
+              RoutePermissions.projectManagement_addTeamMembersUploadNewWBS]}
           />
           <ProtectedRoute
             path="/projects"
             exact
             component={Projects}
-            routePermissions={RoutePermissions.projects}
+            routePermissions={[RoutePermissions.projects, RoutePermissions.projectManagement_fullFunctionality, 
+              RoutePermissions.projectManagement_addTeamMembersUploadNewWBS]}
           />
           <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
           <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
