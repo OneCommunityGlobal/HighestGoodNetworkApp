@@ -1,4 +1,3 @@
-
 const hasPermission = (action) => {
   return (dispatch, getState) => {
     const state = getState();
