@@ -3,7 +3,7 @@ import ToolCard from './ToolCard';
 
 const ToolCards = () => {
   return (
-    <div className="cards-container_content">
+    <div className="cards-container__content">
       <ToolCard />
       <ToolCard />
       <ToolCard />

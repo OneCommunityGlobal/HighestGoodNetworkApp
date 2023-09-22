@@ -2,18 +2,17 @@ import React from 'react';
 
 function ToolCard() {
   return (
-    <div className="singleCard">
-      <div className="cardImg">
+    <div className="single-card">
+      <div className="single-card__img">
         <img
           alt=""
           src="https://www.theforkliftcenter.com/images/forklift-hero-left.png"
-
           width="100%"
         />
       </div>
-      <div className="cardBody">
+      <div className="single-card__body">
         <h3>Card title</h3>
-        <div className="infoDiv">Term ends in __ hours.</div>
+        <div className="single-card__info">Term ends in __ hours.</div>
       </div>
     </div>
   );

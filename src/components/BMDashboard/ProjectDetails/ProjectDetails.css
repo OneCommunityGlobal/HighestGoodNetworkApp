@@ -14,7 +14,7 @@
 
 /* styling for the logBar component - i.e. dashboard with buttons */
 
-.logBar-container {
+.log-bar {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -25,21 +25,21 @@
 }
 
 
-.logBar-section {
+.log-bar__section {
   width: 100%;
   margin-top: 1em;
 }
 
-.logBar-section h2, .card.cards-container h2, .projectLog-container h2{
+.log-bar__section h2, .card.cards-container h2, .project-log h2{
   font-size: 1em;
   font-weight: bold;
 }
 
-.logBar-section ul{
+.log-bar__section ul{
     list-style-type: none;
   }
 
-.button.btn.btn-secondary {
+.button.btn {
   border: 0;
   border-radius: 10px;
   margin: 0.1em;
@@ -47,30 +47,30 @@
 }
 
 /* buttons custom colors */
-.button.btn.greenBtn {
+.button.btn.button--green {
   background-color: #015d4a;
 }
 
-.button.btn.lightBlueBtn {
+.button.btn.button--blue {
   background-color: #0f6386;
 }
 
-.button.btn.darkBlueBtn {
+.button.btn.button--indigo {
   background-color: #203844;
 }
 
-.button.btn.redBtn {
+.button.btn.button--maroon {
   background-color: #980101;
   margin-top: 2em;
 }
 
 @media (min-width: 550px) {
-  .logBar-container {
+  .log-bar {
     display: flex;
     flex-direction: column;
   }
 
-   .logBar-btnGroup {
+   .log-bar__btn-group {
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
@@ -80,13 +80,13 @@
     width: auto;
   }
 
-  .button.btn.btn-secondary.redBtn {
+  .button.btn.btn-secondary.button--maroon {
     margin-top: auto;
   }
 }
 
 @media (min-width: 750px) {
-  .logBar-container {
+  .log-bar {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -94,7 +94,7 @@
     margin: 2em;
   }
 
-  .logBar-section {
+  .log-bar__section {
     width: 50%;
     flex: auto;
   }
@@ -103,8 +103,7 @@
     width: auto;
   }
 
-  .button.btn.btn-secondary.redBtn {
-    margin-top: auto;
+  .button.btn.btn-secondary.button--maroon {
     margin-left: 2em;
   }
 }
@@ -116,7 +115,7 @@
   padding: 1em 2em;
 }
 
-.cards-container_content {
+.cards-container__content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -124,7 +123,7 @@
 }
 
 /* styling for single card element */
-.singleCard {
+.single-card {
   border: 1px solid #eaeeef;
   border-radius: 5px;
   text-align: center;
@@ -132,22 +131,22 @@
   cursor: pointer;
 }
 
-.singleCard:hover {
+.single-card:hover {
   box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
   transform: translate3d(0.5px, 0.5px, 0.5px);
 }
 
-.cardBody {
+.single-card__body {
   margin-top: 0.5em;
 }
 
-.cardBody h3 {
+.single-card__body h3 {
   font-size: 1em;
   margin-bottom: -0.2em;
 }
 
 /* button on a card */
-.infoDiv {
+.single-card__info {
   font-size: 0.5rem;
   padding: 1em;
   margin: 0.5em;
@@ -156,17 +155,17 @@
 }
 
 /* TO DO: dynamic value to be added */
-/* .infoDiv .warning{
+/* .single-card__info .warning{
   color: white;
   background-color: #980101; 
 } */
 
 @media (min-width: 600px) {
-  .cards-container_header {
+  .cards-container__header {
     height: 38px;
   }
 
-  .cards-container_content {
+  .cards-container__content {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -174,14 +173,14 @@
   }
 
   /* styling for single card element */
-  .singleCard {
+  .single-card {
     margin: auto 0.2em;
     flex: none;
   }
 }
 
 /* styling for project log - i.e.table at the bottom */
-.projectLog-container {
+.project-log {
   margin: 2em;
   padding: 1em 2em;
   width: 100%;

@@ -2,7 +2,7 @@ import MaterialCard from './MaterialCard';
 
 function Materials() {
   return (
-    <div className="cards-container_content">
+    <div className="cards-container__content">
       <MaterialCard />
       <MaterialCard />
       <MaterialCard />
