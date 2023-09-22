@@ -24,8 +24,8 @@ import {
   CardText,
   UncontrolledPopover,
   Row,
-  Col,,
-  Alert
+  Col,
+  Alert,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
