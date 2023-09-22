@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import './AddMaterialForm.css';
 
 // AddMaterialsForm will take in an array of project objects
-// to display project names in select field
+// and optionally a selected project object
 export default function AddMaterialsForm(props) {
-  const { projects } = props;
-  const [project, setProject] = useState('');
+  const { allProjects, selectedProject, canAddNewMaterial } = props;
+  const [project, setProject] = useState(allProjects[0]._id);
   const [material, setMaterial] = useState('');
+  const [newMaterial, setNewMaterial] = useState(false);
   const [invoice, setInvoice] = useState('');
   const [unitPrice, setUnitPrice] = useState(0);
   const [currency, setCurrency] = useState('');
@@ -21,6 +23,17 @@ export default function AddMaterialsForm(props) {
   // state for image?
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
+
+  const history = useHistory();
+
+  const handleSubmit = e => {
+    e.preventDefault();
+  };
+
+  const handleCancel = e => {
+    e.preventDefault();
+    history.goBack();
+  };
 
   return (
     <Form className="add-materials-form">
@@ -37,12 +50,12 @@ export default function AddMaterialsForm(props) {
               id="project"
               name="project"
               type="select"
-              value={project}
+              value={selectedProject ? selectedProject._id : project}
               onChange={e => {
                 setProject(e.target.value);
               }}
             >
-              {projects.map(el => (
+              {allProjects.map(el => (
                 <option value={el._id} key={el._id}>
                   {el.projectName}
                 </option>
@@ -55,22 +68,47 @@ export default function AddMaterialsForm(props) {
         <Col xs="12" sm="8">
           <FormGroup>
             <Label for="material">Material Name</Label>
-            <Input
-              id="material"
-              name="material"
-              type="select"
-              value={material}
-              onChange={e => {
-                setMaterial(e.target.value);
-              }}
-            >
-              <option>Gravel</option>
-              <option>Sand</option>
-              <option>Brick</option>
-            </Input>
+            {newMaterial ? (
+              <Input
+                id="material"
+                name="material"
+                type="text"
+                value={material}
+                placeholder="Add new material"
+                onChange={e => setMaterial(e.target.value)}
+              />
+            ) : (
+              <Input
+                id="material"
+                name="material"
+                type="select"
+                value={material}
+                onChange={e => setMaterial(e.target.value)}
+              >
+                <option value="gravel">Gravel</option>
+                <option value="sand">Sand</option>
+                <option value="brick">Brick</option>
+              </Input>
+            )}
           </FormGroup>
         </Col>
       </Row>
+      {canAddNewMaterial && (
+        <Row>
+          <Col>
+            <FormGroup>
+              <input
+                id="newMaterial"
+                name="newMaterial"
+                type="checkbox"
+                checked={newMaterial}
+                onChange={() => setNewMaterial(!newMaterial)}
+              />
+              <label htmlFor="newMaterial">Do you want to add a new material?</label>
+            </FormGroup>
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col xs="12" sm="8">
           <FormGroup>
@@ -272,18 +310,23 @@ export default function AddMaterialsForm(props) {
               <b>Total Price</b>
             </span>
             <span>
-              <b>{quantity * unitPrice}</b>
-              {currency}
+              <b>
+                {quantity * unitPrice} <span style={{ fontSize: '1rem' }}>{currency}</span>
+              </b>
             </span>
           </div>
         </Col>
       </Row>
       <Row>
         <Col>
-          <Button color="secondary">Cancel</Button>
+          <Button type="button" color="secondary" onClick={handleCancel}>
+            Cancel
+          </Button>
         </Col>
         <Col>
-          <Button color="primary">Submit</Button>
+          <Button type="submit" color="primary" onClick={handleSubmit}>
+            Submit
+          </Button>
         </Col>
       </Row>
     </Form>

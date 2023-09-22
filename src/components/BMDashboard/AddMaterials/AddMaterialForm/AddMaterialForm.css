@@ -3,7 +3,11 @@
   background-color: rgb(245, 230, 230);
   border-radius: .5rem;
   padding: .3rem 1rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   display: flex;
   justify-content: space-between;
+}
+
+#newMaterial {
+  margin-right: 0.5rem;
 }
