@@ -9,7 +9,7 @@ import './ProjectDetails.css';
 function ProjectDetails() {
   return (
     <Container className="project-details" fluid>
-      <h3>Project A Dashboard</h3>
+      <h1>Project A Dashboard</h1>
       <Row>
         <LogBar />
       </Row>

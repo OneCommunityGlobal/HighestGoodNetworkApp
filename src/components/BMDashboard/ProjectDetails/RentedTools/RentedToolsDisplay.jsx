@@ -5,7 +5,7 @@ import ToolCards from './ToolCards';
 function RentedToolsDisplay() {
   return (
     <Card className="cards-container">
-      <h6 className="cards-container_header">Rented Tools or equipment to be returned in 3 days.</h6>
+      <h2 className="cards-container_header">Rented Tools or equipment to be returned in 3 days.</h2>
       <ToolCards />  
     </Card>
   );

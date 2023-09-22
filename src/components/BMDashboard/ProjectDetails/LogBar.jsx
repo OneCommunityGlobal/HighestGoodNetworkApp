@@ -5,32 +5,46 @@ function LogBar() {
   return (
     <div className="logBar-container">
       <div className="logBar-section">
-        <p>Daily Logging:</p>
-        <div className="logBar-btnGroup">
-          <Button className="greenBtn">Time</Button> <Button className="greenBtn">Material</Button>{' '}
-          <Button className="greenBtn">Tool/Equipment</Button>
-        </div>
+        <h2>Daily Logging:</h2>
+        <ul className="logBar-btnGroup">
+          <li>
+            <Button className="button greenBtn">Time</Button>
+          </li>{' '}
+          <li>
+            <Button className="button greenBtn">Material</Button>
+          </li>{' '}
+          <li>
+            <Button className=" button greenBtn">Tool/Equipment</Button>
+          </li>
+        </ul>
       </div>
       <div className="logBar-section">
-        <p>Add a new item:</p>
-        <div className="logBar-btnGroup">
-          <Button
-            className="lightBlueBtn"
-            // style={{ backgroundColor: '#0f6386', border: 0, borderRadius: '10px', margin: '0.1em' }}
-          >
-            Team
-          </Button>{' '}
-          <Button className="lightBlueBtn">Material</Button>{' '}
-          <Button className="lightBlueBtn">Tool/Equipment</Button>
-        </div>
+        <h2>Add a new item:</h2>
+        <ul className="logBar-btnGroup">
+          <li>
+            <Button className="button lightBlueBtn">Team</Button>
+          </li>{' '}
+          <li>
+            <Button className="button lightBlueBtn">Material</Button>
+          </li>{' '}
+          <li>
+            <Button className="button lightBlueBtn">Tool/Equipment</Button>
+          </li>
+        </ul>
       </div>
       <div className="logBar-section">
-        <p>Team:</p>
-        <div className="logBar-btnGroup thirdSection">
-          <Button className="darkBlueBtn">Create New Team</Button>{' '}
-          <Button className="darkBlueBtn">Edit Existing Team</Button>{' '}
-          <Button className="redBtn">Log Issue</Button>
-        </div>
+        <h2>Team:</h2>
+        <ul className="logBar-btnGroup">
+          <li>
+            <Button className="button darkBlueBtn">Create New Team</Button>
+          </li>{' '}
+          <li>
+            <Button className="button darkBlueBtn">Edit Existing Team</Button>
+          </li>{' '}
+          <li>
+            <Button className="button redBtn">Log Issue</Button>
+          </li>
+        </ul>
       </div>
     </div>
   );

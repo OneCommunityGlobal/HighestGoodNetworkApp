@@ -5,12 +5,11 @@ function MaterialCard() {
         <img
           alt=""
           src="https://www.theforkliftcenter.com/images/forklift-hero-left.png"
-          top
           width="100%"
         />
       </div>
       <div className="cardBody">
-        <h6>Card title</h6>
+        <h3>Card title</h3>
         <div className="infoDiv">Term ends in __ hours.</div>
       </div>
     </div>

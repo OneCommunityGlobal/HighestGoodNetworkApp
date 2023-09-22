@@ -8,6 +8,10 @@
   font-weight: bold;
 }
 
+.project-details h1{
+  font-size: 1.5rem;
+}
+
 /* styling for the logBar component - i.e. dashboard with buttons */
 
 .logBar-container {
@@ -20,12 +24,22 @@
   background-color: #eaeeef;
 }
 
+
 .logBar-section {
   width: 100%;
   margin-top: 1em;
 }
 
-button.btn.btn-secondary {
+.logBar-section h2, .card.cards-container h2, .projectLog-container h2{
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.logBar-section ul{
+    list-style-type: none;
+  }
+
+.button.btn.btn-secondary {
   border: 0;
   border-radius: 10px;
   margin: 0.1em;
@@ -33,19 +47,19 @@ button.btn.btn-secondary {
 }
 
 /* buttons custom colors */
-button.btn.btn-secondary.greenBtn {
+.button.btn.greenBtn {
   background-color: #015d4a;
 }
 
-button.btn.btn-secondary.lightBlueBtn {
+.button.btn.lightBlueBtn {
   background-color: #0f6386;
 }
 
-button.btn.btn-secondary.darkBlueBtn {
+.button.btn.darkBlueBtn {
   background-color: #203844;
 }
 
-button.btn.btn-secondary.redBtn {
+.button.btn.redBtn {
   background-color: #980101;
   margin-top: 2em;
 }
@@ -56,11 +70,17 @@ button.btn.btn-secondary.redBtn {
     flex-direction: column;
   }
 
-  button.btn.btn-secondary {
+   .logBar-btnGroup {
+    margin-top: -0.5em;
+    display: flex;
+    justify-content: center;
+  }
+
+  .button.btn.btn-secondary {
     width: auto;
   }
 
-  button.btn.btn-secondary.redBtn {
+  .button.btn.btn-secondary.redBtn {
     margin-top: auto;
   }
 }
@@ -79,17 +99,11 @@ button.btn.btn-secondary.redBtn {
     flex: auto;
   }
 
-  .logBar-btnGroup {
-    margin-top: -0.5em;
-    display: flex;
-    justify-content: center;
-  }
-
-  button.btn.btn-secondary {
+  .button.btn.btn-secondary {
     width: auto;
   }
 
-  button.btn.btn-secondary.redBtn {
+  .button.btn.btn-secondary.redBtn {
     margin-top: auto;
     margin-left: 2em;
   }
@@ -127,7 +141,8 @@ button.btn.btn-secondary.redBtn {
   margin-top: 0.5em;
 }
 
-.cardBody h6 {
+.cardBody h3 {
+  font-size: 1em;
   margin-bottom: -0.2em;
 }
 
@@ -173,6 +188,3 @@ button.btn.btn-secondary.redBtn {
   font-weight: lighter;
 }
 
-.projectLog-container h6 {
-  font-weight: bold;
-}
