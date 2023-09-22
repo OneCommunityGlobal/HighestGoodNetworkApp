@@ -48,6 +48,7 @@ const NewBadges = props => {
             )}
             {filteredBadges.map((value, index) => (
               <BadgeImage
+                personalBestMaxHrs={props.personalBestMaxHrs}
                 time="new"
                 count={value.count}
                 badgeData={value.badge}

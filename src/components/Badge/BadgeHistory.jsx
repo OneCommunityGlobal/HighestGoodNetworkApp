@@ -25,6 +25,7 @@ const BadgeHistory = props => {
     <div className="badge_history_container">
       {filteredBadges.map((value, index) => (
         <BadgeImage
+          personalBestMaxHrs={props.personalBestMaxHrs}
           time="old"
           count={value.count}
           badgeData={value.badge}
