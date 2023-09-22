@@ -187,3 +187,9 @@
   font-weight: lighter;
 }
 
+@media (max-width: 768px){
+  .project-log td, .project-log th {
+    font-size: 0.5em;
+  }
+}
+
