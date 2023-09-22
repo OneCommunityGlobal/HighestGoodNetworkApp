@@ -144,15 +144,15 @@ const SetupProfileUserEntry = ({ token }) => {
       .catch(err => console.log(err));
   };
 
-  const handleFormSubmit = e => {
-    e.preventDefault();
-
+  const validateFormData = () => {
     // Validate firstName
+    let isDataValid = true;
     if (userProfile.firstName.trim() === '') {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         firstName: 'First Name is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -166,6 +166,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         lastName: 'Last Name is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -180,11 +181,13 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         email: 'Email is required',
       }));
+      isDataValid = false;
     } else if (!patt.test(userProfile.email)) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         email: 'Email is not valid',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -199,11 +202,13 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         phoneNumber: 'Phone is required',
       }));
+      isDataValid = false;
     } else if (userProfile.phoneNumber.trim().length < 10) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         phoneNumber: 'Phone is not valid',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -218,11 +223,13 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         password: 'Password is required',
       }));
+      isDataValid = false;
     } else if (userProfile.password.trim().length < 8) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         password: 'Password must be at least 8 characters long',
       }));
+      isDataValid = false;
     } else if (
       !containCap.test(userProfile.password.trim()) &&
       !containSpecialCar.test(userProfile.password.trim())
@@ -232,6 +239,7 @@ const SetupProfileUserEntry = ({ token }) => {
         password:
           'Password must contain special characters [!@#$%^&*(),.?":{}|<>] and capital letters.',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -246,11 +254,13 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         confirmPassword: 'Confirm password is required',
       }));
+      isDataValid = false;
     } else if (userProfile.password.trim() !== userProfile.confirmPassword.trim()) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         confirmPassword: 'Password confirmation does not match',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -265,6 +275,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         jobTitle: 'Job Title is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -279,6 +290,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         weeklyCommittedHours: 'Weekly Committed Hours can not be 0',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -293,6 +305,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         collaborationPreference: 'Video Call Preference can not be empty',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -307,6 +320,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         location: 'Location is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -321,6 +335,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         timeZoneFilter: 'Set time zone is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -328,8 +343,15 @@ const SetupProfileUserEntry = ({ token }) => {
       }));
     }
 
-    // Submit the form if there are no errors
-    if (Object.values(formErrors).every(err => err === '')) {
+    return isDataValid;
+  };
+
+  const handleFormSubmit = e => {
+    e.preventDefault();
+
+    const isDataValid = validateFormData();
+
+    if (isDataValid) {
       const data = {
         firstName: userProfile.firstName.trim(),
         lastName: userProfile.lastName.trim(),
