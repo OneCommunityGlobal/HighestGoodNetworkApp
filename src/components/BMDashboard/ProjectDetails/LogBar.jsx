@@ -30,7 +30,16 @@ function LogBar() {
           <ul className="log-bar__btn-group">
             {buttonLabels[section].map((label, i) => (
               <li key={i}>
-                <Button className={label === 'Log Issue' ? `button button--maroon` : `button button--${buttonStyles[section]}`}>{label}</Button>
+                <Button
+                  type="button"
+                  className={
+                    label === 'Log Issue'
+                      ? `button button--maroon`
+                      : `button button--${buttonStyles[section]}`
+                  }
+                >
+                  {label}
+                </Button>
               </li>
             ))}
           </ul>
