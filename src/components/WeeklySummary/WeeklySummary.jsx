@@ -225,7 +225,7 @@ export class WeeklySummary extends Component {
         summaryLastWeek,
         summaryBeforeLast,
         summaryThreeWeeksAgo,
-        wordCount: 0,
+        // wordCount: 0,
         mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
