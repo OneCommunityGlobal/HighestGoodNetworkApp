@@ -64,6 +64,7 @@ class UserManagement extends React.PureComponent {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
     let userTable = this.userTableElements(userProfiles, rolesPermissions);
+
     let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
       <Container fluid>
@@ -122,6 +123,7 @@ class UserManagement extends React.PureComponent {
    * 5. Popup to show the last day selection
    */
   popupElements = () => {
+    let user_name = this.state?.selectedUser?.firstName + '_' + this.state?.selectedUser?.lastName
     return (
       <React.Fragment>
         <ActivationDatePopup
@@ -136,6 +138,7 @@ class UserManagement extends React.PureComponent {
           userCreated={this.userCreated}
         />
         <DeleteUserPopup
+          username={user_name}
           open={this.state.deletePopupOpen}
           onClose={this.deletePopupClose}
           onDelete={this.onDeleteUser}
