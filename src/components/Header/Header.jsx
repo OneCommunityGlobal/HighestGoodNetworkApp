@@ -51,13 +51,14 @@ export const Header = props => {
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
-  const canSeeProjectManagementTab = props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+ 
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
   // Projects
+  const canSeeProjectManagementTab = props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
   const canPostProject = props.hasPermission('postProject');
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
@@ -173,6 +174,7 @@ export const Header = props => {
                 canPutUserProfileImportantInfo ||
                 canCreateBadges ||
                 canPostProject ||
+                canSeeProjectManagementTab ||
                 canDeleteTeam ||
                 canPutTeam ||
                 canCreatePopup ||

@@ -102,8 +102,7 @@ export default (
             path="/projects"
             exact
             component={Projects}
-            routePermissions={[RoutePermissions.projects, RoutePermissions.projectManagement_fullFunctionality, 
-              RoutePermissions.projectManagement_addTeamMembersUploadNewWBS]}
+            routePermissions={RoutePermissions.projects}
           />
           <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
           <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
