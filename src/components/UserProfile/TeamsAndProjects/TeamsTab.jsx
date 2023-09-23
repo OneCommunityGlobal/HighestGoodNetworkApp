@@ -15,11 +15,6 @@ const TeamsTab = props => {
     canEditVisibility,
     handleSubmit,
     disabled,
-    canEditTeamCode,
-    setUserProfile,
-    userProfile,
-    codeValid,
-    setCodeValid,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -61,11 +56,6 @@ const TeamsTab = props => {
         edit={edit}
         role={role}
         disabled={disabled}
-        canEditTeamCode={canEditTeamCode}
-        setUserProfile={setUserProfile}
-        userProfile={userProfile}
-        codeValid={codeValid}
-        setCodeValid={setCodeValid}
       />
     </React.Fragment>
   );

@@ -27,7 +27,6 @@ import {
   UncontrolledPopover,
   Row,
   Col,
-  Alert,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
@@ -62,7 +61,6 @@ function FormattedReport({
   allRoleInfo,
   badges,
   loadBadges,
-  canEditTeamCode,
 }) {
   const emails = [];
 
@@ -109,7 +107,6 @@ function FormattedReport({
             bioCanEdit={bioCanEdit}
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
-            canEditTeamCode={canEditTeamCode}
             badges={badges}
             loadBadges={loadBadges}
           />
@@ -148,7 +145,6 @@ function ReportDetails({
   allRoleInfo,
   badges,
   loadBadges,
-  canEditTeamCode,
 }) {
   const ref = useRef(null);
   const isInViewPort = useIsInViewPort(ref);
@@ -166,7 +162,7 @@ function ReportDetails({
             <Row className="flex-nowrap">
               <Col className="flex-grow-0">
                 <ListGroupItem>
-                  <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
+                  <b>Media URL:</b> <MediaUrlLink summary={summary} />
                 </ListGroupItem>
                 <ListGroupItem>
                   <Bio
@@ -275,87 +271,12 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
       {summaryContent}
     </>
   );
-};
-
-const TeamCodeRow = ({canEditTeamCode, summary}) => {
-
-  const [teamCode, setTeamCode] = useState(summary.teamCode);
-  const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
-
-  const handleOnChange = async (userProfileSummary, newStatus) => {
-    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id)
-    try {
-      await axios.patch(url, {key: 'teamCode', value: newStatus});
-    } catch (err) {
-      alert('An error occurred while attempting to save the new team code change to the profile.');
-    }
-  };
-
-  const handleCodeChange = e => {
-    let value = e.target.value;
-    if (e.target.value.length == 1) {
-      value = e.target.value + "-";
-    }
-    if (e.target.value == "-") {
-      value = "";
-    }
-    if (e.target.value.length == 2) {
-      if(e.target.value.includes("-")) {
-        value = e.target.value.replace("-", "");
-      } else {
-        value = e.target.value.charAt(0) + "-" + e.target.value.charAt(1);
-      }
-    }
-
-    const regexTest = fullCodeRegex.test(value);
-    if (regexTest) {
-      setHasError(false);
-      setTeamCode(value);
-      handleOnChange(summary, value);
-    } else {
-      setTeamCode(value);
-      setHasError(true);
-    }
-  };
-
-  return (
-    <>
-      <div className='teamcode-wrapper'>
-        {canEditTeamCode ?
-          <div style={{width: '100px', paddingRight: "5px"}}>
-            <Input
-              id='codeInput'
-              value={teamCode}
-              onChange={e => {
-                if(e.target.value != teamCode){
-                  handleCodeChange(e);
-                }
-              }}
-              placeholder="X-XXX"
-            />
-          </div>
-          : 
-          <div style={{paddingLeft: "5px"}}>
-            {teamCode == ''? "No assigned team code!": teamCode}
-          </div>
-        }
-        <b>Media URL:</b>
-        <MediaUrlLink summary={summary}/>
-      </div>
-      {hasError ? (
-        <Alert className='code-alert' color="danger">
-          Please enter a code in the format of X-XXX
-        </Alert>
-      ) : null}
-    </>
-  )
-};
+}
 
 function MediaUrlLink({ summary }) {
   if (summary.mediaUrl) {
     return (
-      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
+      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
         Open link to media files
       </a>
     );
@@ -365,7 +286,7 @@ function MediaUrlLink({ summary }) {
     const link = summary.adminLinks.find(item => item.Name === 'Media Folder');
     if (link) {
       return (
-        <a href={link.Link} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
+        <a href={link.Link} target="_blank" rel="noopener noreferrer">
           Open link to media files
         </a>
       );
