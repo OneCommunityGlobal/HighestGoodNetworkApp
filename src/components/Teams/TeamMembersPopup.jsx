@@ -1,23 +1,27 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert, TabContent } from 'reactstrap';
 import MembersAutoComplete from './MembersAutoComplete';
+// import { SwitchComponent } from '@syncfusion/ej2-react-buttons';
+
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
+import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
+
 
 const TeamMembersPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
-    setSortOrder(0)
+    setSortOrder(0);
   };
   const [selectedUser, onSelectUser] = useState(undefined);
   const [isValidUser, onValidation] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [memberList, setMemberList] = useState([]);
-  const [sortOrder, setSortOrder] = useState(0)
+  const [sortOrder, setSortOrder] = useState(0);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
@@ -119,6 +123,7 @@ const TeamMembersPopup = React.memo(props => {
                 <th>#</th>
                 <th>User Name</th>
                 <th style={{cursor: 'pointer'}} onClick={toggleOrder}>Date Added <FontAwesomeIcon {...icons[sortOrder]} /></th>
+                <th>Limit Visiblity</th>
                 {canAssignTeamToUsers && <th />}
               </tr>
             </thead>
@@ -129,6 +134,9 @@ const TeamMembersPopup = React.memo(props => {
                     <td>{index + 1}</td>
                     <td>{`${user.firstName} ${user.lastName}`}</td>
                     <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
+                    <td>
+                      <ToggleSwitch switchType="limit-visiblity" />
+                    </td>
                     {canAssignTeamToUsers && (
                       <td>
                         <Button
@@ -140,6 +148,7 @@ const TeamMembersPopup = React.memo(props => {
                         </Button>
                       </td>
                     )}
+                    
                   </tr>
                 ))
               }
@@ -147,6 +156,9 @@ const TeamMembersPopup = React.memo(props => {
           </table>
         </ModalBody>
         <ModalFooter>
+        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+            Save 
+          </Button>
           <Button color="secondary" onClick={closePopup} style={boxStyle}>
             Close
           </Button>

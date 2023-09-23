@@ -185,8 +185,27 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
           </div>
         </div>
       );
-    default:
-      break;
+      case 'limit-visiblity':
+        return (
+          <div className="blueSqare">
+            <div className={style.switchSection}>
+            <div className={style.switchContainer}>
+              Yes
+              <input
+                data-testid="visibility-switch"
+                id="leaderboardVisibility"
+                type="checkbox"
+                className={style.toggle}
+                onChange={handleUserProfile}
+                defaultChecked
+              />
+              No
+            </div>
+          </div>
+          </div>
+        );
+      default:
+        break;
   }
   return <div>ERROR: Toggle Switch.</div>;
 };
