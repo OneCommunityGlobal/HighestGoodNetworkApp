@@ -6,15 +6,18 @@ import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
 import './TeamLocations.css';
+import { Button, Container } from 'reactstrap';
+
+import { boxStyle } from 'styles';
+import AddNewUserPopUp from './AddNewUserPopUp';
 
 const TeamLocations = () => {
   const [userProfiles, setUserProfiles] = useState([]);
-
+  const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     async function getUserProfiles() {
       const users = await axios.get(ENDPOINTS.USER_PROFILES);
       const validUsers = users.data.filter(item => item.location?.country);
-      console.log(validUsers)
       setUserProfiles(validUsers);
     }
     getUserProfiles();
@@ -38,7 +41,20 @@ const TeamLocations = () => {
 
   return (
     <>
-      <div>Total Countries: {totalUniqueCountries}</div>
+    <Container fluid className='mb-4'>
+      <AddNewUserPopUp open={isOpen} onClose={() => setIsOpen(false)} handleSaveLocation={() =>{}}/>
+      <div className={"py-2 d-flex justify-content-between"}>
+        <h5>Total Countries: {totalUniqueCountries}</h5>
+        <Button
+          outline
+          color="primary"
+          className={'btn btn-outline-success mr-1 btn-sm'}
+          style={{ ...boxStyle }}
+          onClick={() => setIsOpen(true)}
+        >
+          Add person
+        </Button>
+      </div>
       <MapContainer
         center={[51.505, -0.09]}
         maxBounds={[
@@ -48,6 +64,7 @@ const TeamLocations = () => {
         maxBoundsViscosity={1.0}
         zoom={3}
         scrollWheelZoom={true}
+        style={{border: '1px solid grey'}}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -75,6 +92,7 @@ const TeamLocations = () => {
           })}
         </MarkerClusterGroup>
       </MapContainer>
+    </Container>
     </>
   );
 };
