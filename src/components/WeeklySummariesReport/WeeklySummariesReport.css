@@ -53,16 +53,3 @@
   display: flex;
   flex-direction: row;
 }
-
-@media (min-width: 482px) {
-  .teamcode-wrapper{
-    display: flex;
-    white-space: nowrap;
-    align-items: center;
-  }
-}
-
-.code-alert{
-  margin: 10px 0 0 0;
-  padding: 8px;
-}
