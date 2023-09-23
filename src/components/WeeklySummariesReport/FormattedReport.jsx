@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
@@ -10,6 +11,7 @@ import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import useIsInViewPort from 'utils/useIsInViewPort';
 import {
@@ -435,25 +437,15 @@ function Bio({ bioCanEdit, ...props }) {
 
 function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
+  const dispatch = useDispatch();
   const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
-    try {
-      const url = ENDPOINTS.USER_PROFILE(userId);
-      const response = await axios.get(url);
-      const userProfile = response.data;
-      const res = await axios.put(url, {
-        ...userProfile,
-        bioPosted: bioStatus,
-      });
-      if (res.status === 200) {
-        toast.success('You have changed the bio announcement status of this user.');
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-alert
-      alert('An error occurred while attempting to save the bioPosted change to the profile.');
+    const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
+    if (res.status === 200) {
+      toast.success('You have changed the bio announcement status of this user.');
     }
   };
 
@@ -649,6 +641,7 @@ FormattedReport.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekIndex: PropTypes.number.isRequired,
+  updateOneSummaryReport: PropTypes.func,
 };
 
 export default FormattedReport;
