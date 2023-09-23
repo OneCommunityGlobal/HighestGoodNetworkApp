@@ -18,6 +18,7 @@ import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 import { toast } from 'react-toastify';
+// import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 const TeamMemberTasks = React.memo(props => {
@@ -39,6 +40,8 @@ const TeamMemberTasks = React.memo(props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
+  // const [displayData, setDisplayData] = useState([]);
+  // const [hasMore, setHasMore] = useState(true);
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
   const allRequests = useSelector(state => state.timeOffRequests.requests);
 
@@ -116,7 +119,7 @@ const TeamMemberTasks = React.memo(props => {
       taskId,
     };
     submitTasks(newTask);
-    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
+    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, true));
     props.handleUpdateTask();
   }, []);
 
@@ -133,7 +136,7 @@ const TeamMemberTasks = React.memo(props => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
-    setTaskNotificationModal(!showTaskNotificationModal);
+    setTaskNotificationModal(prev => !prev);
   }, []);
 
   const handleMarkAsDoneModal = useCallback((userId, task) => {
@@ -288,6 +291,21 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
+  // const loadFunc = useCallback(pageNum => {
+  //   if (teamList.length <= displayData.length) {
+  //     setHasMore(false);
+  //     return;
+  //   }
+
+  //   const start = pageNum * 10;
+  //   setDisplayData([...displayData, ...teamList.slice(start, start + 10)]);
+  //   setHasMore(true);
+  // });
+
+  // useEffect(() => {
+  //   loadFunc();
+  // }, [teamList]);
+
   const handleshowWhoHasTimeOff = () => {
     setShowWhoHasTimeOff(prev => !prev);
   };
@@ -407,7 +425,7 @@ const TeamMemberTasks = React.memo(props => {
       )}
       <div className="table-container">
         <Table>
-          <thead className="pc-component">
+          <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
             <tr>
               {/* Empty column header for hours completed icon */}
               <th />
@@ -486,7 +504,9 @@ const TeamMemberTasks = React.memo(props => {
                         updateTask={onUpdateTask}
                         roles={props.roles}
                         userPermissions={props.userPermissions}
+                        userId={userId}
                         showWhoHasTimeOff={showWhoHasTimeOff}
+                        timeOffRequests={allRequests[user.personId]}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList

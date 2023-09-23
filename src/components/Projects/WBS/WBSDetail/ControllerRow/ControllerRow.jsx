@@ -25,8 +25,12 @@ import { boxStyle } from 'styles';
 
 function ControllerRow (props) {
   /*
-  * -------------------------------- variable declarations -------------------------------- 
+  * -------------------------------- variable declarations --------------------------------
   */
+  // permissions
+  const canDeleteTask = props.hasPermission('deleteTask');
+  const canPostTask = props.hasPermission('postTask');
+
   // props from store
   const { role, userPermissions, roles, popupContent } = props;
 
@@ -34,10 +38,10 @@ function ControllerRow (props) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  
+
 
   /*
-  * -------------------------------- functions -------------------------------- 
+  * -------------------------------- functions --------------------------------
   */
   const showUpDeleteModal = () => {
     setModalDelete(true);
@@ -67,13 +71,13 @@ function ControllerRow (props) {
   };
 
   /*
-  * -------------------------------- useEffects -------------------------------- 
+  * -------------------------------- useEffects --------------------------------
   */
 
   return (
     <tr className="wbsTaskController desktop-view" id={`controller_${props.taskId}`}>
       <td colSpan={props.tableColNum} className="controlTd">
-        {props.level < 4 && hasPermission(role, 'addTask', roles, userPermissions) ? (
+        {props.level < 4 && canPostTask ? (
           <AddTaskModal
             key={`addTask_${props.taskId}`}
             taskNum={props.num}
@@ -90,7 +94,6 @@ function ControllerRow (props) {
             pageLoadTime={props.pageLoadTime}
             isOpen={props.isOpen}
             setIsOpen={props.setIsOpen}
-            hasPermission={true}
           />
         ) : null}
         <EditTaskModal
@@ -107,7 +110,7 @@ function ControllerRow (props) {
           load={props.load}
           setIsLoading={props.setIsLoading}
         />
-        {hasPermission(role, 'deleteTask', roles, userPermissions) ? (
+        {canDeleteTask ? (
           <>
             <Button
               color="danger"
@@ -180,5 +183,6 @@ export default connect(mapStateToProps, {
   copyTask,
   getPopupById,
   deleteChildrenTasks,
+  hasPermission,
 })(ControllerRow);
 

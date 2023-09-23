@@ -26,3 +26,43 @@
 .bio-toggle {
   display: inline-block;
 }
+
+.name-info {
+  display: flex;
+}
+.total-valid-wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  white-space: nowrap;
+}
+
+.badge-tr {
+  margin-left: 20px;
+  display: block;
+}
+
+.badge-td > img {
+  float: left;
+  height: 45px;
+  width: 45px;
+  margin: 5px;
+}
+
+.nonsummary-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+@media (min-width: 482px) {
+  .teamcode-wrapper{
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+  }
+}
+
+.code-alert{
+  margin: 10px 0 0 0;
+  padding: 8px;
+}

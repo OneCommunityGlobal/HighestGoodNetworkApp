@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
@@ -8,7 +8,7 @@ import { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
-import { updateTask, fetchAllTasks } from '../../../../../actions/task';
+import { updateTask } from '../../../../../actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
@@ -19,62 +19,78 @@ import { toast } from 'react-toastify';
 
 const EditTaskModal = props => {
   /*
-  * -------------------------------- variable declarations -------------------------------- 
+  * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { role, userPermissions, roles, allMembers, error } = props;
-  
+  const { allMembers, error } = props;
+
+  // permissions
+  const canUpdateTask = props.hasPermission('updateTask');
+  const canSuggestTask = props.hasPermission('suggestTask');
+
   // states from hooks
   const [thisTask, setThisTask] = useState();
   const [oldTask, setOldTask] = useState();
   const [modal, setModal] = useState(false);
-  const [taskName, setTaskName] = useState(thisTask?.taskName);
-  const [priority, setPriority] = useState(thisTask?.priority);
-  const [resourceItems, setResourceItems] = useState(thisTask?.resources);
-  const [assigned, setAssigned] = useState(false);
-  const [status, setStatus] = useState('false');
-  const [hoursBest, setHoursBest] = useState(thisTask?.hoursBest);
-  const [hoursWorst, setHoursWorst] = useState(thisTask?.hoursWorst);
-  const [hoursMost, setHoursMost] = useState(thisTask?.hoursMost);
-  const [hoursEstimate, setHoursEstimate] = useState(thisTask?.estimatedHours);
-  const [deadlineCount, setDeadlineCount] = useState(thisTask?.deadlineCount);
+  const [taskName, setTaskName] = useState();
+  const [priority, setPriority] = useState();
+  const [resourceItems, setResourceItems] = useState();
+  const [assigned, setAssigned] = useState();
+  const [status, setStatus] = useState();
+  const [hoursBest, setHoursBest] = useState();
+  const [hoursWorst, setHoursWorst] = useState();
+  const [hoursMost, setHoursMost] = useState();
+  const [hoursEstimate, setHoursEstimate] = useState();
+  const [deadlineCount, setDeadlineCount] = useState();
   const [hoursWarning, setHoursWarning] = useState(false);
   const [link, setLink] = useState('');
-  const [links, setLinks] = useState(thisTask?.links);
-  const [category, setCategory] = useState(thisTask?.category);
-  const [whyInfo, setWhyInfo] = useState(thisTask?.whyInfo);
-  const [intentInfo, setIntentInfo] = useState(thisTask?.intentInfo);
-  const [endstateInfo, setEndstateInfo] = useState(thisTask?.endstateInfo);
-  const [startedDate, setStartedDate] = useState(thisTask?.startedDatetime);
-  const [dueDate, setDueDate] = useState(thisTask?.dueDatetime);
+  const [links, setLinks] = useState();
+  const [category, setCategory] = useState();
+  const [whyInfo, setWhyInfo] = useState();
+  const [intentInfo, setIntentInfo] = useState();
+  const [endstateInfo, setEndstateInfo] = useState();
+  const [startedDate, setStartedDate] = useState();
+  const [dueDate, setDueDate] = useState();
   const [dateWarning, setDateWarning] = useState(false);
-  
+
   const res = [...(resourceItems ? resourceItems : [])];
+  const categoryOptions = [
+    { value: 'Unspecified', label: 'Unspecified' },
+    { value: 'Housing', label: 'Housing' },
+    { value: 'Food', label: 'Food' },
+    { value: 'Energy', label: 'Energy' },
+    { value: 'Education', label: 'Education' },
+    { value: 'Society', label: 'Society' },
+    { value: 'Economics', label: 'Economics' },
+    { value: 'Stewardship', label: 'Stewardship' },
+    { value: 'Other', label: 'Other' },
+  ];
   const FORMAT = 'MM/dd/yy';
-  
+
   /*
-  * -------------------------------- functions -------------------------------- 
+  * -------------------------------- functions --------------------------------
   */
   const toggle = () => setModal(!modal);
 
   const removeResource = userID => {
-    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
-    setResourceItems([
-      ...resourceItems.slice(0, removeIndex),
-      ...resourceItems.slice(removeIndex + 1),
-    ]);
+    const newResource = resourceItems.filter(item => item.userID !== userID);
+    setResourceItems(newResource);
+    if (!newResource.length) setAssigned(false);
   };
 
   const addResources = (userID, first, last, profilePic) => {
-    res.push({
-      userID,
-      name: `${first} ${last}`,
-      profilePic,
-    });
-    setResourceItems([...(res ? res : [])]);
+    const newResource = [
+      {
+        userID,
+        name: `${first} ${last}`,
+        profilePic,
+      },
+      ...resourceItems,
+    ]
+    setResourceItems(newResource);
+    setAssigned(true);
   };
 
-  // helper for hours estimate calculation
   const calHoursEstimate = (isOn = null) => {
     let currHoursMost = parseInt(hoursMost);
     let currHoursWorst = parseInt(hoursWorst);
@@ -99,7 +115,6 @@ const EditTaskModal = props => {
     }
   };
 
-   // helpers for change start/end date
   const changeDateStart = startDate => {
     setStartedDate(startDate);
     if (dueDate) {
@@ -120,7 +135,6 @@ const EditTaskModal = props => {
       }
     }
   };
-  // helper for date picker
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   const parseDate = (str, format, locale) => {
     const parsed = dateFnsParse(str, format, new Date(), { locale });
@@ -130,8 +144,7 @@ const EditTaskModal = props => {
     return undefined;
   };
 
-   // helpers for add/remove links
-   const addLink = () => {
+  const addLink = () => {
     setLinks([...links, link]);
     setLink('');
   };
@@ -139,7 +152,6 @@ const EditTaskModal = props => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
   };
 
-  // helper for updating task
   const updateTask = async () => {
     let newDeadlineCount = deadlineCount;
     if (thisTask?.estimatedHours !== hoursEstimate) {
@@ -148,6 +160,7 @@ const EditTaskModal = props => {
     }
 
     const updatedTask = {
+      ...oldTask,
       taskName,
       priority,
       resources: resourceItems,
@@ -166,50 +179,37 @@ const EditTaskModal = props => {
       endstateInfo,
       category,
     };
-    props.setIsLoading(true);
+    props.setIsLoading?.(true);
     await props.updateTask(
       props.taskId,
       updatedTask,
-      hasPermission(role, 'editTask', roles, userPermissions),
+      canUpdateTask,
       oldTask,
     );
-    await props.load();
-    props.setIsLoading(false);
+    props.setTask?.(updatedTask);
+    await props.load?.();
+    props.setIsLoading?.(false);
 
     if (error === 'none' || Object.keys(error).length === 0) {
       toggle();
+      toast.success('Update Success!')
     } else {
       toast.error('Update failed! Error is ' + props.tasks.error);
     }
   };
 
   /*
-  * -------------------------------- useEffects -------------------------------- 
+  * -------------------------------- useEffects --------------------------------
   */
-
   useEffect(() => {
     const fetchTaskData = async () => {
-      try {
-        const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
-        setThisTask(res?.data || {});
-        setCategory(res.data.category);
-        setAssigned(res.data.isAssigned);
-      } catch (error) {
-        console.log(error);
+      if (!props.taskId) {
+        return;
       }
-    };
-    fetchTaskData();
-  }, []);
-
-  // from dev
-  useEffect(() => {
-    const fetchTaskData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
         setOldTask(res?.data || {});
-        setCategory(res.data.category);
-        setAssigned(res.data.isAssigned);
       } catch (error) {
         console.log(error);
       }
@@ -222,28 +222,8 @@ const EditTaskModal = props => {
     setTaskName(thisTask?.taskName);
     setPriority(thisTask?.priority);
     setResourceItems(thisTask?.resources);
-    setAssigned(thisTask?.isAssigned || false);
-    setStatus(thisTask?.status || false);
-    setHoursBest(thisTask?.hoursBest);
-    setHoursWorst(thisTask?.hoursWorst);
-    setHoursMost(thisTask?.hoursMost);
-    setHoursEstimate(thisTask?.estimatedHours);
-    setLinks(thisTask?.links);
-    setCategory(thisTask?.category);
-    setWhyInfo(thisTask?.whyInfo);
-    setIntentInfo(thisTask?.intentInfo);
-    setEndstateInfo(thisTask?.endstateInfo);
-    setStartedDate(thisTask?.startedDatetime);
-    setDueDate(thisTask?.dueDatetime);
-  }, [thisTask]);
-
-  // from dev
-  useEffect(() => {
-    setTaskName(thisTask?.taskName);
-    setPriority(thisTask?.priority);
-    setResourceItems(thisTask?.resources);
-    setAssigned(thisTask?.isAssigned || false);
-    setStatus(thisTask?.status || false);
+    setAssigned(thisTask?.isAssigned);
+    setStatus(thisTask?.status);
     setHoursBest(thisTask?.hoursBest);
     setHoursWorst(thisTask?.hoursWorst);
     setHoursMost(thisTask?.hoursMost);
@@ -257,8 +237,7 @@ const EditTaskModal = props => {
     setStartedDate(thisTask?.startedDatetime);
     setDueDate(thisTask?.dueDatetime);
   }, [thisTask]);
-  
-  
+
   useEffect(() => {
     ReactTooltip.rebuild();
   }, [links]);
@@ -268,21 +247,12 @@ const EditTaskModal = props => {
       <Modal isOpen={modal} toggle={toggle}>
         <ReactTooltip delayShow={300}/>
         <ModalHeader toggle={toggle}>
-          {hasPermission(role, 'editTask', roles, userPermissions)
-            ? 'Edit'
-            : hasPermission(role, 'suggestTask', roles, userPermissions)
-            ? 'Suggest'
-            : 'View'}
+          {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
         </ModalHeader>
         <ModalBody>
           <table
             className={`table table-bordered responsive
-            ${
-              hasPermission(role, 'editTask', roles, userPermissions) ||
-              hasPermission(role, 'suggestTask', roles, userPermissions)
-                ? null
-                : 'disable-div'
-            }`}
+            ${canUpdateTask || canSuggestTask ? null : 'disable-div'}`}
           >
             <tbody>
               <tr>
@@ -323,7 +293,7 @@ const EditTaskModal = props => {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={allMembers}
+                      members={allMembers.filter(user=>user.isActive)}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -546,20 +516,12 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Category</td>
                 <td scope="col">
-                  <select
-                    value={category}
-                    onChange={e => {
-                      setCategory(e.target.value);
-                    }}
-                  >
-                    <option value="Housing">Housing</option>
-                    <option value="Food">Food</option>
-                    <option value="Energy">Energy</option>
-                    <option value="Education">Education</option>
-                    <option value="Soceity">Society</option>
-                    <option value="Economics">Economics</option>
-                    <option value="Stewardship">Stewardship</option>
-                    <option value="Not Assigned">Not Assigned</option>
+                  <select value={category} onChange={e => setCategory(e.target.value)}>
+                    {categoryOptions.map(cla => (
+                      <option value={cla.value} key={cla.value}>
+                        {cla.label}
+                      </option>
+                    ))}
                   </select>
                 </td>
               </tr>
@@ -668,8 +630,7 @@ const EditTaskModal = props => {
             </tbody>
           </table>
         </ModalBody>
-        {hasPermission(role, 'editTask', roles, userPermissions) ||
-        hasPermission(role, 'suggestTask', roles, userPermissions) ? (
+        {canUpdateTask || canSuggestTask ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask} style={boxStyle}>
@@ -683,21 +644,14 @@ const EditTaskModal = props => {
         ) : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
-        {hasPermission(role, 'editTask', roles, userPermissions)
-          ? 'Edit'
-          : hasPermission(role, 'suggestTask', roles, userPermissions)
-          ? 'Suggest'
-          : 'View'}
+        {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
       </Button>
     </div>
   );
 };
 
 const mapStateToProps = state => ({
-  role: state.auth ? state.auth.user.role : null,
-  userPermissions: state.auth.user?.permissions?.frontPermissions,
-  roles: state.role.roles,
   allMembers: state.projectMembers.members,
   error: state.tasks.error,
 });
-export default connect(mapStateToProps, { updateTask })(EditTaskModal);
+export default connect(mapStateToProps, { updateTask, hasPermission, })(EditTaskModal);

@@ -7,11 +7,11 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
+import { boxStyle } from 'styles';
 
 const Member = props => {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
-  const { roles } = props.state.role;
+  const canGetUserProfiles = props.hasPermission('getUserProfiles');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   return (
     <React.Fragment>
       <tr className="members__tr">
@@ -19,13 +19,13 @@ const Member = props => {
           <div>{props.index + 1}</div>
         </th>
         <td className="members__name">
-          {hasPermission(role, 'seeUserProfileInProjects', roles, userPermissions) ? (
+          {canGetUserProfiles ? (
             <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
           ) : (
             props.fullName
           )}
         </td>
-        {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
+        {canAssignProjectToUsers ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"
@@ -39,6 +39,7 @@ const Member = props => {
                   props.lastName,
                 )
               }
+              style={boxStyle}
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>
@@ -51,4 +52,4 @@ const Member = props => {
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { assignProject })(Member);
+export default connect(mapStateToProps, { assignProject, hasPermission })(Member);

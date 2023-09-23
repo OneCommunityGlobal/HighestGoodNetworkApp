@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -8,18 +8,18 @@ import {
   Label,
   CardBody,
   Card,
-  Col,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
-import { useSelector } from 'react-redux';
-import styles from './EditLinkModal.css';
+import './EditLinkModal.css';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
+import { isValidGoogleDocsUrl, isValidUrl } from 'utils/checkValidURL';
 
 const EditLinkModal = props => {
-  const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
-  const { roles } = useSelector(state => state.role);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+  const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
+
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
@@ -52,6 +52,7 @@ const EditLinkModal = props => {
   );
 
   const [isChanged, setIsChanged] = useState(false);
+  const [mediaFolderDiffWarning, setMediaFolderDiffWarning] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
 
   const handleNameChanges = (e, links, index, setLinks) => {
@@ -68,7 +69,10 @@ const EditLinkModal = props => {
   };
 
   const addNewLink = (links, setLinks, newLink, clearInput) => {
-    if (isDuplicateLink([googleLink,mediaFolderLink,...links], newLink) || !isValidUrl(newLink.Link)) {
+    if (
+      isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink) ||
+      !isValidUrl(newLink.Link)
+    ) {
       setIsValidLink(false);
     } else {
       const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
@@ -85,6 +89,14 @@ const EditLinkModal = props => {
     });
     setLinks(newLinks);
     setIsChanged(true);
+  };
+
+  const isDifferentMediaUrl = () => {
+    if (userProfile.mediaUrl !== mediaFolderLink.Link) {
+      setMediaFolderDiffWarning(true);
+    } else {
+      setMediaFolderDiffWarning(false);
+    }
   };
 
   const isDuplicateLink = (links, newLink) => {
@@ -110,15 +122,27 @@ const EditLinkModal = props => {
     }
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
+    const isGoogleDocsValid = isValidGoogleDocsUrl(googleLink.Link);
+    const isDropboxValid = isValidUrl(mediaFolderLink.Link);
     const updatable =
-      (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
+      (isGoogleDocsValid && isDropboxValid) ||
       (googleLink.Link === '' && mediaFolderLink.Link === '') ||
-      (isValidUrl(googleLink.Link) && mediaFolderLink.Link === '') ||
-      (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
+      (isGoogleDocsValid && mediaFolderLink.Link === '') ||
+      (isDropboxValid && googleLink.Link === '');
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
-      updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
+      // Media Folder link should update the mediaUrl in userProfile
+      if (mediaFolderLink.Link) {
+        await updateLink(
+          personalLinks,
+          [googleLink, mediaFolderLink, ...adminLinks],
+          mediaFolderLink.Link,
+        );
+      } else {
+        await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
+      }
+      handleSubmit();
       setIsValidLink(true);
       setIsChanged(true);
       closeModal();
@@ -127,29 +151,33 @@ const EditLinkModal = props => {
     }
   };
 
+  useEffect(() => {
+    isDifferentMediaUrl();
+  }, [mediaFolderLink.Link, userProfile.mediaUrl]);
+
   return (
     <React.Fragment>
       <Modal isOpen={isOpen} toggle={closeModal}>
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {hasPermission(role, 'adminLinks', roles, userPermissions) && (
+            {canPutUserProfileImportantInfo && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
+                  {mediaFolderDiffWarning && (
+                    <span className="warning-help-context">
+                      <strong>Media Folder link must be a working DropBox link</strong>
+                      <p>
+                        Current Media URL: <a href={userProfile.mediaUrl}>{userProfile.mediaUrl}</a>
+                      </p>
+                    </span>
+                  )}
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                      <label className='custom-label'>Google Doc</label>
                       <input
                         className="customEdit"
-                        id="linkName1"
-                        placeholder="Google Doc"
-                        value="Google Doc"
-                        disabled
-                      />
-
-                      <input
-                        className="customEdit"
-                        id="linkURL1"
                         placeholder="Enter Google Doc link"
                         value={googleLink.Link}
                         onChange={e => {
@@ -159,14 +187,8 @@ const EditLinkModal = props => {
                       />
                     </div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <input
-                        className="customEdit"
-                        id="linkName2"
-                        placeholder="Media Folder"
-                        value="Media Folder"
-                        disabled
-                      />
 
+                      <label className='custom-label'>Media Folder</label>
                       <input
                         className="customEdit"
                         id="linkURL2"
@@ -208,7 +230,7 @@ const EditLinkModal = props => {
                               })
                             }
                           >
-                            X
+                            x
                           </button>
                         </div>
                       );
@@ -286,7 +308,7 @@ const EditLinkModal = props => {
                           })
                         }
                       >
-                        X
+                        x
                       </button>
                     </div>
                   ))}
@@ -365,4 +387,4 @@ EditLinkModal.propTypes = {
   userProfile: PropTypes.object.isRequired,
 };
 
-export default EditLinkModal;
+export default connect(null, { hasPermission })(EditLinkModal);

@@ -7,6 +7,8 @@ export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
+  INFO_COLLECTIONS: `${APIEndpoint}/informations`,
+  INFO_COLLECTION: infoId =>`${APIEndpoint}/informations/${infoId}`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
@@ -86,6 +88,32 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
+  SETUP_NEW_USER: () =>
+    `${APIEndpoint}/getInitialSetuptoken`,
+  VALIDATE_TOKEN: () =>
+    `${APIEndpoint}/validateToken`,
+  SETUP_NEW_USER_PROFILE: () =>
+    `${APIEndpoint}/ProfileInitialSetup`,
+  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+
+
+
+  //reasons endpoints
+  CREATEREASON: () => {
+    return `${APIEndpoint}/reason/`
+  },
+  GETALLUSERREASONS: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
+  },
+  GETSINGLEREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/single/${userId}`
+  },
+  PATCHUSERREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
+  },
+  DELETEUSERREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
+  },
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,

@@ -2,6 +2,7 @@ import moment from 'moment';
 import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import hasPermission from '../../utils/permissions';
+import { connect } from 'react-redux';
 
 /**
  * Shows the dates and times a user has edited their time entries. Admins are given the ability to delete these edits.
@@ -11,6 +12,8 @@ import hasPermission from '../../utils/permissions';
  */
 const TimeEntryEditHistory = props => {
   const editHistory = [...props.userProfile.timeEntryEditHistory].reverse();
+
+  const canDeleteTimeEntry = props.hasPermission('deleteTimeEntry');
 
   const secondsToHms = seconds => {
     let h = new String(Math.floor(seconds / 3600));
@@ -53,12 +56,7 @@ const TimeEntryEditHistory = props => {
               <br />
               (HH:MM:SS)
             </th>
-            {hasPermission(
-              props.role,
-              'deleteTimeEntryOthers',
-              props.roles,
-              props.userPermissions,
-            ) && <th></th>}
+            {canDeleteTimeEntry && <th></th>}
           </tr>
         </thead>
         <tbody>
@@ -72,12 +70,7 @@ const TimeEntryEditHistory = props => {
                 </td>
                 <td>{secondsToHms(item.initialSeconds)}</td>
                 <td>{secondsToHms(item.newSeconds)}</td>
-                {hasPermission(
-                  props.role,
-                  'deleteTimeEntryOthers',
-                  props.roles,
-                  props.userPermissions,
-                ) && (
+                {canDeleteTimeEntry && (
                   <td>
                     <Button variant="danger" onClick={() => deleteEdit(item._id)}>
                       Delete&nbsp;Edit
@@ -93,4 +86,4 @@ const TimeEntryEditHistory = props => {
   );
 };
 
-export default TimeEntryEditHistory;
+export default connect(null, { hasPermission })(TimeEntryEditHistory);
