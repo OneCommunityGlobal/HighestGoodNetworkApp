@@ -17,7 +17,7 @@ function SetUpFinalDayButton(props) {
   const [isSet, setIsSet] = useState(false);
   const [finalDayDateOpen, setFinalDayDateOpen] = useState(false);
   const dispatch = useDispatch();
-  const { userProfile } = props;
+  const { userProfile, loadUserProfile, isBigBtn } = props;
 
   useEffect(() => {
     if (userProfile?.endDate !== undefined) setIsSet(true);
@@ -28,7 +28,7 @@ function SetUpFinalDayButton(props) {
       await updateUserFinalDayStatus(userProfile, 'Active', undefined)(dispatch);
       setIsSet(!isSet);
       setTimeout(async () => {
-        await props.loadUserProfile();
+        await loadUserProfile();
         toast.success("This user's final day has been deleted.");
       }, 1000);
     } else {
@@ -45,7 +45,7 @@ function SetUpFinalDayButton(props) {
     setIsSet(true);
     setFinalDayDateOpen(false);
     setTimeout(async () => {
-      await props.loadUserProfile();
+      await loadUserProfile();
       toast.success("This user's final day has been set.");
     }, 1000);
   };
@@ -61,7 +61,7 @@ function SetUpFinalDayButton(props) {
         outline
         color="primary"
         className={`btn btn-outline-${isSet ? 'warning' : 'success'} ${
-          props.isBigBtn ? '' : 'btn-sm'
+          isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={() => {
           onFinalDayClick(userProfile, isSet);

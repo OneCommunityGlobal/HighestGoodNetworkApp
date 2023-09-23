@@ -24,19 +24,21 @@ function PauseAndResumeButton(props) {
 
   const dispatch = useDispatch();
 
+  const { userProfile, loadUserProfile, isBigBtn } = props;
+
   useEffect(() => {
-    if (props.userProfile?.isActive !== undefined) setIsActive(props.userProfile.isActive);
-  }, [props.userProfile?.isActive]);
+    if (userProfile?.isActive !== undefined) setIsActive(userProfile.isActive);
+  }, [userProfile?.isActive]);
 
   /**
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
   const pauseUser = async reActivationDate => {
-    await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
+    await updateUserStatus(userProfile, UserStatus.InActive, reActivationDate)(dispatch);
     setIsActive(false);
     setActivationDateOpen(false);
     setTimeout(async () => {
-      await props.loadUserProfile();
+      await loadUserProfile();
       toast.success('Your Changes were saved successfully.');
     }, 1000);
   };
@@ -49,7 +51,7 @@ function PauseAndResumeButton(props) {
       await updateUserStatus(user, status, Date.now())(dispatch);
       setIsActive(status);
       setTimeout(async () => {
-        await props.loadUserProfile();
+        await loadUserProfile();
         toast.success('Your Changes were saved successfully.');
       }, 1000);
     } else {
@@ -68,10 +70,10 @@ function PauseAndResumeButton(props) {
         outline
         color="primary"
         className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${
-          props.isBigBtn ? '' : 'btn-sm'
+          isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={() => {
-          onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
+          onPauseResumeClick(userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
         }}
         style={boxStyle}
       >

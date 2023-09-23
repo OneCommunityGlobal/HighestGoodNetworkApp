@@ -9,7 +9,8 @@ class TextSearchBox extends React.PureComponent {
   }
 
   onTextChange = event => {
-    this.props.searchCallback(event.target.value);
+    const { searchCallback } = this.props;
+    searchCallback(event.target.value);
     this.setState({
       text: event.target.value,
     });

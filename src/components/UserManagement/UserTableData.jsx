@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
@@ -17,7 +16,6 @@ import ResetPasswordButton from './ResetPasswordButton';
  */
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
-  const history = useHistory();
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   /**
@@ -65,7 +63,7 @@ const UserTableData = React.memo(props => {
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
-          onClick={e => {
+          onClick={() => {
             onReset(true);
             props.onPauseResumeClick(
               props.user,

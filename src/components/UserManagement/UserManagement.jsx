@@ -56,7 +56,8 @@ class UserManagement extends React.PureComponent {
 
   componentDidMount() {
     // Initiating the user profile fetch action.
-    this.props.getAllUserProfile();
+    const { getAllUserProfile } = this.props;
+    getAllUserProfile();
   }
 
   /**
@@ -119,6 +120,13 @@ class UserManagement extends React.PureComponent {
    * Creates the table body elements after applying the search filter and return it.
    */
   userTableElements = (userProfiles, rolesPermissions) => {
+    const {
+      selectedPage,
+      pageSize,
+      activationDateOpen,
+      finalDayDateOpen,
+      selectedUser,
+    } = this.state;
     if (userProfiles && userProfiles.length > 0) {
       const usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -133,10 +141,7 @@ class UserManagement extends React.PureComponent {
           if (a.createdDate < b.createdDate) return 1;
           return 0;
         })
-        .slice(
-          (this.state.selectedPage - 1) * this.state.pageSize,
-          this.state.selectedPage * this.state.pageSize,
-        )
+        .slice((selectedPage - 1) * pageSize, selectedPage * pageSize)
         .map((user, index) => {
           return (
             <UserTableData
@@ -145,10 +150,10 @@ class UserManagement extends React.PureComponent {
               isActive={user.isActive}
               isSet={user.isSet}
               resetLoading={
-                this.state.selectedUser &&
-                this.state.selectedUser._id === user._id &&
-                this.state.activationDateOpen &&
-                this.state.finalDayDateOpen
+                selectedUser &&
+                selectedUser._id === user._id &&
+                activationDateOpen &&
+                finalDayDateOpen
               }
               onPauseResumeClick={that.onPauseResumeClick}
               onFinalDayClick={that.onFinalDayClick}
@@ -166,25 +171,35 @@ class UserManagement extends React.PureComponent {
   };
 
   filteredUserList = userProfiles => {
+    const {
+      firstNameSearchText,
+      lastNameSearchText,
+      weeklyHrsSearchText,
+      isActive,
+      isPaused,
+      wildCardSearchText,
+      roleSearchText,
+      emailSearchText,
+    } = this.state;
     const filteredList = userProfiles.filter(user => {
       // Applying the search filters before creating each table data element
       if (
-        (user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
-          user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
-          user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
-          user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
-          (this.state.weeklyHrsSearchText === '' ||
-            user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
-          (this.state.isActive === undefined || user.isActive === this.state.isActive) &&
-          (this.state.isPaused === false || user.reactivationDate) &&
-          this.state.wildCardSearchText === '') ||
+        (user.firstName.toLowerCase().indexOf(firstNameSearchText.toLowerCase()) > -1 &&
+          user.lastName.toLowerCase().indexOf(lastNameSearchText.toLowerCase()) > -1 &&
+          user.role.toLowerCase().indexOf(roleSearchText.toLowerCase()) > -1 &&
+          user.email.toLowerCase().indexOf(emailSearchText.toLowerCase()) > -1 &&
+          (weeklyHrsSearchText === '' ||
+            user.weeklycommittedHours === Number(weeklyHrsSearchText)) &&
+          (isActive === undefined || user.isActive === isActive) &&
+          (isPaused === false || user.reactivationDate) &&
+          wildCardSearchText === '') ||
         // the wild card serach, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          (user.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.weeklycommittedHours === Number(this.state.wildCardSearchText)))
+        (wildCardSearchText !== '' &&
+          (user.firstName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1 ||
+            user.lastName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1 ||
+            user.role.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1 ||
+            user.email.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1 ||
+            user.weeklycommittedHours === Number(wildCardSearchText)))
       ) {
         return user;
       }
@@ -198,11 +213,11 @@ class UserManagement extends React.PureComponent {
    * reload user list and close user creation popup
    */
   userCreated = () => {
-    const text = this.state.wildCardSearchText;
+    const { wildCardSearchText } = this.state;
     this.props.getAllUserProfile();
     this.setState({
       newUserPopupOpen: false,
-      wildCardSearchText: text,
+      wildCardSearchText,
     });
   };
 
@@ -257,7 +272,8 @@ class UserManagement extends React.PureComponent {
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
   pauseUser = reActivationDate => {
-    this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
+    const { selectedUser } = this.state;
+    this.props.updateUserStatus(selectedUser, UserStatus.InActive, reActivationDate);
     this.setState({
       activationDateOpen: false,
       selectedUser: undefined,
@@ -268,8 +284,9 @@ class UserManagement extends React.PureComponent {
    * Call back on Save confirmation button click to trigger the action to update user status
    */
   deactiveUser = finalDayDate => {
+    const { selectedUser } = this.state;
     this.props.updateUserFinalDayStatusIsSet(
-      this.state.selectedUser,
+      selectedUser,
       'Active',
       finalDayDate,
       FinalDay.FinalDay,
@@ -307,8 +324,9 @@ class UserManagement extends React.PureComponent {
    * Callback to trigger the status change on confirmation ok click.
    */
   setActiveInactive = isActive => {
+    const { selectedUser } = this.state;
     this.props.updateUserStatus(
-      this.state.selectedUser,
+      selectedUser,
       isActive ? UserStatus.Active : UserStatus.InActive,
       undefined,
     );
@@ -341,10 +359,11 @@ class UserManagement extends React.PureComponent {
    * Call back to trigger the delete based on the type chosen from the popup.
    */
   onDeleteUser = deleteType => {
+    const { selectedUser } = this.state;
     if (deleteType === UserDeleteType.Inactive) {
-      this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, undefined);
+      this.props.updateUserStatus(selectedUser, UserStatus.InActive, undefined);
     } else {
-      this.props.deleteUser(this.state.selectedUser, deleteType);
+      this.props.deleteUser(selectedUser, deleteType);
     }
     this.setState({
       deletePopupOpen: false,
