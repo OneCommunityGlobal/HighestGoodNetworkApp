@@ -63,7 +63,7 @@ class Teams extends React.PureComponent {
         ) : (
           <React.Fragment>
             <div className="container mt-3">
-              {this.teampopupElements(requestorRole, roles, userPermissions)}
+              {this.teampopupElements()}
               <TeamOverview
                 numberOfTeams={numberOfTeams}
                 numberOfActiveTeams={numberOfActiveTeams}
@@ -71,17 +71,10 @@ class Teams extends React.PureComponent {
               <TeamTableSearchPanel
                 onSearch={this.onWildCardSearch}
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
-                requestorRole={requestorRole}
-                userPermissions={userPermissions}
-                roles={roles}
               />
               <table className="table table-bordered table-responsive-sm">
                 <thead>
-                  <TeamTableHeader
-                    requestorRole={requestorRole}
-                    roles={roles}
-                    userPermissions={userPermissions}
-                  />
+                  <TeamTableHeader />
                 </thead>
                 <tbody>{teamTable}</tbody>
               </table>
@@ -95,7 +88,7 @@ class Teams extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  teamTableElements = (allTeams, requestorRole, roles, userPermissions) => {
+  teamTableElements = allTeams => {
     if (allTeams && allTeams.length > 0) {
       const teamSearchData = this.filteredTeamList(allTeams);
       /*
@@ -122,15 +115,12 @@ class Teams extends React.PureComponent {
             onEditTeam={this.onEidtTeam}
             onClickActive={this.onClickActive}
             team={team}
-            requestorRole={requestorRole}
-            roles={roles}
-            userPermissions={userPermissions}
           />
         ));
     }
   };
 
-  filteredTeamList = (allTeams, roles) => {
+  filteredTeamList = allTeams => {
     const filteredList = allTeams.filter(team => {
       // Applying the search filters before creating each team table data element
       if (
@@ -155,7 +145,7 @@ class Teams extends React.PureComponent {
    * 3. Popup to display delete confirmation of the team upon clicking delete button.
    */
 
-  teampopupElements = (requestorRole, roles, userPermissions) => {
+  teampopupElements = () => {
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
     return (
       <React.Fragment>
@@ -167,9 +157,6 @@ class Teams extends React.PureComponent {
           usersdata={this.props.state ? this.props.state.allUserProfiles : []}
           onAddUser={this.onAddUser}
           selectedTeamName={this.state.selectedTeam}
-          requestorRole={requestorRole}
-          roles={roles}
-          userPermissions={userPermissions}
         />
         <CreateNewTeamPopup
           open={this.state.createNewTeamPopupOpen}

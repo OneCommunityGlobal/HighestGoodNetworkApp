@@ -29,6 +29,9 @@ const mapStateToProps = state => {
     organizationData: orgData,
     timeEntries: get(state, 'timeEntries', {}),
     isVisible: user.role === 'Volunteer' || user.isVisible,
+    roles: get(state, 'role', {}).roles,
+    totalTimeMouseoverText: state?.mouseoverText?.[0]?.mouseoverText,
+    totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
   };
 };
 export default connect(mapStateToProps)(Leaderboard);

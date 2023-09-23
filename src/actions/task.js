@@ -1,37 +1,40 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Action: Tasks
  * Author: Henry Ng - 03/20/20
- ********************************************************************************/
+ ******************************************************************************* */
 import axios from 'axios';
 import {
   fetchTeamMembersTaskSuccess,
   fetchTeamMembersTaskBegin,
   fetchTeamMembersTaskError,
+  deleteTaskNotificationSuccess,
 } from 'components/TeamMemberTasks/actions';
+import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
-import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
 
 const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
 const selectUserId = state => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) =>
   state.tasks.taskItems.find(({ _id }) => _id === taskId);
 
-//for those who are not familiarized, this is a arrow function inside a arrow function.
+// for those who are not familiarized, this is a arrow function inside a arrow function.
 // It's the same as doing function(currentUserId){async function(dispatch, getState)}
 //Because of the closure, the inside function have access the currentUserId, that it uses and provides to the userId
 //I've also added authentiatedUserId param so, if you are seeing another user's dashboard, it can fetch the authenticated user tasks to make a filter when seeing an owner or another user
-export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldReload = true) => async (
-  dispatch,
-  getState,
-) => {
+export const fetchTeamMembersTask = (
+  currentUserId,
+  authenticatedUserId,
+  shouldReload = true,
+) => async (dispatch, getState) => {
+
   try {
     const state = getState();
-    //The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store
+    // The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store
 
     const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
-    const authUserId = authenticatedUserId ? authenticatedUserId : null
+    const authUserId = authenticatedUserId ? authenticatedUserId : null;
 
     if(shouldReload){
       await dispatch(fetchTeamMembersTaskBegin());
@@ -39,21 +42,19 @@ export const fetchTeamMembersTask = (currentUserId, authenticatedUserId, shouldR
 
     const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
 
-
     //if you are seeing another user's dashboard, the authenticated user id will be provided so the filter can be made
     if (authUserId !== null) {
       const originalTasks = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(authUserId));
-      const authUserTasks = originalTasks.data
-      const userTasks = response.data
+      const authUserTasks = originalTasks.data;
+      const userTasks = response.data;
       const correctedTasks = userTasks.filter(task => {
-        return authUserTasks.some(task2 => task2.personId === task.personId)
+        return authUserTasks.some(task2 => task2.personId === task.personId);
       });
       await dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
     } else {
       await dispatch(fetchTeamMembersTaskSuccess(response.data));
     }
   } catch (error) {
-
     await dispatch(fetchTeamMembersTaskError());
   }
 };
@@ -68,36 +69,41 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
     const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
     dispatch(deleteTaskNotificationSuccess({ userId, taskId, taskNotificationId }));
   } catch (error) {
-    //dispatch(deleteTaskNotificationError());
+    // dispatch(deleteTaskNotificationError());
   }
 };
-export const deleteChildrenTasks = taskId => async (dispatch, getState) => {
+
+export const deleteChildrenTasks = taskId => {
+  return async (dispatch, getState) => {
   let status = 200;
   try {
     await axios.post(ENDPOINTS.DELETE_CHILDREN(taskId));
   } catch (error) {
     console.log(error);
   }
-};
+}};
 
-export const addNewTask = (newTask, wbsId) => async (dispatch, getState) => {
+export const addNewTask = (newTask, wbsId, pageLoadTime) => async (dispatch, getState) => {
   let status = 200;
   let _id = null;
   let task = {};
   try {
-    //dispatch(fetchTeamMembersTaskBegin());
-    const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
-    _id = res.data._id;
-    status = res.status;
-    task = res.data;
-    const userIds = task.resources.map(resource => resource.userID);
-    await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
+    const wbs = await axios.get(ENDPOINTS.TASK_WBS(wbsId));
+    if (Date.parse(wbs.data.modifiedDatetime) > pageLoadTime) {
+      dispatch(setAddTaskError('outdated'));
+    } else {
+      const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
+      dispatch(postNewTask(res.data, status));
+      _id = res.data._id;
+      status = res.status;
+      task = res.data;
+      const userIds = task.resources.map(resource => resource.userID);
+      await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
+    }
   } catch (error) {
-    //dispatch(fetchTeamMembersTaskError());
     status = 400;
   }
   newTask._id = _id;
-  await dispatch(postNewTask(task, status));
 };
 
 export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatch, getState) => {
@@ -114,7 +120,7 @@ export const updateTask = (taskId, updatedTask, hasPermission) => async (dispatc
       await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
     }
   } catch (error) {
-    //dispatch(fetchTeamMembersTaskError());
+    // dispatch(fetchTeamMembersTaskError());
     console.log(error);
     status = 400;
   }
@@ -138,18 +144,11 @@ export const importTask = (newTask, wbsId) => {
       console.log('TRY CATCH ERR', err);
       status = 400;
     }
-
-    newTask._id = _id;
-
-    /*await dispatch(
-      postNewTask(task,
-        status
-      ));*/
   };
 };
 
 export const updateNumList = (wbsId, list) => {
-  const url = ENDPOINTS.TASKS_UPDATE + '/num';
+  const url = `${ENDPOINTS.TASKS_UPDATE  }/num`;
   return async dispatch => {
     let status = 200;
     try {
@@ -163,12 +162,14 @@ export const updateNumList = (wbsId, list) => {
 };
 
 export const moveTasks = (wbsId, fromNum, toNum) => {
-  const url = ENDPOINTS.MOVE_TASKS(wbsId);
   return async dispatch => {
+    const url = ENDPOINTS.MOVE_TASKS(wbsId);
     try {
-      const res = await axios.put(url, { fromNum, toNum });
-    } catch (err) {}
-    dispatch(setTasksError());
+      await axios.put(url, { fromNum, toNum });
+    } catch (err) {
+      dispatch(setTasksError(err));
+    }
+    dispatch(emptyTaskItems());
   };
 };
 
@@ -184,23 +185,17 @@ export const fetchAllTasks = (wbsId, level = 0, mother = null) => {
   };
 };
 
-export const emptyAllTaskItems = () => {
-  return async dispatch => {
-    dispatch(emptyTaskItems());
-  }
-}
-
 export const deleteTask = (taskId, mother) => {
   const url = ENDPOINTS.TASK_DEL(taskId, mother);
   return async dispatch => {
     let status = 200;
     try {
-      const res = await axios.post(url);
-      status = res.status;
+      await axios.post(url);
     } catch (err) {
       status = 400;
     }
-    await dispatch(removeTask(taskId, status));
+    dispatch(emptyTaskItems());
+    // await dispatch(removeTask(taskId, status));
   };
 };
 
@@ -245,6 +240,13 @@ export const emptyTaskItems = () => {
 export const setTasksError = err => {
   return {
     type: types.FETCH_TASKS_ERROR,
+    err,
+  };
+};
+
+export const setAddTaskError = err => {
+  return {
+    type: types.ADD_NEW_TASK_ERROR,
     err,
   };
 };

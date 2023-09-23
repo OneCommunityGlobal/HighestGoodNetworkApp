@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
+import { boxStyle } from 'styles';
 
 const WBS = props => {
   const projectId = props.match.params.projectId;
@@ -24,7 +25,7 @@ const WBS = props => {
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <NavItem tag={Link} to={`/projects/`}>
-              <button type="button" className="btn btn-secondary">
+              <button type="button" className="btn btn-secondary" style={boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
               </button>
             </NavItem>

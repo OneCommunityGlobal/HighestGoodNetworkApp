@@ -608,4 +608,3 @@ export default connect(mapStateToProps, {
   getUserProfile,
   fetchAllManagingTeams,
 })(TeamMemberTasks);
-

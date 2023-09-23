@@ -1,6 +1,6 @@
 import jwtDecode from 'jwt-decode';
-import httpService from '../services/httpService';
 import axios from 'axios';
+import httpService from '../services/httpService';
 import config from '../config.json';
 import { ENDPOINTS } from '../utils/URL';
 import { GET_ERRORS } from '../constants/errors';

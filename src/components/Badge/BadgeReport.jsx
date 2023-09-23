@@ -31,6 +31,7 @@ import { toast } from 'react-toastify';
 import hasPermission from '../../utils/permissions';
 import './BadgeReport.css';
 import { boxStyle } from 'styles';
+import { formatDate } from 'utils/formatDate';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -38,7 +39,9 @@ const BadgeReport = props => {
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
   let [badgesToDelete, setBadgesToDelete] = useState([]);
-  const { roles } = props.state.role;
+
+  const canDeleteBadges = props.hasPermission('deleteBadges');
+  const canUpdateBadges = props.hasPermission('updateBadges');
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
@@ -208,6 +211,7 @@ const BadgeReport = props => {
     mm < 10 ? (mm = '0' + mm) : mm;
     dd < 10 ? (dd = '0' + dd) : dd;
     const formatedDate = `${yyyy}-${mm}-${dd}`;
+    
     newBadges.map((bdg, i) => {
       if (newValue > bdg.count && i === index) {
         bdg.earnedDate.push(formatedDate);
@@ -304,16 +308,12 @@ const BadgeReport = props => {
                 <th style={{ width: '110px' }}>Modified</th>
                 <th style={{ width: '110px' }}>Earned Dates</th>
                 <th style={{ width: '90px' }}>Count</th>
-                {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
-                  <th>Delete</th>
-                ) : (
-                  []
-                )}
+                {canDeleteBadges ? <th>Delete</th> : []}
                 <th style={{ width: '70px', zIndex: '1' }}>Featured</th>
               </tr>
             </thead>
             <tbody>
-              {sortBadges &&
+              {sortBadges && sortBadges.length ?
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -341,7 +341,7 @@ const BadgeReport = props => {
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
-                        ? value.lastModified.substring(0, 10)
+                        ? formatDate(value.lastModified)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
                     <td>
@@ -351,19 +351,14 @@ const BadgeReport = props => {
                           Dates
                         </DropdownToggle>
                         <DropdownMenu>
-                          {value.earnedDate.map(date => {
-                            return <DropdownItem>{date}</DropdownItem>;
+                          {value.earnedDate.map((date, i) => {
+                            return <DropdownItem key={i}>{formatDate(date)}</DropdownItem>;
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
                     </td>
                     <td>
-                      {hasPermission(
-                        props.role,
-                        'modifyOwnBadgeAmount',
-                        roles,
-                        props.permissionsUser,
-                      ) ? (
+                      {canUpdateBadges ? (
                         <Input
                           type="number"
                           value={Math.round(value.count)}
@@ -377,7 +372,7 @@ const BadgeReport = props => {
                         Math.round(value.count)
                       )}
                     </td>
-                    {hasPermission(props.role, 'deleteOwnBadge', roles, props.permissionsUser) ? (
+                    {canDeleteBadges ? (
                       <td>
                         <button
                           type="button"
@@ -406,7 +401,13 @@ const BadgeReport = props => {
                       </FormGroup>
                     </td>
                   </tr>
-                ))}
+                )) : 
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center" }}>
+                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
+                    </td>
+                  </tr>
+              }
             </tbody>
           </Table>
         </div>
@@ -464,7 +465,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges &&
+              {sortBadges && sortBadges.length ?
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -492,7 +493,7 @@ const BadgeReport = props => {
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
-                        ? value.lastModified.substring(0, 10)
+                        ? formatDate(value.lastModified)
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
 
@@ -523,12 +524,7 @@ const BadgeReport = props => {
                               toggle={false}
                             >
                               <span style={{ fontWeight: 'bold' }}>Count:</span>
-                              {hasPermission(
-                                props.role,
-                                'modifyOwnBadgeAmount',
-                                roles,
-                                props.permissionsUser,
-                              ) ? (
+                              {canUpdateBadges ? (
                                 <Input
                                   type="number"
                                   value={Math.round(value.count)}
@@ -578,19 +574,13 @@ const BadgeReport = props => {
                                 height: '60px',
                               }}
                             >
-                              {hasPermission(
-                                props.role,
-                                'deleteOwnBadge',
-                                roles,
-                                props.permissionsUser,
-                              ) ? (
-                                <button
-                                  type="button"
+                              {canDeleteBadges ? (
+                                <div
                                   className="btn btn-danger"
                                   onClick={e => handleDeleteBadge(index)}
                                 >
                                   Delete
-                                </button>
+                                </div>
                               ) : (
                                 []
                               )}
@@ -600,7 +590,13 @@ const BadgeReport = props => {
                       </ButtonGroup>
                     </td>
                   </tr>
-                ))}
+                )) : 
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center" }}>
+                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
+                    </td>
+                  </tr>
+              }
             </tbody>
           </Table>
         </div>
@@ -659,6 +655,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   changeBadgesByUserID: (userId, badges) => dispatch(changeBadgesByUserID(userId, badges)),
   getUserProfile: userId => dispatch(getUserProfile(userId)),
+  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeReport);

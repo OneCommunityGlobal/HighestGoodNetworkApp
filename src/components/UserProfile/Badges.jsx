@@ -16,12 +16,13 @@ import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
+import hasPermission from '../../utils/permissions';
 import { boxStyle } from 'styles';
 
 export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
-  const permissionsUser = props.userProfile?.permissions?.frontPermissions;
+  const canAssignBadges = props.hasPermission('assignBadges');
 
   const toggle = () => setOpen(!isOpen);
 
@@ -36,7 +37,13 @@ export const Badges = props => {
   }, [isOpen, isAssignOpen]);
 
   // Determines what congratulatory text should displayed.
-  const badgesEarned = props.userProfile.badgeCollection.length;
+  const badgesEarned = props.userProfile.badgeCollection.reduce((acc, badge) => {
+    if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+      return acc + 1;
+    }
+    return acc + Math.round(Number(badge.count));
+  }, 0);
+  
   const subject = props.isUserSelf ? 'You have' : 'This person has';
   const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
@@ -72,14 +79,13 @@ export const Badges = props => {
                         setUserProfile={props.setUserProfile}
                         setOriginalUserProfile={props.setOriginalUserProfile}
                         handleSubmit={props.handleSubmit}
-                        permissionsUser={permissionsUser}
+                        isUserSelf={props.isUserSelf}
                       />
                     </ModalBody>
                   </Modal>
                 </>
               )}
-              {((props.canEdit && (props.role == 'Owner' || props.role == 'Administrator')) ||
-                props.userPermissions.includes('assignBadgeOthers')) && (
+              {canAssignBadges && (
                 <>
                   <Button
                     className="btn--dark-sea-green mr-2"
@@ -106,7 +112,7 @@ export const Badges = props => {
           </div>
         </CardHeader>
         <CardBody style={{ overflow: 'auto' }}>
-          <FeaturedBadges badges={props.userProfile.badgeCollection} />
+          <FeaturedBadges personalBestMaxHrs={props.userProfile.personalBestMaxHrs} badges={props.userProfile.badgeCollection} />
         </CardBody>
         <CardFooter
           style={{
@@ -164,6 +170,7 @@ export const Badges = props => {
 
 const mapDispatchToProps = dispatch => ({
   clearSelected: () => dispatch(clearSelected()),
+  hasPermission: (permission) => dispatch(hasPermission(permission)),
 });
 
 const mapStateToProps = state => ({
