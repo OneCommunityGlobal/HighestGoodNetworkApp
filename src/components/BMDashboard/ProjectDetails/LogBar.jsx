@@ -1,51 +1,41 @@
 import React from 'react';
 import { Button } from 'reactstrap';
 
+// button styles for each section
+const buttonStyles = {
+  dailyLogging: 'green',
+  newItem: 'blue',
+  team: 'indigo',
+};
+
+//  button labels for each section
+const buttonLabels = {
+  dailyLogging: ['Time', 'Material', 'Tool/Equipment'],
+  newItem: ['Team', 'Material', 'Tool/Equipment'],
+  team: ['Create New Team', 'Edit Existing Team', 'Log Issue'],
+};
+
 function LogBar() {
   return (
     <div className="log-bar">
-      <div className="log-bar__section">
-        <h2>Daily Logging:</h2>
-        <ul className="log-bar__btn-group">
-          <li>
-            <Button className="button button--green">Time</Button>
-          </li>{' '}
-          <li>
-            <Button className="button button--green">Material</Button>
-          </li>{' '}
-          <li>
-            <Button className="button button--green">Tool/Equipment</Button>
-          </li>
-        </ul>
-      </div>
-      <div className="log-bar__section">
-        <h2>Add a new item:</h2>
-        <ul className="log-bar__btn-group">
-          <li>
-            <Button className="button button--blue">Team</Button>
-          </li>{' '}
-          <li>
-            <Button className="button button--blue">Material</Button>
-          </li>{' '}
-          <li>
-            <Button className="button button--blue">Tool/Equipment</Button>
-          </li>
-        </ul>
-      </div>
-      <div className="log-bar__section">
-        <h2>Team:</h2>
-        <ul className="log-bar__btn-group">
-          <li>
-            <Button className="button button--indigo">Create New Team</Button>
-          </li>{' '}
-          <li>
-            <Button className="button button--indigo">Edit Existing Team</Button>
-          </li>{' '}
-          <li>
-            <Button className="button button--maroon">Log Issue</Button>
-          </li>
-        </ul>
-      </div>
+      {Object.keys(buttonStyles).map((section, index) => (
+        <div key={index} className={`log-bar__section`}>
+          <h2>
+            {section === 'dailyLogging'
+              ? 'Daily Logging:'
+              : section === 'newItem'
+              ? 'Add a New Item:'
+              : 'Team:'}
+          </h2>
+          <ul className="log-bar__btn-group">
+            {buttonLabels[section].map((label, i) => (
+              <li key={i}>
+                <Button className={label === 'Log Issue' ? `button button--maroon` : `button button--${buttonStyles[section]}`}>{label}</Button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }
