@@ -40,7 +40,8 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     <div key={`${role}+permission`} className="permissions-management">
       <h1 className="permissions-management__title">User Roles</h1>
       <div key={`${role}_header`} className="permissions-management__header">
-      {userProfile?.role === 'Owner' &&
+      {(userProfile?.role === 'Owner' ||
+      userProfile?.permissions?.frontPermissions.some(permission => permission === 'postRole')) &&
         <div key={`${role}_name`} className="role-name-container">
           {roleNames?.map(roleName => {
             const roleNameLC = roleName.toLowerCase().replace(' ', '-');
