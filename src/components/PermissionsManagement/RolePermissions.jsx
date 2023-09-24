@@ -215,6 +215,7 @@ function RolePermissions(props) {
   };
 
   const handleModalOpen = idx => {
+    console.log(idx);
     setContent(modalInfo[idx]);
     setinfoRoleModal(true);
   };
@@ -435,7 +436,7 @@ function RolePermissions(props) {
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal}>
+      <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal} id='#modal2-body_new-role--padding'>
         <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
         <ModalBody>{modalContent}</ModalBody>
         <ModalFooter>
