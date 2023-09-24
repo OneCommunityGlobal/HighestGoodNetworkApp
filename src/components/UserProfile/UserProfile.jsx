@@ -392,10 +392,10 @@ function UserProfile(props) {
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares !== []) {
+      if (dateStamp != null && currentBlueSquares.length > 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
-      if (summary != null && currentBlueSquares !== []) {
+      if (summary != null && currentBlueSquares.length > 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
@@ -403,7 +403,7 @@ function UserProfile(props) {
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
-      if (newInfringements !== []) {
+      if (newInfringements.length > 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
@@ -446,7 +446,7 @@ function UserProfile(props) {
     setShowModal(false);
     setUserProfile({
       ...userProfile,
-      mediaUrl:mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
+      mediaUrl: mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
       personalLinks: personalLinksUpdate,
       adminLinks: adminLinksUpdate,
     });
@@ -646,10 +646,8 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
-              {!codeValid ? (
-              <Alert color="danger">
-                Please enter a code in the format of X-XXX
-              </Alert>
+            {!codeValid ? (
+              <Alert color="danger">Please enter a code in the format of X-XXX</Alert>
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
@@ -709,10 +707,7 @@ function UserProfile(props) {
             <p className="proile-rating">
               From : <span>{formatDate(userProfile.createdDate)}</span>
               {'   '}
-              To:{' '}
-              <span>
-                {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
-              </span>
+              To: <span>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (

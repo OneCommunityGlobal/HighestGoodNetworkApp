@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Table, Progress } from 'reactstrap';
+import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import moment from 'moment';
 import 'moment-timezone';
+import TimeOffRequestDetailModal from './components/TimeOffRequestDetailModal';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -28,7 +29,8 @@ const TeamMemberTask = React.memo(
     userId,
     updateTask,
     showWhoHasTimeOff,
-    timeOffRequests,
+    onTimeOff,
+    goingOnTimeOff,
   }) => {
     const ref = useRef(null);
 
@@ -61,8 +63,6 @@ const TeamMemberTask = React.memo(
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
-    const [onVacation, setOnVacation] = useState(null);
-    const [goingOnVacation, setGoingOnVacation] = useState(null);
     const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
 
     const thisWeekHours = user.totaltangibletime_hrs;
@@ -89,70 +89,12 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    const isTimeOffRequestIncludeCurrentWeek = request => {
-      const { startingDate, endingDate } = request;
-
-      moment.tz.setDefault('America/Los_Angeles');
-
-      const currentDate = moment();
-      const requestStartingDate = moment(startingDate);
-      const requestEndingDate = moment(endingDate);
-
-      const currentWeekStart = currentDate.clone().startOf('week');
-      const currentWeekEnd = currentDate.clone().endOf('week');
-
-      // Check if the current week falls within the date range of the request
-      if (
-        currentWeekStart.isSameOrAfter(requestStartingDate) &&
-        currentWeekEnd.isSameOrBefore(requestEndingDate)
-      ) {
-        return true;
-      }
-
-      return false;
+    const openDetailModal = () => {
+      setDetailModalIsOpen(!detailModalIsOpen);
     };
-
-    const isUserOnVacation = requests => {
-      moment.tz.setDefault('America/Los_Angeles');
-
-      for (const request of requests) {
-        if (isTimeOffRequestIncludeCurrentWeek(request)) {
-          return request;
-        }
-      }
-
-      return null;
-    };
-
-    const isUserGoingOnVacation = requests => {
-      moment.tz.setDefault('America/Los_Angeles');
-
-      const nextWeekStart = moment()
-        .add(1, 'week')
-        .startOf('week');
-
-      // Find the first request that starts on Sunday next week
-      const userOnVacation = requests.find(request => {
-        const startingDate = moment(request.startingDate);
-        return startingDate.isSame(nextWeekStart, 'day');
-      });
-
-      return userOnVacation || null;
-    };
-
     const detailModalClose = () => {
-      setDetailModalIsOpen(prev => false);
+      setDetailModalIsOpen(!detailModalIsOpen);
     };
-
-    useEffect(() => {
-      if (timeOffRequests) {
-        const checkOnVacation = isUserOnVacation(timeOffRequests);
-        const checkGoingOnVacation = isUserGoingOnVacation(timeOffRequests);
-        console.log(checkOnVacation, checkGoingOnVacation);
-        setOnVacation(checkOnVacation);
-        setGoingOnVacation(checkGoingOnVacation);
-      }
-    }, []);
 
     return (
       <>
@@ -304,73 +246,38 @@ const TeamMemberTask = React.memo(
               </tbody>
             </Table>
           </td>
-          {showWhoHasTimeOff && (onVacation || goingOnVacation) && (
+          {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
             <td className="taking-time-off-table-column">
               <div className="taking-time-off-content-div">
                 <p className="taking-time-off-content-text">
-                  {onVacation
+                  {onTimeOff
                     ? `${user.name} Is Not Available this Week`
                     : `${user.name} Is Not Available Next Week`}
                 </p>
                 <button
                   type="button"
                   className="taking-time-off-content-btn"
-                  onClick={() => setDetailModalIsOpen(true)}
+                  onClick={() => {
+                    openDetailModal();
+                  }}
                 >
                   Details ?
                 </button>
               </div>
-              <Modal isOpen={detailModalIsOpen} toggle={detailModalClose}>
-                <ModalHeader toggle={detailModalClose}>Time Off Details</ModalHeader>
-                {onVacation ? (
-                  <ModalBody className="time-off-detail-modal">
-                    <h4 className="time-off-detail-modal-title">{`${user.name} Is Not Available this Week`}</h4>
-                    <div className="time-off-detail-modal-section">
-                      <h5 className="time-off-detail-modal-sub-heading">Starting from:</h5>
-                      <p className="time-off-detail-modal-sub-section">
-                        {moment(onVacation.startingDate).format('YYYY-MM-DD')}
-                      </p>
-                    </div>
-                    <div className="time-off-detail-modal-section">
-                      <h5 className="time-off-detail-modal-sub-heading">Until:</h5>
-                      <p className="time-off-detail-modal-sub-section">
-                        {moment(onVacation.endingDate).format('YYYY-MM-DD')}
-                      </p>
-                    </div>
-                    <div className="time-off-detail-modal-section">
-                      <h5 className="time-off-detail-modal-sub-heading">
-                        For The Following reason:
-                      </h5>
-                      <p className="time-off-detail-modal-sub-section">{onVacation.reason}</p>
-                    </div>
-                  </ModalBody>
-                ) : (
-                  <ModalBody className="time-off-detail-modal">
-                    <h4 className="time-off-detail-modal-title">{`${user.name} Is Not Available Next Week`}</h4>
-                    <div className="time-off-detail-modal-section">
-                      <h5 className="time-off-detail-modal-sub-heading">Starting from:</h5>
-                      <p className="time-off-detail-modal-sub-section">
-                        {moment(goingOnVacation.startingDate).format('YYYY-MM-DD')}
-                      </p>
-                    </div>
-                    <div className="time-off-detail-modal-section">
-                      <h5 className="time-off-detail-modal-sub-heading">Until:</h5>
-                      <p className="time-off-detail-modal-sub-section">
-                        {moment(goingOnVacation.endingDate).format('YYYY-MM-DD')}
-                      </p>
-                    </div>
-                    <div className="time-off-detail-modal-section">
-                      <h5 className="time-off-detail-modal-sub-heading">
-                        For The Following reason:
-                      </h5>
-                      <p className="time-off-detail-modal-sub-section">{goingOnVacation.reason}</p>
-                    </div>
-                  </ModalBody>
-                )}
-              </Modal>
             </td>
           )}
         </tr>
+        {(onTimeOff || goingOnTimeOff) && (
+          <TimeOffRequestDetailModal
+            request={
+              onTimeOff
+                ? { ...onTimeOff, onVacation: true, name: user.name }
+                : { ...goingOnTimeOff, onVacation: false, name: user.name }
+            }
+            detailModalClose={detailModalClose}
+            detailModalIsOpen={detailModalIsOpen}
+          />
+        )}
       </>
     );
   },

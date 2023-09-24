@@ -2,9 +2,10 @@ import * as types from './../constants/timeOffRequestConstants';
 
 const initialState = {
   requests: {},
-  error: null
+  onTimeOff: {},
+  goingOnTimeOff: {},
+  error: null,
 };
-
 
 export const timeOffRequestsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -19,11 +20,11 @@ export const timeOffRequestsReducer = (state = initialState, action) => {
         ...state,
         requests: {
           ...state.requests,
-          [key]: updatedKeyRequests
-        }
+          [key]: updatedKeyRequests,
+        },
       };
     case types.UPDATE_TIME_OF_REQUEST:
-      const id = action.payload.requestFor
+      const id = action.payload.requestFor;
       return {
         ...state,
         requests: {
@@ -32,12 +33,12 @@ export const timeOffRequestsReducer = (state = initialState, action) => {
             if (request._id === action.payload._id) {
               return {
                 ...request,
-                ...action.payload
+                ...action.payload,
               };
             }
             return request;
-          })
-        }
+          }),
+        },
       };
     case types.DELETE_TIME_OF_REQUEST:
       const { requestFor, _id } = action.payload;
@@ -45,9 +46,15 @@ export const timeOffRequestsReducer = (state = initialState, action) => {
         ...state,
         requests: {
           ...state.requests,
-          [requestFor]: state.requests[requestFor].filter(request => request._id !== _id)
-        }
+          [requestFor]: state.requests[requestFor].filter(request => request._id !== _id),
+        },
       };
+    case types.ADD_IS_ON_TIME_OFF_REQUESTS: {
+      return { ...state, onTimeOff: action.payload, error: null };
+    }
+    case types.ADD_GOING_ON_TIME_OFF_REQUESTS: {
+      return { ...state, goingOnTimeOff: action.payload, error: null };
+    }
     default:
       return state;
   }

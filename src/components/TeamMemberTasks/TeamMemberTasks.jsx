@@ -43,7 +43,8 @@ const TeamMemberTasks = React.memo(props => {
   // const [displayData, setDisplayData] = useState([]);
   // const [hasMore, setHasMore] = useState(true);
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
-  const allRequests = useSelector(state => state.timeOffRequests.requests);
+  const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
+  const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
 
   //added it to keep track if the renderTeamsList should run
   const [shouldRun, setShouldRun] = useState(false);
@@ -487,7 +488,8 @@ const TeamMemberTasks = React.memo(props => {
                       roles={props.roles}
                       userPermissions={props.userPermissions}
                       showWhoHasTimeOff={showWhoHasTimeOff}
-                      timeOffRequests={allRequests[user.personId]}
+                      onTimeOff={userOnTimeOff[user.personId]}
+                      goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                     />
                   );
                 } else {
@@ -506,7 +508,8 @@ const TeamMemberTasks = React.memo(props => {
                         userPermissions={props.userPermissions}
                         userId={userId}
                         showWhoHasTimeOff={showWhoHasTimeOff}
-                        timeOffRequests={allRequests[user.personId]}
+                        onTimeOff={userOnTimeOff[user.personId]}
+                        goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
