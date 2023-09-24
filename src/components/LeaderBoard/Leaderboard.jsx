@@ -46,7 +46,7 @@ const LeaderBoard = ({
   asUser,
   userTeams,
   userRole,
-  dispatch
+  dispatch,
   totalTimeMouseoverText,
 }) => {
 
