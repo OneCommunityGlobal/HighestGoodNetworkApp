@@ -88,7 +88,10 @@ const TeamMembersPopup = React.memo(props => {
       }
       return 1;
     })
-  })
+  });
+  
+  // add logic to update the team Visiblity
+  const UpdateTeamMembersVisiblity = () => {};
 
   useEffect(() => {
     sortList(sortOrder)
@@ -135,7 +138,10 @@ const TeamMembersPopup = React.memo(props => {
                     <td>{`${user.firstName} ${user.lastName}`}</td>
                     <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
                     <td>
-                      <ToggleSwitch switchType="limit-visiblity" />
+                      <ToggleSwitch
+                        switchType="limit-visiblity"
+                        UpdateTeamMembersVisiblity={UpdateTeamMembersVisiblity}
+                      />
                     </td>
                     {canAssignTeamToUsers && (
                       <td>

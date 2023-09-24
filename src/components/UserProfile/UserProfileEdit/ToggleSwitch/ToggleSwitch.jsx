@@ -2,7 +2,7 @@ import React from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
-const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
+const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTeamMembersVisiblity }) => {
   switch (switchType) {
     case 'bluesquares':
       if (state) {
@@ -187,21 +187,18 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
       );
       case 'limit-visiblity':
         return (
-          <div className="blueSqare">
             <div className={style.switchSection}>
             <div className={style.switchContainer}>
-              Yes
+              {/* Yes */}
               <input
-                data-testid="visibility-switch"
-                id="leaderboardVisibility"
+                id="teamVisiblity"
                 type="checkbox"
                 className={style.toggle}
-                onChange={handleUserProfile}
+                onChange={UpdateTeamMembersVisiblity}
                 defaultChecked
               />
-              No
+              {/* No */}
             </div>
-          </div>
           </div>
         );
       default:
