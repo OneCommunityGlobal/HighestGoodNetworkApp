@@ -16,6 +16,7 @@ import {
   NavLink,
   Button,
 } from 'reactstrap';
+import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
@@ -42,6 +43,9 @@ export class WeeklySummariesReport extends Component {
       badges: [],
       loadBadges: false,
       hasSeeBadgePermission: false,
+      selectedCodes: [],
+      selectedColors: [],
+      filteredSummaries: [],
     };
 
     this.weekDates = Array(4)
@@ -70,6 +74,7 @@ export class WeeklySummariesReport extends Component {
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
+    this.codeEditPermission = this.canPutUserProfileImportantInfo;
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -84,6 +89,33 @@ export class WeeklySummariesReport extends Component {
       return { ...summary, promisedHoursByWeek };
     });
 
+    const teamCodeSet = [...new Set(summariesCopy.filter(
+      function(summary) {
+      if(summary.teamCode == ''){
+        return false;
+      }
+      return true;
+    }).map(s => s.teamCode))];
+    this.teamCodes = [];
+
+    const colorOptionSet = [...new Set(summariesCopy.filter(
+      function(summary) {
+      if(summary.weeklySummaryOption == undefined){
+        return false;
+      }
+      return true;
+    }).map(s => s.weeklySummaryOption))];
+    this.colorOptions = [];
+
+    if(teamCodeSet.length != 0) {
+      teamCodeSet.forEach((code, index) => {
+        this.teamCodes[index] = {value: code, label: code};
+      });
+      colorOptionSet.forEach((option, index) => {
+        this.colorOptions[index] = {value: option, label: option};
+      });
+    }
+
     this.setState({
       error,
       loading,
@@ -95,6 +127,7 @@ export class WeeklySummariesReport extends Component {
           : sessionStorage.getItem('tabSelection'),
       badges: allBadgeData,
       hasSeeBadgePermission: badgeStatusCode === 200,
+      filteredSummaries: summariesCopy,
     });
     await getInfoCollections();
     const role = authUser?.role;
@@ -203,6 +236,21 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
+  filterWeeklySummaries = () => {
+    const selectedCodesArray = this.state.selectedCodes.map(e => e.value);
+    const selectedColorsArray = this.state.selectedColors.map(e => e.value);
+    const temp = this.state.summaries.filter(summary => (selectedCodesArray.length == 0 || selectedCodesArray.includes(summary.teamCode)) && (selectedColorsArray.length == 0 || selectedColorsArray.includes(summary.weeklySummaryOption)));
+    this.setState({filteredSummaries: temp});
+  };
+
+  handleSelectCodeChange = event => {
+    this.setState({selectedCodes: event}, () => this.filterWeeklySummaries());
+  };
+
+  handleSelectColorChange = event => {
+    this.setState({selectedColors: event}, () => this.filterWeeklySummaries());
+  };
+
   render() {
     const {
       error,
@@ -213,6 +261,9 @@ export class WeeklySummariesReport extends Component {
       badges,
       loadBadges,
       hasSeeBadgePermission,
+      selectedCodes,
+      selectedColors, 
+      filteredSummaries,
     } = this.state;
 
     if (error) {
@@ -244,6 +295,22 @@ export class WeeklySummariesReport extends Component {
             <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
           </Col>
         </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 5, offset:1 }} xs={{size: 5, offset: 1}}>
+            Select Team Code 
+            <MultiSelect
+              options={this.teamCodes} 
+              value={selectedCodes} 
+              onChange={(e) => {this.handleSelectCodeChange(e)}}/>
+          </Col>
+          <Col lg={{ size: 5 }} xs={{size: 5}}>
+            Select Color 
+            <MultiSelect 
+              options={this.colorOptions} 
+              value={selectedColors} 
+              onChange={(e) => {this.handleSelectColorChange(e)}}/>
+          </Col>
+        </Row>
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
@@ -270,7 +337,7 @@ export class WeeklySummariesReport extends Component {
                     </Col>
                     <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                       <GeneratePdfReport
-                        summaries={summaries}
+                        summaries={filteredSummaries}
                         weekIndex={index}
                         weekDates={this.weekDates[index]}
                       />
@@ -290,14 +357,20 @@ export class WeeklySummariesReport extends Component {
                   </Row>
                   <Row>
                     <Col>
+                      <b>Total Team Members:</b> {filteredSummaries.length}
+                    </Col>
+                </Row>
+                  <Row>
+                    <Col>
                       <FormattedReport
-                        summaries={summaries}
+                        summaries={filteredSummaries}
                         weekIndex={index}
                         bioCanEdit={this.bioEditPermission}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={allRoleInfo}
                         badges={badges}
                         loadBadges={loadBadges}
+                        canEditTeamCode={this.codeEditPermission}
                       />
                     </Col>
                   </Row>
