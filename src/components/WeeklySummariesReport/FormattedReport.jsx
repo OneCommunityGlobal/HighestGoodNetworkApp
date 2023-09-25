@@ -13,7 +13,6 @@ import axios from 'axios';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
-import useIsInViewPort from 'utils/useIsInViewPort';
 import {
   Input,
   ListGroup,
@@ -74,17 +73,17 @@ function FormattedReport({
   const handleEmailButtonClick = () => {
     const batchSize = 90;
     const emailChunks = [];
-      
+
     for (let i = 0; i < emails.length; i += batchSize) {
-      emailChunks.push(emails.slice(i, i + batchSize));      
-    }  
-  
+      emailChunks.push(emails.slice(i, i + batchSize));
+    }
+
     const openEmailClientWithBatchInNewTab = (batch) => {
       const emailAddresses = batch.join(', ');
       const mailtoLink = `mailto:${emailAddresses}`;
       window.open(mailtoLink, '_blank');
-    };  
-    
+    };
+
     emailChunks.forEach((batch, index) => {
       setTimeout(() => {
         openEmailClientWithBatchInNewTab(batch);
@@ -151,7 +150,6 @@ function ReportDetails({
   canEditTeamCode,
 }) {
   const ref = useRef(null);
-  const isInViewPort = useIsInViewPort(ref);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
@@ -161,8 +159,6 @@ function ReportDetails({
         <ListGroupItem>
           <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
         </ListGroupItem>
-        {isInViewPort && (
-          <>
             <Row className="flex-nowrap">
               <Col className="flex-grow-0">
                 <ListGroupItem>
@@ -222,8 +218,6 @@ function ReportDetails({
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
-          </>
-        )}
       </ListGroup>
     </li>
   );
@@ -335,7 +329,7 @@ const TeamCodeRow = ({canEditTeamCode, summary}) => {
               placeholder="X-XXX"
             />
           </div>
-          : 
+          :
           <div style={{paddingLeft: "5px"}}>
             {teamCode == ''? "No assigned team code!": teamCode}
           </div>
