@@ -67,7 +67,8 @@ export class WeeklySummariesReport extends Component {
     } = this.props;
 
     // 1. fetch report
-    const { data: summaries } = await getWeeklySummariesReport();
+    const res = await getWeeklySummariesReport();
+    const summaries = res?.data ?? this.props.summaries
     const badgeStatusCode = await fetchAllBadges();
 
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
