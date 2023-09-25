@@ -27,7 +27,7 @@
   display: inline-block;
 }
 
-.name-info{
+.name-info {
   display: flex;
 }
 .total-valid-wrapper {
@@ -42,14 +42,18 @@
   display: block;
 }
 
-.badge-td> img{
+.badge-td > img {
   float: left;
   height: 45px;
   width: 45px;
   margin: 5px;
 }
 
-.nonsummary-wrapper{
+.nonsummary-wrapper {
   display: flex;
   flex-direction: row;
+}
+
+.hoursNotFulliled {
+  color: red;
 }
