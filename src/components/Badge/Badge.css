@@ -11,6 +11,12 @@
   margin: 5px;
 }
 
+.badge_image_md > img {
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+}
+
 .badge_image_lg > img {
   border-radius: 50%;
   height: 200px;
@@ -41,16 +47,16 @@
 /* This is just only for displaying 'Personal Max hours' badge hours position */
 .badge_count_personalmax {
   padding-top: 4px;
-  border-radius: 50%;
-  width: 24px;
+  border-radius: 45%;
+  width: 20px;
   height: 22px;
-  background: #007bff;
+  background: #800080;
   color: #fff;
   text-align: center;
-  font: 12px Arial, sans-serif;
+  font: 11px Arial, sans-serif;
   position: absolute;
-  right: 18px;
-  bottom: 4px;
+  right: 20px;
+  bottom: 1px;
   z-index: 10;
 }
 
@@ -143,6 +149,6 @@
   margin: 0 auto;
 }
 
-.badge_check{
-  margin-left:30px;
+.badge_check {
+  margin-left: 30px;
 }
