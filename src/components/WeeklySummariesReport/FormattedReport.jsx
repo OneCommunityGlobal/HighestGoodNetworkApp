@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
@@ -10,8 +11,8 @@ import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
-import useIsInViewPort from 'utils/useIsInViewPort';
 import {
   Input,
   ListGroup,
@@ -25,6 +26,7 @@ import {
   UncontrolledPopover,
   Row,
   Col,
+  Alert,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
@@ -59,6 +61,7 @@ function FormattedReport({
   allRoleInfo,
   badges,
   loadBadges,
+  canEditTeamCode,
 }) {
   const emails = [];
 
@@ -70,17 +73,17 @@ function FormattedReport({
   const handleEmailButtonClick = () => {
     const batchSize = 90;
     const emailChunks = [];
-      
+
     for (let i = 0; i < emails.length; i += batchSize) {
-      emailChunks.push(emails.slice(i, i + batchSize));      
-    }  
-  
+      emailChunks.push(emails.slice(i, i + batchSize));
+    }
+
     const openEmailClientWithBatchInNewTab = (batch) => {
       const emailAddresses = batch.join(', ');
       const mailtoLink = `mailto:${emailAddresses}`;
       window.open(mailtoLink, '_blank');
-    };  
-    
+    };
+
     emailChunks.forEach((batch, index) => {
       setTimeout(() => {
         openEmailClientWithBatchInNewTab(batch);
@@ -105,6 +108,7 @@ function FormattedReport({
             bioCanEdit={bioCanEdit}
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
+            canEditTeamCode={canEditTeamCode}
             badges={badges}
             loadBadges={loadBadges}
           />
@@ -143,9 +147,9 @@ function ReportDetails({
   allRoleInfo,
   badges,
   loadBadges,
+  canEditTeamCode,
 }) {
   const ref = useRef(null);
-  const isInViewPort = useIsInViewPort(ref);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
@@ -155,12 +159,10 @@ function ReportDetails({
         <ListGroupItem>
           <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
         </ListGroupItem>
-        {isInViewPort && (
-          <>
             <Row className="flex-nowrap">
               <Col className="flex-grow-0">
                 <ListGroupItem>
-                  <b>Media URL:</b> <MediaUrlLink summary={summary} />
+                  <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
                 </ListGroupItem>
                 <ListGroupItem>
                   <Bio
@@ -216,8 +218,6 @@ function ReportDetails({
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
-          </>
-        )}
       </ListGroup>
     </li>
   );
@@ -269,12 +269,87 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
       {summaryContent}
     </>
   );
-}
+};
+
+const TeamCodeRow = ({canEditTeamCode, summary}) => {
+
+  const [teamCode, setTeamCode] = useState(summary.teamCode);
+  const [hasError, setHasError] = useState(false);
+  const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
+
+  const handleOnChange = async (userProfileSummary, newStatus) => {
+    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id)
+    try {
+      await axios.patch(url, {key: 'teamCode', value: newStatus});
+    } catch (err) {
+      alert('An error occurred while attempting to save the new team code change to the profile.');
+    }
+  };
+
+  const handleCodeChange = e => {
+    let value = e.target.value;
+    if (e.target.value.length == 1) {
+      value = e.target.value + "-";
+    }
+    if (e.target.value == "-") {
+      value = "";
+    }
+    if (e.target.value.length == 2) {
+      if(e.target.value.includes("-")) {
+        value = e.target.value.replace("-", "");
+      } else {
+        value = e.target.value.charAt(0) + "-" + e.target.value.charAt(1);
+      }
+    }
+
+    const regexTest = fullCodeRegex.test(value);
+    if (regexTest) {
+      setHasError(false);
+      setTeamCode(value);
+      handleOnChange(summary, value);
+    } else {
+      setTeamCode(value);
+      setHasError(true);
+    }
+  };
+
+  return (
+    <>
+      <div className='teamcode-wrapper'>
+        {canEditTeamCode ?
+          <div style={{width: '100px', paddingRight: "5px"}}>
+            <Input
+              id='codeInput'
+              value={teamCode}
+              onChange={e => {
+                if(e.target.value != teamCode){
+                  handleCodeChange(e);
+                }
+              }}
+              placeholder="X-XXX"
+            />
+          </div>
+          :
+          <div style={{paddingLeft: "5px"}}>
+            {teamCode == ''? "No assigned team code!": teamCode}
+          </div>
+        }
+        <b>Media URL:</b>
+        <MediaUrlLink summary={summary}/>
+      </div>
+      {hasError ? (
+        <Alert className='code-alert' color="danger">
+          Please enter a code in the format of X-XXX
+        </Alert>
+      ) : null}
+    </>
+  )
+};
 
 function MediaUrlLink({ summary }) {
   if (summary.mediaUrl) {
     return (
-      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
+      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
         Open link to media files
       </a>
     );
@@ -284,7 +359,7 @@ function MediaUrlLink({ summary }) {
     const link = summary.adminLinks.find(item => item.Name === 'Media Folder');
     if (link) {
       return (
-        <a href={link.Link} target="_blank" rel="noopener noreferrer">
+        <a href={link.Link} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
           Open link to media files
         </a>
       );
@@ -356,25 +431,15 @@ function Bio({ bioCanEdit, ...props }) {
 
 function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
+  const dispatch = useDispatch();
   const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
-    try {
-      const url = ENDPOINTS.USER_PROFILE(userId);
-      const response = await axios.get(url);
-      const userProfile = response.data;
-      const res = await axios.put(url, {
-        ...userProfile,
-        bioPosted: bioStatus,
-      });
-      if (res.status === 200) {
-        toast.success('You have changed the bio announcement status of this user.');
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-alert
-      alert('An error occurred while attempting to save the bioPosted change to the profile.');
+    const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
+    if (res.status === 200) {
+      toast.success('You have changed the bio announcement status of this user.');
     }
   };
 
@@ -570,6 +635,7 @@ FormattedReport.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekIndex: PropTypes.number.isRequired,
+  updateOneSummaryReport: PropTypes.func,
 };
 
 export default FormattedReport;
