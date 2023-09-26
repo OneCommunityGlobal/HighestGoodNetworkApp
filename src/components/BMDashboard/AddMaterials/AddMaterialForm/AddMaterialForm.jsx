@@ -1,23 +1,33 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
-import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Row, Col, Form, FormGroup, Label, Input, Button, FormFeedback } from 'reactstrap';
 import './AddMaterialForm.css';
 
 // AddMaterialsForm will take in an array of project objects
 // and optionally a selected project object
 export default function AddMaterialsForm(props) {
-  const { allProjects, selectedProject, canAddNewMaterial } = props;
-  const [project, setProject] = useState(allProjects[0]._id);
+  const {
+    allProjects,
+    selectedProject,
+    canAddNewMaterial,
+    canAddNewMeasurement,
+    materialList,
+    measurementList,
+  } = props;
+  const defaultProject = selectedProject ? selectedProject._id : '';
+  const [project, setProject] = useState(defaultProject);
   const [material, setMaterial] = useState('');
   const [newMaterial, setNewMaterial] = useState(false);
   const [invoice, setInvoice] = useState('');
-  const [unitPrice, setUnitPrice] = useState(0);
+  const [unitPrice, setUnitPrice] = useState('');
   const [currency, setCurrency] = useState('');
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState('');
   const [measurement, setMeasurement] = useState('');
+  const [newMeasurement, setNewMeasurement] = useState(false);
   const [purchaseDate, setPurchaseDate] = useState('');
-  const [shippingFee, setShippingFee] = useState(0);
+  const [shippingFee, setShippingFee] = useState('');
   const [taxes, setTaxes] = useState('');
   const [phone, setPhone] = useState('');
   // state for image?
@@ -25,6 +35,7 @@ export default function AddMaterialsForm(props) {
   const [description, setDescription] = useState('');
 
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -36,7 +47,7 @@ export default function AddMaterialsForm(props) {
   };
 
   return (
-    <Form className="add-materials-form">
+    <Form className="add-materials-form" onSubmit={handleSubmit}>
       <Row>
         <Col>
           <h1 style={{ fontSize: '1.3rem' }}>ADD MATERIAL</h1>
@@ -50,17 +61,20 @@ export default function AddMaterialsForm(props) {
               id="project"
               name="project"
               type="select"
-              value={selectedProject ? selectedProject._id : project}
+              invalid={project === ''}
+              value={project}
               onChange={e => {
                 setProject(e.target.value);
               }}
             >
+              <option value="">-- select an option --</option>
               {allProjects.map(el => (
                 <option value={el._id} key={el._id}>
                   {el.projectName}
                 </option>
               ))}
             </Input>
+            <FormFeedback>Please select a project</FormFeedback>
           </FormGroup>
         </Col>
       </Row>
@@ -85,9 +99,10 @@ export default function AddMaterialsForm(props) {
                 value={material}
                 onChange={e => setMaterial(e.target.value)}
               >
-                <option value="gravel">Gravel</option>
-                <option value="sand">Sand</option>
-                <option value="brick">Brick</option>
+                <option value="">-- select an option --</option>
+                {materialList.map(materialName => (
+                  <option value={materialName}>{materialName}</option>
+                ))}
               </Input>
             )}
           </FormGroup>
@@ -128,10 +143,11 @@ export default function AddMaterialsForm(props) {
       <Row>
         <Col xs="12" sm="6">
           <FormGroup>
-            <Label for="unitPrice">Unit Price excl. taxes & shipping</Label>
+            <Label for="unitPrice">Unit Price &#40;excl. taxes & shipping&#41;</Label>
             <Input
               id="unitPrice"
               name="unitPrice"
+              className="remove-arrows"
               type="number"
               value={unitPrice}
               onChange={e => {
@@ -152,6 +168,7 @@ export default function AddMaterialsForm(props) {
                 setCurrency(e.target.value);
               }}
             >
+              <option value="">-- select --</option>
               <option>USD</option>
               <option>EUR</option>
               <option>JPY</option>
@@ -178,21 +195,52 @@ export default function AddMaterialsForm(props) {
         <Col xs="12" sm="5">
           <FormGroup>
             <Label for="measurement">Qty Unit of Measurement</Label>
-            <Input
-              id="measurement"
-              name="measurement"
-              type="select"
-              value={measurement}
-              onChange={e => {
-                setMeasurement(e.target.value);
-              }}
-            >
-              <option>Cubic Yard</option>
-              <option>Cubic Foot</option>
-            </Input>
+            {newMeasurement ? (
+              <Input
+                id="measurement"
+                name="measurement"
+                type="textbox"
+                placeholder="Add new measurement"
+                value={measurement}
+                onChange={e => {
+                  setMeasurement(e.target.value);
+                }}
+              />
+            ) : (
+              <Input
+                id="measurement"
+                name="measurement"
+                type="select"
+                value={measurement}
+                onChange={e => {
+                  setMeasurement(e.target.value);
+                }}
+              >
+                <option value="">-- select an option --</option>
+                {measurementList.map(measurementUnit => (
+                  <option value={measurementUnit}>{measurementUnit}</option>
+                ))}
+              </Input>
+            )}
           </FormGroup>
         </Col>
       </Row>
+      {canAddNewMeasurement && (
+        <Row>
+          <Col>
+            <FormGroup>
+              <input
+                id="newMeasurement"
+                name="newMeasurement"
+                type="checkbox"
+                checked={newMeasurement}
+                onChange={() => setNewMeasurement(!newMeasurement)}
+              />
+              <label htmlFor="newMeasurement">Do you want to add a new unit of measurement?</label>
+            </FormGroup>
+          </Col>
+        </Row>
+      )}
       <Row>
         <Col xs="12" sm="5">
           <FormGroup>
@@ -212,10 +260,11 @@ export default function AddMaterialsForm(props) {
       <Row>
         <Col xs="12" sm="8">
           <FormGroup>
-            <Label for="shippingFee">Shipping Fee excluding taxes enter 0 if free</Label>
+            <Label for="shippingFee">Shipping Fee &#40;excluding taxes, enter 0 if free&#41;</Label>
             <Input
               id="shippingFee"
               name="shippingFee"
+              className="remove-arrows"
               type="number"
               min={0}
               value={shippingFee}
@@ -231,6 +280,7 @@ export default function AddMaterialsForm(props) {
             <Input
               id="taxes"
               name="taxes"
+              className="remove-arrows"
               type="number"
               placeholder="%"
               min={0}
@@ -254,8 +304,8 @@ export default function AddMaterialsForm(props) {
               regions={['america', 'europe', 'asia', 'oceania', 'africa']}
               limitMaxLength="true"
               value={phone}
-              onChange={e => {
-                setPhone(e.target.value);
+              onChange={phoneNum => {
+                setPhone(phoneNum);
               }}
             />
           </FormGroup>
@@ -319,12 +369,12 @@ export default function AddMaterialsForm(props) {
       </Row>
       <Row>
         <Col>
-          <Button type="button" color="secondary" onClick={handleCancel}>
+          <Button type="button" id="cancel" onClick={handleCancel}>
             Cancel
           </Button>
         </Col>
         <Col>
-          <Button type="submit" color="primary" onClick={handleSubmit}>
+          <Button type="submit" id="submit">
             Submit
           </Button>
         </Col>

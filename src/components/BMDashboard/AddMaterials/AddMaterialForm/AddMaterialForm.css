@@ -1,3 +1,21 @@
+/* 
+  Chrome, Safari, Edge, Opera 
+  Remove arrows from number inputs
+*/
+.remove-arrows::-webkit-outer-spin-button,
+.remove-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 
+  Firefox
+  Remove arrows from number inputs
+*/
+.remove-arrows[type=number] {
+  -moz-appearance: textfield;
+}
+
 .total-price {
   font-size: 1.3rem;
   background-color: rgb(245, 230, 230);
@@ -8,6 +26,28 @@
   justify-content: space-between;
 }
 
-#newMaterial {
+#newMaterial, #newMeasurement {
   margin-right: 0.5rem;
+}
+
+.add-materials-form input,
+.add-materials-form select,
+.add-materials-form textarea {
+  background-color: rgb(249, 249, 249);
+}
+
+.add-materials-form #submit {
+  background-color: rgb(46, 80, 97);
+  border: 1px solid rgb(46, 80, 97);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  float: right;
+}
+
+.add-materials-form #cancel {
+  background-color: white;
+  color: rgb(46, 80, 97);
+  border: 1px solid rgb(46, 80, 97);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
 }
