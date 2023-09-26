@@ -265,7 +265,7 @@ function LeaderBoard({
               </td>
             </tr>
             {leaderBoardData.map(item => (
-              <tr key={item.id}>
+              <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
