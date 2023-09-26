@@ -28,8 +28,6 @@ const UserTeamsTable = props => {
               </Col>
             </div>
           )}
-          <div className="row">
-            <div className="col">
           <div className="row" style={{ margin: '0 auto'}}>
             <Col
               md={props.edit ? '7' : '12'}
@@ -40,19 +38,8 @@ const UserTeamsTable = props => {
               }}
             >
               <span className="teams-span">Teams</span>
-            </div>
+            </Col>
             {props.edit && props.role && (
-              <Col md="2">
-                {hasPermission(props.role, 'assignTeamToUser', roles, userPermissions) ? (
-                  <Button
-                    className="btn-addteam"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                  >
-                    Assign Team
-                  </Button>
               <Col md="5" style={{padding: '0'}}>
                 {canAssignTeamToUsers ? (
                   props.disabled ? (

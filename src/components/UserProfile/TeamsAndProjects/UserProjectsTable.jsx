@@ -105,7 +105,7 @@ const UserProjectsTable = React.memo(props => {
           <div className="container" style={{paddingLeft: '4px', paddingRight: '4px'}}>
             <div className="row" style={{ margin: '0 auto'}}>
               <Col
-                md={props.edit ? '10' : '12'}
+                md={props.edit ? '7' : '12'}
                 style={{
                   backgroundColor: '#e9ecef',
                   border: '1px solid #ced4da',
@@ -114,59 +114,36 @@ const UserProjectsTable = React.memo(props => {
               >
                 <span className="projects-span">Projects</span>
               </Col>
-              {
-
-              props.edit && props.role && (
-                <Col md="2">
-                  { //1
-                  hasPermission(props.role, 'assignUserInProject', roles, userPermissions) ? (
-                    <>
-                            <Button
-                              className="btn-addproject"
-                              color="primary"
-                              onClick={() => {
-                                props.onButtonClick();
-                              }}
-                            >
-                              Assign Project
-                            </Button>
-                        <Col md="5" style={{padding: '0'}}>
-                          {
-                            canAssignProjectToUsers && props.disabled ? (
-                            
-                              <div
-                                className="div-addproject"
-                                title="Please save changes before assign project"
-                              >
-                                <Button className="btn-addproject" color="primary" disabled>
-                                  Assign Project
-                                </Button>
-                              </div>
-                            ) : (
-                              <Button
-                                className="btn-addproject"
-                                color="primary"
-                                onClick={() => {
-                                  props.onButtonClick();
-                                }}
-                                style={boxStyle}
-                              >
-                                Assign Project
-                              </Button>
-                            )
-                          
-                        }
-                        </Col>
-                      )
-                </>
-
-                
-              )
-            
-            } 
-            </Col>
-          }
-          /div>
+              {props.edit && props.role && (
+                <Col md="5" style={{padding: '0'}}>
+                  {canAssignProjectToUsers ? (
+                    props.disabled ? (
+                      <div
+                        className="div-addproject"
+                        title="Please save changes before assign project"
+                      >
+                        <Button className="btn-addproject" color="primary" disabled>
+                          Assign Project
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        className="btn-addproject"
+                        color="primary"
+                        onClick={() => {
+                          props.onButtonClick();
+                        }}
+                        style={boxStyle}
+                      >
+                        Assign Project
+                      </Button>
+                    )
+                  ) : (
+                    <></>
+                  )}
+                </Col>
+              )}
+            </div>
           </div>
           <div style={{ maxHeight: '300px', overflow: 'auto',  margin: '4px' }}>
             <table className="table table-bordered table-responsive-sm">
@@ -521,3 +498,4 @@ const UserProjectsTable = React.memo(props => {
 });
 
 export default connect(null, { hasPermission })(UserProjectsTable);
+
