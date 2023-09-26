@@ -498,7 +498,9 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   const badgeThisWeek = [];
   summary.badgeCollection.forEach(badge => {
     if (badge.earnedDate) {
-      if (badge.earnedDate[0] <= badgeEndDate && badge.earnedDate[0] >= badgeStartDate) {
+      const length = badge.earnedDate.length
+      const earnedDate = moment(badge.earnedDate[length - 1])
+      if (earnedDate.isBetween(badgeStartDate, badgeEndDate, 'days', '[]')) {
         badgeIdThisWeek.push(badge.badge);
       }
     } else {
@@ -511,7 +513,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   if (badgeIdThisWeek.length > 0) {
     badgeIdThisWeek.forEach(badgeId => {
       // eslint-disable-next-line no-shadow
-      const badge = badges.filter(badge => badge._id === badgeId)[0];
+      const badge = badges.find(badge => badge._id === badgeId);
       badgeThisWeek.push(badge);
     });
   }
