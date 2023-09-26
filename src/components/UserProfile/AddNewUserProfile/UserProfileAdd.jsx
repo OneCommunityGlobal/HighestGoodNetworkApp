@@ -90,6 +90,8 @@ class AddUserProfile extends Component {
       location: '',
       timeZoneFilter: '',
       formSubmitted: false,
+      teamCode: '',
+      codeValid: false,
     };
 
     
@@ -100,6 +102,12 @@ class AddUserProfile extends Component {
   popupClose = () => {
     this.setState({
       popupOpen: false,
+    });
+  };
+
+  setCodeValid = isValid => {
+    this.setState({
+      codeValid: isValid,
     });
   };
 
@@ -413,9 +421,14 @@ class AddUserProfile extends Component {
                     userTeams={this.state.teams}
                     teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                     onAssignTeam={this.onAssignTeam}
+                    onAssignTeamCode={this.onAssignTeamCode}
                     onDeleteTeam={this.onDeleteTeam}
                     isUserAdmin={true}
                     role={this.props.auth.user.role}
+                    teamCode={this.state.teamCode}
+                    canEditTeamCode={true}
+                    codeValid={this.state.codeValid}
+                    setCodeValid={this.setCodeValid}
                     edit
                   />
                 </TabPane>
@@ -457,6 +470,12 @@ class AddUserProfile extends Component {
     const _projects = projects.filter(project => project._id !== deletedProjectId);
     this.setState({
       projects: _projects,
+    });
+  };
+
+  onAssignTeamCode = value => {
+    this.setState({
+      teamCode: value,
     });
   };
 
@@ -591,6 +610,7 @@ class AddUserProfile extends Component {
       location: location,
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
+      teamCode: this.state.teamCode,
     };
 
     this.setState({ formSubmitted: true });

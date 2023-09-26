@@ -399,12 +399,12 @@ const mapStateToProps = state => ({
   infoCollections: state.infoCollections.infos,
 });
 
-const mapDispatchToProps = {
-  fetchAllBadges,
-  getWeeklySummariesReport,
-  hasPermission,
-  getInfoCollections,
-};
+const mapDispatchToProps = dispatch => ({
+  fetchAllBadges: () => dispatch(fetchAllBadges()),
+  getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
+  hasPermission: () => hasPermission(),
+  getInfoCollections: () => getInfoCollections(),
+});
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
   return <TabPane tabId={tabId}>{!hidden && children}</TabPane>;
