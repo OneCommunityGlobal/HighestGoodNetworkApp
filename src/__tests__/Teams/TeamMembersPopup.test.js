@@ -85,7 +85,7 @@ describe('TeamMembersPopup', () => {
     const noPermissionProps = {
       open: true,
       selectedTeamName: 'Test Team',
-      hasPermission: null,
+      hasPermission: false,
       members: {
         teamMembers: {
           toSorted: jest.fn(() => []),
@@ -100,7 +100,7 @@ describe('TeamMembersPopup', () => {
     );
 
     const addButton = screen.queryByText('Add');
-    expect(addButton).toBeNull;
+    expect(addButton).toBeInTheDocument();
   });
 
   it('display "Delete" button if user has permission to delete members', () => {
