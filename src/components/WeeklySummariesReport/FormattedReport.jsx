@@ -144,7 +144,7 @@ const ReportDetails = ({
                 >
                   Hours logged:
                 </b>
-                <span className="ml-2 hoursNotFulliled">
+                <span className="ml-2 hoursNotFulfilled">
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </span>
               </ListGroupItem>
