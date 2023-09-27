@@ -15,7 +15,7 @@ import {
   ModalFooter,
   UncontrolledPopover,
 } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryPreview.css';
 

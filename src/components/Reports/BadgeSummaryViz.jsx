@@ -19,7 +19,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';
 
