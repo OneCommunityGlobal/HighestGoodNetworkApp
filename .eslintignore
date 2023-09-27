@@ -53,6 +53,4 @@ src/components/Timer/**
 src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
-src/components/WeeklySummary/**
 src/components/MouseoverText/**
-src/components/WeeklySummariesReport/**
