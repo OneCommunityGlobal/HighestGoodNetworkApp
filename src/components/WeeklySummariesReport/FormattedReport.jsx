@@ -136,7 +136,7 @@ const ReportDetails = ({
             {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
               <ListGroupItem>
                 <b
-                  className="hoursNotFulliled"
+                  className="hoursNotFulfilled"
                   // style={{
                   //   color:
                   //     textColors[summary?.weeklySummaryOption] || textColors['hoursNotFullfiled'],
