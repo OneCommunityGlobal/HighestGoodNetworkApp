@@ -4,7 +4,7 @@ import { Button, Modal } from 'react-bootstrap';
 import './PeopleReport/PeopleReport.css';
 import { boxStyle } from 'styles';
 
-const InfringementsViz = ({ infringements, fromDate, toDate }) => {
+function InfringementsViz({ infringements, fromDate, toDate }) {
   const [show, setShow] = React.useState(false);
   const [modalShow, setModalShow] = React.useState(false);
   const [focusedInf, setFocusedInf] = React.useState({});
@@ -17,41 +17,32 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
     setFocusedInf(d);
     setModalShow(true);
   };
-
-  React.useEffect(() => {
-    generateGraph();
-  }, [show, fromDate, toDate]);
-
   function displayGraph(bsCount, maxSquareCount) {
     if (!show) {
       d3.selectAll('#infplot > *').remove();
     } else {
       d3.selectAll('#infplot > *').remove();
-      const margin = { top: 10, right: 30, bottom: 30, left: 60 },
-        width = 1000 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+      const margin = { top: 10, right: 30, bottom: 30, left: 60 };
+      const width = 1000 - margin.left - margin.right;
+      const height = 400 - margin.top - margin.bottom;
 
-      var tooltipEl = function(d) {
+      const tooltipEl = function(d) {
         return (
-          '<div class="tip__container">' +
-          '<div class="close">' +
-          '<button>&times</button>' +
-          '</div>' +
-          '<div>' +
-          'Exact date: ' +
-          d3.timeFormat('%A, %B %e, %Y')(d.date) +
-          '<br>' +
-          'Count: ' +
-          (d.count == 1 ? d.count : d.count + ` <span class="detailsModal"><a>See All</a></span>`) +
-          '<br>' +
-          'Description: ' +
-          d.des[0] +
-          '</div>' +
-          '</div>'
+          `${'<div class="tip__container">' +
+            '<div class="close">' +
+            '<button>&times</button>' +
+            '</div>' +
+            '<div>' +
+            'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
+          `Count: ${
+            d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`
+          }<br>` +
+          `Description: ${d.des[0]}</div>` +
+          `</div>`
         );
       };
 
-      var legendEl = function() {
+      const legendEl = function() {
         return (
           '<div class="lengendSubContainer">' +
           '<div class="infLabelsOff">' +
@@ -122,10 +113,10 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
         .attr('stroke-width', 3)
         .attr('fill', 'white')
         .on('click', function(event, d) {
-          let prevTooltip = d3.select(`.inf${d.id}`);
+          const prevTooltip = d3.select(`.inf${d.id}`);
 
           if (prevTooltip.empty()) {
-            let Tooltip = d3
+            const Tooltip = d3
               .select('#infplot')
               .append('div')
               .style('opacity', 0)
@@ -165,7 +156,7 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
         .style('z-index', 999)
         .style('font-weight', 700)
         .style('display', 'none')
-        .text(d => parseInt(d.count));
+        .text(d => parseInt(d.count, 10));
 
       svg
         .append('g')
@@ -181,7 +172,7 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
         .style('display', 'none')
         .text(d => d3.timeFormat('%m/%d/%Y')(d.date));
 
-      let legend = d3
+      const legend = d3
         .select('#infplot')
         .append('div')
         .attr('class', 'legendContainer')
@@ -209,12 +200,12 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
   }
 
   const generateGraph = () => {
-    let dict = {};
-    let value = [];
+    const dict = {};
+    const value = [];
     let maxSquareCount = 0;
 
-    //aggregate infringements
-    for (let i = 0; i < infringements.length; i++) {
+    // aggregate infringements
+    for (let i = 0; i < infringements.length; i += 1) {
       if (infringements[i].date in dict) {
         dict[infringements[i].date].ids.push(infringements[i]._id);
         dict[infringements[i].date].count += 1;
@@ -228,31 +219,31 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
       }
     }
 
-    //filter infringements by date
-    if (fromDate == '' || toDate == '') {
-      //condition no longer needed
-      for (var key in dict) {
-        value.push({
-          date: d3.timeParse('%Y-%m-%d')(key.toString()),
-          des: dict[key].des,
-          count: dict[key].count,
-          type: 'Infringement',
-          ids: dict[key].ids,
-        });
-        if (dict[key].count > maxSquareCount) {
-          maxSquareCount = dict[key].count;
+    // filter infringements by date
+    if (fromDate === '' || toDate === '') {
+      // condition no longer needed
+      Object.keys(dict).forEach(key => {
+        // Use if statement to filter unwanted properties from the prototype chain
+        if (Object.prototype.hasOwnProperty.call(dict, key)) {
+          value.push({
+            date: d3.timeParse('%Y-%m-%d')(key),
+            des: dict[key].des,
+            count: dict[key].count,
+            type: 'Infringement',
+            ids: dict[key].ids,
+          });
+          if (dict[key].count > maxSquareCount) {
+            maxSquareCount = dict[key].count;
+          }
         }
-      }
+      });
     } else {
       let counter = 0;
-      for (var key in dict) {
-        if (
-          (Date.parse(fromDate) <= Date.parse(key.toString())) &
-          (Date.parse(key.toString()) <= Date.parse(toDate))
-        ) {
+      Object.keys(dict).forEach(key => {
+        if (Date.parse(fromDate) <= Date.parse(key) && Date.parse(key) <= Date.parse(toDate)) {
           value.push({
             id: counter,
-            date: d3.timeParse('%Y-%m-%d')(key.toString()),
+            date: d3.timeParse('%Y-%m-%d')(key),
             des: dict[key].des,
             count: dict[key].count,
             type: 'Infringement',
@@ -263,20 +254,25 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
           }
           counter += 1;
         }
-      }
+      });
     }
 
+    // eslint-disable-next-line no-console
     console.log('INFvalues', value);
 
     displayGraph(value, maxSquareCount);
   };
+
+  React.useEffect(() => {
+    generateGraph();
+  }, [show, fromDate, toDate]);
 
   return (
     <div>
       <Button onClick={() => setShow(!show)} aria-expanded={show} style={boxStyle}>
         Show Infringements Graph
       </Button>
-      <div id="infplot"></div>
+      <div id="infplot" />
 
       <Modal size="lg" show={modalShow} onHide={handleModalClose}>
         <Modal.Header closeButton>
@@ -308,6 +304,6 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
       </Modal>
     </div>
   );
-};
+}
 
 export default InfringementsViz;
