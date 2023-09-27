@@ -239,12 +239,19 @@ const SummaryBar = props => {
 
   const openSuggestionModal = async () => {
     if (!showSuggestionModal) {
-      let res = await httpService
-        .get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`)
-        .catch(e => {});
-      if (res.status == 200) {
-        setSuggestionCategory(res.data.suggestion);
-        setInputField(res.data.field);
+      try {
+        let res = await httpService.get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`);
+        
+        if (res && res.status === 200) {
+          setSuggestionCategory(res.data.suggestion);
+          setInputField(res.data.field);
+        } else {
+          console.error(res.status);
+          // Handle the error as needed
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        // Handle the error
       }
     }
     setShowSuggestionModal(prev => !prev);
