@@ -40,10 +40,10 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoMo
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 
 // BM Dashboard
-// import ProtectedBMRoute from 'components/common/BMDashboard/BMProtectedRoute/ProtectedBMRoute';
 import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
+import MaterialsList from 'components/BMDashboard/MaterialsList';
 
 export default (
   <>
@@ -155,6 +155,7 @@ export default (
 
       <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
       <Route path="/bmdashboard/login" component={BMLogin} />
+      <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
       {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
       <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
       
