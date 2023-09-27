@@ -26,12 +26,13 @@ const getRandomMessage = () => {
  * @returns
  */
 const SaveButton = props => {
-  const { handleSubmit, disabled, userProfile } = props;
+  const { handleSubmit, disabled, userProfile, setSaved } = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
 
   const handleSave = () => {
     handleSubmit();
+    setSaved();
     setModal(true);
   };
 

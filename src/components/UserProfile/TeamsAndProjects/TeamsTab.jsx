@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
+import { deleteTeamMember } from 'actions/allTeamsAction';
 
 const TeamsTab = props => {
   const {
@@ -21,9 +22,20 @@ const TeamsTab = props => {
     userProfile,
     codeValid,
     setCodeValid,
+    saved,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
+  const [removedTeams, setRemovedTeams] = useState([]);
+
+  useEffect(() => {
+    if(saved && removedTeams.length > 0){
+      removedTeams.forEach(teamId => {
+        deleteTeamMember(teamId, userProfile._id);
+        setRemovedTeams([]);
+      })
+    }
+  }, [saved]);
 
   const onAddTeamPopupShow = () => {
     setaddTeamPopupOpen(true);
@@ -33,6 +45,7 @@ const TeamsTab = props => {
     setaddTeamPopupOpen(false);
   };
   const onSelectDeleteTeam = teamId => {
+    setRemovedTeams([...removedTeams, teamId]);
     onDeleteTeam(teamId);
   };
 

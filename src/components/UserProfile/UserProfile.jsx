@@ -92,6 +92,7 @@ function UserProfile(props) {
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const userProfileRef = useRef();
 
@@ -413,6 +414,10 @@ function UserProfile(props) {
     setBlueSquareChanged(true);
   };
 
+  // const handleSave = ()=>{
+  //   setSaved(true);
+  // }
+
   const handleSubmit = async () => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
@@ -427,6 +432,7 @@ function UserProfile(props) {
       }
       await loadUserProfile();
       await loadUserTasks();
+      setSaved(false)
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
@@ -861,6 +867,7 @@ function UserProfile(props) {
               <TabPane tabId="3">
                 <TeamsTab
                   userTeams={teams || []}
+                  originalTeams={originalTeams}
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
@@ -881,6 +888,7 @@ function UserProfile(props) {
                   userProfile={userProfile}
                   codeValid={codeValid}
                   setCodeValid={setCodeValid}
+                  saved={saved}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -980,6 +988,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
+                            setSaved={()=>setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1035,6 +1044,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
+                            setSaved={()=>setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1062,6 +1072,7 @@ function UserProfile(props) {
                 <ModalBody>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
+                    originalTeams={originalTeams}
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
@@ -1100,6 +1111,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
+                            setSaved={()=>setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1160,6 +1172,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
+                            setSaved={()=>setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1207,6 +1220,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
+                            setSaved={()=>setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1274,6 +1288,7 @@ function UserProfile(props) {
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
+                    setSaved={()=>setSaved(true)}
                   />
                   {activeTab !== '3' && (
                     <span
