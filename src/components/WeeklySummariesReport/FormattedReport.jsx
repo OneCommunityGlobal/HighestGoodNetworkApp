@@ -29,8 +29,6 @@ import useIsInViewPort from 'utils/useIsInViewPort';
 
 const textColors = {
   Default: '#000000',
-  hoursNotFullfiled: 'red',
-
   'Not Required': '#708090',
   Team: '#FF00FF',
   'Team Fabulous': '#FF00FF',
