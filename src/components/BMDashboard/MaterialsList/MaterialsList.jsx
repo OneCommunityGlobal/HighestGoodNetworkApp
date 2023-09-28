@@ -1,10 +1,11 @@
+import { useState, useEffect } from 'react';
 // import { connect } from 'react-redux';
-import { Table } from 'reactstrap';
+import { Table, Form, FormGroup, Label, Input } from 'reactstrap';
 
 const dummyData = [
   {
-    id: 'P1',
-    projectId: 'M1',
+    id: 'M1',
+    projectId: 'P1',
     name: 'Sand',
     unit: 'kg',
     bought: 55,
@@ -14,8 +15,8 @@ const dummyData = [
     wasted: 0,
   },
   {
-    id: 'P1',
-    projectId: 'M2',
+    id: 'M2',
+    projectId: 'P1',
     name: 'Rock',
     unit: 'kg',
     bought: 100,
@@ -25,8 +26,8 @@ const dummyData = [
     wasted: 0,
   },
   {
-    id: 'P2',
-    projectId: 'M3',
+    id: 'M3',
+    projectId: 'P2',
     name: 'Brick',
     unit: 'count',
     bought: 1000,
@@ -38,10 +39,47 @@ const dummyData = [
 ];
 
 export default function MaterialsList() {
+  // put materials data into state
+  const [materials, setMaterials] = useState(dummyData);
+
+  // filter materials data by project
+  const [selectProject, setSelectProject] = useState('all');
+  useEffect(() => {
+    if (selectProject === 'all') {
+      return setMaterials(dummyData);
+    }
+    const filterMaterials = dummyData.filter(mat => mat.projectId === selectProject);
+    setMaterials(filterMaterials);
+  }, [selectProject]);
+
+  // create selectable projects set
+  const projects = [...new Set(dummyData.map(mat => mat.projectId))];
   return (
     <main>
       <h2>Material List</h2>
       <section>
+        <div>
+          <Form>
+            <FormGroup>
+              <Label htmlFor="select-project">Project:</Label>
+              <Input
+                id="select-project"
+                name="select-project"
+                type="select"
+                onChange={e => setSelectProject(e.target.value)}
+              >
+                <option value="all">All</option>
+                {projects.map((name, i) => {
+                  return (
+                    <option key={i} value={name}>
+                      {name}
+                    </option>
+                  );
+                })}
+              </Input>
+            </FormGroup>
+          </Form>
+        </div>
         <Table>
           <thead>
             <tr>
@@ -60,9 +98,9 @@ export default function MaterialsList() {
             </tr>
           </thead>
           <tbody>
-            {dummyData.map((mat, idx) => {
+            {materials.map((mat, i) => {
               return (
-                <tr key={idx}>
+                <tr key={i}>
                   <td>{mat.projectId}</td>
                   <td>{mat.id}</td>
                   <td>{mat.name}</td>
