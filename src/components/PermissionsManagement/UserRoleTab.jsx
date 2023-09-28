@@ -11,7 +11,6 @@ export const permissionLabel = {
   seeOnlyWeeklySummariesReports: 'See Only Weekly Summaries Reports Tab',
   seeUserManagement: 'See User Management Tab (delete and update users)',
   seeBadgeManagement: 'See Badge Management Tab (create badges)',
-  seeWeeklySummaryReports: 'See Only Weekly Summary Reports Tab',
   seeUserManagement: 'See User Management Tab (Full Functionality)',
   seeBadgeManagement: 'See Badge Management Tab (Full Functionality)',
   deleteOwnBadge: 'Delete Badge',
