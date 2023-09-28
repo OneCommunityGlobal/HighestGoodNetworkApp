@@ -22,34 +22,34 @@ describe("AddProject component structure", () => {
   })
  
   test("it renders correctly", () => {    
-    expect(screen.getByText("Add new project")).toBeInTheDocument()
+    expect(screen.getByText("Add new project")).toBeInTheDocument();
   })
 
   test("input field should initially be empty", () => { 
-    expect(screen.getByRole('textbox').value).toBe('')
+    expect(screen.getByRole('textbox').value).toBe('');
   })
 
   test("select element should initially have a value of unspecified", () => {
-    expect(screen.getByRole('combobox').value).toBe('Unspecified')
+    expect(screen.getByRole('combobox').value).toBe('Unspecified');
   })
 
   test("button should not be in the document when the input field is empty", () => {
-    expect(screen.queryByRole('button')).toBeNull()
+    expect(screen.queryByRole('button')).toBeNull();
   })
 
   test("user should be able to type in the input field", () => {
-    const { inputField } = typeIntoInput({ input: 'New Project Name' })
-    expect(inputField.value).toBe('New Project Name')
+    const { inputField } = typeIntoInput({ input: 'New Project Name' });
+    expect(inputField.value).toBe('New Project Name');
   })
 
   test("user should be able to select a category", () => {
-    userEvent.selectOptions(screen.getByRole('combobox'), 'Food')
-    expect(screen.getByRole('option', { name: 'Food' }).selected).toBe(true)
+    userEvent.selectOptions(screen.getByRole('combobox'), 'Food');
+    expect(screen.getByRole('option', { name: 'Food' }).selected).toBe(true);
   })
 
   test("button should appear when user types in the input field", () => {
-    typeIntoInput({ input: '123' })
-    expect(screen.queryByRole('button')).not.toBeNull()
+    typeIntoInput({ input: '123' });
+    expect(screen.queryByRole('button')).not.toBeNull();
   })
 })
 
@@ -68,7 +68,7 @@ describe('AddProject component state handlers', () => {
 
     fireEvent.change(inputField, { target: { value: 'New Project' } });
 
-    expect(inputField.value).toBe('New Project')
+    expect(inputField.value).toBe('New Project');
   })
 
   test("Select change handler updates state correctly", () => {
