@@ -55,7 +55,6 @@ export class WeeklySummariesReport extends Component {
 
   async componentDidMount() {
     const {
-      summaries,
       error,
       loading,
       allBadgeData,
@@ -69,7 +68,8 @@ export class WeeklySummariesReport extends Component {
     } = this.props;
 
     // 1. fetch report
-    await getWeeklySummariesReport();
+    const res = await getWeeklySummariesReport();
+    const summaries = res?.data ?? this.props.summaries
     const badgeStatusCode = await fetchAllBadges();
 
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
@@ -149,6 +149,26 @@ export class WeeklySummariesReport extends Component {
     }
     this.setState({ allRoleInfo });
   }
+
+  // componentDidUpdate(preProps) {
+  //   const {summaries} = preProps
+
+  //   if (this.props.summaries !== summaries) {
+  //     let summariesCopy = [...summaries];
+  //     summariesCopy = this.alphabetize(summariesCopy);
+
+  //     // 3. add new key of promised hours by week
+  //     summariesCopy = summariesCopy.map(summary => {
+  //       // append the promised hours starting from the latest week (this week)
+  //       const promisedHoursByWeek = this.weekDates.map(weekDate =>
+  //         this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+  //       );
+  //       return { ...summary, promisedHoursByWeek };
+  //     });
+
+  //     this.setState({filteredSummaries: summariesCopy, summaries: summariesCopy})
+  //   }
+  // }
 
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
@@ -263,7 +283,7 @@ export class WeeklySummariesReport extends Component {
       loadBadges,
       hasSeeBadgePermission,
       selectedCodes,
-      selectedColors, 
+      selectedColors,
       filteredSummaries,
     } = this.state;
 
@@ -298,17 +318,17 @@ export class WeeklySummariesReport extends Component {
         </Row>
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset:1 }} xs={{size: 5, offset: 1}}>
-            Select Team Code 
+            Select Team Code
             <MultiSelect
-              options={this.teamCodes} 
-              value={selectedCodes} 
+              options={this.teamCodes}
+              value={selectedCodes}
               onChange={(e) => {this.handleSelectCodeChange(e)}}/>
           </Col>
           <Col lg={{ size: 5 }} xs={{size: 5}}>
-            Select Color 
-            <MultiSelect 
-              options={this.colorOptions} 
-              value={selectedColors} 
+            Select Color
+            <MultiSelect
+              options={this.colorOptions}
+              value={selectedColors}
               onChange={(e) => {this.handleSelectColorChange(e)}}/>
           </Col>
         </Row>

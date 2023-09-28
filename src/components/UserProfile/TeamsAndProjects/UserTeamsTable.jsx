@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 
 const UserTeamsTable = props => {
   const [tooltipOpen, setTooltip] = useState(false);
-  const [teamCode, setTeamCode] = useState(props.userProfile.teamCode);
+  const [teamCode, setTeamCode] = useState(props.userProfile? props.userProfile.teamCode: props.teamCode);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
@@ -35,7 +35,11 @@ const UserTeamsTable = props => {
     if (regexTest) {
       props.setCodeValid(true);
       setTeamCode(value);
-      props.setUserProfile({ ...props.userProfile, teamCode: value });
+      if (props.userProfile) {
+        props.setUserProfile({ ...props.userProfile, teamCode: value });
+      } else {
+        props.onAssignTeamCode(value);
+      }
     } else {
       setTeamCode(value);
       props.setCodeValid(false);

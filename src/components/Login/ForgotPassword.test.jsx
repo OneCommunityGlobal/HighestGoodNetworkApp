@@ -2,6 +2,7 @@ import React from 'react';
 import { configure, shallow, mount } from 'enzyme';
 import ForgotPassword from './ForgotPassword';
 
+
 const forgotPassword = shallow(<ForgotPassword />);
 describe('ForgotPassword', () => {
   it('should render ForgotPassword with 3 input', () => {
@@ -24,4 +25,6 @@ describe('ForgotPassword', () => {
     const lastNameInput = forgotPassword.find('Input').at(2);
     lastNameInput.simulate('change', { target: { value: 'Admin' } });
   });
+
 });
+
