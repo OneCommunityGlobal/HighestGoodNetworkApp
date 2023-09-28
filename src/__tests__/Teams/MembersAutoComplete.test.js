@@ -12,6 +12,7 @@ const defaultProps = {
     userProfiles: [],
   },
   onAddUser: mock,
+  existingMembers: [],
 };
 
 const dropdownProps = {
@@ -27,6 +28,7 @@ const dropdownProps = {
     ],
   },
   onAddUser: mock,
+  existingMembers: [],
 };
 
 describe('MembersAutoComplete', () => {
