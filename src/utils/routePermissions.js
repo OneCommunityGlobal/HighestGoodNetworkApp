@@ -8,6 +8,7 @@ export const RoutePermissions = {
   projects: 'postProject',
   userManagement: 'postUserProfile',
   badgeManagement: 'createBadges',
+  userPermissionsManagement: 'putUserProfilePermissions',
   permissionsManagement: 'putRole',
   permissionsManagementRole: 'putRole',
   teams: 'putTeam',
