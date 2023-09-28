@@ -51,3 +51,8 @@
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
 }
+
+.add-materials-form .react-tel-input .form-control {
+  width: 100%;
+  background-color: rgb(249, 249, 249);
+}

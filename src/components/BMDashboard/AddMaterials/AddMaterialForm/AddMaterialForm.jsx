@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import { Row, Col, Form, FormGroup, Label, Input, Button, FormFeedback } from 'reactstrap';
+import { addMaterial } from 'actions/materials';
+import Joi from 'joi';
 import './AddMaterialForm.css';
 
 // AddMaterialsForm will take in an array of project objects
@@ -16,35 +18,72 @@ export default function AddMaterialsForm(props) {
     materialList,
     measurementList,
   } = props;
-  const defaultProject = selectedProject ? selectedProject._id : '';
-  const [project, setProject] = useState(defaultProject);
-  const [material, setMaterial] = useState('');
-  const [newMaterial, setNewMaterial] = useState(false);
-  const [invoice, setInvoice] = useState('');
-  const [unitPrice, setUnitPrice] = useState('');
-  const [currency, setCurrency] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [measurement, setMeasurement] = useState('');
-  const [newMeasurement, setNewMeasurement] = useState(false);
-  const [purchaseDate, setPurchaseDate] = useState('');
-  const [shippingFee, setShippingFee] = useState('');
-  const [taxes, setTaxes] = useState('');
-  const [phone, setPhone] = useState('');
+  const defaultProjectId = selectedProject ? selectedProject._id : '';
+  const [formInputs, setFormInputs] = useState({
+    projectId: defaultProjectId,
+    material: '',
+    newMaterial: false,
+    invoice: '',
+    unitPrice: '',
+    currency: '',
+    quantity: '',
+    measurement: '',
+    newMeasurement: false,
+    purchaseDate: '',
+    shippingFee: '',
+    taxRate: '',
+    phone: '',
+    link: '',
+    description: '',
+  });
+  const [trySubmit, setTrySubmit] = useState(false);
   // state for image?
-  const [link, setLink] = useState('');
-  const [description, setDescription] = useState('');
+
+  const schema = Joi.object({
+    projectId: Joi.string().required(),
+    material: Joi.string().required(),
+    newMaterial: Joi.boolean(),
+    invoice: Joi.string().required(),
+    unitPrice: Joi.number().positive().required(),
+    currency: Joi.string().required(),
+    quantity: Joi.number().positive().integer().required(),
+    measurement: Joi.string().required(),
+    newMeasurement: Joi.boolean(),
+    purchaseDate: Joi.date().required(),
+    shippingFee: Joi.number().positive().required(),
+    taxRate: Joi.number().positive().required(),
+    phone: Joi.string().required(),
+    link: Joi.string().required(),
+    description: Joi.string().required(),
+  });
 
   const history = useHistory();
   const dispatch = useDispatch();
 
   const handleSubmit = e => {
     e.preventDefault();
+    const { error, value } = schema.validate(formInputs);
+    if (error) {
+      setTrySubmit(true);
+    } else {
+      console.log(value);
+    }
+    // addMaterial(formInputs);
   };
 
   const handleCancel = e => {
     e.preventDefault();
     history.goBack();
   };
+
+  const handleChange = e => {
+    const obj = {};
+    obj[e.target.name] = e.target.value;
+    setFormInputs({
+      ...formInputs,
+      ...obj,
+    });
+  }
 
   return (
     <Form className="add-materials-form" onSubmit={handleSubmit}>
@@ -56,16 +95,13 @@ export default function AddMaterialsForm(props) {
       <Row>
         <Col xs="12" sm="8">
           <FormGroup>
-            <Label for="project">Project</Label>
+            <Label for="projectId">Project</Label>
             <Input
-              id="project"
-              name="project"
+              id="projectId"
+              name="projectId"
               type="select"
-              invalid={project === ''}
-              value={project}
-              onChange={e => {
-                setProject(e.target.value);
-              }}
+              value={formInputs.projectId}
+              onChange={handleChange}
             >
               <option value="">-- select an option --</option>
               {allProjects.map(el => (
@@ -74,7 +110,6 @@ export default function AddMaterialsForm(props) {
                 </option>
               ))}
             </Input>
-            <FormFeedback>Please select a project</FormFeedback>
           </FormGroup>
         </Col>
       </Row>
@@ -82,22 +117,24 @@ export default function AddMaterialsForm(props) {
         <Col xs="12" sm="8">
           <FormGroup>
             <Label for="material">Material Name</Label>
-            {newMaterial ? (
+            {formInputs.newMaterial ? (
               <Input
                 id="material"
                 name="material"
-                type="text"
-                value={material}
-                placeholder="Add new material"
-                onChange={e => setMaterial(e.target.value)}
+                type={"text"}
+                invalid={trySubmit && formInputs.material === ""}
+                value={formInputs.material}
+                placeholder={"Add new material"}
+                onChange={handleChange}
               />
             ) : (
-              <Input
+               <Input
                 id="material"
                 name="material"
                 type="select"
-                value={material}
-                onChange={e => setMaterial(e.target.value)}
+                invalid={trySubmit && formInputs.material === ""}
+                value={formInputs.material}
+                onChange={handleChange}
               >
                 <option value="">-- select an option --</option>
                 {materialList.map(materialName => (
@@ -116,8 +153,13 @@ export default function AddMaterialsForm(props) {
                 id="newMaterial"
                 name="newMaterial"
                 type="checkbox"
-                checked={newMaterial}
-                onChange={() => setNewMaterial(!newMaterial)}
+                checked={formInputs.newMaterial}
+                onChange={() => {
+                  setFormInputs({
+                    ...formInputs,
+                    newMaterial: !formInputs.newMaterial,
+                  });
+                }}
               />
               <label htmlFor="newMaterial">Do you want to add a new material?</label>
             </FormGroup>
@@ -131,11 +173,10 @@ export default function AddMaterialsForm(props) {
             <Input
               id="invoice"
               name="invoice"
-              value={invoice}
+              value={formInputs.invoice}
+              invalid={trySubmit && formInputs.invoice == ""}
               placeholder="Input Invoice No or ID for the material"
-              onChange={e => {
-                setInvoice(e.target.value);
-              }}
+              onChange={handleChange}
             />
           </FormGroup>
         </Col>
@@ -149,10 +190,9 @@ export default function AddMaterialsForm(props) {
               name="unitPrice"
               className="remove-arrows"
               type="number"
-              value={unitPrice}
-              onChange={e => {
-                setUnitPrice(e.target.value);
-              }}
+              invalid={trySubmit && formInputs.unitPrice === ""}
+              value={formInputs.unitPrice}
+              onChange={handleChange}
             />
           </FormGroup>
         </Col>
@@ -163,15 +203,14 @@ export default function AddMaterialsForm(props) {
               id="currency"
               name="currency"
               type="select"
-              value={currency}
-              onChange={e => {
-                setCurrency(e.target.value);
-              }}
+              invalid={trySubmit && formInputs.currency === ""}
+              value={formInputs.currency}
+              onChange={handleChange}
             >
               <option value="">-- select --</option>
-              <option>USD</option>
-              <option>EUR</option>
-              <option>JPY</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="JPY">JPY</option>
             </Input>
           </FormGroup>
         </Col>
@@ -182,11 +221,10 @@ export default function AddMaterialsForm(props) {
               id="quantity"
               name="quantity"
               type="number"
-              value={quantity}
-              min={0}
-              onChange={e => {
-                setQuantity(e.target.value);
-              }}
+              invalid={trySubmit && formInputs.quantity == ""}
+              value={formInputs.quantity}
+              min={1}
+              onChange={handleChange}
             />
           </FormGroup>
         </Col>
@@ -195,26 +233,24 @@ export default function AddMaterialsForm(props) {
         <Col xs="12" sm="5">
           <FormGroup>
             <Label for="measurement">Qty Unit of Measurement</Label>
-            {newMeasurement ? (
+            {formInputs.newMeasurement ? (
               <Input
                 id="measurement"
                 name="measurement"
-                type="textbox"
+                type="text"
+                invalid={trySubmit && formInputs.measurement == ""}
                 placeholder="Add new measurement"
-                value={measurement}
-                onChange={e => {
-                  setMeasurement(e.target.value);
-                }}
+                value={formInputs.measurement}
+                onChange={handleChange}
               />
             ) : (
               <Input
                 id="measurement"
                 name="measurement"
                 type="select"
-                value={measurement}
-                onChange={e => {
-                  setMeasurement(e.target.value);
-                }}
+                invalid={trySubmit && formInputs.measurement == ""}
+                value={formInputs.measurement}
+                onChange={handleChange}
               >
                 <option value="">-- select an option --</option>
                 {measurementList.map(measurementUnit => (
@@ -233,8 +269,13 @@ export default function AddMaterialsForm(props) {
                 id="newMeasurement"
                 name="newMeasurement"
                 type="checkbox"
-                checked={newMeasurement}
-                onChange={() => setNewMeasurement(!newMeasurement)}
+                checked={formInputs.newMeasurement}
+                onChange={() => {
+                  setFormInputs({
+                    ...formInputs,
+                    newMeasurement: !formInputs.newMeasurement
+                  });
+                }}
               />
               <label htmlFor="newMeasurement">Do you want to add a new unit of measurement?</label>
             </FormGroup>
@@ -244,15 +285,14 @@ export default function AddMaterialsForm(props) {
       <Row>
         <Col xs="12" sm="5">
           <FormGroup>
-            <Label for="purchasedDate">Purchased Date</Label>
+            <Label for="purchaseDate">Purchased Date</Label>
             <Input
-              id="purchasedDate"
-              name="purchasedDate"
+              id="purchaseDate"
+              name="purchaseDate"
               type="date"
-              value={purchaseDate}
-              onChange={e => {
-                setPurchaseDate(e.target.value);
-              }}
+              invalid={trySubmit && formInputs.purchaseDate == ""}
+              value={formInputs.purchaseDate}
+              onChange={handleChange}
             />
           </FormGroup>
         </Col>
@@ -266,46 +306,46 @@ export default function AddMaterialsForm(props) {
               name="shippingFee"
               className="remove-arrows"
               type="number"
+              invalid={trySubmit && formInputs.shippingFee == ""}
               min={0}
-              value={shippingFee}
-              onChange={e => {
-                setShippingFee(e.target.value);
-              }}
+              value={formInputs.shippingFee}
+              onChange={handleChange}
             />
           </FormGroup>
         </Col>
         <Col>
           <FormGroup>
-            <Label for="taxes">Taxes</Label>
+            <Label for="taxRate">Taxes</Label>
             <Input
-              id="taxes"
-              name="taxes"
+              id="taxRate"
+              name="taxRate"
               className="remove-arrows"
               type="number"
+              invalid={trySubmit && formInputs.taxRate == ""}
               placeholder="%"
               min={0}
-              value={taxes}
-              onChange={e => {
-                setTaxes(e.target.value);
-              }}
+              value={formInputs.taxRate}
+              onChange={handleChange}
             />
           </FormGroup>
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col xs="12" sm="6">
           <FormGroup>
             <Label for="phone">Supplier Phone Number</Label>
-            {/* <Input id="phone" name="phone" type="number" /> */}
             <PhoneInput
               id="phone"
               name="phone"
               country="US"
               regions={['america', 'europe', 'asia', 'oceania', 'africa']}
               limitMaxLength="true"
-              value={phone}
+              value={formInputs.phone}
               onChange={phoneNum => {
-                setPhone(phoneNum);
+                setFormInputs({
+                  ...formInputs,
+                  phone: phoneNum
+                });
               }}
             />
           </FormGroup>
@@ -328,10 +368,8 @@ export default function AddMaterialsForm(props) {
               name="link"
               type="url"
               placeholder="https://"
-              value={link}
-              onChange={e => {
-                setLink(e.target.value);
-              }}
+              value={formInputs.link}
+              onChange={handleChange}
             />
           </FormGroup>
         </Col>
@@ -344,11 +382,10 @@ export default function AddMaterialsForm(props) {
               id="description"
               name="description"
               type="textarea"
+              maxLength={200}
               placeholder="Describe your material in detail."
-              value={description}
-              onChange={e => {
-                setDescription(e.target.value);
-              }}
+              value={formInputs.description}
+              onChange={handleChange}
             />
           </FormGroup>
         </Col>
@@ -361,7 +398,8 @@ export default function AddMaterialsForm(props) {
             </span>
             <span>
               <b>
-                {quantity * unitPrice} <span style={{ fontSize: '1rem' }}>{currency}</span>
+                {formInputs.quantity * formInputs.unitPrice}
+                <span style={{ fontSize: '1rem' }}>{formInputs.currency}</span>
               </b>
             </span>
           </div>

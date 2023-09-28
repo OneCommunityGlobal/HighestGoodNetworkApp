@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 /* These styles were not being used */
 
 /* .center {
+=======
+.center {
+>>>>>>> development
   margin-left: auto;
   margin-right: auto;
 }
@@ -14,4 +18,8 @@
 
 .block {
   width: 120px;
+<<<<<<< HEAD
 } */
+=======
+}
+>>>>>>> development
