@@ -9,6 +9,7 @@ export const RoutePermissions = {
   projectManagement_addTeamMembersUploadNewWBS: 'seeProjectManagementTab',
   userManagement: 'postUserProfile',
   badgeManagement: 'createBadges',
+  userPermissionsManagement: 'putUserProfilePermissions',
   permissionsManagement: 'putRole',
   permissionsManagementRole: 'putRole',
   teams: 'putTeam',
