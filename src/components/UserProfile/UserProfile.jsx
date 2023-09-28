@@ -414,10 +414,6 @@ function UserProfile(props) {
     setBlueSquareChanged(true);
   };
 
-  // const handleSave = ()=>{
-  //   setSaved(true);
-  // }
-
   const handleSubmit = async () => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
@@ -867,7 +863,6 @@ function UserProfile(props) {
               <TabPane tabId="3">
                 <TeamsTab
                   userTeams={teams || []}
-                  originalTeams={originalTeams}
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
@@ -1072,7 +1067,7 @@ function UserProfile(props) {
                 <ModalBody>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
-                    originalTeams={originalTeams}
+
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
