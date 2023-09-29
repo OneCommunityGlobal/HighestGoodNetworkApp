@@ -38,13 +38,13 @@ import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
-import AddMaterials from 'components/BMDashboard/AddMaterials';
 
 // BM Dashboard
 // import ProtectedBMRoute from 'components/common/BMDashboard/BMProtectedRoute/ProtectedBMRoute';
 import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
+import AddMaterials from 'components/BMDashboard/AddMaterials';
 
 export default (
   <>

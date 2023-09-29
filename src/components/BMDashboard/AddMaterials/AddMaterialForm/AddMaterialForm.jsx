@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
-import { Row, Col, Form, FormGroup, Label, Input, Button, FormFeedback } from 'reactstrap';
+import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { addMaterial } from 'actions/materials';
+import { isValidUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
 import './AddMaterialForm.css';
 
@@ -18,7 +19,10 @@ export default function AddMaterialsForm(props) {
     materialList,
     measurementList,
   } = props;
+
   const defaultProjectId = selectedProject ? selectedProject._id : '';
+  const [trySubmit, setTrySubmit] = useState(false);
+
   const [formInputs, setFormInputs] = useState({
     projectId: defaultProjectId,
     material: '',
@@ -36,7 +40,6 @@ export default function AddMaterialsForm(props) {
     link: '',
     description: '',
   });
-  const [trySubmit, setTrySubmit] = useState(false);
   // state for image?
 
   const schema = Joi.object({
@@ -44,14 +47,23 @@ export default function AddMaterialsForm(props) {
     material: Joi.string().required(),
     newMaterial: Joi.boolean(),
     invoice: Joi.string().required(),
-    unitPrice: Joi.number().positive().required(),
+    unitPrice: Joi.number()
+      .positive()
+      .required(),
     currency: Joi.string().required(),
-    quantity: Joi.number().positive().integer().required(),
+    quantity: Joi.number()
+      .positive()
+      .integer()
+      .required(),
     measurement: Joi.string().required(),
     newMeasurement: Joi.boolean(),
     purchaseDate: Joi.date().required(),
-    shippingFee: Joi.number().positive().required(),
-    taxRate: Joi.number().positive().required(),
+    shippingFee: Joi.number()
+      .positive()
+      .required(),
+    taxRate: Joi.number()
+      .positive()
+      .required(),
     phone: Joi.string().required(),
     link: Joi.string().required(),
     description: Joi.string().required(),
@@ -65,6 +77,7 @@ export default function AddMaterialsForm(props) {
     const { error, value } = schema.validate(formInputs);
     if (error) {
       setTrySubmit(true);
+      console.error(error);
     } else {
       console.log(value);
     }
@@ -83,7 +96,13 @@ export default function AddMaterialsForm(props) {
       ...formInputs,
       ...obj,
     });
-  }
+  };
+
+  const calculateTotal = (unitPrice, quantity, shipping, tax) => {
+    const subTotal = unitPrice * quantity;
+    const shippingFee = shipping * 1;
+    return (shippingFee + subTotal + subTotal * (tax / 100)).toFixed(2);
+  };
 
   return (
     <Form className="add-materials-form" onSubmit={handleSubmit}>
@@ -121,18 +140,19 @@ export default function AddMaterialsForm(props) {
               <Input
                 id="material"
                 name="material"
-                type={"text"}
-                invalid={trySubmit && formInputs.material === ""}
+                type="text"
+                autoComplete="false"
+                invalid={trySubmit && formInputs.material === ''}
                 value={formInputs.material}
-                placeholder={"Add new material"}
+                placeholder="Add new material"
                 onChange={handleChange}
               />
             ) : (
-               <Input
+              <Input
                 id="material"
                 name="material"
                 type="select"
-                invalid={trySubmit && formInputs.material === ""}
+                invalid={trySubmit && formInputs.material === ''}
                 value={formInputs.material}
                 onChange={handleChange}
               >
@@ -173,8 +193,9 @@ export default function AddMaterialsForm(props) {
             <Input
               id="invoice"
               name="invoice"
+              autoComplete="false"
               value={formInputs.invoice}
-              invalid={trySubmit && formInputs.invoice == ""}
+              invalid={trySubmit && formInputs.invoice === ''}
               placeholder="Input Invoice No or ID for the material"
               onChange={handleChange}
             />
@@ -190,7 +211,7 @@ export default function AddMaterialsForm(props) {
               name="unitPrice"
               className="remove-arrows"
               type="number"
-              invalid={trySubmit && formInputs.unitPrice === ""}
+              invalid={trySubmit && formInputs.unitPrice === ''}
               value={formInputs.unitPrice}
               onChange={handleChange}
             />
@@ -203,7 +224,7 @@ export default function AddMaterialsForm(props) {
               id="currency"
               name="currency"
               type="select"
-              invalid={trySubmit && formInputs.currency === ""}
+              invalid={trySubmit && formInputs.currency === ''}
               value={formInputs.currency}
               onChange={handleChange}
             >
@@ -221,7 +242,7 @@ export default function AddMaterialsForm(props) {
               id="quantity"
               name="quantity"
               type="number"
-              invalid={trySubmit && formInputs.quantity == ""}
+              invalid={trySubmit && formInputs.quantity === ''}
               value={formInputs.quantity}
               min={1}
               onChange={handleChange}
@@ -238,7 +259,8 @@ export default function AddMaterialsForm(props) {
                 id="measurement"
                 name="measurement"
                 type="text"
-                invalid={trySubmit && formInputs.measurement == ""}
+                autoComplete="false"
+                invalid={trySubmit && formInputs.measurement === ''}
                 placeholder="Add new measurement"
                 value={formInputs.measurement}
                 onChange={handleChange}
@@ -248,7 +270,7 @@ export default function AddMaterialsForm(props) {
                 id="measurement"
                 name="measurement"
                 type="select"
-                invalid={trySubmit && formInputs.measurement == ""}
+                invalid={trySubmit && formInputs.measurement === ''}
                 value={formInputs.measurement}
                 onChange={handleChange}
               >
@@ -273,7 +295,7 @@ export default function AddMaterialsForm(props) {
                 onChange={() => {
                   setFormInputs({
                     ...formInputs,
-                    newMeasurement: !formInputs.newMeasurement
+                    newMeasurement: !formInputs.newMeasurement,
                   });
                 }}
               />
@@ -290,15 +312,15 @@ export default function AddMaterialsForm(props) {
               id="purchaseDate"
               name="purchaseDate"
               type="date"
-              invalid={trySubmit && formInputs.purchaseDate == ""}
+              invalid={trySubmit && formInputs.purchaseDate === ''}
               value={formInputs.purchaseDate}
               onChange={handleChange}
             />
           </FormGroup>
         </Col>
       </Row>
-      <Row>
-        <Col xs="12" sm="8">
+      <Row style={{ justifyContent: 'space-between' }}>
+        <Col xs="12" sm="7">
           <FormGroup>
             <Label for="shippingFee">Shipping Fee &#40;excluding taxes, enter 0 if free&#41;</Label>
             <Input
@@ -306,14 +328,13 @@ export default function AddMaterialsForm(props) {
               name="shippingFee"
               className="remove-arrows"
               type="number"
-              invalid={trySubmit && formInputs.shippingFee == ""}
-              min={0}
+              invalid={trySubmit && formInputs.shippingFee === ''}
               value={formInputs.shippingFee}
               onChange={handleChange}
             />
           </FormGroup>
         </Col>
-        <Col>
+        <Col xs="12" sm="3">
           <FormGroup>
             <Label for="taxRate">Taxes</Label>
             <Input
@@ -321,9 +342,8 @@ export default function AddMaterialsForm(props) {
               name="taxRate"
               className="remove-arrows"
               type="number"
-              invalid={trySubmit && formInputs.taxRate == ""}
+              invalid={trySubmit && formInputs.taxRate === ''}
               placeholder="%"
-              min={0}
               value={formInputs.taxRate}
               onChange={handleChange}
             />
@@ -337,14 +357,15 @@ export default function AddMaterialsForm(props) {
             <PhoneInput
               id="phone"
               name="phone"
-              country="US"
+              country="us"
               regions={['america', 'europe', 'asia', 'oceania', 'africa']}
               limitMaxLength="true"
+              invalid={trySubmit && formInputs.phone === ''}
               value={formInputs.phone}
               onChange={phoneNum => {
                 setFormInputs({
                   ...formInputs,
-                  phone: phoneNum
+                  phone: phoneNum,
                 });
               }}
             />
@@ -368,6 +389,7 @@ export default function AddMaterialsForm(props) {
               name="link"
               type="url"
               placeholder="https://"
+              invalid={trySubmit && !isValidUrl(formInputs.link)}
               value={formInputs.link}
               onChange={handleChange}
             />
@@ -383,6 +405,7 @@ export default function AddMaterialsForm(props) {
               name="description"
               type="textarea"
               maxLength={200}
+              invalid={trySubmit && formInputs.description === ''}
               placeholder="Describe your material in detail."
               value={formInputs.description}
               onChange={handleChange}
@@ -398,8 +421,13 @@ export default function AddMaterialsForm(props) {
             </span>
             <span>
               <b>
-                {formInputs.quantity * formInputs.unitPrice}
-                <span style={{ fontSize: '1rem' }}>{formInputs.currency}</span>
+                {calculateTotal(
+                  formInputs.unitPrice,
+                  formInputs.quantity,
+                  formInputs.shippingFee,
+                  formInputs.taxRate,
+                )}
+                <span style={{ fontSize: '1rem', marginLeft: '5px' }}>{formInputs.currency}</span>
               </b>
             </span>
           </div>
