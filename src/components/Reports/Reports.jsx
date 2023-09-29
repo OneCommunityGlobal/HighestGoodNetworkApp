@@ -290,28 +290,31 @@ class ReportsPage extends Component {
           </div>
           <div className="category-container">
             <button
+              type="button"
               className={`card-category-item ${this.state.showProjects ? 'selected' : ''}`}
               onClick={this.showProjectTable}
             >
               <h3 className="card-category-item-title"> Projects</h3>
               <h3 className="card-category-item-number">{this.state.projectSearchData.length} </h3>
-              <img src={projectsImage} alt="Image that representes the projects" />
+              <img src={projectsImage} alt="Represents the projects" />
             </button>
             <button
+              type="button"
               className={`card-category-item ${this.state.showPeople ? 'selected' : ''}`}
               onClick={this.showPeopleTable}
             >
               <h3 className="card-category-item-title"> People </h3>
               <h3 className="card-category-item-number">{this.state.peopleSearchData.length}</h3>
-              <img src={peopleImage} alt="Image that representes the people" />
+              <img src={peopleImage} alt="Representes the people" />
             </button>
             <button
+              type="button"
               className={`card-category-item ${this.state.showTeams ? 'selected' : ''}`}
               onClick={this.showTeamsTable}
             >
               <h3 className="card-category-item-title"> Teams </h3>
               <h3 className="card-category-item-number">{this.state.teamSearchData?.length}</h3>
-              <img src={teamsImage} alt="Image that representes the teams" />
+              <img src={teamsImage} alt="Represents the teams" />
             </button>
             {/* <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showProjectTable}>
               <i className="fa fa-folder" aria-hidden="true" />
@@ -337,6 +340,7 @@ class ReportsPage extends Component {
           </div>
           <div className="mt-4 bg-white p-3 rounded-5">
             <div>
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a>Select a Filter</a>
             </div>
             <div>
@@ -432,8 +436,8 @@ class ReportsPage extends Component {
                   <br />
                   Projects must have had at least 1 hour logged to them to be included.
                   <br />
-                  A 'Total Hours' section will show the total tangible time logged to all projects
-                  during the selected period.
+                  A &apos;Total Hours&apos; section will show the total tangible time logged to all
+                  projects during the selected period.
                   <br />A detail report will list all the projects and hours contributed by each
                   during that time period.
                 </ReactTooltip>
@@ -456,10 +460,10 @@ class ReportsPage extends Component {
                   Click this button to see exactly how many total people have contributed time to
                   the projects for a designated time period.
                   <br />
-                  Peole must have had at least 10 hours logged for them to be included.
+                  People must have had at least 10 hours logged for them to be included.
                   <br />
-                  A 'Total Hours' section will show the total tangible time logged by all people
-                  during the selected period.
+                  A &apos;Total Hours&apos; section will show the total tangible time logged by all
+                  people during the selected period.
                   <br />A detail report will list all the people and hours contributed by each
                   during that time period.
                 </ReactTooltip>
@@ -483,8 +487,8 @@ class ReportsPage extends Component {
                   <br />
                   The team must have had at least 10 hours logged for them to be included.
                   <br />
-                  A 'Total Hours' section will show the total tangible time logged by all the teams
-                  during the selected period.
+                  A &apos;Total Hours&apos; section will show the total tangible time logged by all
+                  the teams during the selected period.
                   <br />A detail report will list all the teams and hours contributed by each during
                   that time period.
                 </ReactTooltip>
