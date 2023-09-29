@@ -23,7 +23,7 @@ const DummyData = [
     todaysHrs: 2.18,
   },
   {
-    id: '35',
+    id: '36',
     firstName: 'Member A',
     lastName: 'Member A',
     role: 'Role A',
@@ -35,7 +35,6 @@ const DummyData = [
 ];
 
 function ProjectLog() {
-
   const tableRows = DummyData.map((person, index) => (
     <tr key={index}>
       <th scope="row">{person.id}</th>

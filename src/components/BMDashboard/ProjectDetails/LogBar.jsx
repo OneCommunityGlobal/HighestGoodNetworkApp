@@ -19,13 +19,18 @@ function LogBar() {
   return (
     <div className="log-bar">
       {Object.keys(buttonStyles).map((section, index) => (
-        <div key={index} className={`log-bar__section`}>
+        <div key={index} className="log-bar__section">
           <h2>
-            {section === 'dailyLogging'
-              ? 'Daily Logging:'
-              : section === 'newItem'
-              ? 'Add a New Item:'
-              : 'Team:'}
+            {(() => {
+              switch (section) {
+                case 'dailyLogging':
+                  return 'Daily Logging:';
+                case 'newItem':
+                  return 'Add a New Item:';
+                default:
+                  return 'Team';
+              }
+            })()}
           </h2>
           <ul className="log-bar__btn-group">
             {buttonLabels[section].map((label, i) => (

@@ -1,7 +1,6 @@
 import ToolCard from './ToolCard';
 
-
-const ToolCards = () => {
+function ToolCards() {
   return (
     <div className="cards-container__content">
       <ToolCard />
@@ -11,4 +10,4 @@ const ToolCards = () => {
   );
 }
 
-export default ToolCards
+export default ToolCards;
