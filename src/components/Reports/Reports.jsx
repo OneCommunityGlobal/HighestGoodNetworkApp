@@ -273,9 +273,14 @@ class ReportsPage extends Component {
       });
     }
 
-    if (this.state.startDate != null && this.state.endDate != null) {
-      this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
+    const { startDate, endDate } = this.state;
+
+    if (startDate != null && endDate != null) {
+      this.setState({
+        peopleSearchData: this.filteredPeopleList(peopleSearchData),
+      });
     }
+
     return (
       <Container fluid className="mb-5 container-component-wrapper">
         <div className="container-component-category">
