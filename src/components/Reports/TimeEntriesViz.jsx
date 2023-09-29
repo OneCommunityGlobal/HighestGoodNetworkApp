@@ -3,7 +3,7 @@ import * as d3 from 'd3/dist/d3.min';
 import { Button } from 'react-bootstrap';
 import { boxStyle } from 'styles';
 
-const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
+function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
   const [show, setShow] = React.useState(false);
 
   React.useEffect(() => {
@@ -15,44 +15,38 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
       d3.selectAll('#tlplot > *').remove();
     } else {
       d3.selectAll('#tlplot > *').remove();
-      const margin = { top: 10, right: 30, bottom: 30, left: 60 },
-        width = 1000 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+      const margin = { top: 10, right: 30, bottom: 30, left: 60 };
+      const width = 1000 - margin.left - margin.right;
+      const height = 400 - margin.top - margin.bottom;
 
-      var tooltipEl = function(d) {
+      const tooltipEl = function(d) {
         return (
-          '<div class="tip__container">' +
-          '<div class="close">' +
-          '<button>&times</button>' +
-          '</div>' +
-          '<div>' +
-          'Exact date: ' +
-          d3.timeFormat('%A, %B %e, %Y')(d.date) +
-          '<br>' +
-          'Hours logged on this day: ' +
-          d.count.toFixed(2) +
-          '</div>' +
-          '</div>'
+          `${'<div class="tip__container">' +
+            '<div class="close">' +
+            '<button>&times</button>' +
+            '</div>' +
+            '<div>' +
+            'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
+          `Hours logged on this day: ${d.count.toFixed(2)}</div>` +
+          `</div>`
         );
       };
 
-      var legendEl = function(totalHours) {
+      const legendEl = function(totalHours) {
         return (
-          '<div class="lengendSubContainer">' +
-          '<div class="totalCount">' +
-          'Total Hours: ' +
-          totalHours.toFixed(2) +
-          '</div>' +
-          '<div class="entLabelsOff">' +
-          '<button>Labels Off</button>' +
-          '</div>' +
-          '<div class="entCountLabelsOn">' +
-          '<button>Show Daily Hours</button>' +
-          '</div>' +
-          '<div class="entDateLabelsOn">' +
-          '<button>Show Dates</button>' +
-          '</div>' +
-          '</div>'
+          `${'<div class="lengendSubContainer">' +
+            '<div class="totalCount">' +
+            'Total Hours: '}${totalHours.toFixed(2)}</div>` +
+          `<div class="entLabelsOff">` +
+          `<button>Labels Off</button>` +
+          `</div>` +
+          `<div class="entCountLabelsOn">` +
+          `<button>Show Daily Hours</button>` +
+          `</div>` +
+          `<div class="entDateLabelsOn">` +
+          `<button>Show Dates</button>` +
+          `</div>` +
+          `</div>`
         );
       };
 
@@ -106,10 +100,10 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
         .attr('stroke-width', 3)
         .attr('fill', 'white')
         .on('click', function(event, d) {
-          let prevTooltip = d3.select(`.ent${d.id}`);
+          const prevTooltip = d3.select(`.ent${d.id}`);
 
           if (prevTooltip.empty()) {
-            let Tooltip = d3
+            const Tooltip = d3
               .select('#tlplot')
               .append('div')
               .style('opacity', 0)
@@ -160,7 +154,7 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
         .style('display', 'none')
         .text(d => d3.timeFormat('%m/%d/%Y')(d.date));
 
-      let legend = d3
+      const legend = d3
         .select('#tlplot')
         .append('div')
         .attr('class', 'legendContainer')
@@ -188,15 +182,15 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
   }
 
   const generateGraph = () => {
-    let timeEntriesDict = {};
-    let timeEntryvalues = [];
+    const timeEntriesDict = {};
+    const timeEntryvalues = [];
     let maxHoursCount = 0;
     let totalHours = 0;
 
-    //aggregate entries
+    // aggregate entries
     if (timeEntries.period) {
       for (let i = 0; i < timeEntries.period.length; i++) {
-        let convertedHours =
+        const convertedHours =
           parseInt(timeEntries.period[i].hours) +
           (timeEntries.period[i].minutes === '0'
             ? 0
@@ -215,10 +209,10 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
       }
     }
 
-    //filter time entries by date
-    if (fromDate == '' || toDate == '') {
-      //if cond not needed
-      for (var key in timeEntriesDict) {
+    // filter time entries by date
+    if (fromDate === '' || toDate === '') {
+      // if cond not needed
+      for (const key in timeEntriesDict) {
         timeEntryvalues.push({
           date: d3.timeParse('%Y-%m-%d')(key.toString()),
           count: timeEntriesDict[key].time,
@@ -232,25 +226,25 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
       }
     } else {
       let counter = 0;
-      for (var key in timeEntriesDict) {
+      Object.keys(timeEntriesDict).forEach(currentKey => {
         if (
-          (Date.parse(fromDate) <= Date.parse(key.toString())) &
-          (Date.parse(key.toString()) <= Date.parse(toDate))
+          (Date.parse(fromDate) <= Date.parse(currentKey.toString())) &
+          (Date.parse(currentKey.toString()) <= Date.parse(toDate))
         ) {
           timeEntryvalues.push({
             id: counter,
-            date: d3.timeParse('%Y-%m-%d')(key.toString()),
-            count: timeEntriesDict[key].time,
-            des: timeEntriesDict[key].des,
-            isTangible: timeEntriesDict[key].isTangible,
+            date: d3.timeParse('%Y-%m-%d')(currentKey.toString()),
+            count: timeEntriesDict[currentKey].time,
+            des: timeEntriesDict[currentKey].des,
+            isTangible: timeEntriesDict[currentKey].isTangible,
             type: 'Entry',
           });
-          if (timeEntriesDict[key].time > maxHoursCount) {
-            maxHoursCount = timeEntriesDict[key].time;
+          if (timeEntriesDict[currentKey].time > maxHoursCount) {
+            maxHoursCount = timeEntriesDict[currentKey].time;
           }
           counter += 1;
         }
-      }
+      });
     }
 
     timeEntryvalues.sort(function(a, b) {
@@ -265,9 +259,9 @@ const TimeEntriesViz = ({ timeEntries, fromDate, toDate }) => {
       <Button onClick={() => setShow(!show)} aria-expanded={show} style={boxStyle}>
         Show Time Entries Graph
       </Button>
-      <div id="tlplot"></div>
+      <div id="tlplot" />
     </div>
   );
-};
+}
 
 export default TimeEntriesViz;
