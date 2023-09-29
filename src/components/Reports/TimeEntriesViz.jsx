@@ -165,17 +165,17 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
 
       legend.html(legendEl(totalHours));
 
-      legend.select('.entLabelsOff').on('click', function() {
+      legend.select('.entLabelsOff').on('click', function handleEntLabelsOffClick() {
         d3.selectAll('.entCountLabel').style('display', 'none');
         d3.selectAll('.entDateLabel').style('display', 'none');
       });
 
-      legend.select('.entCountLabelsOn').on('click', function() {
+      legend.select('.entCountLabelsOn').on('click', function handleEntCountLabelsOnClick() {
         d3.selectAll('.entCountLabel').style('display', 'block');
         d3.selectAll('.entDateLabel').style('display', 'none');
       });
 
-      legend.select('.entDateLabelsOn').on('click', function() {
+      legend.select('.entDateLabelsOn').on('click', function handleEntDateLabelsOnClick() {
         d3.selectAll('.entDateLabel').style('display', 'block');
         d3.selectAll('.entCountLabel').style('display', 'none');
       });
@@ -192,10 +192,10 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
     if (timeEntries.period) {
       for (let i = 0; i < timeEntries.period.length; i += 1) {
         const convertedHours =
-          parseInt(timeEntries.period[i].hours) +
+          parseInt(timeEntries.period[i].hours, 10) +
           (timeEntries.period[i].minutes === '0'
             ? 0
-            : parseInt(timeEntries.period[i].minutes) / 60);
+            : parseInt(timeEntries.period[i].minutes, 10) / 60);
         totalHours += convertedHours;
         if (timeEntries.period[i].dateOfWork in timeEntriesDict) {
           timeEntriesDict[timeEntries.period[i].dateOfWork].time += convertedHours;
@@ -213,9 +213,9 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
     // filter time entries by date
     if (fromDate === '' || toDate === '') {
       // if cond not needed
-      for (const key in timeEntriesDict) {
+      Object.keys(timeEntriesDict).forEach(key => {
         timeEntryvalues.push({
-          date: d3.timeParse('%Y-%m-%d')(key.toString()),
+          date: d3.timeParse('%Y-%m-%d')(key),
           count: timeEntriesDict[key].time,
           des: timeEntriesDict[key].des,
           isTangible: timeEntriesDict[key].isTangible,
@@ -224,13 +224,13 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
         if (timeEntriesDict[key].time > maxHoursCount) {
           maxHoursCount = timeEntriesDict[key].time;
         }
-      }
+      });
     } else {
       let counter = 0;
       Object.keys(timeEntriesDict).forEach(currentKey => {
         if (
-          (Date.parse(fromDate) <= Date.parse(currentKey.toString())) &
-          (Date.parse(currentKey.toString()) <= Date.parse(toDate))
+          Date.parse(fromDate) <= Date.parse(currentKey.toString()) &&
+          Date.parse(currentKey.toString()) <= Date.parse(toDate)
         ) {
           timeEntryvalues.push({
             id: counter,
@@ -248,7 +248,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
       });
     }
 
-    timeEntryvalues.sort(function(a, b) {
+    timeEntryvalues.sort(function sortDates(a, b) {
       return new Date(b.date) - new Date(a.date);
     });
 
