@@ -7,6 +7,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
   const [show, setShow] = React.useState(false);
 
   React.useEffect(() => {
+    // eslint-disable-next-line no-use-before-define
     generateGraph();
   }, [show, fromDate, toDate]);
 
@@ -19,7 +20,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
       const width = 1000 - margin.left - margin.right;
       const height = 400 - margin.top - margin.bottom;
 
-      const tooltipEl = function(d) {
+      const tooltipEl = function generateTooltipElement(d) {
         return (
           `${'<div class="tip__container">' +
             '<div class="close">' +
@@ -32,11 +33,11 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
         );
       };
 
-      const legendEl = function(totalHours) {
+      const legendEl = function generateLegendElement(innerTotalHours) {
         return (
           `${'<div class="lengendSubContainer">' +
             '<div class="totalCount">' +
-            'Total Hours: '}${totalHours.toFixed(2)}</div>` +
+            'Total Hours: '}${innerTotalHours.toFixed(2)}</div>` +
           `<div class="entLabelsOff">` +
           `<button>Labels Off</button>` +
           `</div>` +
@@ -99,7 +100,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
         .attr('stroke', '#69b3a2')
         .attr('stroke-width', 3)
         .attr('fill', 'white')
-        .on('click', function(event, d) {
+        .on('click', function handleEvent(event, d) {
           const prevTooltip = d3.select(`.ent${d.id}`);
 
           if (prevTooltip.empty()) {
@@ -120,7 +121,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
               .style('top', `${event.pageY}px`)
               .style('opacity', 1);
 
-            Tooltip.select('.close').on('click', function() {
+            Tooltip.select('.close').on('click', function closeTooltip() {
               Tooltip.remove();
             });
           }
@@ -189,7 +190,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
 
     // aggregate entries
     if (timeEntries.period) {
-      for (let i = 0; i < timeEntries.period.length; i++) {
+      for (let i = 0; i < timeEntries.period.length; i += 1) {
         const convertedHours =
           parseInt(timeEntries.period[i].hours) +
           (timeEntries.period[i].minutes === '0'
