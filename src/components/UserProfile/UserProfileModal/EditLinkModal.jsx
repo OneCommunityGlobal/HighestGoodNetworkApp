@@ -92,7 +92,14 @@ const EditLinkModal = props => {
   };
 
   const isDifferentMediaUrl = () => {
-    if (userProfile.adminLinks[1].Link !== mediaFolderLink.Link) {
+    let mediaLink = null;
+    if (userProfile.adminLinks.length >= 2) {
+      mediaLink = userProfile.adminLinks[1].Link;
+    }
+    else if (userProfile.adminLinks.length === 1 && userProfile.adminLinks[0].Name === 'Media Folder') {
+      mediaLink = userProfile.adminLinks[0].Link;
+    } 
+    if (mediaLink && mediaLink !== mediaFolderLink.Link) {
       setMediaFolderDiffWarning(true);
     } else {
       setMediaFolderDiffWarning(false);
