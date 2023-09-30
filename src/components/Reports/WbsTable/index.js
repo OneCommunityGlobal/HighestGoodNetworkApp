@@ -1,1 +1,2 @@
-export { WbsTable } from './WbsTable';
+// eslint-disable-next-line import/prefer-default-export
+export { default as WbsTable } from './WbsTable';
