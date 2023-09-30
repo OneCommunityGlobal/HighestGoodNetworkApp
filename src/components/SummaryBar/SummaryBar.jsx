@@ -392,11 +392,13 @@ const SummaryBar = props => {
                       'You have submitted your weekly summary.'
                     ) : matchUser ? (
                       <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                        You still need to complete the weekly summary. Click here to submit it.
+                                                You still need to complete the weekly summary, by FRIDAY at midnight (Pacific Time), for your manager's review
+ Click here to submit it.
                       </span>
                     ) : (
                       <span className="summary-toggle">
-                        You still need to complete the weekly summary. Click here to submit it.
+                                                You still need to complete the weekly summary, by FRIDAY at midnight (Pacific Time), for your manager's review
+ Click here to submit it.
                       </span>
                     )}
                   </font>
