@@ -44,7 +44,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
       userProfile?.permissions?.frontPermissions.some(permission => permission === 'postRole')) &&
         <div key={`${role}_name`} className="role-name-container">
           {roleNames?.map(roleName => {
-            const roleNameLC = roleName.toLowerCase().replace(' ', '-');
+            const roleNameLC = roleName?.toLowerCase().replace(' ', '-');
             return (
               <div key={roleNameLC} className="role-name">
                 <button
