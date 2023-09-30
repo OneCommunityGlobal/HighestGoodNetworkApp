@@ -20,6 +20,7 @@ import TeamMembersPopup from './TeamMembersPopup';
 import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
+import hasPermission from 'utils/permissions';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -142,6 +143,7 @@ class Teams extends React.PureComponent {
    */
 
   teampopupElements = () => {
+    //const canDeleteTeams = this.props.hasPermission('seeTeamsManagement') || this.props.hasPermission('assignTeamToUsers');
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
     return (
       <React.Fragment>
@@ -172,6 +174,7 @@ class Teams extends React.PureComponent {
           selectedStatus={this.state.isActive}
           onDeleteClick={this.onDeleteUser}
           onSetInactiveClick={this.onConfirmClick}
+          //hasPermission={canDeleteTeams}
         />
 
         <TeamStatusPopup

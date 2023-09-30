@@ -7,8 +7,10 @@ import { connect } from 'react-redux';
  * The header row of the team table.
  */
 export const TeamTableHeader = React.memo(props => {
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  //const canDeleteTeam = props.hasPermission('deleteTeam');
+  //const canPutTeam = props.hasPermission('putTeam');
+  const canEditOrDeleteTeams = props.hasPermission('seeTeamsManagement') || 
+  props.hasPermission('putTeam') || props.hasPermission('deleteTeam');
   return (
     <tr>
       <th scope="col" id="teams__order">
@@ -21,7 +23,7 @@ export const TeamTableHeader = React.memo(props => {
       <th scope="col" id="teams__members">
         {MEMBERS}
       </th>
-      {(canDeleteTeam || canPutTeam) && <th scope="col" id="teams__delete"></th>}
+      {(canEditOrDeleteTeams) && <th scope="col" id="teams__delete"></th>}
     </tr>
   );
 });

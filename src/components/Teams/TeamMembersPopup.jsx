@@ -19,7 +19,7 @@ const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0)
 
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers') || props.hasPermission('seeTeamsManagement') || props.hasPermission('seeTeamsManagementTab');
 
 
 

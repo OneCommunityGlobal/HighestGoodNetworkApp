@@ -63,6 +63,7 @@ export const Header = props => {
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
   // Teams
+  const canSeeTeamsManagementTab = props.hasPermission('seeTeamsManagement') || props.hasPermission('seeTeamsManagementTab');
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
   // Popups
@@ -179,6 +180,7 @@ export const Header = props => {
                 canSeeProjectManagementTab ||
                 canDeleteTeam ||
                 canPutTeam ||
+                canSeeTeamsManagementTab ||
                 canCreatePopup ||
                 canUpdatePopup ||
                 canManageUser) && (
@@ -208,7 +210,7 @@ export const Header = props => {
                         {PROJECTS}
                       </DropdownItem>
                     )}
-                    {(canDeleteTeam || canPutTeam) && (
+                    {(canDeleteTeam || canPutTeam || canSeeTeamsManagementTab) && (
                       <DropdownItem tag={Link} to="/teams">
                         {TEAMS}
                       </DropdownItem>

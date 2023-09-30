@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
  * The search panel stateless component for  Teams grid
  */
 export const TeamTablesearchPanel = props => {
-  const canPostTeam = props.hasPermission('postTeam');
+  const canPostTeam = props.hasPermission('postTeam') || props.hasPermission('seeTeamsManagement') || props.hasPermission('seeTeamsManagementTab');
   return (
     <div className="input-group" id="new_team">
       {canPostTeam && (

@@ -148,7 +148,7 @@ export default (
             path="/teams"
             exact
             component={Teams}
-            routePermissions={RoutePermissions.teams}
+            routePermissions={[RoutePermissions.teams, RoutePermissions.teamsManagement_fullFunctionality, RoutePermissions.teamsManagement_createTeamsEditTeamMembers]}
           />
           <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
