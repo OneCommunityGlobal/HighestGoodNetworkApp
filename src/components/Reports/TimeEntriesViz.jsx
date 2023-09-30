@@ -1,7 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { Button } from 'react-bootstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '../../styles';
 
 function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
   const [show, setShow] = React.useState(false);
