@@ -34,9 +34,15 @@ const SetupNewUserPopup = React.memo(props => {
           }
         })
         .catch(err => {
-          setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
-
-          console.log(err);
+          if (err.response.data === 'email already in use') {
+            setAlert({
+              visibility: 'visible',
+              message: 'This email is associated with an existing user account.',
+              state: 'error',
+            });
+          } else {
+            setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
+          }
         });
     }
   };
