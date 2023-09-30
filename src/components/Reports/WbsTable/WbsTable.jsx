@@ -1,6 +1,6 @@
-import { Stub } from 'components/common/Stub';
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
+import { Stub } from '../../common/Stub';
 import './WbsTable.css';
 
 function WbsTable({ wbs, skip, take }) {
