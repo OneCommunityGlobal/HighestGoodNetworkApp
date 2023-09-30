@@ -1,4 +1,5 @@
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
 
 // button styles for each section
@@ -18,8 +19,8 @@ const buttonLabels = {
 function LogBar() {
   return (
     <div className="log-bar">
-      {Object.keys(buttonStyles).map((section, index) => (
-        <div key={index} className="log-bar__section">
+      {Object.keys(buttonStyles).map(section => (
+        <div key={uuidv4()} className="log-bar__section">
           <h2>
             {(() => {
               switch (section) {
@@ -33,8 +34,8 @@ function LogBar() {
             })()}
           </h2>
           <ul className="log-bar__btn-group">
-            {buttonLabels[section].map((label, i) => (
-              <li key={i}>
+            {buttonLabels[section].map(label => (
+              <li key={uuidv4()}>
                 <Button
                   type="button"
                   className={
