@@ -1,3 +1,1 @@
-import WbsTable from './WbsTable';
-
-export default WbsTable;
+export { WbsTable } from './WbsTable';
