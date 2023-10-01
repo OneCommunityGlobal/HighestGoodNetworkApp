@@ -94,8 +94,12 @@ const Badge = props => {
                         props.userProfile.badgeCollection.find(
                           badgeObj => badgeObj.badge.type === 'Personal Max',
                         )
-                          ? ` and a personal best of ${props.userProfile.personalBestMaxHrs} ${
-                              props.userProfile.personalBestMaxHrs === 1 ? 'hour' : 'hours'
+                          ? ` and a personal best of ${parseFloat(
+                              props.userProfile.personalBestMaxHrs,
+                            ).toFixed(1)} ${
+                              parseFloat(props.userProfile.personalBestMaxHrs) === 1.0
+                                ? 'hour'
+                                : 'hours'
                             } in a week`
                           : ''
                       }! `
