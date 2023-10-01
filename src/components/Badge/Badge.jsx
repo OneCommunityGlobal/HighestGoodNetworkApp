@@ -47,6 +47,20 @@ const Badge = props => {
     setOpenTypes(isOpenTypes => !isOpenTypes);
   };
 
+  const generateBadgeText = (totalBadge, badgeCollection, personalBestMaxHrs) => {
+    if (!totalBadge) return 'You have no badges. ';
+
+    const personalMaxText = badgeCollection.find(badgeObj => badgeObj.badge.type === 'Personal Max')
+      ? ` and a personal best of ${parseFloat(personalBestMaxHrs).toFixed(1)} ${
+          parseFloat(personalBestMaxHrs) === 1.0 ? 'hour' : 'hours'
+        } in a week`
+      : '';
+
+    return `Bravo! You have earned ${totalBadge} ${
+      totalBadge === 1 ? 'badge' : 'badges'
+    }${personalMaxText}! `;
+  };
+
   useEffect(() => {
     const userId = props.userId;
     let count = 0;
@@ -87,23 +101,11 @@ const Badge = props => {
                     color: '#285739',
                   }}
                 >
-                  {totalBadge
-                    ? `Bravo! You have earned ${totalBadge} ${
-                        totalBadge === 1 ? 'badge' : 'badges'
-                      }${
-                        props.userProfile.badgeCollection.find(
-                          badgeObj => badgeObj.badge.type === 'Personal Max',
-                        )
-                          ? ` and a personal best of ${parseFloat(
-                              props.userProfile.personalBestMaxHrs,
-                            ).toFixed(1)} ${
-                              parseFloat(props.userProfile.personalBestMaxHrs) === 1.0
-                                ? 'hour'
-                                : 'hours'
-                            } in a week`
-                          : ''
-                      }! `
-                    : 'You have no badges. '}
+                  {generateBadgeText(
+                    totalBadge,
+                    props.userProfile.badgeCollection,
+                    props.userProfile.personalBestMaxHrs,
+                  )}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
                 <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard={true} />
