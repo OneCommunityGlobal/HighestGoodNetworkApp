@@ -1,13 +1,14 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
-import TextSearchBox from '../../UserManagement/TextSearchBox';
-import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
 import DatePicker from 'react-datepicker';
 import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TableFilter.css';
 import { Checkbox } from 'components/common/Checkbox';
+import TextSearchBox from '../../UserManagement/TextSearchBox';
+import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
 
-const InputWithCalendarIcon = ({ value, onClick }) => {
+function InputWithCalendarIcon({ value, onClick }) {
   return (
     <>
       <input
@@ -19,91 +20,64 @@ const InputWithCalendarIcon = ({ value, onClick }) => {
       <FiCalendar className="date-picker-icon" onClick={onClick} />
     </>
   );
-};
+}
 
-const TableFilter = props => {
+function TableFilter({
+  onTaskNameSearch,
+  searchPriority,
+  searchStatus,
+  searchResources,
+  searchActive,
+  searchAssign,
+  searchEstimatedHours,
+  name,
+  estimatedHours,
+  resources,
+  status,
+  priority,
+}) {
   const taskPriority = ['Primary', 'Secondary', 'Tertiary'];
   const taskStatus = ['Paused', 'Complete', 'Active'];
   const [taskActive, setTaskActive] = useState(true);
   const [taskAssign, setTaskAssign] = useState(true);
   const [startDate, setStartDate] = useState(new Date('01/01/2010'));
   const [endDate, setEndDate] = useState(new Date());
-  const onTaskNameSearch = text => {
-    props.onTaskNameSearch(text);
-  };
-
-  const searchPriority = text => {
-    props.searchPriority(text);
-  };
-
-  const searchStatus = text => {
-    props.searchStatus(text);
-  };
-
-  const searchTaskResources = text => {
-    props.searchResources(text);
-  };
-
-  const searchActive = ({ target: { checked } }) => {
-    setTaskActive(checked);
-    props.searchActive(checked ? 'Yes' : 'No');
-  };
-
-  const searchAssign = ({ target: { checked } }) => {
-    setTaskAssign(checked);
-    props.searchAssign(checked ? 'Yes' : 'No');
-  };
-
-  const searchEstimatedHours = text => {
-    props.searchEstimatedHours(text);
-  };
-  const searchStartDate = text => {
-    props.searchStartDate(text);
-  };
-  const searchEndDate = text => {
-    props.searchEndDate(text);
-  };
 
   return (
     <div className="table-filter-wrapper">
       <TextSearchBox
-        id={'name_search'}
+        id="name_search"
         searchCallback={onTaskNameSearch}
-        value={props.name}
+        value={name}
         className="table-filter-item table-filter-input"
         placeholder="Task name"
       />
-
       <TextSearchBox
         searchCallback={searchEstimatedHours}
-        value={props.estimatedHours}
+        value={estimatedHours}
         placeholder="Estimated Hours"
         className="table-filter-item table-filter-input"
       />
-
       <TextSearchBox
-        searchCallback={searchTaskResources}
-        value={props.resources}
+        searchCallback={searchResources}
+        value={resources}
         placeholder="Resources"
         className="table-filter-item table-filter-input"
       />
-
       <DropDownSearchBox
         items={taskStatus}
         searchCallback={searchStatus}
-        value={props.status}
+        value={status}
         placeholder="Any status"
         className="table-filter-item table-filter-input"
       />
-
       <DropDownSearchBox
         items={taskPriority}
         searchCallback={searchPriority}
-        value={props.priority}
+        value={priority}
         placeholder="Any priority"
         className="table-filter-item table-filter-input"
       />
-
       <DatePicker
         customInput={<InputWithCalendarIcon />}
         selected={startDate}
@@ -118,23 +92,28 @@ const TableFilter = props => {
         minDate={new Date('01/01/2010')}
         onChange={date => setEndDate(date)}
       />
-
       <Checkbox
         value={taskActive}
-        onChange={searchActive}
+        onChange={({ target: { checked } }) => {
+          setTaskActive(checked);
+          searchActive(checked ? 'Yes' : 'No');
+        }}
         id="active"
         wrapperClassname="table-filter-item"
         label="Active"
       />
       <Checkbox
         value={taskAssign}
-        onChange={searchAssign}
+        onChange={({ target: { checked } }) => {
+          setTaskAssign(checked);
+          searchAssign(checked ? 'Yes' : 'No');
+        }}
         id="assign"
         wrapperClassname="table-filter-item"
         label="Assign"
       />
     </div>
   );
-};
+}
 
 export default TableFilter;
