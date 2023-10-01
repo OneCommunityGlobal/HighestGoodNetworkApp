@@ -50,7 +50,7 @@ const Badge = props => {
   const generateBadgeText = (totalBadge, badgeCollection, personalBestMaxHrs) => {
     if (!totalBadge) return 'You have no badges. ';
 
-    const roundedHours = Math.round(personalBestMaxHrs);
+    const roundedHours = Math.floor(personalBestMaxHrs);
     const personalMaxText = badgeCollection.find(badgeObj => badgeObj.badge.type === 'Personal Max')
       ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
       : '';
