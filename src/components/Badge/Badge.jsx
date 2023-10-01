@@ -92,7 +92,7 @@ const Badge = props => {
                         totalBadge === 1 ? 'badge' : 'badges'
                       }${
                         props.userProfile.badgeCollection.find(
-                          badgeObj => badgeObj.badge._id === '64ee76a4a2de3e0d0c717841',
+                          badgeObj => badgeObj.badge.type === 'Personal Max',
                         )
                           ? ` and a personal best of ${props.userProfile.personalBestMaxHrs} ${
                               props.userProfile.personalBestMaxHrs === 1 ? 'hour' : 'hours'

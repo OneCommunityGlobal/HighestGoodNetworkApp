@@ -7,10 +7,10 @@ import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
 
 export const permissionLabel = {
-  seeWeeklySummaryReports: 'See Weekly Summary Reports Tab',
+  getWeeklySummaries: 'See Weekly Summary Reports Tab',
+  getWeeklySummaries: 'See Only Weekly Summary Reports Tab',
   seeUserManagement: 'See User Management Tab (delete and update users)',
   seeBadgeManagement: 'See Badge Management Tab (create badges)',
-  seeWeeklySummaryReports: 'See Only Weekly Summary Reports Tab',
   seeUserManagement: 'See User Management Tab (Full Functionality)',
   seeBadgeManagement: 'See Badge Management Tab (Full Functionality)',
   deleteOwnBadge: 'Delete Badge',
