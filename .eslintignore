@@ -55,3 +55,4 @@ src/components/UserProfile/**
 src/components/WeeklySummary/**
 src/components/MouseoverText/**
 src/components/WeeklySummariesReport/**
+src/components/Dashboard/**

@@ -12,8 +12,8 @@ import {
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
-import TimeOffRequestDetailModal from '../TeamMemberTasks/components/TimeOffRequestDetailModal';
+import { useSelector, useDispatch } from 'react-redux';
+import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -51,6 +51,7 @@ const LeaderBoard = ({
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getMouseoverText();
@@ -148,8 +149,6 @@ const LeaderBoard = ({
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
   const dashboardClose = () => setIsDashboardOpen(false);
-  const [timeOffModalIsOpen, setTimeOffModalIsOpen] = useState(false);
-  const [timeOffModalData, setTimeOffModalData] = useState({});
 
   const showDashboard = item => {
     dashboardClose();
@@ -167,23 +166,11 @@ const LeaderBoard = ({
   };
 
   const handleTimeOffModalOpen = request => {
-    console.log('click');
-    setTimeOffModalData(request);
-    setTimeOffModalIsOpen(true);
-  };
-  const handleTimeOffModalClose = () => {
-    setTimeOffModalIsOpen(false);
-    setTimeOffModalData({});
+    dispatch(showTimeOffRequestModal(request));
   };
 
   return (
     <div>
-      <TimeOffRequestDetailModal
-        request={timeOffModalData}
-        detailModalClose={handleTimeOffModalClose}
-        detailModalIsOpen={timeOffModalIsOpen}
-      />
-  
       <h3>
         Leaderboard&nbsp;&nbsp;
         <i

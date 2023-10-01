@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import moment from 'moment';
 import 'moment-timezone';
-import TimeOffRequestDetailModal from './components/TimeOffRequestDetailModal';
+import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -60,7 +60,7 @@ const TeamMemberTask = React.memo(
 
       return [totalHoursRemaining, activeTasks];
     }, [user]);
-
+    const dispatch = useDispatch();
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
     const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
@@ -74,7 +74,6 @@ const TeamMemberTask = React.memo(
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     //^^^
 
-    const dispatch = useDispatch();
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
@@ -89,11 +88,8 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    const openDetailModal = () => {
-      setDetailModalIsOpen(!detailModalIsOpen);
-    };
-    const detailModalClose = () => {
-      setDetailModalIsOpen(!detailModalIsOpen);
+    const openDetailModal = request => {
+      dispatch(showTimeOffRequestModal(request));
     };
 
     return (
@@ -258,7 +254,11 @@ const TeamMemberTask = React.memo(
                   type="button"
                   className="taking-time-off-content-btn"
                   onClick={() => {
-                    openDetailModal();
+                    const request = onTimeOff
+                      ? { ...onTimeOff, onVacation: true, name: user.name }
+                      : { ...goingOnTimeOff, onVacation: false, name: user.name };
+
+                    openDetailModal(request);
                   }}
                 >
                   Details ?
@@ -267,17 +267,6 @@ const TeamMemberTask = React.memo(
             </td>
           )}
         </tr>
-        {(onTimeOff || goingOnTimeOff) && (
-          <TimeOffRequestDetailModal
-            request={
-              onTimeOff
-                ? { ...onTimeOff, onVacation: true, name: user.name }
-                : { ...goingOnTimeOff, onVacation: false, name: user.name }
-            }
-            detailModalClose={detailModalClose}
-            detailModalIsOpen={detailModalIsOpen}
-          />
-        )}
       </>
     );
   },

@@ -8,6 +8,8 @@ import {
   DELETE_TIME_OF_REQUEST,
   ADD_IS_ON_TIME_OFF_REQUESTS,
   ADD_GOING_ON_TIME_OFF_REQUESTS,
+  TIME_OFF_REQUEST_DETAIL_MODAL_OPEN,
+  TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE,
 } from '../constants/timeOffRequestConstants';
 import { ENDPOINTS } from '../utils/URL';
 import moment from 'moment';
@@ -50,6 +52,15 @@ const updateTimeOffRequest = request => ({
 const deleteTimeOffRequest = request => ({
   type: DELETE_TIME_OF_REQUEST,
   payload: request,
+});
+
+export const showTimeOffRequestModal = request => ({
+  type: TIME_OFF_REQUEST_DETAIL_MODAL_OPEN,
+  payload: request,
+});
+
+export const hideTimeOffRequestModal = () => ({
+  type: TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE,
 });
 
 // Thunk Function
