@@ -269,9 +269,14 @@ function RolePermissions(props) {
       </header>
       <ul className="user-role-tab__permissionList">
         {props.permissionsList.map((permission) => (
-          mainPermissions.includes(permission) ?
           <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , fontSize: '20px'}}>
+            <p 
+              style={{ 
+                color: permissions.includes(permission) ? 'green' : 'red',
+                fontSize: mainPermissions.includes(permission) && '20px',
+                paddingLeft: !mainPermissions.includes(permission) && '50px'
+              }}
+            >
               {permission}
             </p>
             <div className="icon-button-container">
@@ -287,39 +292,6 @@ function RolePermissions(props) {
                 }}
               />
               </div>
-              <Button
-                className="icon-button"
-                color={permissions.includes(permission) ? 'danger' : 'success'}
-                onClick={() => {
-                  permissions.includes(permission)
-                    ? onRemovePermission(permission)
-                    : onAddPermission(permission);
-                  setChanged(true);
-                }}
-                disabled={props?.userRole !== 'Owner'}
-                style={boxStyle}
-              >
-                {permissions.includes(permission) ? 'Delete' : 'Add'}
-              </Button>
-            </div>
-          </li>:
-           <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , paddingLeft: '50px'}}>
-              {permission}
-            </p>
-            <div className="icon-button-container">
-              <div className='infos'>
-              <i
-                data-toggle="tooltip"
-                data-placement="center"
-                title="Click for more information"
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={() => {
-                  handleModalOpen(permission);
-                }}
-              />
-               </div>
               <Button
                 className="icon-button"
                 color={permissions.includes(permission) ? 'danger' : 'success'}
