@@ -1,2 +1,2 @@
 // eslint-disable-next-line import/prefer-default-export
-export { TasksTable } from './TasksTable';
+export { default as TasksTable } from './TasksTable';
