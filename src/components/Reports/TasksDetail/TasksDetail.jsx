@@ -1,51 +1,49 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
+import Collapse from 'react-bootstrap/Collapse';
 import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
 import 'react-table/react-table.css';
-import Collapse from 'react-bootstrap/Collapse';
 import './TasksDetail.css';
 
-const ShowCollapse = props => {
+function ShowCollapse({ resources }) {
   const [open, setOpen] = useState(false);
   return (
     <div>
       <Button onClick={() => setOpen(!open)} aria-expanded={open}>
-        {props.resources.length} ➤
+        {resources.length} ➤
       </Button>
 
-      <div>{props.resources[0].name}</div>
+      <div>{resources[0].name}</div>
 
-      {props.resources.slice(1).map(resource => (
-        <Collapse in={open}>
-          <div key={resource._id} className="new-line">
-            {resource.name}
-          </div>
+      {resources.slice(1).map(resource => (
+        <Collapse in={open} key={resource._id}>
+          <div className="new-line">{resource.name}</div>
         </Collapse>
       ))}
     </div>
   );
-};
+}
 
-export const TasksDetail = props => {
+export default function TasksDetail(props) {
+  const { tasks_filter: tasksFilter, users } = props;
+
   let tasksList = [];
-  let tasks = [];
-  tasks = props.tasks_filter;
+  let tasks = tasksFilter;
 
-  if (props.tasks_filter.length > 0) {
+  if (tasksFilter.length > 0) {
     tasks = ['priority', 'status', 'classification', 'isActive', 'isAssigned'].reduce(
       (filteredTask, filter) => {
-        return props[filter]
-          ? filteredTask.filter(item => item[filter] === props[filter])
-          : filteredTask;
+        return filter ? filteredTask.filter(item => item[filter] === filter) : filteredTask;
       },
       tasks,
     );
 
-    if (props.users) {
-      let test = [];
-      for (var i = 0; i < tasks.length; i++) {
-        for (var j = 0; j < tasks[i].resources.length; j++) {
-          if (tasks[i].resources[j].name === props.users) {
+    if (users) {
+      const test = [];
+      for (let i = 0; i < tasks.length; i += 1) {
+        for (let j = 0; j < tasks[i].resources.length; j += 1) {
+          if (tasks[i].resources[j].name === users) {
             test.push(tasks[i]);
           }
         }
@@ -86,11 +84,11 @@ export const TasksDetail = props => {
       <div className="tasks-detail-center-cells">
         {task.isActive ? (
           <tasks className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" />
           </tasks>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
+            <i className="fa fa-circle-o" aria-hidden="true" />
           </div>
         )}
       </div>
@@ -108,7 +106,7 @@ export const TasksDetail = props => {
   return (
     <div>
       <div className="tasks-detail-total">Total: {tasksList.length}</div>
-      <div className="tasks-detail-table-row tasks-detail-table-head">        
+      <div className="tasks-detail-table-row tasks-detail-table-head">
         <div>#</div>
         <div>Task</div>
         <div>Priority</div>
@@ -124,4 +122,4 @@ export const TasksDetail = props => {
       <div>{tasksList}</div>
     </div>
   );
-};
+}
