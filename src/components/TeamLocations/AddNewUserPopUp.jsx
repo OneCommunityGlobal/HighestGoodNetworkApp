@@ -21,7 +21,7 @@ import { createLocation } from 'services/mapLocationsService';
 const initialLocationData = {
   firstName: 'Prior to HGN Data Collection',
   lastName: 'Prior to HGN Data Collection',
-  title: 'Prior to HGN Data Collection',
+  jobTitle: 'Prior to HGN Data Collection',
   location: {
     userProvided: '',
     coords: {
@@ -30,12 +30,12 @@ const initialLocationData = {
     },
   },
 };
-function AddNewUserPopUp({ onClose, open, handleSaveLocation }) {
+function AddNewUserPopUp({ onClose, open, handleSaveLocation, setUserProfiles }) {
   const [locationData, setLocationData] = useState(initialLocationData);
   const [errors, setErrors] = useState({
     firstName: null,
     lastName: null,
-    title: null,
+    jobTitle: null,
     location: null,
   });
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
@@ -127,10 +127,20 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation }) {
       setErrors(currentErrors);
       return;
     }
-    const res = await createLocation(locationData);
-    setLocationData(initialLocationData);
-    onClose();
-    toast.success('A person successfuly added to a map!');
+
+    try {
+      const res = await createLocation(locationData);
+      if(!res) {
+        throw new Error()
+      }
+      onClose();
+      toast.success('A person successfully added to a map!');
+      setUserProfiles(prev => ([...prev, {...locationData, canBeRemoved: true}]))  
+      setLocationData(initialLocationData);
+    } catch (err) {
+      onClose();
+      toast.error(err.message);
+    }
   };
 
   let locationValue = locationData.location.userProvided;
@@ -179,13 +189,13 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation }) {
 
           <Input
             type="text"
-            name="title"
-            value={locationData.title}
-            label="Title"
-            placeholder="Please enter user title"
+            name="jobTitle"
+            value={locationData.jobTitle}
+            label="Job Title"
+            placeholder="Please enter user job title"
             onChange={locationDataHandler}
             required
-            error={errors.title}
+            error={errors.jobTitle}
           />
           <div>
             <label htmlFor="location">Location</label>
@@ -202,7 +212,6 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation }) {
                 />
                 {locationData.location.coords.lat && locationData.location.coords.lng && (
                   <div
-                    title={`Weekly Summary Submitted`}
                     style={{
                       position: 'absolute',
                       right: '3%',
