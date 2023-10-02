@@ -3,7 +3,7 @@ import { ReportBlock } from './components/ReportBlock';
 import { ReportCard } from './components/ReportCard';
 import './ReportPage.css';
 
-export function ReportPage({ children, renderProfile, contentClassName }) {
+function ReportPage({ children, renderProfile, contentClassName }) {
   return (
     <section className="report-page-wrapper">
       <div className="report-page-profile">{renderProfile()}</div>
@@ -11,6 +11,8 @@ export function ReportPage({ children, renderProfile, contentClassName }) {
     </section>
   );
 }
+
+export default ReportPage;
 
 ReportPage.ReportHeader = ReportHeader;
 ReportPage.ReportBlock = ReportBlock;
