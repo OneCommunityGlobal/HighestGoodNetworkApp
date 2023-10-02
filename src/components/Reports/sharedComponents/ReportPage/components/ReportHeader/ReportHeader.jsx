@@ -1,8 +1,9 @@
 import classnames from 'classnames';
-import { ReportBlock } from '../ReportBlock';
+import ReportBlock from '../ReportBlock/ReportBlock';
 import './ReportHeader.css';
 
-export const ReportHeader = ({ children, isActive, src, avatar, name }) => {
+// eslint-disable-next-line import/prefer-default-export
+export function ReportHeader({ children, isActive, src, avatar, name }) {
   return (
     <ReportBlock>
       <header className="report-header">
@@ -13,7 +14,7 @@ export const ReportHeader = ({ children, isActive, src, avatar, name }) => {
             ) : (
               <img
                 src={src || '/pfp-default.png'}
-                alt="Report profile picture"
+                alt="Report profile"
                 className="report-header-profile-pic"
               />
             )}
@@ -25,4 +26,4 @@ export const ReportHeader = ({ children, isActive, src, avatar, name }) => {
       </header>
     </ReportBlock>
   );
-};
+}
