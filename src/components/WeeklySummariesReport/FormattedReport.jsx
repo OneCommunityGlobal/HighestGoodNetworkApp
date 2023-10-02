@@ -136,7 +136,7 @@ const ReportDetails = ({
             {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
               <ListGroupItem>
                 <b
-                  className="hoursNotFulfilled"
+                  className="hours-not-fulfilled"
                   // style={{
                   //   color:
                   //     textColors[summary?.weeklySummaryOption] || textColors['hoursNotFullfiled'],
@@ -144,7 +144,7 @@ const ReportDetails = ({
                 >
                   Hours logged:
                 </b>
-                <span className="ml-2 hoursNotFulfilled">
+                <span className="ml-2 hours-not-fulfilled">
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </span>
               </ListGroupItem>
