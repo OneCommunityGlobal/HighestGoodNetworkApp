@@ -1,7 +1,8 @@
-import { ReportBlock } from '../ReportBlock';
+import ReportBlock from '../ReportBlock/ReportBlock';
+
 import './ReportCard.css';
 
-export function ReportCard() {
+export default function ReportCard() {
   return (
     <ReportBlock>
       <div className="report-card">
