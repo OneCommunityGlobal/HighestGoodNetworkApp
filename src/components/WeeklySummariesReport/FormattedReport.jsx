@@ -22,8 +22,6 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
-  ListGroup,
-  ListGroupItem as LGI,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
