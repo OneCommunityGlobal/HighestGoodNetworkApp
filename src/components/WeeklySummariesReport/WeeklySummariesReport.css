@@ -54,15 +54,7 @@
   flex-direction: row;
 }
 
-@media (min-width: 482px) {
-  .teamcode-wrapper{
-    display: flex;
-    white-space: nowrap;
-    align-items: center;
-  }
+.hours-not-fulfilled {
+  color: red;
 }
 
-.code-alert{
-  margin: 10px 0 0 0;
-  padding: 8px;
-}

@@ -1,6 +1,4 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -24,9 +22,6 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
-  Row,
-  Col,
-  Alert,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
@@ -34,7 +29,6 @@ import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
-
 
 const textColors = {
   Default: '#000000',
@@ -49,20 +43,16 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-function ListGroupItem({ children }) {
-  return <LGI className="px-0 border-0 py-1">{children}</LGI>;
-}
+const ListGroupItem = ({ children }) => <LGI className="px-0 border-0 py-1">{children}</LGI>;
 
-function FormattedReport({
+const FormattedReport = ({
   summaries,
   weekIndex,
   bioCanEdit,
   canEditSummaryCount,
   allRoleInfo,
   badges,
-  loadBadges,
-  canEditTeamCode,
-}) {
+}) => {
   const emails = [];
 
   summaries.forEach(summary => {
@@ -78,7 +68,7 @@ function FormattedReport({
       emailChunks.push(emails.slice(i, i + batchSize));
     }
 
-    const openEmailClientWithBatchInNewTab = (batch) => {
+    const openEmailClientWithBatchInNewTab = batch => {
       const emailAddresses = batch.join(', ');
       const mailtoLink = `mailto:${emailAddresses}`;
       window.open(mailtoLink, '_blank');
@@ -115,41 +105,35 @@ function FormattedReport({
         ))}
       </ListGroup>
       <div className="d-flex align-items-center">
-      <h4>Emails</h4>
-      <Tooltip
-          placement="top"
-          isOpen={tooltipOpen}
-          target="emailIcon"
-          toggle={toggleTooltip}
-        >
-          Launch the email client, organizing the recipient email addresses into batches, each containing a maximum of 90 addresses.
+        <h4>Emails</h4>
+        <Tooltip placement="top" isOpen={tooltipOpen} target="emailIcon" toggle={toggleTooltip}>
+          Launch the email client, organizing the recipient email addresses into batches, each
+          containing a maximum of 90 addresses.
         </Tooltip>
         <FontAwesomeIcon
           className="ml-2"
           onClick={handleEmailButtonClick}
           icon={faMailBulk}
-          size='lg'
-          style={{ color: "#0f8aa9", cursor: "pointer" }}
+          size="lg"
+          style={{ color: '#0f8aa9', cursor: 'pointer' }}
           id="emailIcon"
         />
-
       </div>
       <p>{emails.join(', ')}</p>
     </>
   );
-}
+};
 
-function ReportDetails({
+const ReportDetails = ({
   summary,
   weekIndex,
   bioCanEdit,
   canEditSummaryCount,
   allRoleInfo,
   badges,
-  loadBadges,
-  canEditTeamCode,
-}) {
+}) => {
   const ref = useRef(null);
+  const isInViewPort = useIsInViewPort(ref);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
@@ -159,71 +143,73 @@ function ReportDetails({
         <ListGroupItem>
           <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
         </ListGroupItem>
-            <Row className="flex-nowrap">
-              <Col className="flex-grow-0">
-                <ListGroupItem>
-                  <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
-                </ListGroupItem>
-                <ListGroupItem>
-                  <Bio
-                    bioCanEdit={bioCanEdit}
-                    userId={summary._id}
-                    bioPosted={summary.bioPosted}
-                    summary={summary}
-                    totalTangibleHrs={summary.totalTangibleHrs}
-                    daysInTeam={summary.daysInTeam}
-                  />
-                </ListGroupItem>
-                <ListGroupItem>
-                  <TotalValidWeeklySummaries
-                    summary={summary}
-                    canEditSummaryCount={canEditSummaryCount}
-                  />
-                </ListGroupItem>
-                {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-                  <ListGroupItem>
-                    <p>
-                      <b
-                        style={{
-                          color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                        }}
-                      >
-                        Hours logged:{' '}
-                      </b>
-                      {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                    </p>
-                  </ListGroupItem>
-                )}
-                {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-                  <ListGroupItem>
-                    <b
-                      style={{
-                        color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                      }}
-                    >
-                      Hours logged:
-                    </b>
-                    <span className="ml-2">
-                      {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                    </span>
-                  </ListGroupItem>
-                )}
-              </Col>
-              <Col>
-                {loadBadges && summary.badgeCollection?.length > 0 && (
-                  <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
-                )}
-              </Col>
-            </Row>
+        {isInViewPort && (
+          <>
+            <ListGroupItem>
+              <b>Media URL:</b> <MediaUrlLink summary={summary} />
+            </ListGroupItem>
+            <ListGroupItem>
+              <Bio
+                bioCanEdit={bioCanEdit}
+                userId={summary._id}
+                bioPosted={summary.bioPosted}
+                summary={summary}
+                totalTangibleHrs={summary.totalTangibleHrs}
+                daysInTeam={summary.daysInTeam}
+              />
+            </ListGroupItem>
+            <ListGroupItem>
+              <TotalValidWeeklySummaries
+                summary={summary}
+                canEditSummaryCount={canEditSummaryCount}
+              />
+            </ListGroupItem>
+            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+              <ListGroupItem>
+                <p>
+                  <b
+                    style={{
+                      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                    }}
+                  >
+                    Hours logged:{' '}
+                  </b>
+                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                </p>
+              </ListGroupItem>
+            )}
+            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+              <ListGroupItem>
+                <b
+                  className="hours-not-fulfilled"
+                  // style={{
+                  //   color:
+                  //     textColors[summary?.weeklySummaryOption] || textColors['hoursNotFullfiled'],
+                  // }}
+                >
+                  Hours logged:
+                </b>
+                <span className="ml-2 hours-not-fulfilled">
+                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                </span>
+              </ListGroupItem>
+            )}
+            {summary.badgeCollection.length > 0 && (
+              <ListGroupItem>
+                <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+              </ListGroupItem>
+            )}
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
+          </>
+        )}
       </ListGroup>
     </li>
   );
-}
+};
 
-function WeeklySummaryMessage({ summary, weekIndex }) {
+const WeeklySummaryMessage = ({ summary, weekIndex }) => {
   if (!summary) {
     return (
       <p>
@@ -237,12 +223,13 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     .tz('America/Los_Angeles')
     .endOf('week')
     .subtract(weekIndex, 'week')
-    .format('YYYY-MMM-DD');
+    .format('MMM-DD-YY');
+
   let summaryDateText = `Weekly Summary (${summaryDate}):`;
   const summaryContent = (() => {
     if (summaryText) {
       const style = {
-        color: textColors[summary?.weeklySummaryOption] || textColors.Default,
+        color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
       };
 
       summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
@@ -271,110 +258,40 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 };
 
-const TeamCodeRow = ({canEditTeamCode, summary}) => {
-
-  const [teamCode, setTeamCode] = useState(summary.teamCode);
-  const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
-
-  const handleOnChange = async (userProfileSummary, newStatus) => {
-    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id)
-    try {
-      await axios.patch(url, {key: 'teamCode', value: newStatus});
-    } catch (err) {
-      alert('An error occurred while attempting to save the new team code change to the profile.');
-    }
-  };
-
-  const handleCodeChange = e => {
-    let value = e.target.value;
-    if (e.target.value.length == 1) {
-      value = e.target.value + "-";
-    }
-    if (e.target.value == "-") {
-      value = "";
-    }
-    if (e.target.value.length == 2) {
-      if(e.target.value.includes("-")) {
-        value = e.target.value.replace("-", "");
-      } else {
-        value = e.target.value.charAt(0) + "-" + e.target.value.charAt(1);
-      }
-    }
-
-    const regexTest = fullCodeRegex.test(value);
-    if (regexTest) {
-      setHasError(false);
-      setTeamCode(value);
-      handleOnChange(summary, value);
-    } else {
-      setTeamCode(value);
-      setHasError(true);
-    }
-  };
-
-  return (
-    <>
-      <div className='teamcode-wrapper'>
-        {canEditTeamCode ?
-          <div style={{width: '100px', paddingRight: "5px"}}>
-            <Input
-              id='codeInput'
-              value={teamCode}
-              onChange={e => {
-                if(e.target.value != teamCode){
-                  handleCodeChange(e);
-                }
-              }}
-              placeholder="X-XXX"
-            />
-          </div>
-          :
-          <div style={{paddingLeft: "5px"}}>
-            {teamCode == ''? "No assigned team code!": teamCode}
-          </div>
-        }
-        <b>Media URL:</b>
-        <MediaUrlLink summary={summary}/>
-      </div>
-      {hasError ? (
-        <Alert className='code-alert' color="danger">
-          Please enter a code in the format of X-XXX
-        </Alert>
-      ) : null}
-    </>
-  )
-};
-
-function MediaUrlLink({ summary }) {
+const MediaUrlLink = ({ summary }) => {
   if (summary.mediaUrl) {
     return (
-      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
+      <a
+        href={summary.mediaUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ paddingLeft: '5px' }}
+      >
         Open link to media files
       </a>
     );
   }
 
   if (summary.adminLinks) {
-    const link = summary.adminLinks.find(item => item.Name === 'Media Folder');
-    if (link) {
-      return (
-        <a href={link.Link} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
-          Open link to media files
-        </a>
-      );
+    for (const link of summary.adminLinks) {
+      if (link.Name === 'Media Folder') {
+        return (
+          <a href={link.Link} target="_blank" rel="noopener noreferrer">
+            Open link to media files
+          </a>
+        );
+      }
     }
   }
   return 'Not provided!';
-}
+};
 
-function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
+const TotalValidWeeklySummaries = ({ summary, canEditSummaryCount }) => {
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    // eslint-disable-next-line radix
     parseInt(summary.weeklySummariesCount),
   );
 
@@ -383,7 +300,6 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
     try {
       await axios.patch(url, { key: 'weeklySummariesCount', value: count });
     } catch (err) {
-      // eslint-disable-next-line no-alert
       alert(
         'An error occurred while attempting to save the new weekly summaries count change to the profile.',
       );
@@ -422,18 +338,16 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
       )}
     </div>
   );
-}
+};
 
-function Bio({ bioCanEdit, ...props }) {
-  // eslint-disable-next-line react/jsx-props-no-spreading
+const Bio = ({ bioCanEdit, ...props }) => {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
-}
+};
 
-function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam }) {
+const BioSwitch = ({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam }) => {
   const [bioStatus, setBioStatus] = useState(bioPosted);
-  const dispatch = useDispatch();
   const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
-  const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
+  const style = { color: textColors[summary?.weeklySummaryOption] || textColors['Default'] };
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
@@ -460,9 +374,9 @@ function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
       </div>
     </div>
   );
-}
+};
 
-function BioLabel({ bioPosted, summary }) {
+const BioLabel = ({ bioPosted, summary }) => {
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -481,9 +395,9 @@ function BioLabel({ bioPosted, summary }) {
       {text}
     </div>
   );
-}
+};
 
-function WeeklyBadge({ summary, weekIndex, badges }) {
+const WeeklyBadge = ({ summary, weekIndex, badges }) => {
   const badgeEndDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -549,9 +463,9 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
       </ListGroupItem>
     )
   );
-}
+};
 
-function Index({ summary, weekIndex, allRoleInfo }) {
+const Index = ({ summary, weekIndex, allRoleInfo }) => {
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
     if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
@@ -582,7 +496,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   const googleDocLink = getGoogleDocLink(summary);
   // Determine whether to use grayscale or color icon based on googleDocLink
   const googleDocIcon =
-    googleDocLink && googleDocLink.Link.trim() !== '' ? googleDocIconPng : googleDocIconGray;
+    googleDocLink && googleDocLink.Link.trim() !== '' ? google_doc_icon : google_doc_icon_gray;
 
   return (
     <>
@@ -598,7 +512,9 @@ function Index({ summary, weekIndex, allRoleInfo }) {
         <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
       </span>
       {summary.role !== 'Volunteer' && (
-        <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)} />
+        <RoleInfoModal
+          info={allRoleInfo.find(item => item.infoName === `${summary.role}` + 'Info')}
+        />
       )}
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
@@ -629,7 +545,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
       )}
     </>
   );
-}
+};
 
 FormattedReport.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
