@@ -1,7 +1,4 @@
 import React, { useState, useRef } from 'react';
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -35,7 +32,6 @@ import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
 
-
 const textColors = {
   Default: '#000000',
   'Not Required': '#708090',
@@ -52,7 +48,6 @@ const textColors = {
 const ListGroupItem = ({ children }) => <LGI className="px-0 border-0 py-1">{children}</LGI>;
 
 const FormattedReport = ({
-
   summaries,
   weekIndex,
   bioCanEdit,
@@ -75,7 +70,7 @@ const FormattedReport = ({
       emailChunks.push(emails.slice(i, i + batchSize));
     }
 
-    const openEmailClientWithBatchInNewTab = (batch) => {
+    const openEmailClientWithBatchInNewTab = batch => {
       const emailAddresses = batch.join(', ');
       const mailtoLink = `mailto:${emailAddresses}`;
       window.open(mailtoLink, '_blank');
@@ -112,24 +107,19 @@ const FormattedReport = ({
         ))}
       </ListGroup>
       <div className="d-flex align-items-center">
-      <h4>Emails</h4>
-      <Tooltip
-          placement="top"
-          isOpen={tooltipOpen}
-          target="emailIcon"
-          toggle={toggleTooltip}
-        >
-          Launch the email client, organizing the recipient email addresses into batches, each containing a maximum of 90 addresses.
+        <h4>Emails</h4>
+        <Tooltip placement="top" isOpen={tooltipOpen} target="emailIcon" toggle={toggleTooltip}>
+          Launch the email client, organizing the recipient email addresses into batches, each
+          containing a maximum of 90 addresses.
         </Tooltip>
         <FontAwesomeIcon
           className="ml-2"
           onClick={handleEmailButtonClick}
           icon={faMailBulk}
-          size='lg'
-          style={{ color: "#0f8aa9", cursor: "pointer" }}
+          size="lg"
+          style={{ color: '#0f8aa9', cursor: 'pointer' }}
           id="emailIcon"
         />
-
       </div>
       <p>{emails.join(', ')}</p>
     </>
@@ -137,7 +127,6 @@ const FormattedReport = ({
 };
 
 const ReportDetails = ({
-
   summary,
   weekIndex,
   bioCanEdit,
@@ -147,7 +136,6 @@ const ReportDetails = ({
 }) => {
   const ref = useRef(null);
   const isInViewPort = useIsInViewPort(ref);
-
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
@@ -218,14 +206,12 @@ const ReportDetails = ({
             </ListGroupItem>
           </>
         )}
-
       </ListGroup>
     </li>
   );
-}
+};
 
 const WeeklySummaryMessage = ({ summary, weekIndex }) => {
-
   if (!summary) {
     return (
       <p>
@@ -246,7 +232,6 @@ const WeeklySummaryMessage = ({ summary, weekIndex }) => {
     if (summaryText) {
       const style = {
         color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
-
       };
 
       summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
@@ -276,10 +261,14 @@ const WeeklySummaryMessage = ({ summary, weekIndex }) => {
 };
 
 const MediaUrlLink = ({ summary }) => {
-
   if (summary.mediaUrl) {
     return (
-      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
+      <a
+        href={summary.mediaUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ paddingLeft: '5px' }}
+      >
         Open link to media files
       </a>
     );
@@ -300,13 +289,11 @@ const MediaUrlLink = ({ summary }) => {
 };
 
 const TotalValidWeeklySummaries = ({ summary, canEditSummaryCount }) => {
-
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-
     parseInt(summary.weeklySummariesCount),
   );
 
@@ -315,7 +302,6 @@ const TotalValidWeeklySummaries = ({ summary, canEditSummaryCount }) => {
     try {
       await axios.patch(url, { key: 'weeklySummariesCount', value: count });
     } catch (err) {
-
       alert(
         'An error occurred while attempting to save the new weekly summaries count change to the profile.',
       );
@@ -365,7 +351,6 @@ const BioSwitch = ({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
   const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors['Default'] };
 
-
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
     const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
@@ -391,10 +376,9 @@ const BioSwitch = ({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
       </div>
     </div>
   );
-}
+};
 
 const BioLabel = ({ bioPosted, summary }) => {
-
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
@@ -413,10 +397,9 @@ const BioLabel = ({ bioPosted, summary }) => {
       {text}
     </div>
   );
-}
+};
 
 const WeeklyBadge = ({ summary, weekIndex, badges }) => {
-
   const badgeEndDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -482,10 +465,9 @@ const WeeklyBadge = ({ summary, weekIndex, badges }) => {
       </ListGroupItem>
     )
   );
-}
+};
 
 const Index = ({ summary, weekIndex, allRoleInfo }) => {
-
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
     if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
@@ -518,7 +500,6 @@ const Index = ({ summary, weekIndex, allRoleInfo }) => {
   const googleDocIcon =
     googleDocLink && googleDocLink.Link.trim() !== '' ? google_doc_icon : google_doc_icon_gray;
 
-
   return (
     <>
       <b>Name: </b>
@@ -536,7 +517,6 @@ const Index = ({ summary, weekIndex, allRoleInfo }) => {
         <RoleInfoModal
           info={allRoleInfo.find(item => item.infoName === `${summary.role}` + 'Info')}
         />
-
       )}
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
@@ -568,7 +548,6 @@ const Index = ({ summary, weekIndex, allRoleInfo }) => {
     </>
   );
 };
-
 
 FormattedReport.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
