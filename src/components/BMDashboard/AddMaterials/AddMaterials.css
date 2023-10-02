@@ -1,11 +1,24 @@
 .add-materials-page form {
-  max-width: 700px;
-  border-radius: 1rem;
-  padding: 2rem;
-  margin: 2rem auto 0 auto;
+  max-width: 1000px;
+  padding: 1rem;
   background-color: white;
 }
 
 .add-materials-page {
   background-color: rgb(232, 244, 249);
+  height: 100%;
+}
+
+@media screen and (max-width: 424px) {
+  .add-materials-page {
+    padding: 0 !important;
+  }
+}
+
+@media screen and (min-width: 425px) {
+  .add-materials-page form {
+    border-radius: 1rem;
+    border: 1px solid rgb(220, 220, 220);
+    margin: 2rem auto 0 auto;
+  }
 }

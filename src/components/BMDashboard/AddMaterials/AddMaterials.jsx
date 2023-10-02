@@ -24,7 +24,7 @@ export default function AddMaterials() {
     <Container fluid className="add-materials-page">
       <AddMaterialForm
         allProjects={allProjects.projects}
-        selectedProject={allProjects.projects[3]}
+        // selectedProject={allProjects.projects[3]}
         canAddNewMaterial
         canAddNewMeasurement
         materialList={materialList}

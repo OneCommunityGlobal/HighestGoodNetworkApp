@@ -56,3 +56,7 @@
   width: 100%;
   background-color: rgb(249, 249, 249);
 }
+
+.price-currency {
+  justify-content: space-between;
+}
