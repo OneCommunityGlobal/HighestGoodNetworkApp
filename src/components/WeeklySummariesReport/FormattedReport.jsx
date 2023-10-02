@@ -154,7 +154,7 @@ function ReportDetails({
           <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
         </ListGroupItem>
         <Row className="flex-nowrap">
-          <Col className="flex-grow-0">
+          <Col xs="6" className="flex-grow-0">
             <ListGroupItem>
               <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
             </ListGroupItem>
@@ -202,16 +202,16 @@ function ReportDetails({
                 </span>
               </ListGroupItem>
             )}
+            <ListGroupItem>
+              <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
+            </ListGroupItem>
           </Col>
-          <Col>
+          <Col xs="6">
             {loadBadges && summary.badgeCollection?.length > 0 && (
               <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
             )}
           </Col>
         </Row>
-        <ListGroupItem>
-          <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
-        </ListGroupItem>
       </ListGroup>
     </li>
   );
@@ -448,7 +448,7 @@ function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
   };
 
   return (
-    <div style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}>
+    <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
       <div className="bio-toggle">
         <b style={style}>Bio announcement:</b>
       </div>
