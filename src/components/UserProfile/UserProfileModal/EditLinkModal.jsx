@@ -375,8 +375,16 @@ const EditLinkModal = props => {
           >
             Update
           </Button>
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
-            Cancel
+          <Button 
+            color="primary" 
+            onClick={()=>{
+              setIsMediaFolderLinkChanged(false); 
+              setMediaFolderLink({ ...mediaFolderLink, Link:originalMediaFolderLink.current });
+              closeModal();
+              }
+            } 
+            style={boxStyle}>
+              Cancel
           </Button>
         </ModalFooter>
 
@@ -388,10 +396,11 @@ const EditLinkModal = props => {
           <ModalFooter>
             <Button color='primary'  onClick={() =>{setIsWarningPopupOpen(!isWarningPopupOpen)}}>Confirm</Button>
             {/* Cancel button put original Media Folder link into the input */}
-            <Button onClick={() =>{
-              setIsWarningPopupOpen(!isWarningPopupOpen); 
-              setIsMediaFolderLinkChanged(false); 
-              setMediaFolderLink({ ...mediaFolderLink, Link:originalMediaFolderLink.current });}}
+            <Button onClick={() => {
+                setIsWarningPopupOpen(!isWarningPopupOpen); 
+                setIsMediaFolderLinkChanged(false); 
+                setMediaFolderLink({ ...mediaFolderLink, Link:originalMediaFolderLink.current });
+              }}
             >
               Cancel
             </Button>
