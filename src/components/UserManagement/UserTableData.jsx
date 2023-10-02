@@ -98,6 +98,7 @@ const UserTableData = React.memo(props => {
           ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
+      <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
       <td>{props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}</td>
       {checkPermissionsOnOwner() ? null : (
         <td>
