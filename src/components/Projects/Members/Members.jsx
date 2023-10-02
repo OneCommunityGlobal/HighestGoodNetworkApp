@@ -22,8 +22,9 @@ import { boxStyle } from 'styles';
 const Members = props => {
   const projectId = props.match.params.projectId;
 
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
+  const canGetProjectMembers = props.hasPermission('getProjectMembers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canUnassignUserInProject = props.hasPermission('unassignUserInProject') || props.hasPermission('seeProjectManagement');
 
   useEffect(() => {
     props.fetchAllMembers(projectId);
@@ -126,7 +127,7 @@ const Members = props => {
                 #
               </th>
               <th scope="col" id="members__name"></th>
-              {canAssignProjectToUsers ? <th scope="col" id="members__name"></th> : null}
+              {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
             </tr>
           </thead>
           <tbody>
