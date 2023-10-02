@@ -72,8 +72,14 @@ const Badge = props => {
                 Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
               </CardHeader>
               <CardBody>
-                <NewBadges badges={props.userProfile.badgeCollection || []} />
-                <OldBadges badges={props.userProfile.badgeCollection || []} />
+                <NewBadges
+                  personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
+                  badges={props.userProfile.badgeCollection || []}
+                />
+                <OldBadges
+                  personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
+                  badges={props.userProfile.badgeCollection || []}
+                />
                 <CardText
                   style={{
                     fontWeight: 'bold',
@@ -83,7 +89,15 @@ const Badge = props => {
                 >
                   {totalBadge
                     ? `Bravo! You have earned ${totalBadge} ${
-                        totalBadge == 1 ? 'badge' : 'badges'
+                        totalBadge === 1 ? 'badge' : 'badges'
+                      }${
+                        props.userProfile.badgeCollection.find(
+                          badgeObj => badgeObj.badge.type === 'Personal Max',
+                        )
+                          ? ` and a personal best of ${props.userProfile.personalBestMaxHrs} ${
+                              props.userProfile.personalBestMaxHrs === 1 ? 'hour' : 'hours'
+                            } in a week`
+                          : ''
                       }! `
                     : 'You have no badges. '}
                   <i className="fa fa-info-circle" id="CountInfo" />

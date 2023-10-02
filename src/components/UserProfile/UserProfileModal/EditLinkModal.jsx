@@ -14,6 +14,7 @@ import hasPermission from '../../../utils/permissions';
 import './EditLinkModal.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
@@ -91,7 +92,14 @@ const EditLinkModal = props => {
   };
 
   const isDifferentMediaUrl = () => {
-    if (userProfile.mediaUrl !== mediaFolderLink.Link) {
+    let mediaLink = null;
+    if (userProfile.adminLinks.length >= 2) {
+      mediaLink = userProfile.adminLinks[1].Link;
+    }
+    else if (userProfile.adminLinks.length === 1 && userProfile.adminLinks[0].Name === 'Media Folder') {
+      mediaLink = userProfile.adminLinks[0].Link;
+    } 
+    if (mediaLink && mediaLink !== mediaFolderLink.Link) {
       setMediaFolderDiffWarning(true);
     } else {
       setMediaFolderDiffWarning(false);
@@ -122,11 +130,13 @@ const EditLinkModal = props => {
   };
 
   const handleUpdate = async () => {
+    const isGoogleDocsValid = isValidGoogleDocsUrl(googleLink.Link);
+    const isDropboxValid = isValidMediaUrl(mediaFolderLink.Link);
     const updatable =
-      (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
+      (isGoogleDocsValid && isDropboxValid) ||
       (googleLink.Link === '' && mediaFolderLink.Link === '') ||
-      (isValidUrl(googleLink.Link) && mediaFolderLink.Link === '') ||
-      (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
+      (isGoogleDocsValid && mediaFolderLink.Link === '') ||
+      (isDropboxValid && googleLink.Link === '');
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
       // Media Folder link should update the mediaUrl in userProfile

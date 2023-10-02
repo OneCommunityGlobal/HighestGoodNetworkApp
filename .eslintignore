@@ -24,8 +24,8 @@ src/components/App.jsx
 src/components/AutoReload/**
 src/components/AutoUpdate/**
 src/components/Badge/**
+src/components/BMDashboard/**
 src/components/common/**
-src/components/Dashboard/**
 src/components/ForcePasswordUpdate/**
 src/components/Header/**
 src/components/Inventory/**
@@ -49,9 +49,9 @@ src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/Timelog/**
-src/components/Timer/**
 src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
-src/components/WeeklySummariesReport/**
+src/components/WeeklySummary/**
 src/components/MouseoverText/**
+src/components/WeeklySummariesReport/**

@@ -1,21 +1,25 @@
-/* eslint-disable react/function-component-definition */
 import React, { useState, useRef } from 'react';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
-import google_doc_icon from './google_doc_icon.png';
-import google_doc_icon_gray from './google_doc_icon_gray.png';
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
-import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import {
   Input,
+  ListGroup,
+  ListGroupItem as LGI,
   Card,
+  Tooltip,
   CardTitle,
   CardBody,
   CardImg,
@@ -24,8 +28,13 @@ import {
   ListGroup,
   ListGroupItem as LGI,
 } from 'reactstrap';
-import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
-import useIsInViewPort from 'utils/useIsInViewPort';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
+import { ENDPOINTS } from '../../utils/URL';
+import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
+import googleDocIconGray from './google_doc_icon_gray.png';
+import googleDocIconPng from './google_doc_icon.png';
+
 
 const textColors = {
   Default: '#000000',
@@ -43,6 +52,7 @@ const textColors = {
 const ListGroupItem = ({ children }) => <LGI className="px-0 border-0 py-1">{children}</LGI>;
 
 const FormattedReport = ({
+
   summaries,
   weekIndex,
   bioCanEdit,
@@ -57,6 +67,32 @@ const FormattedReport = ({
       emails.push(summary.email);
     }
   });
+  const handleEmailButtonClick = () => {
+    const batchSize = 90;
+    const emailChunks = [];
+
+    for (let i = 0; i < emails.length; i += batchSize) {
+      emailChunks.push(emails.slice(i, i + batchSize));
+    }
+
+    const openEmailClientWithBatchInNewTab = (batch) => {
+      const emailAddresses = batch.join(', ');
+      const mailtoLink = `mailto:${emailAddresses}`;
+      window.open(mailtoLink, '_blank');
+    };
+
+    emailChunks.forEach((batch, index) => {
+      setTimeout(() => {
+        openEmailClientWithBatchInNewTab(batch);
+      }, index * 2000);
+    });
+  };
+
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const toggleTooltip = () => {
+    setTooltipOpen(!tooltipOpen);
+  };
 
   return (
     <>
@@ -69,17 +105,39 @@ const FormattedReport = ({
             bioCanEdit={bioCanEdit}
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
+            canEditTeamCode={canEditTeamCode}
             badges={badges}
+            loadBadges={loadBadges}
           />
         ))}
       </ListGroup>
+      <div className="d-flex align-items-center">
       <h4>Emails</h4>
+      <Tooltip
+          placement="top"
+          isOpen={tooltipOpen}
+          target="emailIcon"
+          toggle={toggleTooltip}
+        >
+          Launch the email client, organizing the recipient email addresses into batches, each containing a maximum of 90 addresses.
+        </Tooltip>
+        <FontAwesomeIcon
+          className="ml-2"
+          onClick={handleEmailButtonClick}
+          icon={faMailBulk}
+          size='lg'
+          style={{ color: "#0f8aa9", cursor: "pointer" }}
+          id="emailIcon"
+        />
+
+      </div>
       <p>{emails.join(', ')}</p>
     </>
   );
 };
 
 const ReportDetails = ({
+
   summary,
   weekIndex,
   bioCanEdit,
@@ -89,6 +147,7 @@ const ReportDetails = ({
 }) => {
   const ref = useRef(null);
   const isInViewPort = useIsInViewPort(ref);
+
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
@@ -159,12 +218,14 @@ const ReportDetails = ({
             </ListGroupItem>
           </>
         )}
+
       </ListGroup>
     </li>
   );
-};
+}
 
 const WeeklySummaryMessage = ({ summary, weekIndex }) => {
+
   if (!summary) {
     return (
       <p>
@@ -179,11 +240,13 @@ const WeeklySummaryMessage = ({ summary, weekIndex }) => {
     .endOf('week')
     .subtract(weekIndex, 'week')
     .format('MMM-DD-YY');
+
   let summaryDateText = `Weekly Summary (${summaryDate}):`;
   const summaryContent = (() => {
     if (summaryText) {
       const style = {
         color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+
       };
 
       summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
@@ -192,16 +255,14 @@ const WeeklySummaryMessage = ({ summary, weekIndex }) => {
       summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
       return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
-    } else {
-      if (
-        summary?.weeklySummaryOption === 'Not Required' ||
-        (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
-      ) {
-        return <p style={{ color: textColors['Not Required'] }}>Not required for this user</p>;
-      } else {
-        return <span style={{ color: 'red' }}>Not provided!</span>;
-      }
     }
+    if (
+      summary?.weeklySummaryOption === 'Not Required' ||
+      (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
+    ) {
+      return <p style={{ color: textColors['Not Required'] }}>Not required for this user</p>;
+    }
+    return <span style={{ color: 'red' }}>Not provided!</span>;
   })();
 
   return (
@@ -215,9 +276,10 @@ const WeeklySummaryMessage = ({ summary, weekIndex }) => {
 };
 
 const MediaUrlLink = ({ summary }) => {
+
   if (summary.mediaUrl) {
     return (
-      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
+      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer" style={{paddingLeft: "5px"}}>
         Open link to media files
       </a>
     );
@@ -238,11 +300,13 @@ const MediaUrlLink = ({ summary }) => {
 };
 
 const TotalValidWeeklySummaries = ({ summary, canEditSummaryCount }) => {
+
   const style = {
-    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
+
     parseInt(summary.weeklySummariesCount),
   );
 
@@ -251,6 +315,7 @@ const TotalValidWeeklySummaries = ({ summary, canEditSummaryCount }) => {
     try {
       await axios.patch(url, { key: 'weeklySummariesCount', value: count });
     } catch (err) {
+
       alert(
         'An error occurred while attempting to save the new weekly summaries count change to the profile.',
       );
@@ -300,20 +365,12 @@ const BioSwitch = ({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
   const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors['Default'] };
 
+
+  // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
-    try {
-      const url = ENDPOINTS.USER_PROFILE(userId);
-      const response = await axios.get(url);
-      const userProfile = response.data;
-      const res = await axios.put(url, {
-        ...userProfile,
-        bioPosted: bioStatus,
-      });
-      if (res.status === 200) {
-        toast.success('You have changed the bio announcement status of this user.');
-      }
-    } catch (err) {
-      alert('An error occurred while attempting to save the bioPosted change to the profile.');
+    const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
+    if (res.status === 200) {
+      toast.success('You have changed the bio announcement status of this user.');
     }
   };
 
@@ -334,25 +391,32 @@ const BioSwitch = ({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
       </div>
     </div>
   );
-};
+}
 
 const BioLabel = ({ bioPosted, summary }) => {
+
   const style = {
-    color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
+
+  let text = '';
+  if (bioPosted === 'default') {
+    text = ' Not requested/posted';
+  } else if (bioPosted === 'posted') {
+    text = 'Posted';
+  } else {
+    text = 'Requested';
+  }
   return (
     <div>
       <b style={style}>Bio announcement:</b>
-      {bioPosted === 'default'
-        ? ' Not requested/posted'
-        : bioPosted === 'posted'
-        ? ' Posted'
-        : ' Requested'}
+      {text}
     </div>
   );
-};
+}
 
 const WeeklyBadge = ({ summary, weekIndex, badges }) => {
+
   const badgeEndDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -363,9 +427,9 @@ const WeeklyBadge = ({ summary, weekIndex, badges }) => {
     .startOf('week')
     .subtract(weekIndex, 'week')
     .format('YYYY-MM-DD');
-  let badgeIdThisWeek = [];
-  let badgeThisWeek = [];
-  summary.badgeCollection.map(badge => {
+  const badgeIdThisWeek = [];
+  const badgeThisWeek = [];
+  summary.badgeCollection.forEach(badge => {
     if (badge.earnedDate) {
       if (badge.earnedDate[0] <= badgeEndDate && badge.earnedDate[0] >= badgeStartDate) {
         badgeIdThisWeek.push(badge.badge);
@@ -379,50 +443,49 @@ const WeeklyBadge = ({ summary, weekIndex, badges }) => {
   });
   if (badgeIdThisWeek.length > 0) {
     badgeIdThisWeek.forEach(badgeId => {
+      // eslint-disable-next-line no-shadow
       const badge = badges.filter(badge => badge._id === badgeId)[0];
       badgeThisWeek.push(badge);
     });
   }
   return (
-    <table>
-      <tbody>
-        <tr className="badge-tr" key={weekIndex + 'badge_' + summary._id}>
-          {badgeThisWeek.length > 0
-            ? badgeThisWeek.map(
-                (value, index) =>
-                  value?.showReport && (
-                    <td className="badge-td" key={weekIndex + '_' + summary._id + '_' + index}>
-                      {' '}
-                      <img src={value.imageUrl} id={'popover_' + value._id} />
-                      <UncontrolledPopover trigger="hover" target={'popover_' + value._id}>
-                        <Card className="text-center">
-                          <CardImg className="badge_image_lg" src={value?.imageUrl} />
-                          <CardBody>
-                            <CardTitle
-                              style={{
-                                fontWeight: 'bold',
-                                fontSize: 18,
-                                color: '#285739',
-                                marginBottom: 15,
-                              }}
-                            >
-                              {value?.badgeName}
-                            </CardTitle>
-                            <CardText>{value?.description}</CardText>
-                          </CardBody>
-                        </Card>
-                      </UncontrolledPopover>
-                    </td>
-                  ),
-              )
-            : null}
-        </tr>
-      </tbody>
-    </table>
+    badgeThisWeek.length > 0 && (
+      <ListGroupItem className="row">
+        {badgeThisWeek.map(
+          (value, index) =>
+            value?.showReport && (
+              // eslint-disable-next-line react/no-array-index-key
+              <div className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
+                {' '}
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt='""' />
+                <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                  <Card className="text-center">
+                    <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                    <CardBody>
+                      <CardTitle
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: 18,
+                          color: '#285739',
+                          marginBottom: 15,
+                        }}
+                      >
+                        {value?.badgeName}
+                      </CardTitle>
+                      <CardText>{value?.description}</CardText>
+                    </CardBody>
+                  </Card>
+                </UncontrolledPopover>
+              </div>
+            ),
+        )}
+      </ListGroupItem>
+    )
   );
-};
+}
 
 const Index = ({ summary, weekIndex, allRoleInfo }) => {
+
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
     if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
@@ -439,6 +502,7 @@ const Index = ({ summary, weekIndex, allRoleInfo }) => {
     }
   };
 
+  // eslint-disable-next-line no-shadow
   const getGoogleDocLink = summary => {
     if (!summary.adminLinks) {
       return undefined;
@@ -453,6 +517,7 @@ const Index = ({ summary, weekIndex, allRoleInfo }) => {
   // Determine whether to use grayscale or color icon based on googleDocLink
   const googleDocIcon =
     googleDocLink && googleDocLink.Link.trim() !== '' ? google_doc_icon : google_doc_icon_gray;
+
 
   return (
     <>
@@ -471,6 +536,7 @@ const Index = ({ summary, weekIndex, allRoleInfo }) => {
         <RoleInfoModal
           info={allRoleInfo.find(item => item.infoName === `${summary.role}` + 'Info')}
         />
+
       )}
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
@@ -503,9 +569,12 @@ const Index = ({ summary, weekIndex, allRoleInfo }) => {
   );
 };
 
+
 FormattedReport.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekIndex: PropTypes.number.isRequired,
+  updateOneSummaryReport: PropTypes.func,
 };
 
 export default FormattedReport;
