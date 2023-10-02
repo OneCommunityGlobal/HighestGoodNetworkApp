@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import './ReportBlock.css';
 
-export const ReportBlock = ({ className, children, firstColor, secondColor }) => {
+function ReportBlock({ className, children, firstColor, secondColor }) {
   const color = secondColor
     ? `linear-gradient(to bottom right, ${firstColor}, ${secondColor})`
     : firstColor;
@@ -13,4 +13,6 @@ export const ReportBlock = ({ className, children, firstColor, secondColor }) =>
       </div>
     </div>
   );
-};
+}
+
+export default ReportBlock;
