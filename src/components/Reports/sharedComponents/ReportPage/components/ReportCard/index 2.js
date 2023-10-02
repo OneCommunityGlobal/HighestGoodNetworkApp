@@ -1,2 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-export { ReportCard } from './ReportCard';
+import ReportCard from './ReportCard';
+
+export default ReportCard;

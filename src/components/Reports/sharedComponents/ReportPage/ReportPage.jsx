@@ -1,6 +1,6 @@
 import { ReportHeader } from './components/ReportHeader';
-import { ReportBlock } from './components/ReportBlock';
-import { ReportCard } from './components/ReportCard';
+import ReportBlock from './components/ReportBlock/ReportBlock';
+import ReportCard from './components/ReportCard/ReportCard';
 import './ReportPage.css';
 
 function ReportPage({ children, renderProfile, contentClassName }) {
