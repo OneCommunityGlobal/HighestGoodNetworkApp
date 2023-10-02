@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-// import { connect } from 'react-redux';
+import { connect } from 'react-redux';
 import { Table, Form, FormGroup, Label, Input } from 'reactstrap';
+
+import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 
 const dummyData = [
   {
@@ -38,9 +40,11 @@ const dummyData = [
   },
 ];
 
-export default function MaterialsList() {
-  // put materials data into state
-  const [materials, setMaterials] = useState(dummyData);
+export function MaterialsList(props) {
+  console.log('materials props: ', props);
+
+  // dispatch materials fetch action
+  useEffect(() => props.dispatch(fetchAllMaterials()), []);
 
   // filter materials data by project
   const [selectProject, setSelectProject] = useState('all');
@@ -123,8 +127,9 @@ export default function MaterialsList() {
   );
 }
 
-// const mapStateToProps = state => ({
-//   auth: state.auth,
-// });
+const mapStateToProps = state => ({
+  // auth: state.auth,
+  materials: state.materials,
+});
 
-// export default connect(mapStateToProps)(MaterialsList);
+export default connect(mapStateToProps)(MaterialsList);
