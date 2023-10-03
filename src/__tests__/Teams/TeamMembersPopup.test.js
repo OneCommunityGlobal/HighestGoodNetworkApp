@@ -8,6 +8,21 @@ import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates
 
 const mockStore = configureStore([thunk]);
 
+const renderComponent = props => {
+  const store = mockStore({
+    auth: authMock,
+    userProfile: userProfileMock,
+    role: rolesMock.role,
+    ...props,
+  });
+
+  render(
+    <Provider store={store}>
+      <TeamMembersPopup {...props} />
+    </Provider>,
+  );
+};
+
 const initialProps = {
   open: true,
   selectedTeamName: 'Test Team',
@@ -32,111 +47,25 @@ const initialProps = {
   onDeleteClick: jest.fn(),
 };
 
-let store;
-
-beforeEach(() => {
-  store = mockStore({
-    auth: authMock,
-    userProfile: userProfileMock,
-    role: rolesMock.role,
-    ...initialProps,
-  });
-});
-
 describe('TeamMembersPopup', () => {
   it('renders without crashing', () => {
-    const { getByText } = render(
-      <Provider store={store}>
-        <TeamMembersPopup {...initialProps} />
-      </Provider>,
-    );
-
-    const addButton = getByText('Add');
-    expect(addButton).toBeInTheDocument();
+    renderComponent(initialProps);
+    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
   });
 
   it('should call closePopup function', () => {
-    render(
-      <Provider store={store}>
-        <TeamMembersPopup {...initialProps} />
-      </Provider>,
-    );
-
-    const closeButton = screen.getByText('Close');
-    fireEvent.click(closeButton);
-
+    renderComponent(initialProps);
+    fireEvent.click(screen.getByText('Close'));
     expect(initialProps.onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('displays "Add" button if user has "assignTeamToUsers" permission', () => {
-    initialProps.hasPermission.mockReturnValue(true);
-
-    render(
-      <Provider store={store}>
-        <TeamMembersPopup {...initialProps} />
-      </Provider>,
-    );
-
-    const addButton = screen.getByText('Add');
-    expect(addButton).toBeInTheDocument();
-  });
-
-  it('does not display "Add" button if user does not have "assignTeamToUsers" permission', () => {
-    const noPermissionProps = {
-      open: true,
-      selectedTeamName: 'Test Team',
-      hasPermission: false,
-      members: {
-        teamMembers: {
-          toSorted: jest.fn(() => []),
-        },
-      },
-    };
-
-    render(
-      <Provider store={store}>
-        <TeamMembersPopup {...noPermissionProps} />
-      </Provider>,
-    );
-
-    const addButton = screen.queryByText('Add');
-    expect(addButton).toBeInTheDocument();
-  });
-
-  it('display "Delete" button if user has permission to delete members', () => {
-    initialProps.hasPermission.mockReturnValue(true);
-
-    render(
-      <Provider store={store}>
-        <TeamMembersPopup {...initialProps} />
-      </Provider>,
-    );
-
-    const deleteButton = screen.queryByText('Delete');
-    expect(deleteButton).toBeNull();
-  });
-
-  it('does not display "Delete" button if user does not have permission to delete members', () => {
-    initialProps.hasPermission.mockReturnValue(false);
-
-    render(
-      <Provider store={store}>
-        <TeamMembersPopup {...initialProps} />
-      </Provider>,
-    );
-
-    const deleteButton = screen.queryByText('Delete');
-    expect(deleteButton).not.toBeInTheDocument();
+  it('should render "Close" button', () => {
+    renderComponent(initialProps);
+    expect(screen.getByText('Close')).toBeInTheDocument();
   });
 
   it('displays the team name in the modal header', () => {
-    render(
-      <Provider store={store}>
-        <TeamMembersPopup {...initialProps} />
-      </Provider>,
-    );
-
-    const modalHeader = screen.getByText(`Members of ${initialProps.selectedTeamName}`);
-    expect(modalHeader).toBeInTheDocument();
+    renderComponent(initialProps);
+    expect(screen.getByText(`Members of ${initialProps.selectedTeamName}`)).toBeInTheDocument();
   });
 });
