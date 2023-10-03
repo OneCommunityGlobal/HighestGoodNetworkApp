@@ -51,7 +51,7 @@ function ProjectLog() {
   return (
     <Card className="project-log">
       <h2>Members working on site today</h2>
-      <Table hover responsive>
+      <Table hover responsive striped>
         <thead>
           <tr>
             <th>ID</th>

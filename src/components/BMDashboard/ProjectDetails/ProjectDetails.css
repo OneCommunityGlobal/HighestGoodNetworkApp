@@ -192,6 +192,10 @@
   font-weight: lighter;
 }
 
+.project-log thead{
+  background-color: transparent;
+}
+
 @media (max-width: 768px){
   .project-log td, .project-log th {
     font-size: 0.6em;
