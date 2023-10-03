@@ -46,6 +46,11 @@
   width: 100%;
 }
 
+.button.btn:hover{
+  outline:auto;
+  filter: brightness(130%);
+}
+
 /* buttons custom colors */
 .button.btn.button--green {
   background-color: #015d4a;
