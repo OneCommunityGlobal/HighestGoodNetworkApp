@@ -268,7 +268,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 function TeamCodeRow({ canEditTeamCode, summary }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
+  const fullCodeRegex = /^[a-zA-Z]-[a-zA-Z]{3}$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);

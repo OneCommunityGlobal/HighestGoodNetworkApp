@@ -120,12 +120,21 @@ export class WeeklySummariesReport extends Component {
 
     if (teamCodeSet.length !== 0) {
       teamCodeSet.forEach((code, index) => {
-        this.teamCodes[index] = { value: code, label: code };
+        const codeLabel = `${code} (${
+          summariesCopy.filter(summary => summary.teamCode === code).length
+        })`;
+        this.teamCodes[index] = { value: code, label: codeLabel };
       });
       colorOptionSet.forEach((option, index) => {
         this.colorOptions[index] = { value: option, label: option };
       });
     }
+
+    const noCodeLabel = `Select All With NO Code (${
+      summariesCopy.filter(summary => summary.teamCode === '').length
+    })`;
+    const sortedTeamCodes = this.teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+    this.teamCodes = [...sortedTeamCodes, { value: '', label: noCodeLabel }];
 
     this.setState({
       error,
@@ -336,6 +345,7 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
             <MultiSelect
+              className="multi-select-filter"
               options={this.teamCodes}
               value={selectedCodes}
               onChange={e => {
@@ -346,7 +356,8 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5 }} xs={{ size: 5 }}>
             Select Color
             <MultiSelect
-              options={this.colorOptions}
+              className="multi-select-filter"
+              options={this.colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))}
               value={selectedColors}
               onChange={e => {
                 this.handleSelectColorChange(e);
