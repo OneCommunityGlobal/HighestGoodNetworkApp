@@ -4,60 +4,31 @@ import { Table, Form, FormGroup, Label, Input } from 'reactstrap';
 
 import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 
-const dummyData = [
-  {
-    id: 'M1',
-    projectId: 'P1',
-    name: 'Sand',
-    unit: 'kg',
-    bought: 55,
-    used: 25,
-    available: 25,
-    hold: 5,
-    wasted: 0,
-  },
-  {
-    id: 'M2',
-    projectId: 'P1',
-    name: 'Rock',
-    unit: 'kg',
-    bought: 100,
-    used: 50,
-    available: 50,
-    hold: 0,
-    wasted: 0,
-  },
-  {
-    id: 'M3',
-    projectId: 'P2',
-    name: 'Brick',
-    unit: 'count',
-    bought: 1000,
-    used: 500,
-    available: 400,
-    hold: 100,
-    wasted: 0,
-  },
-];
-
 export function MaterialsList(props) {
-  console.log('materials props: ', props);
+  // console.log('materials props: ', props);
+  // props & state
+  const { materials } = props;
+  console.log('🚀 ~ file: MaterialsList.jsx:47 ~ MaterialsList ~ materials:', materials);
+  const [filteredMaterials, setFilteredMaterials] = useState(materials || []);
+  const [selectedProject, setSelectedProject] = useState('all');
 
   // dispatch materials fetch action
-  useEffect(() => props.dispatch(fetchAllMaterials()), []);
+  useEffect(() => {
+    props.dispatch(fetchAllMaterials());
+  }, []);
+
+  // create selectable projects
+  const projectsSet = [...new Set(materials.map(mat => mat.project.projectName))];
 
   // filter materials data by project
-  const [selectProject, setSelectProject] = useState('all');
   useEffect(() => {
-    if (selectProject === 'all') {
-      return setMaterials(dummyData);
+    if (selectedProject === 'all') {
+      return setFilteredMaterials(materials);
     }
-    const filterMaterials = dummyData.filter(mat => mat.projectId === selectProject);
-    setMaterials(filterMaterials);
-  }, [selectProject]);
+    const filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject);
+    setFilteredMaterials(filterMaterials);
+  }, [selectedProject]);
 
-  // create selectable projects set
-  const projects = [...new Set(dummyData.map(mat => mat.projectId))];
   return (
     <main>
       <h2>Material List</h2>
@@ -70,10 +41,10 @@ export function MaterialsList(props) {
                 id="select-project"
                 name="select-project"
                 type="select"
-                onChange={e => setSelectProject(e.target.value)}
+                onChange={e => setSelectedProject(e.target.value)}
               >
                 <option value="all">All</option>
-                {projects.map((name, i) => {
+                {projectsSet.map((name, i) => {
                   return (
                     <option key={i} value={name}>
                       {name}
@@ -87,8 +58,7 @@ export function MaterialsList(props) {
         <Table>
           <thead>
             <tr>
-              <th>PID</th>
-              <th>ID</th>
+              <th>Project</th>
               <th>Name</th>
               <th>Unit</th>
               <th>Bought</th>
@@ -96,24 +66,23 @@ export function MaterialsList(props) {
               <th>Available</th>
               <th>Hold</th>
               <th>Wasted</th>
-              <th>Usage Record</th>
-              <th>Update Record</th>
-              <th>Purchase Record</th>
+              <th>Log</th>
+              <th>Updates</th>
+              <th>Purchases</th>
             </tr>
           </thead>
           <tbody>
-            {materials.map((mat, i) => {
+            {filteredMaterials.map((mat, i) => {
               return (
                 <tr key={i}>
-                  <td>{mat.projectId}</td>
-                  <td>{mat.id}</td>
-                  <td>{mat.name}</td>
-                  <td>{mat.unit}</td>
-                  <td>{mat.bought}</td>
-                  <td>{mat.used}</td>
-                  <td>{mat.available}</td>
-                  <td>{mat.hold}</td>
-                  <td>{mat.wasted}</td>
+                  <td>{mat.project.projectName}</td>
+                  <td>{mat.inventoryItemType.name}</td>
+                  <td>{mat.inventoryItemType.uom}</td>
+                  <td>{mat.stockBought}</td>
+                  <td>{mat.stockUsed}</td>
+                  <td>{mat.stockAvailable}</td>
+                  <td>{mat.stockHeld}</td>
+                  <td>{mat.stockWasted}</td>
                   <td>Button</td>
                   <td>Button</td>
                   <td>Button</td>

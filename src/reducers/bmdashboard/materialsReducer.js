@@ -1,15 +1,18 @@
 import { SET_MATERIALS } from "constants/bmdashboard/materialsConstants"
 
-const materialsDefaultState = {
-  materials: []
-}
+// const materialsDefaultState = {
+//   materials: []
+// }
 
-export const materialsReducer = (materials = materialsDefaultState, action) => {
+const defaultState = []
+
+export const materialsReducer = (materials = defaultState, action) => {
   if(action.type === SET_MATERIALS) {
-    return {
-      ...materialsDefaultState,
-      materials: action.payload
-    }
+    // return {
+    //   ...materialsDefaultState,
+    //   materials: action.payload
+    // }
+    return action.payload
   }
   return materials
 }
