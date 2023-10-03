@@ -69,7 +69,8 @@ export class WeeklySummariesReport extends Component {
 
     // 1. fetch report
     const res = await getWeeklySummariesReport();
-    const summaries = res?.data ?? this.props.summaries
+    // eslint-disable-next-line react/destructuring-assignment
+    const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
 
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
@@ -90,30 +91,40 @@ export class WeeklySummariesReport extends Component {
       return { ...summary, promisedHoursByWeek };
     });
 
-    const teamCodeSet = [...new Set(summariesCopy.filter(
-      function(summary) {
-      if(summary.teamCode == ''){
-        return false;
-      }
-      return true;
-    }).map(s => s.teamCode))];
+    const teamCodeSet = [
+      ...new Set(
+        summariesCopy
+          .filter(summary => {
+            if (summary.teamCode === '') {
+              return false;
+            }
+            return true;
+          })
+          .map(s => s.teamCode),
+      ),
+    ];
     this.teamCodes = [];
 
-    const colorOptionSet = [...new Set(summariesCopy.filter(
-      function(summary) {
-      if(summary.weeklySummaryOption == undefined){
-        return false;
-      }
-      return true;
-    }).map(s => s.weeklySummaryOption))];
+    const colorOptionSet = [
+      ...new Set(
+        summariesCopy
+          .filter(summary => {
+            if (summary.weeklySummaryOption === undefined) {
+              return false;
+            }
+            return true;
+          })
+          .map(s => s.weeklySummaryOption),
+      ),
+    ];
     this.colorOptions = [];
 
-    if(teamCodeSet.length != 0) {
+    if (teamCodeSet.length !== 0) {
       teamCodeSet.forEach((code, index) => {
-        this.teamCodes[index] = {value: code, label: code};
+        this.teamCodes[index] = { value: code, label: code };
       });
       colorOptionSet.forEach((option, index) => {
-        this.colorOptions[index] = {value: option, label: option};
+        this.colorOptions[index] = { value: option, label: option };
       });
     }
 
@@ -258,25 +269,31 @@ export class WeeklySummariesReport extends Component {
   };
 
   filterWeeklySummaries = () => {
-    const selectedCodesArray = this.state.selectedCodes.map(e => e.value);
-    const selectedColorsArray = this.state.selectedColors.map(e => e.value);
-    const temp = this.state.summaries.filter(summary => (selectedCodesArray.length == 0 || selectedCodesArray.includes(summary.teamCode)) && (selectedColorsArray.length == 0 || selectedColorsArray.includes(summary.weeklySummaryOption)));
-    this.setState({filteredSummaries: temp});
+    const { selectedCodes, selectedColors, summaries } = this.state;
+
+    const selectedCodesArray = selectedCodes.map(e => e.value);
+    const selectedColorsArray = selectedColors.map(e => e.value);
+    const temp = summaries.filter(
+      summary =>
+        (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
+        (selectedColorsArray.length === 0 ||
+          selectedColorsArray.includes(summary.weeklySummaryOption)),
+    );
+    this.setState({ filteredSummaries: temp });
   };
 
   handleSelectCodeChange = event => {
-    this.setState({selectedCodes: event}, () => this.filterWeeklySummaries());
+    this.setState({ selectedCodes: event }, () => this.filterWeeklySummaries());
   };
 
   handleSelectColorChange = event => {
-    this.setState({selectedColors: event}, () => this.filterWeeklySummaries());
+    this.setState({ selectedColors: event }, () => this.filterWeeklySummaries());
   };
 
   render() {
     const {
       error,
       loading,
-      summaries,
       activeTab,
       allRoleInfo,
       badges,
@@ -317,19 +334,25 @@ export class WeeklySummariesReport extends Component {
           </Col>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset:1 }} xs={{size: 5, offset: 1}}>
+          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
             <MultiSelect
               options={this.teamCodes}
               value={selectedCodes}
-              onChange={(e) => {this.handleSelectCodeChange(e)}}/>
+              onChange={e => {
+                this.handleSelectCodeChange(e);
+              }}
+            />
           </Col>
-          <Col lg={{ size: 5 }} xs={{size: 5}}>
+          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
             Select Color
             <MultiSelect
               options={this.colorOptions}
               value={selectedColors}
-              onChange={(e) => {this.handleSelectColorChange(e)}}/>
+              onChange={e => {
+                this.handleSelectColorChange(e);
+              }}
+            />
           </Col>
         </Row>
         <Row>
@@ -380,7 +403,7 @@ export class WeeklySummariesReport extends Component {
                     <Col>
                       <b>Total Team Members:</b> {filteredSummaries.length}
                     </Col>
-                </Row>
+                  </Row>
                   <Row>
                     <Col>
                       <FormattedReport
