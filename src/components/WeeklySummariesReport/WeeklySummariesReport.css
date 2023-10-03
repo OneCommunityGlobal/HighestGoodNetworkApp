@@ -69,7 +69,7 @@
 
 .multi-select-filter {
   .options {
-    max-height: 628px;
+    max-height: 610px;
     overflow-y: scroll;
   }
 
@@ -88,5 +88,6 @@
 
   .select-item {
     padding: 5px 10px;
+    margin-bottom: 0.25rem;
   }
 }
