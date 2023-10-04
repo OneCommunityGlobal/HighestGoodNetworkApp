@@ -132,6 +132,7 @@ const TeamMembersPopup = React.memo(props => {
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
+                existingMembers={props.members.teamMembers}
                 onAddUser={selectUser}
                 searchText={searchText}
                 setSearchText={setSearchText}
