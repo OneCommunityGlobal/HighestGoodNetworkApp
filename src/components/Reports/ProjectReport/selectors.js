@@ -1,4 +1,4 @@
-export const projectReportViewData = state => ({
+const projectReportViewData = state => ({
   wbs: state.wbs,
   projectMembers: state.projectMembers,
   tasks: state.tasks,
@@ -7,3 +7,5 @@ export const projectReportViewData = state => ({
   isLoading: state.projectReport.isLoading,
   wbsTasksID: state.wbs.WBSItems.map(item => item._id),
 });
+
+export default projectReportViewData;

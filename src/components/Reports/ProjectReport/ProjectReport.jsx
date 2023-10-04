@@ -10,7 +10,7 @@ import { ReportPage } from '../sharedComponents/ReportPage';
 import { Paging } from '../../common/Paging';
 import { TasksTable } from '../TasksTable';
 import { WbsTable } from '../WbsTable';
-import { projectReportViewData } from './selectors';
+import projectReportViewData from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
 
