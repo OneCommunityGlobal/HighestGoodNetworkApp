@@ -52,6 +52,7 @@ import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
+import { toast } from 'react-toastify';
 
 function UserProfile(props) {
   /* Constant values */
@@ -92,6 +93,7 @@ function UserProfile(props) {
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
+  const [summaryIntro, setSummaryIntro] = useState('');
 
   const userProfileRef = useRef();
 
@@ -197,6 +199,29 @@ function UserProfile(props) {
     setIsProjectsEqual(compare);
   };
 
+  const loadTeamDetails = async teamId => {
+    const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+    const { data } = res;
+
+    const memberSubmitted = [];
+    const memberNotSubmitted = [];
+
+    data.forEach(member => {
+      member.weeklySummaries[0].summary !== ''
+        ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
+        : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+    });
+
+    const string = `This week’s summary was managed by <Your Name> and includes ${memberSubmitted.join(
+      ', ',
+    )}. These people did NOT provide a summary ${memberNotSubmitted.join(
+      ', ',
+    )}. <Insert the proofread and single-paragraph summary created by ChatGPT.>
+    `;
+
+    setSummaryIntro(string);
+  };
+
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
@@ -216,6 +241,8 @@ function UserProfile(props) {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
       setTeams(newUserProfile.teams);
+
+      await loadTeamDetails(newUserProfile.teams[0]._id);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
@@ -269,6 +296,7 @@ function UserProfile(props) {
           label: `View ${leaderBoardData[i].name}'s summary.`,
         });
       }
+
       setSummaries(allSummaries);
       return;
     } catch (err) {
@@ -446,7 +474,7 @@ function UserProfile(props) {
     setShowModal(false);
     setUserProfile({
       ...userProfile,
-      mediaUrl:mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
+      mediaUrl: mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
       personalLinks: personalLinksUpdate,
       adminLinks: adminLinksUpdate,
     });
@@ -646,10 +674,8 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
-              {!codeValid ? (
-              <Alert color="danger">
-                Please enter a code in the format of X-XXX
-              </Alert>
+            {!codeValid ? (
+              <Alert color="danger">Please enter a code in the format of X-XXX</Alert>
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
@@ -661,7 +687,7 @@ function UserProfile(props) {
                 aria-hidden="true"
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
-              />{' '}
+              />
               <ActiveCell
                 isActive={userProfile.isActive}
                 user={userProfile}
@@ -704,15 +730,31 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
+              <Button
+                onClick={() => {
+                  navigator.clipboard.writeText(summaryIntro);
+
+                  toast.success('Summary Intro Copied!');
+                }}
+                color="primary"
+                size="sm"
+                // onMouseEnter={handleMouseEnter}
+              >
+                Generate Summary Intro
+                {/* <i
+                  data-toggle="tooltip"
+                  className="fa fa-clock-o"
+                  aria-hidden="true"
+                  style={{ fontSize: 24, cursor: 'pointer', width: '100%' }}
+                  title="Generates summery intro"
+                ></i> */}
+              </Button>
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
               From : <span>{formatDate(userProfile.createdDate)}</span>
               {'   '}
-              To:{' '}
-              <span>
-                {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
-              </span>
+              To: <span>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
@@ -1255,7 +1297,6 @@ function UserProfile(props) {
                   }}
                 >
                   <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
-                    {' '}
                     Update Password
                   </Button>
                 </Link>
