@@ -65,7 +65,8 @@ export function Header(props) {
   // Badges
   const canCreateBadges = hasPermission('createBadges');
   // Projects
-  const canSeeProjectManagementTab = hasPermission('seeProjectManagement') || hasPermission('seeProjectManagementTab');
+  const canSeeProjectManagementTab =
+    hasPermission('seeProjectManagement') || hasPermission('seeProjectManagementTab');
   const canPostProject = hasPermission('postProject');
   // Tasks
   const canUpdateTask = hasPermission('updateTask');
@@ -150,12 +151,12 @@ export function Header(props) {
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                        <DropdownItem tag={Link} to="/reports">
-                          {REPORTS}
-                        </DropdownItem>
-                        <DropdownItem tag={Link} to="/weeklysummariesreport">
-                          {WEEKLY_SUMMARIES_REPORT}
-                        </DropdownItem>
+                    <DropdownItem tag={Link} to="/reports">
+                      {REPORTS}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/weeklysummariesreport">
+                      {WEEKLY_SUMMARIES_REPORT}
+                    </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
               ) : null}
