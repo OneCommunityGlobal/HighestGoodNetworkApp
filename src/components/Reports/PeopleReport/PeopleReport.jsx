@@ -19,6 +19,7 @@ import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
 import BadgeSummaryViz from '../BadgeSummaryViz';
+import BadgeSummaryPreview from '../BadgeSummaryPreview';
 import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
@@ -615,6 +616,9 @@ class PeopleReport extends Component {
               </div>
               <div className='visualizationDiv'>
                 <BadgeSummaryViz authId={this.props.auth.user.userid} userId={this.props.match.params.userId} badges={userProfile.badgeCollection} />
+              </div>
+              <div className='visualizationDiv'>
+                <BadgeSummaryPreview badges={userProfile.badgeCollection} />
               </div>
             </table>
           </div>

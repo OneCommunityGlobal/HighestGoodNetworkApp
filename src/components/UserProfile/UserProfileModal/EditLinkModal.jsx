@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -8,13 +8,13 @@ import {
   Label,
   CardBody,
   Card,
-  Col,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
-import styles from './EditLinkModal.css';
+import './EditLinkModal.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
@@ -92,7 +92,14 @@ const EditLinkModal = props => {
   };
 
   const isDifferentMediaUrl = () => {
-    if (userProfile.mediaUrl !== mediaFolderLink.Link) {
+    let mediaLink = null;
+    if (userProfile.adminLinks.length >= 2) {
+      mediaLink = userProfile.adminLinks[1].Link;
+    }
+    else if (userProfile.adminLinks.length === 1 && userProfile.adminLinks[0].Name === 'Media Folder') {
+      mediaLink = userProfile.adminLinks[0].Link;
+    } 
+    if (mediaLink && mediaLink !== mediaFolderLink.Link) {
       setMediaFolderDiffWarning(true);
     } else {
       setMediaFolderDiffWarning(false);
@@ -123,11 +130,13 @@ const EditLinkModal = props => {
   };
 
   const handleUpdate = async () => {
+    const isGoogleDocsValid = isValidGoogleDocsUrl(googleLink.Link);
+    const isDropboxValid = isValidMediaUrl(mediaFolderLink.Link);
     const updatable =
-      (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
+      (isGoogleDocsValid && isDropboxValid) ||
       (googleLink.Link === '' && mediaFolderLink.Link === '') ||
-      (isValidUrl(googleLink.Link) && mediaFolderLink.Link === '') ||
-      (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
+      (isGoogleDocsValid && mediaFolderLink.Link === '') ||
+      (isDropboxValid && googleLink.Link === '');
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
       // Media Folder link should update the mediaUrl in userProfile
@@ -173,17 +182,9 @@ const EditLinkModal = props => {
                   )}
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                      <label className='custom-label'>Google Doc</label>
                       <input
                         className="customEdit"
-                        id="linkName1"
-                        placeholder="Google Doc"
-                        value="Google Doc"
-                        disabled
-                      />
-
-                      <input
-                        className="customEdit"
-                        id="linkURL1"
                         placeholder="Enter Google Doc link"
                         value={googleLink.Link}
                         onChange={e => {
@@ -193,14 +194,8 @@ const EditLinkModal = props => {
                       />
                     </div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <input
-                        className="customEdit"
-                        id="linkName2"
-                        placeholder="Media Folder"
-                        value="Media Folder"
-                        disabled
-                      />
 
+                      <label className='custom-label'>Media Folder</label>
                       <input
                         className="customEdit"
                         id="linkURL2"
@@ -242,7 +237,7 @@ const EditLinkModal = props => {
                               })
                             }
                           >
-                            X
+                            x
                           </button>
                         </div>
                       );
@@ -320,7 +315,7 @@ const EditLinkModal = props => {
                           })
                         }
                       >
-                        X
+                        x
                       </button>
                     </div>
                   ))}
