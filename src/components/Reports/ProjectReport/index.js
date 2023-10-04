@@ -1,1 +1,2 @@
-export { ProjectReport } from './ProjectReport';
+// eslint-disable-next-line import/prefer-default-export
+export { default as ProjectReport } from './ProjectReport';
