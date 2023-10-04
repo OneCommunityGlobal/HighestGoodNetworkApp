@@ -46,6 +46,8 @@ export const  modalInfo = {
     'Make the "Other Links" -> "Popup Management" button appear and be able to create and update popups.',
   'See Project Management Tab (Full Functionality)':
     'Make the "Other Links" -> "Projects" button appear and be able to create or delete new projects, edit projects names, add members to projects, upload/import/create new WBSs, etc.',
+  'See Project Management Tab (Add team members, upload new WBSs only)':
+    'Make the "Other Links" -> "Projects" button appear and be able to ONLY add members to projects and upload/import/create new WBSs in an existing project.',  
   'Delete WBS':
     'Gives the user permission to delete any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Minus Red Icon"',
   'Add Task':
@@ -72,6 +74,8 @@ export const  modalInfo = {
     'Gives the user permission to remove any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Minus button"',
     'See Teams Management Tab (Full Functionality)':
     'Make the "Other Links" -> "Teams" button appear and be able to add/delete teams, edit team names, and add/delete members.',
+    'See Teams Management Tab (Create Teams and edit team members only)': 
+      'Make the "Other Links" -> "Teams" button appear and be able to create new teams and add/delete members only.',
   'Edit/Delete Team': 'Gives the user permission to Edit or delete a team.',
   'Create Team': 'Gives the user permission to create a team.',
   'Assign Users Team':
