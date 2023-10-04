@@ -78,11 +78,6 @@ const ForgotPassword = React.memo(() => {
     const result = Joi.validate(user, schema, { abortEarly: false });
     const { error } = result;
     if (error) {
-      // const errorData = {};
-      // for (const item of error.details) {
-      //   const name = item.path[0];
-      //   errorData[name] = item.message;
-      // }
       const errorData = error.details.reduce((pre, cur) => {
         const name = cur.path[0];
         pre[name] = cur.message;
