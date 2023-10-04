@@ -3,9 +3,9 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import { addMaterial } from 'actions/materials';
 import { isValidUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
+import { postNewMaterial } from '../../../../actions/materials';
 import './AddMaterialForm.css';
 
 // AddMaterialsForm will take in an array of project objects
@@ -41,6 +41,8 @@ export default function AddMaterialsForm(props) {
   const [newMeasurement, setNewMeasurement] = useState(false);
   const [trySubmit, setTrySubmit] = useState(false);
 
+  const linkRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
+
   const schema = Joi.object({
     projectId: Joi.string().required(),
     material: Joi.string().required(),
@@ -62,7 +64,9 @@ export default function AddMaterialsForm(props) {
       .positive()
       .required(),
     phone: Joi.string().required(),
-    link: Joi.string().required(),
+    link: Joi.string()
+      .required()
+      .regex(linkRegex),
     description: Joi.string().required(),
   });
 
@@ -74,8 +78,9 @@ export default function AddMaterialsForm(props) {
     const { error, value } = schema.validate(formInputs);
     if (error) {
       setTrySubmit(true);
+      console.log(error);
     } else {
-      console.log(value);
+      dispatch(postNewMaterial(formInputs));
     }
     // addMaterial(formInputs);
   };
