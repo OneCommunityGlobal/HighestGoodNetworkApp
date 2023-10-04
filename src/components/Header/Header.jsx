@@ -65,6 +65,7 @@ export function Header(props) {
   // Badges
   const canCreateBadges = hasPermission('createBadges');
   // Projects
+  const canSeeProjectManagementTab = hasPermission('seeProjectManagement') || hasPermission('seeProjectManagementTab');
   const canPostProject = hasPermission('postProject');
   // Tasks
   const canUpdateTask = hasPermission('updateTask');
@@ -76,6 +77,8 @@ export function Header(props) {
   const canUpdatePopup = hasPermission('updatePopup');
   // Roles
   const canPutRole = hasPermission('putRole');
+  // Permissions
+  const canManageUser = hasPermission('putUserProfilePermissions');
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -141,26 +144,18 @@ export function Header(props) {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {canGetWeeklySummaries || canGetWeeklySummaries ? (
+              {canGetWeeklySummaries ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    {canGetWeeklySummaries ? (
-                      <>
                         <DropdownItem tag={Link} to="/reports">
                           {REPORTS}
                         </DropdownItem>
                         <DropdownItem tag={Link} to="/weeklysummariesreport">
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
-                      </>
-                    ) : (
-                      <DropdownItem tag={Link} to="/weeklysummariesreport">
-                        {WEEKLY_SUMMARIES_REPORT}
-                      </DropdownItem>
-                    )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
               ) : null}
@@ -179,10 +174,12 @@ export function Header(props) {
                 canPutUserProfileImportantInfo ||
                 canCreateBadges ||
                 canPostProject ||
+                canSeeProjectManagementTab ||
                 canDeleteTeam ||
                 canPutTeam ||
                 canCreatePopup ||
-                canUpdatePopup) && (
+                canUpdatePopup ||
+                canManageUser) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{OTHER_LINKS}</span>
@@ -200,7 +197,7 @@ export function Header(props) {
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
                     )}
-                    {canPostProject && (
+                    {(canPostProject || canSeeProjectManagementTab) && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
                       </DropdownItem>
@@ -218,7 +215,7 @@ export function Header(props) {
                         </DropdownItem>
                       </>
                     ) : null}
-                    {canPutRole && (
+                    {(canPutRole || canManageUser) && (
                       <DropdownItem tag={Link} to="/permissionsmanagement">
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>

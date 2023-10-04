@@ -18,7 +18,7 @@ import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 
 const ProjectTableHeader = props => {
-  const canDeleteProject = props.hasPermission('deleteProject');
+  const canDeleteProject = props.hasPermission('deleteProject') || props.hasPermission('seeProjectManagement');
 
   return (
     <tr>
