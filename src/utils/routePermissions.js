@@ -6,6 +6,8 @@ export const RoutePermissions = {
   weeklySummariesReport: 'getWeeklySummaries',
   seeOnlyWeeklySummariesReports: 'seeOnlyWeeklySummariesReports',
   projects: 'postProject',
+  projectManagement_fullFunctionality: 'seeProjectManagement',
+  projectManagement_addTeamMembersUploadNewWBS: 'seeProjectManagementTab',
   userManagement: 'postUserProfile',
   badgeManagement: 'createBadges',
   userPermissionsManagement: 'putUserProfilePermissions',

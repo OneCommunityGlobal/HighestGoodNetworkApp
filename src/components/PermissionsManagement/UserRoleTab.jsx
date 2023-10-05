@@ -17,14 +17,9 @@ export const permissionLabel = {
   modifyOwnBadgeAmount: 'Modify Badge Amount',
   assignBadgeOthers: 'Assign Badges',
   seePopupManagement: 'See Popup Management Tab (create and update popups)',
-  seeProjectManagement: 'See Project Management Tab',
-  deleteWbs: 'Delete WBS',
-  addTask: 'Add Task',
-  deleteTask: 'Delete Task',
-  editTask: 'Edit Task',
-  suggestTask: 'Suggest Changes on a task',
-  addWbs: 'Add WBS',
+  //seeProjectManagement: 'See Project Management Tab',
   seeProjectManagement: 'See Project Management Tab (Full Functionality)',
+  seeProjectManagementTab: 'See Project Management Tab (Add team members, upload new WBSs only)',
   addProject: 'Add Project',
   deleteProject: 'Delete Project',
   editProject: 'Edit Project',
@@ -33,6 +28,13 @@ export const permissionLabel = {
   findUserInProject: 'Find User in Project',
   assignUserInProject: 'Assign User in Project',
   unassignUserInProject: 'Unassign User in Project',
+  addWbs: 'Add WBS',
+  deleteWbs: 'Delete WBS',
+  //addTask: 'Add Task',
+  //editTask: 'Edit Task',
+  //deleteTask: 'Delete Task',
+  //suggestTask: 'Suggest Changes on a task',
+  // Teams
   seeTeamsManagement: 'See Teams Management Tab',
   editDeleteTeam: 'Edit/Delete Team',
   addWbs: 'Add WBS',
@@ -79,6 +81,7 @@ export const permissionLabel = {
   seePopupManagement: 'See Popup Management Tab (create and update popups)',
   seeSummaryIndicator: 'See Summary Indicator',
   seeVisibilityIcon: 'See Visibility Icon',
+  editTeamCode: 'Edit Team 4-Digit Codes',
 };
 
 const UserRoleTab = props => {

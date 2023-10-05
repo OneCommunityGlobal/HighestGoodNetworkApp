@@ -29,7 +29,6 @@ src/components/common/**
 src/components/ForcePasswordUpdate/**
 src/components/Header/**
 src/components/Inventory/**
-src/components/LeaderBoard/**
 src/components/Login/**
 src/components/ManageMemberships/**
 src/components/Memberships/**
@@ -49,10 +48,7 @@ src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/Timelog/**
-src/components/Timer/**
 src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
-src/components/WeeklySummary/**
 src/components/MouseoverText/**
-src/components/WeeklySummariesReport/**
