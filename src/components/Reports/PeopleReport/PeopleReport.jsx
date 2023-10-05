@@ -5,6 +5,9 @@ import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
+import moment from 'moment';
+import Collapse from 'react-bootstrap/Collapse';
+import { toast } from 'react-toastify';
 import {
   updateUserProfileProperty,
   getUserProfile,
@@ -12,9 +15,7 @@ import {
 } from '../../../actions/userProfile';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
-import moment from 'moment';
 import 'react-input-range/lib/css/index.css';
-import Collapse from 'react-bootstrap/Collapse';
 import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
@@ -24,7 +25,6 @@ import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
-import { toast } from 'react-toastify';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
 import { formatDate } from 'utils/formatDate';
@@ -75,7 +75,7 @@ class PeopleReport extends Component {
 
   async componentDidMount() {
     if (this.props.match) {
-      const userId = this.props.match.params.userId;
+      const { userId } = this.props.match.params;
       await this.props.getUserProfile(userId);
       await this.props.getUserTask(userId);
       await this.props.getUserProjects(userId);
@@ -104,6 +104,7 @@ class PeopleReport extends Component {
       });
     }
   }
+
   setStartDate(date) {
     this.setState(state => {
       return {
@@ -111,6 +112,7 @@ class PeopleReport extends Component {
       };
     });
   }
+
   setEndDate(date) {
     this.setState(state => {
       return {
@@ -183,6 +185,7 @@ class PeopleReport extends Component {
       });
     }
   }
+
   setStatus(statusValue) {
     if (statusValue != 'Filter Off') {
       this.setState(state => {
@@ -200,6 +203,7 @@ class PeopleReport extends Component {
       });
     }
   }
+
   setAssign(assignValue) {
     this.setState(state => {
       return {
@@ -265,17 +269,18 @@ class PeopleReport extends Component {
       toDate,
       timeEntries,
     } = this.state;
-    const { firstName, lastName, weeklycommittedHours,hoursByCategory } = userProfile;
+    const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
 
-  
-    var totalTangibleHrsRound = 0;
+    let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
-      const hours = hoursByCategory ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0):0;
+      const hours = hoursByCategory
+        ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0)
+        : 0;
       totalTangibleHrsRound = hours.toFixed(2);
     }
 
     const UserProject = props => {
-      let userProjectList = [];
+      const userProjectList = [];
       return <div>{userProjectList}</div>;
     };
 
@@ -295,7 +300,7 @@ class PeopleReport extends Component {
     };
 
     const StatusOptions = props => {
-      var allStatus = [...Array.from(new Set(props.get_tasks.map(item => item.status))).sort()];
+      const allStatus = [...Array.from(new Set(props.get_tasks.map(item => item.status))).sort()];
       allStatus.unshift('Filter Off');
       return (
         <DropdownButton style={{ margin: '3px' }} exact id="dropdown-basic-button" title="Status">
@@ -353,9 +358,9 @@ class PeopleReport extends Component {
 
     const Infringements = props => {
       let BlueSquare = [];
-      let dict = {};
+      const dict = {};
 
-      //aggregate infringements
+      // aggregate infringements
       for (let i = 0; i < props.infringements.length; i++) {
         if (props.infringements[i].date in dict) {
           dict[props.infringements[i].date].count += 1;
@@ -369,7 +374,7 @@ class PeopleReport extends Component {
       }
 
       const startdate = Object.keys(dict)[0];
-      var startdateStr = '';
+      let startdateStr = '';
       if (startdate) {
         startdateStr = startdate.toString();
       }
@@ -384,13 +389,13 @@ class PeopleReport extends Component {
       }
       return (
         <div>
-          <div></div>
+          <div />
         </div>
       );
     };
 
     const PeopleDataTable = props => {
-      let peopleData = {
+      const peopleData = {
         alertVisible: false,
         taskData: [],
         color: null,
@@ -398,7 +403,7 @@ class PeopleReport extends Component {
       };
 
       for (let i = 0; i < userTask.length; i++) {
-        let task = {
+        const task = {
           taskName: '',
           priority: '',
           status: '',
@@ -416,7 +421,7 @@ class PeopleReport extends Component {
           endstateInfo: '',
           intentInfo: '',
         };
-        let resourcesName = [];
+        const resourcesName = [];
 
         if (userTask[i].isActive) {
           task.active = 'Yes';
@@ -431,10 +436,10 @@ class PeopleReport extends Component {
         task.taskName = userTask[i].taskName;
         task.priority = userTask[i].priority;
         task.status = userTask[i].status;
-        let n = userTask[i].estimatedHours;
+        const n = userTask[i].estimatedHours;
         task.estimatedHours = n.toFixed(2);
         for (let j = 0; j < userTask[i].resources.length; j++) {
-          let tempResource = {
+          const tempResource = {
             name: '',
             profilePic: '',
           };
@@ -474,53 +479,51 @@ class PeopleReport extends Component {
         isActive={isActive}
       >
         <div className="report-stats">
-        <p>
-          <Link to={`/userProfile/${userProfile._id}`} title="View Profile">
-            {userProfile.firstName} {userProfile.lastName}
-          </Link>
-        </p>
-        <p>Role: {userProfile.role}</p>
-        <p>Title: {userProfile.jobTitle}</p>
+          <p>
+            <Link to={`/userProfile/${userProfile._id}`} title="View Profile">
+              {userProfile.firstName} {userProfile.lastName}
+            </Link>
+          </p>
+          <p>Role: {userProfile.role}</p>
+          <p>Title: {userProfile.jobTitle}</p>
 
-        {userProfile.endDate ? (
-          <div className="rehireable">
-            <Checkbox
-              value={this.state.isRehireable}
-              onChange={() => this.setRehireable(!this.state.isRehireable)}
-              label="Rehireable"
-            />
-          </div>
-        ) : (
-          ''
-        )}
-
-        <div className="stats">
-          <div>
-            <h4>{formatDate(userProfile.createdDate)}</h4>
-            <p>Start Date</p>
-          </div>
-          <div>
-            <h4>
-              {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
-            </h4>
-            <p>End Date</p>
-          </div>
-          {this.state.bioStatus ? (
-            <div>
-              <h5>
-                Bio {this.state.bioStatus === 'default' ? 'not requested' : this.state.bioStatus}
-              </h5>{' '}
-              {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
-                <ToggleSwitch
-                  fontSize={'13px'}
-                  switchType="bio"
-                  state={this.state.bioStatus}
-                  handleUserProfile={bio => onChangeBioPosted(bio)}
-                />
-              ) : null}
+          {userProfile.endDate ? (
+            <div className="rehireable">
+              <Checkbox
+                value={this.state.isRehireable}
+                onChange={() => this.setRehireable(!this.state.isRehireable)}
+                label="Rehireable"
+              />
             </div>
-          ) : null}
-        </div>
+          ) : (
+            ''
+          )}
+
+          <div className="stats">
+            <div>
+              <h4>{formatDate(userProfile.createdDate)}</h4>
+              <p>Start Date</p>
+            </div>
+            <div>
+              <h4>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</h4>
+              <p>End Date</p>
+            </div>
+            {this.state.bioStatus ? (
+              <div>
+                <h5>
+                  Bio {this.state.bioStatus === 'default' ? 'not requested' : this.state.bioStatus}
+                </h5>{' '}
+                {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
+                  <ToggleSwitch
+                    fontSize="13px"
+                    switchType="bio"
+                    state={this.state.bioStatus}
+                    handleUserProfile={bio => onChangeBioPosted(bio)}
+                  />
+                ) : null}
+              </div>
+            ) : null}
+          </div>
         </div>
       </ReportPage.ReportHeader>
     );
@@ -529,7 +532,7 @@ class PeopleReport extends Component {
       const bioStatus = bio;
       this.setState(state => {
         return {
-          bioStatus: bioStatus,
+          bioStatus,
         };
       });
 
@@ -543,88 +546,91 @@ class PeopleReport extends Component {
 
     return (
       <div className="container-people-wrapper">
-      <ReportPage renderProfile={renderProfileInfo}>
-        <div className="people-report-time-logs-wrapper">
-          <ReportPage.ReportBlock
-            firstColor="#ff5e82"
-            secondColor="#e25cb2"
-            className="people-report-time-log-block"
-          >
-            <h3>{weeklycommittedHours}</h3>
-            <p>Weekly Committed Hours</p>
-          </ReportPage.ReportBlock>
-
-          {userProfile.endDate ? (
-            ''
-          ) : (
+        <ReportPage renderProfile={renderProfileInfo}>
+          <div className="people-report-time-logs-wrapper">
             <ReportPage.ReportBlock
-              firstColor="#b368d2"
-              secondColor="#831ec4"
+              firstColor="#ff5e82"
+              secondColor="#e25cb2"
               className="people-report-time-log-block"
             >
-              <h3>{this.props.tangibleHoursReportedThisWeek}</h3>
-              <p>Hours Logged This Week</p>
+              <h3>{weeklycommittedHours}</h3>
+              <p>Weekly Committed Hours</p>
             </ReportPage.ReportBlock>
-          )}
 
-          <ReportPage.ReportBlock
-            firstColor="#64b7ff"
-            secondColor="#928aef"
-            className="people-report-time-log-block"
-          >
-            <h3>{infringements.length}</h3>
-            <p>Blue squares</p>
-          </ReportPage.ReportBlock>
-          <ReportPage.ReportBlock
-            firstColor="#ffdb56"
-            secondColor="#ff9145"
-            className="people-report-time-log-block"
-          >
-            <h3>{totalTangibleHrsRound}</h3>
-            <p>Total Hours Logged</p>
-          </ReportPage.ReportBlock>
-        </div>
+            {userProfile.endDate ? (
+              ''
+            ) : (
+              <ReportPage.ReportBlock
+                firstColor="#b368d2"
+                secondColor="#831ec4"
+                className="people-report-time-log-block"
+              >
+                <h3>{this.props.tangibleHoursReportedThisWeek}</h3>
+                <p>Hours Logged This Week</p>
+              </ReportPage.ReportBlock>
+            )}
 
-        <PeopleTasksPieChart />
-        <div className="mobile-people-table">
-        <ReportPage.ReportBlock>
-          <div className="intro_date">
-            <h4>Tasks contributed</h4>
+            <ReportPage.ReportBlock
+              firstColor="#64b7ff"
+              secondColor="#928aef"
+              className="people-report-time-log-block"
+            >
+              <h3>{infringements.length}</h3>
+              <p>Blue squares</p>
+            </ReportPage.ReportBlock>
+            <ReportPage.ReportBlock
+              firstColor="#ffdb56"
+              secondColor="#ff9145"
+              className="people-report-time-log-block"
+            >
+              <h3>{totalTangibleHrsRound}</h3>
+              <p>Total Hours Logged</p>
+            </ReportPage.ReportBlock>
           </div>
-            
-          <PeopleDataTable />
-          
 
-          <div className="container">
-            <table>
-              <UserProject userProjects={userProjects} />
-              <Infringements
-                infringements={infringements}
-                fromDate={fromDate}
-                toDate={toDate}
-                timeEntries={timeEntries}
-              />
-              <div className="visualizationDiv">
-                <InfringementsViz
-                  infringements={infringements}
-                  fromDate={fromDate}
-                  toDate={toDate}
-                />
+          <PeopleTasksPieChart />
+          <div className="mobile-people-table">
+            <ReportPage.ReportBlock>
+              <div className="intro_date">
+                <h4>Tasks contributed</h4>
               </div>
-              <div className="visualizationDiv">
-                <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+
+              <PeopleDataTable />
+
+              <div className="container">
+                <table>
+                  <UserProject userProjects={userProjects} />
+                  <Infringements
+                    infringements={infringements}
+                    fromDate={fromDate}
+                    toDate={toDate}
+                    timeEntries={timeEntries}
+                  />
+                  <div className="visualizationDiv">
+                    <InfringementsViz
+                      infringements={infringements}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                    />
+                  </div>
+                  <div className="visualizationDiv">
+                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                  </div>
+                  <div className="visualizationDiv">
+                    <BadgeSummaryViz
+                      authId={this.props.auth.user.userid}
+                      userId={this.props.match.params.userId}
+                      badges={userProfile.badgeCollection}
+                    />
+                  </div>
+                  <div className="visualizationDiv">
+                    <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                  </div>
+                </table>
               </div>
-              <div className='visualizationDiv'>
-                <BadgeSummaryViz authId={this.props.auth.user.userid} userId={this.props.match.params.userId} badges={userProfile.badgeCollection} />
-              </div>
-              <div className='visualizationDiv'>
-                <BadgeSummaryPreview badges={userProfile.badgeCollection} />
-              </div>
-            </table>
+            </ReportPage.ReportBlock>
           </div>
-        </ReportPage.ReportBlock>
-        </div>
-      </ReportPage>
+        </ReportPage>
       </div>
     );
   }
