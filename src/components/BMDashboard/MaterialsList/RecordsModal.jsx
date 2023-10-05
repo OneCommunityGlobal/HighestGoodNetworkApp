@@ -1,4 +1,5 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
+import moment from 'moment';
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
   if (record) {
@@ -31,18 +32,20 @@ export function Record({ record, recordType }) {
         <thead>
           <tr>
             <th>Date</th>
-            <th>Qty</th>
-            <th>Logged by</th>
+            <th>Quantity</th>
+            <th>Created by</th>
           </tr>
         </thead>
         <tbody>
-          {record.map((entry, i) => (
-            <tr key={i}>
-              <td>{entry.date}</td>
-              <td>{entry.quantityUsed}</td>
-              <td>{entry.createdBy}</td>
-            </tr>
-          ))}
+          {record.map(({ date, quantityUsed, createdBy }, i) => {
+            return (
+              <tr key={i}>
+                <td>{moment(date).format('MM/DD/YY')}</td>
+                <td>{quantityUsed}</td>
+                <td>{createdBy.firstName + ' ' + createdBy.lastName}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </>
     );
@@ -53,24 +56,26 @@ export function Record({ record, recordType }) {
         <thead>
           <tr>
             <th>Date</th>
-            <th>Qty</th>
+            <th>Quantity</th>
             <th>Action</th>
             <th>Cause</th>
             <th>Description</th>
-            <th>Logged by</th>
+            <th>Created by</th>
           </tr>
         </thead>
         <tbody>
-          {record.map((entry, i) => (
-            <tr key={i}>
-              <td>{entry.date}</td>
-              <td>{entry.quantity}</td>
-              <td>{entry.action}</td>
-              <td>{entry.cause}</td>
-              <td>{entry.description}</td>
-              <td>{entry.createdBy}</td>
-            </tr>
-          ))}
+          {record.map(({ date, quantity, action, cause, description, createdBy }, i) => {
+            return (
+              <tr key={i}>
+                <td>{moment(date).format('MM/DD/YY')}</td>
+                <td>{quantity}</td>
+                <td>{action}</td>
+                <td>{cause}</td>
+                <td>{description}</td>
+                <td>{createdBy.firstName + ' ' + createdBy.lastName}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </>
     );
@@ -83,7 +88,7 @@ export function Record({ record, recordType }) {
             <th>Date</th>
             <th>PO</th>
             <th>Seller ID</th>
-            <th>Qty</th>
+            <th>Quantity</th>
             <th>Subtotal</th>
             <th>Taxes</th>
             <th>Shipping</th>
@@ -91,18 +96,22 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.map((entry, i) => (
-            <tr key={i}>
-              <td>{entry.date}</td>
-              <td>{entry.poId}</td>
-              <td>{entry.sellerId}</td>
-              <td>{entry.quantity}</td>
-              <td>{entry.subtotal}</td>
-              <td>{entry.tax}</td>
-              <td>{entry.shipping}</td>
-              <td>{entry.createdBy}</td>
-            </tr>
-          ))}
+          {record.map(
+            ({ date, poId, sellerId, quantity, subtotal, tax, shipping, createdBy }, i) => {
+              return (
+                <tr key={i}>
+                  <td>{moment(date).format('MM/DD/YY')}</td>
+                  <td>{poId}</td>
+                  <td>{sellerId}</td>
+                  <td>{quantity}</td>
+                  <td>{subtotal}</td>
+                  <td>{tax}</td>
+                  <td>{shipping}</td>
+                  <td>{createdBy.firstName + ' ' + createdBy.lastName}</td>
+                </tr>
+              );
+            },
+          )}
         </tbody>
       </>
     );
