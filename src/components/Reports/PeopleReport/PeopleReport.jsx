@@ -294,50 +294,6 @@ class PeopleReport extends Component {
       const userProjectList = [];
       return <div>{userProjectList}</div>;
     };
-
-    const ClassificationOptions = props => {
-      return (
-        <DropdownButton
-          style={{ margin: '3px' }}
-          exact
-          id="dropdown-basic-button"
-          title="Classification"
-        >
-          {props.allClassification.map((c, index) => (
-            <Dropdown.Item onClick={() => this.setClassfication(c)}>{c}</Dropdown.Item>
-          ))}
-        </DropdownButton>
-      );
-    };
-
-    const StatusOptions = props => {
-      const allStatus = [...Array.from(new Set(props.get_tasks.map(item => item.status))).sort()];
-      allStatus.unshift('Filter Off');
-      return (
-        <DropdownButton style={{ margin: '3px' }} exact id="dropdown-basic-button" title="Status">
-          {allStatus.map((c, index) => (
-            <Dropdown.Item onClick={() => this.setStatus(c)}>{c}</Dropdown.Item>
-          ))}
-        </DropdownButton>
-      );
-    };
-
-    const UserOptions = props => {
-      let users = [];
-      props.userTask.map((task, index) =>
-        task.resources.map(resource => users.push(resource.name)),
-      );
-
-      users = Array.from(new Set(users)).sort();
-      users.unshift('Filter Off');
-      return (
-        <DropdownButton style={{ margin: '3px' }} exact id="dropdown-basic-button" title="Users">
-          {users.map((c, index) => (
-            <Dropdown.Item onClick={() => this.setUsers(c)}>{c}</Dropdown.Item>
-          ))}
-        </DropdownButton>
-      );
-    };
     const Infringements = props => {
       const BlueSquare = [];
       const dict = {};
@@ -356,7 +312,6 @@ class PeopleReport extends Component {
       }
 
       const startdate = Object.keys(dict)[0];
-      const startdateStr = '';
       if (startdate) {
         startdate.toString();
       }
