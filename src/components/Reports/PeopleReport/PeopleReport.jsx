@@ -216,6 +216,7 @@ class PeopleReport extends Component {
     });
   }
 
+  // eslint-disable-next-line no-unused-vars
   setFilter(filterValue) {
     this.setState(() => {
       return {
@@ -237,11 +238,12 @@ class PeopleReport extends Component {
   }
 
   setClassfication(classificationValue) {
+    const { classificationList } = this.state;
     if (classificationValue !== 'Filter Off') {
       this.setState(() => {
         return {
           classification: classificationValue,
-          classificationList: this.state.classificationList.concat(classificationValue),
+          classificationList: classificationList.concat(classificationValue),
         };
       });
     } else {
