@@ -346,37 +346,8 @@ class PeopleReport extends Component {
         </DropdownButton>
       );
     };
-    const ShowInfringementsCollapse = props => {
-      const [open, setOpen] = useState(false);
-      return (
-        <div>
-          <table className="center">
-            <table className="table table-bordered table-responsive-sm">
-              <thead>
-                <tr>
-                  <th scope="col" id="projects__order">
-                    <Button variant="light" onClick={() => setOpen(!open)} aria-expanded={open}>
-                      ⬇
-                    </Button>
-                  </th>
-
-                  <th scope="col" id="projects__order">
-                    Date
-                  </th>
-                  <th scope="col">Description</th>
-                </tr>
-              </thead>
-              <Collapse in={open}>
-                <tbody>{props.BlueSquare}</tbody>
-              </Collapse>
-            </table>
-          </table>
-        </div>
-      );
-    };
-
     const Infringements = props => {
-      let BlueSquare = [];
+      const BlueSquare = [];
       const dict = {};
 
       // aggregate infringements
@@ -393,12 +364,12 @@ class PeopleReport extends Component {
       }
 
       const startdate = Object.keys(dict)[0];
-      let startdateStr = '';
+      const startdateStr = '';
       if (startdate) {
-        startdateStr = startdate.toString();
+        startdate.toString();
       }
       if (props.infringements.length > 0) {
-        BlueSquare = props.infringements.map((current, index) => (
+        props.infringements.map((current, index) => (
           <tr className="teams__tr">
             <td>{index + 1}</td>
             <td>{current.date}</td>
@@ -549,7 +520,7 @@ class PeopleReport extends Component {
 
     const onChangeBioPosted = async bio => {
       const bioStatus = bio;
-      this.setState(state => {
+      this.setState(() => {
         return {
           bioStatus,
         };
