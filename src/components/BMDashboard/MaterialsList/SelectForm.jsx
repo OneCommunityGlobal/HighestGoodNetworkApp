@@ -8,7 +8,7 @@ export default function SelectForm({ materials, setSelectedProject }) {
   }
   return (
     <Form>
-      <FormGroup>
+      <FormGroup className="select_input">
         <Label htmlFor="select-project">Project:</Label>
         <Input
           id="select-project"

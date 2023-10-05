@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import SelectForm from './SelectForm';
 import MaterialsTable from './MaterialsTable';
-import RecordsModal from './RecordsModal';
+import './MaterialsList.css';
 
 export function MaterialsList(props) {
   // console.log('materials props: ', props);
@@ -64,9 +64,9 @@ export function MaterialsList(props) {
   }
 
   return (
-    <main>
-      <h2>Materials List</h2>
-      <section>
+    <main className="container mt-3">
+      <h3>Materials</h3>
+      <section className="materials_list_section">
         <SelectForm materials={materials} setSelectedProject={setSelectedProject} />
         <MaterialsTable filteredMaterials={filteredMaterials} />
       </section>

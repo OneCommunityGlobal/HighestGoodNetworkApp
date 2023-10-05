@@ -9,7 +9,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
     };
 
     return (
-      <Modal isOpen={modal} style={{ width: '60%' }}>
+      <Modal isOpen={modal} size="lg">
         <ModalHeader>{recordType} Record</ModalHeader>
         <ModalBody>
           <Table>
@@ -42,7 +42,11 @@ export function Record({ record, recordType }) {
               <tr key={i}>
                 <td>{moment(date).format('MM/DD/YY')}</td>
                 <td>{quantityUsed}</td>
-                <td>{createdBy.firstName + ' ' + createdBy.lastName}</td>
+                <td>
+                  <a href={`/userprofile/${createdBy._id}`}>
+                    {createdBy.firstName + ' ' + createdBy.lastName}
+                  </a>
+                </td>
               </tr>
             );
           })}
@@ -72,7 +76,11 @@ export function Record({ record, recordType }) {
                 <td>{action}</td>
                 <td>{cause}</td>
                 <td>{description}</td>
-                <td>{createdBy.firstName + ' ' + createdBy.lastName}</td>
+                <td>
+                  <a href={`/userprofile/${createdBy._id}`}>
+                    {createdBy.firstName + ' ' + createdBy.lastName}
+                  </a>
+                </td>
               </tr>
             );
           })}
@@ -107,7 +115,11 @@ export function Record({ record, recordType }) {
                   <td>{subtotal}</td>
                   <td>{tax}</td>
                   <td>{shipping}</td>
-                  <td>{createdBy.firstName + ' ' + createdBy.lastName}</td>
+                  <td>
+                    <a href={`/userprofile/${createdBy._id}`}>
+                      {createdBy.firstName + ' ' + createdBy.lastName}
+                    </a>
+                  </td>
                 </tr>
               );
             },
