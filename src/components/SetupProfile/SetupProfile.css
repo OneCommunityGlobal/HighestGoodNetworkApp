@@ -67,3 +67,8 @@
   width: 100vh;
   padding: 0px;
 }
+
+#setup-profile-phone-input {
+  width: 100%;
+  background-color: red;
+}

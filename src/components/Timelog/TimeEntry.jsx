@@ -48,8 +48,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
     //permission to edit any time entry on their own time logs tab
     dispatch(hasPermission('editTimeEntry')) ||
     //default permission: edit own sameday timelog entry
-    (isOwner && isSameDay);
-
+    (isOwner && isSameDay && (role === "Owner" || role === "Administrator"));
   const projectCategory = data.category?.toLowerCase() || '';
   const taskClassification = data.classification?.toLowerCase() || '';
 

@@ -36,7 +36,7 @@ const OldBadges = props => {
             </Modal> */}
           </CardTitle>
           <div className="old_badges">
-            <BadgeHistory badges={props.badges} />
+            <BadgeHistory personalBestMaxHrs={props.personalBestMaxHrs} badges={props.badges} />
           </div>
         </CardBody>
       </Card>
