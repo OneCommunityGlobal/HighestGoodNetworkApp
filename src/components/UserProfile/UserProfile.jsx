@@ -648,7 +648,7 @@ function UserProfile(props) {
             ) : null}
               {!codeValid ? (
               <Alert color="danger">
-                Please enter a code in the format of X-XXX
+                The code format should be A-AAA or AAAAA.
               </Alert>
             ) : null}
             <div className="profile-head">
