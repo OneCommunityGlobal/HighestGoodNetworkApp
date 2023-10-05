@@ -189,11 +189,13 @@ class PeopleReport extends Component {
   }
 
   setStatus(statusValue) {
+    const { statusList } = this.state;
+
     if (statusValue !== 'Filter Off') {
       this.setState(() => {
         return {
           status: statusValue,
-          statusList: this.state.statusList.concat(statusValue),
+          statusList: statusList.concat(statusValue),
         };
       });
     } else {
