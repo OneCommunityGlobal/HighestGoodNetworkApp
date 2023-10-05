@@ -1,5 +1,4 @@
-
-const hasPermission = (action) => {
+const hasPermission = action => {
   return (dispatch, getState) => {
     const state = getState();
     const rolePermissions = state.role.roles;
@@ -21,23 +20,20 @@ const hasPermission = (action) => {
       return userPermissions?.includes(action) || permissions?.includes(action);
     }
     return false;
-  }
+  };
 };
 
 // others cannot change the details for devadmin@hgn.net
 export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
-  const allowedEmails = ['jae@onecommunityglobal.org',
-                         'one.community@me.com',
-                         'jsabol@me.com'
-                        ]
-  const protectedEmails = ['jae@onecommunityglobal.org',
-                           'one.community@me.com',
-                           'jsabol@me.com',
-                           'devadmin@hgn.net'
-                          ]
+  const allowedEmails = ['jae@onecommunityglobal.org', 'one.community@me.com', 'jsabol@me.com'];
+  const protectedEmails = [
+    'jae@onecommunityglobal.org',
+    'one.community@me.com',
+    'jsabol@me.com',
+    'devadmin@hgn.net',
+  ];
   return protectedEmails.includes(devAdminEmail) && !allowedEmails.includes(authEmail);
 };
-
 
 export const cantDeactivateOwner = (user, authRole) => {
   return user.role === 'Owner' && user.isActive && authRole !== 'Owner';

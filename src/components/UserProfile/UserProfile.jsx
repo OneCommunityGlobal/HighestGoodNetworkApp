@@ -62,6 +62,7 @@ function UserProfile(props) {
     email: true,
   };
   const roles = props?.role.roles;
+  const permittedRoles = ['Owner', 'Administrator', 'Manager', 'Assistant Manager'];
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -94,6 +95,7 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
+  const [usersRole, setUsersRole] = useState('');
 
   const userProfileRef = useRef();
 
@@ -260,6 +262,7 @@ function UserProfile(props) {
       });
       setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
       setShowLoading(false);
+      setUsersRole(props.userProfile?.role);
     } catch (err) {
       setShowLoading(false);
     }
@@ -616,6 +619,7 @@ function UserProfile(props) {
     setUserEndDate(endDate);
   };
 
+  console.log('props', props);
   return (
     <div>
       <ActiveInactiveConfirmationPopup
@@ -730,25 +734,23 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(summaryIntro);
+              {permittedRoles.includes(usersRole) ? (
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(summaryIntro);
 
-                  toast.success('Summary Intro Copied!');
-                }}
-                color="primary"
-                size="sm"
-                // onMouseEnter={handleMouseEnter}
-              >
-                Generate Summary Intro
-                {/* <i
-                  data-toggle="tooltip"
-                  className="fa fa-clock-o"
-                  aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', width: '100%' }}
-                  title="Generates summery intro"
-                ></i> */}
-              </Button>
+                    toast.success('Summary Intro Copied!');
+                  }}
+                  color="primary"
+                  size="sm"
+                  title="Generates the summary intro for your team and copies it to your clipboard for easy use."
+                  // onMouseEnter={handleMouseEnter}
+                >
+                  Generate Summary Intro
+                </Button>
+              ) : (
+                ''
+              )}
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
