@@ -125,7 +125,7 @@ class PeopleReport extends Component {
   }
 
   setStartDate(date) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         startDate: date,
       };
@@ -133,7 +133,7 @@ class PeopleReport extends Component {
   }
 
   setEndDate(date) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         endDate: date,
       };
