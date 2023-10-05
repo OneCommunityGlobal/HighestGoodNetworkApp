@@ -117,6 +117,7 @@ export default function ProjectMemberTable({ projectMembers, skip, take, handleM
         <div className="reports-table-head-cell">ID</div>
       </div>
       <div>
+        {/* eslint-disable-next-line no-nested-ternary */}
         {memberFilter === 'all-time' ? (
           allMemberTable.length > 0 ? (
             allMemberTable
