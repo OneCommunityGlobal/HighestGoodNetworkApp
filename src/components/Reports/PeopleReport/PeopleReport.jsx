@@ -3,7 +3,6 @@ import React, { Component, useState } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
 import { formatDate } from 'utils/formatDate';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
@@ -152,6 +151,8 @@ class PeopleReport extends Component {
   }
 
   async setRehireable(rehireValue) {
+    const { userProfile } = this.props;
+
     this.setState(() => {
       return {
         isRehireable: rehireValue,
@@ -159,13 +160,10 @@ class PeopleReport extends Component {
     });
 
     try {
-      await this.props.updateUserProfileProperty(
-        this.props.userProfile,
-        'isRehireable',
-        rehireValue,
-      );
+      await updateUserProfileProperty(userProfile, 'isRehireable', rehireValue);
       toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
     } catch (err) {
+      // eslint-disable-next-line no-alert
       alert('An error occurred while attempting to save the rehireable status of this user.');
     }
   }
