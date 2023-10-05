@@ -3,12 +3,11 @@ import React, { Component, useState } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
 import { formatDate } from 'utils/formatDate';
-import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import moment from 'moment';
-import Collapse from 'react-bootstrap/Collapse';
 import { toast } from 'react-toastify';
 import {
   updateUserProfileProperty,
