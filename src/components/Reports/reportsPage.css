@@ -115,6 +115,28 @@
   margin: 0px 25px 0px 0px;
 }
 
+.lost-time-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: 16px 0;
+}
+
+.lost-time-item {
+  display: flex;
+  flex-direction: row;
+  margin: 0px 25px 0px 0px;
+}
+
+.type-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.type-item {
+  padding-left: 30px;
+}
+
 @media screen and (max-width: 1350px) {
   .container-component-wrapper {
     padding: 16px;
@@ -194,5 +216,11 @@
     font-size: 24px;
     font-weight: 700;
     margin: 8px 0;
+  }
+  .lost-time-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 1rem;
   }
 }

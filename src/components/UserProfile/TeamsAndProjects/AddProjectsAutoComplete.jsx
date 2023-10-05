@@ -45,6 +45,7 @@ const AddProjectsAutoComplete = React.memo(props => {
             .map(item => (
               <div
                 className="project-auto-complete"
+                key={item._id}
                 onClick={() => {
                   onInputChange(item.projectName);
                   toggle(false);

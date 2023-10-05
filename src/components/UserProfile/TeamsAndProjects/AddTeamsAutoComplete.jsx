@@ -45,6 +45,7 @@ const AddTeamsAutoComplete = React.memo(props => {
             .map(item => (
               <div
                 className="team-auto-complete"
+                key={item._id}
                 onClick={() => {
                   onInputChange(item.teamName);
                   toggle(false);

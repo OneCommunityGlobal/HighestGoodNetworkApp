@@ -18,6 +18,7 @@ const TotalTeamReport = props => {
   const [dataReady, setDataReady] = useState(false);
   const [showTotalTeamTable, setShowTotalTeamTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
+  const [teamTimeEntries, setTeamTimeEntries] = useState([]);
   const [allTeams, setAllTeams] = useState([]);
   const [teamInMonth, setTeamInMonth] = useState([]);
   const [teamInYear, setTeamInYear] = useState([]);
@@ -29,6 +30,7 @@ const TotalTeamReport = props => {
   const fromDate = props.startDate.toLocaleDateString('en-CA');
   const toDate = props.endDate.toLocaleDateString('en-CA');
   const userList = props.userProfiles.map(user => user._id);
+  const teamList = props.allTeams.map(team => team._id);
 
   const filterTeamByEndDate = (teams, endDate) => {
     const filteredTeams = teams
@@ -84,13 +86,24 @@ const TotalTeamReport = props => {
         }
       });
     });
+    teamTimeEntries?.forEach(entry => {
+      const key = entry.teamId;
+      const hours = parseInt(entry.hours);
+      const minutes = parseInt(entry.minutes);
+      accTeam[key]['hours'] += hours;
+      accTeam[key]['minutes'] += minutes;
+      if(entry.isTangible){
+        accTeam[key]['tangibleHours'] += hours;
+        accTeam[key]['tangibleMinutes'] += minutes;
+      }
+    });
     return accTeam;
   };
 
   const loadTimeEntriesForPeriod = async () => {
     //get the time entries of every user in the selected time range.
     //console.log('Load time entries within the time range');
-    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
@@ -107,7 +120,26 @@ const TotalTeamReport = props => {
       .catch(err => {
         console.log(err.message);
       });
+
+    url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
+    const teamTimeEntries = await axios
+      .post(url, { teams: teamList, fromDate, toDate })
+      .then(res => {
+        return res.data.map(entry => {
+          return {
+            teamId: entry.teamId,
+            hours: entry.hours,
+            minutes: entry.minutes,
+            isTangible: entry.isTangible,
+            date: entry.dateOfWork,
+          };
+        });
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
     setAllTimeEntries(timeEntries);
+    setTeamTimeEntries(teamTimeEntries);
   };
 
   const sumByUser = (objectArray, property) => {

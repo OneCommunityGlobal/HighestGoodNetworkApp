@@ -66,6 +66,7 @@ function PeopleTable(props) {
         </tr>
       </thead>
       <tbody>{PeopleList}</tbody>
+      {console.log(PeopleList)}
     </table>
   );
 }

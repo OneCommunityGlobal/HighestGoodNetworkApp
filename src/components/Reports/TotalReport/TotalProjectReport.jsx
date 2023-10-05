@@ -24,12 +24,14 @@ const TotalProjectReport = props => {
   const toDate = props.endDate.toLocaleDateString('en-CA');
 
   const userList = props.userProfiles.map(user => user._id);
+  const projectList = props.projects.map(proj => proj._id);
 
   const loadTimeEntriesForPeriod = async () => {
-    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
+        console.log(res.data);
         return res.data.map(entry => {
           return {
             projectId: entry.projectId,
@@ -44,7 +46,23 @@ const TotalProjectReport = props => {
       .catch(err => {
         console.log(err.message);
       });
-    setAllTimeEntries(timeEntries);
+
+    url = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+    const projTimeEntries = await axios
+      .post(url, { projects: projectList, fromDate, toDate })
+      .then(res => {
+        return res.data.map(entry => {
+          return {
+            projectId: entry.projectId,
+            projectName: entry.projectName,
+            hours: entry.hours,
+            minutes: entry.minutes,
+            isTangible: entry.isTangible,
+            date: entry.dateOfWork,
+          };
+        });
+      });
+    setAllTimeEntries([...timeEntries, ...projTimeEntries]);
   };
 
   const sumByProject = (objectArray, property) => {

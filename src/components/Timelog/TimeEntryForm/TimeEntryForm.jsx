@@ -443,6 +443,7 @@ const TimeEntryForm = props => {
       projectId: inputs.projectId,
       notes: inputs.notes,
       isTangible: inputs.isTangible.toString(),
+      entryType: 'default',
     };
 
     if (edit) {

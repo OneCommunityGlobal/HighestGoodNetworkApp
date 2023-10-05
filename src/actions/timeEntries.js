@@ -74,7 +74,9 @@ export const postTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry));
+      if(timeEntry.entryType == 'default'){
+        dispatch(updateTimeEntries(timeEntry));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
