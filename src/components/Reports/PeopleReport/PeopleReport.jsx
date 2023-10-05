@@ -88,32 +88,37 @@ class PeopleReport extends Component {
   }
 
   async componentDidMount() {
-    if (this.props.match) {
-      const { userId } = this.props.match.params;
-      await this.props.getUserProfile(userId);
-      await this.props.getUserTask(userId);
-      await this.props.getUserProjects(userId);
-      await this.props.getWeeklySummaries(userId);
-      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
+    const { match, userProfile, userTask, userProjects, timeEntries, auth } = this.props;
+    const { fromDate, toDate } = this.state;
+
+    if (match) {
+      const { userId } = match.params;
+      await getUserProfile(userId);
+      await getUserTask(userId);
+      await getUserProjects(userId);
+      await getWeeklySummaries(userId);
+      await getTimeEntriesForPeriod(userId, fromDate, toDate);
+
       this.setState({
+        // eslint-disable-next-line react/no-unused-state
         userId,
+        // eslint-disable-next-line react/no-unused-state
         isLoading: false,
-        bioStatus: this.props.userProfile.bioPosted,
-        authRole: this.props.auth.user.role,
+        bioStatus: userProfile.bioPosted,
+        authRole: auth.user.role,
         userProfile: {
-          ...this.props.userProfile,
+          ...userProfile,
         },
-        isRehireable: this.props.userProfile.isRehireable,
-        userTask: [...this.props.userTask],
+        isRehireable: userProfile.isRehireable,
+        userTask: [...userTask],
         userProjects: {
-          ...this.props.userProjects,
+          ...userProjects,
         },
-        allClassification: [
-          ...Array.from(new Set(this.props.userTask.map(item => item.classification))),
-        ],
-        infringements: this.props.userProfile.infringements,
+        // eslint-disable-next-line react/no-unused-state
+        allClassification: [...Array.from(new Set(userTask.map(item => item.classification)))],
+        infringements: userProfile.infringements,
         timeEntries: {
-          ...this.props.timeEntries,
+          ...timeEntries,
         },
       });
     }
