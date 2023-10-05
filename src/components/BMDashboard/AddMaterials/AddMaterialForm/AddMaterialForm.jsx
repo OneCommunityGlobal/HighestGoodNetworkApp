@@ -5,6 +5,7 @@ import PhoneInput from 'react-phone-input-2';
 import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { isValidUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
+import { boxStyle } from 'styles';
 import { postNewMaterial } from '../../../../actions/materials';
 import './AddMaterialForm.css';
 
@@ -40,6 +41,8 @@ export default function AddMaterialsForm(props) {
   const [newMaterial, setNewMaterial] = useState(false);
   const [newMeasurement, setNewMeasurement] = useState(false);
   const [trySubmit, setTrySubmit] = useState(false);
+  const history = useHistory();
+  const dispatch = useDispatch();
 
   const linkRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
 
@@ -70,19 +73,14 @@ export default function AddMaterialsForm(props) {
     description: Joi.string().required(),
   });
 
-  const history = useHistory();
-  const dispatch = useDispatch();
-
   const handleSubmit = e => {
     e.preventDefault();
-    const { error, value } = schema.validate(formInputs);
+    const { error } = schema.validate(formInputs);
     if (error) {
       setTrySubmit(true);
-      console.log(error);
     } else {
       dispatch(postNewMaterial(formInputs));
     }
-    // addMaterial(formInputs);
   };
 
   const handleCancel = e => {
@@ -441,12 +439,18 @@ export default function AddMaterialsForm(props) {
       </Row>
       <Row>
         <Col>
-          <Button type="button" id="cancel" onClick={handleCancel}>
+          <Button
+            type="button"
+            id="cancel"
+            color="secondary"
+            onClick={handleCancel}
+            style={boxStyle}
+          >
             Cancel
           </Button>
         </Col>
         <Col>
-          <Button type="submit" id="submit">
+          <Button type="submit" id="submit" color="primary" style={boxStyle}>
             Submit
           </Button>
         </Col>

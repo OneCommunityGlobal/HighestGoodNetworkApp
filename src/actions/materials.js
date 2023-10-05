@@ -33,8 +33,6 @@ export const postNewMaterial = (newMaterial) => {
   return async dispatch => {
     const url = ENDPOINTS.BM_ADD_NEW_MATERIAL;
     let status = null;
-    let project_id = newMaterial.projectId;
-    let material = null;
 
     try {
       const res = await axios.post(url, {
@@ -42,19 +40,9 @@ export const postNewMaterial = (newMaterial) => {
         type: 'material'
       });
       status = res.status;
-
     } catch (err) {
       console.log("Error adding material");
     }
-
-    // only change state if status of 201 indicating success
-    dispatch(
-      addMaterial(
-        newMaterial,
-
-        status
-      )
-    );
   };
 };
 
@@ -63,7 +51,7 @@ export const postNewMaterial = (newMaterial) => {
  * ACTIONS
  */
 
-export const addMaterial = (payload, status) => {
+export const addNewMaterial = (payload, status) => {
   return {
     type: types.ADD_NEW_MATERIAL,
     payload,
