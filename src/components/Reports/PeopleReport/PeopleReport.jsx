@@ -285,6 +285,7 @@ class PeopleReport extends Component {
     } = this.state;
     // eslint-disable-next-line no-unused-vars
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
+    const { tangibleHoursReportedThisWeek, auth, match } = this.props;
 
     let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
@@ -478,9 +479,10 @@ class PeopleReport extends Component {
       });
 
       try {
-        await this.props.updateUserProfileProperty(this.props.userProfile, 'bioPosted', bioStatus);
+        await updateUserProfileProperty(userProfile, 'bioPosted', bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
+        // eslint-disable-next-line no-alert
         alert('An error occurred while attempting to save the bioPosted change to the profile.');
       }
     };
@@ -506,7 +508,7 @@ class PeopleReport extends Component {
                 secondColor="#831ec4"
                 className="people-report-time-log-block"
               >
-                <h3>{this.props.tangibleHoursReportedThisWeek}</h3>
+                <h3>{tangibleHoursReportedThisWeek}</h3>
                 <p>Hours Logged This Week</p>
               </ReportPage.ReportBlock>
             )}
@@ -559,8 +561,8 @@ class PeopleReport extends Component {
                   </div>
                   <div className="visualizationDiv">
                     <BadgeSummaryViz
-                      authId={this.props.auth.user.userid}
-                      userId={this.props.match.params.userId}
+                      authId={auth.user.userid}
+                      userId={match.params.userId}
                       badges={userProfile.badgeCollection}
                     />
                   </div>
