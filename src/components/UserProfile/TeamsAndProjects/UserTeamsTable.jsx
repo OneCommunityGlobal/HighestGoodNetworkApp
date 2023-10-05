@@ -53,7 +53,7 @@ const UserTeamsTable = props => {
           )}
           <div className="row" style={{ margin: '0 auto'}}>
             <Col
-              md={props.edit ? '7' : '10'}
+              md={canAssignTeamToUsers ? '7' : '10'}
               style={{
                 backgroundColor: ' #e9ecef',
                 border: '1px solid #ced4da',
@@ -62,32 +62,28 @@ const UserTeamsTable = props => {
             >
               <span className="teams-span">Teams</span>
             </Col>
-            {props.edit && props.role && (
+            {props.edit && props.role && canAssignTeamToUsers && (
               <Col md="3" style={{padding: '0'}}>
-                {canAssignTeamToUsers ? (
-                  props.disabled ? (
-                    <>
-                      <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignteam" toggle={toggleTooltip}>
-                        Please save changes before assign team
-                      </Tooltip>
-                      <Button className="btn-addteam" id='btn-assignteam' color="primary" style={boxStyle} disabled>
-                        Assign Team
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      onClick={() => {
-                        props.onButtonClick();
-                      }}
-                      style={boxStyle}
-                    >
+                {props.disabled ? (
+                  <>
+                    <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignteam" toggle={toggleTooltip}>
+                      Please save changes before assign team
+                    </Tooltip>
+                    <Button className="btn-addteam" id='btn-assignteam' color="primary" style={boxStyle} disabled>
                       Assign Team
                     </Button>
-                  )
+                  </>
                 ) : (
-                  <></>
+                  <Button
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                    style={boxStyle}
+                   >
+                    Assign Team
+                  </Button>
                 )}
               </Col>
             )}
@@ -100,7 +96,9 @@ const UserTeamsTable = props => {
                   placeholder="X-XXX"
                 />
               ) : (
-                `${teamCode == ''? "No assigned team code": teamCode}`
+                <div style={{paddingTop: '6px', textAlign: 'center'}}>
+                  {teamCode == ''? "No assigned team code": teamCode}
+                </div>
               )}
             </Col>
           </div>
@@ -192,7 +190,9 @@ const UserTeamsTable = props => {
                     placeholder="X-XXX"
                   />
                 ) : (
-                  `${teamCode == ''? "No assigned team code": teamCode}`
+                  <div style={{paddingTop: '6px', textAlign: 'center'}}>
+                    {teamCode == ''? "No assigned team code": teamCode}
+                  </div>
                 )}
             </Col>
           </div>
