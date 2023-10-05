@@ -120,7 +120,7 @@ export const ENDPOINTS = {
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
-  BM_ADD_NEW_MATERIAL: `${APIEndpoint}/bm/addMaterial`,
+  BM_ADD_NEW_MATERIAL: `${APIEndpoint}/bm/materials`,
 };
 
 export const ApiEndpoint = APIEndpoint;

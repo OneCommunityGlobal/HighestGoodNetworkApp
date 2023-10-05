@@ -24,11 +24,13 @@ export default function AddMaterialsForm(props) {
   const [formInputs, setFormInputs] = useState({
     projectId: selectedProject?._id || '',
     material: '',
+    newMaterial: false,
     invoice: '',
     unitPrice: '',
     currency: '',
     quantity: '',
     measurement: '',
+    newMeasurement: false,
     purchaseDate: '',
     shippingFee: '',
     taxRate: '',
@@ -38,8 +40,6 @@ export default function AddMaterialsForm(props) {
   });
   // state for image?
 
-  const [newMaterial, setNewMaterial] = useState(false);
-  const [newMeasurement, setNewMeasurement] = useState(false);
   const [trySubmit, setTrySubmit] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
@@ -49,6 +49,7 @@ export default function AddMaterialsForm(props) {
   const schema = Joi.object({
     projectId: Joi.string().required(),
     material: Joi.string().required(),
+    newMaterial: Joi.boolean(),
     invoice: Joi.string().required(),
     unitPrice: Joi.number()
       .positive()
@@ -59,6 +60,7 @@ export default function AddMaterialsForm(props) {
       .integer()
       .required(),
     measurement: Joi.string().required(),
+    newMeasurement: Joi.boolean(),
     purchaseDate: Joi.date().required(),
     shippingFee: Joi.number()
       .positive()
@@ -136,7 +138,7 @@ export default function AddMaterialsForm(props) {
             <Col xs="12" sm="9">
               <FormGroup>
                 <Label for="material">Material Name</Label>
-                {newMaterial ? (
+                {formInputs.newMaterial ? (
                   <Input
                     id="material"
                     name="material"
@@ -173,9 +175,12 @@ export default function AddMaterialsForm(props) {
                     id="newMaterial"
                     name="newMaterial"
                     type="checkbox"
-                    checked={newMaterial}
+                    checked={formInputs.newMaterial}
                     onChange={() => {
-                      setNewMaterial(!newMaterial);
+                      setFormInputs({
+                        ...formInputs,
+                        newMaterial: !formInputs.newMaterial,
+                      });
                     }}
                   />
                   <label htmlFor="newMaterial">Do you want to add a new material?</label>
@@ -237,7 +242,7 @@ export default function AddMaterialsForm(props) {
             <Col xs="12" sm="7">
               <FormGroup>
                 <Label for="measurement">Unit of Measurement</Label>
-                {newMeasurement ? (
+                {formInputs.newMeasurement ? (
                   <Input
                     id="measurement"
                     name="measurement"
@@ -274,9 +279,12 @@ export default function AddMaterialsForm(props) {
                     id="newMeasurement"
                     name="newMeasurement"
                     type="checkbox"
-                    checked={newMeasurement}
+                    checked={formInputs.newMeasurement}
                     onChange={() => {
-                      setNewMeasurement(!newMeasurement);
+                      setFormInputs({
+                        ...formInputs,
+                        newMeasurement: !formInputs.newMeasurement,
+                      });
                     }}
                   />
                   <label htmlFor="newMeasurement">

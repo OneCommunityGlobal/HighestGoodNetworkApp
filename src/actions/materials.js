@@ -29,15 +29,14 @@ import { ENDPOINTS } from '../utils/URL';
  *    description: string
  * }
  */
-export const postNewMaterial = (newMaterial) => {
+export const postNewMaterial = (material) => {
   return async dispatch => {
     const url = ENDPOINTS.BM_ADD_NEW_MATERIAL;
     let status = null;
 
     try {
       const res = await axios.post(url, {
-        newMaterial,
-        type: 'material'
+        material
       });
       status = res.status;
     } catch (err) {
