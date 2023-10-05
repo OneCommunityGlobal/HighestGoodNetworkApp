@@ -169,11 +169,13 @@ class PeopleReport extends Component {
   }
 
   setPriority(priorityValue) {
+    const { priorityList } = this.state;
+
     if (priorityValue !== 'Filter Off') {
       this.setState(() => {
         return {
           priority: priorityValue,
-          priorityList: this.state.priorityList.concat(priorityValue),
+          priorityList: priorityList.concat(priorityValue),
         };
       });
     } else {
