@@ -1,9 +1,10 @@
-import { Stub } from '../../common/Stub';
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
+import { Stub } from '../../common/Stub';
 
-export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount }) => {
+export default function ProjectMemberTable({ projectMembers, skip, take, handleMemberCount }) {
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
@@ -33,52 +34,56 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
   }, [fetched]);
 
   const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
-    <div className="project-member-table-row" id={'tr_' + member._id} key={'ac_' + member._id}>
+    <div className="project-member-table-row" id={`tr_${member._id}`} key={`ac_${member._id}`}>
       <div>
         <div>{skip + index + 1}</div>
       </div>
       <Link to={`/userprofile/${member._id}`} title="View Profile">
         <div>
-        {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
+          {window.innerWidth >= 1100
+            ? `${member.firstName} ${member.lastName}`
+            : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}
         </div>
       </Link>
       <div className="projects__active--input">
         {member.active ? (
           <tasks className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" />
           </tasks>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
+            <i className="fa fa-circle-o" aria-hidden="true" />
           </div>
         )}
       </div>
-      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>      
+      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>
     </div>
   ));
 
   const allMemberTable = allMemberList.slice(skip, skip + take).map((member, index) => (
-    <div className="project-member-table-row" id={'tr_' + member._id} key={'al_' + member._id}>
+    <div className="project-member-table-row" id={`tr_${member._id}`} key={`al_${member._id}`}>
       <div>
         <div>{skip + index + 1}</div>
       </div>
       <Link to={`/userprofile/${member._id}`} title="View Profile">
         <div>
-        {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
+          {window.innerWidth >= 1100
+            ? `${member.firstName} ${member.lastName}`
+            : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}
         </div>
       </Link>
       <div className="projects__active--input">
         {member.active ? (
           <tasks className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" />
           </tasks>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
+            <i className="fa fa-circle-o" aria-hidden="true" />
           </div>
         )}
       </div>
-      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>    
+      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>
     </div>
   ));
 
@@ -86,7 +91,8 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
     <div className="project-member-table test">
       <h5 className="project-member-table-title">Members</h5>
       <div className="project-member-count-head">
-        <div className="filter-members-mobile"
+        <div
+          className="filter-members-mobile"
           onChange={e => {
             setMemberFilter(e.target.value);
           }}
@@ -99,7 +105,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           <label htmlFor="all-time" id="project-all-member-count" className="project-member-count">
             ALL-TIME: {members.length}
           </label>
-          {memberFilter == 'all-time'
+          {memberFilter === 'all-time'
             ? handleMemberCount(allMemberList.length)
             : handleMemberCount(activeMemberList.length)}
         </div>
@@ -111,7 +117,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
         <div className="reports-table-head-cell">ID</div>
       </div>
       <div>
-        {memberFilter == 'all-time' ? (
+        {memberFilter === 'all-time' ? (
           allMemberTable.length > 0 ? (
             allMemberTable
           ) : (
@@ -125,4 +131,4 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       </div>
     </div>
   );
-};
+}
