@@ -295,16 +295,17 @@ class PeopleReport extends Component {
       totalTangibleHrsRound = hours.toFixed(2);
     }
 
+    // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
     const UserProject = props => {
       const userProjectList = [];
       return <div>{userProjectList}</div>;
     };
+    // eslint-disable-next-line react/no-unstable-nested-components
     const Infringements = props => {
-      const BlueSquare = [];
       const dict = {};
 
       // aggregate infringements
-      for (let i = 0; i < props.infringements.length; i++) {
+      for (let i = 0; i < props.infringements.length; i += 1) {
         if (props.infringements[i].date in dict) {
           dict[props.infringements[i].date].count += 1;
           dict[props.infringements[i].date].des.push(props.infringements[i].description);
@@ -336,6 +337,7 @@ class PeopleReport extends Component {
       );
     };
 
+    // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
     const PeopleDataTable = props => {
       const peopleData = {
         alertVisible: false,
@@ -344,7 +346,7 @@ class PeopleReport extends Component {
         message: '',
       };
 
-      for (let i = 0; i < userTask.length; i++) {
+      for (let i = 0; i < userTask.length; i += 1) {
         const task = {
           taskName: '',
           priority: '',
@@ -380,7 +382,7 @@ class PeopleReport extends Component {
         task.status = userTask[i].status;
         const n = userTask[i].estimatedHours;
         task.estimatedHours = n.toFixed(2);
-        for (let j = 0; j < userTask[i].resources.length; j++) {
+        for (let j = 0; j < userTask[i].resources.length; j += 1) {
           const tempResource = {
             name: '',
             profilePic: '',
