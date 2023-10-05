@@ -1,12 +1,9 @@
 import { Row, Col, Container, Form, Button, FormGroup, Label, Input } from 'reactstrap';
-//import { ProjectsList } from './ProjectsList';
+import { ProjectsList } from './ProjectsList';
 import './BMDashboard.css';
 
 export const BMDashboard = () => {
   return (
-    // <div style={{ textAlign: 'center', marginTop: '5rem' }}>
-    //   <h2>Building and Inventory Management Dashboard</h2>
-    // </div>
     <Container className="d-flex justify-content-center align-items-center mw-80 px-4">
       <Form className="w-75 p-3">
         <Row className="ml-0">
@@ -34,6 +31,7 @@ export const BMDashboard = () => {
           </Col>
         </Row>
       </Form>
+      <ProjectsList />
     </Container>
   );
 };
