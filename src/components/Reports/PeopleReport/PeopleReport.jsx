@@ -416,61 +416,64 @@ class PeopleReport extends Component {
       return <PeopleTableDetails taskData={peopleData.taskData} />;
     };
 
-    const renderProfileInfo = () => (
-      <ReportPage.ReportHeader
-        src={this.state.userProfile.profilePic}
-        avatar={this.state.userProfile.profilePic ? undefined : <FiUser />}
-        isActive={isActive}
-      >
-        <div className="report-stats">
-          <p>
-            <Link to={`/userProfile/${userProfile._id}`} title="View Profile">
-              {userProfile.firstName} {userProfile.lastName}
-            </Link>
-          </p>
-          <p>Role: {userProfile.role}</p>
-          <p>Title: {userProfile.jobTitle}</p>
+    const renderProfileInfo = () => {
+      const { isRehireable, bioStatus, authRole } = this.state;
+      const { profilePic, role, jobTitle, endDate, _id, createdDate } = userProfile;
 
-          {userProfile.endDate ? (
-            <div className="rehireable">
-              <Checkbox
-                value={this.state.isRehireable}
-                onChange={() => this.setRehireable(!this.state.isRehireable)}
-                label="Rehireable"
-              />
-            </div>
-          ) : (
-            ''
-          )}
+      return (
+        <ReportPage.ReportHeader
+          src={profilePic}
+          avatar={profilePic ? undefined : <FiUser />}
+          isActive={isActive}
+        >
+          <div className="report-stats">
+            <p>
+              <Link to={`/userProfile/${_id}`} title="View Profile">
+                {firstName} {lastName}
+              </Link>
+            </p>
+            <p>Role: {role}</p>
+            <p>Title: {jobTitle}</p>
 
-          <div className="stats">
-            <div>
-              <h4>{formatDate(userProfile.createdDate)}</h4>
-              <p>Start Date</p>
-            </div>
-            <div>
-              <h4>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</h4>
-              <p>End Date</p>
-            </div>
-            {this.state.bioStatus ? (
-              <div>
-                <h5>
-                  Bio {this.state.bioStatus === 'default' ? 'not requested' : this.state.bioStatus}
-                </h5>{' '}
-                {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
-                  <ToggleSwitch
-                    fontSize="13px"
-                    switchType="bio"
-                    state={this.state.bioStatus}
-                    handleUserProfile={bio => onChangeBioPosted(bio)}
-                  />
-                ) : null}
+            {endDate ? (
+              <div className="rehireable">
+                <Checkbox
+                  value={isRehireable}
+                  onChange={() => this.setRehireable(!isRehireable)}
+                  label="Rehireable"
+                />
               </div>
-            ) : null}
+            ) : (
+              ''
+            )}
+
+            <div className="stats">
+              <div>
+                <h4>{formatDate(createdDate)}</h4>
+                <p>Start Date</p>
+              </div>
+              <div>
+                <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
+                <p>End Date</p>
+              </div>
+              {bioStatus ? (
+                <div>
+                  <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
+                  {authRole === 'Administrator' || authRole === 'Owner' ? (
+                    <ToggleSwitch
+                      fontSize="13px"
+                      switchType="bio"
+                      state={bioStatus}
+                      handleUserProfile={bio => onChangeBioPosted(bio)}
+                    />
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
           </div>
-        </div>
-      </ReportPage.ReportHeader>
-    );
+        </ReportPage.ReportHeader>
+      );
+    };
 
     const onChangeBioPosted = async bio => {
       const bioStatus = bio;
