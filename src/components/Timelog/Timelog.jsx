@@ -204,8 +204,7 @@ const Timelog = props => {
     props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate);
   };
 
-  // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
-  // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
+
   const startOfWeek = offset => {
     return moment()
       .tz('America/Los_Angeles')

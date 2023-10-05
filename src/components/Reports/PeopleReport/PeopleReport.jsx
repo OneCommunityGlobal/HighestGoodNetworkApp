@@ -143,22 +143,6 @@ class PeopleReport extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  startOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
-
-  endOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
-
   setActive(activeValue) {
     this.setState(() => {
       return {
@@ -276,6 +260,14 @@ class PeopleReport extends Component {
     });
   }
 
+  endOfWeek(offset) {
+    return moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(offset, 'weeks')
+      .format('YYYY-MM-DD');
+  }
+
   render() {
     const {
       userProfile,
@@ -287,6 +279,7 @@ class PeopleReport extends Component {
       toDate,
       timeEntries,
     } = this.state;
+    // eslint-disable-next-line no-unused-vars
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
 
     let totalTangibleHrsRound = 0;
