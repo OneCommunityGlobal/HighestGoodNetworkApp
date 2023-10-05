@@ -264,6 +264,7 @@ class PeopleReport extends Component {
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   endOfWeek(offset) {
     return moment()
       .tz('America/Los_Angeles')
@@ -464,6 +465,7 @@ class PeopleReport extends Component {
                       fontSize="13px"
                       switchType="bio"
                       state={bioStatus}
+                      /* eslint-disable-next-line no-use-before-define */
                       handleUserProfile={bio => onChangeBioPosted(bio)}
                     />
                   ) : null}
