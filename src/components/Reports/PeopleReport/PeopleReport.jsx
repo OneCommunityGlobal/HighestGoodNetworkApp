@@ -161,7 +161,7 @@ class PeopleReport extends Component {
   }
 
   setActive(activeValue) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         isActive: activeValue,
       };
@@ -169,7 +169,7 @@ class PeopleReport extends Component {
   }
 
   async setRehireable(rehireValue) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         isRehireable: rehireValue,
       };
@@ -188,15 +188,15 @@ class PeopleReport extends Component {
   }
 
   setPriority(priorityValue) {
-    if (priorityValue != 'Filter Off') {
-      this.setState(state => {
+    if (priorityValue !== 'Filter Off') {
+      this.setState(() => {
         return {
           priority: priorityValue,
           priorityList: this.state.priorityList.concat(priorityValue),
         };
       });
     } else {
-      this.setState(state => {
+      this.setState(() => {
         return {
           priority: priorityValue,
           priorityList: [],
@@ -206,15 +206,15 @@ class PeopleReport extends Component {
   }
 
   setStatus(statusValue) {
-    if (statusValue != 'Filter Off') {
-      this.setState(state => {
+    if (statusValue !== 'Filter Off') {
+      this.setState(() => {
         return {
           status: statusValue,
           statusList: this.state.statusList.concat(statusValue),
         };
       });
     } else {
-      this.setState(state => {
+      this.setState(() => {
         return {
           status: statusValue,
           statusList: [],
@@ -224,7 +224,7 @@ class PeopleReport extends Component {
   }
 
   setAssign(assignValue) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         isAssigned: assignValue,
       };
@@ -232,7 +232,7 @@ class PeopleReport extends Component {
   }
 
   setFilter(filterValue) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         isAssigned: false,
         isActive: false,
@@ -252,15 +252,15 @@ class PeopleReport extends Component {
   }
 
   setClassfication(classificationValue) {
-    if (classificationValue != 'Filter Off') {
-      this.setState(state => {
+    if (classificationValue !== 'Filter Off') {
+      this.setState(() => {
         return {
           classification: classificationValue,
           classificationList: this.state.classificationList.concat(classificationValue),
         };
       });
     } else {
-      this.setState(state => {
+      this.setState(() => {
         return {
           classification: classificationValue,
           classificationList: [],
@@ -270,7 +270,7 @@ class PeopleReport extends Component {
   }
 
   setUsers(userValue) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         users: userValue,
       };
