@@ -876,7 +876,7 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
-                  canEditTeamCode={props.hasPermission('putUserProfileImportantInfo')}
+                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
@@ -1077,7 +1077,7 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
-                    canEditTeamCode={props.hasPermission('putUserProfileImportantInfo')}
+                    canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
                     codeValid={codeValid}

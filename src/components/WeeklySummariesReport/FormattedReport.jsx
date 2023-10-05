@@ -324,7 +324,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
             />
           </div>
         ) : (
-          <div style={{ paddingLeft: '5px' }}>
+          <div style={{ paddingRight: '5px' }}>
             {teamCode === '' ? 'No assigned team code!' : teamCode}
           </div>
         )}

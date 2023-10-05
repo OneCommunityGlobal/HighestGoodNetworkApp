@@ -1215,6 +1215,7 @@ export const rolesMock = {
           'getWeeklySummaries',
           'getTimeZoneAPIKey',
           'checkLeadTeamOfXplus',
+          'editTeamCode',
         ],
       },
     ]
