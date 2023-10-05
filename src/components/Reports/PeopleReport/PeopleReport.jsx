@@ -1,6 +1,8 @@
+// eslint-disable-next-line no-unused-vars
 import React, { Component, useState } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
+import { formatDate } from 'utils/formatDate';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -13,6 +15,7 @@ import {
   getUserProfile,
   getUserTask,
 } from '../../../actions/userProfile';
+
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import 'react-input-range/lib/css/index.css';
@@ -27,7 +30,6 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import { formatDate } from 'utils/formatDate';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -36,19 +38,28 @@ class PeopleReport extends Component {
       userProfile: {},
       userTask: [],
       userProjects: {},
+      // eslint-disable-next-line react/no-unused-state
       userId: '',
+      // eslint-disable-next-line react/no-unused-state
       isLoading: true,
       bioStatus: '',
       authRole: '',
       infringements: {},
+      // eslint-disable-next-line react/no-unused-state
       isAssigned: '',
       isActive: '',
       isRehireable: false,
+      // eslint-disable-next-line react/no-unused-state
       priority: '',
+      // eslint-disable-next-line react/no-unused-state
       status: '',
+      // eslint-disable-next-line react/no-unused-state
       hasFilter: true,
+      // eslint-disable-next-line react/no-unused-state
       allClassification: [],
+      // eslint-disable-next-line react/no-unused-state
       classification: '',
+      // eslint-disable-next-line react/no-unused-state
       users: '',
       classificationList: [],
       priorityList: [],
@@ -56,8 +67,11 @@ class PeopleReport extends Component {
       fromDate: '2016-01-01',
       toDate: this.endOfWeek(0),
       timeEntries: {},
+      // eslint-disable-next-line react/no-unused-state
       startDate: '',
+      // eslint-disable-next-line react/no-unused-state
       endDate: '',
+      // eslint-disable-next-line react/no-unused-state
       fetched: false,
     };
     this.setStatus = this.setStatus.bind(this);
