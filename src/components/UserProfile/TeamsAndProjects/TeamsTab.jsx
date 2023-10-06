@@ -8,6 +8,7 @@ const TeamsTab = props => {
     userTeams,
     onDeleteTeam,
     onAssignTeam,
+    onAssignTeamCode,
     edit,
     role,
     onUserVisibilitySwitch,
@@ -66,6 +67,7 @@ const TeamsTab = props => {
         userProfile={userProfile}
         codeValid={codeValid}
         setCodeValid={setCodeValid}
+        onAssignTeamCode={onAssignTeamCode}
       />
     </React.Fragment>
   );

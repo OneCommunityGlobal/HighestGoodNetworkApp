@@ -31,8 +31,8 @@ export const fetchWeeklySummariesReportError = error => ({
 
 /**
  * Update one summary report
- * 
- * @param {Object} updatedField the updated field object, dynamic 
+ *
+ * @param {Object} updatedField the updated field object, dynamic
  */
 export const updateSummaryReport = ({ _id, updatedField }) => ({
   type: actions.UPDATE_SUMMARY_REPORT,
@@ -50,7 +50,7 @@ export const getWeeklySummariesReport = () => {
     try {
       const response = await axios.get(url);
       dispatch(fetchWeeklySummariesReportSuccess(response.data));
-      return response.status;
+      return {status: response.status, data: response.data};
     } catch (error) {
       dispatch(fetchWeeklySummariesReportError(error));
       return error.response.status;
