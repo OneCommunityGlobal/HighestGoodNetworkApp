@@ -1,11 +1,11 @@
 import React from 'react';
-import Project from './Project';
+import ProjectSummary from './ProjectSummary';
 
 export const ProjectsList = () => {
   return (
-    <div>
-      <Project />
-      <Project />
-    </div>
+    <ul className="projects-list">
+      <ProjectSummary />
+      <ProjectSummary />
+    </ul>
   )
 }

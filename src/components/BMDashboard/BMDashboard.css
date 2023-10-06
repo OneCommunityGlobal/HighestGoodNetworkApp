@@ -12,5 +12,30 @@
   padding-left: 0;
   padding-right: 0;
   max-height: 38px;
+  background-color: #2e5061;
+}
+}
+
+/* project summaries */
+.projects-list{
+width: 80%;
+list-style-type: none;
+}
+
+.project-summary{
+  background-color: #e8f4f9;
+  height: 20vh;
+  margin-bottom: 2em;
+  padding: 1em;
+  border-radius: 5px;
+}
+
+.project-summary_header{
+  font-size: 0.9em;
+}
+
+@media (min-width: 650px){
+  .project-summary_header{
+  font-size: 1.3em;  
 }
 }

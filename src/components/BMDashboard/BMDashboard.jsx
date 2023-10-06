@@ -12,11 +12,12 @@ export const BMDashboard = () => {
       </Row>
       <Form className="w-100 p-3  text-center">
         <Row className="ml-0 gx-5 w-75" md="2" sm="1" xs="1">
+          <FormGroup>
           <Col className="p-3">
-            <Label for="exampleSelect" hidden>
+            <Label for="projectSelect" hidden>
               Select
             </Label>
-            <Input id="exampleSelect" name="select" type="select">
+            <Input id="projectSelect" name="select" type="select">
               <option default>Select a project</option>
               <option>1</option>
               <option>2</option>
@@ -24,6 +25,7 @@ export const BMDashboard = () => {
               <option>4</option>
             </Input>
           </Col>
+          </FormGroup>
           <Col className="p-3">
             <Button className="w-100 bm-dashboard__button">Go to Project Dashboard</Button>
           </Col>
