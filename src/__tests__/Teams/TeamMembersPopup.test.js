@@ -61,4 +61,9 @@ describe('TeamMembersPopup', () => {
     renderComponent({ ...initialState, usersdata });
     expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
   });
+
+  it('should render "Close" button', () => {
+    renderComponent({ ...initialState, usersdata });
+    expect(screen.getByText('Close')).toBeInTheDocument();
+  });
 });
