@@ -72,4 +72,9 @@ describe('TeamMembersPopup', () => {
     fireEvent.click(screen.getByText('Close'));
     expect(initialState.onClose).toHaveBeenCalledTimes(1);
   });
+
+  it('displays the team name in the modal header', () => {
+    renderComponent({ ...initialState, usersdata });
+    expect(screen.getByText(`Members of ${initialState.selectedTeamName}`)).toBeInTheDocument();
+  });
 });
