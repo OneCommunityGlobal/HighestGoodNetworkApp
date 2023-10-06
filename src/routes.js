@@ -44,13 +44,15 @@ import SetupProfile from 'components/SetupProfile/SetupProfile';
 import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
+import BMHeader from 'components/BMDashboard/BMHeader/BMHeader';
 
 export default (
   <>
     <Switch>
       <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
       <>
-        <Header />
+        {/* <Header /> */}
+        <BMHeader/>
         <AutoUpdate />
         <ToastContainer />
         <Switch>

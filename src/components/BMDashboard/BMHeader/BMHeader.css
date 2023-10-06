@@ -1,0 +1,28 @@
+.header-wrapper {
+  height: fit-content;
+  width: clamp(100vw, 0.1rem + 1vw, 100%);
+}
+
+.navbar {
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.logo-section {
+  color: #fff;
+  font-weight: bold;
+}
+
+.nav-links {
+  align-items: center;
+}
+
+.dashboardimg {
+  margin-left: 30px;
+}
+
+@media (max-width: 1500px) {
+  .dashboard-text-link {
+    font-size: 14px;
+  }
+}
