@@ -22,7 +22,7 @@ import { boxStyle } from 'styles';
 export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
-  const canAssignBadges = props.hasPermission('assignBadges');
+  const canAssignBadges = props.hasPermission('assignBadges') || props.hasPermission('assignBadgeOthers');
 
   const toggle = () => setOpen(!isOpen);
 
