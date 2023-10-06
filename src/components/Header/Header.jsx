@@ -139,7 +139,7 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {canGetWeeklySummaries || canSeeOnlyWeeklySummariesReports ? (
+              {canGetWeeklySummaries && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{REPORTS}</span>
@@ -153,7 +153,19 @@ export const Header = props => {
                         </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-              ) : null}
+              )}
+              {!canGetWeeklySummaries && canSeeOnlyWeeklySummariesReports && (
+                <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  <span className="dashboard-text-link">{REPORTS}</span>
+                </DropdownToggle>
+                <DropdownMenu>
+                      <DropdownItem tag={Link} to="/weeklysummariesreport">
+                        {WEEKLY_SUMMARIES_REPORT}
+                      </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+              )}
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">
