@@ -2,18 +2,14 @@ import configureStore from 'redux-mock-store';
 import TeamMembersPopup from 'components/Teams/TeamMembersPopup';
 import thunk from 'redux-thunk';
 import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 const mockStore = configureStore([thunk]);
 
 const mockProps = {
-  members: {
-    teamMembers: [],
-  },
-  usersdata: {
-    userProfiles: [],
-  },
+  members: { teamMembers: [] },
+  usersdata: { userProfiles: [] },
 };
 
 const renderComponent = props => {
@@ -31,8 +27,38 @@ const renderComponent = props => {
   );
 };
 
+const initialState = {
+  open: true,
+  selectedTeamName: 'Test Team',
+  hasPermission: jest.fn(),
+  members: {
+    teamMembers: { toSorted: jest.fn(() => []) },
+  },
+  roles: [{}],
+  auth: {
+    user: {
+      role: 'Owner',
+      permissions: {
+        frontPermissions: ['assignTeamToUsers'],
+      },
+    },
+  },
+  userProfile: { userProfiles: [] },
+  requestorRole: '',
+  userPermissions: [],
+  onClose: jest.fn(),
+  onDeleteClick: jest.fn(),
+};
+
+const usersdata = { userProfiles: [] };
+
 describe('TeamMembersPopup', () => {
   it('should render correctly', () => {
     renderComponent(mockProps);
+  });
+
+  it('should render "Add" button', () => {
+    renderComponent({ ...initialState, usersdata });
+    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
   });
 });
