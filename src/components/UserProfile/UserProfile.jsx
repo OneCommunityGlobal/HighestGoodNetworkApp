@@ -97,6 +97,7 @@ function UserProfile(props) {
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
+  const [codeValid, setCodeValid] = useState(true);
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
@@ -645,6 +646,11 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
+              {!codeValid ? (
+              <Alert color="danger">
+                The code format should be A-AAA or AAAAA.
+              </Alert>
+            ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
               <i
@@ -870,7 +876,11 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
+                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                  setUserProfile={setUserProfile}
                   userProfile={userProfile}
+                  codeValid={codeValid}
+                  setCodeValid={setCodeValid}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -966,6 +976,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1020,6 +1031,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1065,7 +1077,11 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
+                    canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                    setUserProfile={setUserProfile}
                     userProfile={userProfile}
+                    codeValid={codeValid}
+                    setCodeValid={setCodeValid}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1080,6 +1096,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1139,6 +1156,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1185,6 +1203,7 @@ function UserProfile(props) {
                               !formValid.firstName ||
                               !formValid.lastName ||
                               !formValid.email ||
+                              !codeValid ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1250,6 +1269,7 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
+                      !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }

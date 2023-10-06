@@ -16,6 +16,7 @@ import {
   NavLink,
   Button,
 } from 'reactstrap';
+import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
@@ -41,6 +42,10 @@ export class WeeklySummariesReport extends Component {
       activeTab: navItems[1],
       badges: [],
       loadBadges: false,
+      hasSeeBadgePermission: false,
+      selectedCodes: [],
+      selectedColors: [],
+      filteredSummaries: [],
     };
 
     this.weekDates = Array(4)
@@ -50,7 +55,6 @@ export class WeeklySummariesReport extends Component {
 
   async componentDidMount() {
     const {
-      summaries,
       error,
       loading,
       allBadgeData,
@@ -60,15 +64,19 @@ export class WeeklySummariesReport extends Component {
       fetchAllBadges,
       getInfoCollections,
       hasPermission,
+      auth,
     } = this.props;
 
     // 1. fetch report
-    await getWeeklySummariesReport();
-    await fetchAllBadges();
+    const res = await getWeeklySummariesReport();
+    // eslint-disable-next-line react/destructuring-assignment
+    const summaries = res?.data ?? this.props.summaries;
+    const badgeStatusCode = await fetchAllBadges();
 
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
+    this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner';
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -83,6 +91,52 @@ export class WeeklySummariesReport extends Component {
       return { ...summary, promisedHoursByWeek };
     });
 
+    const teamCodeSet = [
+      ...new Set(
+        summariesCopy
+          .filter(summary => {
+            if (summary.teamCode === '') {
+              return false;
+            }
+            return true;
+          })
+          .map(s => s.teamCode),
+      ),
+    ];
+    this.teamCodes = [];
+
+    const colorOptionSet = [
+      ...new Set(
+        summariesCopy
+          .filter(summary => {
+            if (summary.weeklySummaryOption === undefined) {
+              return false;
+            }
+            return true;
+          })
+          .map(s => s.weeklySummaryOption),
+      ),
+    ];
+    this.colorOptions = [];
+
+    if (teamCodeSet.length !== 0) {
+      teamCodeSet.forEach((code, index) => {
+        const codeLabel = `${code} (${
+          summariesCopy.filter(summary => summary.teamCode === code).length
+        })`;
+        this.teamCodes[index] = { value: code, label: codeLabel };
+      });
+      colorOptionSet.forEach((option, index) => {
+        this.colorOptions[index] = { value: option, label: option };
+      });
+    }
+
+    const noCodeLabel = `Select All With NO Code (${
+      summariesCopy.filter(summary => summary.teamCode === '').length
+    })`;
+    const sortedTeamCodes = this.teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+    this.teamCodes = [...sortedTeamCodes, { value: '', label: noCodeLabel }];
+
     this.setState({
       error,
       loading,
@@ -93,6 +147,8 @@ export class WeeklySummariesReport extends Component {
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
       badges: allBadgeData,
+      hasSeeBadgePermission: badgeStatusCode === 200,
+      filteredSummaries: summariesCopy,
     });
     await getInfoCollections();
     const role = authUser?.role;
@@ -113,6 +169,26 @@ export class WeeklySummariesReport extends Component {
     }
     this.setState({ allRoleInfo });
   }
+
+  // componentDidUpdate(preProps) {
+  //   const {summaries} = preProps
+
+  //   if (this.props.summaries !== summaries) {
+  //     let summariesCopy = [...summaries];
+  //     summariesCopy = this.alphabetize(summariesCopy);
+
+  //     // 3. add new key of promised hours by week
+  //     summariesCopy = summariesCopy.map(summary => {
+  //       // append the promised hours starting from the latest week (this week)
+  //       const promisedHoursByWeek = this.weekDates.map(weekDate =>
+  //         this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+  //       );
+  //       return { ...summary, promisedHoursByWeek };
+  //     });
+
+  //     this.setState({filteredSummaries: summariesCopy, summaries: summariesCopy})
+  //   }
+  // }
 
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
@@ -201,8 +277,41 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
+  filterWeeklySummaries = () => {
+    const { selectedCodes, selectedColors, summaries } = this.state;
+
+    const selectedCodesArray = selectedCodes.map(e => e.value);
+    const selectedColorsArray = selectedColors.map(e => e.value);
+    const temp = summaries.filter(
+      summary =>
+        (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
+        (selectedColorsArray.length === 0 ||
+          selectedColorsArray.includes(summary.weeklySummaryOption)),
+    );
+    this.setState({ filteredSummaries: temp });
+  };
+
+  handleSelectCodeChange = event => {
+    this.setState({ selectedCodes: event }, () => this.filterWeeklySummaries());
+  };
+
+  handleSelectColorChange = event => {
+    this.setState({ selectedColors: event }, () => this.filterWeeklySummaries());
+  };
+
   render() {
-    const { error, loading, summaries, activeTab, allRoleInfo, badges, loadBadges } = this.state;
+    const {
+      error,
+      loading,
+      activeTab,
+      allRoleInfo,
+      badges,
+      loadBadges,
+      hasSeeBadgePermission,
+      selectedCodes,
+      selectedColors,
+      filteredSummaries,
+    } = this.state;
 
     if (error) {
       return (
@@ -233,6 +342,30 @@ export class WeeklySummariesReport extends Component {
             <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
           </Col>
         </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+            Select Team Code
+            <MultiSelect
+              className="multi-select-filter"
+              options={this.teamCodes}
+              value={selectedCodes}
+              onChange={e => {
+                this.handleSelectCodeChange(e);
+              }}
+            />
+          </Col>
+          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
+            Select Color
+            <MultiSelect
+              className="multi-select-filter"
+              options={this.colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))}
+              value={selectedColors}
+              onChange={e => {
+                this.handleSelectColorChange(e);
+              }}
+            />
+          </Col>
+        </Row>
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
@@ -259,17 +392,19 @@ export class WeeklySummariesReport extends Component {
                     </Col>
                     <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                       <GeneratePdfReport
-                        summaries={summaries}
+                        summaries={filteredSummaries}
                         weekIndex={index}
                         weekDates={this.weekDates[index]}
                       />
-                      <Button
-                        className="btn--dark-sea-green"
-                        style={boxStyle}
-                        onClick={() => this.setState({ loadBadges: !loadBadges })}
-                      >
-                        {loadBadges ? 'Hide Badges' : 'Load Badges'}
-                      </Button>
+                      {hasSeeBadgePermission && (
+                        <Button
+                          className="btn--dark-sea-green"
+                          style={boxStyle}
+                          onClick={() => this.setState({ loadBadges: !loadBadges })}
+                        >
+                          {loadBadges ? 'Hide Badges' : 'Load Badges'}
+                        </Button>
+                      )}
                       <Button className="btn--dark-sea-green" style={boxStyle}>
                         Load Trophies
                       </Button>
@@ -277,14 +412,20 @@ export class WeeklySummariesReport extends Component {
                   </Row>
                   <Row>
                     <Col>
+                      <b>Total Team Members:</b> {filteredSummaries.length}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
                       <FormattedReport
-                        summaries={summaries}
+                        summaries={filteredSummaries}
                         weekIndex={index}
                         bioCanEdit={this.bioEditPermission}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={allRoleInfo}
                         badges={badges}
                         loadBadges={loadBadges}
+                        canEditTeamCode={this.codeEditPermission}
                       />
                     </Col>
                   </Row>
@@ -311,12 +452,13 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
+  auth: state.auth,
 });
 
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
-  hasPermission: () => hasPermission(),
+  hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
 });
 

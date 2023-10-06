@@ -8,6 +8,8 @@ import {
   USER_DELETE_DATA_INACTIVE,
   USER_DELETE_DATA_ARCHIVE,
   USER_DELETE_OPTION_HEADING,
+  USER_DELETE_CONFIRMATION_USER_NAME,
+  USER_DELETE_CONFIRMATION_FIRST_LINE_CONT
 } from '../../languages/en/messages';
 import { CLOSE } from '../../languages/en/ui';
 import { boxStyle } from 'styles';
@@ -23,7 +25,11 @@ const DeleteUserPopup = React.memo(props => {
     <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>{USER_DELETE_OPTION_HEADING}</ModalHeader>
       <ModalBody>
-        <p>{USER_DELETE_CONFIRMATION_FIRST_LINE}</p>
+        <p>
+          {USER_DELETE_CONFIRMATION_FIRST_LINE}
+          <b>{USER_DELETE_CONFIRMATION_USER_NAME(props?.username)} </b>
+          {USER_DELETE_CONFIRMATION_FIRST_LINE_CONT}
+        </p>
         <p>{USER_DELETE_CONFIRMATION_SECOND_LINE}</p>
         <div style={{ textAlign: 'center', paddingTop: '10px' }}>
           <Button

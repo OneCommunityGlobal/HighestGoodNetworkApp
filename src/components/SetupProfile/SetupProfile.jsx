@@ -9,6 +9,7 @@ const SetupProfile = ({ match }) => {
   const [loading, setLoading] = useState(true);
   const [isValidToken, setIsValidToken] = useState(false);
   const [linktoken, setLinkToken] = useState('');
+  const [email, setEmail] = useState('');
   useEffect(() => {
     const { token } = match.params;
     setLinkToken(token);
@@ -17,6 +18,7 @@ const SetupProfile = ({ match }) => {
       .then(res => {
         if (res.status === 200) {
           setIsValidToken(true);
+          setEmail(res.data.email);
         }
         setLoading(false);
       })
@@ -30,7 +32,7 @@ const SetupProfile = ({ match }) => {
     <>
       {!loading ? (
         isValidToken ? (
-          <SetupProfileUserEntry token={linktoken} />
+          <SetupProfileUserEntry token={linktoken} userEmail={email} />
         ) : (
           <SetupProfileInvalidToken />
         )

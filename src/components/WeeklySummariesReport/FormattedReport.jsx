@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'moment-timezone';
@@ -10,19 +11,25 @@ import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
-import useIsInViewPort from 'utils/useIsInViewPort';
 import {
   Input,
   ListGroup,
   ListGroupItem as LGI,
   Card,
+  Tooltip,
   CardTitle,
   CardBody,
   CardImg,
   CardText,
   UncontrolledPopover,
+  Row,
+  Col,
+  Alert,
 } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
@@ -53,6 +60,7 @@ function FormattedReport({
   allRoleInfo,
   badges,
   loadBadges,
+  canEditTeamCode,
 }) {
   const emails = [];
 
@@ -61,6 +69,32 @@ function FormattedReport({
       emails.push(summary.email);
     }
   });
+  const handleEmailButtonClick = () => {
+    const batchSize = 90;
+    const emailChunks = [];
+
+    for (let i = 0; i < emails.length; i += batchSize) {
+      emailChunks.push(emails.slice(i, i + batchSize));
+    }
+
+    const openEmailClientWithBatchInNewTab = batch => {
+      const emailAddresses = batch.join(', ');
+      const mailtoLink = `mailto:${emailAddresses}`;
+      window.open(mailtoLink, '_blank');
+    };
+
+    emailChunks.forEach((batch, index) => {
+      setTimeout(() => {
+        openEmailClientWithBatchInNewTab(batch);
+      }, index * 2000);
+    });
+  };
+
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const toggleTooltip = () => {
+    setTooltipOpen(!tooltipOpen);
+  };
 
   return (
     <>
@@ -73,12 +107,27 @@ function FormattedReport({
             bioCanEdit={bioCanEdit}
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
+            canEditTeamCode={canEditTeamCode}
             badges={badges}
             loadBadges={loadBadges}
           />
         ))}
       </ListGroup>
-      <h4>Emails</h4>
+      <div className="d-flex align-items-center">
+        <h4>Emails</h4>
+        <Tooltip placement="top" isOpen={tooltipOpen} target="emailIcon" toggle={toggleTooltip}>
+          Launch the email client, organizing the recipient email addresses into batches, each
+          containing a maximum of 90 addresses.
+        </Tooltip>
+        <FontAwesomeIcon
+          className="ml-2"
+          onClick={handleEmailButtonClick}
+          icon={faMailBulk}
+          size="lg"
+          style={{ color: '#0f8aa9', cursor: 'pointer' }}
+          id="emailIcon"
+        />
+      </div>
       <p>{emails.join(', ')}</p>
     </>
   );
@@ -92,9 +141,9 @@ function ReportDetails({
   allRoleInfo,
   badges,
   loadBadges,
+  canEditTeamCode,
 }) {
   const ref = useRef(null);
-  const isInViewPort = useIsInViewPort(ref);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
 
@@ -104,10 +153,10 @@ function ReportDetails({
         <ListGroupItem>
           <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
         </ListGroupItem>
-        {isInViewPort && (
-          <>
+        <Row className="flex-nowrap">
+          <Col xs="6" className="flex-grow-0">
             <ListGroupItem>
-              <b>Media URL:</b> <MediaUrlLink summary={summary} />
+              <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
             </ListGroupItem>
             <ListGroupItem>
               <Bio
@@ -153,14 +202,16 @@ function ReportDetails({
                 </span>
               </ListGroupItem>
             )}
-            {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
-            )}
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
-          </>
-        )}
+          </Col>
+          <Col xs="6">
+            {loadBadges && summary.badgeCollection?.length > 0 && (
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+            )}
+          </Col>
+        </Row>
       </ListGroup>
     </li>
   );
@@ -214,10 +265,79 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
+function TeamCodeRow({ canEditTeamCode, summary }) {
+  const [teamCode, setTeamCode] = useState(summary.teamCode);
+  const [hasError, setHasError] = useState(false);
+  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+
+  const handleOnChange = async (userProfileSummary, newStatus) => {
+    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
+    try {
+      await axios.patch(url, { key: 'teamCode', value: newStatus });
+    } catch (err) {
+      // eslint-disable-next-line no-alert
+      alert(
+        `An error occurred while attempting to save the new team code change to the profile.${err}`,
+      );
+    }
+  };
+
+  const handleCodeChange = e => {
+    const { value } = e.target;
+
+    const regexTest = fullCodeRegex.test(value);
+    if (regexTest) {
+      setHasError(false);
+      setTeamCode(value);
+      handleOnChange(summary, value);
+    } else {
+      setTeamCode(value);
+      setHasError(true);
+    }
+  };
+
+  return (
+    <>
+      <div className="teamcode-wrapper">
+        {canEditTeamCode ? (
+          <div style={{ width: '107px', paddingRight: '5px' }}>
+            <Input
+              id="codeInput"
+              value={teamCode}
+              onChange={e => {
+                if (e.target.value !== teamCode) {
+                  handleCodeChange(e);
+                }
+              }}
+              placeholder="X-XXX"
+            />
+          </div>
+        ) : (
+          <div style={{ paddingRight: '5px' }}>
+            {teamCode === '' ? 'No assigned team code!' : teamCode}
+          </div>
+        )}
+        <b>Media URL:</b>
+        <MediaUrlLink summary={summary} />
+      </div>
+      {hasError ? (
+        <Alert className="code-alert" color="danger">
+          The code format should be A-AAA or AAAAA.
+        </Alert>
+      ) : null}
+    </>
+  );
+}
+
 function MediaUrlLink({ summary }) {
   if (summary.mediaUrl) {
     return (
-      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer">
+      <a
+        href={summary.mediaUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ paddingLeft: '5px' }}
+      >
         Open link to media files
       </a>
     );
@@ -227,7 +347,12 @@ function MediaUrlLink({ summary }) {
     const link = summary.adminLinks.find(item => item.Name === 'Media Folder');
     if (link) {
       return (
-        <a href={link.Link} target="_blank" rel="noopener noreferrer">
+        <a
+          href={link.Link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ paddingLeft: '5px' }}
+        >
           Open link to media files
         </a>
       );
@@ -299,30 +424,20 @@ function Bio({ bioCanEdit, ...props }) {
 
 function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
+  const dispatch = useDispatch();
   const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
-    try {
-      const url = ENDPOINTS.USER_PROFILE(userId);
-      const response = await axios.get(url);
-      const userProfile = response.data;
-      const res = await axios.put(url, {
-        ...userProfile,
-        bioPosted: bioStatus,
-      });
-      if (res.status === 200) {
-        toast.success('You have changed the bio announcement status of this user.');
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-alert
-      alert('An error occurred while attempting to save the bioPosted change to the profile.');
+    const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
+    if (res.status === 200) {
+      toast.success('You have changed the bio announcement status of this user.');
     }
   };
 
   return (
-    <div style={isMeetCriteria ? { backgroundColor: 'yellow' } : {}}>
+    <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
       <div className="bio-toggle">
         <b style={style}>Bio announcement:</b>
       </div>
@@ -376,7 +491,9 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   const badgeThisWeek = [];
   summary.badgeCollection.forEach(badge => {
     if (badge.earnedDate) {
-      if (badge.earnedDate[0] <= badgeEndDate && badge.earnedDate[0] >= badgeStartDate) {
+      const { length } = badge.earnedDate;
+      const earnedDate = moment(badge.earnedDate[length - 1]);
+      if (earnedDate.isBetween(badgeStartDate, badgeEndDate, 'days', '[]')) {
         badgeIdThisWeek.push(badge.badge);
       }
     } else {
@@ -389,47 +506,38 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   if (badgeIdThisWeek.length > 0) {
     badgeIdThisWeek.forEach(badgeId => {
       // eslint-disable-next-line no-shadow
-      const badge = badges.filter(badge => badge._id === badgeId)[0];
+      const badge = badges.find(badge => badge._id === badgeId);
       badgeThisWeek.push(badge);
     });
   }
   return (
     badgeThisWeek.length > 0 && (
-      <ListGroupItem>
-        <table>
-          <tbody>
-            <tr className="badge-tr" key={`${weekIndex}badge_${summary._id}`}>
-              {badgeThisWeek.map(
-                (value, index) =>
-                  value?.showReport && (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <td className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
-                      {' '}
-                      <img src={value.imageUrl} id={`popover_${value._id}`} alt='""' />
-                      <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                        <Card className="text-center">
-                          <CardImg className="badge_image_lg" src={value?.imageUrl} />
-                          <CardBody>
-                            <CardTitle
-                              style={{
-                                fontWeight: 'bold',
-                                fontSize: 18,
-                                color: '#285739',
-                                marginBottom: 15,
-                              }}
-                            >
-                              {value?.badgeName}
-                            </CardTitle>
-                            <CardText>{value?.description}</CardText>
-                          </CardBody>
-                        </Card>
-                      </UncontrolledPopover>
-                    </td>
-                  ),
-              )}
-            </tr>
-          </tbody>
-        </table>
+      <ListGroupItem className="row">
+        {badgeThisWeek.map((value, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
+            {' '}
+            <img src={value.imageUrl} id={`popover_${value._id}`} alt='""' />
+            <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+              <Card className="text-center">
+                <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                <CardBody>
+                  <CardTitle
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: 18,
+                      color: '#285739',
+                      marginBottom: 15,
+                    }}
+                  >
+                    {value?.badgeName}
+                  </CardTitle>
+                  <CardText>{value?.description}</CardText>
+                </CardBody>
+              </Card>
+            </UncontrolledPopover>
+          </div>
+        ))}
       </ListGroupItem>
     )
   );

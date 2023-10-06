@@ -10,11 +10,17 @@ import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
+import { getInfoCollections } from '../../actions/information';
+import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
 
-function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile }) {
+function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile, hasPermission, getInfoCollections }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
+
+  const canPostRole = hasPermission('postRole');
+  const canPutRole = hasPermission('putRole');
+  const canManageUserPermissions = hasPermission('putUserProfilePermissions');
 
   const history = useHistory();
   const togglePopUpNewRole = () => {
@@ -27,6 +33,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
 
   useEffect(() => {
     getAllRoles();
+    getInfoCollections();
     getUserRole(auth?.user.userid);
   }, []);
 
@@ -40,7 +47,8 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     <div key={`${role}+permission`} className="permissions-management">
       <h1 className="permissions-management__title">User Roles</h1>
       <div key={`${role}_header`} className="permissions-management__header">
-        <div key={`${role}_name`} className="role-name-container">
+        {canPutRole &&
+          <div key={`${role}_name`} className="role-name-container">
           {roleNames?.map(roleName => {
             const roleNameLC = roleName.toLowerCase().replace(' ', '-');
             return (
@@ -64,8 +72,10 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
             );
           })}
         </div>
-        {userProfile?.role === 'Owner' && (
+        }
+        {(canPostRole || canManageUserPermissions) && (
           <div className="buttons-container">
+            {canPostRole &&
             <Button
               className="permissions-management__button"
               type="button"
@@ -74,7 +84,8 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
               style={boxStyle}
             >
               Add New Role
-            </Button>
+            </Button>}
+            {(canManageUserPermissions) &&
             <Button
               color="primary"
               className="permissions-management__button"
@@ -85,7 +96,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
               style={boxStyle}
             >
               Manage User Permissions
-            </Button>
+            </Button>}
           </div>
         )}
       </div>
@@ -129,10 +140,12 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  getInfoCollections: () => dispatch(getInfoCollections()),
   getAllRoles: () => dispatch(getAllRoles()),
   updateUserProfile: data => dispatch(updateUserProfile(data)),
-  getAllUsers: () => dispatch(getAllUserProfile),
+  getAllUsers: () => dispatch(getAllUserProfile()),
   getUserRole: id => dispatch(getUserProfile(id)),
+  hasPermission: action => dispatch(hasPermission(action)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PermissionsManagement);
