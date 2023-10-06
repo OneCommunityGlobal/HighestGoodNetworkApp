@@ -30,10 +30,10 @@ const mapPermissionToLabel = permissions => {
 };
 
 export const  modalInfo = {
-  'See Weekly Summary Reports Tab':
-    'Make the "Other Links" -> "Reports" button appear/accessible.',
+  'See All the Reports Tabs (Full Functionality)':
+    'Make BOTH "Reports -> “Reports” AND "Reports -> “Weekly Summaries Reports” options appear/accessible.',
   'See Only Weekly Summaries Reports Tab':
-    'Make the "Other Links" -> "Reports" button appear/accessible and ONLY weekly summaries appears.',
+    'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible. ',
   'See User Management Tab (Full Functionality)':
     'Make the "Other Links" -> "User Management" button appear/accessible and be able to create, delete, and update users.',
     'See Badge Management Tab (Full Functionality)':
