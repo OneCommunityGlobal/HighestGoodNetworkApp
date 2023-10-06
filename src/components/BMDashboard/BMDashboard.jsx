@@ -1,5 +1,5 @@
 import { Row, Col, Container, Form, Button } from 'reactstrap';
-import  ProjectsList  from './Projects/ProjectsList';
+import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import './BMDashboard.css';
 
@@ -22,7 +22,6 @@ const dummyProjects = [
   },
 ];
 
-
 export const BMDashboard = () => {
   return (
     <Container className="justify-content-center align-items-center mw-80 px-4">
@@ -31,9 +30,7 @@ export const BMDashboard = () => {
       </header>
       <main>
         <ProjectSelectForm projects={dummyProjects} />
-        <Row className="ml-0 mt-2 text-center">
-          <ProjectsList projects={dummyProjects} />
-        </Row>
+        <ProjectsList projects={dummyProjects} />
       </main>
     </Container>
   );

@@ -4,7 +4,7 @@ import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
 
 const ProjectSelectForm = ({ projects }) => {
   const history = useHistory();
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useState('');
 
   const selectOptions = projects.map(project => {
     return (
@@ -44,7 +44,9 @@ const ProjectSelectForm = ({ projects }) => {
               value={selectedProjectId}
               onChange={handleOptionChange}
             >
-              <option default>Select a project</option>
+              <option value="" default>
+                Select a project
+              </option>
               {selectOptions}
             </Input>
           </Col>
