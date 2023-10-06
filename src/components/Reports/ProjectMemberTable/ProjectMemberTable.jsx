@@ -119,13 +119,14 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
             : handleMemberCount(activeMemberList.length)}
         </div>
       </div>
+      <div className='scroll_x'>
       <div className="reports-table-head-members">
         <div className="reports-table-head-cell">#</div>
         <div className="reports-table-head-cell">Name</div>
         <div className="reports-table-head-cell">Active</div>
         <div className="reports-table-head-cell">ID</div>
       </div>
-      <div className='scroll_x'>
+    
         {memberFilter == 'all-time' ? (
           allMemberTable.length > 0 ? (
             allMemberTable
