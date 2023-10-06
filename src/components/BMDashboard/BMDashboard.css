@@ -1,18 +1,19 @@
-.bm-dashboard__header{
-  font-size: 1em;
- 
+.bm-dashboard__header h1{
+  font-size: 1.5em;
+  text-align: center;
+  margin-top: 2em;
+}
+
+.bm-dashboard__button.btn.btn-secondary{
+  background-color: #2e5061;
 }
 
 @media (min-width: 650px){
-  .bm-dashboard__header{
-  font-size: 1.5em;  
-}
 
 .bm-dashboard__button.btn.btn-secondary{
   padding-left: 0;
   padding-right: 0;
   max-height: 38px;
-  background-color: #2e5061;
 }
 }
 
