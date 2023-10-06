@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import TeamMembersPopup from 'components/Teams/TeamMembersPopup';
 import thunk from 'redux-thunk';
 import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
 const mockStore = configureStore([thunk]);
@@ -65,5 +65,11 @@ describe('TeamMembersPopup', () => {
   it('should render "Close" button', () => {
     renderComponent({ ...initialState, usersdata });
     expect(screen.getByText('Close')).toBeInTheDocument();
+  });
+
+  it('should call closePopup function', () => {
+    renderComponent({ ...initialState, usersdata });
+    fireEvent.click(screen.getByText('Close'));
+    expect(initialState.onClose).toHaveBeenCalledTimes(1);
   });
 });
