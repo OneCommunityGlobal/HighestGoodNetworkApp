@@ -4,26 +4,30 @@ import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
 
 const ProjectSelectForm = ({ projects }) => {
   const history = useHistory();
-  const [selectedProject, setSelectedProject] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   const selectOptions = projects.map(project => {
-    return <option key={project.projectId} value={project}>{project.projectName}</option>;
+    return (
+      <option key={project.projectId} value={project.projectId}>
+        {project.projectName}
+      </option>
+    );
   });
 
-  const handleOptionChange = (event) => {
-    setSelectedProject(event.target.value);
+  const handleOptionChange = event => {
+    console.log('option change', event.target.value);
+    setSelectedProjectId(event.target.value);
   };
 
-
   const handleButtonClick = () => {
-    if (selectedProject) {
+    if (selectedProjectId) {
       //navigate to a new page with information about the selected project
-      history.push('/bmdashboard/${selectedProject.projectId}')
+      console.log('selectedProjectId', selectedProjectId);
+      history.push(`/bmdashboard/projects/${selectedProjectId}`);
     } else {
       alert('Please select an option first');
     }
   };
-
 
   return (
     <Form className="w-100 p-3  text-center">
@@ -37,15 +41,18 @@ const ProjectSelectForm = ({ projects }) => {
               id="projectSelect"
               name="select"
               type="select"
-              value={selectedProject}
-              onChange={handleOptionChange}>
+              value={selectedProjectId}
+              onChange={handleOptionChange}
+            >
               <option default>Select a project</option>
               {selectOptions}
             </Input>
           </Col>
         </FormGroup>
         <Col className="p-3">
-          <Button className="bm-dashboard__button w-100" onClick={handleButtonClick}>Go to Project Dashboard</Button>
+          <Button className="bm-dashboard__button w-100" onClick={handleButtonClick}>
+            Go to Project Dashboard
+          </Button>
         </Col>
       </Row>
     </Form>

@@ -1,8 +1,12 @@
-import React from 'react'
+import React from 'react';
+import { useParams } from 'react-router-dom';
 
-const ProjectDetails = ({project}) => {
+const ProjectDetails = ({ project }) => {
+  
+  const { projectId } = useParams();
+
   return (
-    <div>Welcome to the {project.projectName} Details Page</div>
+    <div style={{textAlign:'center', marginTop:'5em'}}>Welcome to Project #{projectId} Details Page</div>
   )
 }
 
