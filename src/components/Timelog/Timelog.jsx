@@ -278,40 +278,44 @@ const Timelog = props => {
   };
 
   const buildOptions = async () => {
-    //build options for the project and task
+    // Build options for the project and task
     let projects = [];
     if (!isEmpty(userProjects.projects)) {
       projects = userProjects.projects;
     }
-    const options = projects.map(project => (
-      <option value={project.projectId} key={project.projectId}>
-        {' '}
-        {project.projectName}{' '}
+    const projectOptions = projects.map(project => (
+        //Added 'projects-' to id so its unique 
+      <option value={project.projectId} key={`project-${project.projectId}`}>
+        {project.projectName}
       </option>
     ));
-    options.unshift(
+  
+    const allProjectOptions = (
       <option value="all" key="all">
         All Projects and Tasks (Default)
-      </option>,
+      </option>
     );
-
+  
     let tasks = [];
     if (!isEmpty(userTask)) {
       tasks = userTask;
     }
     const activeTasks = tasks.filter(task =>
       task.resources.some(
-        resource => resource.userID === auth.user.userid && !resource.completedTask,
-      ),
+        resource => resource.userID === auth.user.userid && !resource.completedTask
+      )
     );
     const taskOptions = activeTasks.map(task => (
-      <option value={task._id} key={task._id}>
+      //Added 'taks-' to id so its unique 
+      <option value={task._id} key={`task-${task._id}`}>
         {task.taskName}
       </option>
     ));
-    const allOptions = options.concat(taskOptions);
+  
+    const allOptions = [allProjectOptions, ...projectOptions, ...taskOptions];
     return allOptions;
   };
+  
 
   const [error, setError] = useState(null);
   const [initialTab, setInitialTab] = useState(null);
