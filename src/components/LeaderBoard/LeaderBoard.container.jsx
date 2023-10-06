@@ -1,8 +1,10 @@
-import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
 import { connect } from 'react-redux';
+import { get, round, maxBy } from 'lodash';
+import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
 import Leaderboard from './Leaderboard';
 import { getcolor, getprogress } from '../../utils/effortColors';
 import { get, round } from 'lodash';
+import { getMouseoverText } from '../../actions/mouseoverTextAction';
 
 const mapStateToProps = state => {
   let user = get(state, 'userProfile', []);
