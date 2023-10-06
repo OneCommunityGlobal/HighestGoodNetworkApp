@@ -204,17 +204,24 @@ function UserProfile(props) {
   const loadTeamDetails = async teamId => {
     const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
     const { data } = res;
+    console.log('Data', data);
 
     const memberSubmitted = [];
     const memberNotSubmitted = [];
+    let manager = '';
 
     data.forEach(member => {
+      if (member.role === 'Manager') {
+        manager = `${member.firstName} ${member.lastName}`;
+      }
       member.weeklySummaries[0].summary !== ''
         ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
         : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
     });
 
-    const string = `This week’s summary was managed by <Your Name> and includes ${memberSubmitted.join(
+    const string = `This week’s summary was managed by ${
+      manager ? manager : '<Your Name>'
+    } and includes ${memberSubmitted.join(
       ', ',
     )}. These people did NOT provide a summary ${memberNotSubmitted.join(
       ', ',
@@ -619,7 +626,6 @@ function UserProfile(props) {
     setUserEndDate(endDate);
   };
 
-  console.log('props', props);
   return (
     <div>
       <ActiveInactiveConfirmationPopup
