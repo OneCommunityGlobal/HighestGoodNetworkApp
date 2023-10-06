@@ -42,7 +42,6 @@ const SummaryBar = props => {
 
   const [weeklySummary, setWeeklySummary] = useState(null);
 
-
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
   const gsUserprofile = useSelector(state => state.userProfile);
@@ -114,18 +113,18 @@ const SummaryBar = props => {
     if (!userProfile || !userProfile.badgeCollection) {
       return 0;
     }
-  
+
     let totalBadges = 0;
     userProfile.badgeCollection.forEach(badge => {
       if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
         totalBadges += 1;
       } else {
-        totalBadges += Math.round(Number(badge.count));        
+        totalBadges += Math.round(Number(badge.count));
       }
     });
-  
+
     return totalBadges;
-  };  
+  };
 
   const getState = useSelector(state => {
     return state;
@@ -144,24 +143,23 @@ const SummaryBar = props => {
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
-//refactored for rading form values
-  const readFormData = (formid) =>{
+  //refactored for rading form values
+  const readFormData = formid => {
     let form = document.getElementById(formid);
     let formData = new FormData(form);
     let data = {};
     let isvalid = true;
 
     formData.forEach(function(value, key) {
-      if(value.trim() !== '' ){
-        data[key] = value
-      }else{
+      if (value.trim() !== '') {
+        data[key] = value;
+      } else {
         isvalid = false;
       }
-
     });
 
     return isvalid ? data : null;
-  }
+  };
 
   const openReport = () => {
     const htmlStr = '';
@@ -174,7 +172,7 @@ const SummaryBar = props => {
 
   const sendBugReport = event => {
     event.preventDefault();
-    const data = readFormData('bugReportForm')
+    const data = readFormData('bugReportForm');
     data['firstName'] = userProfile.firstName;
     data['lastName'] = userProfile.lastName;
     data['email'] = userProfile.email;
@@ -182,69 +180,82 @@ const SummaryBar = props => {
     httpService.post(`${ApiEndpoint}/dashboard/bugreport/${userProfile._id}`, data).catch(e => {});
     openReport();
   };
-//
-  const setnewfields = (fielddata, setfield) =>{
-    setfield(prev =>{
+  //
+  const setnewfields = (fielddata, setfield) => {
+    setfield(prev => {
       let newarr = prev;
-      if(fielddata.action === 'add') newarr.unshift(fielddata.newField);
-      if(fielddata.action === 'delete'){
+      if (fielddata.action === 'add') newarr.unshift(fielddata.newField);
+      if (fielddata.action === 'delete') {
         newarr = newarr.filter((item, index) => {
-          return fielddata.field ?  fielddata.newField !== item : +fielddata.newField !== index + 1
+          return fielddata.field ? fielddata.newField !== item : +fielddata.newField !== index + 1;
         });
-      };
+      }
       return newarr;
     });
-  }
- //add new text field or suggestion category by owner class and update the backend
-  const editField = async (event) =>{
+  };
+  //add new text field or suggestion category by owner class and update the backend
+  const editField = async event => {
     event.preventDefault();
     const data = readFormData('newFieldForm');
 
-    if(data){
-      if(extraFieldForSuggestionForm === 'suggestion'){
+    if (data) {
+      if (extraFieldForSuggestionForm === 'suggestion') {
         data.suggestion = true;
         data.field = false;
         setnewfields(data, setSuggestionCategory);
-      }else if(extraFieldForSuggestionForm === 'field'){
+      } else if (extraFieldForSuggestionForm === 'field') {
         data.suggestion = false;
-        data.field = true
+        data.field = true;
         setnewfields(data, setInputField);
       }
-        setExtraFieldForSuggestionForm('');
-        seteditType('');
-        httpService.post(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`, data).catch(e => {});
-    }else{
-      toast.error('Please fill all fields with valid values.')
+      setExtraFieldForSuggestionForm('');
+      seteditType('');
+      httpService
+        .post(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`, data)
+        .catch(e => {});
+    } else {
+      toast.error('Please fill all fields with valid values.');
     }
-  }
+  };
 
-  const sendUserSuggestion = async event =>{
+  const sendUserSuggestion = async event => {
     event.preventDefault();
-    const data = readFormData('suggestionForm')
+    const data = readFormData('suggestionForm');
 
-    if(data){
+    if (data) {
       setShowSuggestionModal(prev => !prev);
-      const res = await httpService.post(`${ApiEndpoint}/dashboard/makesuggestion/${userProfile._id}`, data).catch(e => {});
-    if(res.status === 200){
-      toast.success('Email sent successfully!');
-    }else{
-       toast.error('Failed to send email!');
+      const res = await httpService
+        .post(`${ApiEndpoint}/dashboard/makesuggestion/${userProfile._id}`, data)
+        .catch(e => {});
+      if (res.status === 200) {
+        toast.success('Email sent successfully!');
+      } else {
+        toast.error('Failed to send email!');
+      }
+    } else {
+      toast.error('Please fill all fields with valid values.');
     }
-    }else{
-      toast.error('Please fill all fields with valid values.')
-    }
-  }
+  };
 
   const openSuggestionModal = async () => {
-    if(!showSuggestionModal){
-      let res = await httpService.get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`).catch(e => {});
-      if(res.status == 200){
+    if (!showSuggestionModal) {
+      try {
+        let res = await httpService.get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`);
+        
+        if (res && res.status === 200) {
           setSuggestionCategory(res.data.suggestion);
           setInputField(res.data.field);
+        } else {
+          console.error(res.status);
+          // Handle the error as needed
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        // Handle the error
       }
     }
-    setShowSuggestionModal(prev => !prev)
-  }
+    setShowSuggestionModal(prev => !prev);
+  };
 
   const onTaskClick = () => {
     window.location.hash = '#tasks';
@@ -257,7 +268,8 @@ const SummaryBar = props => {
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
     return latestSummary && new Date() < new Date(latestSummary.dueDate)
-      ? latestSummary.summary : '';
+      ? latestSummary.summary
+      : '';
   };
 
   if (userProfile !== undefined && summaryBarData !== undefined) {
@@ -293,11 +305,9 @@ const SummaryBar = props => {
           <Col className="d-flex col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
               {totalEffort < weeklyCommittedHours && (
-                <div className="border-red col-4 bg--white-smoke" >
+                <div className="border-red col-4 bg--white-smoke">
                   <div className="py-1"> </div>
-                  <p className="text-center large_text_summary text--black text-danger" >
-                    ! 
-                  </p>
+                  <p className="text-center large_text_summary text--black text-danger">!</p>
                   <font className="text-center text--black" size="3">
                     HOURS
                   </font>
@@ -305,20 +315,17 @@ const SummaryBar = props => {
                 </div>
               )}
               {totalEffort >= weeklyCommittedHours && (
-                <div className="border-green col-4 bg--dark-green" >
+                <div className="border-green col-4 bg--dark-green">
                   <div className="py-1"> </div>
-                  <p className="text-center large_text_summary text--black" >
-                    ✓
-                  </p>
-                  <font className="text-center" size="3">HOURS</font>
+                  <p className="text-center large_text_summary text--black">✓</p>
+                  <font className="text-center" size="3">
+                    HOURS
+                  </font>
                   <div className="py-2"> </div>
                 </div>
               )}
 
-              <div
-                className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center"
-
-              >
+              <div className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center">
                 <div className="align-items-center" id="timelogweeklychart">
                   <div className="text--black align-items-center med_text_summary">
                     Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
@@ -336,20 +343,22 @@ const SummaryBar = props => {
           <Col className="d-flex col-lg-3 col-12 no-gutters">
             <Row className="no-gutters">
               {!weeklySummary ? (
-                <div className="border-red col-4 bg--white-smoke no-gutters" >
+                <div className="border-red col-4 bg--white-smoke no-gutters">
                   <div className="py-1"> </div>
                   {matchUser || canPutUserProfileImportantInfo ? (
                     <p
-                      className={'text-center summary-toggle large_text_summary text--black text-danger'}
-
+                      className={
+                        'text-center summary-toggle large_text_summary text--black text-danger'
+                      }
                       onClick={props.toggleSubmitForm}
                     >
                       !
                     </p>
                   ) : (
                     <p
-                      className={'text-center summary-toggle large_text_summary text--black text-danger'}
-
+                      className={
+                        'text-center summary-toggle large_text_summary text--black text-danger'
+                      }
                     >
                       !
                     </p>
@@ -361,9 +370,9 @@ const SummaryBar = props => {
                   <div className="py-2"> </div>
                 </div>
               ) : (
-                <div className="border-green col-4 bg--dark-green" >
+                <div className="border-green col-4 bg--dark-green">
                   <div className="py-1"> </div>
-                  <p className="text-center large_text_summary text--black" >
+                  <p onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
                     ✓
                   </p>
                   <font className="text-center text--black" size="3">
@@ -377,8 +386,8 @@ const SummaryBar = props => {
                 className="col-8 border-black bg--white-smoke d-flex align-items-center"
 
               >
-                <div className="m-auto p-2 text-justify">
-                  <font className="text--black med_text_summary align-middle" size="3">
+                <div className="m-auto p-2 text-center">
+                  <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
                     {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
                     ) : matchUser ? (
@@ -449,7 +458,12 @@ const SummaryBar = props => {
               &nbsp;&nbsp;
               <div className="image_frame">
                 {matchUser ? (
-                  <img className="sum_img" src={suggestions_icon} alt="" onClick={openSuggestionModal} />
+                  <img
+                    className="sum_img"
+                    src={suggestions_icon}
+                    alt=""
+                    onClick={openSuggestionModal}
+                  />
                 ) : (
                   <img className="sum_img" src={suggestions_icon} alt="" />
                 )}
@@ -460,108 +474,159 @@ const SummaryBar = props => {
           <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal}>
             <ModalHeader>User Suggestion</ModalHeader>
             <ModalBody>
-              {userProfile.role === 'Owner'  && !extraFieldForSuggestionForm &&
+              {userProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
                 <FormGroup>
-                  <Button onClick={()=> setExtraFieldForSuggestionForm('suggestion')} type="button" color="success" size="md">
+                  <Button
+                    onClick={() => setExtraFieldForSuggestionForm('suggestion')}
+                    type="button"
+                    color="success"
+                    size="md"
+                  >
                     Edit Category
                   </Button>{' '}
                   &nbsp;&nbsp;&nbsp;
-                  <Button  onClick={()=> setExtraFieldForSuggestionForm('field')} type="button" color="success" size="md">
+                  <Button
+                    onClick={() => setExtraFieldForSuggestionForm('field')}
+                    type="button"
+                    color="success"
+                    size="md"
+                  >
                     Edit Field
                   </Button>
                 </FormGroup>
-              }
+              )}
 
-              {extraFieldForSuggestionForm &&
-                 <Form onSubmit={editField} id="newFieldForm" style={{border:'1px solid gray', padding:'5px 10px', margin: '5px 10px'}}>
-                    <FormGroup tag="fieldset" id='fieldsetinner'>
-                      <legend style={{fontSize:'16px'}}>Select Action type:</legend>
-                      <FormGroup check>
-                        <Label check>
-                          <Input onChange={()=> seteditType('add')} type="radio" name="action" value={'add'} required/> Add
-                        </Label>
-                      </FormGroup>
-                      <FormGroup check>
-                        <Label check>
-                           <Input onChange={()=> seteditType('delete')} type="radio" name="action" value={'delete'} required disabled={extraFieldForSuggestionForm === 'field' && inputFiled.length === 0}/> Delete
-                        </Label>
-                      </FormGroup>
+              {extraFieldForSuggestionForm && (
+                <Form
+                  onSubmit={editField}
+                  id="newFieldForm"
+                  style={{ border: '1px solid gray', padding: '5px 10px', margin: '5px 10px' }}
+                >
+                  <FormGroup tag="fieldset" id="fieldsetinner">
+                    <legend style={{ fontSize: '16px' }}>Select Action type:</legend>
+                    <FormGroup check>
+                      <Label check>
+                        <Input
+                          onChange={() => seteditType('add')}
+                          type="radio"
+                          name="action"
+                          value={'add'}
+                          required
+                        />{' '}
+                        Add
+                      </Label>
                     </FormGroup>
-                    {editType !== '' && <FormGroup>
-                      <Label for="newField">{extraFieldForSuggestionForm === 'suggestion' ?
-                                             editType === 'delete' ? 'Delete category (Write the suggestion category number from the dropdown to delete it).' : 'Add category' :
-                                             editType === 'add' ? 'Add Field' : 'Delete field (Copy the field name to delete it).'}
+                    <FormGroup check>
+                      <Label check>
+                        <Input
+                          onChange={() => seteditType('delete')}
+                          type="radio"
+                          name="action"
+                          value={'delete'}
+                          required
+                          disabled={
+                            extraFieldForSuggestionForm === 'field' && inputFiled.length === 0
+                          }
+                        />{' '}
+                        Delete
+                      </Label>
+                    </FormGroup>
+                  </FormGroup>
+                  {editType !== '' && (
+                    <FormGroup>
+                      <Label for="newField">
+                        {extraFieldForSuggestionForm === 'suggestion'
+                          ? editType === 'delete'
+                            ? 'Delete category (Write the suggestion category number from the dropdown to delete it).'
+                            : 'Add category'
+                          : editType === 'add'
+                          ? 'Add Field'
+                          : 'Delete field (Copy the field name to delete it).'}
                       </Label>
                       <Input
-                          type="textarea"
-                          name="newField"
-                          id="newField"
-                          placeholder={extraFieldForSuggestionForm === 'suggestion' ? editType === 'delete'  ? 'write the category number, like 1 or 2 etc': 'write the category name': 'write the field name'}
-                          required
-                        />
-                    </FormGroup>}
-                    <Button id='add' type="submit" color="success" size="md">
-                       Submit
-                    </Button>{' '}
-                    &nbsp;&nbsp;&nbsp;
-                    <Button onClick={()=>{
+                        type="textarea"
+                        name="newField"
+                        id="newField"
+                        placeholder={
+                          extraFieldForSuggestionForm === 'suggestion'
+                            ? editType === 'delete'
+                              ? 'write the category number, like 1 or 2 etc'
+                              : 'write the category name'
+                            : 'write the field name'
+                        }
+                        required
+                      />
+                    </FormGroup>
+                  )}
+                  <Button id="add" type="submit" color="success" size="md">
+                    Submit
+                  </Button>{' '}
+                  &nbsp;&nbsp;&nbsp;
+                  <Button
+                    onClick={() => {
                       seteditType('');
                       setExtraFieldForSuggestionForm('');
-                      }} type="button" color="danger" size="md">
-                       Cancel
-                    </Button>
-                 </Form>
-              }
+                    }}
+                    type="button"
+                    color="danger"
+                    size="md"
+                  >
+                    Cancel
+                  </Button>
+                </Form>
+              )}
               <Form onSubmit={sendUserSuggestion} id="suggestionForm">
                 <FormGroup>
                   <Label for="suggestioncate">Please select a category of your suggestion:</Label>
 
-                  <Input onChange={()=> setTakeInput(true)} type="select" name="suggestioncate" id="suggestioncate" defaultValue={""} required>
-                    <option disabled  value=""  hidden>
+                  <Input
+                    onChange={() => setTakeInput(true)}
+                    type="select"
+                    name="suggestioncate"
+                    id="suggestioncate"
+                    defaultValue={''}
+                    required
+                  >
+                    <option disabled value="" hidden>
                       {' '}
                       -- select an option --{' '}
                     </option>
-                    {suggestionCategory.map((item,index) => {
-                        return <option key={index} value={item}>{`${index+1}. ${item}`}</option>
+                    {suggestionCategory.map((item, index) => {
+                      return <option key={index} value={item}>{`${index + 1}. ${item}`}</option>;
                     })}
                   </Input>
                 </FormGroup>
-                  {takeInput &&
+                {takeInput && (
                   <FormGroup>
-                  <Label for="suggestion">
-                    {' '}
-                    Write your suggestion.{' '}
-                  </Label>
-                  <Input
-                    type="textarea"
-                    name="suggestion"
-                    id="suggestion"
-                    placeholder="I suggest ..."
-                    required
-                  />
-                 </FormGroup>}
-                {inputFiled.length > 0 && inputFiled.map((item, index) =>
-                  <FormGroup key={index}>
-                  <Label for="title">{item} </Label>
-                  <Input
-                    type="textbox"
-                    name={item}
-                    id={item}
-                    placeholder=""
-                    required
-                  />
-                 </FormGroup>
+                    <Label for="suggestion"> Write your suggestion. </Label>
+                    <Input
+                      type="textarea"
+                      name="suggestion"
+                      id="suggestion"
+                      placeholder="I suggest ..."
+                      required
+                    />
+                  </FormGroup>
                 )}
-                <FormGroup tag="fieldset" id='fieldset'>
-                  <legend style={{fontSize:'16px'}}>Would you like a followup/reply regarding this feedback?</legend>
+                {inputFiled.length > 0 &&
+                  inputFiled.map((item, index) => (
+                    <FormGroup key={index}>
+                      <Label for="title">{item} </Label>
+                      <Input type="textbox" name={item} id={item} placeholder="" required />
+                    </FormGroup>
+                  ))}
+                <FormGroup tag="fieldset" id="fieldset">
+                  <legend style={{ fontSize: '16px' }}>
+                    Would you like a followup/reply regarding this feedback?
+                  </legend>
                   <FormGroup check>
                     <Label check>
-                      <Input type="radio" name="confirm" value={'yes'} required/> Yes
+                      <Input type="radio" name="confirm" value={'yes'} required /> Yes
                     </Label>
                   </FormGroup>
                   <FormGroup check>
                     <Label check>
-                      <Input type="radio" name="confirm" value={'no'} required/> No
+                      <Input type="radio" name="confirm" value={'no'} required /> No
                     </Label>
                   </FormGroup>
                 </FormGroup>
@@ -570,7 +635,11 @@ const SummaryBar = props => {
                     Submit
                   </Button>{' '}
                   &nbsp;&nbsp;&nbsp;
-                  <Button onClick={()=> setShowSuggestionModal(prev => !prev)} color="danger" size="lg">
+                  <Button
+                    onClick={() => setShowSuggestionModal(prev => !prev)}
+                    color="danger"
+                    size="lg"
+                  >
                     Close
                   </Button>
                 </FormGroup>
@@ -578,7 +647,7 @@ const SummaryBar = props => {
             </ModalBody>
           </Modal>
 
-          <Modal  isOpen={report.in} toggle={openReport} >
+          <Modal isOpen={report.in} toggle={openReport}>
             <ModalHeader>Bug Report</ModalHeader>
             <ModalBody>
               <Form onSubmit={sendBugReport} id="bugReportForm">
@@ -649,8 +718,8 @@ const SummaryBar = props => {
                 </FormGroup>
                 <FormGroup>
                   <Label for="severity">Severity/Priority (How Bad is the Bug?) </Label>
-                  <Input type="select" name="severity" id="severity" defaultValue={""} required>
-                    <option hidden value="" disabled >
+                  <Input type="select" name="severity" id="severity" defaultValue={''} required>
+                    <option hidden value="" disabled>
                       {' '}
                       -- select an option --{' '}
                     </option>
