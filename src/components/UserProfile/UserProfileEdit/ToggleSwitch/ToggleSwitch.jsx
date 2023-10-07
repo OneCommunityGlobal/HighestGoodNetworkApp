@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
-const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTeamMembersVisiblity }) => {
+const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTeamMembersVisiblity, userId }) => {
+
+  const[visiblity,setVisiblity]=useState(true);
   switch (switchType) {
     case 'bluesquares':
       if (state) {
@@ -194,15 +196,19 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTe
                 id="teamVisiblity"
                 type="checkbox"
                 className={style.toggle}
-                onChange={UpdateTeamMembersVisiblity}
+                onChange={ (event)=>{
+                  setVisiblity(event.target.checked);
+                  UpdateTeamMembersVisiblity(userId,visiblity);
+                }
+                }
                 defaultChecked
               />
               {/* No */}
             </div>
           </div>
         );
-      default:
-        break;
+    default:
+      break;
   }
   return <div>ERROR: Toggle Switch.</div>;
 };

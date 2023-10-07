@@ -91,7 +91,11 @@ const TeamMembersPopup = React.memo(props => {
   });
   
   // add logic to update the team Visiblity
-  const UpdateTeamMembersVisiblity = () => {};
+  const UpdateTeamMembersVisiblity = (useId, choice) => {
+    console.log(userId);
+    console.log(choice);
+
+  };
 
   useEffect(() => {
     sortList(sortOrder)
@@ -140,6 +144,7 @@ const TeamMembersPopup = React.memo(props => {
                     <td>
                       <ToggleSwitch
                         switchType="limit-visiblity"
+                        userId={user._id}
                         UpdateTeamMembersVisiblity={UpdateTeamMembersVisiblity}
                       />
                     </td>
@@ -162,9 +167,6 @@ const TeamMembersPopup = React.memo(props => {
           </table>
         </ModalBody>
         <ModalFooter>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
-            Save 
-          </Button>
           <Button color="secondary" onClick={closePopup} style={boxStyle}>
             Close
           </Button>
