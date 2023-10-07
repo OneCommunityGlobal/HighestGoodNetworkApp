@@ -1,5 +1,7 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
+import './SelectForm.css';
+
 export default function SelectForm({ materials, setSelectedProject }) {
   // create selectable projects
   let projectsSet = [];

@@ -1,6 +1,8 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
 
+import './RecordsModal.css';
+
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
   if (record) {
     const toggle = () => {
@@ -9,7 +11,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
     };
 
     return (
-      <Modal isOpen={modal} size="lg">
+      <Modal isOpen={modal} contentClassName="custom-modal-style" size="xl">
         <ModalHeader>{recordType} Record</ModalHeader>
         <ModalBody>
           <Table>

@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
+import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import MaterialsTable from './MaterialsTable';
-import './MaterialsList.css';
 
 export function MaterialsList(props) {
   // console.log('materials props: ', props);
@@ -50,15 +50,9 @@ export function MaterialsList(props) {
 
   if (isError) {
     return (
-      <main>
+      <main className="container mt-3">
         <h2>Materials List</h2>
-        <section>
-          <p>There was an error!</p>
-          <p>Error Code: {error.status}</p>
-          <p>Error Message: {error.message}</p>
-          <p>Try again:</p>
-          <button onClick={() => location.reload()}>Reload</button>
-        </section>
+        <BMError error={error} />
       </main>
     );
   }
@@ -66,7 +60,7 @@ export function MaterialsList(props) {
   return (
     <main className="container mt-3">
       <h3>Materials</h3>
-      <section className="materials_list_section">
+      <section style={{ marginTop: '2rem' }}>
         <SelectForm materials={materials} setSelectedProject={setSelectedProject} />
         <MaterialsTable filteredMaterials={filteredMaterials} />
       </section>
