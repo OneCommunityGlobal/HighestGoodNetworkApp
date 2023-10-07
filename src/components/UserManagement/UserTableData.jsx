@@ -43,9 +43,6 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
       </td>
-      {/* <td>       
-        <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>     
-      </td> */}
       <td className="email_cell">
       <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
         <FontAwesomeIcon
@@ -57,9 +54,6 @@ const UserTableData = React.memo(props => {
           }}
         />
       </td>
-      {/* <td>
-        <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
-      </td> */}
        <td className="email_cell">
        <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
         <FontAwesomeIcon
@@ -120,7 +114,7 @@ const UserTableData = React.memo(props => {
           ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
-      {/* <td>{props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}</td> */}
+      
       <td className="email_cell">
       {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
         <FontAwesomeIcon
