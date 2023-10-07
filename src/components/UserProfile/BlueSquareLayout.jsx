@@ -128,7 +128,7 @@ const BlueSquareLayout = props => {
             className="w-100"
             size="md"
             style={boxStyle}
-            disabled={true} //  disabled the Schedule Blue Square button.
+            //disabled={true} //  disabled the Schedule Blue Square button.
             title="This functionality doesn't work currently. Please contact your manager."
           >
             {fetchState.isFetching ? (
