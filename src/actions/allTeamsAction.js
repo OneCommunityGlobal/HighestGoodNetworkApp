@@ -12,6 +12,7 @@ import {
   FETCH_TEAM_USERS_ERROR,
   TEAM_MEMBER_DELETE,
   TEAM_MEMBER_ADD,
+  UPDATE_TEAM_MEMBER_VISIBLITY,
 } from '../constants/allTeamsConstants';
 
 /**
@@ -99,6 +100,13 @@ delete team member action
 export const teamMemberAddAction = (member) => ({
   type: TEAM_MEMBER_ADD,
   member,
+});
+
+export const updateVisibilityAction = (teamId, userId, visibility) => ({
+  type: UPDATE_TEAM_MEMBER_VISIBLITY,
+  teamId,
+  userId,
+  visibility,
 });
 
 /**
@@ -201,5 +209,21 @@ export const addTeamMember = (teamId, userId, firstName, lastName) => {
     teamMemberAddPromise.then(() => {
       dispatch(teamMemberAddAction({ _id: userId, firstName, lastName }));
     });
+  };
+};
+
+//updateTeamMemeberVisiblity
+
+export const updateTeamMemeberVisiblity = (teamId, userId, visiblity) => {
+  const requestData = { users: [{ userId, operation: 'Update' }] };
+  const updateVisiblityPromise = axios.post(ENDPOINTS.TEAM(teamId), requestData);
+  return async (dispatch) => {
+    try {
+      updateVisiblityPromise.then(() => {
+        dispatch(updateVisibilityAction({ teamId, userId, visiblity }));
+      });
+    } catch (error) {
+      console.error('Error updating visibility:', error);
+    }
   };
 };

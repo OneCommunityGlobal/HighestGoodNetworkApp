@@ -91,7 +91,7 @@ const TeamMembersPopup = React.memo(props => {
   });
   
   // add logic to update the team Visiblity
-  const UpdateTeamMembersVisiblity = (useId, choice) => {
+  const UpdateTeamMembersVisiblity = (userId, choice) => {
     console.log(userId);
     console.log(choice);
 

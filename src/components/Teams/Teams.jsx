@@ -9,6 +9,7 @@ import {
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
+  updateTeamMemeberVisiblity,
 } from '../../actions/allTeamsAction';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Loading from '../common/Loading';
@@ -143,7 +144,10 @@ class Teams extends React.PureComponent {
 
   teampopupElements = () => {
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
-    return (
+    const stateKeys = Object.values(this.props.state.team.vi);
+    console.log('State keys:', stateKeys); 
+    // console.log(this.props.state.team);
+       return (
       <React.Fragment>
         <TeamMembersPopup
           open={this.state.teamMembersPopupOpen}
@@ -152,6 +156,7 @@ class Teams extends React.PureComponent {
           onDeleteClick={this.onDeleteTeamMember}
           usersdata={this.props.state ? this.props.state.allUserProfiles : []}
           onAddUser={this.onAddUser}
+          onUpdateTeamMemberVisiblity={this.onUpdateTeamMemberVisiblity}
           selectedTeamName={this.state.selectedTeam}
         />
         <CreateNewTeamPopup
@@ -190,6 +195,13 @@ class Teams extends React.PureComponent {
     this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName);
   };
 
+  /**
+   * Update Team member visiblity
+   */
+
+  onUpdateTeamMemberVisiblity=(userid,visiblity)=>{
+    this.props.updateTeamMemeberVisiblity(this.state,selectedTeamId,userid,visiblity);
+  };
   /**
    * call back to show team members popup
    */
@@ -362,4 +374,5 @@ export default connect(mapStateToProps, {
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
+  updateTeamMemeberVisiblity,
 })(Teams);
