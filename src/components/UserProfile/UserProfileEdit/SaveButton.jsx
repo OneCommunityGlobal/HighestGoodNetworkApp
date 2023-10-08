@@ -19,6 +19,7 @@ const getRandomMessage = () => {
 };
 
 const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab';
+const validTeamCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
 
 /**
  *
@@ -28,7 +29,7 @@ const invalidCodemessage = 'Nice save! It seems you do not have a valid team cod
  * @returns
  */
 const SaveButton = props => {
-  const { handleSubmit, disabled, userProfile, isValidTeamCode } = props;
+  const { handleSubmit, disabled, userProfile } = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
 
@@ -43,7 +44,8 @@ const SaveButton = props => {
 
   useEffect(() => {
     if (modal === true) {
-      if (!isValidTeamCode) {
+      const regexTest = validTeamCodeRegex.test(userProfile.teamCode);
+      if (!regexTest) {
         setRandomMessage(invalidCodemessage);
       }
       else {

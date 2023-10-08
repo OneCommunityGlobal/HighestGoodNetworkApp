@@ -292,8 +292,6 @@ function UserProfile(props) {
     setProjects(prevProjects => [...prevProjects, assignedProject]);
   };
 
-  console.log(userProfile);
-
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
