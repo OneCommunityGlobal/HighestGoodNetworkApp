@@ -174,34 +174,15 @@ function ReportDetails({
                 canEditSummaryCount={canEditSummaryCount}
               />
             </ListGroupItem>
-            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <p>
-                  <b
-                    style={{
-                      color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                    }}
-                  >
-                    Hours logged:{' '}
-                  </b>
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              </ListGroupItem>
-            )}
-            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <b
-                  style={{
-                    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                  }}
-                >
-                  Hours logged:
-                </b>
-                <span className="ml-2">
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
-              </ListGroupItem>
-            )}
+            <ListGroupItem>
+              <b style={{color: textColors[summary?.weeklySummaryOption] || textColors.Default}}>
+                Hours logged:
+              </b>
+              {(hoursLogged >= summary.promisedHoursByWeek[weekIndex])
+                ? <p>{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</p>
+                : <span className="ml-2">{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</span>
+              }
+            </ListGroupItem>
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
