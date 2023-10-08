@@ -49,7 +49,7 @@ export class WeeklySummariesReport extends Component {
     super(props);
 
     this.state = {
-      loading: false,
+      loading: true,
       summaries: [],
       activeTab: navItems[1],
       badges: [],
