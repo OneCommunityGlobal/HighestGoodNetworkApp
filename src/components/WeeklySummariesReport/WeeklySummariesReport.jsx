@@ -185,7 +185,7 @@ export class WeeklySummariesReport extends Component {
       .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
       .push({
         value: '',
-        label: `Select All With NO Code (${teamCodeGroup.noCodeLabel.length})`,
+        label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
       });
 
     this.setState({
