@@ -203,7 +203,6 @@ class ReportsPage extends Component {
     return filteredList;
   };
 
-
   showProjectTable() {
     this.setState(prevState => ({
       showProjects: !prevState.showProjects,
@@ -271,29 +270,44 @@ class ReportsPage extends Component {
   }
 
   render() {
-    const { projects } = this.props.state.allProjects;
-    const { allTeams } = this.props.state.allTeamsData;
-    const { userProfiles } = this.props.state.allUserProfiles;
+    const {
+      state: { allProjects, allTeamsData, allUserProfiles },
+    } = this.props;
+
+    const {
+      teamNameSearchText,
+      wildCardSearchText,
+      checkActive,
+      startDate,
+      endDate,
+      teamSearchData,
+      peopleSearchData,
+      projectSearchData,
+    } = this.state;
+
+    const { projects } = allProjects;
+    const { allTeams } = allTeamsData;
+    const { userProfiles } = allUserProfiles;
     this.state.teamSearchData = this.filteredTeamList(allTeams);
     this.state.peopleSearchData = this.filteredPeopleList(userProfiles);
     this.state.projectSearchData = this.filteredProjectList(projects);
-    if (this.state.checkActive === 'true') {
+    if (checkActive === 'true') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === true);
       this.state.projectSearchData = projects.filter(project => project.isActive === true);
       this.state.peopleSearchData = userProfiles.filter(user => user.isActive === true);
-      this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
-      this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
-      this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
-    } else if (this.state.checkActive === 'false') {
+      this.state.teamSearchData = this.filteredTeamList(teamSearchData);
+      this.state.peopleSearchData = this.filteredPeopleList(peopleSearchData);
+      this.state.projectSearchData = this.filteredProjectList(projectSearchData);
+    } else if (checkActive === 'false') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === false);
       this.state.projectSearchData = projects.filter(project => project.isActive === false);
       this.state.peopleSearchData = userProfiles.filter(user => user.isActive === false);
-      this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
-      this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
-      this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
+      this.state.teamSearchData = this.filteredTeamList(teamSearchData);
+      this.state.peopleSearchData = this.filteredPeopleList(peopleSearchData);
+      this.state.projectSearchData = this.filteredProjectList(projectSearchData);
     }
-    if (this.state.startDate != null && this.state.endDate != null) {
-      this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
+    if (startDate != null && endDate != null) {
+      this.state.peopleSearchData = this.filteredPeopleList(peopleSearchData);
     }
     return (
       <Container fluid className="mb-5 container-component-wrapper">
