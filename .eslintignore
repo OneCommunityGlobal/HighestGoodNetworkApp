@@ -26,7 +26,6 @@ src/components/AutoUpdate/**
 src/components/Badge/**
 src/components/BMDashboard/**
 src/components/common/**
-src/components/ForcePasswordUpdate/**
 src/components/Header/**
 src/components/Inventory/**
 src/components/Login/**
