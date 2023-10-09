@@ -32,6 +32,7 @@ function SingleTask(props) {
   const history = useHistory();
   useEffect(() => {
     const fetchTaskData = async () => {
+      if (!taskId) return;
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
         setTask(res?.data || {});
@@ -40,7 +41,7 @@ function SingleTask(props) {
       }
     };
     fetchTaskData();
-  }, []);
+  }, [taskId]);
 
   const deleteTask = (taskId, taskMother) => {
     props.deleteTask(taskId, taskMother);

@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Button,
   Modal,
@@ -8,14 +8,13 @@ import {
   Label,
   CardBody,
   Card,
-  Col,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
-import styles from './EditLinkModal.css';
+import './EditLinkModal.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
-import { isValidGoogleDocsUrl, isValidDropboxUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile } = props;
@@ -51,8 +50,12 @@ const EditLinkModal = props => {
   const [personalLinks, setPersonalLinks] = useState(
     userProfile.personalLinks ? userProfile.personalLinks : [],
   );
+  const originalMediaFolderLink = useRef(mediaFolderLink.Link);
 
   const [isChanged, setIsChanged] = useState(false);
+  const [mediaFolderDiffWarning, setMediaFolderDiffWarning] = useState(false);
+  const [isWarningPopupOpen, setIsWarningPopupOpen] = useState(false);
+  const [isMediaFolderLinkChanged, setIsMediaFolderLinkChanged] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
 
   const handleNameChanges = (e, links, index, setLinks) => {
@@ -88,6 +91,21 @@ const EditLinkModal = props => {
     setIsChanged(true);
   };
 
+  const isDifferentMediaUrl = () => {
+    let mediaLink = null;
+    if (userProfile.adminLinks.length >= 2) {
+      mediaLink = userProfile.adminLinks[1].Link;
+    }
+    else if (userProfile.adminLinks.length === 1 && userProfile.adminLinks[0].Name === 'Media Folder') {
+      mediaLink = userProfile.adminLinks[0].Link;
+    } 
+    if (mediaLink && mediaLink !== mediaFolderLink.Link) {
+      setMediaFolderDiffWarning(true);
+    } else {
+      setMediaFolderDiffWarning(false);
+    }
+  };
+
   const isDuplicateLink = (links, newLink) => {
     // ! return true if there is a duplicate link, which is invalid
     if (newLink.Name === '' || newLink.Link === '') return true;
@@ -114,13 +132,12 @@ const EditLinkModal = props => {
 
   const handleUpdate = async () => {
     const isGoogleDocsValid = isValidGoogleDocsUrl(googleLink.Link);
-    const isDropboxValid = isValidDropboxUrl(mediaFolderLink.Link);
+    const isDropboxValid = isValidMediaUrl(mediaFolderLink.Link);
     const updatable =
       (isGoogleDocsValid && isDropboxValid) ||
       (googleLink.Link === '' && mediaFolderLink.Link === '') ||
       (isGoogleDocsValid && mediaFolderLink.Link === '') ||
       (isDropboxValid && googleLink.Link === '');
-
     if (updatable) {
       // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
       updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
@@ -144,17 +161,9 @@ const EditLinkModal = props => {
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                      <label className='custom-label'>Google Doc</label>
                       <input
                         className="customEdit"
-                        id="linkName1"
-                        placeholder="Google Doc"
-                        value="Google Doc"
-                        disabled
-                      />
-
-                      <input
-                        className="customEdit"
-                        id="linkURL1"
                         placeholder="Enter Google Doc link"
                         value={googleLink.Link}
                         onChange={e => {
@@ -164,14 +173,8 @@ const EditLinkModal = props => {
                       />
                     </div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <input
-                        className="customEdit"
-                        id="linkName2"
-                        placeholder="Media Folder"
-                        value="Media Folder"
-                        disabled
-                      />
 
+                      <label className='custom-label'>Media Folder</label>
                       <input
                         className="customEdit"
                         id="linkURL2"
@@ -180,6 +183,10 @@ const EditLinkModal = props => {
                         onChange={e => {
                           setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
                           setIsChanged(true);
+                          if (!isMediaFolderLinkChanged && !isWarningPopupOpen){
+                            setIsMediaFolderLinkChanged(true);
+                            setIsWarningPopupOpen(true);
+                          }
                         }}
                       />
                     </div>
@@ -213,7 +220,7 @@ const EditLinkModal = props => {
                               })
                             }
                           >
-                            X
+                            x
                           </button>
                         </div>
                       );
@@ -291,7 +298,7 @@ const EditLinkModal = props => {
                           })
                         }
                       >
-                        X
+                        x
                       </button>
                     </div>
                   ))}
@@ -354,10 +361,38 @@ const EditLinkModal = props => {
           >
             Update
           </Button>
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
-            Cancel
+          <Button 
+            color="primary" 
+            onClick={()=>{
+              setIsMediaFolderLinkChanged(false); 
+              setMediaFolderLink({ ...mediaFolderLink, Link:originalMediaFolderLink.current });
+              closeModal();
+              }
+            } 
+            style={boxStyle}>
+              Cancel
           </Button>
         </ModalFooter>
+
+        <Modal isOpen={isWarningPopupOpen} toggle={()=> setIsWarningPopupOpen(!isWarningPopupOpen)}  >
+          <ModalHeader>Warning!</ModalHeader>
+          <ModalBody>
+            Whoa Tiger, don’t do this! This link was added by an Admin when you were set up in the system. It is used by the Admin Team and your Manager(s) for reviewing your work. You should only change it if you are ABSOLUTELY SURE the one you are changing it to is more correct than the one here already.
+          </ModalBody>
+          <ModalFooter>
+            <Button color='primary'  onClick={() =>{setIsWarningPopupOpen(!isWarningPopupOpen)}}>Confirm</Button>
+            {/* Cancel button put original Media Folder link into the input */}
+            <Button onClick={() => {
+                setIsWarningPopupOpen(!isWarningPopupOpen); 
+                setIsMediaFolderLinkChanged(false); 
+                setMediaFolderLink({ ...mediaFolderLink, Link:originalMediaFolderLink.current });
+              }}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal> 
+
       </Modal>
     </React.Fragment>
   );

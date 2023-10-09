@@ -79,12 +79,12 @@ class ReportsPage extends Component {
   async componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
-    this.state = {
+    this.setState({
       showProjects: false,
       showPeople: false,
       showTeams: false,
       checkActive: '',
-    };
+    });
     this.props.getAllUserProfile();
   }
 

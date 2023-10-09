@@ -47,7 +47,7 @@ import WeeklySummaryOptions from './WeeklySummaryOptions';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { isValidGoogleDocsUrl, isValidDropboxUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 class AddUserProfile extends Component {
@@ -86,6 +86,8 @@ class AddUserProfile extends Component {
       location: '',
       timeZoneFilter: '',
       formSubmitted: false,
+      teamCode: '',
+      codeValid: false,
     };
 
     this.canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
@@ -94,6 +96,12 @@ class AddUserProfile extends Component {
   popupClose = () => {
     this.setState({
       popupOpen: false,
+    });
+  };
+
+  setCodeValid = isValid => {
+    this.setState({
+      codeValid: isValid,
     });
   };
 
@@ -387,9 +395,14 @@ class AddUserProfile extends Component {
                     userTeams={this.state.teams}
                     teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                     onAssignTeam={this.onAssignTeam}
+                    onAssignTeamCode={this.onAssignTeamCode}
                     onDeleteTeam={this.onDeleteTeam}
                     isUserAdmin={true}
                     role={this.props.auth.user.role}
+                    teamCode={this.state.teamCode}
+                    canEditTeamCode={true}
+                    codeValid={this.state.codeValid}
+                    setCodeValid={this.setCodeValid}
                     edit
                   />
                 </TabPane>
@@ -431,6 +444,12 @@ class AddUserProfile extends Component {
     const _projects = projects.filter(project => project._id !== deletedProjectId);
     this.setState({
       projects: _projects,
+    });
+  };
+
+  onAssignTeamCode = value => {
+    this.setState({
+      teamCode: value,
     });
   };
 
@@ -563,13 +582,15 @@ class AddUserProfile extends Component {
       timeZone: timeZone,
       location: location,
       allowsDuplicateName: allowsDuplicateName,
+      createdDate: createdDate,
+      teamCode: this.state.teamCode,
     };
 
     this.setState({ formSubmitted: true });
 
     if (googleDoc) {
       if (isValidGoogleDocsUrl(googleDoc)) {
-        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
+        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
       } else{
         toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
         this.setState({
@@ -586,22 +607,22 @@ class AddUserProfile extends Component {
       }
     }
     if (dropboxDoc) {
-      if (isValidDropboxUrl(dropboxDoc)) {
-      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
-      } else {
-        toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
-        this.setState({
-          formValid: {
-            ...that.state.formValid,
-            dropboxDoc: false,
-          },
-          formErrors: {
-            ...that.state.formErrors,
-            dropboxDoc: 'Invalid Dropbox Link URL',
-          },
-        });
-        return;
-      }
+      if (isValidMediaUrl(dropboxDoc)) {
+          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
+        } else {
+          toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+          this.setState({
+            formValid: {
+              ...that.state.formValid,
+              dropboxDoc: false,
+            },
+            formErrors: {
+              ...that.state.formErrors,
+              dropboxDoc: 'Invalid Dropbox Link URL',
+            },
+          });
+          return;
+        }
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });

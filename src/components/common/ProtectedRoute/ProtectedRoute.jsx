@@ -34,7 +34,8 @@ const ProtectedRoute = ({
       render={props => {
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
-        } else if (routePermissions && !hasPermissionToAccess) {
+        }
+        else if (routePermissions && !hasPermissionToAccess) {
           return <Redirect to={{ pathname: '/dashboard', state: { from: props.location } }} />;
         }
         return Component ? <Component {...props} /> : render(props);

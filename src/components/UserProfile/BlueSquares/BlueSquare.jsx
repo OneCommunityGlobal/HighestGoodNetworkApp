@@ -40,8 +40,10 @@ const BlueSquare = (props) => {
                   }}
                 >
                   <div className="report" data-testid="report">
-                    <div className="title">{blueSquare.date}</div>
-                    <div className="summary">{blueSquare.description}</div>
+                    <div className="title">{formatDate(blueSquare.date)}</div>
+                    {blueSquare.description !== undefined && 
+                      <div className="summary">{formatDateFromDescriptionString(blueSquare.description)}</div>
+                    }
                   </div>
                 </div>
               ))

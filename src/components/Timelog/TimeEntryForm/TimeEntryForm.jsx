@@ -31,6 +31,7 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
+import fixDiscrepancy from 'utils/fixDiscrepancy';
 import { boxStyle } from 'styles';
 
 /**
@@ -291,10 +292,17 @@ const TimeEntryForm = props => {
     setErrors(result);
     return isEmpty(result);
   };
+
+
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
     const { projectId, isTangible, personId } = timeEntry;
+
+    //fix discrepancy in hours in userProfile if any
+
+     fixDiscrepancy(userProfile);
+
     //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 

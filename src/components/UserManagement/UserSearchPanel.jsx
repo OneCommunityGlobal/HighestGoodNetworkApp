@@ -1,5 +1,5 @@
 import React from 'react';
-import { SEARCH, SHOW, CREATE_NEW_USER } from '../../languages/en/ui';
+import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
 import { boxStyle } from 'styles';
 /**
  * The search panel stateless component for user management grid
@@ -7,9 +7,12 @@ import { boxStyle } from 'styles';
 const UserSearchPanel = props => {
   return (
     <div className="input-group mt-3" id="new_usermanagement">
+      <button type="button" className="btn btn-info mr-2" onClick={props.handleNewUserSetupPopup}>
+        {SEND_SETUP_LINK}
+      </button>
       <button
         type="button"
-        className="btn btn-info"
+        className="btn btn-info mr-2"
         onClick={e => {
           props.onNewUserClick();
         }}
@@ -17,7 +20,7 @@ const UserSearchPanel = props => {
       >
         {CREATE_NEW_USER}
       </button>
-      <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
+      <div className="input-group-prepend">
         <span className="input-group-text">{SEARCH}</span>
       </div>
       <input
@@ -32,7 +35,7 @@ const UserSearchPanel = props => {
           props.onSearch(e.target.value);
         }}
       />
-      <div className="input-group-prepend" style={{ marginLeft: '10px' }}>
+      <div className="input-group-prepend ml-2">
         <span className="input-group-text">{SHOW}</span>
         <select
           id="active-filter-dropdown"

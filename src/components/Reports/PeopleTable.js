@@ -15,10 +15,9 @@ function PeopleTable(props) {
             <div>{index + 1}</div>
           </th>
           <td>
-            <Link to={`/peoplereport/${person._id}`} personId={person._id}>
-              {person.firstName} 
-              {' '}
-              {person.lastName}
+            <Link to={`/peoplereport/${person._id}`}>
+              {person.firstName}{' '}
+              {person.lastName.length > 15 ? person.lastName.slice(0, 15) + '...' : person.lastName}
             </Link>
           </td>
           <td

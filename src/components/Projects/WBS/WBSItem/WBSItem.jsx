@@ -14,7 +14,7 @@ import hasPermission from 'utils/permissions';
 const WBSItem = props => {
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const canDeleteWBS = props.hasPermission('deleteWbs');
+  const canDeleteWBS = props.hasPermission('deleteWbs') || props.hasPermission('seeProjectManagement');
 
   const confirmDelete = () => {
     props.deleteWbs(props.wbsId);

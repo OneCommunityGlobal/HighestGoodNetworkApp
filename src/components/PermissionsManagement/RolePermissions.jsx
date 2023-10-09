@@ -150,6 +150,7 @@ function RolePermissions(props) {
   };
 
   const handleModalOpen = idx => {
+    console.log(idx);
     setContent(modalInfo[idx]);
     setinfoRoleModal(true);
   };
@@ -262,45 +263,29 @@ function RolePermissions(props) {
       </header>
       <ul className="user-role-tab__permissionList">
         {props.permissionsList.map((permission) => (
-          mainPermissions.includes(permission) ?
           <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , fontSize: '20px'}}>
+            <p 
+              style={{ 
+                color: permissions.includes(permission) ? 'green' : 'red',
+                fontSize: mainPermissions.includes(permission) && '20px',
+                paddingLeft: !mainPermissions.includes(permission) && '50px'
+              }}
+            >
               {permission}
             </p>
             <div className="icon-button-container">
-              <div style={{paddingRight: "1rem"}}>
-                  <EditableInfoModal
-                    role={props?.userRole}
-                    areaName={`${permission}`+'Info'}
-                    fontSize={24} />{' '}
-               </div>
-              <Button
-                className="icon-button"
-                color={permissions.includes(permission) ? 'danger' : 'success'}
+            <div className='infos'>
+              <i
+                data-toggle="tooltip"
+                data-placement="center"
+                title="Click for more information"
+                aria-hidden="true"
+                className="fa fa-info-circle"
                 onClick={() => {
-                  permissions.includes(permission)
-                    ? onRemovePermission(permission)
-                    : onAddPermission(permission);
-                  setChanged(true);
+                  handleModalOpen(permission);
                 }}
-                disabled={props?.userRole !== 'Owner'}
-                style={boxStyle}
-              >
-                {permissions.includes(permission) ? 'Delete' : 'Add'}
-              </Button>
-            </div>
-          </li>:
-           <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , paddingLeft: '50px'}}>
-              {permission}
-            </p>
-            <div className="icon-button-container">
-              <div style={{paddingRight: "1rem"}}>
-                  <EditableInfoModal
-                    role={props?.userRole}
-                    areaName={`${permission}`+'Info'}
-                    fontSize={24} />{' '}
-               </div>
+              />
+              </div>
               <Button
                 className="icon-button"
                 color={permissions.includes(permission) ? 'danger' : 'success'}
@@ -340,7 +325,7 @@ function RolePermissions(props) {
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal}>
+      <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal} id='#modal2-body_new-role--padding'>
         <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
         <ModalBody>{modalContent}</ModalBody>
         <ModalFooter>

@@ -57,8 +57,7 @@ export class EditableInfoModal extends Component {
   };
   
   
-  async componentDidMount() {
-    await this.props.getInfoCollections();
+  componentDidMount() {
     const {infoCollections, role, areaName, fontSize, isPermissionPage} = this.props;
     let content = '';
     let visible = '0';
@@ -303,10 +302,10 @@ const mapStateToProps = ({infoCollections }) => ({
   
 const mapDispatchToProps = dispatch => {
   return {
-    getInfoCollections: ()=> dispatch(getInfoCollections()),
-    updateInfoCollection: (infoId, updatedInfo)=>dispatch(updateInfoCollection(infoId, updatedInfo)),
-    addInfoCollection: (newInfo)=>dispatch(addInfoCollection(newInfo)),
-    deleteInfoCollectionById: (infoId)=>dispatch(deleteInfoCollectionById(infoId)), 
+    getInfoCollections: () => dispatch(getInfoCollections()),
+    updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
+    addInfoCollection: (newInfo) => dispatch(addInfoCollection(newInfo)),
+    deleteInfoCollectionById: (infoId) => dispatch(deleteInfoCollectionById(infoId)), 
   };
 };
 

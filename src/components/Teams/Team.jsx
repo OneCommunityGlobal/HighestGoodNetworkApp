@@ -23,7 +23,8 @@ const Team = props => {
             ? props.onStatusClick(props.name, props.teamId, props.active)
             : null;
         }}
-        style={boxStyle}
+        // style={boxStyle}
+        data-testid='active-marker'
       >
         {props.active ? (
           <div className="isActive">
@@ -35,8 +36,8 @@ const Team = props => {
           </div>
         )}
       </td>
-      <td>
-        <button
+      <td className="centered-cell">
+        <button style={boxStyle}
           type="button"
           className="btn btn-outline-info"
           onClick={e => {

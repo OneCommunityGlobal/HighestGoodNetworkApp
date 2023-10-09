@@ -7,12 +7,12 @@ function TeamTable(props) {
   let TeamsList = [];
   if (props.allTeams.length > 0) {
     TeamsList = props.allTeams.map((team, index) => (
-      <tr id={`tr_${team._id}`}>
+      <tr id={`tr_${team._id}`} key={team._id}>
         <th scope="row">
           <div>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/teamreport/${team._id}`} teamId={team._id} teamName={team.teamName}>
+          <Link to={`/teamreport/${team._id}`}>
             {team.teamName}
           </Link>
         </td>
