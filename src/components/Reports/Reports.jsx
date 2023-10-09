@@ -287,6 +287,7 @@ class ReportsPage extends Component {
       showTotalProject,
       showTotalPeople,
       showTotalTeam,
+      teamMemberList,
     } = this.state;
 
     const { projects } = allProjects;
@@ -525,31 +526,31 @@ class ReportsPage extends Component {
           </div>
         </div>
         <div className="table-data-container mt-5">
-          {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
-          {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
-          {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
-          {this.state.showTotalProject && (
+          {showPeople && <PeopleTable userProfiles={peopleSearchData} />}
+          {showProjects && <ProjectTable projects={projectSearchData} />}
+          {showTeams && <TeamTable allTeams={teamSearchData} />}
+          {showTotalProject && (
             <TotalProjectReport
-              startDate={this.state.startDate}
-              endDate={this.state.endDate}
+              startDate={startDate}
+              endDate={endDate}
               userProfiles={userProfiles}
             />
           )}
-          {this.state.showTotalPeople && (
+          {showTotalPeople && (
             <TotalPeopleReport
-              startDate={this.state.startDate}
-              endDate={this.state.endDate}
+              startDate={startDate}
+              endDate={endDate}
               userProfiles={userProfiles}
             />
           )}
-          {this.state.showTotalTeam && (
+          {showTotalTeam && (
             <TotalTeamReport
-              startDate={this.state.startDate}
-              endDate={this.state.endDate}
+              startDate={startDate}
+              endDate={endDate}
               userProfiles={userProfiles}
               allTeams={allTeams}
               passTeamMemberList={this.setTeamMemberList}
-              savedTeamMemberList={this.state.teamMemberList}
+              savedTeamMemberList={teamMemberList}
             />
           )}
         </div>
