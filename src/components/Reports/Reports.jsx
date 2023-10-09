@@ -319,28 +319,31 @@ class ReportsPage extends Component {
           </div>
           <div className="category-container">
             <button
+              type="button"
               className={`card-category-item ${showProjects ? 'selected' : ''}`}
               onClick={this.showProjectTable}
             >
               <h3 className="card-category-item-title"> Projects</h3>
               <h3 className="card-category-item-number">{projectSearchData.length} </h3>
-              <img src={projectsImage} alt="Image that representes the projects" />
+              <img src={projectsImage} alt="representes the projects" />
             </button>
             <button
+              type="button"
               className={`card-category-item ${showPeople ? 'selected' : ''}`}
               onClick={this.showPeopleTable}
             >
               <h3 className="card-category-item-title"> People </h3>
               <h3 className="card-category-item-number">{peopleSearchData.length}</h3>
-              <img src={peopleImage} alt="Image that representes the people" />
+              <img src={peopleImage} alt="representes the people" />
             </button>
             <button
+              type="button"
               className={`card-category-item ${showTeams ? 'selected' : ''}`}
               onClick={this.showTeamsTable}
             >
               <h3 className="card-category-item-title"> Teams </h3>
               <h3 className="card-category-item-number">{teamSearchData?.length}</h3>
-              <img src={teamsImage} alt="Image that representes the teams" />
+              <img src={teamsImage} alt="representes the teams" />
             </button>
             {/* <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showProjectTable}>
               <i className="fa fa-folder" aria-hidden="true" />
