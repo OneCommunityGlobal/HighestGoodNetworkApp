@@ -10,10 +10,11 @@ import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
+import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
 
-function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile, hasPermission }) {
+function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile, hasPermission, getInfoCollections }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
@@ -32,6 +33,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
 
   useEffect(() => {
     getAllRoles();
+    getInfoCollections();
     getUserRole(auth?.user.userid);
   }, []);
 
@@ -138,11 +140,12 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  getInfoCollections: () => dispatch(getInfoCollections()),
   getAllRoles: () => dispatch(getAllRoles()),
   updateUserProfile: data => dispatch(updateUserProfile(data)),
-  getAllUsers: () => dispatch(getAllUserProfile),
+  getAllUsers: () => dispatch(getAllUserProfile()),
   getUserRole: id => dispatch(getUserProfile(id)),
-  hasPermission: (action) => dispatch(hasPermission(action)),
+  hasPermission: action => dispatch(hasPermission(action)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PermissionsManagement);
