@@ -285,6 +285,7 @@ class ReportsPage extends Component {
       showPeople,
       showTeams,
       showTotalProject,
+      showTotalPeople,
     } = this.state;
 
     const { projects } = allProjects;
@@ -464,17 +465,15 @@ class ReportsPage extends Component {
                   <br />
                   Projects must have had at least 1 hour logged to them to be included.
                   <br />
-                  A 'Total Hours' section will show the total tangible time logged to all projects
-                  during the selected period.
+                  A &apos;Total Hours&apos; section will show the total tangible time logged to all
+                  projects projects projects projects projects projects during the selected period.
                   <br />A detail report will list all the projects and hours contributed by each
                   during that time period.
                 </ReactTooltip>
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalPeople}>
-                  {this.state.showTotalPeople
-                    ? 'Hide Total People Report'
-                    : 'Show Total People Report'}
+                  {showTotalPeople ? 'Hide Total People Report' : 'Show Total People Report'}
                 </Button>
                 <i
                   className="fa fa-info-circle"
@@ -490,8 +489,8 @@ class ReportsPage extends Component {
                   <br />
                   Peole must have had at least 10 hours logged for them to be included.
                   <br />
-                  A 'Total Hours' section will show the total tangible time logged by all people
-                  during the selected period.
+                  A &apos;Total Hours&apos; section will show the total tangible time logged by all
+                  people during the selected period.
                   <br />A detail report will list all the people and hours contributed by each
                   during that time period.
                 </ReactTooltip>
