@@ -10,7 +10,7 @@ import { Checkbox } from 'components/common/Checkbox';
 import TextSearchBox from 'components/UserManagement/TextSearchBox';
 import { boxStyle } from 'styles';
 import { TasksDetail } from '../TasksDetail';
-import { getTasksTableData } from './selectors';
+import getTasksTableData from './selectors';
 
 function FilterOptions({ tasks, filterName, width, setOneFilter, filters }) {
   const filtersOptions = [...Array.from(new Set(tasks.map(item => item[filterName]))).sort()];
