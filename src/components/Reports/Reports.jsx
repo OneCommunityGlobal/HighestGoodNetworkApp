@@ -286,6 +286,7 @@ class ReportsPage extends Component {
       showTeams,
       showTotalProject,
       showTotalPeople,
+      showTotalTeam,
     } = this.state;
 
     const { projects } = allProjects;
@@ -497,7 +498,7 @@ class ReportsPage extends Component {
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalTeam}>
-                  {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
+                  {showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
                 </Button>
                 <i
                   className="fa fa-info-circle"
@@ -514,8 +515,8 @@ class ReportsPage extends Component {
                   <br />
                   The team must have had at least 10 hours logged for them to be included.
                   <br />
-                  A 'Total Hours' section will show the total tangible time logged by all the teams
-                  during the selected period.
+                  A &apos;Total Hours&apos; section will show the total tangible time logged by all
+                  the teams during the selected period.
                   <br />A detail report will list all the teams and hours contributed by each during
                   that time period.
                 </ReactTooltip>
