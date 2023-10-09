@@ -109,45 +109,29 @@ class ReportsPage extends Component {
     });
   };
 
-  filteredProjectList = projects => {
-    const filteredList = projects.filter(project => {
-      // Applying the search filters before creating each team table data element
-      if (
-        (project.projectName &&
-          project.projectName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
-          this.state.wildCardSearchText === '') ||
-        // the wild card search, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          project.projectName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
-      ) {
-        return project;
-      }
-      return false;
-    });
+  setActive() {
+    this.setState(state => ({
+      checkActive: 'true',
+    }));
+  }
 
-    return filteredList;
-  };
+  setAll() {
+    this.setState(state => ({
+      checkActive: '',
+    }));
+  }
 
-  filteredTeamList = allTeams => {
-    const filteredList = allTeams?.filter(team => {
-      // Applying the search filters before creating each team table data element
-      if (
-        (team.teamName &&
-          team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1 &&
-          this.state.wildCardSearchText === '') ||
-        // the wild card search, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1)
-      ) {
-        return team;
-      }
-      return false;
-    });
+  setInActive() {
+    this.setState(() => ({
+      checkActive: 'false',
+    }));
+  }
 
-    return filteredList;
-  };
+  setTeamMemberList(list) {
+    this.setState(() => ({
+      teamMemberList: list,
+    }));
+  }
 
   filteredPeopleList = userProfiles => {
     const filteredList = userProfiles.filter(userProfile => {
@@ -177,29 +161,45 @@ class ReportsPage extends Component {
     return filteredList;
   };
 
-  setActive() {
-    this.setState(state => ({
-      checkActive: 'true',
-    }));
-  }
+  filteredTeamList = allTeams => {
+    const filteredList = allTeams?.filter(team => {
+      // Applying the search filters before creating each team table data element
+      if (
+        (team.teamName &&
+          team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1 &&
+          this.state.wildCardSearchText === '') ||
+        // the wild card search, the search text can be match with any item
+        (this.state.wildCardSearchText !== '' &&
+          team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1)
+      ) {
+        return team;
+      }
+      return false;
+    });
 
-  setAll() {
-    this.setState(state => ({
-      checkActive: '',
-    }));
-  }
+    return filteredList;
+  };
 
-  setInActive() {
-    this.setState(() => ({
-      checkActive: 'false',
-    }));
-  }
+  filteredProjectList = projects => {
+    const filteredList = projects.filter(project => {
+      // Applying the search filters before creating each team table data element
+      if (
+        (project.projectName &&
+          project.projectName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
+            -1 &&
+          this.state.wildCardSearchText === '') ||
+        // the wild card search, the search text can be match with any item
+        (this.state.wildCardSearchText !== '' &&
+          project.projectName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
+            -1)
+      ) {
+        return project;
+      }
+      return false;
+    });
 
-  setTeamMemberList(list) {
-    this.setState(() => ({
-      teamMemberList: list,
-    }));
-  }
+    return filteredList;
+  };
 
   showProjectTable() {
     this.setState(prevState => ({
