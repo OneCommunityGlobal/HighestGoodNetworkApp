@@ -284,6 +284,7 @@ class ReportsPage extends Component {
       showProjects,
       showPeople,
       showTeams,
+      showTotalProject,
     } = this.state;
 
     const { projects } = allProjects;
@@ -369,6 +370,7 @@ class ReportsPage extends Component {
           </div>
           <div className="mt-4 bg-white p-3 rounded-5">
             <div>
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a>Select a Filter</a>
             </div>
             <div>
@@ -411,11 +413,11 @@ class ReportsPage extends Component {
                   Start Date
                 </label>
                 <DatePicker
-                  selected={this.state.startDate}
+                  selected={startDate}
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
                   maxDate={new Date()}
                   onChange={date => {
-                    if (date > new Date(DATE_PICKER_MIN_DATE) && date <= this.state.endDate) {
+                    if (date > new Date(DATE_PICKER_MIN_DATE) && date <= endDate) {
                       this.setState({ startDate: date });
                     }
                   }}
@@ -429,11 +431,11 @@ class ReportsPage extends Component {
                   End Date
                 </label>
                 <DatePicker
-                  selected={this.state.endDate}
+                  selected={endDate}
                   maxDate={new Date()}
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
                   onChange={date => {
-                    if (date >= this.state.startDate) {
+                    if (date >= startDate) {
                       this.setState({ endDate: date });
                     }
                   }}
@@ -445,9 +447,7 @@ class ReportsPage extends Component {
             <div className="total-report-container">
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalProject}>
-                  {this.state.showTotalProject
-                    ? 'Hide Total Project Report'
-                    : 'Show Total Project Report'}
+                  {showTotalProject ? 'Hide Total Project Report' : 'Show Total Project Report'}
                 </Button>
                 <i
                   className="fa fa-info-circle"
