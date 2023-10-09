@@ -1,18 +1,17 @@
-const getTaskByWbsId = (WbsTasksID, tasks) => {
-  const getTasks = [];
+const get_task_by_wbsId = (WbsTasksID, tasks) => {
+  const get_tasks = [];
   if (WbsTasksID.length > 0) {
     let i = 0;
     while (i < WbsTasksID.length && tasks.fetched) {
-      const currentWbsId = WbsTasksID[i]; // Capture the current value of i
-      const result = tasks.taskItems.filter(task => task.wbsId === currentWbsId);
-      getTasks.push(result);
+      const result = tasks.taskItems.filter(task => task.wbsId == WbsTasksID[i]);
+      get_tasks.push(result);
       i += 1;
     }
   }
-  return getTasks[1];
+
+  return get_tasks[1];
 };
 
-// eslint-disable-next-line import/prefer-default-export
 export const getTasksTableData = (state, { WbsTasksID }) => ({
-  getTasks: getTaskByWbsId(WbsTasksID, state.tasks) || [],
+  get_tasks: get_task_by_wbsId(WbsTasksID, state.tasks) || [],
 });
