@@ -1,8 +1,9 @@
+// eslint-disable-next-line no-unused-vars
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import moment from 'moment';
 import { Container, Button } from 'reactstrap';
 import DatePicker from 'react-datepicker';
+import ReactTooltip from 'react-tooltip';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
@@ -16,7 +17,6 @@ import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
 import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';
-import ReactTooltip from 'react-tooltip';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
 import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
@@ -34,44 +34,44 @@ class ReportsPage extends Component {
       showTotalTeam: false,
       showTotalProject: false,
       teamNameSearchText: '',
-      teamMembersPopupOpen: false,
-      deleteTeamPopupOpen: false,
-      createNewTeamPopupOpen: false,
-      teamStatusPopupOpen: false,
+      // teamMembersPopupOpen: false,
+      // deleteTeamPopupOpen: false,
+      // createNewTeamPopupOpen: false,
+      // teamStatusPopupOpen: false,
       wildCardSearchText: '',
-      selectedTeamId: 0,
-      selectedTeam: '',
+      // selectedTeamId: 0,
+      // selectedTeam: '',
       checkActive: '',
-      formElements: {
-        summary: '',
-        summaryLastWeek: '',
-        summaryBeforeLast: '',
-        mediaUrl: '',
-        weeklySummariesCount: 0,
-        mediaConfirm: false,
-      },
-      dueDate: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .toISOString(),
-      dueDateLastWeek: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .subtract(1, 'week')
-        .toISOString(),
-      dueDateBeforeLast: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .subtract(2, 'week')
-        .toISOString(),
-      activeTab: '1',
-      errors: {},
-      fetchError: null,
-      loading: true,
+      // formElements: {
+      //   summary: '',
+      //   summaryLastWeek: '',
+      //   summaryBeforeLast: '',
+      //   mediaUrl: '',
+      //   weeklySummariesCount: 0,
+      //   mediaConfirm: false,
+      // },
+      // dueDate: moment()
+      //   .tz('America/Los_Angeles')
+      //   .endOf('week')
+      //   .toISOString(),
+      // dueDateLastWeek: moment()
+      //   .tz('America/Los_Angeles')
+      //   .endOf('week')
+      //   .subtract(1, 'week')
+      //   .toISOString(),
+      // dueDateBeforeLast: moment()
+      //   .tz('America/Los_Angeles')
+      //   .endOf('week')
+      //   .subtract(2, 'week')
+      //   .toISOString(),
+      // activeTab: '1',
+      // errors: {},
+      // fetchError: null,
+      // loading: true,
       teamSearchData: {},
       peopleSearchData: [],
       projectSearchData: {},
-      users: {},
+      // users: {},
       startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
       teamMemberList: {},
@@ -255,6 +255,7 @@ class ReportsPage extends Component {
       showTotalPeople: false,
     }));
   }
+
   showTotalProject() {
     this.setState(prevState => ({
       showProjects: false,
