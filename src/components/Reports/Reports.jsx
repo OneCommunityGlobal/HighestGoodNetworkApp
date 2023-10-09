@@ -110,13 +110,13 @@ class ReportsPage extends Component {
   };
 
   setActive() {
-    this.setState(state => ({
+    this.setState(() => ({
       checkActive: 'true',
     }));
   }
 
   setAll() {
-    this.setState(state => ({
+    this.setState(() => ({
       checkActive: '',
     }));
   }
@@ -134,25 +134,25 @@ class ReportsPage extends Component {
   }
 
   filteredPeopleList = userProfiles => {
+    const { teamNameSearchText, wildCardSearchText, startDate, endDate } = this.state;
+
     const filteredList = userProfiles.filter(userProfile => {
       // Applying the search filters before creating each team table data element
       if (
         (userProfile.firstName &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
-          this.state.wildCardSearchText === '') ||
+          userProfile.firstName.toLowerCase().indexOf(teamNameSearchText.toLowerCase()) > -1 &&
+          wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1) ||
-        (this.state.wildCardSearchText !== '' &&
+        (wildCardSearchText !== '' &&
+          userProfile.firstName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1) ||
+        (wildCardSearchText !== '' &&
           userProfile.lastName &&
-          userProfile.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
+          userProfile.lastName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1)
       ) {
         return (
-          new Date(Date.parse(userProfile.createdDate)) >= this.state.startDate &&
-          this.state.startDate <= new Date(Date.parse(userProfile?.endDate)) <= this.state.endDate
+          new Date(Date.parse(userProfile.createdDate)) >= startDate &&
+          startDate <= new Date(Date.parse(userProfile?.endDate)) &&
+          new Date(Date.parse(userProfile?.endDate)) <= endDate
         );
       }
       return false;
@@ -162,17 +162,19 @@ class ReportsPage extends Component {
   };
 
   filteredTeamList = allTeams => {
+    const { teamNameSearchText, wildCardSearchText } = this.state;
+
     const filteredList = allTeams?.filter(team => {
       // Applying the search filters before creating each team table data element
       if (
         (team.teamName &&
-          team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1 &&
-          this.state.wildCardSearchText === '') ||
+          team.teamName.toLowerCase().indexOf(teamNameSearchText.toLowerCase()) > -1 &&
+          wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1)
+        (wildCardSearchText !== '' &&
+          team.teamName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1)
       ) {
-        return team;
+        return true;
       }
       return false;
     });
