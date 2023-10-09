@@ -51,6 +51,8 @@ import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { formatDate } from 'utils/formatDate';
+import { toast } from 'react-toastify';
 
 function UserProfile(props) {
   /* Constant values */
@@ -60,6 +62,7 @@ function UserProfile(props) {
     email: true,
   };
   const roles = props?.role.roles;
+  const permittedRoles = ['Owner', 'Administrator', 'Manager', 'Assistant Manager'];
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -91,6 +94,8 @@ function UserProfile(props) {
   const [summarySelected, setSummarySelected] = useState(null);
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
+  const [summaryIntro, setSummaryIntro] = useState('');
+  const [usersRole, setUsersRole] = useState('');
 
   const userProfileRef = useRef();
 
@@ -196,6 +201,35 @@ function UserProfile(props) {
     setIsProjectsEqual(compare);
   };
 
+  const loadTeamDetails = async teamId => {
+    const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+    const { data } = res;
+
+    const memberSubmitted = [];
+    const memberNotSubmitted = [];
+    let manager = '';
+
+    data.forEach(member => {
+      if (member.role === 'Manager') {
+        manager = `${member.firstName} ${member.lastName}`;
+      }
+      member.weeklySummaries[0].summary !== ''
+        ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
+        : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+    });
+
+    const string = `This week’s summary was managed by ${
+      manager ? manager : '<Your Name>'
+    } and includes ${memberSubmitted.join(
+      ', ',
+    )}. These people did NOT provide a summary ${memberNotSubmitted.join(
+      ', ',
+    )}. <Insert the proofread and single-paragraph summary created by ChatGPT.>
+    `;
+
+    setSummaryIntro(string);
+  };
+
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
@@ -215,6 +249,8 @@ function UserProfile(props) {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
       setTeams(newUserProfile.teams);
+
+      await loadTeamDetails(newUserProfile.teams[0]._id);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
@@ -232,6 +268,7 @@ function UserProfile(props) {
       });
       setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
       setShowLoading(false);
+      setUsersRole(props.userProfile?.role);
     } catch (err) {
       setShowLoading(false);
     }
@@ -268,6 +305,7 @@ function UserProfile(props) {
           label: `View ${leaderBoardData[i].name}'s summary.`,
         });
       }
+
       setSummaries(allSummaries);
       return;
     } catch (err) {
@@ -441,10 +479,11 @@ function UserProfile(props) {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const updateLink = (personalLinksUpdate, adminLinksUpdate) => {
+  const updateLink = (personalLinksUpdate, adminLinksUpdate, mediaUrlUpdate) => {
     setShowModal(false);
     setUserProfile({
       ...userProfile,
+      mediaUrl: mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
       personalLinks: personalLinksUpdate,
       adminLinks: adminLinksUpdate,
     });
@@ -624,7 +663,7 @@ function UserProfile(props) {
                 className="profilePicture"
               />
               {canEdit ? (
-                <div className="image-button file btn btn-lg btn-primary">
+                <div className="image-button file btn btn-lg btn-primary" style={boxStyle}>
                   Change Photo
                   <Input
                     style={{ width: '100%', height: '100%', zIndex: '2' }}
@@ -644,10 +683,8 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
-              {!codeValid ? (
-              <Alert color="danger">
-                The code format should be A-AAA or AAAAA.
-              </Alert>
+            {!codeValid ? (
+              <Alert color="danger">Please enter a code in the format of X-XXX</Alert>
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
@@ -659,7 +696,7 @@ function UserProfile(props) {
                 aria-hidden="true"
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
-              />{' '}
+              />
               <ActiveCell
                 isActive={userProfile.isActive}
                 user={userProfile}
@@ -702,15 +739,29 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
+              {permittedRoles.includes(usersRole) ? (
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(summaryIntro);
+
+                    toast.success('Summary Intro Copied!');
+                  }}
+                  color="primary"
+                  size="sm"
+                  title="Generates the summary intro for your team and copies it to your clipboard for easy use."
+                  // onMouseEnter={handleMouseEnter}
+                >
+                  Generate Summary Intro
+                </Button>
+              ) : (
+                ''
+              )}
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
+              From : <span>{formatDate(userProfile.createdDate)}</span>
               {'   '}
-              To:{' '}
-              <span>
-                {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
-              </span>
+              To: <span>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
@@ -754,6 +805,7 @@ function UserProfile(props) {
                 userProfile={userProfile}
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
+                handleSubmit={handleSubmit}
                 role={requestorRole}
                 canEdit={canEdit}
               />
@@ -873,7 +925,7 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
-                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                  canEditTeamCode={props.hasPermission('putUserProfileImportantInfo')}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
@@ -1074,7 +1126,7 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
-                    canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                    canEditTeamCode={props.hasPermission('putUserProfileImportantInfo')}
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
                     codeValid={codeValid}
@@ -1252,7 +1304,6 @@ function UserProfile(props) {
                   }}
                 >
                   <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
-                    {' '}
                     Update Password
                   </Button>
                 </Link>

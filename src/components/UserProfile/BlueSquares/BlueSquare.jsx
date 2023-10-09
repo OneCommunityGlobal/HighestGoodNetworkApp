@@ -2,8 +2,10 @@ import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
+import { formatDate } from 'utils/formatDate';
+import { formatDateFromDescriptionString } from 'utils/formatDateFromDescriptionString';
 
-const BlueSquare = (props) => {
+const BlueSquare = props => {
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const { blueSquares, handleBlueSquare } = props;
@@ -41,9 +43,11 @@ const BlueSquare = (props) => {
                 >
                   <div className="report" data-testid="report">
                     <div className="title">{formatDate(blueSquare.date)}</div>
-                    {blueSquare.description !== undefined && 
-                      <div className="summary">{formatDateFromDescriptionString(blueSquare.description)}</div>
-                    }
+                    {blueSquare.description !== undefined && (
+                      <div className="summary">
+                        {formatDateFromDescriptionString(blueSquare.description)}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))

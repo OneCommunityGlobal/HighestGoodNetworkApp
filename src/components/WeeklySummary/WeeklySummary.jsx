@@ -659,7 +659,7 @@ export class WeeklySummary extends Component {
             {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
-            <Button className="btn--dark-sea-green" onClick={this.handleClose}>
+            <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyle}>
               Close this window
             </Button>
           </Col>
@@ -697,7 +697,6 @@ export class WeeklySummary extends Component {
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
                           <UncontrolledDropdown>
-
                             <DropdownToggle
                               className="px-5 btn--dark-sea-green"
                               caret
@@ -843,7 +842,6 @@ export class WeeklySummary extends Component {
                 )}
 
                 <Row form>
-
                   <Modal isOpen={movePopup} toggle={this.toggleMovePopup}>
                     <ModalHeader> Warning!</ModalHeader>
                     <ModalBody>Are you SURE you want to move the summary?</ModalBody>
