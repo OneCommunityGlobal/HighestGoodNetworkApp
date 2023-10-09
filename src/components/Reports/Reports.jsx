@@ -183,25 +183,26 @@ class ReportsPage extends Component {
   };
 
   filteredProjectList = projects => {
+    const { teamNameSearchText, wildCardSearchText } = this.state;
+
     const filteredList = projects.filter(project => {
-      // Applying the search filters before creating each team table data element
+      // Applying the search filters before creating each project table data element
       if (
         (project.projectName &&
-          project.projectName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
-          this.state.wildCardSearchText === '') ||
+          project.projectName.toLowerCase().indexOf(teamNameSearchText.toLowerCase()) > -1 &&
+          wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          project.projectName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
+        (wildCardSearchText !== '' &&
+          project.projectName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1)
       ) {
-        return project;
+        return true;
       }
       return false;
     });
 
     return filteredList;
   };
+
 
   showProjectTable() {
     this.setState(prevState => ({
