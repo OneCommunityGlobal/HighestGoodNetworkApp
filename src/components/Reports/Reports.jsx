@@ -275,14 +275,15 @@ class ReportsPage extends Component {
     } = this.props;
 
     const {
-      teamNameSearchText,
-      wildCardSearchText,
       checkActive,
       startDate,
       endDate,
       teamSearchData,
       peopleSearchData,
       projectSearchData,
+      showProjects,
+      showPeople,
+      showTeams,
     } = this.state;
 
     const { projects } = allProjects;
@@ -318,27 +319,27 @@ class ReportsPage extends Component {
           </div>
           <div className="category-container">
             <button
-              className={`card-category-item ${this.state.showProjects ? 'selected' : ''}`}
+              className={`card-category-item ${showProjects ? 'selected' : ''}`}
               onClick={this.showProjectTable}
             >
               <h3 className="card-category-item-title"> Projects</h3>
-              <h3 className="card-category-item-number">{this.state.projectSearchData.length} </h3>
+              <h3 className="card-category-item-number">{projectSearchData.length} </h3>
               <img src={projectsImage} alt="Image that representes the projects" />
             </button>
             <button
-              className={`card-category-item ${this.state.showPeople ? 'selected' : ''}`}
+              className={`card-category-item ${showPeople ? 'selected' : ''}`}
               onClick={this.showPeopleTable}
             >
               <h3 className="card-category-item-title"> People </h3>
-              <h3 className="card-category-item-number">{this.state.peopleSearchData.length}</h3>
+              <h3 className="card-category-item-number">{peopleSearchData.length}</h3>
               <img src={peopleImage} alt="Image that representes the people" />
             </button>
             <button
-              className={`card-category-item ${this.state.showTeams ? 'selected' : ''}`}
+              className={`card-category-item ${showTeams ? 'selected' : ''}`}
               onClick={this.showTeamsTable}
             >
               <h3 className="card-category-item-title"> Teams </h3>
-              <h3 className="card-category-item-number">{this.state.teamSearchData?.length}</h3>
+              <h3 className="card-category-item-number">{teamSearchData?.length}</h3>
               <img src={teamsImage} alt="Image that representes the teams" />
             </button>
             {/* <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showProjectTable}>
