@@ -51,7 +51,6 @@ import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
 
 function UserProfile(props) {
   /* Constant values */
@@ -442,11 +441,10 @@ function UserProfile(props) {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const updateLink = (personalLinksUpdate, adminLinksUpdate, mediaUrlUpdate) => {
+  const updateLink = (personalLinksUpdate, adminLinksUpdate) => {
     setShowModal(false);
     setUserProfile({
       ...userProfile,
-      mediaUrl:mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
       personalLinks: personalLinksUpdate,
       adminLinks: adminLinksUpdate,
     });
@@ -626,7 +624,7 @@ function UserProfile(props) {
                 className="profilePicture"
               />
               {canEdit ? (
-                <div className="image-button file btn btn-lg btn-primary" style={boxStyle}>
+                <div className="image-button file btn btn-lg btn-primary">
                   Change Photo
                   <Input
                     style={{ width: '100%', height: '100%', zIndex: '2' }}
@@ -646,10 +644,8 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
-              {!codeValid ? (
-              <Alert color="danger">
-                The code format should be A-AAA or AAAAA.
-              </Alert>
+            {!codeValid ? (
+              <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
@@ -707,11 +703,11 @@ function UserProfile(props) {
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{formatDate(userProfile.createdDate)}</span>
+              From : <span>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</span>
               {'   '}
               To:{' '}
               <span>
-                {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
+                {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
               </span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
@@ -756,7 +752,6 @@ function UserProfile(props) {
                 userProfile={userProfile}
                 updateLink={updateLink}
                 handleLinkModel={props.handleLinkModel}
-                handleSubmit={handleSubmit}
                 role={requestorRole}
                 canEdit={canEdit}
               />
@@ -1077,7 +1072,9 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
-                    canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                    canEditTeamCode={
+                      props.hasPermission('editTeamCode') || requestorRole == 'Owner'
+                    }
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
                     codeValid={codeValid}

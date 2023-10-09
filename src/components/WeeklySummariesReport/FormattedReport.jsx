@@ -145,7 +145,7 @@ function ReportDetails({
 }) {
   const ref = useRef(null);
 
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const googleDocLink = summary.adminLinks.find(link => link.Name === 'Google Doc');
 
   return (
     <li className="list-group-item px-0" ref={ref}>
@@ -577,6 +577,24 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   // Determine whether to use grayscale or color icon based on googleDocLink
   const googleDocIcon =
     googleDocLink && googleDocLink.Link.trim() !== '' ? googleDocIconPng : googleDocIconGray;
+
+  const BioLabel = (userId, bioPosted, summary) => {
+    const style = {
+      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+    };
+    return (
+      <div>
+        <b style={style}>Bio announcement:</b>
+        {bioPosted === 'default'
+          ? ' Not requested/posted'
+          : bioPosted === 'posted'
+          ? ' Posted'
+          : ' Requested'}
+      </div>
+    );
+  };
+
+  const bioFunction = bioCanEdit ? BioSwitch : BioLabel;
 
   return (
     <>
