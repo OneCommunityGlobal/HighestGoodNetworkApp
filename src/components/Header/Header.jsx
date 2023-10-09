@@ -46,16 +46,18 @@ import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks'
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  // const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const { isAuthenticated } = props.auth;
 
   // useEffect(() => {
   //   console.log("props:", props);
   // }, [])
 
-  const isAuthenticated = true;
+  // Check if props.auth.isAuthenticated is true then set isAuthenticated to true 
+
+  // const isAuthenticated = true;
   const user = props.userProfile;
   const firstName = user.firstName;
-  const profilePic = undefined;
+  const profilePic = '/pfp-default-header.png';
 
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
@@ -253,7 +255,7 @@ export const Header = props => {
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                    <DropdownItem tag={Link} to={`/updatepassword/${user._id}`}>
                       {UPDATE_PASSWORD}
                     </DropdownItem>
                   )}
