@@ -38,7 +38,6 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     const getChangeLogs = async () => {
       try {
         const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid))
-        console.log("🚀 ~ file: PermissionsManagement.jsx:38 ~ getChangeLogs ~ response.data:", response.data)
         setChangeLogs(response.data)
         setLoading(false);
       }
@@ -56,10 +55,6 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
   const role = userProfile?.role;
   const roleNames = roles?.map(role => role.roleName);
 
-  // console.log("🚀 ~ file: PermissionsManagement.jsx:58 ~ PermissionsManagement ~ changeLogs.slice().sort((a,b) => a.logDateTime - b.logDateTime):", changeLogs.slice().sort((a,b) => b.logDateTime - a.logDateTime))
-  if (changeLogs) {
-    console.log("🚀 ~ file: PermissionsManagement.jsx:60 ~ PermissionsManagement ~ changeLogs.slice().reverse():", changeLogs.slice().reverse())
-  }
   return (
     <>
       <div key={`${role}+permission`} className="permissions-management">
