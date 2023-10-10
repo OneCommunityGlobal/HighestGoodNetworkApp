@@ -91,6 +91,14 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
+  SETUP_NEW_USER: () =>
+    `${APIEndpoint}/getInitialSetuptoken`,
+  VALIDATE_TOKEN: () =>
+    `${APIEndpoint}/validateToken`,
+  SETUP_NEW_USER_PROFILE: () =>
+    `${APIEndpoint}/ProfileInitialSetup`,
+  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+
 
 
   //reasons endpoints
@@ -112,6 +120,9 @@ export const ENDPOINTS = {
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
+
+  // bm dashboard endpoints
+  BM_LOGIN: `${APIEndpoint}/bm/login`,
 };
 
 export const ApiEndpoint = APIEndpoint;
