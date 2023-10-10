@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
 
@@ -11,12 +12,14 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
     };
 
     return (
-      <Modal isOpen={modal} contentClassName="custom-modal-style" size="xl">
+      <Modal isOpen={modal} size="xl">
         <ModalHeader>{recordType} Record</ModalHeader>
         <ModalBody>
-          <Table>
-            <Record record={record} recordType={recordType} />
-          </Table>
+          <div className="records_modal_table_container">
+            <Table>
+              <Record record={record} recordType={recordType} />
+            </Table>
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button onClick={toggle}>Close</Button>
@@ -34,8 +37,8 @@ export function Record({ record, recordType }) {
         <thead>
           <tr>
             <th>Date</th>
-            <th>Quantity</th>
-            <th>Created by</th>
+            <th>Qty</th>
+            <th>Creator</th>
           </tr>
         </thead>
         <tbody>
@@ -46,7 +49,7 @@ export function Record({ record, recordType }) {
                 <td>{quantityUsed}</td>
                 <td>
                   <a href={`/userprofile/${createdBy._id}`}>
-                    {createdBy.firstName + ' ' + createdBy.lastName}
+                    {`${createdBy.firstName} ${createdBy.lastName}`}
                   </a>
                 </td>
               </tr>
@@ -62,11 +65,11 @@ export function Record({ record, recordType }) {
         <thead>
           <tr>
             <th>Date</th>
-            <th>Quantity</th>
+            <th>Qty</th>
             <th>Action</th>
             <th>Cause</th>
-            <th>Description</th>
-            <th>Created by</th>
+            <th>Desc</th>
+            <th>Creator</th>
           </tr>
         </thead>
         <tbody>
@@ -80,7 +83,7 @@ export function Record({ record, recordType }) {
                 <td>{description}</td>
                 <td>
                   <a href={`/userprofile/${createdBy._id}`}>
-                    {createdBy.firstName + ' ' + createdBy.lastName}
+                    {`${createdBy.firstName} ${createdBy.lastName}`}
                   </a>
                 </td>
               </tr>
@@ -97,12 +100,12 @@ export function Record({ record, recordType }) {
           <tr>
             <th>Date</th>
             <th>PO</th>
-            <th>Seller ID</th>
-            <th>Quantity</th>
+            <th>Seller</th>
+            <th>Qty</th>
             <th>Subtotal</th>
             <th>Taxes</th>
             <th>Shipping</th>
-            <th>Created by</th>
+            <th>Creator</th>
           </tr>
         </thead>
         <tbody>
@@ -119,7 +122,7 @@ export function Record({ record, recordType }) {
                   <td>{shipping}</td>
                   <td>
                     <a href={`/userprofile/${createdBy._id}`}>
-                      {createdBy.firstName + ' ' + createdBy.lastName}
+                      {`${createdBy.firstName} ${createdBy.lastName}`}
                     </a>
                   </td>
                 </tr>

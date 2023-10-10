@@ -52,7 +52,7 @@ export function MaterialsList(props) {
 
   if (isError) {
     return (
-      <main className="container mt-3">
+      <main className="materials_list_container">
         <h2>Materials List</h2>
         <BMError error={error} />
       </main>
@@ -62,7 +62,7 @@ export function MaterialsList(props) {
   return (
     <main className="materials_list_container">
       <h3>Materials</h3>
-      <section style={{ marginTop: '2rem' }}>
+      <section>
         <SelectForm materials={materials} setSelectedProject={setSelectedProject} />
         <MaterialsTable filteredMaterials={filteredMaterials} />
       </section>
