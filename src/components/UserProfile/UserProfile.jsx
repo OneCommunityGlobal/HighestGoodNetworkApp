@@ -62,7 +62,7 @@ function UserProfile(props) {
     email: true,
   };
   const roles = props?.role.roles;
-  const permittedRoles = ['Owner', 'Administrator', 'Manager', 'Assistant Manager'];
+  // const permittedRoles = ['Owner', 'Administrator', 'Manager', 'Assistant Manager'];
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -201,10 +201,9 @@ function UserProfile(props) {
     setIsProjectsEqual(compare);
   };
 
-  const loadTeamDetails = async teamId => {
+  const loadSummaryIntroDetails = async teamId => {
     const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
     const { data } = res;
-    console.log('Data', data);
 
     const memberSubmitted = [];
     const memberNotSubmitted = [];
@@ -251,7 +250,7 @@ function UserProfile(props) {
       const newUserProfile = response.data;
       setTeams(newUserProfile.teams);
 
-      await loadTeamDetails(newUserProfile.teams[0]._id);
+      await loadSummaryIntroDetails(newUserProfile.teams[0]._id);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
@@ -587,6 +586,7 @@ function UserProfile(props) {
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
+  const canSeeSummaryIntroBtn = props.hasPermission('seeSummaryIntroBtn');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
@@ -740,7 +740,7 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
-              {permittedRoles.includes(usersRole) ? (
+              {canSeeSummaryIntroBtn ? (
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);
@@ -750,7 +750,6 @@ function UserProfile(props) {
                   color="primary"
                   size="sm"
                   title="Generates the summary intro for your team and copies it to your clipboard for easy use."
-                  // onMouseEnter={handleMouseEnter}
                 >
                   Generate Summary Intro
                 </Button>

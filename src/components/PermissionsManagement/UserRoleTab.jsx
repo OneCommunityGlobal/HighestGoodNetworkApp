@@ -13,6 +13,7 @@ export const permissionLabel = {
   seeBadgeManagement: 'See Badge Management Tab (create badges)',
   seeUserManagement: 'See User Management Tab (Full Functionality)',
   seeBadgeManagement: 'See Badge Management Tab (Full Functionality)',
+  seeSummaryIntroButton: 'See Summary Intro Button',
   deleteOwnBadge: 'Delete Badge',
   modifyOwnBadgeAmount: 'Modify Badge Amount',
   assignBadgeOthers: 'Assign Badges',
