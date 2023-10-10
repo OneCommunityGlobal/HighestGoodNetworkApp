@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
@@ -5,11 +6,12 @@ import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import MaterialsTable from './MaterialsTable';
+import './MaterialsList.css';
 
 export function MaterialsList(props) {
   // console.log('materials props: ', props);
   // props & state
-  const { materials, errors } = props;
+  const { materials, errors, dispatch } = props;
   const [filteredMaterials, setFilteredMaterials] = useState(materials);
   const [selectedProject, setSelectedProject] = useState('all');
   const [isError, setIsError] = useState(false);
@@ -18,7 +20,7 @@ export function MaterialsList(props) {
   // dispatch materials fetch action
   // response is mapped to materials or errors in redux store
   useEffect(() => {
-    props.dispatch(fetchAllMaterials());
+    dispatch(fetchAllMaterials());
   }, []);
 
   // filter materials data by project
@@ -58,7 +60,7 @@ export function MaterialsList(props) {
   }
 
   return (
-    <main className="container mt-3">
+    <main className="materials_list_container">
       <h3>Materials</h3>
       <section style={{ marginTop: '2rem' }}>
         <SelectForm materials={materials} setSelectedProject={setSelectedProject} />

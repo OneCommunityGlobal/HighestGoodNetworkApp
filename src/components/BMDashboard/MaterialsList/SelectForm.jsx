@@ -1,7 +1,5 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
-import './SelectForm.css';
-
 export default function SelectForm({ materials, setSelectedProject }) {
   // create selectable projects
   let projectsSet = [];
@@ -22,9 +20,9 @@ export default function SelectForm({ materials, setSelectedProject }) {
           {materials.length ? (
             <>
               <option value="all">All</option>
-              {projectsSet.map((name, i) => {
+              {projectsSet.map(name => {
                 return (
-                  <option key={i} value={name}>
+                  <option key={name} value={name}>
                     {name}
                   </option>
                 );
