@@ -285,14 +285,16 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
   const handleCodeChange = e => {
     const { value } = e.target;
 
-    const regexTest = fullCodeRegex.test(value);
-    if (regexTest) {
-      setHasError(false);
-      setTeamCode(value);
-      handleOnChange(summary, value);
-    } else {
-      setTeamCode(value);
-      setHasError(true);
+    if (value.length <= 5) {
+      const regexTest = fullCodeRegex.test(value);
+      if (regexTest) {
+        setHasError(false);
+        setTeamCode(value);
+        handleOnChange(summary, value);
+      } else {
+        setTeamCode(value);
+        setHasError(true);
+      }
     }
   };
 
@@ -322,7 +324,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
       </div>
       {hasError ? (
         <Alert className="code-alert" color="danger">
-          The code format should be A-AAA or AAAAA.
+          NOT SAVED! The code format must be A-AAA or AAAAA.
         </Alert>
       ) : null}
     </>
