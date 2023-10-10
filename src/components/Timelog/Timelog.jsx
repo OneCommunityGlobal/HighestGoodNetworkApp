@@ -277,10 +277,11 @@ const Timelog = props => {
     }
   };
 
+
   const buildOptions = async () => {
     //build options for the project and task
     let projects = [];
-    if (!isEmpty(userProjects.projects)) {
+    if (!isEmpty(userProjects.projects) && !((userProjects?.projects?.length == 1 && userProjects?.projects[0]?.projectId == undefined))) {
       projects = userProjects.projects;
     }
     const options = projects.map(project => (
