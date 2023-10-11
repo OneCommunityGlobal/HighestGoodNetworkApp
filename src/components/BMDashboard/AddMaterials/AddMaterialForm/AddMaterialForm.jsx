@@ -6,6 +6,7 @@ import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { isValidUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
+import { postNewItemType } from '../../../../actions/itemTypes';
 import { postNewMaterial } from '../../../../actions/materials';
 import './AddMaterialForm.css';
 
@@ -17,8 +18,8 @@ export default function AddMaterialsForm(props) {
     selectedProject,
     canAddNewMaterial,
     canAddNewMeasurement,
-    materialList,
-    measurementList,
+    materials,
+    measurements,
   } = props;
 
   const [formInputs, setFormInputs] = useState({
@@ -41,8 +42,8 @@ export default function AddMaterialsForm(props) {
   // state for image?
 
   const [trySubmit, setTrySubmit] = useState(false);
-  const history = useHistory();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const linkRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
 
@@ -75,7 +76,7 @@ export default function AddMaterialsForm(props) {
     description: Joi.string().required(),
   });
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const { error } = schema.validate(formInputs);
     if (error) {
@@ -159,7 +160,7 @@ export default function AddMaterialsForm(props) {
                     onChange={handleChange}
                   >
                     <option value="">-- select an option --</option>
-                    {materialList.map(el => (
+                    {materials.map(el => (
                       <option value={el._id} key={el._id}>
                         {el.name}
                       </option>
@@ -265,7 +266,7 @@ export default function AddMaterialsForm(props) {
                     onChange={handleChange}
                   >
                     <option value="">-- select an option --</option>
-                    {measurementList.map(measurementUnit => (
+                    {measurements.map(measurementUnit => (
                       <option value={measurementUnit}>{measurementUnit}</option>
                     ))}
                   </Input>

@@ -3,40 +3,31 @@ import { Container } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 // import { useLocation } from 'react-router-dom';
 import './AddMaterials.css';
-import { ENDPOINTS } from 'utils/URL';
-import axios from 'axios';
+import { getAllItemTypes } from 'actions/itemTypes';
 import AddMaterialForm from './AddMaterialForm/AddMaterialForm';
 
 export default function AddMaterials() {
-  const projects = useSelector(state => state.allProjects);
-  const [materials, setMaterials] = useState([]);
-  const [measurements, setMeasurements] = useState(['Cubic Yard', 'Cubic Foot']);
+  const allProjects = useSelector(state => state.allProjects);
+  const itemTypes = useSelector(state => state.itemTypes.allItemTypes);
+  const dispatch = useDispatch();
 
   // expecting a state object with the project object selected
   // from the BM Dashboard
   // const { state } = useLocation();
 
   useEffect(() => {
-    const url = ENDPOINTS.BM_GET_INVENTORY_TYPES;
-
-    axios
-      .get(url)
-      .then(result => {
-        const materialList = result.data.filter(invItem => invItem.type === 'material');
-        setMaterials(materialList);
-      })
-      .catch(error => console.log(error));
+    dispatch(getAllItemTypes());
   }, []);
 
   return (
     <Container fluid className="add-materials-page">
       <AddMaterialForm
-        projects={projects.projects}
+        projects={allProjects.projects}
         // selectedProject={allProjects.projects[3]}
         canAddNewMaterial
         canAddNewMeasurement
-        materialList={materials}
-        measurementList={measurements}
+        materials={itemTypes.filter(item => item.type === 'material')}
+        measurements={['Cubic Yard', 'Cubic Foot']}
       />
     </Container>
   );
