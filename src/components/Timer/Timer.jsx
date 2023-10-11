@@ -1,46 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Badge, Button } from 'reactstrap';
+import axios from 'axios';
 import { startTimer, pauseTimer, updateTimer, getTimerData } from '../../actions/timer';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import './Timer.css';
-import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import { useLocation } from 'react-router-dom';
 
-const Timer = () => {
+function Timer() {
   const data = {
     disabled: window.screenX <= 500,
     isTangible: true,
-    //isTangible: window.screenX > 500
-    //How does the screen position of the element influence tangability?
-    //This has been changed as part of a hotfix.
+    // isTangible: window.screenX > 500
+    // How does the screen position of the element influence tangability?
+    // This has been changed as part of a hotfix.
   };
-
-  const location = useLocation()
-
-  const userIdFromState = useSelector(state => state.auth.user.userid);
-  const userProfileFromState = useSelector(state => state.userProfile)
-  const authUserFromState = useSelector(state => state.auth.user);
-  
-  const userId = location.pathname.includes(userProfileFromState._id) ? userProfileFromState._id : userIdFromState
-  const userProfile = location.pathname.includes(userProfileFromState._id) ? userProfileFromState : authUserFromState
-
+  const userId = useSelector(state => state.auth.user.userid);
+  const userProfile = useSelector(state => state.auth.user);
   const pausedAt = useSelector(state => state.timer?.seconds);
   const isWorking = useSelector(state => state.timer?.isWorking);
-
   const dispatch = useDispatch();
   const alert = {
     va: true,
   };
-  const [seconds, setSeconds] = useState(isNaN(pausedAt) ? 0 : pausedAt);
+  const [seconds, setSeconds] = useState(Number.isNaN(pausedAt) ? 0 : pausedAt);
   const [isActive, setIsActive] = useState(false);
   const [modal, setModal] = useState(false);
   let intervalSec = null;
   let intervalMin = null;
   let intervalThreeMin = null;
 
-  const toggle = () => setModal(modal => !modal);
+  const toggle = () => setModal(!modal);
 
   const reset = async () => {
     setSeconds(0);
@@ -49,6 +39,11 @@ const Timer = () => {
       setIsActive(false);
     }
   };
+
+  const handleStop = () => {
+    toggle();
+  };
+
   const handleStart = async () => {
     await dispatch(getTimerData(userId));
 
@@ -74,7 +69,9 @@ const Timer = () => {
         setIsActive(false);
       }
       await dispatch(getTimerData(userId));
-    } catch (e) {}
+    } catch (e) {
+      // Do Nothing
+    }
   };
 
   const handlePause = async () => {
@@ -87,10 +84,6 @@ const Timer = () => {
     return false;
   };
 
-  const handleStop = () => {
-    toggle();
-  };
-
   useEffect(() => {
     const fetchSeconds = async () => {
       try {
@@ -99,10 +92,10 @@ const Timer = () => {
           setSeconds(res.data?.seconds || 0);
           setIsActive(res.data.isWorking);
         } else {
-          setSeconds(isNaN(pausedAt) ? 0 : pausedAt);
+          setSeconds(Number.isNaN(pausedAt) ? 0 : pausedAt);
         }
       } catch {
-        setSeconds(isNaN(pausedAt) ? 0 : pausedAt);
+        setSeconds(Number.isNaN(pausedAt) ? 0 : pausedAt);
       }
     };
 
@@ -112,7 +105,10 @@ const Timer = () => {
   useEffect(() => {
     try {
       setIsActive(isWorking);
-    } catch {}
+    } catch {
+      // Do Nothing
+      setIsActive(false);
+    }
   }, [isWorking]);
 
   useEffect(() => {
@@ -121,7 +117,7 @@ const Timer = () => {
         clearInterval(intervalThreeMin);
       }
       intervalSec = setInterval(() => {
-        setSeconds(seconds => seconds + 1);
+        setSeconds(second => second + 1);
       }, 1000);
 
       intervalMin = setInterval(handleUpdate, 60000);
@@ -131,7 +127,7 @@ const Timer = () => {
       if (intervalThreeMin) {
         clearInterval(intervalThreeMin);
       }
-      //handles restarting timer if you restart it in another tab
+      // handles restarting timer if you restart it in another tab
       intervalThreeMin = setInterval(handleUpdate, 1800000);
     } else {
       clearInterval(intervalSec);
@@ -139,7 +135,7 @@ const Timer = () => {
       if (intervalThreeMin) {
         clearInterval(intervalThreeMin);
       }
-      //handles restarting timer if you restart it in another tab
+      // handles restarting timer if you restart it in another tab
       intervalThreeMin = setInterval(handleUpdate, 1800000);
     }
     return () => {
@@ -154,6 +150,7 @@ const Timer = () => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secondsRemainder = seconds % 60;
+  const padZero = number => `0${number}`.slice(-2);
 
   return (
     <div style={{ zIndex: 2 }} className="timer">
@@ -180,22 +177,20 @@ const Timer = () => {
           Stop
         </Button>
       </div>
-      {modal ? (
+      {modal && (
         <TimeEntryForm
           edit={false}
           userId={userId}
           toggle={toggle}
-          isOpen={true}
+          isOpen
           timer={{ hours, minutes }}
           data={data}
           userProfile={userProfile}
           resetTimer={reset}
         />
-      ) : null}
+      )}
     </div>
   );
-};
-
-const padZero = number => `0${number}`.slice(-2);
+}
 
 export default Timer;

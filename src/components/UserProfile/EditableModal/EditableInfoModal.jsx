@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById} from '../../../actions/information';
 import styles from './EditableInfoModal.css';
+import { boxStyle } from 'styles';
 
 // New RichTextEditor component
 const RichTextEditor = ({ disabled, value, onEditorChange }) => (
@@ -57,9 +58,8 @@ export class EditableInfoModal extends Component {
   };
   
   
-  async componentDidMount() {
-    await this.props.getInfoCollections();
-    const {infoCollections, role, areaName, fontSize} = this.props;
+  componentDidMount() {
+    const {infoCollections, role, areaName, fontSize, isPermissionPage} = this.props;
     let content = '';
     let visible = '0';
     if (Array.isArray(infoCollections)) {
@@ -86,6 +86,7 @@ export class EditableInfoModal extends Component {
       CanRead,
       CanEdit,
       fontSize: fontSize,
+      isPermissionPage,
     });
   };
 
@@ -202,19 +203,14 @@ export class EditableInfoModal extends Component {
     }
     await this.mainSaveHandler();
   };
-
   render() {
     const { 
-      loading,
-      fetchError,
-      infoElements,
       infoContent,
-      infoName,
-      visibility,
       editableModalOpen,
       fontSize,
       CanRead,
       CanEdit,
+      isPermissionPage,
      } = this.state;
 
     return (
@@ -227,7 +223,7 @@ export class EditableInfoModal extends Component {
           style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '10px'}}
           aria-hidden="true"
           className="fa fa-info-circle"
-          onMouseOver={()=>this.setState({editableModalOpen: true})}
+          onClick={()=>this.setState({editableModalOpen: true})}
         />
         {editableModalOpen && (
           <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg">
@@ -244,6 +240,14 @@ export class EditableInfoModal extends Component {
                 dangerouslySetInnerHTML={{ __html: infoContent }}
                 onClick={() => this.handleEdit(true)} />
               }
+          {isPermissionPage && CanEdit&&
+            (
+              <div style={{ paddingLeft: '20px' }}> 
+                <p>Click above to edit this content. (Note: Only works on Permissions Management Page)</p>
+              </div>
+              
+            )
+          }
           </ModalBody>
           <ModalFooter>
           <Row>
@@ -263,13 +267,14 @@ export class EditableInfoModal extends Component {
               <Col md={{ size: 1}} style={{paddingLeft:'5px'}}>
                 <Button
                   className='saveBtn' 
-                  onClick={this.handleSave}>Save</Button>
+                  onClick={this.handleSave}
+                  style={boxStyle}>Save</Button>
               </Col>)
             }
           <Col 
             md={{ size: 1}}
             >
-            <Button onClick={this.handleClose}>Close</Button>
+            <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
           </Col>
           </Row>
           </ModalFooter>
@@ -299,10 +304,10 @@ const mapStateToProps = ({infoCollections }) => ({
   
 const mapDispatchToProps = dispatch => {
   return {
-    getInfoCollections: ()=> dispatch(getInfoCollections()),
-    updateInfoCollection: (infoId, updatedInfo)=>dispatch(updateInfoCollection(infoId, updatedInfo)),
-    addInfoCollection: (newInfo)=>dispatch(addInfoCollection(newInfo)),
-    deleteInfoCollectionById: (infoId)=>dispatch(deleteInfoCollectionById(infoId)), 
+    getInfoCollections: () => dispatch(getInfoCollections()),
+    updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
+    addInfoCollection: (newInfo) => dispatch(addInfoCollection(newInfo)),
+    deleteInfoCollectionById: (infoId) => dispatch(deleteInfoCollectionById(infoId)), 
   };
 };
 

@@ -23,11 +23,11 @@ import { boxStyle } from 'styles';
 
 function WBSTasks(props) {
   /*
-  * -------------------------------- variable declarations -------------------------------- 
+  * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { role, roles, userPermissions, tasks, fetched } = props;
-  
+  const { tasks, fetched } = props;
+
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
   const { wbsName } = props.match.params;
@@ -43,8 +43,11 @@ function WBSTasks(props) {
   const [pageLoadTime, setPageLoadTime] = useState(Date.now());
   const myRef = useRef(null);
 
+  // permissions
+  const canPostTask = props.hasPermission('postTask') || props.hasPermission('seeProjectManagement');
+
   /*
-  * -------------------------------- functions -------------------------------- 
+  * -------------------------------- functions --------------------------------
   */
   const load = async () => {
     const levelList = [0, 1, 2, 3, 4];
@@ -171,7 +174,7 @@ function WBSTasks(props) {
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-secondary">
+              <button type="button" className="btn btn-secondary" style={boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
             </NavItem>
@@ -179,7 +182,7 @@ function WBSTasks(props) {
           </ol>
         </nav>
         <div className='mb-2'>
-          {hasPermission(role, 'addTask', roles, userPermissions) ? (
+          {canPostTask ? (
             <AddTaskModal
               key="task_modal_null"
               taskNum={null}
@@ -192,9 +195,9 @@ function WBSTasks(props) {
           ) : null}
 
           {!isLoading && showImport ? (
-            <ImportTask 
-              wbsId={wbsId} 
-              projectId={projectId} 
+            <ImportTask
+              wbsId={wbsId}
+              projectId={projectId}
               load={load}
               setIsLoading={setIsLoading}
             />
@@ -384,10 +387,7 @@ function WBSTasks(props) {
   );
 }
 
-const mapStateToProps = state => ({ 
-  role: state.auth ? state.auth.user.role : null,
-  roles: state.role.roles,
-  userPermissions: state.auth.user?.permissions?.frontPermissions,
+const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
   fetched: state.tasks.fetched,
 });
@@ -398,4 +398,5 @@ export default connect(mapStateToProps, {
   updateNumList,
   deleteTask,
   fetchAllMembers,
+  hasPermission,
 })(WBSTasks);

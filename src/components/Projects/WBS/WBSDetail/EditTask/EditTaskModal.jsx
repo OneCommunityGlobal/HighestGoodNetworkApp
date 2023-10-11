@@ -22,7 +22,11 @@ const EditTaskModal = props => {
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { role, userPermissions, roles, allMembers, error } = props;
+  const { allMembers, error } = props;
+
+  // permissions
+  const canUpdateTask = props.hasPermission('updateTask');
+  const canSuggestTask = props.hasPermission('suggestTask');
 
   // states from hooks
   const [thisTask, setThisTask] = useState();
@@ -179,7 +183,7 @@ const EditTaskModal = props => {
     await props.updateTask(
       props.taskId,
       updatedTask,
-      hasPermission(role, 'editTask', roles, userPermissions),
+      canUpdateTask,
       oldTask,
     );
     props.setTask?.(updatedTask);
@@ -199,6 +203,9 @@ const EditTaskModal = props => {
   */
   useEffect(() => {
     const fetchTaskData = async () => {
+      if (!props.taskId) {
+        return;
+      }
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
@@ -240,21 +247,12 @@ const EditTaskModal = props => {
       <Modal isOpen={modal} toggle={toggle}>
         <ReactTooltip delayShow={300}/>
         <ModalHeader toggle={toggle}>
-          {hasPermission(role, 'editTask', roles, userPermissions)
-            ? 'Edit'
-            : hasPermission(role, 'suggestTask', roles, userPermissions)
-            ? 'Suggest'
-            : 'View'}
+          {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
         </ModalHeader>
         <ModalBody>
           <table
             className={`table table-bordered responsive
-            ${
-              hasPermission(role, 'editTask', roles, userPermissions) ||
-              hasPermission(role, 'suggestTask', roles, userPermissions)
-                ? null
-                : 'disable-div'
-            }`}
+            ${canUpdateTask || canSuggestTask ? null : 'disable-div'}`}
           >
             <tbody>
               <tr>
@@ -295,7 +293,7 @@ const EditTaskModal = props => {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={allMembers}
+                      members={allMembers.filter(user=>user.isActive)}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -632,8 +630,7 @@ const EditTaskModal = props => {
             </tbody>
           </table>
         </ModalBody>
-        {hasPermission(role, 'editTask', roles, userPermissions) ||
-        hasPermission(role, 'suggestTask', roles, userPermissions) ? (
+        {canUpdateTask || canSuggestTask ? (
           <ModalFooter>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
               <Button color="primary" onClick={updateTask} style={boxStyle}>
@@ -647,21 +644,14 @@ const EditTaskModal = props => {
         ) : null}
       </Modal>
       <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
-        {hasPermission(role, 'editTask', roles, userPermissions)
-          ? 'Edit'
-          : hasPermission(role, 'suggestTask', roles, userPermissions)
-          ? 'Suggest'
-          : 'View'}
+        {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
       </Button>
     </div>
   );
 };
 
 const mapStateToProps = state => ({
-  role: state.auth ? state.auth.user.role : null,
-  userPermissions: state.auth.user?.permissions?.frontPermissions,
-  roles: state.role.roles,
   allMembers: state.projectMembers.members,
   error: state.tasks.error,
 });
-export default connect(mapStateToProps, { updateTask })(EditTaskModal);
+export default connect(mapStateToProps, { updateTask, hasPermission, })(EditTaskModal);

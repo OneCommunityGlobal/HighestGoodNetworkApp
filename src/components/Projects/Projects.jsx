@@ -95,7 +95,7 @@ export class Projects extends Component {
     this.setState({ showModalDelete: false });
   };
 
-  addProject = (name, category) => {
+  postProject = (name, category) => {
     this.props.postNewProject(name, category, true);
     this.setState({ trackModelMsg: true });
   };
@@ -115,14 +115,11 @@ export class Projects extends Component {
 
     let showModalMsg = false;
 
+    const canPostProject = this.props.hasPermission('postProject') || this.props.hasPermission('seeProjectManagement');
+
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
     }
-
-    const role = this.props.state.auth.user.role;
-    const userPermissions = this.props.state.auth.user?.permissions?.frontPermissions;
-
-    const { roles } = this.props.state.role;
 
     // Display project lists
     let ProjectsList = [];
@@ -159,13 +156,11 @@ export class Projects extends Component {
             onClick={this.toggleProjectInfoModal}
           />
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          {hasPermission(role, 'addProject', roles, userPermissions) ? (
-            <AddProject addNewProject={this.addProject} />
-          ) : null}
+          {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader role={role} roles={roles} userPermissions={userPermissions} />
+              <ProjectTableHeader />
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>
@@ -211,4 +206,5 @@ export default connect(mapStateToProps, {
   deleteProject,
   modifyProject,
   getPopupById,
+  hasPermission,
 })(Projects);

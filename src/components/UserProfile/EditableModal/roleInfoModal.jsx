@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { 
+import {
   Button,
   Modal,
   ModalBody,
@@ -8,7 +8,7 @@ import {
  } from 'reactstrap';
 
 const RoleInfoModal = ({info}) => {
-    const [isOpen, setOpen] = useState(false);  
+    const [isOpen, setOpen] = useState(false);
     const {infoContent, CanRead} = {...info};
     const handleMouseOver = () => {
       setOpen(true);
@@ -18,22 +18,22 @@ const RoleInfoModal = ({info}) => {
       setOpen(false);
     }
     if(CanRead){
-      return (<div>
+      return (<span>
         <i
           data-toggle="tooltip"
           data-placement="right"
           title="Click for user class information"
-          style={{ fontSize: 24, cursor: 'pointer', color: '#00CCFF', marginTop: '2px', marginLeft: '5px'}}
+          style={{ fontSize: 24, cursor: 'pointer', color: '#00CCFF', marginLeft: '5px'}}
           aria-hidden="true"
           className="fa fa-info-circle"
-          onMouseOver={handleMouseOver}
+          onClick={handleMouseOver}
         />
         {isOpen && (
           <Modal isOpen={isOpen} size="lg">
           <ModalHeader>Welcome to Information Page!</ModalHeader>
           <ModalBody>
-           <div 
-              style={{ paddingLeft: '20px' }} 
+           <div
+              style={{ paddingLeft: '20px' }}
               dangerouslySetInnerHTML={{ __html: infoContent }}/>
           </ModalBody>
           <ModalFooter>
@@ -41,13 +41,12 @@ const RoleInfoModal = ({info}) => {
           </ModalFooter>
           </Modal>
         )}
-      </div>)
+      </span>)
     }
     return (
-        <div>
-          <p>Please Input Informations first!</p>
-        </div>
-        
+        <>
+        </>
+
     )
 }
 

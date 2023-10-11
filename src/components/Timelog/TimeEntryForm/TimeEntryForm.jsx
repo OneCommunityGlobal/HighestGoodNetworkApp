@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -21,7 +21,7 @@ import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
-import { getAllRoles } from 'actions/role';
+import { updateUserProfile } from 'actions/userProfile';
 
 import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
@@ -32,7 +32,7 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
-import { useLocation } from 'react-router-dom';
+import fixDiscrepancy from 'utils/fixDiscrepancy';
 import { boxStyle } from 'styles';
 
 /**
@@ -50,8 +50,9 @@ import { boxStyle } from 'styles';
  * @returns
  */
 const TimeEntryForm = props => {
-  const location = useLocation()
   const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
+  const canEditTimeEntry = props.hasPermission('editTimeEntry');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -85,8 +86,6 @@ const TimeEntryForm = props => {
 
   const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
-  const roles = useSelector(state => state.role.roles);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
 
   const dispatch = useDispatch();
 
@@ -140,7 +139,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, [props.isTaskUpdated, location]);
+  }, [props.isTaskUpdated]);
 
   //grab form data before editing
   useEffect(() => {
@@ -277,7 +276,7 @@ const TimeEntryForm = props => {
     }
 
     if (
-      !hasPermission(currentUserRole, 'addTimeEntryOthers', roles, userPermissions) &&
+      !canPutUserProfileImportantInfo &&
       data.isTangible &&
       isTimeModified &&
       reminder.editNotice
@@ -294,10 +293,17 @@ const TimeEntryForm = props => {
     setErrors(result);
     return isEmpty(result);
   };
+
+
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
     const { projectId, isTangible, personId } = timeEntry;
+
+    //fix discrepancy in hours in userProfile if any
+
+     fixDiscrepancy(userProfile);
+
     //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
@@ -455,6 +461,7 @@ const TimeEntryForm = props => {
     }
 
     //Update userprofile hoursByCategory
+    await dispatch(getUserProfile(userId));
 
     //Send the time entry to the server
     setSubmitting(true);
@@ -477,6 +484,20 @@ const TimeEntryForm = props => {
         `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
       );
       return;
+    }
+
+    // see if this is the first time the user is logging time
+    if (!edit) {
+      if (userProfile.isFirstTimelog && userProfile.isFirstTimelog === true) {
+
+        const updatedUserProfile = {
+          ...userProfile,
+          createdDate: new Date(),
+          isFirstTimelog: false,
+        };
+    
+        dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
+      }
     }
 
     //Clear the form and clean up.
@@ -620,12 +641,7 @@ const TimeEntryForm = props => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {hasPermission(
-                currentUserRole,
-                'changeIntangibleTimeEntryDate',
-                roles,
-                userPermissions,
-              ) && !fromTimer ? (
+              {canEditTimeEntry && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -739,10 +755,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
-                  disabled={
-                    !hasPermission(currentUserRole, 'toggleTangibleTime', roles, userPermissions) &&
-                    !data.isTangible
-                  }
+                  disabled={!canEditTimeEntry && !data.isTangible}
                 />
                 Tangible&nbsp;
                 <i
@@ -786,4 +799,4 @@ TimeEntryForm.propTypes = {
   resetTimer: PropTypes.func,
 };
 
-export default TimeEntryForm;
+export default connect(null, { hasPermission })(TimeEntryForm);

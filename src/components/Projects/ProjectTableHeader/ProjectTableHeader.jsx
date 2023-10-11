@@ -15,8 +15,11 @@ import {
   DELETE,
 } from './../../../languages/en/ui';
 import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 
 const ProjectTableHeader = props => {
+  const canDeleteProject = props.hasPermission('deleteProject') || props.hasPermission('seeProjectManagement');
+
   return (
     <tr>
       <th scope="col" id="projects__order">
@@ -38,7 +41,7 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__wbs">
         {WBS}
       </th>
-      {hasPermission(props.role, 'deleteProject', props.roles, props.userPermissions) ? (
+      {canDeleteProject ? (
         <th scope="col" id="projects__delete">
           {DELETE}
         </th>
@@ -47,4 +50,4 @@ const ProjectTableHeader = props => {
   );
 };
 
-export default ProjectTableHeader;
+export default connect(null, { hasPermission })(ProjectTableHeader);

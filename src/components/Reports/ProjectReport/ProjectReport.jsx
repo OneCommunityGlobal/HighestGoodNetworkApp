@@ -60,9 +60,11 @@ export const ProjectReport = ({ match }) => {
           </Paging>
         </ReportPage.ReportBlock>
       </div>
+      <div className="tasks-block">
       <ReportPage.ReportBlock>
         <TasksTable WbsTasksID={wbsTasksID} />
       </ReportPage.ReportBlock>
+      </div>
     </ReportPage>
   );
 };

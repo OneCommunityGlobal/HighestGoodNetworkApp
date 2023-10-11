@@ -88,9 +88,38 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
+  SETUP_NEW_USER: () =>
+    `${APIEndpoint}/getInitialSetuptoken`,
+  VALIDATE_TOKEN: () =>
+    `${APIEndpoint}/validateToken`,
+  SETUP_NEW_USER_PROFILE: () =>
+    `${APIEndpoint}/ProfileInitialSetup`,
+  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+
+
+
+  //reasons endpoints
+  CREATEREASON: () => {
+    return `${APIEndpoint}/reason/`
+  },
+  GETALLUSERREASONS: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
+  },
+  GETSINGLEREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/single/${userId}`
+  },
+  PATCHUSERREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
+  },
+  DELETEUSERREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
+  },
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
+
+  // bm dashboard endpoints
+  BM_LOGIN: `${APIEndpoint}/bm/login`,
 };
 
 export const ApiEndpoint = APIEndpoint;

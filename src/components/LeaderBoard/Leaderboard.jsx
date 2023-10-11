@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -11,13 +11,14 @@ import {
 } from 'utils/leaderboardPermissions';
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+import { toast } from 'react-toastify';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
   const prevDeps = useRef(deps);
   useEffect(() => {
     const isSame = prevDeps.current.every((obj, index) => {
-      let isItEqual = isEqual(obj, deps[index]);
+      const isItEqual = isEqual(obj, deps[index]);
       return isItEqual;
     });
     if (isFirst.current || !isSame) {
@@ -29,7 +30,7 @@ function useDeepEffect(effectFunc, deps) {
   }, deps);
 }
 
-const LeaderBoard = ({
+function LeaderBoard({
   getLeaderboardData,
   getOrgData,
   getMouseoverText,
@@ -38,14 +39,12 @@ const LeaderBoard = ({
   organizationData,
   timeEntries,
   isVisible,
-  roles,
   asUser,
   totalTimeMouseoverText,
-}) => {
-  const userId = asUser ? asUser : loggedInUser.userId;
-  const userPermissions = loggedInUser.permissions?.frontPermissions;
-  const hasSummaryIndicatorPermission = hasPermission(loggedInUser.role, 'seeSummaryIndicator', roles, userPermissions);
-  const hasVisibilityIconPermission = hasPermission(loggedInUser.role, 'seeVisibilityIcon', roles, userPermissions);
+}) {
+  const userId = asUser || loggedInUser.userId;
+  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
@@ -76,13 +75,16 @@ const LeaderBoard = ({
           }
         }
       }
-    } catch {}
+    } catch (error) {
+      throw new Error(error);
+    }
   }, [leaderBoardData]);
 
   const [isOpen, setOpen] = useState(false);
   const [modalContent, setContent] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const toggle = () => setOpen(isOpen => !isOpen);
+  const toggle = () => setOpen(isOpenState => !isOpenState);
 
   const modalInfos = [
     <>
@@ -97,10 +99,10 @@ const LeaderBoard = ({
           The HGN Totals at the top shows how many volunteers are currently active in the system,
           how many volunteer hours they are collectively committed to, and how many tangible and
           total hours they have completed.
-          {/*The color and length of that bar
+          {/* The color and length of that bar
           changes based on what percentage of the total committed hours for the week have been
           completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo,
-          and Equal or More than 100%: Purple.*/}
+          and Equal or More than 100%: Purple. */}
         </li>
         <li>
           The red/green dot shows whether or not a person has completed their “tangible” hours
@@ -154,6 +156,12 @@ const LeaderBoard = ({
       'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
     );
   };
+  const updateLeaderboardHandler = async () => {
+    setIsLoading(true);
+    await getLeaderboardData(userId);
+    setIsLoading(false);
+    toast.success('Successfuly updated leaderboard');
+  };
 
   return (
     <div>
@@ -165,10 +173,8 @@ const LeaderBoard = ({
           title="Click to refresh the leaderboard"
           style={{ fontSize: 24, cursor: 'pointer' }}
           aria-hidden="true"
-          className="fa fa-refresh"
-          onClick={() => {
-            getLeaderboardData(userId);
-          }}
+          className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
+          onClick={updateLeaderboardHandler}
         />
         &nbsp;&nbsp;
         <i
@@ -258,8 +264,8 @@ const LeaderBoard = ({
                 </span>
               </td>
             </tr>
-            {leaderBoardData.map((item, key) => (
-              <tr key={key}>
+            {leaderBoardData.map(item => (
+              <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
@@ -285,7 +291,18 @@ const LeaderBoard = ({
                     }}
                   >
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div onClick={() => dashboardToggle(item)}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        dashboardToggle(item);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          dashboardToggle(item);
+                        }
+                      }}
+                    >
                       {hasLeaderboardPermissions(loggedInUser.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
@@ -319,7 +336,7 @@ const LeaderBoard = ({
                     </div>
                     {hasSummaryIndicatorPermission && item.hasSummary && (
                       <div
-                        title={`Weekly Summary Submitted`}
+                        title="Weekly Summary Submitted"
                         style={{
                           color: '#32a518',
                           cursor: 'default',
@@ -337,7 +354,7 @@ const LeaderBoard = ({
                   </Link>
                   &nbsp;&nbsp;&nbsp;
                   {hasVisibilityIconPermission && !item.isVisible && (
-                    <i className="fa fa-eye-slash" title="User is invisible"></i>
+                    <i className="fa fa-eye-slash" title="User is invisible" />
                   )}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
@@ -367,6 +384,6 @@ const LeaderBoard = ({
       </div>
     </div>
   );
-};
+}
 
 export default LeaderBoard;

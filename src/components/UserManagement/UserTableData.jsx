@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
-import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
-import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails } from 'utils/permissions';
-import Table from 'react-bootstrap/Table';
+import hasPermission from 'utils/permissions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
+import { formatDate } from 'utils/formatDate';
 
 /**
  * The body row of the user table
  */
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
-  const history = useHistory();
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -26,10 +26,7 @@ const UserTableData = React.memo(props => {
   }, [props.isActive, props.resetLoading]);
 
   const checkPermissionsOnOwner = () => {
-    return (
-      props.user.role === 'Owner' &&
-      !hasPermission(props.role, 'addDeleteEditOwners', props.roles, props.userPermissions)
-    );
+    return props.user.role === 'Owner' && !canAddDeleteEditOwners;
   };
 
   return (
@@ -95,10 +92,11 @@ const UserTableData = React.memo(props => {
       </td>
       <td>
         {props.user.isActive === false && props.user.reactivationDate
-          ? props.user.reactivationDate.toLocaleString().split('T')[0]
+          ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
-      <td>{props.user.endDate ? props.user.endDate.toLocaleString().split('T')[0] : 'N/A'}</td>
+      <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
+      <td>{props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}</td>
       {checkPermissionsOnOwner() ? null : (
         <td>
           <span className="usermanagement-actions-cell">
@@ -122,4 +120,4 @@ const UserTableData = React.memo(props => {
   );
 });
 
-export default UserTableData;
+export default connect(null, { hasPermission })(UserTableData);
