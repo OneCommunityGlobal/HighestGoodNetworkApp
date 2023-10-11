@@ -15,14 +15,12 @@ const ProjectSelectForm = ({ projects }) => {
   });
 
   const handleOptionChange = event => {
-    console.log('option change', event.target.value);
     setSelectedProjectId(event.target.value);
   };
 
   const handleButtonClick = () => {
     if (selectedProjectId) {
       //navigate to a new page with information about the selected project
-      console.log('selectedProjectId', selectedProjectId);
       history.push(`/bmdashboard/projects/${selectedProjectId}`);
     } else {
       alert('Please select an option first');
