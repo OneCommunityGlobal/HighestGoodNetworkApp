@@ -52,8 +52,9 @@ export default function MaterialsTable({ filteredMaterials }) {
                 return (
                   <tr key={mat._id}>
                     <td>{mat.project.projectName}</td>
-                    <td>{mat.inventoryItemType.name}</td>
-                    <td>{mat.inventoryItemType.uom}</td>
+                    {/* Note: optional chaining to prevent crashes while db work ongoing */}
+                    <td>{mat.inventoryItemType?.name}</td>
+                    <td>{mat.inventoryItemType?.uom}</td>
                     <td>{mat.stockBought}</td>
                     <td>{mat.stockUsed}</td>
                     <td>{mat.stockAvailable}</td>
