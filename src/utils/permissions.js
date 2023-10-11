@@ -3,8 +3,6 @@ const hasPermission = (action) => {
   return (dispatch, getState) => {
     const state = getState();
     const rolePermissions = state.role.roles;
-    // const userRole = state.auth.user.role;
-    // const userPermissions = state.auth.user.permissions?.frontPermissions;
 
     const userRole = state.userProfile.role;
     const userPermissions = state.userProfile.permissions?.frontPermissions;

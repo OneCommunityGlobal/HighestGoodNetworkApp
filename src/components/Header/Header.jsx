@@ -48,13 +48,6 @@ export const Header = props => {
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated } = props.auth;
 
-  // useEffect(() => {
-  //   console.log("props:", props);
-  // }, [])
-
-  // Check if props.auth.isAuthenticated is true then set isAuthenticated to true 
-
-  // const isAuthenticated = true;
   const user = props.userProfile;
   const firstName = user.firstName;
   const profilePic = '/pfp-default-header.png';
