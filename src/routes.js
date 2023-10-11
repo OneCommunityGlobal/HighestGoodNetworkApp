@@ -44,6 +44,7 @@ import SetupProfile from 'components/SetupProfile/SetupProfile';
 import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
+import ProjectDetails from 'components/BMDashboard/ProjectDetails/ProjectDetails';
 
 export default (
   <>
@@ -157,7 +158,7 @@ export default (
       <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
       <Route path="/bmdashboard/login" component={BMLogin} />
       {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-      <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+      <BMProtectedRoute path="/bmdashboard/:path" component={ProjectDetails} />
       
       {/* ----- END BM Dashboard Routing ----- */}
 
