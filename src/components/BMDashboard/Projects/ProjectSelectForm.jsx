@@ -29,7 +29,7 @@ const ProjectSelectForm = ({ projects }) => {
 
   return (
     <Form className="w-100 p-3  text-center">
-      <Row className="ml-0 gx-5 w-75" md="2" sm="1" xs="1">
+      <Row className="ml-0 gx-5 w-75 mx-auto" md="2" sm="1" xs="1">
         <FormGroup>
           <Col className="p-3">
             <Label for="projectSelect" hidden>
