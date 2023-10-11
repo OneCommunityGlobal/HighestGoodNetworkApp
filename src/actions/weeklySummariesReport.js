@@ -29,6 +29,7 @@ export const fetchWeeklySummariesReportError = error => ({
   payload: { error },
 });
 
+
 /**
  * Gets all active users' summaries + a few other selected fields from the userProfile that
  * might be useful for the weekly summary report.
@@ -43,7 +44,8 @@ export const getWeeklySummariesReport = () => {
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesReportError(error));
-      return error.response.status;
+      return error?.response?.status;
     }
   };
 };
+

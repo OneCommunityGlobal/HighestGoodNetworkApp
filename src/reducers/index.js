@@ -28,6 +28,7 @@ import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+import {weeklySummaryRecipientsReducer} from "./weeklySummaryRecipientsReducer"
 
 export default combineReducers({
   auth: authReducer,
@@ -38,6 +39,7 @@ export default combineReducers({
   orgData: orgDataReducer,
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
+  weeklySummaryRecipientsReducer: weeklySummaryRecipientsReducer,
   allProjects: allProjectsReducer,
   projectReport: projectReportReducer,
   userProjects: userProjectsReducer,
@@ -61,4 +63,5 @@ export default combineReducers({
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
+  weeklySummaryRecipients:weeklySummaryRecipientsReducer
 });

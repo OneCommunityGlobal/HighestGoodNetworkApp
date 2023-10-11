@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Alert, Container, Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import { Alert, Container, Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Button } from 'reactstrap';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
@@ -12,6 +12,10 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import { getInfoCollections } from '../../actions/information';
+import { PasswordInputModal } from "./PasswordInputModal"
+import { boxStyle } from 'styles';
+import { WeeklySummaryRecipientsPopup } from "./WeeklySummaryRecipientsPopup";
+import { getSummaryRecipients, addSummaryRecipient, deleteSummaryRecipient } from "../../actions/weeklySummariesReportRecepients"
 
 const navItems = [
   'This Week',
@@ -29,6 +33,11 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: navItems[1],
+      passwordModalOpen: false,
+      summaryRecepientsPopupOpen: false,
+      summaryRecepients: [],
+      tempArr: [],
+      isValidPwd: true
     };
 
     this.weekDates = Array(4)
@@ -39,8 +48,9 @@ export class WeeklySummariesReport extends Component {
   async componentDidMount() {
     // 1. fetch report
     await this.props.getWeeklySummariesReport();
+    await this.props.getSummaryRecipients()
     // await this.props.fetchAllBadges();
-
+    console.log("recepientsArr in componentDidNount:", this.props.recepientsArr)
     this.canPutUserProfileImportantInfo = this.props.hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
@@ -68,24 +78,39 @@ export class WeeklySummariesReport extends Component {
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
       badges: this.props.allBadgeData,
+      summaryRecepients: this.props.recepientsArr
     });
     await this.props.getInfoCollections();
-    const { infoCollections} = this.props;
+    const { infoCollections } = this.props;
     const role = this.props.authUser?.role;
     const roleInfoNames = this.getAllRoles(summariesCopy);
     const allRoleInfo = [];
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
-        if(roleInfoNames?.includes(info.infoName)) {
+        if (roleInfoNames?.includes(info.infoName)) {
           let visible = (info.visibility === '0') ||
-          (info.visibility === '1' && (role==='Owner' || role==='Administrator')) ||
-          (info.visibility=== '2' && (role !== 'Volunteer'));
+            (info.visibility === '1' && (role === 'Owner' || role === 'Administrator')) ||
+            (info.visibility === '2' && (role !== 'Volunteer'));
           info.CanRead = visible;
           allRoleInfo.push(info);
         }
       });
     }
-    this.setState({allRoleInfo:allRoleInfo})
+    this.setState({ allRoleInfo: allRoleInfo })
+  }
+
+  getDetails = async () => {
+    let data = await this.props.getSummaryRecipients();
+    this.setState({ summaryRecepients: data })
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if ((prevState.tempArr !== this.state.tempArr)) {
+      this.getDetails()
+    }
+    if ((prevProps.recepientsArr !== this.props.recepientsArr)) {
+      this.setState({ summaryRecepients: this.props.recepientsArr })
+    }
   }
 
   componentWillUnmount() {
@@ -104,15 +129,15 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
-    /**
-   * Get the roleNames
-   * @param {*} summaries
-   * @returns
-   */
-    getAllRoles = summaries => {
-      const roleNames = summaries.map(summary => summary.role+"Info");
-      const uniqueRoleNames = [...new Set(roleNames)];
-      return uniqueRoleNames;
+  /**
+ * Get the roleNames
+ * @param {*} summaries
+ * @returns
+ */
+  getAllRoles = summaries => {
+    const roleNames = summaries.map(summary => summary.role + "Info");
+    const uniqueRoleNames = [...new Set(roleNames)];
+    return uniqueRoleNames;
   };
 
   getWeekDates = weekIndex => ({
@@ -175,6 +200,69 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
+  onSummaryRecepientsPopupClose = () => {
+    this.setState({ summaryRecepientsPopupOpen: false })
+  }
+
+  onAddUser = async (user) => {
+    let result = await this.props.addSummaryRecipient(user._id);
+    this.setState(prevState => ({
+      tempArr: [...prevState.tempArr, user]
+    }));
+  };
+
+  //alter memberAutoComplete function
+  //finish delete function for frontend and backend and test cron job 
+  onDeleteUser = async (userId) => {
+    await this.props.deleteSummaryRecipient(userId);
+  };
+
+  setSummaryRecepientsPopup = (val) => {
+    this.setState({ summaryRecepientsPopupOpen: val })
+  }
+
+  popUpElements = () => {
+    return (
+      <WeeklySummaryRecipientsPopup
+        open={this.state.summaryRecepientsPopupOpen}
+        onClose={this.onSummaryRecepientsPopupClose}
+        summaries={this.props.summaries}
+        onDeleteClick={this.onDeleteUser}
+        onAddUser={this.onAddUser}
+        recipients={this.state.summaryRecepients}
+      />
+    )
+  }
+
+  onpasswordModalClose = () => {
+    this.setState({
+      passwordModalOpen: false,
+    });
+  };
+
+  checkForValidPwd = (booleanVal) => {
+    this.setState({ isValidPwd: booleanVal })
+  }
+
+  passwordInputModalToggle = () => {
+    return (
+      <PasswordInputModal
+        open={this.state.passwordModalOpen}
+        onClose={this.onpasswordModalClose}
+        checkForValidPwd={this.checkForValidPwd}
+        isValidPwd={this.state.isValidPwd}
+        setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
+      />
+    )
+  }
+
+  onClickRecepients = () => {
+    this.setState({
+      passwordModalOpen: true,
+    });
+    this.checkForValidPwd(true)
+  }
+
   render() {
     const { error, loading, summaries, activeTab } = this.state;
 
@@ -202,10 +290,23 @@ export class WeeklySummariesReport extends Component {
 
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
+        {this.passwordInputModalToggle()}
+        {this.popUpElements()}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
           </Col>
+        </Row>
+        <Row>
+          <Button
+            color="primary"
+            className="permissions-management__button"
+            type="button"
+            onClick={() => this.onClickRecepients()}
+            style={boxStyle}
+          >
+            Weekly Summary Report Recipients
+          </Button>
         </Row>
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
@@ -273,13 +374,22 @@ const mapStateToProps = state => ({
   loading: state.weeklySummariesReport.loading,
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
-  infoCollections:state.infoCollections.infos,
+  infoCollections: state.infoCollections.infos,
+  recepientsArr: state.weeklySummaryRecipientsReducer.recepientsArr
 });
 
-const WeeklySummariesReportTab = ({tabId, hidden, children}) => {
+const WeeklySummariesReportTab = ({ tabId, hidden, children }) => {
   return (
     <TabPane tabId={tabId}>{!hidden && children}</TabPane>
   )
 };
 
-export default connect(mapStateToProps, { getWeeklySummariesReport, hasPermission, getInfoCollections, fetchAllBadges })(WeeklySummariesReport);
+export default connect(mapStateToProps, {
+  getWeeklySummariesReport,
+  hasPermission,
+  getInfoCollections,
+  fetchAllBadges,
+  getSummaryRecipients,
+  addSummaryRecipient,
+  deleteSummaryRecipient
+})(WeeklySummariesReport);
