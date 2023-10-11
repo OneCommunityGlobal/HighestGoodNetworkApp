@@ -4,18 +4,22 @@ import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
-import { hasLeaderboardPermissions, assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { getTeamMembers} from '../../actions/allTeamsAction';
-import {skyblue} from 'constants/colors';
-import Loading from '../common/Loading';
-import { getLeaderboardData, getOrgData} from '../../actions/leaderBoardData';
+import {
+  hasLeaderboardPermissions,
+  assignStarDotColors,
+  showStar,
+} from 'utils/leaderboardPermissions';
+import { skyblue } from 'constants/colors';
 import { round, maxBy } from 'lodash';
-import { getcolor, getProgressValue } from '../../utils/effortColors';
-import {faFrown} from '@fortawesome/free-solid-svg-icons';
+import { faFrown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
+import { getcolor, getProgressValue } from '../../utils/effortColors';
+import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
+import Loading from '../common/Loading';
+import { getTeamMembers } from '../../actions/allTeamsAction';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -35,8 +39,8 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 function LeaderBoard({
-  getLeaderboardData,
-  getOrgData,
+  // getLeaderboardData,
+  // getOrgData,
   getMouseoverText,
   leaderBoardData,
   loggedInUser,
@@ -48,19 +52,16 @@ function LeaderBoard({
   userRole,
   dispatch,
   totalTimeMouseoverText,
-}) => {
-
-
-
-  const [myTeamData,setmyTeamData] = useState(undefined)
-  const [leaderboarddata,setleaderboarddata] = useState([]);
+}) {
+  const [myTeamData, setmyTeamData] = useState(undefined);
+  const [leaderboarddata, setleaderboarddata] = useState([]);
   const [showLeaderboard, setShowLeaderboard] = useState([]);
   const [isTeamTab, setisTeamTab] = useState(false);
   const [isLoadingmember, setisLoadingmember] = useState(false);
- 
+
   const userId = asUser || loggedInUser.userId;
   const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
- 
+
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
@@ -80,24 +81,28 @@ function LeaderBoard({
     getOrgData()(dispatch);
   }, [timeEntries]);
 
-  //get leaderboard data
-  const getdata = async ()=>{
+  // get leaderboard data
+  const getdata = async () => {
     // const url = ENDPOINTS.LEADER_BOARD(userId);
     // const res = await httpService.get(url);
     // let leaderBoardData = res.data
-    let leaderBoardData = await getLeaderboardData(userId)(dispatch)
+    let leaderBoardData = await getLeaderboardData(userId)(dispatch);
 
-    if (loggedInUser.role !== 'Administrator' && loggedInUser.role !== 'Owner' && loggedInUser.role !== 'Core Team') {
+    if (
+      loggedInUser.role !== 'Administrator' &&
+      loggedInUser.role !== 'Owner' &&
+      loggedInUser.role !== 'Core Team'
+    ) {
       leaderBoardData = leaderBoardData.filter(element => {
         return element.weeklycommittedHours > 0 || loggedInUser.userid === element.personId;
       });
     }
-  
+
     if (leaderBoardData.length) {
-      let maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
+      const maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
       leaderBoardData = leaderBoardData.map(element => {
         element.didMeetWeeklyCommitment =
-        element.totaltangibletime_hrs >= element.weeklycommittedHours;
+          element.totaltangibletime_hrs >= element.weeklycommittedHours;
         element.weeklycommitted = round(element.weeklycommittedHours, 2);
         element.tangibletime = round(element.totaltangibletime_hrs, 2);
         element.intangibletime = round(element.totalintangibletime_hrs, 2);
@@ -107,89 +112,91 @@ function LeaderBoard({
         element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
         element.totaltime = round(element.totaltime_hrs, 2);
         element.isVisible = element.role === 'Volunteer' || element.isVisible;
-  
+
         return element;
       });
     }
-    setleaderboarddata([...leaderBoardData])
-  }
+    setleaderboarddata([...leaderBoardData]);
+  };
 
-  //set team toggler button state according to logged in user role
-  useEffect(()=>{
-    if(loggedInUser){
-      setisLoadingmember(true)
-      getdata()
+  // set team toggler button state according to logged in user role
+  useEffect(() => {
+    if (loggedInUser) {
+      setisLoadingmember(true);
+      getdata();
     }
-  },[loggedInUser])
+  }, [loggedInUser]);
 
-  //if user role is core team or admin or owner instead of showing all members show only team members by default.//loggedInUser.role
+  // if user role is core team or admin or owner instead of showing all members show only team members by default.//loggedInUser.role
   useDeepEffect(() => {
-    if(userRole){
-      if((userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team') && userTeams?.length > 0){
-        setisTeamTab(true)
+    if (userRole) {
+      if (
+        (userRole === 'Owner' || userRole === 'Administrator' || userRole === 'Core Team') &&
+        userTeams?.length > 0
+      ) {
+        setisTeamTab(true);
         getMyTeam();
-      }else{
-        setShowLeaderboard([...leaderboarddata])
-      } 
+      } else {
+        setShowLeaderboard([...leaderboarddata]);
+      }
       try {
         if (window.screen.width < 540) {
           const scrollWindow = document.getElementById('leaderboard');
           if (scrollWindow) {
             const elem = document.getElementById(`id${userId}`); //
-  
+
             if (elem) {
               const topPos = elem.offsetTop;
               scrollWindow.scrollTo(0, topPos - 100 < 100 ? 0 : topPos - 100);
             }
           }
         }
-      } catch {} 
+      } catch {}
     }
+  }, [leaderboarddata, userRole]);
 
-  }, [leaderboarddata,userRole]);
-
-  //get user team members
-  const getMyTeam = async () => { 
-    let member = []
-    let res
-    if(userTeams){
-      for(let i =0; i < userTeams?.length; i++){    
+  // get user team members
+  const getMyTeam = async () => {
+    let member = [];
+    let res;
+    if (userTeams) {
+      for (let i = 0; i < userTeams?.length; i++) {
         res = await getTeamMembers(userTeams[i]._id)(dispatch);
-        if(member.length > 0){
+        if (member.length > 0) {
           member.forEach(user => {
             res = res.filter(item => user._id !== item._id);
           });
         }
         member = member.concat(res);
-    }
-    const filteredlist = leaderboarddata.filter(user => {
-      for(let i = 0; i < member.length; i++){
-        if(user.personId === member[i]._id){
-          return user;
-        }
       }
-    })
-    setmyTeamData([...filteredlist]);
-    setShowLeaderboard([...filteredlist]);
-  }
-}
-//my team toggle button
-const toggleTeamView = () =>{
-  if(isTeamTab){
-    setisTeamTab(false)
-    setShowLeaderboard([...leaderboarddata]);
-  }else{
-    setisTeamTab(true)
-    setShowLeaderboard([...myTeamData]);
-  }
-}
+      const filteredlist = leaderboarddata.filter(user => {
+        for (let i = 0; i < member.length; i++) {
+          if (user.personId === member[i]._id) {
+            return user;
+          }
+        }
+      });
+      setmyTeamData([...filteredlist]);
+      setShowLeaderboard([...filteredlist]);
+    }
+  };
+  // my team toggle button
+  const toggleTeamView = () => {
+    if (isTeamTab) {
+      setisTeamTab(false);
+      setShowLeaderboard([...leaderboarddata]);
+    } else {
+      setisTeamTab(true);
+      setShowLeaderboard([...myTeamData]);
+    }
+  };
 
-//stop loading on data fetched
-useEffect(()=>{
-  if(isLoadingmember && showLeaderboard){
-    setisLoadingmember(false)
-  }
-},[showLeaderboard])
+  // stop loading on data fetched
+  useEffect(() => {
+    if (isLoadingmember && showLeaderboard) {
+      setisLoadingmember(false);
+    }
+  }, [showLeaderboard]);
 
   const [isOpen, setOpen] = useState(false);
   const [modalContent, setContent] = useState(null);
@@ -276,38 +283,47 @@ useEffect(()=>{
 
   return (
     <div>
-      <div className='leader-head'>
-      <h3>
-        Leaderboard&nbsp;&nbsp;
-        <i
-          data-toggle="tooltip"
-          data-placement="right"
-          title="Click to refresh the leaderboard"
-          style={{ fontSize: 24, cursor: 'pointer' }}
-          aria-hidden="true"
-          className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
-          onClick={updateLeaderboardHandler}
-        />
-        &nbsp;&nbsp;
-        <i
-          data-toggle="tooltip"
-          data-placement="right"
-          title="Click for more information"
-          style={{ fontSize: 24, cursor: 'pointer' }}
-          aria-hidden="true"
-          className="fa fa-info-circle"
-          onClick={() => {
-            handleModalOpen(0);
-          }}
-        />
-      </h3>
-      {(loggedInUser.role === 'Owner' || loggedInUser.role === 'Administrator' || loggedInUser.role == 'Core Team') && userTeams?.length > 0 && <button className='circle-border my-team' style={{ 
+      <div className="leader-head">
+        <h3>
+          Leaderboard&nbsp;&nbsp;
+          <i
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Click to refresh the leaderboard"
+            style={{ fontSize: 24, cursor: 'pointer' }}
+            aria-hidden="true"
+            className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
+            onClick={updateLeaderboardHandler}
+          />
+          &nbsp;&nbsp;
+          <i
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Click for more information"
+            style={{ fontSize: 24, cursor: 'pointer' }}
+            aria-hidden="true"
+            className="fa fa-info-circle"
+            onClick={() => {
+              handleModalOpen(0);
+            }}
+          />
+        </h3>
+        {(loggedInUser.role === 'Owner' ||
+          loggedInUser.role === 'Administrator' ||
+          loggedInUser.role == 'Core Team') &&
+          userTeams?.length > 0 && (
+            <button
+              className="circle-border my-team"
+              style={{
                 backgroundColor: isTeamTab ? skyblue : 'slategray',
-                cursor: isLoadingmember ? 'not-allowed': 'pointer',
-                }} onClick={toggleTeamView}
-                disabled={isLoadingmember}>
-                {isTeamTab ? 'View All' : 'My Teams'}
-      </button>}
+                cursor: isLoadingmember ? 'not-allowed' : 'pointer',
+              }}
+              onClick={toggleTeamView}
+              disabled={isLoadingmember}
+            >
+              {isTeamTab ? 'View All' : 'My Teams'}
+            </button>
+          )}
       </div>
       {!isVisible && (
         <Alert color="warning">
@@ -384,126 +400,140 @@ useEffect(()=>{
                 </span>
               </td>
             </tr>
-            {isLoadingmember ? <Loading/>: (
-            showLeaderboard.map((item, key) => (
-              <tr key={key}>
-                <td className="align-middle">
-                  <div>
-                    <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
-                      <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
-                      <ModalBody>
-                        <p>Are you sure you wish to view this {item.name} dashboard?</p>
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button variant="primary" onClick={() => showDashboard(item)}>
-                          Ok
-                        </Button>{' '}
-                        <Button variant="secondary" onClick={dashboardToggle}>
-                          Cancel
-                        </Button>
-                      </ModalFooter>
-                    </Modal>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center',
-                    }}
-                  >
-                    {/* <Link to={`/dashboard/${item.personId}`}> */}
+            {isLoadingmember ? (
+              <Loading />
+            ) : (
+              showLeaderboard.map((item, key) => (
+                <tr key={key}>
+                  <td className="align-middle">
+                    <div>
+                      <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
+                        <ModalHeader toggle={dashboardToggle}>
+                          Jump to personal Dashboard
+                        </ModalHeader>
+                        <ModalBody>
+                          <p>Are you sure you wish to view this {item.name} dashboard?</p>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button variant="primary" onClick={() => showDashboard(item)}>
+                            Ok
+                          </Button>{' '}
+                          <Button variant="secondary" onClick={dashboardToggle}>
+                            Cancel
+                          </Button>
+                        </ModalFooter>
+                      </Modal>
+                    </div>
                     <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => {
-                        dashboardToggle(item);
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          dashboardToggle(item);
-                        }
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center',
                       }}
                     >
-                      {hasLeaderboardPermissions(loggedInUser.role) &&
-                      showStar(item.tangibletime, item.weeklycommittedHours) ? (
-                        <i
-                          className="fa fa-star"
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                          style={{
-                            color: assignStarDotColors(
-                              item.tangibletime,
-                              item.weeklycommittedHours,
-                            ),
-                            fontSize: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        />
-                      ) : (
-                        <div
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                          style={{
-                            backgroundColor:
-                              item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',
-                            width: 15,
-                            height: 15,
-                            borderRadius: 7.5,
-                            margin: 'auto',
-                            verticalAlign: 'middle',
-                          }}
-                        />
-                      )}
-                    </div>
-                    {hasSummaryIndicatorPermission && item.hasSummary && (
+                      {/* <Link to={`/dashboard/${item.personId}`}> */}
                       <div
-                        title="Weekly Summary Submitted"
-                        style={{
-                          color: '#32a518',
-                          cursor: 'default',
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          dashboardToggle(item);
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            dashboardToggle(item);
+                          }
                         }}
                       >
-                        <strong>✓</strong>
+                        {hasLeaderboardPermissions(loggedInUser.role) &&
+                        showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                          <i
+                            className="fa fa-star"
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                            style={{
+                              color: assignStarDotColors(
+                                item.tangibletime,
+                                item.weeklycommittedHours,
+                              ),
+                              fontSize: '20px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          />
+                        ) : (
+                          <div
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                            style={{
+                              backgroundColor:
+                                item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',
+                              width: 15,
+                              height: 15,
+                              borderRadius: 7.5,
+                              margin: 'auto',
+                              verticalAlign: 'middle',
+                            }}
+                          />
+                        )}
                       </div>
+                      {hasSummaryIndicatorPermission && item.hasSummary && (
+                        <div
+                          title="Weekly Summary Submitted"
+                          style={{
+                            color: '#32a518',
+                            cursor: 'default',
+                          }}
+                        >
+                          <strong>✓</strong>
+                        </div>
+                      )}
+                    </div>
+                    {/* </Link> */}
+                  </td>
+                  <th scope="row">
+                    <Link to={`/userprofile/${item.personId}`} title="View Profile">
+                      {item.name}
+                    </Link>
+                    &nbsp;&nbsp;&nbsp;
+                    {hasVisibilityIconPermission && !item.isVisible && (
+                      <i className="fa fa-eye-slash" title="User is invisible" />
                     )}
-                  </div>
-                  {/* </Link> */}
-                </td>
-                <th scope="row">
-                  <Link to={`/userprofile/${item.personId}`} title="View Profile">
-                    {item.name}
-                  </Link>
-                  &nbsp;&nbsp;&nbsp;
-                  {hasVisibilityIconPermission && !item.isVisible && (
-                    <i className="fa fa-eye-slash" title="User is invisible" />
-                  )}
-                </th>
-                <td className="align-middle" id={`id${item.personId}`}>
-                  <span title="Tangible time">{item.tangibletime}</span>
-                </td>
-                <td className="align-middle">
-                  <Link
-                    to={`/timelog/${item.personId}`}
-                    title={`TangibleEffort: ${item.tangibletime} hours`}
-                  >
-                    <Progress value={item.barprogress} color={item.barcolor} />
-                  </Link>
-                </td>
-                <td className="align-middle">
-                  <span
-                    title={mouseoverTextValue}
-                    id="Total time"
-                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
-                  >
-                    {item.totaltime}
-                  </span>
-                </td>
-              </tr>
-            )))}
+                  </th>
+                  <td className="align-middle" id={`id${item.personId}`}>
+                    <span title="Tangible time">{item.tangibletime}</span>
+                  </td>
+                  <td className="align-middle">
+                    <Link
+                      to={`/timelog/${item.personId}`}
+                      title={`TangibleEffort: ${item.tangibletime} hours`}
+                    >
+                      <Progress value={item.barprogress} color={item.barcolor} />
+                    </Link>
+                  </td>
+                  <td className="align-middle">
+                    <span
+                      title={mouseoverTextValue}
+                      id="Total time"
+                      className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                    >
+                      {item.totaltime}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
-        {isTeamTab && myTeamData?.length === 1 && <p className='noMember'>Great, you are on a team! Unfortunately though, your team has only you in it 
-         <FontAwesomeIcon icon={faFrown} size='lg' style={{color: "#ffd22e", marginLeft:'2px'}} />. Contact an Administrator or your Manager to fix this so you are not so lonely here!</p>}
+        {isTeamTab && myTeamData?.length === 1 && (
+          <p className="noMember">
+            Great, you are on a team! Unfortunately though, your team has only you in it
+            <FontAwesomeIcon
+              icon={faFrown}
+              size="lg"
+              style={{ color: '#ffd22e', marginLeft: '2px' }}
+            />
+            . Contact an Administrator or your Manager to fix this so you are not so lonely here!
+          </p>
+        )}
       </div>
     </div>
   );
