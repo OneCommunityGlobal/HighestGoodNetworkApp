@@ -92,6 +92,9 @@ const Timelog = props => {
   const userIdByState = useSelector(state => state.auth.user.userid);
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
 
+  const LoggedInuserId = auth.user.userid;
+  const curruserId = props?.match?.params?.userId || props.asUser;
+
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = auth.user.role;
@@ -235,7 +238,14 @@ const Timelog = props => {
       data = data.filter(entry => state.projectsSelected.includes(entry.projectId));
     }
     return data.map(entry => (
-      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={userProfile} />
+      <TimeEntry
+        data={entry}
+        displayYear={false}
+        key={entry._id}
+        userProfile={userProfile}
+        LoggedInuserId={LoggedInuserId}
+        curruserId={curruserId}
+      />
     ));
   };
 
@@ -245,7 +255,8 @@ const Timelog = props => {
     } else if (state.activeTab === 4) {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{formatDate(state.fromDate)}</b> to <b>{formatDate(state.toDate)}</b>
+          Viewing time Entries from <b>{formatDate(state.fromDate)}</b> to{' '}
+          <b>{formatDate(state.toDate)}</b>
         </p>
       );
     } else {
@@ -567,6 +578,8 @@ const Timelog = props => {
                         userProfile={userProfile}
                         roles={role.roles}
                         isTaskUpdated={isTaskUpdated}
+                        LoggedInuserId={LoggedInuserId}
+                        curruserId={curruserId}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
@@ -728,10 +741,7 @@ const Timelog = props => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks
-                        asUser={props.asUser}
-                        handleUpdateTask={handleUpdateTask}
-                      />
+                      <TeamMemberTasks asUser={props.asUser} handleUpdateTask={handleUpdateTask} />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>

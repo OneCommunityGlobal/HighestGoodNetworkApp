@@ -19,6 +19,8 @@ function Timer() {
   const userProfile = useSelector(state => state.auth.user);
   const pausedAt = useSelector(state => state.timer?.seconds);
   const isWorking = useSelector(state => state.timer?.isWorking);
+
+  const userProfile1 = useSelector(state => state.userProfile);
   const dispatch = useDispatch();
   const alert = {
     va: true,
@@ -187,6 +189,8 @@ function Timer() {
           data={data}
           userProfile={userProfile}
           resetTimer={reset}
+          LoggedInuserId={userId}
+          curruserId={userProfile1._id}
         />
       )}
     </div>

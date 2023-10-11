@@ -19,7 +19,8 @@ export const getUserProfile = userId => {
       }
     });
     if (!loggedOut) {
-      await dispatch(getUserProfileActionCreator(res.data));
+      const resp = await dispatch(getUserProfileActionCreator(res.data));
+      return resp.payload
     }
   };
 };
