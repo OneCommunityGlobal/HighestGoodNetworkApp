@@ -1,1 +1,3 @@
-export { default } from './MaterialsList';
+import MaterialsList from './MaterialsList';
+
+export default MaterialsList;
