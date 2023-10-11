@@ -12,15 +12,16 @@ import { ENDPOINTS } from '../utils/URL';
 
 /**
  * Post new material to project in db
- * @param {newMaterial}: object containing info from add material form
  * {
  *    projectId: string,
  *    material: string,
+ *    newMaterial: boolean
  *    invoice: string,
  *    unitPrice: number,
  *    currency: string,
  *    quantity: number,
  *    measurement: string,
+ *    newMeasurement: boolean
  *    purchaseDate: date,
  *    shippingFee: number,
  *    taxRate: number,

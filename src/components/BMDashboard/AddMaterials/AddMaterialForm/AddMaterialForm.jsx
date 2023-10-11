@@ -13,7 +13,7 @@ import './AddMaterialForm.css';
 // and optionally a selected project object
 export default function AddMaterialsForm(props) {
   const {
-    allProjects,
+    projects,
     selectedProject,
     canAddNewMaterial,
     canAddNewMeasurement,
@@ -125,7 +125,7 @@ export default function AddMaterialsForm(props) {
                   onChange={handleChange}
                 >
                   <option value="">-- select an option --</option>
-                  {allProjects.map(el => (
+                  {projects.map(el => (
                     <option value={el._id} key={el._id}>
                       {el.projectName}
                     </option>
@@ -159,8 +159,10 @@ export default function AddMaterialsForm(props) {
                     onChange={handleChange}
                   >
                     <option value="">-- select an option --</option>
-                    {materialList.map(materialName => (
-                      <option value={materialName}>{materialName}</option>
+                    {materialList.map(el => (
+                      <option value={el._id} key={el._id}>
+                        {el.name}
+                      </option>
                     ))}
                   </Input>
                 )}
