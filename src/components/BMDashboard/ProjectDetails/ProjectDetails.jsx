@@ -9,11 +9,13 @@ import './ProjectDetails.css';
 function ProjectDetails() {
   return (
     <Container className="project-details" fluid>
-      <h1>Project A Dashboard</h1>
-      <Row>
+      <Row className="mx-auto">
+        <h1>Project A Dashboard</h1>
+      </Row>
+      <Row className="mx-auto">
         <LogBar />
       </Row>
-      <Row>
+      <Row className="mx-auto">
         <Col lg="6" md="12">
           <RentedToolsDisplay />
         </Col>
@@ -21,7 +23,7 @@ function ProjectDetails() {
           <MaterialsDisplay />
         </Col>
       </Row>
-      <Row>
+      <Row className="mx-auto">
         <ProjectLog />
       </Row>
     </Container>
