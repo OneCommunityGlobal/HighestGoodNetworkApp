@@ -586,7 +586,9 @@ function UserProfile(props) {
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
-  const canSeeSummaryIntroBtn = props.hasPermission('seeSummaryIntroBtn');
+  const canSeeSummaryIntroBtn = props.hasPermission('seeSummaryIntroButton');
+  const canSeeSummaryIntroBtn1 = props.hasPermission('seeSummaryIntroBtn');
+  console.log('can see summary intro btn', canSeeSummaryIntroBtn, canSeeSummaryIntroBtn1);
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
