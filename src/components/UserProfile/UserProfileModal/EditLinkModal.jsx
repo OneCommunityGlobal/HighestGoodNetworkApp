@@ -71,6 +71,20 @@ const EditLinkModal = props => {
     setIsChanged(true);
   };
 
+  const handleMediaFolderLinkChanges = (e) => {
+    setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+    setIsChanged(true);
+    if (!isMediaFolderLinkChanged && !isWarningPopupOpen && !e.target.value){
+      // Prevent warning popup apear if empty media folder link
+      if(!e.target.value){
+        return;
+      } else {
+        setIsMediaFolderLinkChanged(true);
+        setIsWarningPopupOpen(true);
+      }
+    }
+  }
+
   const addNewLink = (links, setLinks, newLink, clearInput) => {
     if (
       isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink) ||
@@ -149,6 +163,8 @@ const EditLinkModal = props => {
           [googleLink, mediaFolderLink, ...adminLinks],
           mediaFolderLink.Link,
         );
+        // Update ref to reflect updated original Media Folder Link
+          originalMediaFolderLink.current = mediaFolderLink.Link;
       } else {
         await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
       }
@@ -204,14 +220,7 @@ const EditLinkModal = props => {
                         id="linkURL2"
                         placeholder="Enter Dropbox link"
                         value={mediaFolderLink.Link}
-                        onChange={e => {
-                          setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
-                          setIsChanged(true);
-                          if (!isMediaFolderLinkChanged && !isWarningPopupOpen){
-                            setIsMediaFolderLinkChanged(true);
-                            setIsWarningPopupOpen(true);
-                          }
-                        }}
+                        onChange={e => {handleMediaFolderLinkChanges(e)}}
                       />
                     </div>
                     {adminLinks?.map((link, index) => {
