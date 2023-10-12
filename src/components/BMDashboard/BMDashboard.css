@@ -23,19 +23,26 @@
 width: 80%;
 list-style-type: none;
 max-height: 80vh;
-overflow:scroll;
+overflow-x: hidden;
+overflow-y: auto;
 }
 
 .project-summary{
   background-color: #e8f4f9;
-  height: 20vh;
+  min-height: 20vh;
+  height: auto;
   margin-bottom: 2em;
   padding: 1em;
   border-radius: 5px;
 }
 
+.project-summary p{
+  margin: 0;
+}
+
 .project-summary_header{
   font-size: 0.9em;
+  font-weight: bold;
 }
 
 @media (min-width: 650px){
