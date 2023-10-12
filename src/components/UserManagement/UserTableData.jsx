@@ -132,4 +132,4 @@ const UserTableData = React.memo(props => {
   );
 });
 
-export default UserTableData;
+export default connect(null, {hasPermission})(UserTableData);
