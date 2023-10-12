@@ -472,8 +472,11 @@ const TimeEntryForm = props => {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
 
+    // Problem: fix timelog entry for other user page
+    // To fix the problem of both wrong details getting updated in mongoDB and frontend, the response from the payload is stored in curruserProfile as userProfile contains the user whose timelog page we are viewing.
+    // This can lead to the details being mixed up in mongoDB and in turn updating mongoDB with wrong user details
     //Update userprofile hoursByCategory
-    const userProfile1 = await dispatch(getUserProfile(userId));
+    const curruserProfile = await dispatch(getUserProfile(userId));
 
     //Send the time entry to the server
     setSubmitting(true);
@@ -481,14 +484,14 @@ const TimeEntryForm = props => {
     let timeEntryStatus;
     if (edit) {
       if (!reminder.notice) {
-        if (userProfile1) {
-          editHoursByCategory(userProfile1, timeEntry, hours, minutes);
+        if (curruserProfile) {
+          editHoursByCategory(curruserProfile, timeEntry, hours, minutes);
         }
         timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry, data.dateOfWork));
       }
     } else {
-      if (userProfile1) {
-        updateHoursByCategory(userProfile1, timeEntry, hours, minutes);
+      if (curruserProfile) {
+        updateHoursByCategory(curruserProfile, timeEntry, hours, minutes);
       }
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
     }
@@ -504,14 +507,14 @@ const TimeEntryForm = props => {
 
     // see if this is the first time the user is logging time
     if (!edit) {
-      if (userProfile1.isFirstTimelog && userProfile1.isFirstTimelog === true) {
+      if (curruserProfile.isFirstTimelog && curruserProfile.isFirstTimelog === true) {
         const updatedUserProfile = {
-          ...userProfile1,
+          ...curruserProfile,
           createdDate: new Date(),
           isFirstTimelog: false,
         };
 
-        dispatch(updateUserProfile(userProfile1._id, updatedUserProfile));
+        dispatch(updateUserProfile(curruserProfile._id, updatedUserProfile));
       }
     }
 
@@ -538,6 +541,10 @@ const TimeEntryForm = props => {
     if (!props.edit) setInputs(initialFormValues);
 
     await getUserProfile(userId)(dispatch);
+
+    // Problem: fix timelog entry for other user page
+    // To fix the problem of both wrong details getting updated in mongoDB and frontend, the state variable needs to be updated for user profile in order to get the right details
+    // In addition to updating state, an update to time entries for 0th week is necessary as updateTimeEntries() under action is updating 0th week particularly with the logged in user's time entry
 
     await dispatch(getUserProfile(curruserId));
     await dispatch(getTimeEntriesForWeek(curruserId, 0));
