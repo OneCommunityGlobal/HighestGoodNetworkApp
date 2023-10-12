@@ -5,6 +5,7 @@ import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
 import { useEffect } from 'react';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
 
 const Team = props => {
 
