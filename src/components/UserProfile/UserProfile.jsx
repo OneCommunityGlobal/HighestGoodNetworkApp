@@ -50,8 +50,10 @@ import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
+import { fetchAllProjects } from '../../actions/projects';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
 
 function UserProfile(props) {
   /* Constant values */
@@ -61,6 +63,7 @@ function UserProfile(props) {
     email: true,
   };
   const roles = props?.role.roles;
+  const dispatch = useDispatch();
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -103,9 +106,10 @@ function UserProfile(props) {
   const [userEndDate, setUserEndDate] = useState('');
 
   /* useEffect functions */
-
   useEffect(() => {
     loadUserProfile();
+    dispatch(fetchAllProjects());
+    dispatch(getAllUserTeams());
   }, []);
 
   useEffect(() => {
@@ -446,7 +450,7 @@ function UserProfile(props) {
     setShowModal(false);
     setUserProfile({
       ...userProfile,
-      mediaUrl:mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
+      mediaUrl: mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
       personalLinks: personalLinksUpdate,
       adminLinks: adminLinksUpdate,
     });
@@ -556,8 +560,8 @@ function UserProfile(props) {
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner'
-    ? canAddDeleteEditOwners
-    : canPutUserProfile;
+      ? canAddDeleteEditOwners
+      : canPutUserProfile;
 
   const canEdit = canEditUserProfile || isUserSelf;
 
@@ -646,7 +650,7 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
-              {!codeValid ? (
+            {!codeValid ? (
               <Alert color="danger">
                 The code format should be A-AAA or AAAAA.
               </Alert>
@@ -954,8 +958,8 @@ function UserProfile(props) {
                             if (selfIsDevAdminUneditable) {
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                                  'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                                'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                                'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                               );
                               return `#`;
                             }
@@ -1247,8 +1251,8 @@ function UserProfile(props) {
                     if (selfIsDevAdminUneditable) {
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                        'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                        'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                       );
                       return `#`;
                     }
