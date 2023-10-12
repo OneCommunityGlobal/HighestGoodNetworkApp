@@ -35,21 +35,13 @@ overflow-y: auto;
   border-radius: 5px;
 }
 
-.project-summary p{
-  margin: 0;
-  font-size: 0.9em;
-}
-
 .project-summary_header{
-  font-size: 1em;
+  font-size: clamp(1em, 3vw, 1.3em);
   font-weight: bold;
 }
 
-@media (min-width: 650px){
-  .project-summary_header{
-  font-size: 1.3em;  
+.project-summary p{
+  margin: 0;
+  font-size: clamp(0.9em, 2.5vw, 1em);
 }
-.project-summary p{ 
-  font-size: 1em;
-}
-}
+
