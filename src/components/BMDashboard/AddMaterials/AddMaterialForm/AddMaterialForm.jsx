@@ -6,7 +6,7 @@ import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { isValidUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
-import { postNewItemType } from '../../../../actions/itemTypes';
+// import { postNewItemType } from '../../../../actions/itemTypes';
 import { postNewMaterial } from '../../../../actions/materials';
 import './AddMaterialForm.css';
 
@@ -50,7 +50,7 @@ export default function AddMaterialsForm(props) {
   const schema = Joi.object({
     projectId: Joi.string().required(),
     material: Joi.string().required(),
-    newMaterial: Joi.boolean(),
+    newMaterial: Joi.boolean().required(),
     invoice: Joi.string().required(),
     unitPrice: Joi.number()
       .positive()
@@ -61,7 +61,7 @@ export default function AddMaterialsForm(props) {
       .integer()
       .required(),
     measurement: Joi.string().required(),
-    newMeasurement: Joi.boolean(),
+    newMeasurement: Joi.boolean().required(),
     purchaseDate: Joi.date().required(),
     shippingFee: Joi.number()
       .positive()
