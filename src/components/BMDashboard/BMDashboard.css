@@ -1,6 +1,5 @@
 .bm-dashboard__header h1{
   font-size: 1.5em;
-
   text-align: center;
   margin-top: 2em;
 }
@@ -38,15 +37,19 @@ overflow-y: auto;
 
 .project-summary p{
   margin: 0;
+  font-size: 0.9em;
 }
 
 .project-summary_header{
-  font-size: 0.9em;
+  font-size: 1em;
   font-weight: bold;
 }
 
 @media (min-width: 650px){
   .project-summary_header{
   font-size: 1.3em;  
+}
+.project-summary p{ 
+  font-size: 1em;
 }
 }
