@@ -44,7 +44,7 @@ import SetupProfile from 'components/SetupProfile/SetupProfile';
 import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
-import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails';
+import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
 
 export default (
   <>
