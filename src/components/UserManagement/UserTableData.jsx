@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
-import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
 import hasPermission from 'utils/permissions';
-import Table from 'react-bootstrap/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
@@ -17,7 +15,8 @@ import { boxStyle } from 'styles';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const history = useHistory();
-  const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
+//const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
 
   console.log("user table", props)
@@ -102,6 +101,7 @@ const UserTableData = React.memo(props => {
           ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
+      <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
       <td>{props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}</td>
       {checkPermissionsOnOwner() ? null : (
         <td>
