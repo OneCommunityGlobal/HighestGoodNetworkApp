@@ -104,4 +104,4 @@ const Team = props => {
     
   </tr>)
 }
-export default Team;
+export default connect(null, {hasPermission})(Team);
