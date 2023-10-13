@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
-import { deleteTeamMember } from 'actions/allTeamsAction';
+import { addTeamMember, deleteTeamMember } from 'actions/allTeamsAction';
 
 const TeamsTab = props => {
   const {
@@ -50,6 +50,9 @@ const TeamsTab = props => {
   };
 
   const onSelectAssignTeam = team => {
+    if(userProfile._id){
+      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName)
+    }
     onAssignTeam(team);
     setRenderedOn(Date.now());
   };

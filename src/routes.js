@@ -44,6 +44,7 @@ import SetupProfile from 'components/SetupProfile/SetupProfile';
 import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
+import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
 
 export default (
   <>
@@ -101,7 +102,8 @@ export default (
             exact
             component={Projects}
             allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-            routePermissions={RoutePermissions.projects}
+            routePermissions={[RoutePermissions.projects, RoutePermissions.projectManagement_fullFunctionality, 
+              RoutePermissions.projectManagement_addTeamMembersUploadNewWBS]}
           />
           <ProtectedRoute
             path="/projects"
@@ -155,8 +157,8 @@ export default (
 
       <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
       <Route path="/bmdashboard/login" component={BMLogin} />
-      {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-      <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+      <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
+  
       
       {/* ----- END BM Dashboard Routing ----- */}
 
