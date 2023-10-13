@@ -147,7 +147,6 @@ function RolePermissions(props) {
 
   useEffect(() => {
     setPermissions(mapPermissionToLabel(props.permissions));
-    console.log('updated');
   }, [props.roles]);
 
   const toggleDeleteRoleModal = () => {
