@@ -18,7 +18,7 @@ import moment from 'moment-timezone';
 import { isEmpty } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactTooltip from 'react-tooltip';
-import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
+import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
 import { updateUserProfile } from 'actions/userProfile';
@@ -47,10 +47,22 @@ import { boxStyle } from 'styles';
  * @param {boolean} props.data.isTangible
  * @param {*} props.userProfile
  * @param {function} props.resetTimer
+ * @param {string} props.LoggedInuserId
+ * @param {string} props.curruserId
  * @returns
  */
 const TimeEntryForm = props => {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
+  const {
+    userId,
+    edit,
+    data,
+    isOpen,
+    toggle,
+    timer,
+    resetTimer,
+    LoggedInuserId,
+    curruserId,
+  } = props;
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
@@ -294,7 +306,6 @@ const TimeEntryForm = props => {
     return isEmpty(result);
   };
 
-
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
@@ -302,7 +313,7 @@ const TimeEntryForm = props => {
 
     //fix discrepancy in hours in userProfile if any
 
-     fixDiscrepancy(userProfile);
+    fixDiscrepancy(userProfile);
 
     //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
@@ -451,6 +462,7 @@ const TimeEntryForm = props => {
       projectId: inputs.projectId,
       notes: inputs.notes,
       isTangible: inputs.isTangible.toString(),
+      curruserId: curruserId,
     };
 
     if (edit) {
@@ -460,8 +472,11 @@ const TimeEntryForm = props => {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
 
+    // Problem: fix timelog entry for other user page
+    // To fix the problem of both wrong details getting updated in mongoDB and frontend, the response from the payload is stored in curruserProfile as userProfile contains the user whose timelog page we are viewing.
+    // This can lead to the details being mixed up in mongoDB and in turn updating mongoDB with wrong user details
     //Update userprofile hoursByCategory
-    await dispatch(getUserProfile(userId));
+    const curruserProfile = await dispatch(getUserProfile(userId));
 
     //Send the time entry to the server
     setSubmitting(true);
@@ -469,11 +484,15 @@ const TimeEntryForm = props => {
     let timeEntryStatus;
     if (edit) {
       if (!reminder.notice) {
-        editHoursByCategory(userProfile, timeEntry, hours, minutes);
+        if (curruserProfile) {
+          editHoursByCategory(curruserProfile, timeEntry, hours, minutes);
+        }
         timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry, data.dateOfWork));
       }
     } else {
-      updateHoursByCategory(userProfile, timeEntry, hours, minutes);
+      if (curruserProfile) {
+        updateHoursByCategory(curruserProfile, timeEntry, hours, minutes);
+      }
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
     }
     setSubmitting(false);
@@ -488,15 +507,14 @@ const TimeEntryForm = props => {
 
     // see if this is the first time the user is logging time
     if (!edit) {
-      if (userProfile.isFirstTimelog && userProfile.isFirstTimelog === true) {
-
+      if (curruserProfile.isFirstTimelog && curruserProfile.isFirstTimelog === true) {
         const updatedUserProfile = {
-          ...userProfile,
+          ...curruserProfile,
           createdDate: new Date(),
           isFirstTimelog: false,
         };
-    
-        dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
+
+        dispatch(updateUserProfile(curruserProfile._id, updatedUserProfile));
       }
     }
 
@@ -523,6 +541,13 @@ const TimeEntryForm = props => {
     if (!props.edit) setInputs(initialFormValues);
 
     await getUserProfile(userId)(dispatch);
+
+    // Problem: fix timelog entry for other user page
+    // To fix the problem of both wrong details getting updated in mongoDB and frontend, the state variable needs to be updated for user profile in order to get the right details
+    // In addition to updating state, an update to time entries for 0th week is necessary as updateTimeEntries() under action is updating 0th week particularly with the logged in user's time entry
+
+    await dispatch(getUserProfile(curruserId));
+    await dispatch(getTimeEntriesForWeek(curruserId, 0));
     if (isOpen) toggle();
   };
 
@@ -797,6 +822,8 @@ TimeEntryForm.propTypes = {
   data: PropTypes.any.isRequired,
   userProfile: PropTypes.any.isRequired,
   resetTimer: PropTypes.func,
+  LoggedInuserId: PropTypes.string,
+  curruserId: PropTypes.string,
 };
 
 export default connect(null, { hasPermission })(TimeEntryForm);
