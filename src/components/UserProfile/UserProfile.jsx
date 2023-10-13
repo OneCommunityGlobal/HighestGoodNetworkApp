@@ -587,8 +587,6 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canSeeSummaryIntroBtn = props.hasPermission('seeSummaryIntroButton');
-  const canSeeSummaryIntroBtn1 = props.hasPermission('seeSummaryIntroBtn');
-  console.log('can see summary intro btn', canSeeSummaryIntroBtn, canSeeSummaryIntroBtn1);
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
@@ -746,7 +744,6 @@ function UserProfile(props) {
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);
-
                     toast.success('Summary Intro Copied!');
                   }}
                   color="primary"
