@@ -122,6 +122,8 @@ export const  modalInfo = {
     'Give the ability to see on the dashboard the green ✓ indicator for when a summary has been submitted. ',
   'See Visibility Icon' : 
     'Give the ability to see on the dashboard the eye indicator for when a person is invisible. ',
+  'Edit Team 4-Digit Codes' :
+    'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
 
 };
 

@@ -22,10 +22,8 @@ src/components/AutoReload/**
 src/components/AutoUpdate/**
 src/components/Badge/**
 src/components/common/**
-src/components/ForcePasswordUpdate/**
 src/components/Header/**
 src/components/Inventory/**
-src/components/LeaderBoard/**
 src/components/Login/**
 src/components/ManageMemberships/**
 src/components/Memberships/**

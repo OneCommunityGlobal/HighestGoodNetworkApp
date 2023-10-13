@@ -1,11 +1,10 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import Joi from 'joi';
+import { toast } from 'react-toastify';
 import { forcePasswordUpdate } from '../../actions/updatePassword';
 import { clearErrors } from '../../actions/errorsActions';
 import Form from '../common/Form';
-import Joi from 'joi';
-import { toast } from 'react-toastify';
 
 export class ForcePasswordUpdate extends Form {
   state = {
@@ -59,8 +58,8 @@ export class ForcePasswordUpdate extends Form {
       return;
     }
 
-    let userId = this.props.match.params.userId;
-    let data = { userId, newpassword };
+    const { userId } = this.props.match.params;
+    const data = { userId, newpassword };
     const status = await this.props.forcePasswordUpdate(data);
     if (status === 200) {
       toast.success(
