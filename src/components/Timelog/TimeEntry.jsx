@@ -9,15 +9,15 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
 
-import { editTimeEntry, postTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
-import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
+import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
+import { updateUserProfile } from '../../actions/userProfile';
 import hasPermission from 'utils/permissions';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 
 import checkNegativeNumber from 'utils/checkNegativeHours';
 
-const TimeEntry = ({ data, displayYear, userProfile, LoggedInuserId, curruserId }) => {
+const TimeEntry = ({ data, displayYear, userProfile }) => {
   const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
 
@@ -95,8 +95,6 @@ const TimeEntry = ({ data, displayYear, userProfile, LoggedInuserId, curruserId 
     }
     checkNegativeNumber(userProfile);
     dispatch(updateUserProfile(userProfile._id, userProfile));
-    dispatch(getUserProfile(curruserId));
-    dispatch(getTimeEntriesForWeek(curruserId, 0));
   };
 
   return (
@@ -145,8 +143,6 @@ const TimeEntry = ({ data, displayYear, userProfile, LoggedInuserId, curruserId 
                   toggle={toggle}
                   isOpen={modal}
                   userProfile={userProfile}
-                  LoggedInuserId={LoggedInuserId}
-                  curruserId={curruserId}
                 />
               </span>
             )}

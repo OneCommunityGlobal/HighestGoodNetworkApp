@@ -92,9 +92,6 @@ const Timelog = props => {
   const userIdByState = useSelector(state => state.auth.user.userid);
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
 
-  const LoggedInuserId = auth.user.userid;
-  const curruserId = props?.match?.params?.userId || props.asUser;
-
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = auth.user.role;
@@ -238,14 +235,7 @@ const Timelog = props => {
       data = data.filter(entry => state.projectsSelected.includes(entry.projectId));
     }
     return data.map(entry => (
-      <TimeEntry
-        data={entry}
-        displayYear={false}
-        key={entry._id}
-        userProfile={userProfile}
-        LoggedInuserId={LoggedInuserId}
-        curruserId={curruserId}
-      />
+      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={userProfile} />
     ));
   };
 
@@ -578,8 +568,6 @@ const Timelog = props => {
                         userProfile={userProfile}
                         roles={role.roles}
                         isTaskUpdated={isTaskUpdated}
-                        LoggedInuserId={LoggedInuserId}
-                        curruserId={curruserId}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
