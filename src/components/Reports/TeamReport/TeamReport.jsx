@@ -84,9 +84,16 @@ export function TeamReport({ match }) {
         setSelectedTeams([...selectedTeams, { selectedTeam, index }]);
       }
     } else {
+      let counter = 0;
       setSelectedTeams(prevSelectedTeams =>
-        prevSelectedTeams.filter(team => team.selectedTeam._id !== selectedTeam._id),
-      );
+        prevSelectedTeams.filter((team) => {
+          if((team.selectedTeam._id !== selectedTeam._id) && counter <= 5)
+          {
+          counter += 1 ;
+          return team;
+          }
+        }),
+        );
     }
   }
 
@@ -158,7 +165,11 @@ export function TeamReport({ match }) {
   }
 
   useEffect(() => {
-    if (match) {
+
+    // Create a state variable to store the selected radio input
+    setSelectedInput('isManager');
+
+      if (match) {
       dispatch(getTeamDetail(match.params.teamId));
       dispatch(getTeamMembers(match.params.teamId)).then(result => setTeamMembers([...result]));
       dispatch(getAllUserTeams())
@@ -167,11 +178,27 @@ export function TeamReport({ match }) {
           return result;
         })
         .then(result => {
+          console.log(result)
           const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
           Promise.all(allTeamMembersPromises).then(results => {
             setAllTeamsMembers([...results]);
           });
         });
+    }
+    return () => {
+      setTeamMembers([]);
+      setAllTeams([]);
+      setAllTeamsMembers([]);
+      setSearchParams({
+        teamName: '',
+        createdAt: moment('01-01-2015', 'MM-DD-YYYY').toDate(),
+        modifiedAt: moment('01-01-2015', 'MM-DD-YYYY').toDate(),
+        isActive: false,
+        isInactive: false,
+      });
+
+      setSelectedTeams([]);
+
     }
   }, []);
 
@@ -421,7 +448,7 @@ export function TeamReport({ match }) {
             </thead>
             {allTeamsMembers.length > 1 ? (
               <tbody className="table">
-                {handleSearch().map((team, index) => (
+                {handleSearch().slice(0,5).map((team, index) => (
                   <tr className="table-row" key={team._id}>
                     <td>
                       <input
