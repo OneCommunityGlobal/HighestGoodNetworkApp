@@ -73,7 +73,7 @@ const EditLinkModal = props => {
 
   const handleMediaFolderLinkChanges = (e) => {
     if (!mediaFolderLink.Link){
-      // Prevent warning popup apear if empty media folder link
+      // Prevent warning popup appear if empty media folder link
       setIsMediaFolderLinkChanged(true);
       setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
       setIsChanged(true);
