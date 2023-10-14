@@ -72,15 +72,18 @@ const EditLinkModal = props => {
   };
 
   const handleMediaFolderLinkChanges = (e) => {
-    setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
-    setIsChanged(true);
-    if (!isMediaFolderLinkChanged && !isWarningPopupOpen && !e.target.value){
+    if (!mediaFolderLink.Link){
       // Prevent warning popup apear if empty media folder link
-      if(!e.target.value){
-        return;
-      } else {
-        setIsMediaFolderLinkChanged(true);
-        setIsWarningPopupOpen(true);
+      setIsMediaFolderLinkChanged(true);
+      setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+      setIsChanged(true);
+    } 
+    else {
+      setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+      setIsChanged(true);
+      if (!isMediaFolderLinkChanged && !isWarningPopupOpen){ // Fisrt time media folder link is changed
+          setIsMediaFolderLinkChanged(true);
+          setIsWarningPopupOpen(true);
       }
     }
   }
@@ -170,8 +173,9 @@ const EditLinkModal = props => {
       }
       handleSubmit();
       setIsValidLink(true);
-      setIsChanged(true);
+      setIsChanged(false);
       closeModal();
+      setIsMediaFolderLinkChanged(false);
     } else {
       setIsValidLink(false);
     }
