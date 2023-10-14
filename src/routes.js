@@ -51,8 +51,8 @@ export default (
     <Switch>
       <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
       <>
-        {/* <Header /> */}
-        <BMHeader/>
+        <Header />
+        {/* <BMHeader/> */}
         <AutoUpdate />
         <ToastContainer />
         <Switch>

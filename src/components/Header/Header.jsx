@@ -10,6 +10,17 @@ import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
   LOGO,
   DASHBOARD,
+  BM_DASHBOARD,
+  BM_PROJECT,
+  ADD_MATERIAL,
+  LOG_MATERIAL,
+  MATERIAL_LIST,
+  ADD_EQUIPMENT_TOOL,
+  LOG_EQUIPMENT_TOOL,
+  UPDATE_EQUIPMENT_TOOL,
+  EQUIPMENT_TOOL_LIST,
+  ISSUE,
+  LESSON,
   TIMELOG,
   REPORTS,
   WEEKLY_SUMMARIES_REPORT,
@@ -133,11 +144,52 @@ export const Header = props => {
                   <span className="dashboard-text-link">{DASHBOARD}</span>
                 </NavLink>
               </NavItem>
+               <NavItem>
+                <NavLink tag={Link} to="/bmdashboard">
+                  <span className="dashboard-text-link">{BM_DASHBOARD}</span>
+                </NavLink>
+              </NavItem>
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
+               <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  <span className="dashboard-text-link">{BM_PROJECT}</span>
+                </DropdownToggle>
+                <DropdownMenu>
+                  <>
+                    <DropdownItem tag={Link} to="/bmdashboard/add-material">
+                      {ADD_MATERIAL}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/log-material">
+                      {LOG_MATERIAL}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/material-list">
+                      {MATERIAL_LIST}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/add-equipment-tool">
+                      {ADD_EQUIPMENT_TOOL}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/log-equipment-tool">
+                      {LOG_EQUIPMENT_TOOL}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/update-equipment-tool">
+                      {UPDATE_EQUIPMENT_TOOL}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/equipment-tool-list">
+                      {EQUIPMENT_TOOL_LIST}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/issue">
+                      {ISSUE}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/bmdashboard/lesson">
+                      {LESSON}
+                    </DropdownItem>
+                  </>
+                </DropdownMenu>
+              </UncontrolledDropdown>
               {canGetWeeklySummaries ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>

@@ -5,6 +5,17 @@
 export const ACTIVE = 'Active';
 export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
+export const BM_DASHBOARD = 'BM Dashboard';
+export const BM_PROJECT = 'Project';
+export const ADD_MATERIAL = 'Add Material';
+export const LOG_MATERIAL = 'Log Material';
+export const MATERIAL_LIST = 'Material List';
+export const ADD_EQUIPMENT_TOOL = 'Add Equipment/Tool';
+export const LOG_EQUIPMENT_TOOL = 'Log Equipment/Tool';
+export const UPDATE_EQUIPMENT_TOOL = 'Update Equipment/Tool';
+export const EQUIPMENT_TOOL_LIST = 'Equipment/Tool List';
+export const ISSUE = 'Issue';
+export const LESSON = 'Lesson';
 export const DASHBOARD = 'Dashboard';
 export const DELETE = 'Delete';
 export const LOGO = 'Time Tracking Tool';
