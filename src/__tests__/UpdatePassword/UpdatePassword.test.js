@@ -155,7 +155,7 @@ describe('Update Password Page', () => {
     });
 
     it('should show error if new and confirm passwords are not same', async () => {
-      await userEvent.type(screen.getByLabelText(/current password:/i), 'abced', {
+      await userEvent.type(screen.getByLabelText(/current password:/i), 'abced@12', {
         allAtOnce: false,
       });
       await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123', {
