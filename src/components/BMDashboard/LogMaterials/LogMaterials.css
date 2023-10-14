@@ -1,0 +1,78 @@
+.logMaterialContainer {
+  padding: 0% !important;
+}
+
+
+/* @media (min-width: 769px) 
+{ */
+.logMaterialPage {
+  background-color: #E8F4F9;
+  width: 100%;
+  height: auto;
+  margin: 0px;
+  padding: 1rem 2rem;
+}
+
+.logMaterial {
+  background-color: white;
+  border-radius: 25px;
+  padding: 50px;
+}
+
+.logMInputs {
+  margin-top: 20px;
+}
+
+/* } */
+
+.logMInputInline {
+  width: 100% !important;
+
+}
+
+.logMInput {
+  margin: .5rem;
+}
+
+.logMtitle {
+  font-weight: 700;
+}
+
+
+.logMTableHead {
+  color: #0066A1
+}
+
+.logMTableSelect {
+  width: 100%;
+}
+
+
+
+.logMTableHeaderLine {
+  font-weight: 500;
+  padding: 10px;
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+  background-color: #E8F4F9;
+  padding: 0.75rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.logMButtonOutline {
+  color: #2E5061 !important
+}
+
+.logMButtonOutline:hover {
+  background-color: #2E5061 !important;
+  color: white !important
+}
+
+.logMButtonBg {
+  background-color: #2E5061 !important
+}
+
+.logMButtonBg:hover {
+  background-color: white !important;
+  color: #2E5061 !important;
+}
