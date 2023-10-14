@@ -43,7 +43,7 @@ class UpdatePassword extends Form {
       .required()
       .label('Current Password'),
     newpassword: Joi.string()
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*-]).{8,}$/)
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*-])(?=.{8,})/)
       .required()
       .disallow(Joi.ref('currentpassword'))
       .label('New Password')
