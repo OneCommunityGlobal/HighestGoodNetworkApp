@@ -52,15 +52,16 @@ const TeamMemberTask = React.memo(({
   const [isTruncated, setIsTruncated] = useState(canTruncate);
 
   const thisWeekHours = user.totaltangibletime_hrs;
-
+  const dispatch = useDispatch();
+  const canResolveTask = dispatch(hasPermission('viewAndInteractWithTaskTick'));
   // these need to be changed to actual permissions...
   const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
   const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
-  const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
+  const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole) || canResolveTask;
   const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
   //^^^
 
-  const dispatch = useDispatch();
+  
   const canUpdateTask = dispatch(hasPermission('updateTask'));
   const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 

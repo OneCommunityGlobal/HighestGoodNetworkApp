@@ -45,6 +45,7 @@ export const permissionLabel = {
   updateTask: 'Edit Task',
   deleteTask: 'Delete Task',
   suggestTask: 'Suggest Changes on a task',
+  viewAndInteractWithTaskTick: 'View and Interact with Task “✓” on Dashboards',
   seeTeamsManagement: 'See Teams Management Tab (Full Functionality)',
   createTeam: 'Create Team',
   assignTeamToUser: 'Assign Team to User',
