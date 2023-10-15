@@ -147,11 +147,6 @@ class Teams extends React.PureComponent {
 
   teampopupElements = (allTeams) => {
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
-    // console.log('dis',this.props.state.allTeamsData);
-    // const stateKeys = Object.values(this.props.state);
-    // console.log('State keys:', stateKeys); 
-    // console.log(this.props.state.team);
-    // console.log('ps work ',teamMemberVisiblity);
        return (
       <React.Fragment>
         <TeamMembersPopup

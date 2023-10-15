@@ -1,10 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
 const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTeamMembersVisiblity, userId, choice }) => {
-  // console.log("hehe",userId);
+  // console.log("choice",choice);
   const[visiblity,setVisiblity]=useState(choice);
+  // useEffect(() => {
+  //   // console.log('Updated value', visiblity); // Log the updated value when it changes
+  // }, [visiblity]); 
   switch (switchType) {
     case 'bluesquares':
       if (state) {
@@ -191,20 +194,20 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTe
         return (
             <div className={style.switchSection}>
             <div className={style.switchContainer}>
-              {/* Yes */}
               <input
                 id="teamVisiblity"
                 type="checkbox"
                 className={style.toggle}
+                checked={visiblity} // Assuming visiblity is a string
                 onChange={ (event)=>{
-                  setVisiblity(event.target.checked);
-                  UpdateTeamMembersVisiblity(userId,visiblity);
+                  const isChecked = !visiblity;
+                  setVisiblity(isChecked);
+                  console.log('new value',isChecked);
+
+                  UpdateTeamMembersVisiblity(userId, isChecked);
                 }
                 }
-                checked={visiblity}
-                defaultChecked
               />
-              {/* No */}
             </div>
           </div>
         );
