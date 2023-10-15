@@ -17,7 +17,8 @@ import { getUserTimeZone } from 'services/timezoneApiService';
 import { useSelector } from 'react-redux';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
-import { createLocation } from 'services/mapLocationsService';
+import { createLocation, editLocation } from 'services/mapLocationsService';
+import { useEffect } from 'react';
 const initialLocationData = {
   firstName: 'Prior to HGN Data Collection',
   lastName: 'Prior to HGN Data Collection',
@@ -30,7 +31,16 @@ const initialLocationData = {
     },
   },
 };
-function AddNewUserPopUp({ onClose, open, handleSaveLocation, setUserProfiles }) {
+function AddOrEditPopup({
+  onClose,
+  open,
+  setManuallyUserProfiles,
+  title,
+  isAdd,
+  isEdit,
+  editProfile,
+  submitText,
+}) {
   const [locationData, setLocationData] = useState(initialLocationData);
   const [errors, setErrors] = useState({
     firstName: null,
@@ -40,7 +50,7 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation, setUserProfiles })
   });
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
 
-  const getCoordsHandler = () => {
+  const getCoordsHandler = async () => {
     const location = locationData.location.userProvided;
     if (!location) {
       alert('Please enter valid location');
@@ -51,41 +61,60 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation, setUserProfiles })
       return;
     }
     if (errors.location === 'Please get the coordinates of location') {
-      errors.location = null;
+      setErrors(prev => ({ ...prev, location: null }));
     }
 
     if (key) {
-      getUserTimeZone(location, key)
-        .then(response => {
-          if (
-            response.data.status.code === 200 &&
-            response.data.results &&
-            response.data.results.length
-          ) {
-            let currentLocation = {
-              userProvided: location,
-              coords: {
-                lat: response.data.results[0].geometry.lat,
-                lng: response.data.results[0].geometry.lng,
-              },
-              country: response.data.results[0].components.country || '',
-              city: response.data.results[0].components.city || '',
-            };
-            setLocationData(prev => ({
-              ...prev,
-              location: currentLocation,
-            }));
-          } else {
-            alert('Invalid location or ' + response.data.status.message);
-          }
-        })
-        .catch(err => console.log(err));
+      try {
+        const res = await getUserTimeZone(location, key);
+        if (
+          res.data.status.code === 200 &&
+          res.data.results &&
+          res.data.results.length
+        ) {
+          let currentLocation = {
+            userProvided: location,
+            coords: {
+              lat: res.data.results[0].geometry.lat,
+              lng: res.data.results[0].geometry.lng,
+            },
+            country: res.data.results[0].components.country || '',
+            city: res.data.results[0].components.city || '',
+          };
+          setLocationData(prev => ({
+            ...prev,
+            location: currentLocation,
+          }));
+        } else if(res.data.status.code !== 200) {
+          throw new Error('Something went wrong with a request')
+        } else {
+          throw new Error('Invalid location')
+        }
+      } catch(err) {
+        toast.error(err.message);
+      }
+
     }
   };
-
-  const closePopup = () => {
-    onClose();
-  };
+  useEffect(() => {
+    if (isEdit) {
+      const priorData = {
+        firstName: editProfile.firstName,
+        lastName: editProfile.lastName,
+        jobTitle: Array.isArray(editProfile.jobTitle) ? editProfile.jobTitle.join(' ') : editProfile.jobTitle,
+        location: editProfile.location,
+        type: editProfile.type
+      };
+      for (let key in priorData) {
+        if (!priorData[key]) {
+          priorData[key] = 'Prior to HGN Data Collection';
+        }
+      }
+      setLocationData(priorData);
+    } else {
+      setLocationData(initialLocationData);
+    }
+  }, [open]);
 
   const locationDataHandler = e => {
     const { value, name } = e.target;
@@ -108,10 +137,12 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation, setUserProfiles })
       }));
     }
   };
+
   const onSubmitHandler = async e => {
     e.preventDefault();
     const currentErrors = {};
     Object.keys(locationData).forEach(item => {
+      locationData[item] = Array.isArray(item) ? item.join(' ') : locationData[item];
       if (item === 'location') {
         if (!locationData.location.coords.lat || !locationData.location.coords.lng) {
           currentErrors[item] = 'Please get the coordinates of location';
@@ -128,18 +159,42 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation, setUserProfiles })
       return;
     }
 
-    try {
-      const res = await createLocation(locationData);
-      if(!res) {
-        throw new Error()
+    if (isAdd) {
+      try {
+        const res = await createLocation(locationData);
+        if (!res) {
+          throw new Error();
+        }
+        onClose();
+        toast.success('A person successfully added to a map!');
+        setManuallyUserProfiles(prev => [
+          ...prev,
+          {
+            firstName:
+              locationData.firstName !== 'Prior to HGN Data Collection'
+                ? locationData.firstName
+                : '',
+            lastName:
+              locationData.lastName !== 'Prior to HGN Data Collection' ? locationData.lastName : '',
+            jobTitle:
+              locationData.jobTitle !== 'Prior to HGN Data Collection' ? locationData.jobTitle : '',
+            location: locationData.location,
+          },
+        ]);
+        setLocationData(initialLocationData);
+      } catch (err) {
+        onClose();
+        toast.error(err.message);
+      }
+    } else if (isEdit) {
+      const res = await editLocation(locationData);
+      if (!res || res.status !== 200) {
+        throw new Error();
       }
       onClose();
-      toast.success('A person successfully added to a map!');
-      setUserProfiles(prev => ([...prev, {...locationData, canBeRemoved: true}]))  
-      setLocationData(initialLocationData);
-    } catch (err) {
-      onClose();
-      toast.error(err.message);
+      toast.success('User successfully edited!');
+    } else {
+      return;
     }
   };
 
@@ -157,12 +212,9 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation, setUserProfiles })
   }
 
   return (
-    <Modal isOpen={open} toggle={closePopup} className={'modal-dialog modal-lg'}>
-      <ModalHeader
-        toggle={closePopup}
-        cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
-      >
-        Add New User Location
+    <Modal isOpen={open} toggle={onClose} className={'modal-dialog modal-lg'}>
+      <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
+        {title}
       </ModalHeader>
       <ModalBody>
         <Form onSubmit={onSubmitHandler}>
@@ -237,19 +289,14 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation, setUserProfiles })
             {errors.location && <div className="alert alert-danger mt-1">{errors.location}</div>}
           </div>
           <div className="text-center">
-            <Button
-              onClick={handleSaveLocation}
-              className="btn btn-primary mt-5"
-              type="submit"
-              color="primary"
-            >
-              Save to Map
+            <Button className="btn btn-primary mt-5" type="submit" color="primary">
+              {submitText}
             </Button>
           </div>
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={closePopup}>
+        <Button color="secondary" onClick={onClose}>
           Close
         </Button>
       </ModalFooter>
@@ -257,4 +304,4 @@ function AddNewUserPopUp({ onClose, open, handleSaveLocation, setUserProfiles })
   );
 }
 
-export default AddNewUserPopUp;
+export default AddOrEditPopup;
