@@ -35,6 +35,7 @@ function AddOrEditPopup({
   onClose,
   open,
   setManuallyUserProfiles,
+  setUserProfiles,
   title,
   isAdd,
   isEdit,
@@ -103,6 +104,7 @@ function AddOrEditPopup({
         lastName: editProfile.lastName,
         jobTitle: Array.isArray(editProfile.jobTitle) ? editProfile.jobTitle.join(' ') : editProfile.jobTitle,
         location: editProfile.location,
+        _id: editProfile._id,
         type: editProfile.type
       };
       for (let key in priorData) {
@@ -190,6 +192,17 @@ function AddOrEditPopup({
       const res = await editLocation(locationData);
       if (!res || res.status !== 200) {
         throw new Error();
+      }
+      if(res.data.type === 'm_user') {
+        setManuallyUserProfiles(prev => {
+          const filtered = prev.filter(item => item._id !== res.data._id)
+          return [...filtered, res.data]
+        })
+      } else {
+        setUserProfiles(prev => {
+          const filtered = prev.filter(item => item._id !== res.data._id)
+          return [...filtered, res.data]
+        })
       }
       onClose();
       toast.success('User successfully edited!');
