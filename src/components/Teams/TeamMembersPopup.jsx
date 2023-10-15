@@ -22,6 +22,7 @@ const TeamMembersPopup = React.memo(props => {
   const [searchText, setSearchText] = useState('');
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
+  const [teamVisibility, setTeamVisibility] = useState([]);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
@@ -89,17 +90,19 @@ const TeamMembersPopup = React.memo(props => {
       return 1;
     })
   });
-  
-  // add logic to update the team Visiblity
-  const UpdateTeamMembersVisiblity = (userId, choice) => {
-    console.log(userId);
-    console.log(choice);
 
+  // call the handler to update the team member's visibility
+  const UpdateTeamMembersVisiblity = (userId, choice) => {
+    console.log('userid', userId);
+    console.log(choice);
+    props.onUpdateTeamMemberVisiblity(userId, choice);
   };
 
   useEffect(() => {
-    sortList(sortOrder)
-  }, [props.members.teamMembers, sortOrder])
+    sortList(sortOrder);
+    setTeamVisibility(props.teamData);
+  }, [props.members.teamMembers, sortOrder]);
+
 
   useEffect(() => {
     onValidation(true);
@@ -135,7 +138,7 @@ const TeamMembersPopup = React.memo(props => {
               </tr>
             </thead>
             <tbody>
-              {props.members.teamMembers.length > 0 &&
+              {props.members.teamMembers.length > 0 && 
                 memberList.toSorted().map((user, index) => (
                   <tr key={`team_member_${index}`}>
                     <td>{index + 1}</td>
@@ -145,6 +148,7 @@ const TeamMembersPopup = React.memo(props => {
                       <ToggleSwitch
                         switchType="limit-visiblity"
                         userId={user._id}
+                        choice={!!teamVisibility.some(item => item.userId === user._id)}
                         UpdateTeamMembersVisiblity={UpdateTeamMembersVisiblity}
                       />
                     </td>
@@ -159,10 +163,8 @@ const TeamMembersPopup = React.memo(props => {
                         </Button>
                       </td>
                     )}
-                    
                   </tr>
-                ))
-              }
+                ))}
             </tbody>
           </table>
         </ModalBody>

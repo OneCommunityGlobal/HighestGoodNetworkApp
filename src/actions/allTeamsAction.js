@@ -12,7 +12,7 @@ import {
   FETCH_TEAM_USERS_ERROR,
   TEAM_MEMBER_DELETE,
   TEAM_MEMBER_ADD,
-  UPDATE_TEAM_MEMBER_VISIBLITY,
+  FETCH_USER_TEAMS_START,
 } from '../constants/allTeamsConstants';
 
 /**
@@ -102,11 +102,9 @@ export const teamMemberAddAction = (member) => ({
   member,
 });
 
-export const updateVisibilityAction = (teamId, userId, visibility) => ({
-  type: UPDATE_TEAM_MEMBER_VISIBLITY,
-  teamId,
-  userId,
-  visibility,
+export const updateVisibilityAction = (payload) => ({
+  type: FETCH_USER_TEAMS_START,
+  payload,
 });
 
 /**
@@ -213,17 +211,18 @@ export const addTeamMember = (teamId, userId, firstName, lastName) => {
 };
 
 //updateTeamMemeberVisiblity
+export const updateTeamMemeberVisiblity = (teamId, userId, visibility) => {
+  console.log("making a dispatch call");
+  const updateData = { users: [{ visibility, operation: 'Update' }] };
+  const updateVisiblityPromise = axios.put(ENDPOINTS.TEAM_USERS(teamId,userId), updateData);
 
-export const updateTeamMemeberVisiblity = (teamId, userId, visiblity) => {
-  const requestData = { users: [{ userId, operation: 'Update' }] };
-  const updateVisiblityPromise = axios.post(ENDPOINTS.TEAM(teamId), requestData);
   return async (dispatch) => {
-    try {
-      updateVisiblityPromise.then(() => {
-        dispatch(updateVisibilityAction({ teamId, userId, visiblity }));
+    updateVisiblityPromise
+      .then((res) => {
+        dispatch(updateVisibilityAction(res.data));
+      })
+      .catch(error => {
+        console.error('Error updating visibility:', error);
       });
-    } catch (error) {
-      console.error('Error updating visibility:', error);
-    }
   };
 };

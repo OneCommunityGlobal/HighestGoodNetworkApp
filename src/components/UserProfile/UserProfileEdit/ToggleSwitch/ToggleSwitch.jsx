@@ -2,9 +2,9 @@ import React, {useState} from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
-const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTeamMembersVisiblity, userId }) => {
+const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTeamMembersVisiblity, userId, choice }) => {
   // console.log("hehe",userId);
-  const[visiblity,setVisiblity]=useState(true);
+  const[visiblity,setVisiblity]=useState(choice);
   switch (switchType) {
     case 'bluesquares':
       if (state) {
@@ -201,6 +201,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTe
                   UpdateTeamMembersVisiblity(userId,visiblity);
                 }
                 }
+                checked={visiblity}
                 defaultChecked
               />
               {/* No */}
