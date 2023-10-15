@@ -68,29 +68,33 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: '200',
       });
-      // case types.UPDATE_TEAM_MEMBER_VISIBILITY:
-      // const { teamId, userId, visibility } = action;
-    
-      // const updatedTeams = allTeams.allTeams.map(team => {
-      //   if (team._id === teamId) {
-      //     const updatedMembers = team.members.map(member => {
-      //       if (member.userId === userId) {
-      //         member.visibility = visibility;
-      //       }
-      //       return member;
-      //     });
-    
-      //     return { ...team, members: updatedMembers };
-      //   }
-      //   return team;
-      // });
-    
-      // return updateObject(allTeams, {
-      //   allTeams: updatedTeams,
-      //   fetching: false,
-      //   fetched: true,
-      //   status: '200',
-      // });
+    case types.UPDATE_TEAM_MEMBER_VISIBILITY:
+      const { teamId, userId, visibility } = action;
+      console.log('update redux store');
+      // console.log('userID', userId);
+      // console.log('visibility', visibility);
+      // console.log('teamID', teamId);
+      const updatedTeams = allTeams.allTeams.map(team => {
+        if (team._id === teamId) {
+          const updatedMembers = team.members.map(member => {
+            if (member.userId === userId) {
+              member.visible = visibility;
+            }
+            return member;
+          });
+
+          return { ...team, members: updatedMembers };
+        }
+        return team;
+      });
+      console.log('Updated teams:', updatedTeams);
+
+      return updateObject(allTeams, {
+        allTeams: updatedTeams,
+        fetching: false,
+        fetched: true,
+        status: '200',
+      });
     default:
       return allTeams;
   }

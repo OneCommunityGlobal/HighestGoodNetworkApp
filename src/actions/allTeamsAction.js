@@ -12,7 +12,7 @@ import {
   FETCH_TEAM_USERS_ERROR,
   TEAM_MEMBER_DELETE,
   TEAM_MEMBER_ADD,
-  FETCH_USER_TEAMS_START,
+  UPDATE_TEAM_MEMBER_VISIBILITY,
 } from '../constants/allTeamsConstants';
 
 /**
@@ -102,9 +102,11 @@ export const teamMemberAddAction = (member) => ({
   member,
 });
 
-export const updateVisibilityAction = (payload) => ({
-  type: FETCH_USER_TEAMS_START,
-  payload,
+export const updateVisibilityAction = (visibility, userId, teamId) => ({
+  type: UPDATE_TEAM_MEMBER_VISIBILITY,
+  visibility,
+  userId,
+  teamId,
 });
 
 /**
@@ -212,17 +214,28 @@ export const addTeamMember = (teamId, userId, firstName, lastName) => {
 
 //updateTeamMemeberVisiblity
 export const updateTeamMemeberVisiblity = (teamId, userId, visibility) => {
-  console.log("making a dispatch call");
-  const updateData = { users: [{ visibility, operation: 'Update' }] };
-  const updateVisiblityPromise = axios.put(ENDPOINTS.TEAM_USERS(teamId,userId), updateData);
+  // console.log("making a dispatch call");
+  const updateData = { visibility, userId, teamId };
+  const updateVisiblityPromise = axios.put(ENDPOINTS.TEAM, updateData);
 
-  return async (dispatch) => {
+  return async dispatch => {
     updateVisiblityPromise
       .then((res) => {
-        dispatch(updateVisibilityAction(res.data));
+        console.log(res);
+        dispatch(updateVisibilityAction(visibility, userId, teamId));
       })
       .catch(error => {
-        console.error('Error updating visibility:', error);
+         if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error('Error updating visibility:', error.response.data);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error('Error updating visibility: No response received');
+        } else {
+          // Something happened in setting up the request that triggered an error
+          console.error('Error updating visibility:', error.message);
+        }
       });
   };
 };
