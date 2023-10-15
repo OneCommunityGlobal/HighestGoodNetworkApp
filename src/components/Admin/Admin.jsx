@@ -13,7 +13,10 @@ function Admin(props) {
   return (
     <div className="container mt-3">
       {popupEditor.popupItems.length === 0 ? (
-        <p style={{ textAlign: 'center' }}>You have not created any popup messages!</p>
+        <p style={{ textAlign: 'center' }}>
+          A popup is needed for this. Help us make the app better by sharing with the Admin what you
+          did to get this screen.
+        </p>
       ) : (
         popupEditor.popupItems.map(item => (
           <PopupText
