@@ -14,25 +14,24 @@ function LogMaterialsInputs() {
   }
 
   return (
-    <div className='container-fluid logMInputs'>
-      <div className='row justify-content-between'>
+    <div className='container-fluid'>
+      <div className='row'>
 
         <div className='col-lg-4 col-12'>
-          <div class="form-group form-inline  align-items-center m-1">
+          <div className="form-group form-inline align-items-center">
             <Label for="selectdate">
               Date:
             </Label>
             <Input value={date} onChange={dateHandler} id='selectdate' className='logMInput form-control' name='select' type="date">
             </Input>
-
           </div>
         </div>
         <div className='col-lg-4 col-12'>
-          <div class="form-group form-inline align-items-center m-1">
+          <div className="form-group form-inline align-items-center">
             <Label for="selectproject">
               Project:
             </Label>
-            <Input id='selectproject' className='logMInput' name='select' type="select">
+            <Input id='selectproject' className='logMInput form-control' name='select' type="select">
               <option>Project 1</option>
               <option>Project 2</option>
               <option>Project 3</option>
@@ -40,11 +39,11 @@ function LogMaterialsInputs() {
           </div>
         </div>
         <div className='col-lg-4 col-12'>
-          <div class="form-group form-inline align-items-center m-1">
+          <div className="form-group form-inline align-items-center">
             <Label for="selectcheck">
               Check In or Out:
             </Label>
-            <Input id='selectcheck' className='logMInput' name='select' type="select">
+            <Input id='selectcheck' className='logMInput form-control' name='select' type="select">
               <option>Check In</option>
               <option>Check Out</option>
             </Input>

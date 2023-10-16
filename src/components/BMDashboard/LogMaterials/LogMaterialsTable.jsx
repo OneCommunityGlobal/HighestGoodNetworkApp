@@ -10,29 +10,21 @@ import Select, {
   ClearIndicatorProps
 } from 'react-select';
 
-const CustomClearText = () => <>clear all</>;
+const CustomClearText = () => <span className='logMaterialClearAll'>clear all</span>;
 const ClearIndicator = (props) => {
   const {
     children = <CustomClearText />,
-    getStyles,
     innerProps: { ref, ...restInnerProps },
   } = props;
   return (
     <div
       {...restInnerProps}
       ref={ref}
-      style={getStyles('clearIndicator', props)}
     >
       <div style={{ padding: '0px 5px' }}>{children}</div>
     </div>
   );
 };
-
-const ClearIndicatorStyles = (base, state) => ({
-  ...base,
-  cursor: 'pointer',
-  color: state.isFocused ? 'blue' : 'black',
-});
 
 function LogMaterialsTable() {
 
@@ -45,14 +37,16 @@ function LogMaterialsTable() {
 
   return (
     <div>
-      <div className='row justify-content-around logMTableHeaderLine'>
-        <div className=''>Item</div>
-        <div className=''>Quantity</div>
-        <div className='logMTableHead'> Daily Log Input </div>
-      </div>
 
-      <Table>
-        <thead >
+      <Table borderless className='logMaterialTable' responsive >
+        <thead className='logMTableHeaderLine'>
+          <tr className="">
+            <th colSpan={2}> Item </th>
+            <th colSpan={3}>Quantity</th>
+            <th colSpan={1} className='logMTableHead'> Daily Log Input </th>
+          </tr>
+        </thead>
+        <thead className='logMTableHeaderLine'>
           <tr className="table-light">
             <th> ID </th>
             <th>Name</th>
@@ -62,9 +56,9 @@ function LogMaterialsTable() {
             <th className='logMTableHead'> Material Number </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody >
           <tr>
-            <th scope="row">   1   </th>
+            <td scope="row">   1   </td>
             <td>  Bristle Brush  </td>
             <td>  30 </td>
             <td>  5 </td>
@@ -73,7 +67,6 @@ function LogMaterialsTable() {
               <Select
                 closeMenuOnSelect={false}
                 components={{ ClearIndicator }}
-                styles={{ ClearIndicatorStyles }}
                 defaultValue={[]}
                 isMulti
                 options={options}
@@ -81,7 +74,7 @@ function LogMaterialsTable() {
             </td>
           </tr>
           <tr>
-            <th scope="row">   2   </th>
+            <td scope="row">   2   </td>
             <td>  Leather Gloves  </td>
             <td>  100 </td>
             <td>  50 </td>
@@ -90,7 +83,6 @@ function LogMaterialsTable() {
               <Select
                 closeMenuOnSelect={false}
                 components={{ ClearIndicator }}
-                styles={{ ClearIndicatorStyles }}
                 defaultValue={[]}
                 isMulti
                 options={options}
@@ -98,7 +90,7 @@ function LogMaterialsTable() {
             </td>
           </tr>
           <tr>
-            <th scope="row">   3   </th>
+            <td scope="row">   3   </td>
             <td>  Wheel Barrows  </td>
             <td>  10 </td>
             <td>  5 </td>
@@ -107,7 +99,6 @@ function LogMaterialsTable() {
               <Select
                 closeMenuOnSelect={false}
                 components={{ ClearIndicator }}
-                styles={{ ClearIndicatorStyles }}
                 defaultValue={[]}
                 isMulti
                 options={options}
@@ -115,7 +106,7 @@ function LogMaterialsTable() {
             </td>
           </tr>
           <tr>
-            <th scope="row">   4   </th>
+            <td scope="row">   4   </td>
             <td>  4 gallon bucket  </td>
             <td>  50 </td>
             <td>  30 </td>
@@ -124,7 +115,6 @@ function LogMaterialsTable() {
               <Select
                 closeMenuOnSelect={false}
                 components={{ ClearIndicator }}
-                styles={{ ClearIndicatorStyles }}
                 defaultValue={[]}
                 isMulti
                 options={options}
@@ -132,9 +122,10 @@ function LogMaterialsTable() {
             </td>
           </tr>
 
+
         </tbody>
       </Table>
-      <div className='row justify-content-between'>
+      <div className='row justify-content-between '>
         <Button size="lg" className='logMButtons' outline>Cancel</Button>
         <Button size="lg" className='logMButtonBg'  >Submit</Button>
       </div>

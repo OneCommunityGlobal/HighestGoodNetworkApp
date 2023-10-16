@@ -9,7 +9,7 @@ function LogMaterial() {
     <Container fluid className='logMaterialContainer'>
       <div className='logMaterialPage'>
         <div className='logMaterial'>
-          <div className='logMtitle'>MATERIAL DAILY ACTIVITIES LOG</div>
+          <div className='logMaterialTitle'>MATERIAL DAILY ACTIVITIES LOG</div>
           <LogMaterialsInputs />
           <LogMaterialsTable />
         </div>
