@@ -18,6 +18,7 @@ export default function AddMaterials() {
   // const { selectedProject } = state;
 
   useEffect(() => {
+    // fetching of projects can be removed once link to this page is created
     dispatch(fetchAllProjects());
     dispatch(getAllItemTypes());
   }, []);
