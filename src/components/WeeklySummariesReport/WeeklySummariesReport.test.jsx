@@ -33,9 +33,7 @@ describe('WeeklySummariesReport page', () => {
         badges: [],
         getInfoCollections: jest.fn(),
       };
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
-
-      await waitFor(() => screen.getByTestId('loading'));
+      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });
 
       expect(screen.getByTestId('error')).toBeInTheDocument();
     });

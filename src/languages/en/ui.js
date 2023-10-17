@@ -51,3 +51,5 @@ export const CANCEL = 'Delete Final Day';
 export const SET_FINAL_DAY = 'Set Final Day';
 export const MANAGE_FINAL_DAY = 'Manage Final Day';
 export const SEND_SETUP_LINK = 'Send Setup Link';
+export const USER_START_DATE = 'Start Date';
+export const USER_END_DATE = 'End Date';

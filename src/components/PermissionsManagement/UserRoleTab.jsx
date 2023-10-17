@@ -81,6 +81,7 @@ export const permissionLabel = {
   seePopupManagement: 'See Popup Management Tab (create and update popups)',
   seeSummaryIndicator: 'See Summary Indicator',
   seeVisibilityIcon: 'See Visibility Icon',
+  editTeamCode: 'Edit Team 4-Digit Codes',
 };
 
 const UserRoleTab = props => {
