@@ -34,7 +34,23 @@ describe('FoundUser Component', () => {
     expect(getByRole('button')).toBeInTheDocument();
   });
 
-  it('does not render the assign button if user is already assigned', () => {
+  it('should render the assign button if user is not assigned', () => {
+
+    const initialState = {};
+    const store = mockStore(initialState);
+
+    const { getByRole } = render(
+      <Provider store={store}>
+        <FoundUser {...sampleUser} />
+      </Provider>
+    );
+    
+    const assignButton = getByRole('button');
+    expect(assignButton).toBeInTheDocument();
+  });
+
+
+  it('should not render the assign button if user is already assigned', () => {
     const assignedUser = {
       ...sampleUser,
       assigned: true,
@@ -54,32 +70,6 @@ describe('FoundUser Component', () => {
     expect(assignButton).toBeNull();
   });
 
-  //  it('calls assignProject function when the assign button is clicked', () => {
-  //   const assignProject = jest.fn();
-     
-  //   const initialState = {};
-  //   const store = mockStore(initialState);
-
-  //   const { getByRole } = render(
-  //     <Provider store={store}>
-  //       <FoundUser {...sampleUser} assignProject={assignProject} />
-  //     </Provider>
-  //   );
-  //   const assignButton = getByRole('button');
-
-  //   // Simulate a button click
-  //   fireEvent.click(assignButton);
-
-  //   // Verify that the assignProject function is called with the expected arguments
-  //   expect(assignProject).toHaveBeenCalledWith(
-  //     'project123',
-  //     'user123',
-  //     'Assign',
-  //     'John',
-  //     'Smith'
-  //   );
-  // });
-
   it('generates the correct user profile link', () => {
 
 
@@ -95,5 +85,31 @@ describe('FoundUser Component', () => {
     // Verify that the user profile link is generated correctly
     const profileLink = getByText('John Smith');
     expect(profileLink).toHaveAttribute('href', '/userprofile/user123');
+  });
+
+    it('calls assignProject function when the assign button is clicked', () => {
+    const assignProject = jest.fn();
+     
+    const initialState = {};
+    const store = mockStore(initialState);
+
+    const { getByRole } = render(
+      <Provider store={store}>
+        <FoundUser {...sampleUser} assignProject={assignProject} />
+      </Provider>
+    );
+    const assignButton = getByRole('button');
+
+    // Simulate a button click
+    fireEvent.click(assignButton);
+
+    // Verify that the assignProject function is called with the expected arguments
+    expect(assignProject).toHaveBeenCalledWith(
+      'project123',
+      'user123',
+      'Assign',
+      'John',
+      'Smith'
+    );
   });
 });
