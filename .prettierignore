@@ -22,10 +22,8 @@ src/components/AutoReload/**
 src/components/AutoUpdate/**
 src/components/Badge/**
 src/components/common/**
-src/components/ForcePasswordUpdate/**
 src/components/Header/**
 src/components/Inventory/**
-src/components/LeaderBoard/**
 src/components/ManageMemberships/**
 src/components/Memberships/**
 src/components/MonthlyEffort/**
@@ -47,4 +45,6 @@ src/components/Timelog/**
 src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
+src/components/WeeklySummary/**
+src/components/WeeklySummariesReport/**
 src/components/MouseoverText/**
