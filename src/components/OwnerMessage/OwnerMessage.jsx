@@ -187,7 +187,7 @@ function OwnerMessage({
             name="file"
             type="file"
             label="Choose Image"
-            onChange={() => handleImageUpload()}
+            onChange={event => handleImageUpload(event)}
             className="inputs"
           />
         </ModalBody>
