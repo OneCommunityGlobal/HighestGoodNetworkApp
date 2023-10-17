@@ -253,9 +253,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
             icon={faCopy}
             className="copy-icon "
             onClick={() => {
-              const parsedSummary = summaryText.replace(/<[^>]+>/g, '');
-              // console.log(parsedSummary);
-
+              const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
               navigator.clipboard.writeText(parsedSummary);
               toast.success('Summary Copied!');
             }}
