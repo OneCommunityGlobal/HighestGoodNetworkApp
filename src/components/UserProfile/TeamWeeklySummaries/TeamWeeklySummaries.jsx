@@ -38,8 +38,7 @@ function TeamWeeklySummaries({ name, i, data }) {
             icon={faCopy}
             className="copy-icon"
             onClick={() => {
-              const parsedSummary = data.summary.replace(/<[^>]+>/g, '');
-
+              const parsedSummary = data.summary.replace(/<\/?[^>]+>|&nbsp;/g, '');
               navigator.clipboard.writeText(parsedSummary);
               toast.success('Summary Copied!');
             }}
