@@ -125,9 +125,9 @@ export const  modalInfo = {
   'Edit Team 4-Digit Codes' :
     'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
   'Create New Preset' :
-    'Saves current permissions into a new preset named \'New Preset #\' with the lowest number not already taken.',
+    '\'Create New Preset\' saves current permissions into a new preset named \'New Preset #\' with the lowest number not already taken.',
   'Load Presets' :
-    'Opens list of presets saved for this role where they can be renamed, applied, or deleted.'
+    '\'Load Presets\' opens a list of presets saved for this role where they can be renamed, applied, or deleted.'
 };
 
 function RolePermissions(props) {
