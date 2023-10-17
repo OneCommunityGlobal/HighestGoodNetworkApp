@@ -33,13 +33,14 @@ export const postNewItemType = (newItemType) => {
       dispatch(addNewItemType(res.data));
     } catch (err) {
       console.log(err);
+      dispatch(setItemTypesError());
     }
   };
 };
 
 
 /**
- * ACTIONS
+ * ACTION CREATORS
  */
 
 export const setItemTypesStart = () => {

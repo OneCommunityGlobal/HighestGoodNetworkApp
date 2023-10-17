@@ -5,9 +5,7 @@ export const ADD_NEW_ITEMTYPE = 'ADD_NEW_ITEMTYPE';
 
 const initialState = {
   allItemTypes: [],
-  fetching: false,
-  fetched: false,
-  status: 404,
+  isLoading: false,
 };
 
 export const itemTypeReducer = (state = initialState, action) => {
@@ -15,26 +13,20 @@ export const itemTypeReducer = (state = initialState, action) => {
     case FETCH_ITEMTYPES_START:
       return {
         ...state,
-        fetching: true,
-        fetched: false,
-        status: 404,
+        isLoading: true,
       };
 
     case RECEIVE_ITEMTYPES:
       return {
         ...state,
         allItemTypes: action.payload,
-        fetching: false,
-        fetched: true,
-        status: 200,
+        isLoading: false,
       }
 
     case FETCH_ITEMTYPES_ERROR:
       return {
         ...state,
-        fetching: false,
-        fetched: false,
-        status: action.status,
+        isLoading: false,
       }
 
     case ADD_NEW_ITEMTYPE:

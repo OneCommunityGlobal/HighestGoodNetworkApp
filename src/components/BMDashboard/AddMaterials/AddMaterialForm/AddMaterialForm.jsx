@@ -6,8 +6,7 @@ import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { isValidUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
-// import { postNewItemType } from '../../../../actions/itemTypes';
-import { postNewMaterial } from '../../../../actions/materials';
+import { postMaterial } from '../../../../actions/materials';
 import './AddMaterialForm.css';
 
 // AddMaterialsForm will take in an array of project objects
@@ -82,7 +81,24 @@ export default function AddMaterialsForm(props) {
     if (error) {
       setTrySubmit(true);
     } else {
-      dispatch(postNewMaterial(formInputs));
+      dispatch(postMaterial(formInputs));
+      setFormInputs({
+        projectId: selectedProject?._id || '',
+        material: '',
+        newMaterial: false,
+        invoice: '',
+        unitPrice: '',
+        currency: '',
+        quantity: '',
+        measurement: '',
+        newMeasurement: false,
+        purchaseDate: '',
+        shippingFee: '',
+        taxRate: '',
+        phone: '',
+        link: '',
+        description: '',
+      });
     }
   };
 
@@ -144,7 +160,7 @@ export default function AddMaterialsForm(props) {
                     id="material"
                     name="material"
                     type="text"
-                    autoComplete="false"
+                    autoComplete="off"
                     invalid={trySubmit && formInputs.material === ''}
                     value={formInputs.material}
                     placeholder="Add new material"
@@ -198,7 +214,7 @@ export default function AddMaterialsForm(props) {
                 <Input
                   id="invoice"
                   name="invoice"
-                  autoComplete="false"
+                  autoComplete="off"
                   value={formInputs.invoice}
                   invalid={trySubmit && formInputs.invoice === ''}
                   placeholder="Input Invoice No or ID for the material"
@@ -250,7 +266,7 @@ export default function AddMaterialsForm(props) {
                     id="measurement"
                     name="measurement"
                     type="text"
-                    autoComplete="false"
+                    autoComplete="off"
                     invalid={trySubmit && formInputs.measurement === ''}
                     placeholder="Add new measurement"
                     value={formInputs.measurement}
@@ -392,6 +408,7 @@ export default function AddMaterialsForm(props) {
                   name="link"
                   type="text"
                   placeholder="https://"
+                  autoComplete="off"
                   invalid={trySubmit && !isValidUrl(formInputs.link)}
                   value={formInputs.link}
                   onChange={handleChange}

@@ -8,28 +8,30 @@ import { addNewItemType } from './itemTypes';
  *  MIDDLEWARE
  */
 
-export const postNewMaterial = (formInputs) => {
+export const postMaterial = (formInputs) => {
   const material = {...formInputs};
   return async dispatch => {
     try {
-      // add new inventory type if necessary
       if (material.newMaterial || material.newMeasurement) {
-        const res1 = await axios.post(ENDPOINTS.BM_INVENTORY_TYPES, {
-          type: 'material',
-          name: material.material,
-          description: material.description,
-          uom: material.measurement,
-          totalStock: material.quantity,
-          totalAvailable: material.quantity,
-          projectsUsing: [],
-          imageUrl: '',
-          link: material.link,
-        });
+        const res1 = await axios.post(ENDPOINTS.BM_INVENTORY_TYPES,
+          {
+            type: 'material',
+            name: material.material,
+            description: material.description,
+            uom: material.measurement,
+            totalStock: material.quantity,
+            totalAvailable: material.quantity,
+            projectsUsing: [],
+            imageUrl: '',
+            link: material.link,
+          }
+        );
         material.material = res1.data._id;
         dispatch(addNewItemType(res1.data));
       }
       const res = await axios.post(ENDPOINTS.BM_ADD_NEW_MATERIAL, { material });
-      // possibly dispatch inventory material to state?
+      // dispatch new inventory material to state once created
+      // dispatch(addMaterial(res.data));
     } catch (error) {
       console.error(error);
     }
@@ -38,10 +40,10 @@ export const postNewMaterial = (formInputs) => {
 
 
 /**
- * ACTIONS
+ * ACTION CREATORS
  */
 
-export const addNewMaterial = (payload, status) => {
+export const addMaterial = (payload, status) => {
   return {
     type: types.ADD_NEW_MATERIAL,
     payload,

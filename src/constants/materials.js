@@ -1,6 +1,6 @@
 /**
  * This is to store constants that relate to
- * actions which will be sent to the reducers
+ * actions which will be sent to the materials reducer
 */
 
 // INIT MATERIALS

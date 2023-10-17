@@ -17,7 +17,7 @@
 
 @media screen and (min-width: 425px) {
   .add-materials-page form {
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     border: 1px solid rgb(220, 220, 220);
     margin: 2rem auto 0 auto;
   }
