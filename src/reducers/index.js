@@ -24,6 +24,7 @@ import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
+import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { infoCollectionsReducer} from './informationReducer';
@@ -58,6 +59,7 @@ export default combineReducers({
   teamMemberTasks: teamMemberTasksReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
+  rolePreset: rolePresetReducer,
   ownerMessage: ownerMessageReducer,
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,

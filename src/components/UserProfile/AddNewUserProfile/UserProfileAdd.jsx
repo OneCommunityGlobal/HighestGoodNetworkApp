@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import { get } from 'lodash';
+import { assign, get } from 'lodash';
 import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
@@ -46,7 +46,7 @@ import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { isValidGoogleDocsUrl, isValidUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
@@ -115,13 +115,13 @@ class AddUserProfile extends Component {
     this.state.showphone = true;
     this.onCreateNewUser();
   }
-
+  
+  
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
-
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -430,6 +430,7 @@ class AddUserProfile extends Component {
                     codeValid={this.state.codeValid}
                     setCodeValid={this.setCodeValid}
                     edit
+                    userProfile={this.state.userProfile}
                   />
                 </TabPane>
               </TabContent>
@@ -482,7 +483,6 @@ class AddUserProfile extends Component {
   onAssignTeam = assignedTeam => {
     const teams = [...this.state.teams];
     teams.push(assignedTeam);
-
     this.setState({
       teams: teams,
     });
@@ -617,7 +617,7 @@ class AddUserProfile extends Component {
 
     if (googleDoc) {
       if (isValidGoogleDocsUrl(googleDoc)) {
-        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
+        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
       } else{
         toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
         this.setState({
@@ -634,8 +634,8 @@ class AddUserProfile extends Component {
       }
     }
     if (dropboxDoc) {
-      if (isValidUrl(dropboxDoc)) {
-          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
+      if (isValidMediaUrl(dropboxDoc)) {
+          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
         } else {
           toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
           this.setState({
@@ -670,6 +670,12 @@ class AddUserProfile extends Component {
               return;
             } else {
               toast.success('User profile created.');
+              this.state.userProfile._id = res.data._id;
+              if(this.state.teams.length > 0){
+                this.state.teams.forEach((team) => {
+                  this.props.addTeamMember(team._id, res.data._id, res.data.firstName, res.data.lastName)
+                })
+              }
             }
             this.props.userCreated();
           })
