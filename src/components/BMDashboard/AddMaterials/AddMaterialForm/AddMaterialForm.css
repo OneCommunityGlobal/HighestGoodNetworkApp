@@ -14,6 +14,7 @@
 */
 .remove-arrows[type=number] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .total-price {
@@ -32,9 +33,8 @@
   background-color: rgb(249, 249, 249);
 }
 
-.add-materials-form .form-check-input {
-  position: static;
-  margin: 0 0.5rem 0 0;
+.add-materials-form .form-check {
+  margin-bottom: 1rem;
 }
 
 .add-materials-form #submit {
