@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
 const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTeamMembersVisiblity, userId, choice }) => {
   const[visiblity,setVisiblity]=useState(choice);
+  useEffect(() => {
+    setVisiblity(choice);
+  }, [choice]);
   switch (switchType) {
     case 'bluesquares':
       if (state) {

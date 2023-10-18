@@ -183,7 +183,7 @@ const TeamMembersPopup = React.memo(props => {
                           userId={user._id}
                           choice={
                             teamVisibility[0]?.members.find(member => member.userId === user._id)
-                              ?.visible || false
+                              ?.visible || true
                           }
                           UpdateTeamMembersVisiblity={UpdateTeamMembersVisiblity}
                         />
