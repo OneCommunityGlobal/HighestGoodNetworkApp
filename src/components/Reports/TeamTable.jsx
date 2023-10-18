@@ -3,6 +3,9 @@ import { React, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './TeamTable.css';
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
+import { connect } from 'react-redux';
+import hasPermission from 'utils/permissions';
+import { updateTeam } from 'actions/allTeamsAction';
 
 function TeamTable({ allTeams }) {
   // Display project lists
@@ -119,4 +122,12 @@ function TeamTable({ allTeams }) {
   );
 }
 
-export default TeamTable;
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+const mapDispatchToProps = dispatch => ({
+  hasPermission: permission => dispatch(hasPermission(permission)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TeamTable);
