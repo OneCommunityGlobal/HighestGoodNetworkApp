@@ -27,7 +27,7 @@ export default function Countdown({
   toggleTimer,
 }) {
   const MAX_HOURS = 10;
-  const MIN_MINS = 1;
+  const MIN_MINS = 15;
 
   const { started, goal } = message;
 
