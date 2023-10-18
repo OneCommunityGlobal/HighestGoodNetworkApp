@@ -50,7 +50,7 @@ import { boxStyle } from 'styles';
  * @returns
  */
 const TimeEntryForm = props => {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
+  const { userId, edit, data, isOpen, toggle, timer, resetTimer = () => {}, sendClear, sendStop } = props;
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
@@ -73,7 +73,6 @@ const TimeEntryForm = props => {
     editNotice: true,
   };
 
-  const [isSubmitting, setSubmitting] = useState(false);
   const [inputs, setInputs] = useState(edit ? data : initialFormValues);
   const [errors, setErrors] = useState({});
   const [close, setClose] = useState(false);
@@ -437,7 +436,7 @@ const TimeEntryForm = props => {
   const handleSubmit = async event => {
     //Validation and variable initialization
     if (event) event.preventDefault();
-    if (isSubmitting) return;
+
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
@@ -463,8 +462,6 @@ const TimeEntryForm = props => {
     //Update userprofile hoursByCategory
     await dispatch(getUserProfile(userId));
 
-    //Send the time entry to the server
-    setSubmitting(true);
 
     let timeEntryStatus;
     if (edit) {
@@ -476,7 +473,6 @@ const TimeEntryForm = props => {
       updateHoursByCategory(userProfile, timeEntry, hours, minutes);
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
     }
-    setSubmitting(false);
 
     if (timeEntryStatus !== 200) {
       toggle();
@@ -510,6 +506,7 @@ const TimeEntryForm = props => {
           'Your time entry was successfully recorded, but an error occurred while asking the server to reset your timer. There is no need to submit your hours a second time, and doing so will result in a duplicate time entry.',
         );
       }
+      sendClear();
     } else if (!reminder.notice) {
       setReminder(reminder => ({
         ...reminder,
@@ -517,7 +514,10 @@ const TimeEntryForm = props => {
       }));
     }
 
-    if (fromTimer) clearForm();
+    if (fromTimer) {
+      sendStop();
+      clearForm();
+    }
     setReminder(initialReminder);
 
     if (!props.edit) setInputs(initialFormValues);
@@ -797,6 +797,7 @@ TimeEntryForm.propTypes = {
   data: PropTypes.any.isRequired,
   userProfile: PropTypes.any.isRequired,
   resetTimer: PropTypes.func,
+  handleStop: PropTypes.func,
 };
 
 export default connect(null, { hasPermission })(TimeEntryForm);
