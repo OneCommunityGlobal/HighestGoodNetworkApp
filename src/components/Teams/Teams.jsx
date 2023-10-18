@@ -49,8 +49,6 @@ class Teams extends React.PureComponent {
   render() {
     // debugger;
     const { allTeams, fetching } = this.props.state.allTeamsData;
-    // console.log(allTeams);
-
     const teamTable = this.teamTableElements(allTeams);
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
@@ -147,7 +145,7 @@ class Teams extends React.PureComponent {
 
   teampopupElements = (allTeams) => {
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
-       return (
+    return (
       <React.Fragment>
         <TeamMembersPopup
           open={this.state.teamMembersPopupOpen}
