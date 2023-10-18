@@ -1,20 +1,19 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './TeamTable.css';
 
-function TeamTable(props) {
+function TeamTable({ allTeams }) {
   // Display project lists
   let TeamsList = [];
-  if (props.allTeams.length > 0) {
-    TeamsList = props.allTeams.map((team, index) => (
+  if (allTeams.length > 0) {
+    TeamsList = allTeams.map((team, index) => (
       <tr id={`tr_${team._id}`} key={team._id}>
         <th scope="row">
           <div>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/teamreport/${team._id}`}>
-            {team.teamName}
-          </Link>
+          <Link to={`/teamreport/${team._id}`}>{team.teamName}</Link>
         </td>
         <td className="projects__active--input">
           {team.isActive ? (

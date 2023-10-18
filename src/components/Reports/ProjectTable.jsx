@@ -1,29 +1,28 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import './reports.css';
 import { Link } from 'react-router-dom';
 
-const ProjectTable = props => {
+function ProjectTable({ projects }) {
   // Display project lists
   let ProjectsList = [];
-  if (props.projects.length > 0) {
-    ProjectsList = props.projects.map((project, index) => (
-      <tr id={'tr_' + project._id} key={project._id}>
+  if (projects.length > 0) {
+    ProjectsList = projects.map((project, index) => (
+      <tr id={`tr_${project._id}`} key={project._id}>
         <th scope="row">
           <div>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/projectreport/${project._id}`}>
-            {project.projectName}
-          </Link>
+          <Link to={`/projectreport/${project._id}`}>{project.projectName}</Link>
         </td>
         <td>
           {project.isActive ? (
             <div className="isActive">
-              <i className="fa fa-circle" aria-hidden="true"></i>
+              <i className="fa fa-circle" aria-hidden="true" />
             </div>
           ) : (
             <div className="isNotActive">
-              <i className="fa fa-circle-o" aria-hidden="true"></i>
+              <i className="fa fa-circle-o" aria-hidden="true" />
             </div>
           )}
         </td>
@@ -47,5 +46,5 @@ const ProjectTable = props => {
       <tbody>{ProjectsList}</tbody>
     </table>
   );
-};
+}
 export default ProjectTable;
