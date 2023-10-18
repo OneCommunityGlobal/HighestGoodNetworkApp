@@ -49,14 +49,9 @@ export class ForcePasswordUpdate extends Form {
   };
 
   doSubmit = async () => {
-    const { newpassword, confirmnewpassword } = {
+    const { newpassword } = {
       ...this.state.data,
     };
-
-    if (newpassword !== confirmnewpassword) {
-      alert('Confirm Password must match New Password');
-      return;
-    }
 
     const { userId } = this.props.match.params;
     const data = { userId, newpassword };
