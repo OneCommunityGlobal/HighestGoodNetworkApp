@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
 
@@ -42,9 +41,9 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.map(({ date, quantityUsed, createdBy }, i) => {
+          {record.map(({ date, quantityUsed, createdBy }) => {
             return (
-              <tr key={i}>
+              <tr key={date + createdBy._id}>
                 <td>{moment(date).format('MM/DD/YY')}</td>
                 <td>{quantityUsed}</td>
                 <td>
@@ -73,9 +72,9 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.map(({ date, quantity, action, cause, description, createdBy }, i) => {
+          {record.map(({ date, quantity, action, cause, description, createdBy }) => {
             return (
-              <tr key={i}>
+              <tr key={date + createdBy._id}>
                 <td>{moment(date).format('MM/DD/YY')}</td>
                 <td>{quantity}</td>
                 <td>{action}</td>
@@ -109,26 +108,24 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.map(
-            ({ date, poId, sellerId, quantity, subtotal, tax, shipping, createdBy }, i) => {
-              return (
-                <tr key={i}>
-                  <td>{moment(date).format('MM/DD/YY')}</td>
-                  <td>{poId}</td>
-                  <td>{sellerId}</td>
-                  <td>{quantity}</td>
-                  <td>{subtotal}</td>
-                  <td>{tax}</td>
-                  <td>{shipping}</td>
-                  <td>
-                    <a href={`/userprofile/${createdBy._id}`}>
-                      {`${createdBy.firstName} ${createdBy.lastName}`}
-                    </a>
-                  </td>
-                </tr>
-              );
-            },
-          )}
+          {record.map(({ date, poId, sellerId, quantity, subtotal, tax, shipping, createdBy }) => {
+            return (
+              <tr key={date + createdBy._id}>
+                <td>{moment(date).format('MM/DD/YY')}</td>
+                <td>{poId}</td>
+                <td>{sellerId}</td>
+                <td>{quantity}</td>
+                <td>{subtotal}</td>
+                <td>{tax}</td>
+                <td>{shipping}</td>
+                <td>
+                  <a href={`/userprofile/${createdBy._id}`}>
+                    {`${createdBy.firstName} ${createdBy.lastName}`}
+                  </a>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </>
     );
