@@ -109,8 +109,6 @@ const TeamMembersPopup = React.memo(props => {
 
   // call the handler to update the team member's visibility
   const UpdateTeamMembersVisiblity = (userId, choice) => {
-    // console.log('userid', userId);
-    // console.log(choice);
     props.onUpdateTeamMemberVisiblity(userId, choice);
   };
 

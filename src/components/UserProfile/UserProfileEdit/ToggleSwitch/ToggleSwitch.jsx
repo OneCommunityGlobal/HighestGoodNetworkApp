@@ -1,13 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import { useState } from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
 const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTeamMembersVisiblity, userId, choice }) => {
-  // console.log("choice",choice);
   const[visiblity,setVisiblity]=useState(choice);
-  // useEffect(() => {
-  //   // console.log('Updated value', visiblity); // Log the updated value when it changes
-  // }, [visiblity]); 
   switch (switchType) {
     case 'bluesquares':
       if (state) {

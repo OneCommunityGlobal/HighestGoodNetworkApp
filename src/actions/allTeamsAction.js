@@ -212,22 +212,18 @@ export const addTeamMember = (teamId, userId, firstName, lastName) => {
   };
 };
 
-//updateTeamMemeberVisiblity
 export const updateTeamMemeberVisiblity = (teamId, userId, visibility) => {
-  // console.log("making a dispatch call");
   const updateData = { visibility, userId, teamId };
   const updateVisiblityPromise = axios.put(ENDPOINTS.TEAM, updateData);
 
   return async dispatch => {
     updateVisiblityPromise
-      .then((res) => {
-        console.log(res);
+      .then(res => {
         dispatch(updateVisibilityAction(visibility, userId, teamId));
       })
       .catch(error => {
-         if (error.response) {
+        if (error.response) {
           // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           console.error('Error updating visibility:', error.response.data);
         } else if (error.request) {
           // The request was made but no response was received

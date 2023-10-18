@@ -36,7 +36,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         status: '200',
       });
 
-    case types.USER_TEAMS_UPDATE:
+    case types.USER_TEAMS_UPDATE: {
       const index = allTeams.allTeams.findIndex(team => team._id === action.team._id);
       return updateObject(allTeams, {
         allTeams: Object.assign([
@@ -48,6 +48,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: '200',
       });
+    }
 
     case types.TEAMS_DELETE:
       return updateObject(allTeams, {
@@ -57,7 +58,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         status: '200',
       });
 
-    case types.UPDATE_TEAM:
+    case types.UPDATE_TEAM: {
       const teams = Object.assign([...allTeams.allTeams]);
       const updatedTeam = teams.find(team => team._id === action.teamId);
       updatedTeam.isActive = action.isActive;
@@ -68,12 +69,9 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: '200',
       });
-    case types.UPDATE_TEAM_MEMBER_VISIBILITY:
+    }
+    case types.UPDATE_TEAM_MEMBER_VISIBILITY: {
       const { teamId, userId, visibility } = action;
-      console.log('update redux store');
-      // console.log('userID', userId);
-      // console.log('visibility', visibility);
-      // console.log('teamID', teamId);
       const updatedTeams = allTeams.allTeams.map(team => {
         if (team._id === teamId) {
           const updatedMembers = team.members.map(member => {
@@ -87,14 +85,13 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         }
         return team;
       });
-      console.log('Updated teams:', updatedTeams);
-
       return updateObject(allTeams, {
         allTeams: updatedTeams,
         fetching: false,
         fetched: true,
         status: '200',
       });
+    }
     default:
       return allTeams;
   }
