@@ -1,12 +1,13 @@
+// eslint-disable-next-line no-unused-vars
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './TeamTable.css';
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 
-function TeamTable(props) {
+function TeamTable({ allTeams }) {
   // Display project lists
   let TeamsList = [];
-  const canEditTeamCode = props.hasPermission('editTeamCode') || props.auth.user.role == 'Owner';
+  const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role == 'Owner';
 
   const EditTeamCode = ({team}) => {
 
@@ -15,7 +16,7 @@ function TeamTable(props) {
     const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
 
     const handleOnChange = (value, team) => {
-      props.updateTeam(team.teamName, team._id, team.isActive, value);
+      updateTeam(team.teamName, team._id, team.isActive, value);
     };
   
     const handleCodeChange = e => {
@@ -73,16 +74,14 @@ function TeamTable(props) {
     )
   };
 
-  if (props.allTeams.length > 0) {
-    TeamsList = props.allTeams.map((team, index) => (
+  if (allTeams.length > 0) {
+    TeamsList = allTeams.map((team, index) => (
       <tr id={`tr_${team._id}`} key={team._id}>
         <th scope="row">
           <div>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/teamreport/${team._id}`}>
-            {team.teamName}
-          </Link>
+          <Link to={`/teamreport/${team._id}`}>{team.teamName}</Link>
         </td>
         <td className="projects__active--input">
           {team.isActive ? (

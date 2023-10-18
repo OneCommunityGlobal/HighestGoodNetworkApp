@@ -82,6 +82,9 @@ export const ENDPOINTS = {
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
 
+  PRESETS: () => `${APIEndpoint}/rolePreset`,
+  PRESETS_BY_ID: (roleNameOrPresetId) => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
+
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
   OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
 
@@ -117,6 +120,9 @@ export const ENDPOINTS = {
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
+
+  // bm dashboard endpoints
+  BM_LOGIN: `${APIEndpoint}/bm/login`,
 };
 
 export const ApiEndpoint = APIEndpoint;

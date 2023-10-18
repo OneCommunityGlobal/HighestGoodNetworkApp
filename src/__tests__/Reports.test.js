@@ -1,14 +1,15 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 import ReportsPage from '../components/Reports/Reports';
+import configureStore from 'redux-mock-store'; // Import the mock store creator
 
 describe('<ReportsPage/>', () => {
-  it('should render ReportsPage with no errors', () => {
-    //TEST IS FAILING NEED TO FIX USE STORE/MOCK
-    // const wrapper = shallow(<ReportsPage />);
+  const mockStore = configureStore(); // Create a mock store
+
+  it('should render without errors', () => {
+    const store = mockStore({}); // Create an empty mock store
+    const wrapper = shallow(<ReportsPage store={store} />); // Pass the mock store as a prop
+    expect(wrapper.exists()).toBe(true);
   });
-  // it('should render `ReportsPage` in jumbotron', () => {
-  //   const wrapper = shallow(<ReportsPage />);
-  //   expect(wrapper.find('.jumbotron').text()).toMatch('ReportsPage');
-  // });
+
 });

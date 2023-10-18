@@ -9,33 +9,24 @@ import { connect } from 'react-redux';
 
 const UserTeamsTable = props => {
   const [tooltipOpen, setTooltip] = useState(false);
-  const [teamCode, setTeamCode] = useState(props.userProfile.teamCode);
+  const [teamCode, setTeamCode] = useState(props.userProfile? props.userProfile.teamCode: props.teamCode);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
+  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = e => {
     let value = e.target.value;
-    if (e.target.value.length == 1) {
-      value = e.target.value + "-";
-    }
-    if (e.target.value == "-") {
-      value = "";
-    }
-    if (e.target.value.length == 2) {
-      if(e.target.value.includes("-")) {
-        value = e.target.value.replace("-", "");
-      } else {
-        value = e.target.value.charAt(0) + "-" + e.target.value.charAt(1);
-      }
-    }
     
     const regexTest = fullCodeRegex.test(value);
     if (regexTest) {
       props.setCodeValid(true);
       setTeamCode(value);
-      props.setUserProfile({ ...props.userProfile, teamCode: value });
+      if (props.userProfile) {
+        props.setUserProfile({ ...props.userProfile, teamCode: value });
+      } else {
+        props.onAssignTeamCode(value);
+      }
     } else {
       setTeamCode(value);
       props.setCodeValid(false);
