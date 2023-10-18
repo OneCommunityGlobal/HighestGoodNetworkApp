@@ -54,6 +54,7 @@ import { connect, useDispatch } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
+import { toast } from 'react-toastify';
 
 function UserProfile(props) {
   /* Constant values */
@@ -96,6 +97,8 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [summaryIntro, setSummaryIntro] = useState('');
+  const [usersRole, setUsersRole] = useState('');
 
   const userProfileRef = useRef();
 
@@ -213,6 +216,38 @@ function UserProfile(props) {
       .catch(err => console.log(err));
   };
 
+  const loadSummaryIntroDetails = async teamId => {
+    const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+    const { data } = res;
+
+    const memberSubmitted = [];
+    const memberNotSubmitted = [];
+    let manager = '';
+
+    data.forEach(member => {
+      if (member.role === 'Manager') {
+        manager = `${member.firstName} ${member.lastName}`;
+      }
+      member.weeklySummaries[0].summary !== ''
+        ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
+        : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+    });
+
+    manager = manager === '' ? '<Your Name>' : manager;
+    const memberSubmittedString =
+      memberSubmitted.length !== 0
+        ? memberSubmitted.join(', ')
+        : '<list all team members names included in the summary>.';
+    const memberDidntSubmitString =
+      memberNotSubmitted.length !== 0
+        ? memberSubmitted.join(', ')
+        : '<list all team members names NOT included in the summary>';
+
+    const summaryIntroString = `This week’s summary was managed by ${manager} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+
+    setSummaryIntro(summaryIntroString);
+  };
+
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
     if (!userId) return;
@@ -220,6 +255,7 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
+      await loadSummaryIntroDetails(newUserProfile.teams[0]._id);
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
@@ -555,6 +591,7 @@ function UserProfile(props) {
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
+  const canSeeSummaryIntroBtn = props.hasPermission('seeSummaryIntroButton');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
@@ -708,6 +745,21 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
+              {canSeeSummaryIntroBtn ? (
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(summaryIntro);
+                    toast.success('Summary Intro Copied!');
+                  }}
+                  color="primary"
+                  size="sm"
+                  title="Generates the summary intro for your team and copies it to your clipboard for easy use."
+                >
+                  Generate Summary Intro
+                </Button>
+              ) : (
+                ''
+              )}
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
