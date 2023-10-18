@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import PhoneInput from 'react-phone-input-2';
 import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import { isValidUrl } from 'utils/checkValidURL';
+import { isValidMediaUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
 import { postMaterial } from '../../../../actions/materials';
@@ -198,6 +198,7 @@ export default function AddMaterialsForm(props) {
                     onChange={() => {
                       setFormInputs({
                         ...formInputs,
+                        material: '',
                         newMaterial: !formInputs.newMaterial,
                       });
                     }}
@@ -302,6 +303,7 @@ export default function AddMaterialsForm(props) {
                     onChange={() => {
                       setFormInputs({
                         ...formInputs,
+                        measurement: '',
                         newMeasurement: !formInputs.newMeasurement,
                       });
                     }}
@@ -409,7 +411,7 @@ export default function AddMaterialsForm(props) {
                   type="text"
                   placeholder="https://"
                   autoComplete="off"
-                  invalid={trySubmit && !isValidUrl(formInputs.link)}
+                  invalid={trySubmit && !isValidMediaUrl(formInputs.link)}
                   value={formInputs.link}
                   onChange={handleChange}
                 />

@@ -31,7 +31,6 @@ export const postMaterial = (formInputs) => {
       }
       const res = await axios.post(ENDPOINTS.BM_ADD_NEW_MATERIAL, { material });
       // dispatch new inventory material to state once created
-      // dispatch(addMaterial(res.data));
     } catch (error) {
       console.error(error);
     }
