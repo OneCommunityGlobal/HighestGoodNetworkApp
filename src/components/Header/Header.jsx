@@ -51,14 +51,15 @@ export const Header = props => {
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
- 
+
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
   // Projects
-  const canSeeProjectManagementTab = props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canSeeProjectManagementTab =
+    props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
   const canPostProject = props.hasPermission('postProject');
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
@@ -70,7 +71,7 @@ export const Header = props => {
   const canUpdatePopup = props.hasPermission('updatePopup');
   // Roles
   const canPutRole = props.hasPermission('putRole');
-  // Permissions 
+  // Permissions
   const canManageUser = props.hasPermission('putUserProfilePermissions');
 
   const dispatch = useDispatch();
@@ -79,7 +80,7 @@ export const Header = props => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       props.getTimerData(props.auth.user.userid);
-      if (props.auth.user.role === 'Administrator') {
+      if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
     }
@@ -144,12 +145,12 @@ export const Header = props => {
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                        <DropdownItem tag={Link} to="/reports">
-                          {REPORTS}
-                        </DropdownItem>
-                        <DropdownItem tag={Link} to="/weeklysummariesreport">
-                          {WEEKLY_SUMMARIES_REPORT}
-                        </DropdownItem>
+                    <DropdownItem tag={Link} to="/reports">
+                      {REPORTS}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/weeklysummariesreport">
+                      {WEEKLY_SUMMARIES_REPORT}
+                    </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
               ) : null}
