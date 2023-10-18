@@ -30,8 +30,10 @@ export const postMaterial = (formInputs) => {
         dispatch(addNewItemType(res1.data));
       }
       const res = await axios.post(ENDPOINTS.BM_ADD_NEW_MATERIAL, { material });
-      // dispatch new inventory material to state once created
+      // TODO: dispatch new inventory material to state once created
     } catch (error) {
+      // TODO: dispatch action that changes status that can be used
+      // to show toast message
       console.error(error);
     }
   };

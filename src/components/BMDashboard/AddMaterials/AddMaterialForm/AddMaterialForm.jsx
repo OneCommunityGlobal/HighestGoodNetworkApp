@@ -82,6 +82,7 @@ export default function AddMaterialsForm(props) {
       setTrySubmit(true);
     } else {
       dispatch(postMaterial(formInputs));
+      // TODO: check status to display success or error toast message
       setFormInputs({
         projectId: selectedProject?._id || '',
         material: '',
