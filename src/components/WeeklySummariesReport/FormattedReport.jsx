@@ -298,6 +298,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
         setHasError(true);
       }
     }
+
   };
 
   return (
@@ -317,7 +318,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
             />
           </div>
         ) : (
-          <div style={{ paddingRight: '5px' }}>
+          <div style={{ paddingRight: '12px' }}>
             {teamCode === '' ? 'No assigned team code!' : teamCode}
           </div>
         )}
