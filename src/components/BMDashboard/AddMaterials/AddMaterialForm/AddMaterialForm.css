@@ -26,14 +26,15 @@
   justify-content: space-between;
 }
 
-#newMaterial, #newMeasurement {
-  margin-right: 0.5rem;
-}
-
 .add-materials-form input,
 .add-materials-form select,
 .add-materials-form textarea {
   background-color: rgb(249, 249, 249);
+}
+
+.add-materials-form .form-check-input {
+  position: static;
+  margin: 0 0.5rem 0 0;
 }
 
 .add-materials-form #submit {

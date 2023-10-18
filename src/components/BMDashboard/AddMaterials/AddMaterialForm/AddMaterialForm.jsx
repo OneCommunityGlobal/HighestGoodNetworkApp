@@ -189,8 +189,8 @@ export default function AddMaterialsForm(props) {
           {canAddNewMaterial && (
             <Row>
               <Col>
-                <FormGroup>
-                  <input
+                <FormGroup new_material>
+                  <Input
                     id="newMaterial"
                     name="newMaterial"
                     type="checkbox"
@@ -203,7 +203,7 @@ export default function AddMaterialsForm(props) {
                       });
                     }}
                   />
-                  <label htmlFor="newMaterial">Do you want to add a new material?</label>
+                  <Label new_material>Do you want to add a new material?</Label>
                 </FormGroup>
               </Col>
             </Row>
@@ -294,8 +294,8 @@ export default function AddMaterialsForm(props) {
           {canAddNewMeasurement && (
             <Row>
               <Col>
-                <FormGroup>
-                  <input
+                <FormGroup new_measurement>
+                  <Input
                     id="newMeasurement"
                     name="newMeasurement"
                     type="checkbox"
@@ -308,9 +308,7 @@ export default function AddMaterialsForm(props) {
                       });
                     }}
                   />
-                  <label htmlFor="newMeasurement">
-                    Do you want to add a new unit of measurement?
-                  </label>
+                  <Label new_measurement>Do you want to add a new unit of measurement?</Label>
                 </FormGroup>
               </Col>
             </Row>
