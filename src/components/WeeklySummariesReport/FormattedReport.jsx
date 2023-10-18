@@ -146,7 +146,9 @@ function ReportDetails({
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-
+  if(summary.lastName === "lallouache"){
+    console.log(summary)
+  }
   return (
     <li className="list-group-item px-0" ref={ref}>
       <ListGroup className="px-0" flush>
