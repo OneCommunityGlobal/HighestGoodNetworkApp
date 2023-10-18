@@ -163,10 +163,10 @@ export const Header = props => {
                     <DropdownItem tag={Link} to="/bmdashboard/add-material">
                       {ADD_MATERIAL}
                     </DropdownItem>
-                    <DropdownItem tag={Link} to="/bmdashboard/log-material">
+                    <DropdownItem tag={Link} to="/bmdashboard/logMaterials">
                       {LOG_MATERIAL}
                     </DropdownItem>
-                    <DropdownItem tag={Link} to="/bmdashboard/material-list">
+                    <DropdownItem tag={Link} to="/bmdashboard/materials-list">
                       {MATERIAL_LIST}
                     </DropdownItem>
                     <DropdownItem tag={Link} to="/bmdashboard/add-equipment-tool">
