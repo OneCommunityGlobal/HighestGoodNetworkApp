@@ -1,7 +1,7 @@
 import { ReadyState } from 'react-use-websocket';
 import { timerStatus } from './Countdown.module.css';
 
-export default function TimerStatus({ readyState, message }) {
+export default function TimerStatus({ readyState }) {
   /*
   This is the status of the connection with the timer service
   We just use the readyState of the websocket connection to show the status
