@@ -47,7 +47,7 @@ export const MemberAutoComplete = props => {
                 user.isActive &&
                 (user.firstName.toLowerCase().includes(props.searchText.toLowerCase()) ||
                 user.lastName.toLowerCase().includes(props.searchText.toLowerCase())) &&
-                !props.existingMembers.some(member => member._id === user._id)
+                !props.existingMembers?.some(member => member._id === user._id)
               ) {
                 return true;
               }

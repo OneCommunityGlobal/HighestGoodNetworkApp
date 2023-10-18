@@ -11,6 +11,7 @@ class LostTimeHistory extends Component {
     super(props);
     this.state = {
       entriesList: [],
+      dataLoading: true,
     };
 
     this.loadLostTimeEntries = this.loadLostTimeEntries.bind(this);
@@ -77,17 +78,18 @@ class LostTimeHistory extends Component {
     const projectList = this.props.projects.map(proj => proj._id);
     const teamList = this.props.teams.map(team => team._id);
     this.loadLostTimeEntries(projectList, userList, teamList, fromDate, toDate).then(res => {
-      console.log("res", res);
       this.setState(() => ({
         entriesList: res,
+        dataLoading: false,
       }));
-      console.log(this.state.entriesList);
     });
-    
 
     return (
         <div className="table-data-container mt-5">
-          {isOpen && <HistoryTable entriesList={this.state.entriesList} />}
+          {isOpen && <HistoryTable 
+            entriesList={this.state.entriesList}
+            dataLoading={this.state.dataLoading}
+          />}
         </div>
     );
   }

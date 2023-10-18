@@ -1,3 +1,4 @@
+import Loading from 'components/common/Loading';
 import React, { useState } from 'react';
 
 function HistoryTable(props) {
@@ -33,7 +34,11 @@ function HistoryTable(props) {
     }
 
   return (
-    <table className="table table-bordered">
+    <>
+    {props.dataLoading? (
+      <Loading/>
+    ): (
+      <table className="table table-bordered">
       <thead>
         <tr>
           <th scope="col">
@@ -54,8 +59,10 @@ function HistoryTable(props) {
         </tr>
       </thead>
       <tbody>{entriesList}</tbody>
-      {/* {console.log(entriesList)} */}
     </table>
+    )}
+    
+    </>
   );
 }
 
