@@ -43,7 +43,6 @@ import { boxStyle } from 'styles';
  * @param {function} props.toggle Toggles the visability of this modal
  * @param {boolean} props.isOpen Whether or not this modal is visible
  * @param {*} props.timer
- * @param {boolean} props.data.disabled
  * @param {boolean} props.data.isTangible
  * @param {*} props.userProfile
  * @param {function} props.resetTimer

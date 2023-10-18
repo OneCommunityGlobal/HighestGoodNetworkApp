@@ -83,7 +83,6 @@ export default function NewTimer() {
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
 
   const data = {
-    disabled: window.screenX <= 500,
     isTangible: true,
   };
 
