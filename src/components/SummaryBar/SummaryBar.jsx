@@ -595,7 +595,7 @@ const SummaryBar = props => {
                 </FormGroup>
                 {takeInput && (
                   <FormGroup>
-                    <Label for="suggestion"> Write your suggestion. </Label>
+                    <Label for="suggestion"> Write your suggestion: </Label>
                     <Input
                       type="textarea"
                       name="suggestion"
