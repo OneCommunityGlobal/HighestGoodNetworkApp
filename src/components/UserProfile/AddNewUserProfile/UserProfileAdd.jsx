@@ -79,6 +79,8 @@ class AddUserProfile extends Component {
         showphone: true,
         weeklySummaryOption: 'Required',
         createdDate: nextDay,
+        betaEmail: '',
+        betaPassword: '',
       },
       formValid: {},
       formErrors: {
@@ -118,7 +120,7 @@ class AddUserProfile extends Component {
   
   
   render() {
-    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
+    const { firstName, email, lastName, phoneNumber, role, betaEmail, betaPassword, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
@@ -280,6 +282,44 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
+                {role === 'Administrator' && (
+                  <>
+                    <Row className="user-add-row">
+                      <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                        <Label>Email</Label>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <Input
+                              type="email"
+                              name="betaEmail"
+                              id="betaEmail"
+                              value={betaEmail}
+                              onChange={this.handleUserProfile}
+                              placeholder="Beta Email"
+                            />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row className="user-add-row">
+                      <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                        <Label>Password</Label>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <Input
+                              type="password"
+                              name="betaPassword"
+                              id="betaPassword"
+                              value={betaPassword}
+                              onChange={this.handleUserProfile}
+                              placeholder="Beta Password"
+                            />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  </>
+                )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
@@ -587,6 +627,8 @@ class AddUserProfile extends Component {
       location,
       weeklySummaryOption,
       createdDate,
+      betaEmail,
+      betaPassword
     } = that.state.userProfile;
 
     const userData = {
@@ -611,6 +653,8 @@ class AddUserProfile extends Component {
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
+      betaEmail: betaEmail,
+      betaPassword: betaPassword
     };
 
     this.setState({ formSubmitted: true });
@@ -978,6 +1022,22 @@ class AddUserProfile extends Component {
               ...userProfile.privacySettings,
               phoneNumber: !userProfile.privacySettings?.phoneNumber,
             },
+          },
+        });
+        break;
+      case 'betaEmail':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            betaEmail: event.target.value
+          },
+        });
+        break;
+      case 'betaPassword':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            betaPassword: event.target.value
           },
         });
         break;
