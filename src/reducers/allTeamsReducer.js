@@ -12,6 +12,7 @@ export const updateObject = (oldObject, updatedProperties) => ({
   ...updatedProperties,
 });
 
+// eslint-disable-next-line default-param-last
 export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
   switch (action.type) {
     case types.FETCH_USER_TEAMS_START:
@@ -36,7 +37,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         status: '200',
       });
 
-    case types.USER_TEAMS_UPDATE:
+    case types.USER_TEAMS_UPDATE: {
       const index = allTeams.allTeams.findIndex(team => team._id === action.team._id);
       return updateObject(allTeams, {
         allTeams: Object.assign([
@@ -48,6 +49,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: '200',
       });
+    }
 
     case types.TEAMS_DELETE:
       return updateObject(allTeams, {
@@ -57,7 +59,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         status: '200',
       });
 
-    case types.UPDATE_TEAM:
+    case types.UPDATE_TEAM: {
       const teams = Object.assign([...allTeams.allTeams]);
       const updatedTeam = teams.find(team => team._id === action.teamId);
       updatedTeam.isActive = action.isActive;
@@ -68,6 +70,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: '200',
       });
+    }
 
     default:
       return allTeams;
