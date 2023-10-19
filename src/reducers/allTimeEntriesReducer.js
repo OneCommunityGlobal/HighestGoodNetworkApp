@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/prefer-default-export
-export const allTimeEntriesReducer = (action, allTimeEntries = null) => {
+export const allTimeEntriesReducer = (allTimeEntries = null, action) => {
   if (action.type === 'GET_ALL_TIME_ENTRIES') {
     return action.payload;
   }

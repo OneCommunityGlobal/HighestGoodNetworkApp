@@ -1,3 +1,4 @@
+import { createOrUpdateTaskNotificationHTTP } from 'actions/taskNotification';
 import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
 import * as types from "../constants/task";
 
@@ -14,7 +15,7 @@ const filterAndSort = (tasks, level) => {
   return tasks.sort((a, b) => {
     const aArr = a.num.split('.');
     const bArr = b.num.split('.');
-    for (let i = 0; i < level; i += 1) {
+    for (let i = 0; i < level; i++) {
       if (+aArr[i] !== +bArr[i]) return +aArr[i] - +bArr[i];
     }
     return 0;
@@ -45,8 +46,7 @@ const sortByNum = tasks => {
   return filterAndSort(appendTasks, 4);
 };
 
-// eslint-disable-next-line import/prefer-default-export
-export const taskReducer = (action, allTasks = allTasksInital ) => {
+export const taskReducer = (allTasks = allTasksInital, action) => {
   let newTaskItems;
   switch (action.type) {
     case types.FETCH_TASKS_START:
@@ -54,7 +54,6 @@ export const taskReducer = (action, allTasks = allTasksInital ) => {
     case types.FETCH_TASKS_ERROR:
       return { ...allTasks, fetched: true, fetching: false, error: action.err };
     case types.RECEIVE_TASKS:
-      // eslint-disable-next-line no-param-reassign
       allTasks.fetchedData[action.level] = action.taskItems;
       newTaskItems = allTasks.fetchedData.flat();
       return {
@@ -74,7 +73,7 @@ export const taskReducer = (action, allTasks = allTasksInital ) => {
         fetching: false,
         error: 'none',
       };
-    case types.DELETE_TASK: {
+    case types.DELETE_TASK:
       const delIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
       let delIndexEnd = delIndexStart;
       allTasks.taskItems.forEach((task, index) => {
@@ -98,7 +97,6 @@ export const taskReducer = (action, allTasks = allTasksInital ) => {
         fetching: false,
         error: 'none',
       };
-    }
     case types.EMPTY_TASK_ITEMS:
       return {
         ...allTasks,
@@ -108,7 +106,7 @@ export const taskReducer = (action, allTasks = allTasksInital ) => {
         fetching: false,
         error: 'none',
       };
-    case types.UPDATE_TASK: {
+    case types.UPDATE_TASK:
       const updIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
       const updIndexEnd = updIndexStart;
       let updatedTask = allTasks.taskItems.filter(task => task._id === action.taskId)[0];
@@ -124,17 +122,13 @@ export const taskReducer = (action, allTasks = allTasksInital ) => {
         fetching: false,
         error: 'none',
       };
-    }
-    case types.COPY_TASK: {
+    case types.COPY_TASK:
       const copiedTask = allTasks.taskItems.find(item => item._id === action.taskId);
-      // eslint-disable-next-line no-console
       console.log(copiedTask);
       return { ...allTasks, copiedTask };
-    }
-    case types.ADD_NEW_TASK_ERROR: {
+    case types.ADD_NEW_TASK_ERROR:
       const error = action.err;
       return { ...allTasks, error };
-    }
     case fetchTeamMembersTaskSuccess.type:
       return { ...allTasks, ...action.tasks }; // change that when there will be backend
     default:

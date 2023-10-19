@@ -12,7 +12,7 @@ export const updateObject = (oldObject, updatedProperties) => ({
   ...updatedProperties,
 });
 
-export const allUserTeamsReducer = (action, allTeams = userTeamsInitial) => {
+export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
   switch (action.type) {
     case types.FETCH_USER_TEAMS_START:
       return { ...allTeams, fetching: true, status: '200' };
@@ -36,7 +36,7 @@ export const allUserTeamsReducer = (action, allTeams = userTeamsInitial) => {
         status: '200',
       });
 
-    case types.USER_TEAMS_UPDATE: {
+    case types.USER_TEAMS_UPDATE:
       const index = allTeams.allTeams.findIndex(team => team._id === action.team._id);
       return updateObject(allTeams, {
         allTeams: Object.assign([
@@ -48,7 +48,6 @@ export const allUserTeamsReducer = (action, allTeams = userTeamsInitial) => {
         fetched: true,
         status: '200',
       });
-    }
 
     case types.TEAMS_DELETE:
       return updateObject(allTeams, {
@@ -58,7 +57,7 @@ export const allUserTeamsReducer = (action, allTeams = userTeamsInitial) => {
         status: '200',
       });
 
-    case types.UPDATE_TEAM: {
+    case types.UPDATE_TEAM:
       const teams = Object.assign([...allTeams.allTeams]);
       const updatedTeam = teams.find(team => team._id === action.teamId);
       updatedTeam.isActive = action.isActive;
@@ -69,7 +68,6 @@ export const allUserTeamsReducer = (action, allTeams = userTeamsInitial) => {
         fetched: true,
         status: '200',
       });
-    }
 
     default:
       return allTeams;

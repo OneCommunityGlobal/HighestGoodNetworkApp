@@ -14,7 +14,7 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
-export const allProjectsReducer = (action, allProjects = allProjectsInital) => {
+export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
   switch (action.type) {
     case types.FETCH_PROJECTS_START:
       return { ...allProjects, fetching: true, status: '200' };
@@ -30,9 +30,9 @@ export const allProjectsReducer = (action, allProjects = allProjectsInital) => {
     case types.ADD_NEW_PROJECT:
       if (action.status === 201) {
         return { ...allProjects, projects: [action.payload, ...allProjects.projects] };
-      }
+      } 
         return { ...allProjects, status: action.status };
-
+      
     case types.DELETE_PROJECT:
       if (action.status === 200) {
         const index = allProjects.projects.findIndex(project => project._id === action.projectId);
@@ -43,9 +43,7 @@ export const allProjectsReducer = (action, allProjects = allProjectsInital) => {
           ]),
         });
       }
-
-    // eslint-disable-next-line no-fallthrough
-    case types.UPDATE_PROJECT: {
+    case types.UPDATE_PROJECT:
       const index = allProjects.projects.findIndex(project => project._id === action.projectId);
       return updateObject(allProjects, {
         projects: Object.assign([
@@ -59,9 +57,7 @@ export const allProjectsReducer = (action, allProjects = allProjectsInital) => {
           ...allProjects.projects.slice(index + 1),
         ]),
       });
-    }
     default:
       return allProjects;
-
   }
 };
