@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { updateTeam } from 'actions/allTeamsAction';
 
-function TeamTable({ allTeams }) {
+function TeamTable({ allTeams, auth, hasPermission }) {
   // Display project lists
   let TeamsList = [];
   const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role == 'Owner';
@@ -16,7 +16,7 @@ function TeamTable({ allTeams }) {
 
     const [teamCode, setTeamCode] = useState(team.teamCode);
     const [hasError, setHasError] = useState(false);
-    const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
+    const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
 
     const handleOnChange = (value, team) => {
       updateTeam(team.teamName, team._id, team.isActive, value);
@@ -24,19 +24,6 @@ function TeamTable({ allTeams }) {
   
     const handleCodeChange = e => {
       let value = e.target.value;
-      if (e.target.value.length == 1) {
-        value = e.target.value + "-";
-      }
-      if (e.target.value == "-") {
-        value = "";
-      }
-      if (e.target.value.length == 2) {
-        if(e.target.value.includes("-")) {
-          value = e.target.value.replace("-", "");
-        } else {
-          value = e.target.value.charAt(0) + "-" + e.target.value.charAt(1);
-        }
-      }
   
       const regexTest = fullCodeRegex.test(value);
       if (regexTest) {
@@ -66,12 +53,12 @@ function TeamTable({ allTeams }) {
                 invalid={hasError}
               />
               <FormFeedback>
-                Please enter a code in the format of X-XXX.
+              The code format must be A-AAA or AAAAA.
               </FormFeedback>
             </FormGroup>
           </div>
         : 
-          `${teamCode == ''? "No assigned team code!": teamCode}`
+          `${teamCode == ''? "No assigned code!": teamCode}`
         }
       </>
     )
