@@ -36,8 +36,7 @@ const ReviewButton = ({
   const updReviewStat = (newStatus) => {
     const resources = [...task.resources];
     const newResources = resources.map(resource => {
-      const newResource = { ...resource };
-      newResource.reviewStatus = newStatus;
+      const newResource = { ...resource, reviewStatus: newStatus };
       newResource.completedTask = newStatus === "Reviewed";
       return newResource;
     });
