@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { Container } from 'reactstrap';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import './BMDashboard.css';
-//TO DO: add error state, add loading state, update dummy projects to a more complex structure (see database and wireframe)
+//TO DO: add error state, add loading state
 const dummyProjects = [
   {
     projectId: 1,
@@ -271,14 +272,23 @@ const dummyProjects = [
 ];
 
 export const BMDashboard = () => {
+
+
+
   return (
     <Container className="justify-content-center align-items-center mw-80 px-4">
       <header className="bm-dashboard__header">
         <h1>Building and Inventory Management Dashboard</h1>
       </header>
+      
       <main>
+        {dummyProjects ? (
+          <>
         <ProjectSelectForm projects={dummyProjects} />
-        <ProjectsList projects={dummyProjects} />
+        <ProjectsList projects={dummyProjects} /></>
+        ) : (
+            <div>Loading...</div>
+        )}        
       </main>
     </Container>
   );
