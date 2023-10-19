@@ -45,6 +45,7 @@ import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
+import { formatDate } from 'utils/formatDate';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -203,8 +204,7 @@ const Timelog = props => {
     props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate);
   };
 
-  // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
-  // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
+
   const startOfWeek = offset => {
     return moment()
       .tz('America/Los_Angeles')
@@ -244,14 +244,14 @@ const Timelog = props => {
     } else if (state.activeTab === 4) {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{state.fromDate}</b> to <b>{state.toDate}</b>
+          Viewing time Entries from <b>{formatDate(state.fromDate)}</b> to <b>{formatDate(state.toDate)}</b>
         </p>
       );
     } else {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{startOfWeek(state.activeTab - 1)}</b> to{' '}
-          <b>{endOfWeek(state.activeTab - 1)}</b>
+          Viewing time Entries from <b>{formatDate(startOfWeek(state.activeTab - 1))}</b> to{' '}
+          <b>{formatDate(endOfWeek(state.activeTab - 1))}</b>
         </p>
       );
     }
@@ -276,6 +276,7 @@ const Timelog = props => {
     }
   };
 
+
   const buildOptions = async () => {
     //build options for the project and task
     let projects = [];
@@ -283,6 +284,7 @@ const Timelog = props => {
       projects = userProjects.projects;
     }
     const options = projects.map(project => (
+      (project?.projectId != undefined) &&
       <option value={project.projectId} key={project.projectId}>
         {' '}
         {project.projectName}{' '}

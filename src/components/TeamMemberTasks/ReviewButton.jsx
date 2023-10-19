@@ -48,14 +48,14 @@ const ReviewButton = ({
 
   const buttonFormat = () => {
     if (user.personId == myUserId && reviewStatus == "Unsubmitted") {
-      return <Button className='reviewBtn' color='primary' onClick={toggleModal}>
+      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={boxStyle}>
         Submit for Review
       </Button>;
      } else if (reviewStatus == "Submitted")  {
       if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") {
         return (
           <UncontrolledDropdown>
-            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret>
+            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={boxStyle}>
               Ready for Review
             </DropdownToggle>
             <DropdownMenu>

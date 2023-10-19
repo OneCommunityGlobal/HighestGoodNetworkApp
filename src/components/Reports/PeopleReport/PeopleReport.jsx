@@ -1,29 +1,31 @@
+// eslint-disable-next-line no-unused-vars
 import React, { Component, useState } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
-import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
+import { formatDate } from 'utils/formatDate';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
+import moment from 'moment';
+import { toast } from 'react-toastify';
 import {
   updateUserProfileProperty,
   getUserProfile,
   getUserTask,
 } from '../../../actions/userProfile';
+
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
-import moment from 'moment';
 import 'react-input-range/lib/css/index.css';
-import Collapse from 'react-bootstrap/Collapse';
 import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
 import BadgeSummaryViz from '../BadgeSummaryViz';
+import BadgeSummaryPreview from '../BadgeSummaryPreview';
 import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
-import { toast } from 'react-toastify';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
 
@@ -34,19 +36,28 @@ class PeopleReport extends Component {
       userProfile: {},
       userTask: [],
       userProjects: {},
+      // eslint-disable-next-line react/no-unused-state
       userId: '',
+      // eslint-disable-next-line react/no-unused-state
       isLoading: true,
       bioStatus: '',
       authRole: '',
       infringements: {},
+      // eslint-disable-next-line react/no-unused-state
       isAssigned: '',
       isActive: '',
       isRehireable: false,
+      // eslint-disable-next-line react/no-unused-state
       priority: '',
+      // eslint-disable-next-line react/no-unused-state
       status: '',
+      // eslint-disable-next-line react/no-unused-state
       hasFilter: true,
+      // eslint-disable-next-line react/no-unused-state
       allClassification: [],
+      // eslint-disable-next-line react/no-unused-state
       classification: '',
+      // eslint-disable-next-line react/no-unused-state
       users: '',
       classificationList: [],
       priorityList: [],
@@ -54,8 +65,11 @@ class PeopleReport extends Component {
       fromDate: '2016-01-01',
       toDate: this.endOfWeek(0),
       timeEntries: {},
+      // eslint-disable-next-line react/no-unused-state
       startDate: '',
+      // eslint-disable-next-line react/no-unused-state
       endDate: '',
+      // eslint-disable-next-line react/no-unused-state
       fetched: false,
     };
     this.setStatus = this.setStatus.bind(this);
@@ -72,45 +86,52 @@ class PeopleReport extends Component {
   }
 
   async componentDidMount() {
-    if (this.props.match) {
-      const userId = this.props.match.params.userId;
-      await this.props.getUserProfile(userId);
-      await this.props.getUserTask(userId);
-      await this.props.getUserProjects(userId);
-      await this.props.getWeeklySummaries(userId);
-      await this.props.getTimeEntriesForPeriod(userId, this.state.fromDate, this.state.toDate);
+    const { match, userProfile, userTask, userProjects, timeEntries, auth } = this.props;
+    const { fromDate, toDate } = this.state;
+
+    if (match) {
+      const { userId } = match.params;
+      await getUserProfile(userId);
+      await getUserTask(userId);
+      await getUserProjects(userId);
+      await getWeeklySummaries(userId);
+      await getTimeEntriesForPeriod(userId, fromDate, toDate);
+
       this.setState({
+        // eslint-disable-next-line react/no-unused-state
         userId,
+        // eslint-disable-next-line react/no-unused-state
         isLoading: false,
-        bioStatus: this.props.userProfile.bioPosted,
-        authRole: this.props.auth.user.role,
+        bioStatus: userProfile.bioPosted,
+        authRole: auth.user.role,
         userProfile: {
-          ...this.props.userProfile,
+          ...userProfile,
         },
-        isRehireable: this.props.userProfile.isRehireable,
-        userTask: [...this.props.userTask],
+        isRehireable: userProfile.isRehireable,
+        userTask: [...userTask],
         userProjects: {
-          ...this.props.userProjects,
+          ...userProjects,
         },
-        allClassification: [
-          ...Array.from(new Set(this.props.userTask.map(item => item.classification))),
-        ],
-        infringements: this.props.userProfile.infringements,
+        // eslint-disable-next-line react/no-unused-state
+        allClassification: [...Array.from(new Set(userTask.map(item => item.classification)))],
+        infringements: userProfile.infringements,
         timeEntries: {
-          ...this.props.timeEntries,
+          ...timeEntries,
         },
       });
     }
   }
+
   setStartDate(date) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         startDate: date,
       };
     });
   }
+
   setEndDate(date) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         endDate: date,
       };
@@ -121,24 +142,8 @@ class PeopleReport extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  startOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
-
-  endOfWeek(offset) {
-    return moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(offset, 'weeks')
-      .format('YYYY-MM-DD');
-  }
-
   setActive(activeValue) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         isActive: activeValue,
       };
@@ -146,34 +151,35 @@ class PeopleReport extends Component {
   }
 
   async setRehireable(rehireValue) {
-    this.setState(state => {
+    const { userProfile } = this.props;
+
+    this.setState(() => {
       return {
         isRehireable: rehireValue,
       };
     });
 
     try {
-      await this.props.updateUserProfileProperty(
-        this.props.userProfile,
-        'isRehireable',
-        rehireValue,
-      );
+      await updateUserProfileProperty(userProfile, 'isRehireable', rehireValue);
       toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
     } catch (err) {
+      // eslint-disable-next-line no-alert
       alert('An error occurred while attempting to save the rehireable status of this user.');
     }
   }
 
   setPriority(priorityValue) {
-    if (priorityValue != 'Filter Off') {
-      this.setState(state => {
+    const { priorityList } = this.state;
+
+    if (priorityValue !== 'Filter Off') {
+      this.setState(() => {
         return {
           priority: priorityValue,
-          priorityList: this.state.priorityList.concat(priorityValue),
+          priorityList: priorityList.concat(priorityValue),
         };
       });
     } else {
-      this.setState(state => {
+      this.setState(() => {
         return {
           priority: priorityValue,
           priorityList: [],
@@ -181,16 +187,19 @@ class PeopleReport extends Component {
       });
     }
   }
+
   setStatus(statusValue) {
-    if (statusValue != 'Filter Off') {
-      this.setState(state => {
+    const { statusList } = this.state;
+
+    if (statusValue !== 'Filter Off') {
+      this.setState(() => {
         return {
           status: statusValue,
-          statusList: this.state.statusList.concat(statusValue),
+          statusList: statusList.concat(statusValue),
         };
       });
     } else {
-      this.setState(state => {
+      this.setState(() => {
         return {
           status: statusValue,
           statusList: [],
@@ -198,16 +207,18 @@ class PeopleReport extends Component {
       });
     }
   }
+
   setAssign(assignValue) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         isAssigned: assignValue,
       };
     });
   }
 
+  // eslint-disable-next-line no-unused-vars
   setFilter(filterValue) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         isAssigned: false,
         isActive: false,
@@ -227,15 +238,16 @@ class PeopleReport extends Component {
   }
 
   setClassfication(classificationValue) {
-    if (classificationValue != 'Filter Off') {
-      this.setState(state => {
+    const { classificationList } = this.state;
+    if (classificationValue !== 'Filter Off') {
+      this.setState(() => {
         return {
           classification: classificationValue,
-          classificationList: this.state.classificationList.concat(classificationValue),
+          classificationList: classificationList.concat(classificationValue),
         };
       });
     } else {
-      this.setState(state => {
+      this.setState(() => {
         return {
           classification: classificationValue,
           classificationList: [],
@@ -245,11 +257,20 @@ class PeopleReport extends Component {
   }
 
   setUsers(userValue) {
-    this.setState(state => {
+    this.setState(() => {
       return {
         users: userValue,
       };
     });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  endOfWeek(offset) {
+    return moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(offset, 'weeks')
+      .format('YYYY-MM-DD');
   }
 
   render() {
@@ -263,98 +284,29 @@ class PeopleReport extends Component {
       toDate,
       timeEntries,
     } = this.state;
-    const { firstName, lastName, weeklycommittedHours,hoursByCategory } = userProfile;
+    // eslint-disable-next-line no-unused-vars
+    const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
+    const { tangibleHoursReportedThisWeek, auth, match } = this.props;
 
-  
-    var totalTangibleHrsRound = 0;
+    let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
-      const hours = hoursByCategory ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0):0;
+      const hours = hoursByCategory
+        ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0)
+        : 0;
       totalTangibleHrsRound = hours.toFixed(2);
     }
 
+    // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
     const UserProject = props => {
-      let userProjectList = [];
+      const userProjectList = [];
       return <div>{userProjectList}</div>;
     };
-
-    const ClassificationOptions = props => {
-      return (
-        <DropdownButton
-          style={{ margin: '3px' }}
-          exact
-          id="dropdown-basic-button"
-          title="Classification"
-        >
-          {props.allClassification.map((c, index) => (
-            <Dropdown.Item onClick={() => this.setClassfication(c)}>{c}</Dropdown.Item>
-          ))}
-        </DropdownButton>
-      );
-    };
-
-    const StatusOptions = props => {
-      var allStatus = [...Array.from(new Set(props.get_tasks.map(item => item.status))).sort()];
-      allStatus.unshift('Filter Off');
-      return (
-        <DropdownButton style={{ margin: '3px' }} exact id="dropdown-basic-button" title="Status">
-          {allStatus.map((c, index) => (
-            <Dropdown.Item onClick={() => this.setStatus(c)}>{c}</Dropdown.Item>
-          ))}
-        </DropdownButton>
-      );
-    };
-
-    const UserOptions = props => {
-      let users = [];
-      props.userTask.map((task, index) =>
-        task.resources.map(resource => users.push(resource.name)),
-      );
-
-      users = Array.from(new Set(users)).sort();
-      users.unshift('Filter Off');
-      return (
-        <DropdownButton style={{ margin: '3px' }} exact id="dropdown-basic-button" title="Users">
-          {users.map((c, index) => (
-            <Dropdown.Item onClick={() => this.setUsers(c)}>{c}</Dropdown.Item>
-          ))}
-        </DropdownButton>
-      );
-    };
-    const ShowInfringementsCollapse = props => {
-      const [open, setOpen] = useState(false);
-      return (
-        <div>
-          <table className="center">
-            <table className="table table-bordered table-responsive-sm">
-              <thead>
-                <tr>
-                  <th scope="col" id="projects__order">
-                    <Button variant="light" onClick={() => setOpen(!open)} aria-expanded={open}>
-                      ⬇
-                    </Button>
-                  </th>
-
-                  <th scope="col" id="projects__order">
-                    Date
-                  </th>
-                  <th scope="col">Description</th>
-                </tr>
-              </thead>
-              <Collapse in={open}>
-                <tbody>{props.BlueSquare}</tbody>
-              </Collapse>
-            </table>
-          </table>
-        </div>
-      );
-    };
-
+    // eslint-disable-next-line react/no-unstable-nested-components
     const Infringements = props => {
-      let BlueSquare = [];
-      let dict = {};
+      const dict = {};
 
-      //aggregate infringements
-      for (let i = 0; i < props.infringements.length; i++) {
+      // aggregate infringements
+      for (let i = 0; i < props.infringements.length; i += 1) {
         if (props.infringements[i].date in dict) {
           dict[props.infringements[i].date].count += 1;
           dict[props.infringements[i].date].des.push(props.infringements[i].description);
@@ -367,12 +319,11 @@ class PeopleReport extends Component {
       }
 
       const startdate = Object.keys(dict)[0];
-      var startdateStr = '';
       if (startdate) {
-        startdateStr = startdate.toString();
+        startdate.toString();
       }
       if (props.infringements.length > 0) {
-        BlueSquare = props.infringements.map((current, index) => (
+        props.infringements.map((current, index) => (
           <tr className="teams__tr">
             <td>{index + 1}</td>
             <td>{current.date}</td>
@@ -382,21 +333,22 @@ class PeopleReport extends Component {
       }
       return (
         <div>
-          <div></div>
+          <div />
         </div>
       );
     };
 
+    // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
     const PeopleDataTable = props => {
-      let peopleData = {
+      const peopleData = {
         alertVisible: false,
         taskData: [],
         color: null,
         message: '',
       };
 
-      for (let i = 0; i < userTask.length; i++) {
-        let task = {
+      for (let i = 0; i < userTask.length; i += 1) {
+        const task = {
           taskName: '',
           priority: '',
           status: '',
@@ -414,7 +366,7 @@ class PeopleReport extends Component {
           endstateInfo: '',
           intentInfo: '',
         };
-        let resourcesName = [];
+        const resourcesName = [];
 
         if (userTask[i].isActive) {
           task.active = 'Yes';
@@ -429,10 +381,10 @@ class PeopleReport extends Component {
         task.taskName = userTask[i].taskName;
         task.priority = userTask[i].priority;
         task.status = userTask[i].status;
-        let n = userTask[i].estimatedHours;
+        const n = userTask[i].estimatedHours;
         task.estimatedHours = n.toFixed(2);
-        for (let j = 0; j < userTask[i].resources.length; j++) {
-          let tempResource = {
+        for (let j = 0; j < userTask[i].resources.length; j += 1) {
+          const tempResource = {
             name: '',
             profilePic: '',
           };
@@ -465,156 +417,171 @@ class PeopleReport extends Component {
       return <PeopleTableDetails taskData={peopleData.taskData} />;
     };
 
-    const renderProfileInfo = () => (
-      <ReportPage.ReportHeader
-        src={this.state.userProfile.profilePic}
-        avatar={this.state.userProfile.profilePic ? undefined : <FiUser />}
-        isActive={isActive}
-      >
-        <p>
-          <Link to={`/userProfile/${userProfile._id}`} title="View Profile">
-            {userProfile.firstName} {userProfile.lastName}
-          </Link>
-        </p>
-        <p>Role: {userProfile.role}</p>
-        <p>Title: {userProfile.jobTitle}</p>
+    const renderProfileInfo = () => {
+      const { isRehireable, bioStatus, authRole } = this.state;
+      const { profilePic, role, jobTitle, endDate, _id, createdDate } = userProfile;
 
-        {userProfile.endDate ? (
-          <div className="rehireable">
-            <Checkbox
-              value={this.state.isRehireable}
-              onChange={() => this.setRehireable(!this.state.isRehireable)}
-              label="Rehireable"
-            />
-          </div>
-        ) : (
-          ''
-        )}
+      return (
+        <ReportPage.ReportHeader
+          src={profilePic}
+          avatar={profilePic ? undefined : <FiUser />}
+          isActive={isActive}
+        >
+          <div className="report-stats">
+            <p>
+              <Link to={`/userProfile/${_id}`} title="View Profile">
+                {firstName} {lastName}
+              </Link>
+            </p>
+            <p>Role: {role}</p>
+            <p>Title: {jobTitle}</p>
 
-        <div className="stats">
-          <div>
-            <h4>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</h4>
-            <p>Start Date</p>
-          </div>
-          <div>
-            <h4>
-              {userProfile.endDate ? userProfile.endDate.toLocaleString().split('T')[0] : 'N/A'}
-            </h4>
-            <p>End Date</p>
-          </div>
-          {this.state.bioStatus ? (
-            <div>
-              <h5>
-                Bio {this.state.bioStatus === 'default' ? 'not requested' : this.state.bioStatus}
-              </h5>{' '}
-              {this.state.authRole === 'Administrator' || this.state.authRole === 'Owner' ? (
-                <ToggleSwitch
-                  fontSize={'13px'}
-                  switchType="bio"
-                  state={this.state.bioStatus}
-                  handleUserProfile={bio => onChangeBioPosted(bio)}
+            {endDate ? (
+              <div className="rehireable">
+                <Checkbox
+                  value={isRehireable}
+                  onChange={() => this.setRehireable(!isRehireable)}
+                  label="Rehireable"
                 />
+              </div>
+            ) : (
+              ''
+            )}
+
+            <div className="stats">
+              <div>
+                <h4>{formatDate(createdDate)}</h4>
+                <p>Start Date</p>
+              </div>
+              <div>
+                <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
+                <p>End Date</p>
+              </div>
+              {bioStatus ? (
+                <div>
+                  <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
+                  {authRole === 'Administrator' || authRole === 'Owner' ? (
+                    <ToggleSwitch
+                      fontSize="13px"
+                      switchType="bio"
+                      state={bioStatus}
+                      /* eslint-disable-next-line no-use-before-define */
+                      handleUserProfile={bio => onChangeBioPosted(bio)}
+                    />
+                  ) : null}
+                </div>
               ) : null}
             </div>
-          ) : null}
-        </div>
-      </ReportPage.ReportHeader>
-    );
+          </div>
+        </ReportPage.ReportHeader>
+      );
+    };
 
     const onChangeBioPosted = async bio => {
       const bioStatus = bio;
-      this.setState(state => {
+      this.setState(() => {
         return {
-          bioStatus: bioStatus,
+          bioStatus,
         };
       });
 
       try {
-        await this.props.updateUserProfileProperty(this.props.userProfile, 'bioPosted', bioStatus);
+        await updateUserProfileProperty(userProfile, 'bioPosted', bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
+        // eslint-disable-next-line no-alert
         alert('An error occurred while attempting to save the bioPosted change to the profile.');
       }
     };
 
     return (
-      <ReportPage renderProfile={renderProfileInfo}>
-        <div className="people-report-time-logs-wrapper">
-          <ReportPage.ReportBlock
-            firstColor="#ff5e82"
-            secondColor="#e25cb2"
-            className="people-report-time-log-block"
-          >
-            <h3>{weeklycommittedHours}</h3>
-            <p>Weekly Committed Hours</p>
-          </ReportPage.ReportBlock>
-
-          {userProfile.endDate ? (
-            ''
-          ) : (
+      <div className="container-people-wrapper">
+        <ReportPage renderProfile={renderProfileInfo}>
+          <div className="people-report-time-logs-wrapper">
             <ReportPage.ReportBlock
-              firstColor="#b368d2"
-              secondColor="#831ec4"
+              firstColor="#ff5e82"
+              secondColor="#e25cb2"
               className="people-report-time-log-block"
             >
-              <h3>{this.props.tangibleHoursReportedThisWeek}</h3>
-              <p>Hours Logged This Week</p>
+              <h3>{weeklycommittedHours}</h3>
+              <p>Weekly Committed Hours</p>
             </ReportPage.ReportBlock>
-          )}
 
-          <ReportPage.ReportBlock
-            firstColor="#64b7ff"
-            secondColor="#928aef"
-            className="people-report-time-log-block"
-          >
-            <h3>{infringements.length}</h3>
-            <p>Blue squares</p>
-          </ReportPage.ReportBlock>
-          <ReportPage.ReportBlock
-            firstColor="#ffdb56"
-            secondColor="#ff9145"
-            className="people-report-time-log-block"
-          >
-            <h3>{totalTangibleHrsRound}</h3>
-            <p>Total Hours Logged</p>
-          </ReportPage.ReportBlock>
-        </div>
+            {userProfile.endDate ? (
+              ''
+            ) : (
+              <ReportPage.ReportBlock
+                firstColor="#b368d2"
+                secondColor="#831ec4"
+                className="people-report-time-log-block"
+              >
+                <h3>{tangibleHoursReportedThisWeek}</h3>
+                <p>Hours Logged This Week</p>
+              </ReportPage.ReportBlock>
+            )}
 
-        <PeopleTasksPieChart />
-
-        <ReportPage.ReportBlock>
-          <div className="intro_date">
-            <h4>Tasks contributed</h4>
+            <ReportPage.ReportBlock
+              firstColor="#64b7ff"
+              secondColor="#928aef"
+              className="people-report-time-log-block"
+            >
+              <h3>{infringements.length}</h3>
+              <p>Blue squares</p>
+            </ReportPage.ReportBlock>
+            <ReportPage.ReportBlock
+              firstColor="#ffdb56"
+              secondColor="#ff9145"
+              className="people-report-time-log-block"
+            >
+              <h3>{totalTangibleHrsRound}</h3>
+              <p>Total Hours Logged</p>
+            </ReportPage.ReportBlock>
           </div>
 
-          <PeopleDataTable />
+          <PeopleTasksPieChart />
+          <div className="mobile-people-table">
+            <ReportPage.ReportBlock>
+              <div className="intro_date">
+                <h4>Tasks contributed</h4>
+              </div>
 
-          <div className="container">
-            <table>
-              <UserProject userProjects={userProjects} />
-              <Infringements
-                infringements={infringements}
-                fromDate={fromDate}
-                toDate={toDate}
-                timeEntries={timeEntries}
-              />
-              <div className="visualizationDiv">
-                <InfringementsViz
-                  infringements={infringements}
-                  fromDate={fromDate}
-                  toDate={toDate}
-                />
+              <PeopleDataTable />
+
+              <div className="container">
+                <table>
+                  <UserProject userProjects={userProjects} />
+                  <Infringements
+                    infringements={infringements}
+                    fromDate={fromDate}
+                    toDate={toDate}
+                    timeEntries={timeEntries}
+                  />
+                  <div className="visualizationDiv">
+                    <InfringementsViz
+                      infringements={infringements}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                    />
+                  </div>
+                  <div className="visualizationDiv">
+                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                  </div>
+                  <div className="visualizationDiv">
+                    <BadgeSummaryViz
+                      authId={auth.user.userid}
+                      userId={match.params.userId}
+                      badges={userProfile.badgeCollection}
+                    />
+                  </div>
+                  <div className="visualizationDiv">
+                    <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                  </div>
+                </table>
               </div>
-              <div className="visualizationDiv">
-                <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
-              </div>
-              <div className='visualizationDiv'>
-                <BadgeSummaryViz badges={userProfile.badgeCollection} />
-              </div>
-            </table>
+            </ReportPage.ReportBlock>
           </div>
-        </ReportPage.ReportBlock>
-      </ReportPage>
+        </ReportPage>
+      </div>
     );
   }
 }

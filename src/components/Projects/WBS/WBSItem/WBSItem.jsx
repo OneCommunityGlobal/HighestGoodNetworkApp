@@ -10,11 +10,12 @@ import { deleteWbs } from './../../../../actions/wbs';
 import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
+import { boxStyle } from 'styles';
 
 const WBSItem = props => {
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const canDeleteWBS = props.hasPermission('deleteWbs');
+  const canDeleteWBS = props.hasPermission('deleteWbs') || props.hasPermission('seeProjectManagement');
 
   const confirmDelete = () => {
     props.deleteWbs(props.wbsId);
@@ -39,6 +40,7 @@ const WBSItem = props => {
                 setShowModalDelete(true);
                 props.getPopupById(WBS_DELETE_POPUP_ID);
               }}
+              style={boxStyle}
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>
