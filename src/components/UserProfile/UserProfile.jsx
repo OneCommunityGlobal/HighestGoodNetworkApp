@@ -98,7 +98,6 @@ function UserProfile(props) {
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
-  const [usersRole, setUsersRole] = useState('');
 
   const userProfileRef = useRef();
 
@@ -205,24 +204,20 @@ function UserProfile(props) {
     setIsProjectsEqual(compare);
   };
 
-  const loadSummaryIntroDetails = async teamId => {
+  const loadSummaryIntroDetails = async (teamId, user) => {
+    const { firstName, lastName } = user;
     const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
     const { data } = res;
 
     const memberSubmitted = [];
     const memberNotSubmitted = [];
-    let manager = '';
 
     data.forEach(member => {
-      if (member.role === 'Manager') {
-        manager = `${member.firstName} ${member.lastName}`;
-      }
       member.weeklySummaries[0].summary !== ''
         ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
         : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
     });
 
-    manager = manager === '' ? '<Your Name>' : manager;
     const memberSubmittedString =
       memberSubmitted.length !== 0
         ? memberSubmitted.join(', ')
@@ -232,7 +227,7 @@ function UserProfile(props) {
         ? memberSubmitted.join(', ')
         : '<list all team members names NOT included in the summary>';
 
-    const summaryIntroString = `This week’s summary was managed by ${manager} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+    const summaryIntroString = `This week’s summary was managed by ${firstName} ${lastName} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
 
     setSummaryIntro(summaryIntroString);
   };
@@ -255,7 +250,8 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      await loadSummaryIntroDetails(newUserProfile.teams[0]._id);
+
+      await loadSummaryIntroDetails(newUserProfile.teams[0]._id, response.data);
 
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
@@ -592,7 +588,7 @@ function UserProfile(props) {
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
-  const canSeeSummaryIntroBtn = props.hasPermission('seeSummaryIntroButton');
+  const canGetProjectMembers = props.hasPermission('getProjectMembers');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
@@ -746,7 +742,7 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
-              {canSeeSummaryIntroBtn ? (
+              {canGetProjectMembers ? (
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);
