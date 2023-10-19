@@ -9,6 +9,7 @@ import { boxStyle } from 'styles';
 export const permissionLabel = {
   getWeeklySummaries: 'See Weekly Summary Reports Tab',
   getWeeklySummaries: 'See Only Weekly Summary Reports Tab',
+  totalValidWeeklySummaries: 'Edit Total Valid Weekly Summaries',
   seeUserManagement: 'See User Management Tab (delete and update users)',
   seeBadgeManagement: 'See Badge Management Tab (create badges)',
   seeUserManagement: 'See User Management Tab (Full Functionality)',

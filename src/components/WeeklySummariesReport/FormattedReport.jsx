@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import hasPermission from '../../utils/permissions';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import {
   Input,
@@ -63,6 +64,8 @@ function FormattedReport({
   canEditTeamCode,
 }) {
   const emails = [];
+  const dispatch = useDispatch();
+  const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
   summaries.forEach(summary => {
     if (summary.email !== undefined && summary.email !== null) {
@@ -105,7 +108,7 @@ function FormattedReport({
             summary={summary}
             weekIndex={weekIndex}
             bioCanEdit={bioCanEdit}
-            canEditSummaryCount={canEditSummaryCount}
+            canEditSummaryCount={isEditCount}
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
