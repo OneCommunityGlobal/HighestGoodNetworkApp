@@ -14,6 +14,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import hasPermission from '../../utils/permissions';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import {
   Input,
@@ -78,7 +79,7 @@ function FormattedReport({
             summary={summary}
             weekIndex={weekIndex}
             bioCanEdit={bioCanEdit}
-            canEditSummaryCount={canEditSummaryCount}
+            canEditSummaryCount={isEditCount}
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
