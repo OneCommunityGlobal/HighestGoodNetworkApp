@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container } from 'reactstrap';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import './BMDashboard.css';
-//TO DO: add error state, add loading state
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
+
 const dummyProjects = [
   {
     projectId: 1,
@@ -274,6 +276,14 @@ const dummyProjects = [
 export const BMDashboard = () => {
 
 
+  //TO DO: api call to fetch data
+  // const fetchData = () => {
+  //   const response = axios.get(ENDPOINTS.PROJECTS_LIST);
+  // } 
+
+  // useEffect(() => {
+  //   fetchData()
+  // }, []);
 
   return (
     <Container className="justify-content-center align-items-center mw-80 px-4">
