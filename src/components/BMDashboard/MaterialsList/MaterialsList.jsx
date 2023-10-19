@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
@@ -9,13 +8,11 @@ import MaterialsTable from './MaterialsTable';
 import './MaterialsList.css';
 
 export function MaterialsList(props) {
-  // console.log('materials props: ', props);
   // props & state
   const { materials, errors, dispatch } = props;
   const [filteredMaterials, setFilteredMaterials] = useState(materials);
   const [selectedProject, setSelectedProject] = useState('all');
   const [isError, setIsError] = useState(false);
-  const [error, setError] = useState({ status: '', message: '' });
 
   // dispatch materials fetch action
   // response is mapped to materials or errors in redux store
@@ -29,32 +26,22 @@ export function MaterialsList(props) {
       return setFilteredMaterials(materials);
     }
     const filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject);
-    setFilteredMaterials(filterMaterials);
+    return setFilteredMaterials(filterMaterials);
   }, [selectedProject]);
 
-  // error handling
+  // trigger error state if an error object is added to props
   useEffect(() => {
     if (Object.entries(errors).length) {
       setIsError(true);
-      // no response object if server is offline
-      if (!errors.response) {
-        return setError({
-          status: 503,
-          message: 'The server is temporarily offline. Please try again later.',
-        });
-      }
-      setError({
-        status: errors.response.status,
-        message: errors.response.statusText,
-      });
     }
   }, [errors]);
 
+  // error state
   if (isError) {
     return (
       <main className="materials_list_container">
         <h2>Materials List</h2>
-        <BMError error={error} />
+        <BMError errors={errors} />
       </main>
     );
   }
@@ -71,7 +58,6 @@ export function MaterialsList(props) {
 }
 
 const mapStateToProps = state => ({
-  // auth: state.auth,
   materials: state.materials,
   errors: state.errors,
 });
