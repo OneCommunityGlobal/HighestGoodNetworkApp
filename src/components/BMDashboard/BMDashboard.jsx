@@ -1,8 +1,8 @@
-import { Row, Col, Container, Form, Button } from 'reactstrap';
+import { Container } from 'reactstrap';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import './BMDashboard.css';
-
+//TO DO: add error state, add loading state, update dummy projects to a more complex structure (see database and wireframe)
 const dummyProjects = [
   {
     projectId: 1,
