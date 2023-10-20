@@ -20,18 +20,21 @@ const badgeInitial = {
   alertVisible: false,
 };
 
+// eslint-disable-next-line import/prefer-default-export,default-param-last
 export const badgeReducer = (state = badgeInitial, action) => {
   switch (action.type) {
     case GET_ALL_BADGE_DATA:
       return { ...state, allBadgeData: action.allBadges };
-    case ADD_SELECT_BADGE:
+    case ADD_SELECT_BADGE: {
       const toAdd = state.selectedBadges;
       toAdd.push(action.badgeId);
       return { ...state, selectedBadges: toAdd };
-    case REMOVE_SELECT_BADGE:
+    }
+    case REMOVE_SELECT_BADGE: {
       const toRemove = state.selectedBadges;
       toRemove.splice(toRemove.indexOf(action.badgeId), 1);
       return { ...state, selectedBadges: toRemove };
+    }
     case CLEAR_NAME_AND_SELECTED:
       return { ...state, selectedBadges: [], firstName: '', lastName: '' };
     case CLEAR_SELECTED:
