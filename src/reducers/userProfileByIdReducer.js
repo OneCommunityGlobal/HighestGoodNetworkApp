@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import { GET_USER_PROFILE, EDIT_USER_PROFILE, GET_USER_TASK_BY_ID } from '../constants/userProfile';
 
 const initialUserProfileState = {
