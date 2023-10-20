@@ -217,7 +217,6 @@ function UserProfile(props) {
         ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
         : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
     });
-
     const memberSubmittedString =
       memberSubmitted.length !== 0
         ? memberSubmitted.join(', ')
@@ -245,13 +244,17 @@ function UserProfile(props) {
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
+
     if (!userId) return;
 
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
 
-      await loadSummaryIntroDetails(newUserProfile.teams[0]._id, response.data);
+      const teamId = newUserProfile?.teams[0]?._id;
+      if (teamId) {
+        await loadSummaryIntroDetails(teamId, response.data);
+      }
 
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
@@ -742,7 +745,7 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
-              {canGetProjectMembers ? (
+              {canGetProjectMembers && teams.length !== 0 ? (
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);
