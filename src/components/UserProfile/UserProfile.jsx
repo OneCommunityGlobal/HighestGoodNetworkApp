@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useId } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react'
 import {
   Row,
   Input,
@@ -15,46 +15,46 @@ import {
   NavItem,
   NavLink,
   Button,
-} from 'reactstrap';
-import Select from 'react-select';
-import Image from 'react-bootstrap/Image';
-import { Link } from 'react-router-dom';
-import classnames from 'classnames';
-import moment from 'moment';
-import Alert from 'reactstrap/lib/Alert';
-import axios from 'axios';
+} from 'reactstrap'
+import Select from 'react-select'
+import Image from 'react-bootstrap/Image'
+import { Link } from 'react-router-dom'
+import classnames from 'classnames'
+import moment from 'moment'
+import Alert from 'reactstrap/lib/Alert'
+import axios from 'axios'
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
-} from '../../utils/permissions';
-import ActiveCell from '../UserManagement/ActiveCell';
-import { ENDPOINTS } from '../../utils/URL';
-import SkeletonLoading from '../common/SkeletonLoading';
-import UserProfileModal from './UserProfileModal';
-import './UserProfile.scss';
-import TeamsTab from './TeamsAndProjects/TeamsTab';
-import ProjectsTab from './TeamsAndProjects/ProjectsTab';
-import InfoModal from './InfoModal';
-import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
-import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
-import SaveButton from './UserProfileEdit/SaveButton';
-import UserLinkLayout from './UserLinkLayout';
-import TabToolTips from './ToolTips/TabToolTips';
-import BasicToolTips from './ToolTips/BasicTabTips';
-import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
-import Badges from './Badges';
-import TimeEntryEditHistory from './TimeEntryEditHistory';
-import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus } from '../../actions/userManagement';
-import { UserStatus } from '../../utils/enums';
-import BlueSquareLayout from './BlueSquareLayout';
-import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
-import { boxStyle } from 'styles';
-import { connect, useDispatch } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
-import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
-import { toast } from 'react-toastify';
+} from '../../utils/permissions'
+import ActiveCell from '../UserManagement/ActiveCell'
+import { ENDPOINTS } from '../../utils/URL'
+import SkeletonLoading from '../common/SkeletonLoading'
+import UserProfileModal from './UserProfileModal'
+import './UserProfile.scss'
+import TeamsTab from './TeamsAndProjects/TeamsTab'
+import ProjectsTab from './TeamsAndProjects/ProjectsTab'
+import InfoModal from './InfoModal'
+import BasicInformationTab from './BasicInformationTab/BasicInformationTab'
+import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab'
+import SaveButton from './UserProfileEdit/SaveButton'
+import UserLinkLayout from './UserLinkLayout'
+import TabToolTips from './ToolTips/TabToolTips'
+import BasicToolTips from './ToolTips/BasicTabTips'
+import ResetPasswordButton from '../UserManagement/ResetPasswordButton'
+import Badges from './Badges'
+import TimeEntryEditHistory from './TimeEntryEditHistory'
+import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup'
+import { updateUserStatus } from '../../actions/userManagement'
+import { UserStatus } from '../../utils/enums'
+import BlueSquareLayout from './BlueSquareLayout'
+import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries'
+import { boxStyle } from 'styles'
+import { connect, useDispatch } from 'react-redux'
+import { formatDate } from 'utils/formatDate'
+import { fetchAllProjects } from '../../actions/projects'
+import { getAllUserTeams } from '../../actions/allTeamsAction'
+import { toast } from 'react-toastify'
 
 function UserProfile(props) {
   /* Constant values */
@@ -62,132 +62,132 @@ function UserProfile(props) {
     firstName: true,
     lastName: true,
     email: true,
-  };
-  const roles = props?.role.roles;
-  const dispatch = useDispatch();
+  }
+  const roles = props?.role.roles
+  const dispatch = useDispatch()
 
   /* Hooks */
-  const [showLoading, setShowLoading] = useState(true);
-  const [showSelect, setShowSelect] = useState(false);
-  const [summaries, setSummaries] = useState(undefined);
-  const [userProfile, setUserProfile] = useState(undefined);
-  const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
-  const [originalTasks, setOriginalTasks] = useState([]);
-  const [isTeamsEqual, setIsTeamsEqual] = useState(true);
-  const [teams, setTeams] = useState([]);
-  const [originalTeams, setOriginalTeams] = useState([]);
-  const [isProjectsEqual, setIsProjectsEqual] = useState(true);
-  const [projects, setProjects] = useState([]);
-  const [originalProjects, setOriginalProjects] = useState([]);
-  const [id, setId] = useState('');
-  const [activeTab, setActiveTab] = useState('1');
-  const [infoModal, setInfoModal] = useState(false);
-  const [formValid, setFormValid] = useState(initialFormValid);
-  const [blueSquareChanged, setBlueSquareChanged] = useState(false);
-  const [type, setType] = useState('');
-  const [menuModalTabletScreen, setMenuModalTabletScreen] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalMessage, setModalMessage] = useState('');
-  const [shouldRefresh, setShouldRefresh] = useState(false);
-  const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false);
-  const [tasks, setTasks] = useState([]);
-  const [updatedTasks, setUpdatedTasks] = useState([]);
-  const [summarySelected, setSummarySelected] = useState(null);
-  const [summaryName, setSummaryName] = useState('');
-  const [showSummary, setShowSummary] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [showLoading, setShowLoading] = useState(true)
+  const [showSelect, setShowSelect] = useState(false)
+  const [summaries, setSummaries] = useState(undefined)
+  const [userProfile, setUserProfile] = useState(undefined)
+  const [originalUserProfile, setOriginalUserProfile] = useState(undefined)
+  const [originalTasks, setOriginalTasks] = useState([])
+  const [isTeamsEqual, setIsTeamsEqual] = useState(true)
+  const [teams, setTeams] = useState([])
+  const [originalTeams, setOriginalTeams] = useState([])
+  const [isProjectsEqual, setIsProjectsEqual] = useState(true)
+  const [projects, setProjects] = useState([])
+  const [originalProjects, setOriginalProjects] = useState([])
+  const [id, setId] = useState('')
+  const [activeTab, setActiveTab] = useState('1')
+  const [infoModal, setInfoModal] = useState(false)
+  const [formValid, setFormValid] = useState(initialFormValid)
+  const [blueSquareChanged, setBlueSquareChanged] = useState(false)
+  const [type, setType] = useState('')
+  const [menuModalTabletScreen, setMenuModalTabletScreen] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [modalTitle, setModalTitle] = useState('')
+  const [modalMessage, setModalMessage] = useState('')
+  const [shouldRefresh, setShouldRefresh] = useState(false)
+  const [activeInactivePopupOpen, setActiveInactivePopupOpen] = useState(false)
+  const [tasks, setTasks] = useState([])
+  const [updatedTasks, setUpdatedTasks] = useState([])
+  const [summarySelected, setSummarySelected] = useState(null)
+  const [summaryName, setSummaryName] = useState('')
+  const [showSummary, setShowSummary] = useState(false)
+  const [saved, setSaved] = useState(false)
 
-  const userProfileRef = useRef();
+  const userProfileRef = useRef()
 
-  const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
-  const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
-  const [codeValid, setCodeValid] = useState(true);
+  const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks)
+  const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile)
+  const [codeValid, setCodeValid] = useState(true)
 
-  const [userStartDate, setUserStartDate] = useState('');
-  const [userEndDate, setUserEndDate] = useState('');
+  const [userStartDate, setUserStartDate] = useState('')
+  const [userEndDate, setUserEndDate] = useState('')
 
   /* useEffect functions */
   useEffect(() => {
-    loadUserProfile();
-    dispatch(fetchAllProjects());
-    dispatch(getAllUserTeams());
-  }, []);
+    loadUserProfile()
+    dispatch(fetchAllProjects())
+    dispatch(getAllUserTeams())
+  }, [])
 
   useEffect(() => {
-    userProfileRef.current = userProfile;
-  });
+    userProfileRef.current = userProfile
+  })
 
   useEffect(() => {
-    checkIsTeamsEqual();
-    checkIsProjectsEqual();
-    setUserProfile({ ...userProfile, teams, projects });
-    setOriginalUserProfile({ ...originalUserProfile, teams, projects });
-  }, [teams, projects]);
+    checkIsTeamsEqual()
+    checkIsProjectsEqual()
+    setUserProfile({ ...userProfile, teams, projects })
+    setOriginalUserProfile({ ...originalUserProfile, teams, projects })
+  }, [teams, projects])
 
   useEffect(() => {
-    setShowLoading(true);
-    loadUserProfile();
-    loadUserTasks();
-  }, [props?.match?.params?.userId]);
+    setShowLoading(true)
+    loadUserProfile()
+    loadUserTasks()
+  }, [props?.match?.params?.userId])
 
   useEffect(() => {
-    if (!blueSquareChanged) return;
-    setBlueSquareChanged(false);
-    handleSubmit();
-  }, [blueSquareChanged]);
+    if (!blueSquareChanged) return
+    setBlueSquareChanged(false)
+    handleSubmit()
+  }, [blueSquareChanged])
 
   const checkIsTeamsEqual = () => {
-    setOriginalTeams(teams);
-    const originalTeamProperties = [];
+    setOriginalTeams(teams)
+    const originalTeamProperties = []
     originalTeams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
-          originalTeamProperties.push({ [key]: value });
+          originalTeamProperties.push({ [key]: value })
         }
       }
-    });
+    })
 
-    const teamsProperties = [];
+    const teamsProperties = []
     teams?.forEach(team => {
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
-          teamsProperties.push({ [key]: value });
+          teamsProperties.push({ [key]: value })
         }
       }
-    });
+    })
 
     const originalTeamsBeingDisplayed = teamsProperties.filter(
       item =>
         JSON.stringify(item) ===
         JSON.stringify(originalTeamProperties.filter(elem => elem.teamName === item.teamName)[0]),
-    );
+    )
 
     const compare =
       originalTeamsBeingDisplayed?.length === originalTeams?.length &&
-      originalTeamsBeingDisplayed?.length === teamsProperties?.length;
-    setIsTeamsEqual(compare);
-  };
+      originalTeamsBeingDisplayed?.length === teamsProperties?.length
+    setIsTeamsEqual(compare)
+  }
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects);
-    const originalProjectProperties = [];
+    setOriginalProjects(projects)
+    const originalProjectProperties = []
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
         if (key == 'projectName') {
-          originalProjectProperties.push({ [key]: value });
+          originalProjectProperties.push({ [key]: value })
         }
       }
-    });
+    })
 
-    const projectsProperties = [];
+    const projectsProperties = []
     projects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
         if (key == 'projectName') {
-          projectsProperties.push({ [key]: value });
+          projectsProperties.push({ [key]: value })
         }
       }
-    });
+    })
 
     const originalProjectsBeingDisplayed = projectsProperties.filter(
       item =>
@@ -195,187 +195,187 @@ function UserProfile(props) {
         JSON.stringify(
           originalProjectProperties.filter(elem => elem.projectName === item.projectName)[0],
         ),
-    );
+    )
 
     const compare =
       originalProjectsBeingDisplayed?.length === originalProjects?.length &&
-      originalProjectsBeingDisplayed?.length === projectsProperties?.length;
-    setIsProjectsEqual(compare);
-  };
+      originalProjectsBeingDisplayed?.length === projectsProperties?.length
+    setIsProjectsEqual(compare)
+  }
 
   const loadUserTasks = async () => {
-    const userId = props?.match?.params?.userId;
+    const userId = props?.match?.params?.userId
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
       .then(res => {
-        setTasks(res?.data || []);
-        setOriginalTasks(res.data);
+        setTasks(res?.data || [])
+        setOriginalTasks(res.data)
       })
-      .catch(err => console.log(err));
-  };
+      .catch(err => console.log(err))
+  }
 
   const loadUserProfile = async () => {
-    const userId = props?.match?.params?.userId;
-    if (!userId) return;
+    const userId = props?.match?.params?.userId
+    if (!userId) return
 
     try {
-      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const newUserProfile = response.data;
-      setTeams(newUserProfile.teams);
-      setOriginalTeams(newUserProfile.teams);
-      setProjects(newUserProfile.projects);
-      setOriginalProjects(newUserProfile.projects);
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId))
+      const newUserProfile = response.data
+      setTeams(newUserProfile.teams)
+      setOriginalTeams(newUserProfile.teams)
+      setProjects(newUserProfile.projects)
+      setOriginalProjects(newUserProfile.projects)
       setUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         createdDate: newUserProfile?.createdDate.split('T')[0],
-      });
+      })
       setOriginalUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         createdDate: newUserProfile?.createdDate.split('T')[0],
-      });
-      setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
-      setShowLoading(false);
+      })
+      setUserStartDate(newUserProfile?.createdDate.split('T')[0])
+      setShowLoading(false)
     } catch (err) {
-      setShowLoading(false);
+      setShowLoading(false)
     }
-  };
+  }
 
   const getWeeklySummary = async userId => {
     try {
-      setSummarySelected('');
-      setShowSummary(false);
-      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const user = response.data;
-      const userSummaries = user.weeklySummaries;
+      setSummarySelected('')
+      setShowSummary(false)
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId))
+      const user = response.data
+      const userSummaries = user.weeklySummaries
 
-      setSummarySelected(userSummaries);
-      setShowSummary(true);
+      setSummarySelected(userSummaries)
+      setShowSummary(true)
     } catch (err) {
-      setShowLoading(false);
+      setShowLoading(false)
     }
-  };
+  }
 
   const getTeamMembersWeeklySummary = async () => {
-    const userId = props?.match?.params?.userId;
+    const userId = props?.match?.params?.userId
 
-    if (!userId) return;
+    if (!userId) return
 
     try {
-      const response = await axios.get(ENDPOINTS.LEADER_BOARD(userId));
-      const leaderBoardData = response.data;
-      const allSummaries = [];
+      const response = await axios.get(ENDPOINTS.LEADER_BOARD(userId))
+      const leaderBoardData = response.data
+      const allSummaries = []
 
       for (let i = 0; i < leaderBoardData.length; i++) {
         allSummaries.push({
           value: [leaderBoardData[i].name, leaderBoardData[i].personId],
           label: `View ${leaderBoardData[i].name}'s summary.`,
-        });
+        })
       }
-      setSummaries(allSummaries);
-      return;
+      setSummaries(allSummaries)
+      return
     } catch (err) {
-      console.log('Could not load leaderBoard data.', err);
+      console.log('Could not load leaderBoard data.', err)
     }
-  };
+  }
 
   const onDeleteTeam = deletedTeamId => {
-    setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId));
-  };
+    setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId))
+  }
 
   const onDeleteProject = deletedProjectId => {
-    setProjects(prevProject => prevProject.filter(project => project._id !== deletedProjectId));
-  };
+    setProjects(prevProject => prevProject.filter(project => project._id !== deletedProjectId))
+  }
 
   const onAssignTeam = assignedTeam => {
-    setTeams(prevState => [...prevState, assignedTeam]);
-  };
+    setTeams(prevState => [...prevState, assignedTeam])
+  }
 
   const onAssignProject = assignedProject => {
-    setProjects(prevProjects => [...prevProjects, assignedProject]);
-  };
+    setProjects(prevProjects => [...prevProjects, assignedProject])
+  }
 
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
       taskId,
-    };
+    }
 
     setTasks(tasks => {
-      const tasksWithoutTheUpdated = [...tasks];
-      const taskIndex = tasks.findIndex(task => task._id === taskId);
-      tasksWithoutTheUpdated[taskIndex] = updatedTask;
-      return tasksWithoutTheUpdated;
-    });
+      const tasksWithoutTheUpdated = [...tasks]
+      const taskIndex = tasks.findIndex(task => task._id === taskId)
+      tasksWithoutTheUpdated[taskIndex] = updatedTask
+      return tasksWithoutTheUpdated
+    })
 
     if (updatedTasks.findIndex(task => task.taskId === taskId) !== -1) {
-      const taskIndex = updatedTasks.findIndex(task => task.taskId === taskId);
-      const tasksToUpdate = updatedTasks;
-      tasksToUpdate.splice(taskIndex, 1);
-      tasksToUpdate.splice(taskIndex, 0, newTask);
-      setUpdatedTasks(tasksToUpdate);
+      const taskIndex = updatedTasks.findIndex(task => task.taskId === taskId)
+      const tasksToUpdate = updatedTasks
+      tasksToUpdate.splice(taskIndex, 1)
+      tasksToUpdate.splice(taskIndex, 0, newTask)
+      setUpdatedTasks(tasksToUpdate)
     } else {
-      setUpdatedTasks(tasks => [...tasks, newTask]);
+      setUpdatedTasks(tasks => [...tasks, newTask])
     }
-  };
+  }
 
   const handleImageUpload = async evt => {
-    if (evt) evt.preventDefault();
-    const file = evt.target.files[0];
+    if (evt) evt.preventDefault()
+    const file = evt.target.files[0]
     if (typeof file !== 'undefined') {
-      const filesizeKB = file.size / 1024;
-      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+      const filesizeKB = file.size / 1024
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']
       const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes
         .toString()
-        .replaceAll(',', ', ')}`;
+        .replaceAll(',', ', ')}`
 
       // Input validation: file type
       if (!allowedTypes.includes(file.type)) {
-        setType('image');
-        setShowModal(true);
-        setModalTitle('Profile Pic Error');
-        setModalMessage(allowedTypesString);
-        return;
+        setType('image')
+        setShowModal(true)
+        setModalTitle('Profile Pic Error')
+        setModalMessage(allowedTypesString)
+        return
       }
 
       // Input validation: file size.
       if (filesizeKB > 50) {
         const errorMessage = `The file you are trying to upload exceeds the maximum size of 50KB. You can either
-														choose a different file, or use an online file compressor.`;
+														choose a different file, or use an online file compressor.`
 
-        setType('image');
-        setShowModal(true);
-        setModalTitle('Profile Pic Error');
-        setModalMessage(errorMessage);
+        setType('image')
+        setShowModal(true)
+        setModalTitle('Profile Pic Error')
+        setModalMessage(errorMessage)
 
-        return;
+        return
       }
 
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
       fileReader.onloadend = () => {
-        setUserProfile({ ...userProfile, profilePic: fileReader.result });
-      };
+        setUserProfile({ ...userProfile, profilePic: fileReader.result })
+      }
     }
-  };
+  }
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
-    setType(type);
-    setShowModal(status);
+    setType(type)
+    setShowModal(status)
 
     if (type === 'addBlueSquare') {
-      setModalTitle('Blue Square');
+      setModalTitle('Blue Square')
     } else if (type === 'viewBlueSquare' || type === 'modBlueSquare') {
-      setModalTitle('Blue Square');
-      setId(blueSquareID);
+      setModalTitle('Blue Square')
+      setId(blueSquareID)
     } else if (blueSquareID === 'none') {
-      setModalTitle('Save & Refresh');
-      setModalMessage('');
+      setModalTitle('Save & Refresh')
+      setModalMessage('')
     }
-  };
+  }
 
   /**
    * Modifies the userProfile's infringements using a predefined operation
@@ -386,106 +386,106 @@ function UserProfile(props) {
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
-      const newBlueSquare = { date: dateStamp, description: summary };
+      const newBlueSquare = { date: dateStamp, description: summary }
       setOriginalUserProfile({
         ...originalUserProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
+      })
       setUserProfile({
         ...userProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
-      setModalTitle('Blue Square');
+      })
+      setModalTitle('Blue Square')
     } else if (operation === 'update') {
-      const currentBlueSquares = [...userProfile?.infringements] || [];
+      const currentBlueSquares = [...userProfile?.infringements] || []
       if (dateStamp != null && currentBlueSquares !== []) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
+        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp
       }
       if (summary != null && currentBlueSquares !== []) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
+        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary
       }
 
-      setUserProfile({ ...userProfile, infringements: currentBlueSquares });
-      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
+      setUserProfile({ ...userProfile, infringements: currentBlueSquares })
+      setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares })
     } else if (operation === 'delete') {
-      let newInfringements = [...userProfile?.infringements] || [];
+      let newInfringements = [...userProfile?.infringements] || []
       if (newInfringements !== []) {
-        newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        setUserProfile({ ...userProfile, infringements: newInfringements });
-        setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
+        newInfringements = newInfringements.filter(infringement => infringement._id !== id)
+        setUserProfile({ ...userProfile, infringements: newInfringements })
+        setOriginalUserProfile({ ...userProfile, infringements: newInfringements })
       }
     }
-    setShowModal(false);
-    setBlueSquareChanged(true);
-  };
+    setShowModal(false)
+    setBlueSquareChanged(true)
+  }
 
   const handleSubmit = async () => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
-      const updatedTask = updatedTasks[i];
-      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+      const updatedTask = updatedTasks[i]
+      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId)
+      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err))
     }
     try {
-      await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
+      await props.updateUserProfile(props.match.params.userId, userProfileRef.current)
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-        await props.refreshToken(userProfile._id);
+        await props.refreshToken(userProfile._id)
       }
-      await loadUserProfile();
-      await loadUserTasks();
+      await loadUserProfile()
+      await loadUserTasks()
       setSaved(false)
     } catch (err) {
-      alert('An error occurred while attempting to save this profile.');
+      alert('An error occurred while attempting to save this profile.')
     }
-  };
+  }
 
-  const toggle = modalName => setMenuModalTabletScreen(modalName);
+  const toggle = modalName => setMenuModalTabletScreen(modalName)
 
   const toggleInfoModal = () => {
-    setInfoModal(!infoModal);
-  };
+    setInfoModal(!infoModal)
+  }
 
   const toggleTab = tab => {
-    if (activeTab !== tab) setActiveTab(tab);
-  };
+    if (activeTab !== tab) setActiveTab(tab)
+  }
 
   const updateLink = (personalLinksUpdate, adminLinksUpdate, mediaUrlUpdate) => {
-    setShowModal(false);
+    setShowModal(false)
     setUserProfile({
       ...userProfile,
       mediaUrl: mediaUrlUpdate !== undefined ? mediaUrlUpdate : userProfile.mediaUrl,
       personalLinks: personalLinksUpdate,
       adminLinks: adminLinksUpdate,
-    });
-  };
+    })
+  }
 
   const setActiveInactive = isActive => {
-    setActiveInactivePopupOpen(false);
+    setActiveInactivePopupOpen(false)
     const newUserProfile = {
       ...userProfile,
       isActive: !userProfile.isActive,
       endDate: userProfile.isActive ? moment(new Date()).format('YYYY-MM-DD') : undefined,
-    };
-    updateUserStatus(newUserProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined);
-    setUserProfile(newUserProfile);
-    setOriginalUserProfile(newUserProfile);
-  };
+    }
+    updateUserStatus(newUserProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined)
+    setUserProfile(newUserProfile)
+    setOriginalUserProfile(newUserProfile)
+  }
 
   const activeInactivePopupClose = () => {
-    setActiveInactivePopupOpen(false);
-  };
+    setActiveInactivePopupOpen(false)
+  }
 
   /* useEffect functions */
   useEffect(() => {
-    getTeamMembersWeeklySummary();
-    loadUserProfile();
-  }, []);
+    getTeamMembersWeeklySummary()
+    loadUserProfile()
+  }, [])
 
   useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
-  }, [shouldRefresh]);
+    if (!shouldRefresh) return
+    setShouldRefresh(false)
+    loadUserProfile()
+  }, [shouldRefresh])
 
   /**
    *
@@ -502,8 +502,8 @@ function UserProfile(props) {
             ...userProfile.privacySettings,
             email: !userProfile.privacySettings?.email,
           },
-        });
-        break;
+        })
+        break
       case 'phonePubliclyAccessible':
         setUserProfile({
           ...userProfile,
@@ -511,8 +511,8 @@ function UserProfile(props) {
             ...userProfile.privacySettings,
             phoneNumber: !userProfile.privacySettings?.phoneNumber,
           },
-        });
-        break;
+        })
+        break
       case 'blueSquaresPubliclyAccessible':
         setUserProfile({
           ...userProfile,
@@ -520,53 +520,53 @@ function UserProfile(props) {
             ...userProfile.privacySettings,
             blueSquares: !userProfile.privacySettings?.blueSquares,
           },
-        });
-        break;
+        })
+        break
       default:
-        break;
+        break
     }
-  };
+  }
 
   const onUserVisibilitySwitch = () => {
     setUserProfile({
       ...userProfile,
       isVisible: !userProfile.isVisible ?? true,
-    });
-  };
+    })
+  }
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
       <Container fluid>
         <Row className="text-center" data-test="loading">
-          <SkeletonLoading template="UserProfile" />
+          <SkeletonLoading template="UserProfile"/>
         </Row>
       </Container>
-    );
+    )
   }
 
-  const { firstName, lastName, profilePic, jobTitle = '' } = userProfile;
+  const { firstName, lastName, profilePic, jobTitle = '' } = userProfile
 
-  const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
-  const { userid: requestorId, role: requestorRole } = props.auth.user;
+  const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined }
+  const { userid: requestorId, role: requestorRole } = props.auth.user
 
-  const authEmail = props.userProfile?.email;
-  const isUserSelf = targetUserId === requestorId;
+  const authEmail = props.userProfile?.email
+  const isUserSelf = targetUserId === requestorId
 
-  const canChangeUserStatus = props.hasPermission('changeUserStatus');
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  const canPutUserProfile = props.hasPermission('putUserProfile');
-  const canUpdatePassword = props.hasPermission('updatePassword');
+  const canChangeUserStatus = props.hasPermission('changeUserStatus')
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners')
+  const canPutUserProfile = props.hasPermission('putUserProfile')
+  const canUpdatePassword = props.hasPermission('updatePassword')
 
-  const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
-  const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
+  const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail)
+  const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail)
 
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner'
       ? canAddDeleteEditOwners
-      : canPutUserProfile;
+      : canPutUserProfile
 
-  const canEdit = canEditUserProfile || isUserSelf;
+  const canEdit = canEditUserProfile || isUserSelf
 
   const customStyles = {
     control: (base, state) => ({
@@ -585,15 +585,15 @@ function UserProfile(props) {
       ...base,
       zIndex: 9999,
     }),
-  };
+  }
 
   const handleStartDate = async startDate => {
-    setUserStartDate(startDate);
-  };
+    setUserStartDate(startDate)
+  }
 
   const handleEndDate = async endDate => {
-    setUserEndDate(endDate);
-  };
+    setUserEndDate(endDate)
+  }
 
   return (
     <div>
@@ -619,9 +619,9 @@ function UserProfile(props) {
           role={requestorRole}
         />
       )}
-      <TabToolTips />
-      <BasicToolTips />
-      <InfoModal isOpen={infoModal} toggle={toggleInfoModal} />
+      <TabToolTips/>
+      <BasicToolTips/>
+      <InfoModal isOpen={infoModal} toggle={toggleInfoModal}/>
       <Container className="emp-profile">
         <Row>
           <Col md="4" id="profileContainer">
@@ -676,10 +676,10 @@ function UserProfile(props) {
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
                     //Owner user cannot be deactivated by another user that is not an Owner.
-                    alert('You are not authorized to deactivate an owner.');
-                    return;
+                    alert('You are not authorized to deactivate an owner.')
+                    return
                   }
-                  setActiveInactivePopupOpen(true);
+                  setActiveInactivePopupOpen(true)
                 }}
               />
               {canEdit && (
@@ -691,19 +691,19 @@ function UserProfile(props) {
                   title="Click to see user's timelog"
                   onClick={e => {
                     if (e.metaKey || e.ctrlKey) {
-                      window.open(`/timelog/${targetUserId}`, '_blank');
+                      window.open(`/timelog/${targetUserId}`, '_blank')
                     } else {
-                      e.preventDefault();
-                      props.history.push(`/timelog/${targetUserId}`);
+                      e.preventDefault()
+                      props.history.push(`/timelog/${targetUserId}`)
                     }
                   }}
                 />
               )}
               <Button
                 onClick={() => {
-                  setShowSelect(!showSelect);
-                  setSummarySelected(null);
-                  setSummaryName(null);
+                  setShowSelect(!showSelect)
+                  setSummarySelected(null)
+                  setSummaryName(null)
                 }}
                 color="primary"
                 size="sm"
@@ -721,28 +721,28 @@ function UserProfile(props) {
                 {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
               </span>
             </p>
-            {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
+            {showSelect && summaries === undefined ? <div>Loading</div> : <div/>}
             {showSelect && summaries !== undefined ? (
               <div>
                 <Select
                   options={summaries}
                   styles={customStyles}
                   onChange={e => {
-                    setSummaryName(e.value[0]);
-                    getWeeklySummary(e.value[1]);
+                    setSummaryName(e.value[0])
+                    getWeeklySummary(e.value[1])
                   }}
                 />
               </div>
             ) : (
-              <div />
+              <div/>
             )}
             {summarySelected &&
               showSelect &&
               showSummary &&
               summarySelected.map((data, i) => {
                 return (
-                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} />
-                );
+                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data}/>
+                )
               })}
             <Badges
               isUserSelf={isUserSelf}
@@ -820,8 +820,8 @@ function UserProfile(props) {
                   <NavLink
                     className={classnames({ active: activeTab === '5' }, 'nav-link')}
                     onClick={e => {
-                      e.preventDefault();
-                      toggleTab('5');
+                      e.preventDefault()
+                      toggleTab('5')
                     }}
                     data-testid="edit-history-tab"
                   >
@@ -964,8 +964,8 @@ function UserProfile(props) {
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                                 'You shouldn’t even be using this account except to create your own accounts to use. ' +
                                 'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
-                              );
-                              return `#`;
+                              )
+                              return `#`
                             }
                           }}
                         >
@@ -988,12 +988,12 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
-                              setUserProfile(originalUserProfile);
-                              setTasks(originalTasks);
+                              setUserProfile(originalUserProfile)
+                              setTasks(originalTasks)
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1044,12 +1044,12 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
-                              setUserProfile(originalUserProfile);
-                              setTasks(originalTasks);
+                              setUserProfile(originalUserProfile)
+                              setTasks(originalTasks)
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1111,12 +1111,12 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
-                              setUserProfile(originalUserProfile);
-                              setTasks(originalTasks);
+                              setUserProfile(originalUserProfile)
+                              setTasks(originalTasks)
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1172,12 +1172,12 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
-                              setUserProfile(originalUserProfile);
-                              setTasks(originalTasks);
+                              setUserProfile(originalUserProfile)
+                              setTasks(originalTasks)
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1202,7 +1202,7 @@ function UserProfile(props) {
               <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Edit History</ModalHeader>
                 <ModalBody>
-                  <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile} />
+                  <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile}/>
                 </ModalBody>
                 <ModalFooter>
                   <Row>
@@ -1220,12 +1220,12 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
-                              setUserProfile(originalUserProfile);
-                              setTasks(originalTasks);
+                              setUserProfile(originalUserProfile)
+                              setTasks(originalTasks)
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1263,8 +1263,8 @@ function UserProfile(props) {
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                         'You shouldn’t even be using this account except to create your own accounts to use. ' +
                         'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
-                      );
-                      return `#`;
+                      )
+                      return `#`
                     }
                   }}
                 >
@@ -1288,14 +1288,14 @@ function UserProfile(props) {
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
-                    setSaved={()=>setSaved(true)}
+                    setSaved={() => setSaved(true)}
                   />
                   {activeTab !== '3' && (
                     <span
                       onClick={() => {
-                        setUserProfile(originalUserProfile);
-                        setTasks(originalTasks);
-                        setTeams(originalTeams);
+                        setUserProfile(originalUserProfile)
+                        setTasks(originalTasks)
+                        setTeams(originalTeams)
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
                       style={boxStyle}
@@ -1310,7 +1310,7 @@ function UserProfile(props) {
         </Row>
       </Container>
     </div>
-  );
+  )
 }
 
-export default connect(null, { hasPermission })(UserProfile);
+export default connect(null, { hasPermission })(UserProfile)
