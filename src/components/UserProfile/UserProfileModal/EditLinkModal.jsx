@@ -71,6 +71,23 @@ const EditLinkModal = props => {
     setIsChanged(true);
   };
 
+  const handleMediaFolderLinkChanges = (e) => {
+    if (!mediaFolderLink.Link){
+      // Prevent warning popup appear if empty media folder link
+      setIsMediaFolderLinkChanged(true);
+      setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+      setIsChanged(true);
+    } 
+    else {
+      setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+      setIsChanged(true);
+      if (!isMediaFolderLinkChanged && !isWarningPopupOpen){ // Fisrt time media folder link is changed
+          setIsMediaFolderLinkChanged(true);
+          setIsWarningPopupOpen(true);
+      }
+    }
+  }
+
   const addNewLink = (links, setLinks, newLink, clearInput) => {
     if (
       isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink) ||
@@ -149,13 +166,16 @@ const EditLinkModal = props => {
           [googleLink, mediaFolderLink, ...adminLinks],
           mediaFolderLink.Link,
         );
+        // Update ref to reflect updated original Media Folder Link
+          originalMediaFolderLink.current = mediaFolderLink.Link;
       } else {
         await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
       }
       handleSubmit();
       setIsValidLink(true);
-      setIsChanged(true);
+      setIsChanged(false);
       closeModal();
+      setIsMediaFolderLinkChanged(false);
     } else {
       setIsValidLink(false);
     }
@@ -204,14 +224,7 @@ const EditLinkModal = props => {
                         id="linkURL2"
                         placeholder="Enter Dropbox link"
                         value={mediaFolderLink.Link}
-                        onChange={e => {
-                          setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
-                          setIsChanged(true);
-                          if (!isMediaFolderLinkChanged && !isWarningPopupOpen){
-                            setIsMediaFolderLinkChanged(true);
-                            setIsWarningPopupOpen(true);
-                          }
-                        }}
+                        onChange={e => {handleMediaFolderLinkChanges(e)}}
                       />
                     </div>
                     {adminLinks?.map((link, index) => {

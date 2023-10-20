@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Row, Col } from 'reactstrap';
 import LogBar from './LogBar';
@@ -8,9 +7,8 @@ import ProjectLog from './ProjectLog';
 import './ProjectDetails.css';
 
 function ProjectDetails() {
-
   const { projectId } = useParams();
-  
+
   return (
     <Container className="project-details" fluid>
       <Row className="mx-auto">
