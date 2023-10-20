@@ -14,6 +14,7 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
+// eslint-disable-next-line default-param-last
 export const userProfileByIdReducer = (userProfile = initialUserProfileState, action) => {
   if (action.type === GET_USER_PROFILE) {
     return action.payload;
@@ -30,6 +31,7 @@ export const userProfileByIdReducer = (userProfile = initialUserProfileState, ac
   return userProfile;
 };
 
+// eslint-disable-next-line default-param-last
 export const userTaskByIdReducer = (userTask = null, action) => {
   if (action.type === 'GET_USER_TASK_BY_ID') {
     return action.payload;

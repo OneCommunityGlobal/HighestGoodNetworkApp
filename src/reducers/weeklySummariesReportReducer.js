@@ -6,6 +6,7 @@ const initialState = {
   error: null,
 };
 
+// eslint-disable-next-line import/prefer-default-export,default-param-last
 export const weeklySummariesReportReducer = (state = initialState, action) => {
   switch (action.type) {
     case actions.FETCH_SUMMARIES_REPORT_BEGIN:
@@ -29,15 +30,16 @@ export const weeklySummariesReportReducer = (state = initialState, action) => {
         error: action.payload.error,
       };
 
-    case actions.UPDATE_SUMMARY_REPORT:
+    case actions.UPDATE_SUMMARY_REPORT: {
       const { _id, updatedField } = action.payload;
       const newSummaries = [...state.summaries];
       const summaryIndex = newSummaries.findIndex(summary => summary._id === _id);
-      newSummaries[summaryIndex] = { ...newSummaries[summaryIndex], ...updatedField }
+      newSummaries[summaryIndex] = { ...newSummaries[summaryIndex], ...updatedField };
       return {
         ...state,
         summaries: newSummaries,
       };
+    }
 
     default:
       return state;
