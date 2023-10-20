@@ -8,7 +8,7 @@ import { connect, useDispatch } from 'react-redux';
 import Timer from '../../Timer/Timer';
 import OwnerMessage from '../../OwnerMessage/OwnerMessage';
 import {
-  LOGO,
+  // LOGO,
   DASHBOARD,
   BM_DASHBOARD,
   BM_PROJECT,
