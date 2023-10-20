@@ -43,15 +43,21 @@ import SetupProfile from 'components/SetupProfile/SetupProfile';
 import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
+
 import MaterialsList from 'components/BMDashboard/MaterialsList';
+
 import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+
 
 export default (
   <>
     <Switch>
       <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
       <>
+        {/* Comment out the Header component and its import during phase 2 development. */}
         <Header />
+        {/* Uncomment BMHeader and its import during phase 2 development. */}
+        {/* <BMHeader /> */}
         <AutoUpdate />
         <ToastContainer />
         <Switch>
