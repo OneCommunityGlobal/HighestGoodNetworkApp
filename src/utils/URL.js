@@ -82,6 +82,9 @@ export const ENDPOINTS = {
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
 
+  PRESETS: () => `${APIEndpoint}/rolePreset`,
+  PRESETS_BY_ID: (roleNameOrPresetId) => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
+
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
   OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
 
@@ -120,6 +123,7 @@ export const ENDPOINTS = {
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
+  BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`
 };
 
 export const ApiEndpoint = APIEndpoint;
