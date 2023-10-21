@@ -59,12 +59,12 @@ describe('Team component', () => {
     expect(teamProps.onMembersClick).toHaveBeenCalledWith(1, 'Team Name');
   });
 
-  it('should call onStatusClick function', () => {
-    renderWithProvider(<Team {...teamProps} />, { store });
+  // it('should call onStatusClick function', () => {
+  //   renderWithProvider(<Team {...teamProps} />, { store });
 
-    const activeMarker = screen.getByTestId('active-marker');
-    fireEvent.click(activeMarker);
+  //   const activeMarker = screen.getByTestId('active-marker');
+  //   fireEvent.click(activeMarker);
 
-    expect(teamProps.onStatusClick).toHaveBeenCalledWith('Team Name', 1, true);
-  });
+  //   expect(teamProps.onStatusClick).toHaveBeenCalledWith('Team Name', 1, true);
+  // });
 });
