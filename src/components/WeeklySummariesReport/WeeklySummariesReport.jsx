@@ -60,6 +60,8 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: [],
       teamCodes: [],
       colorOptions: [],
+      currentSessionTeamCodes: [],
+      testingString: "testingString"
     };
   }
 
@@ -151,6 +153,7 @@ export class WeeklySummariesReport extends Component {
      */
     const teamCodeGroup = {};
     const teamCodes = [];
+    const currentSessionTeamCodes = [];
     const colorOptionGroup = new Set();
     const colorOptions = [];
 
@@ -188,6 +191,12 @@ export class WeeklySummariesReport extends Component {
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
       });
 
+    teamCodes.forEach((el) => {
+      currentSessionTeamCodes.push(el);
+    })
+
+    console.log("currentSessionTeamCodes before the setState ", currentSessionTeamCodes);
+
     this.setState({
       loading,
       allRoleInfo: [],
@@ -201,6 +210,7 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: summariesCopy,
       colorOptions,
       teamCodes,
+      currentSessionTeamCodes,
     });
     await getInfoCollections();
     const role = authUser?.role;
@@ -227,6 +237,13 @@ export class WeeklySummariesReport extends Component {
     if (loading !== preState.loading) {
       this.setState({ loading });
     }
+  }
+
+  teamCodeChange = (text) => {
+    console.log("Testing on WeeklySummariesReport.jsx");
+    console.log(`Passed through ${text}`);
+    console.log(this.testingString);
+    console.log('currentSessionTeamCodes previously was :', this.currentSessionTeamCodes);
   }
 
   // componentDidUpdate(preProps) {
@@ -475,6 +492,7 @@ export class WeeklySummariesReport extends Component {
                         badges={badges}
                         loadBadges={loadBadges}
                         canEditTeamCode={this.codeEditPermission}
+                        handleTeamCodeChange={this.teamCodeChange}
                       />
                     </Col>
                   </Row>

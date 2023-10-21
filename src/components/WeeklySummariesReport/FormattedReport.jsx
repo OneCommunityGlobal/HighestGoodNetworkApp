@@ -61,6 +61,7 @@ function FormattedReport({
   badges,
   loadBadges,
   canEditTeamCode,
+  handleTeamCodeChange,
 }) {
   const emails = [];
 
@@ -108,6 +109,7 @@ function FormattedReport({
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
+            handleTeamCodeChange={handleTeamCodeChange}
             badges={badges}
             loadBadges={loadBadges}
           />
@@ -142,11 +144,12 @@ function ReportDetails({
   badges,
   loadBadges,
   canEditTeamCode,
+  handleTeamCodeChange,
 }) {
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-  if(summary.lastName === "lallouache"){
+  if (summary.lastName === "lallouache") {
     console.log(summary)
   }
   return (
@@ -158,7 +161,7 @@ function ReportDetails({
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
             <ListGroupItem>
-              <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
+              <TeamCodeRow canEditTeamCode={canEditTeamCode} handleTeamCodeChange={handleTeamCodeChange} summary={summary} />
             </ListGroupItem>
             <ListGroupItem>
               <Bio
@@ -177,7 +180,7 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem>
-              <b style={{color: textColors[summary?.weeklySummaryOption] || textColors.Default}}>
+              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
                 Hours logged:
               </b>
               {(hoursLogged >= summary.promisedHoursByWeek[weekIndex])
@@ -248,7 +251,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary }) {
+function TeamCodeRow({ canEditTeamCode, handleTeamCodeChange, summary }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
@@ -257,6 +260,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
     try {
       await axios.patch(url, { key: 'teamCode', value: newStatus });
+      handleTeamCodeChange(newStatus);
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
