@@ -79,8 +79,8 @@ class AddUserProfile extends Component {
         showphone: true,
         weeklySummaryOption: 'Required',
         createdDate: nextDay,
-        betaEmail: '',
-        betaPassword: '',
+        actualEmail: '',
+        actualPassword: '',
       },
       formValid: {},
       formErrors: {
@@ -88,6 +88,8 @@ class AddUserProfile extends Component {
         lastName: 'Last Name is required',
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
+        actualEmail: "Actual Email is required",
+        actualPassword: "Actual Password is required",
       },
       location: '',
       timeZoneFilter: '',
@@ -120,7 +122,7 @@ class AddUserProfile extends Component {
   
   
   render() {
-    const { firstName, email, lastName, phoneNumber, role, betaEmail, betaPassword, jobTitle } = this.state.userProfile;
+    const { firstName, email, lastName, phoneNumber, role, actualEmail, actualPassword, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
@@ -282,39 +284,43 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
-                {role === 'Administrator' && (
+                {(role === 'Administrator' || role === 'Owner') && (
                   <>
                     <Row className="user-add-row">
                       <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                        <Label>Email</Label>
+                        <Label>Actual Email</Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
                           <Input
-                              type="email"
-                              name="betaEmail"
-                              id="betaEmail"
-                              value={betaEmail}
+                              type="actualEmail"
+                              name="actualEmail"
+                              id="actualEmail"
+                              value={actualEmail}
                               onChange={this.handleUserProfile}
-                              placeholder="Beta Email"
+                              placeholder="Actual Email"
+                              invalid={this.state.formErrors.actualEmail}
                             />
+                            <FormFeedback>{this.state.formErrors.actualEmail}</FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
                     <Row className="user-add-row">
                       <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                        <Label>Password</Label>
+                        <Label>Actual Password</Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
                           <Input
                               type="password"
-                              name="betaPassword"
-                              id="betaPassword"
-                              value={betaPassword}
+                              name="actualPassword"
+                              id="actualPassword"
+                              value={actualPassword}
                               onChange={this.handleUserProfile}
-                              placeholder="Beta Password"
+                              placeholder="Actual Password"
+                              invalid={this.state.formErrors.actualPassword}
                             />
+                            <FormFeedback>{this.state.formErrors.actualPassword}</FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
@@ -627,8 +633,8 @@ class AddUserProfile extends Component {
       location,
       weeklySummaryOption,
       createdDate,
-      betaEmail,
-      betaPassword
+      actualEmail,
+      actualPassword
     } = that.state.userProfile;
 
     const userData = {
@@ -653,8 +659,8 @@ class AddUserProfile extends Component {
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
-      betaEmail: betaEmail,
-      betaPassword: betaPassword
+      actualEmail: actualEmail,
+      actualPassword: actualPassword
     };
 
     this.setState({ formSubmitted: true });
@@ -760,6 +766,19 @@ class AddUserProfile extends Component {
                       popupOpen: true,
                     });
                   }
+                  break;
+                case 'credentials':
+                  this.setState({
+                    formValid: {
+                      ...that.state.formValid,
+                      email: false,
+                    },
+                    formErrors: {
+                      ...that.state.formErrors,
+                      actualEmail: 'Actual email or password may be incorrect',
+                      actualPassword: 'Actual email or password may be incorrect',
+                    },
+                  });
                   break;
               }
             }
@@ -1025,19 +1044,27 @@ class AddUserProfile extends Component {
           },
         });
         break;
-      case 'betaEmail':
+      case 'actualEmail':
         this.setState({
           userProfile: {
             ...userProfile,
-            betaEmail: event.target.value
+            actualEmail: event.target.value
+          },
+          formErrors: {
+            ...formErrors,
+            actualEmail: event.target.value.match(patt) ? '' : 'Actual Email is not valid',
           },
         });
         break;
-      case 'betaPassword':
+      case 'actualPassword':
         this.setState({
           userProfile: {
             ...userProfile,
-            betaPassword: event.target.value
+            actualPassword: event.target.value
+          },
+          formErrors: {
+            ...formErrors,
+            actualPassword: event.target.value.length > 0 ? '' : 'Actual Password is required',
           },
         });
         break;
