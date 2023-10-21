@@ -60,6 +60,7 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: [],
       teamCodes: [],
       colorOptions: [],
+      auth:[],
     };
   }
 
@@ -75,7 +76,6 @@ export class WeeklySummariesReport extends Component {
       hasPermission,
       auth,
     } = this.props;
-
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
@@ -187,7 +187,6 @@ export class WeeklySummariesReport extends Component {
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
       });
-
     this.setState({
       loading,
       allRoleInfo: [],
@@ -201,6 +200,7 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: summariesCopy,
       colorOptions,
       teamCodes,
+      auth,
     });
     await getInfoCollections();
     const role = authUser?.role;
@@ -358,8 +358,8 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries,
       colorOptions,
       teamCodes,
+      auth,
     } = this.state;
-
     const { error } = this.props;
 
     if (error) {
@@ -475,6 +475,7 @@ export class WeeklySummariesReport extends Component {
                         badges={badges}
                         loadBadges={loadBadges}
                         canEditTeamCode={this.codeEditPermission}
+                        auth = {auth}
                       />
                     </Col>
                   </Row>

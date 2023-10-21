@@ -61,7 +61,11 @@ function FormattedReport({
   badges,
   loadBadges,
   canEditTeamCode,
+  auth,
 }) {
+  console.log("FormattedReport")
+  if (auth?.user?.role){console.log(auth.user.role)}
+
   const emails = [];
 
   summaries.forEach(summary => {
