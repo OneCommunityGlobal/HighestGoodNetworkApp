@@ -59,6 +59,7 @@ const BlueSquareLayout = props => {
       .toISOString()
       .split('T')[0],
   );
+  const [IsReasonUpdated,setIsReasonUpdated] = useState(false);
   const [fetchState, fetchDispatch] = useReducer(fetchingReducer, {
     isFetching: false,
     error: false,
@@ -76,9 +77,10 @@ const BlueSquareLayout = props => {
     setShow(false);
   }, []);
 
+  
   const handleSubmit = async event => {
     event.preventDefault();
-    if (fetchState.isSet) {
+    if (fetchState.isSet && IsReasonUpdated) { //if reason already exists
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await patchReason(userProfile._id, { date: date, message: reason });
       if (response.status !== 200) {
@@ -88,9 +90,9 @@ const BlueSquareLayout = props => {
         });
       } else {
         fetchDispatch({ type: 'SUCCESS' });
-      }
+        }
       setShow(true);
-    } else {
+    } else { //add/create reason
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await addReason(userProfile._id, { date: date, message: reason });
       console.log(response);
@@ -103,6 +105,7 @@ const BlueSquareLayout = props => {
         fetchDispatch({ type: 'SUCCESS' });
       }
     }
+    setIsReasonUpdated(false);
   };
 
   if (canEdit) {
@@ -128,7 +131,7 @@ const BlueSquareLayout = props => {
             className="w-100"
             size="md"
             style={boxStyle}
-            //disabled={true} //  disabled the Schedule Blue Square button.
+            //disabled={true} //remove the disabled condition to make the Schedule Blue Square button available.
             title="This functionality doesn't work currently. Please contact your manager."
           >
             {fetchState.isFetching ? (
@@ -152,6 +155,8 @@ const BlueSquareLayout = props => {
               fetchMessage={fetchState.fetchMessage}
               fetchDispatch={fetchDispatch}
               userId={userProfile._id}
+              IsReasonUpdated={IsReasonUpdated}
+              setIsReasonUpdated={setIsReasonUpdated}
             />
           </Modal>
         )}

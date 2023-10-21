@@ -22,6 +22,8 @@ const ScheduleReasonModal = ({
   fetchMessage,
   fetchDispatch,
   userId,
+  IsReasonUpdated,
+  setIsReasonUpdated,
 }) => {
   useEffect(() => {
     const initialFetching = async () => {
@@ -80,8 +82,9 @@ const ScheduleReasonModal = ({
               className="w-100"
               placeholder="Please be detailed in describing your reason and, if it is different than your scheduled Sunday, include the expected date you’ll return to work."
               value={reason}
-              onChange={e => {
+               onChange={e => {
                 setReason(e.target.value);
+                setIsReasonUpdated(true);
               }}
               disabled={fetchState.isFetching}
             />
@@ -96,7 +99,7 @@ const ScheduleReasonModal = ({
           <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
-          <Button variant="primary" type="submit" disabled={fetchState.isFetching} style={boxStyle}>
+          <Button variant="primary" type="submit" disabled={fetchState.isFetching || !IsReasonUpdated} style={boxStyle}>
             {fetchState.isFetching ? <Spinner animation="border" size="sm" /> : 'Save'}
           </Button>
         </Modal.Footer>
