@@ -58,6 +58,8 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
   };
 
   useEffect(() => {
+    if (!data.projectId) return; // some projectId are empty strings. calling PROJECT_BY_ID will return 400
+
     axios
       .get(ENDPOINTS.PROJECT_BY_ID(data.projectId))
       .then(res => {
