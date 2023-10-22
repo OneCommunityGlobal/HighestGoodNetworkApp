@@ -52,7 +52,7 @@ export const Header = props => {
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
- 
+
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
@@ -71,7 +71,7 @@ export const Header = props => {
   const canUpdatePopup = props.hasPermission('updatePopup');
   // Roles
   const canPutRole = props.hasPermission('putRole');
-  // Permissions 
+  // Permissions
   const canManageUser = props.hasPermission('putUserProfilePermissions');
 
   const dispatch = useDispatch();
@@ -87,7 +87,7 @@ export const Header = props => {
   }, [props.auth.isAuthenticated]);
 
   useEffect(() => {
-    if (roles.length === 0) {
+    if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
   }, []);
