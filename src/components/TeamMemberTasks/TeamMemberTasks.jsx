@@ -478,7 +478,7 @@ const TeamMemberTasks = React.memo(props => {
                         timeEntriesList
                           .filter(timeEntry => timeEntry.personId === user.personId)
                           .map(timeEntry => (
-                            <tr className="table-row">
+                            <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={3} style={{ padding: 0 }}>
                                 <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
                               </td>
