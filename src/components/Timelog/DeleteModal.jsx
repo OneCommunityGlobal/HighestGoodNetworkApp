@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,7 +6,7 @@ import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { deleteTimeEntry } from '../../actions/timeEntries';
 import { updateUserProfile } from '../../actions/userProfile';
 
-function DeleteModal({ timeEntry, userProfile, projectCategory, taskClassification }) {
+const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassification }) => {
   const [isOpen, setOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -18,12 +18,12 @@ function DeleteModal({ timeEntry, userProfile, projectCategory, taskClassificati
     }
 
     dispatch(deleteTimeEntry(timeEntry));
-    // update hours
+    //update hours
     const formattedHours = parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
     if (!timeEntry.isTangible) {
       userProfile.totalIntangibleHrs -= formattedHours;
     } else {
-      const category = projectCategory || taskClassification;
+      const category = projectCategory ? projectCategory : taskClassification;
       const { hoursByCategory } = userProfile;
       hoursByCategory[category] -= formattedHours;
     }
@@ -59,6 +59,6 @@ function DeleteModal({ timeEntry, userProfile, projectCategory, taskClassificati
       </Modal>
     </span>
   );
-}
+};
 
 export default DeleteModal;

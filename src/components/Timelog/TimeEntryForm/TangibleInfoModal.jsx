@@ -6,9 +6,9 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
  * @param {Boolean} props.visible
  * @param {Func} props.setVisible
  */
-function TangibleInfoModal({ visible, setVisible }) {
+const TangibleInfoModal = props => {
   return (
-    <Modal isOpen={visible}>
+    <Modal isOpen={props.visible}>
       <ModalHeader>Info</ModalHeader>
       <ModalBody>
         <p>
@@ -19,12 +19,12 @@ function TangibleInfoModal({ visible, setVisible }) {
         </p>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={() => setVisible(false)} color="primary">
+        <Button onClick={() => props.setVisible(false)} color="primary">
           Close
         </Button>
       </ModalFooter>
     </Modal>
   );
-}
+};
 
 export default TangibleInfoModal;
