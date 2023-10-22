@@ -26,8 +26,9 @@ import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
-import { infoCollectionsReducer} from './informationReducer';
+import { infoCollectionsReducer } from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+import { inventoryMaterialsCollectionsReducer } from './inventoryMaterialReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -61,4 +62,5 @@ export default combineReducers({
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
+  inventoryMaterials: inventoryMaterialsCollectionsReducer
 });

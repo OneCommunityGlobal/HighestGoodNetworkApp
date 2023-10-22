@@ -3,15 +3,19 @@ import './LogMaterials.css';
 import LogMaterialsInputs from './LogMaterialsInputs';
 import LogMaterialsTable from './LogMaterialsTable';
 import { Container } from 'reactstrap';
+import { useState } from 'react';
+import moment from 'moment';
 
 function LogMaterial() {
+
+  const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
   return (
     <Container fluid className='logMaterialContainer'>
       <div className='logMaterialPage'>
         <div className='logMaterial'>
           <div className='logMaterialTitle'>MATERIAL DAILY ACTIVITIES LOG</div>
-          <LogMaterialsInputs />
-          <LogMaterialsTable />
+          <LogMaterialsInputs date={date} setDate={setDate} />
+          <LogMaterialsTable date={date} />
         </div>
       </div>
     </Container>

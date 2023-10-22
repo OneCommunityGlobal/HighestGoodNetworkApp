@@ -1,39 +1,51 @@
+import { postMaterialLog } from 'actions/inventoryMaterial';
 import React, { useState } from 'react'
-import { Button, Table } from 'reactstrap'
-import { FormGroup, Input, Label } from 'reactstrap';
-import Select, {
-  components,
-  MultiValueGenericProps,
-  MultiValueProps,
-  OnChangeValue,
-  Props,
-  ClearIndicatorProps
-} from 'react-select';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button, Label, Table, Row, Col, Input } from 'reactstrap';
+import { toast } from 'react-toastify';
 
-const CustomClearText = () => <span className='logMaterialClearAll'>clear all</span>;
-const ClearIndicator = (props) => {
-  const {
-    children = <CustomClearText />,
-    innerProps: { ref, ...restInnerProps },
-  } = props;
-  return (
-    <div
-      {...restInnerProps}
-      ref={ref}
-    >
-      <div style={{ padding: '0px 5px' }}>{children}</div>
-    </div>
-  );
-};
+function LogMaterialsTable({ date }) {
 
-function LogMaterialsTable() {
+  const materials = useSelector(state => state.inventoryMaterials.materials);
+  const [materialsState, setMaterialsState] = useState(materials);
+  const [postMaterialLogData, setPostMaterialLogData] = useState({});
+  const logMaterialsResult = useSelector(state => state.inventoryMaterials.logMaterialsResult);
+  const dispatch = useDispatch();
 
-  const options = [
-    { value: "#1", label: "#1" },
-    { value: "#2", label: "#2" },
-    { value: "#3", label: "#3" },
-    { value: "#4", label: "#4" },
-  ];
+  const initializeLogValue = () => {
+    let _materialsState = materials.map((material) => {
+      material.logValue = '';
+      return material;
+    })
+    setMaterialsState(_materialsState);
+    setPostMaterialLogData({})
+  }
+
+  useEffect(() => {
+    initializeLogValue();
+  }, [materials])
+
+  useEffect(() => {
+    if (logMaterialsResult?.success != null)
+      toast.success(logMaterialsResult?.success)
+    else if (logMaterialsResult?.error != null)
+      toast.error(logMaterialsResult?.error)
+  }, [logMaterialsResult])
+
+
+  const logValueHandler = (e, material_obj) => {
+    material_obj.logValue = e.target.value;
+    setMaterialsState([...materialsState]);
+    postMaterialLogData[material_obj._id] = material_obj;
+  }
+
+  const onSubmitHandler = () => {
+    dispatch(postMaterialLog(postMaterialLogData, date));
+    initializeLogValue();
+  }
+
+
 
   return (
     <div>
@@ -53,81 +65,51 @@ function LogMaterialsTable() {
             <th>Working</th>
             <th> Available </th>
             <th>Using</th>
-            <th className='logMTableHead'> Material Number </th>
+            <th className='logMTableHead'> Log Material </th>
           </tr>
         </thead>
         <tbody >
-          <tr>
-            <td scope="row">   1   </td>
-            <td>  Bristle Brush  </td>
-            <td>  30 </td>
-            <td>  5 </td>
-            <td>  25 </td>
-            <td>
-              <Select
-                closeMenuOnSelect={false}
-                components={{ ClearIndicator }}
-                defaultValue={[]}
-                isMulti
-                options={options}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td scope="row">   2   </td>
-            <td>  Leather Gloves  </td>
-            <td>  100 </td>
-            <td>  50 </td>
-            <td>  50 </td>
-            <td>
-              <Select
-                closeMenuOnSelect={false}
-                components={{ ClearIndicator }}
-                defaultValue={[]}
-                isMulti
-                options={options}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td scope="row">   3   </td>
-            <td>  Wheel Barrows  </td>
-            <td>  10 </td>
-            <td>  5 </td>
-            <td>  5 </td>
-            <td>
-              <Select
-                closeMenuOnSelect={false}
-                components={{ ClearIndicator }}
-                defaultValue={[]}
-                isMulti
-                options={options}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td scope="row">   4   </td>
-            <td>  4 gallon bucket  </td>
-            <td>  50 </td>
-            <td>  30 </td>
-            <td>  20 </td>
-            <td>
-              <Select
-                closeMenuOnSelect={false}
-                components={{ ClearIndicator }}
-                defaultValue={[]}
-                isMulti
-                options={options}
-              />
-            </td>
-          </tr>
+          {
+            materialsState.length == 0 ?
+              <>
+                <tr align="center">
+                  <td colSpan={6}> <i>Please select a project that has valid material data! </i></td>
+                </tr>
+              </>
+              :
+              materialsState.map((material, idx) =>
+                <tr key={material._id}>
+                  <td scope="row">   {idx + 1}  </td>
+                  <td>  {material.inventoryItemType.name}  </td>
+                  <td>  {material.stockBought} </td>
+                  <td>  {material.stockAvailable} </td>
+                  <td>  {material.stockUsed} </td>
+                  <td>
+                    <Row className="justify-content-start align-items-center">
+                      <Col lg={10} md={9}>
+                        <Input placeholder='Please the log amount used'
+                          onChange={(e) => logValueHandler(e, materialsState[idx])}
+                          value={materialsState[idx]?.logValue}
+                          id={'log' + material._id} type="number">
 
-
+                        </Input>
+                      </Col>
+                      <Label
+                        for={'log' + material._id}
+                        lg={2} md={3}
+                      >
+                        {material.inventoryItemType.uom}
+                      </Label>
+                    </Row>
+                  </td>
+                </tr>
+              )
+          }
         </tbody>
       </Table>
       <div className='row justify-content-between '>
-        <Button size="lg" className='logMButtons' outline>Cancel</Button>
-        <Button size="lg" className='logMButtonBg'  >Submit</Button>
+        <Button size="md" className='logMButtons' outline onClick={initializeLogValue}>Cancel</Button>
+        <Button size="md" className='logMButtonBg' onClick={onSubmitHandler}  >Submit</Button>
       </div>
 
     </div>

@@ -7,81 +7,56 @@
   margin-bottom: 20px;
 }
 
-
-@media (min-width: 1024px) {
-  .logMaterialPage {
-    background-color: #E8F4F9;
-    width: 100%;
-    min-height: 100vh;
-    height: auto;
-    margin: 0px;
-    padding: 4rem 5rem;
-  }
-
-  .logMaterial {
-    background-color: white;
-    border-radius: 25px;
-    padding: 50px;
-  }
-
+.logMaterialInputRow {
+  margin: 0.5rem;
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
-  .logMaterialPage {
-    background-color: #E8F4F9;
-    width: 100%;
-    min-height: 100vh;
-    height: auto;
-    margin: 0px;
-    padding: 3rem 4rem;
+@media (min-width: 1024px) {
+  .logMaterialInputCol {
+    margin: 0rem;
   }
+}
 
-  .logMaterial {
-    background-color: white;
-    border-radius: 25px;
-    padding: 50px;
+@media (min-width: 992px) and (max-width: 1024px) {
+  .logMaterialInputCol {
+    margin: 0rem;
   }
+}
 
+
+@media (min-width: 768px) and (max-width: 992px) {
+  .logMaterialInputCol {
+    margin: 0.1rem;
+  }
 }
 
 @media (min-width: 480px) and (max-width: 768px) {
-  .logMaterialPage {
-    background-color: #E8F4F9;
-    width: 100%;
-    min-height: 100vh;
-    height: auto;
-    margin: 0px;
-    padding: 2rem 3rem;
-  }
-
-  .logMaterial {
-    background-color: white;
-    border-radius: 25px;
-    padding: 40px;
+  .logMaterialInputCol {
+    margin: 0.2rem;
   }
 }
 
 @media (max-width: 480px) {
-  .logMaterialPage {
-    background-color: #E8F4F9;
-    width: 100%;
-    min-height: 100vh;
-    height: auto;
-    margin: 0px;
-    padding: 1rem 2rem;
+  .logMaterialInputCol {
+    margin: 0.3rem;
   }
-
-  .logMaterial {
-    background-color: white;
-    border-radius: 15px;
-    padding: 20px;
-  }
-
 }
 
 
-.logMInput {
-  margin: .5rem;
+.logMaterialPage {
+  background-color: #E8F4F9;
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
+  margin: 0px;
+  padding: 3rem 4rem;
+}
+
+.logMaterial {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  height: auto;
 }
 
 
@@ -127,4 +102,8 @@
 
 .logMaterialClearAll:hover {
   color: #1C8BCC;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
