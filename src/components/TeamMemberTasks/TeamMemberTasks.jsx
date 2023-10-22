@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -460,7 +461,7 @@ const TeamMemberTasks = React.memo(props => {
                   );
                 } else {
                   return (
-                    <>
+                    <Fragment key={user.personId}>
                       <TeamMemberTask
                         user={user}
                         key={user.personId}
@@ -484,7 +485,7 @@ const TeamMemberTasks = React.memo(props => {
                               </td>
                             </tr>
                           ))}
-                    </>
+                    </ Fragment>
                   );
                 }
               })
