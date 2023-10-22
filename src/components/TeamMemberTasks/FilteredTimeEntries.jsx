@@ -70,6 +70,8 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
   }, []);
 
   useEffect(() => {
+    if (!data.projectId) return; // some projectId are empty strings. calling GET_TASK will return 400
+
     axios
       // Note: Here taskId is stored in projectId since no taskId field in timeEntry schema
       .get(ENDPOINTS.GET_TASK(data.projectId))
