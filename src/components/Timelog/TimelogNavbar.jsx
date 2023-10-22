@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Progress,
@@ -13,14 +13,15 @@ import {
 import { useSelector } from 'react-redux';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
-const TimelogNavbar = ({ userId }) => {
+function TimelogNavbar({ userId }) {
   const { firstName, lastName } = useSelector(state => state.userProfile);
   const [collapsed, setCollapsed] = useState(true);
 
   const toggleNavbar = () => setCollapsed(!collapsed);
 
   const timeEntries = useSelector(state => state.timeEntries.weeks[0]);
-  const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
+  const reducer = (total, entry) =>
+    total + parseInt(entry.hours, 10) + parseInt(entry.minutes, 10) / 60;
   const totalEffort = timeEntries.reduce(reducer, 0);
   const weeklycommittedHours = useSelector(state => state.userProfile.weeklycommittedHours);
 
@@ -79,6 +80,6 @@ const TimelogNavbar = ({ userId }) => {
       </Navbar>
     </div>
   );
-};
+}
 
 export default TimelogNavbar;

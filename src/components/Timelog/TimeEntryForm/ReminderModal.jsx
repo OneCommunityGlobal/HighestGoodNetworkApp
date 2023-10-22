@@ -10,25 +10,23 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
  * @param {*} props.inputs
  * @param {Func} cancelChange
  */
-const ReminderModal = props => {
+function ReminderModal({ visible, reminder, setVisible, edit, data, inputs, cancelChange }) {
   return (
-    <Modal isOpen={props.visible}>
+    <Modal isOpen={visible}>
       <ModalHeader>Reminder</ModalHeader>
-      <ModalBody>{props.reminder.remind}</ModalBody>
+      <ModalBody>{reminder.remind}</ModalBody>
       <ModalFooter>
-        <Button onClick={() => props.setVisible(false)} color="danger">
+        <Button onClick={() => setVisible(false)} color="danger">
           Continue
         </Button>
-        {props.edit &&
-          (props.data.hours !== props.inputs.hours ||
-            props.data.minutes !== props.inputs.minutes) && (
-            <Button onClick={props.cancelChange} color="primary">
-              Cancel
-            </Button>
-          )}
+        {edit && (data.hours !== inputs.hours || data.minutes !== inputs.minutes) && (
+          <Button onClick={cancelChange} color="primary">
+            Cancel
+          </Button>
+        )}
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default ReminderModal;

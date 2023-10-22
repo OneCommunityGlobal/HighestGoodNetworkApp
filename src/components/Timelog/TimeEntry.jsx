@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
@@ -6,23 +6,19 @@ import moment from 'moment-timezone';
 import './Timelog.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import hasPermission from 'utils/permissions';
+import checkNegativeNumber from 'utils/checkNegativeHours';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
 
-import { editTimeEntry, postTimeEntry } from '../../actions/timeEntries';
+import { editTimeEntry } from '../../actions/timeEntries';
 import { updateUserProfile } from '../../actions/userProfile';
-import hasPermission from 'utils/permissions';
-import { ENDPOINTS } from 'utils/URL';
-import axios from 'axios';
 
-import checkNegativeNumber from 'utils/checkNegativeHours';
-
-const TimeEntry = ({ data, displayYear, userProfile }) => {
-
+function TimeEntry({ data, displayYear, userProfile }) {
   const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
 
-  const toggle = () => setModal(modal => !modal);
+  const toggle = () => setModal(!modal);
 
   const dateOfWork = moment(data.dateOfWork);
   const { user } = useSelector(state => state.auth);
@@ -32,23 +28,23 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
     moment()
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD') === data.dateOfWork;
-  const role = user.role;
+  const { role } = user;
 
   const canDelete =
-    //permission to Delete time entry from other user's Dashboard
+    // permission to Delete time entry from other user's Dashboard
     dispatch(hasPermission('deleteTimeEntryOthers')) ||
-    //permission to delete any time entry on their own time logs tab
+    // permission to delete any time entry on their own time logs tab
     dispatch(hasPermission('deleteTimeEntry')) ||
-    //default permission: delete own sameday tangible entry
+    // default permission: delete own sameday tangible entry
     (!data.isTangible && isOwner && isSameDay);
 
   const canEdit =
-    //permission to edit any time log entry (from other user's Dashboard
+    // permission to edit any time log entry (from other user's Dashboard
     dispatch(hasPermission('editTimelogInfo')) ||
-    //permission to edit any time entry on their own time logs tab
+    // permission to edit any time entry on their own time logs tab
     dispatch(hasPermission('editTimeEntry')) ||
-    //default permission: edit own sameday timelog entry
-    (isOwner && isSameDay && (role === "Owner" || role === "Administrator"));
+    // default permission: edit own sameday timelog entry
+    (isOwner && isSameDay && (role === 'Owner' || role === 'Administrator'));
   const projectCategory = data.category?.toLowerCase() || '';
   const taskClassification = data.classification?.toLowerCase() || '';
 
@@ -60,38 +56,38 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
     };
     dispatch(editTimeEntry(data._id, newData));
 
-    //Update intangible hours property in userprofile
+    // Update intangible hours property in userprofile
     const formattedHours = parseFloat(data.hours) + parseFloat(data.minutes) / 60;
     const { hoursByCategory } = userProfile;
     if (data.projectName) {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
-      //change tangible to intangible
+      // change tangible to intangible
       if (data.isTangible) {
         userProfile.totalIntangibleHrs += formattedHours;
         isFindCategory
           ? (hoursByCategory[projectCategory] -= formattedHours)
-          : (hoursByCategory['unassigned'] -= formattedHours);
+          : (hoursByCategory.unassigned -= formattedHours);
       } else {
-        //change intangible to tangible
+        // change intangible to tangible
         userProfile.totalIntangibleHrs -= formattedHours;
         isFindCategory
           ? (hoursByCategory[projectCategory] += formattedHours)
-          : (hoursByCategory['unassigned'] += formattedHours);
+          : (hoursByCategory.unassigned += formattedHours);
       }
     } else {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === taskClassification);
-      //change tangible to intangible
+      // change tangible to intangible
       if (data.isTangible) {
         userProfile.totalIntangibleHrs += formattedHours;
         isFindCategory
           ? (hoursByCategory[taskClassification] -= formattedHours)
-          : (hoursByCategory['unassigned'] -= formattedHours);
+          : (hoursByCategory.unassigned -= formattedHours);
       } else {
-        //change intangible to tangible
+        // change intangible to tangible
         userProfile.totalIntangibleHrs -= formattedHours;
         isFindCategory
           ? (hoursByCategory[taskClassification] += formattedHours)
-          : (hoursByCategory['unassigned'] += formattedHours);
+          : (hoursByCategory.unassigned += formattedHours);
       }
     }
     checkNegativeNumber(userProfile);
@@ -138,7 +134,7 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
                   onClick={toggle}
                 />
                 <TimeEntryForm
-                  edit={true}
+                  edit
                   userId={data.personId}
                   data={data}
                   toggle={toggle}
@@ -160,6 +156,6 @@ const TimeEntry = ({ data, displayYear, userProfile }) => {
       </Row>
     </Card>
   );
-};
+}
 
 export default TimeEntry;
