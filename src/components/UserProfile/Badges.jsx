@@ -37,7 +37,13 @@ export const Badges = props => {
   }, [isOpen, isAssignOpen]);
 
   // Determines what congratulatory text should displayed.
-  const badgesEarned = props.userProfile.badgeCollection.reduce((acc, obj) => acc + Number(obj.count), 0);
+  const badgesEarned = props.userProfile.badgeCollection.reduce((acc, badge) => {
+    if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+      return acc + 1;
+    }
+    return acc + Math.round(Number(badge.count));
+  }, 0);
+  
   const subject = props.isUserSelf ? 'You have' : 'This person has';
   const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
@@ -73,6 +79,7 @@ export const Badges = props => {
                         setUserProfile={props.setUserProfile}
                         setOriginalUserProfile={props.setOriginalUserProfile}
                         handleSubmit={props.handleSubmit}
+                        isUserSelf={props.isUserSelf}
                       />
                     </ModalBody>
                   </Modal>
@@ -105,7 +112,7 @@ export const Badges = props => {
           </div>
         </CardHeader>
         <CardBody style={{ overflow: 'auto' }}>
-          <FeaturedBadges badges={props.userProfile.badgeCollection} />
+          <FeaturedBadges personalBestMaxHrs={props.userProfile.personalBestMaxHrs} badges={props.userProfile.badgeCollection} />
         </CardBody>
         <CardFooter
           style={{

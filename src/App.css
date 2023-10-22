@@ -9,6 +9,7 @@ body {
 
 #root {
   height: 100%;
+  overflow-x: auto; 
 }
 
 .App {
@@ -114,4 +115,8 @@ nav ul.navbar-nav li:last-child>div {
   right: -30px;
   bottom: 10px;
   white-space: nowrap
+}
+
+tr {
+  content-visibility: auto;
 }

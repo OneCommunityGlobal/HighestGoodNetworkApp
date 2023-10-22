@@ -68,7 +68,8 @@
     "redux-actions": "^2.6.5",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
-    "tinymce": "^5.10.7",
+    "tinymce": "^5.10.8",
+    "uuid": "^9.0.1",
     "websocket-extensions": ">=0.1.4"
   },
   "scripts": {
@@ -80,8 +81,8 @@
     "test:coverage": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen --coverage",
     "eject": "react-scripts eject",
     "start:local": "react-scripts start",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
+    "lint": "eslint . --ext .jsx,.js",
+    "lint:fix": "eslint --fix . --ext .jsx,.js",
     "prepare": "husky install"
   },
   "browserslist": [
@@ -92,6 +93,7 @@
   ],
   "devDependencies": {
     "@babel/helper-validator-identifier": "^7.12.11",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@testing-library/jest-dom": "^5.11.3",
     "@testing-library/react": "^10.4.3",
     "@testing-library/user-event": "^12.0.14",

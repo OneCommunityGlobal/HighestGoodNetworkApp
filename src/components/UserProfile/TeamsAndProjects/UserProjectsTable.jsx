@@ -102,12 +102,12 @@ const UserProjectsTable = React.memo(props => {
     <div>
       <div className="desktop">
         <div className="projecttable-container">
-          <div className="container">
-            <div className="row">
+          <div className="container" style={{paddingLeft: '4px', paddingRight: '4px'}}>
+            <div className="row" style={{ margin: '0 auto'}}>
               <Col
                 md={props.edit ? '7' : '12'}
                 style={{
-                  backgroundColor: ' #e9ecef',
+                  backgroundColor: '#e9ecef',
                   border: '1px solid #ced4da',
                   marginBottom: '10px',
                 }}
@@ -115,7 +115,7 @@ const UserProjectsTable = React.memo(props => {
                 <span className="projects-span">Projects</span>
               </Col>
               {props.edit && props.role && (
-                <Col md="5">
+                <Col md="5" style={{padding: '0'}}>
                   {canAssignProjectToUsers ? (
                     props.disabled ? (
                       <div
@@ -145,7 +145,7 @@ const UserProjectsTable = React.memo(props => {
               )}
             </div>
           </div>
-          <div style={{ maxHeight: '300px', overflow: 'auto' }}>
+          <div style={{ maxHeight: '300px', overflow: 'auto',  margin: '4px' }}>
             <table className="table table-bordered table-responsive-sm">
               <thead>
                 {props.role && (
@@ -163,7 +163,7 @@ const UserProjectsTable = React.memo(props => {
                       <td>{index + 1}</td>
                       <td>{`${project.projectName}`}</td>
                       {props.edit && props.role && (
-                        <td style={{ width: '103px' }}>
+                        <td style={{ width: '103px', textAlign: 'center' }}>
                           <Button
                             color="danger"
                             disabled={!canUpdateTask}
@@ -177,6 +177,7 @@ const UserProjectsTable = React.memo(props => {
                         </td>
                       )}
                     </tr>
+                    
                   ))
                 ) : (
                   <></>

@@ -203,6 +203,9 @@ const EditTaskModal = props => {
   */
   useEffect(() => {
     const fetchTaskData = async () => {
+      if (!props.taskId) {
+        return;
+      }
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(props.taskId));
         setThisTask(res?.data || {});
@@ -290,7 +293,7 @@ const EditTaskModal = props => {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={allMembers}
+                      members={allMembers.filter(user=>user.isActive)}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}

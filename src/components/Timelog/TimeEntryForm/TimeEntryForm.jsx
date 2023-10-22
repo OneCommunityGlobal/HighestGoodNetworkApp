@@ -21,6 +21,7 @@ import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
+import { updateUserProfile } from 'actions/userProfile';
 
 import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
@@ -31,6 +32,7 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
+import fixDiscrepancy from 'utils/fixDiscrepancy';
 import { boxStyle } from 'styles';
 
 /**
@@ -291,10 +293,17 @@ const TimeEntryForm = props => {
     setErrors(result);
     return isEmpty(result);
   };
+
+
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
     const { projectId, isTangible, personId } = timeEntry;
+
+    //fix discrepancy in hours in userProfile if any
+
+     fixDiscrepancy(userProfile);
+
     //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
@@ -452,6 +461,7 @@ const TimeEntryForm = props => {
     }
 
     //Update userprofile hoursByCategory
+    await dispatch(getUserProfile(userId));
 
     //Send the time entry to the server
     setSubmitting(true);
@@ -474,6 +484,20 @@ const TimeEntryForm = props => {
         `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
       );
       return;
+    }
+
+    // see if this is the first time the user is logging time
+    if (!edit) {
+      if (userProfile.isFirstTimelog && userProfile.isFirstTimelog === true) {
+
+        const updatedUserProfile = {
+          ...userProfile,
+          createdDate: new Date(),
+          isFirstTimelog: false,
+        };
+    
+        dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
+      }
     }
 
     //Clear the form and clean up.

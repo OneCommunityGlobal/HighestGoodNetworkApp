@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
   Alert,
@@ -30,21 +30,22 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { Editor } from '@tinymce/tinymce-react';
-import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries';
-import DueDateTime from './DueDateTime';
 import moment from 'moment';
 import 'moment-timezone';
-import SkeletonLoading from '../common/SkeletonLoading';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
-import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
 import { boxStyle } from 'styles';
-import CurrentPromptModal from './CurrentPromptModal.jsx';
+import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
+import SkeletonLoading from '../common/SkeletonLoading';
+import DueDateTime from './DueDateTime';
+import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries';
+import CurrentPromptModal from './CurrentPromptModal';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
+  // eslint-disable-next-line react/state-in-constructor
   state = {
     summariesCountShowing: 0,
     originSummaries: {
@@ -55,6 +56,7 @@ export class WeeklySummary extends Component {
     },
     formElements: {
       summary: '',
+      wordCount: 0,
       summaryLastWeek: '',
       summaryBeforeLast: '',
       summaryThreeWeeksAgo: '',
@@ -105,10 +107,56 @@ export class WeeklySummary extends Component {
     moveConfirm: false,
   };
 
-  async componentDidMount() {
-    await this.props.getWeeklySummaries(this.props.asUser || this.props.currentUser.userid);
+  // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
+  regexPattern = /^\s*(?:\S+(?:\s+|$)){50,}$/;
 
-    const { mediaUrl, weeklySummaries, weeklySummariesCount } = this.props.summaries;
+  // regexPattern = /^(?=(?:\S*\s){50,})\S*$/;
+
+  schema = {
+    mediaUrl: Joi.string()
+      .trim()
+      .uri()
+      .required()
+      .label('Media URL'),
+    summary: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'), // Allow empty string OR the minimum word count of 50.
+    wordCount: Joi.number()
+      .min(50)
+      .label('word count must be greater than 50 words'),
+    summaryLastWeek: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+    summaryBeforeLast: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+    summaryThreeWeeksAgo: Joi.string()
+      .allow('')
+      .regex(this.regexPattern)
+      .label('Minimum 50 words'),
+    weeklySummariesCount: Joi.optional(),
+    mediaConfirm: Joi.boolean()
+      .invalid(false)
+      .label('Media Confirm'),
+    editorConfirm: Joi.boolean()
+      .invalid(false)
+      .label('Editor Confirm'),
+    proofreadConfirm: Joi.boolean()
+      .invalid(false)
+      .label('Proofread Confirm'),
+  };
+
+  async componentDidMount() {
+    const { dueDate: _dueDate } = this.state;
+    // eslint-disable-next-line no-shadow
+    const { getWeeklySummaries, asUser, currentUser, summaries, fetchError, loading } = this.props;
+
+    await getWeeklySummaries(asUser || currentUser.userid);
+
+    const { mediaUrl, weeklySummaries, weeklySummariesCount } = summaries;
 
     const summary = (weeklySummaries && weeklySummaries[0] && weeklySummaries[0].summary) || '';
     const summaryLastWeek =
@@ -135,9 +183,7 @@ export class WeeklySummary extends Component {
 
     const dueDateThisWeek = weeklySummaries && weeklySummaries[0] && weeklySummaries[0].dueDate;
     // Make sure server dueDate is not before the localtime dueDate.
-    const dueDate = moment(dueDateThisWeek).isBefore(this.state.dueDate)
-      ? this.state.dueDate
-      : dueDateThisWeek;
+    const dueDate = moment(dueDateThisWeek).isBefore(_dueDate) ? _dueDate : dueDateThisWeek;
 
     // Calculate due dates for the last three weeks by subtracting 1, 2, and 3 weeks from the current due date
     // and then setting the due date to the end of the ISO week (Saturday) for each respective week
@@ -179,6 +225,7 @@ export class WeeklySummary extends Component {
         summaryLastWeek,
         summaryBeforeLast,
         summaryThreeWeeksAgo,
+        // wordCount: 0,
         mediaUrl: mediaUrl || '',
         weeklySummariesCount: weeklySummariesCount || 0,
         mediaConfirm: false,
@@ -197,8 +244,8 @@ export class WeeklySummary extends Component {
       dueDateThreeWeeksAgo,
       submittedCountInFourWeeks,
       activeTab: '1',
-      fetchError: this.props.fetchError,
-      loading: this.props.loading,
+      fetchError,
+      loading,
       editPopup: false,
       mediaChangeConfirm: false,
       mediaFirstChange: false,
@@ -220,7 +267,7 @@ export class WeeklySummary extends Component {
   };
 
   toggleTab = tab => {
-    const activeTab = this.state.activeTab;
+    const { activeTab } = this.state;
     if (activeTab !== tab) {
       this.setState({ activeTab: tab });
     }
@@ -231,7 +278,7 @@ export class WeeklySummary extends Component {
   };
 
   toggleShowPopup = showPopup => {
-    const mediaChangeConfirm = this.state.mediaChangeConfirm;
+    const { mediaChangeConfirm } = this.state;
     if (!mediaChangeConfirm) {
       this.setState({ editPopup: !showPopup });
     } else {
@@ -240,15 +287,14 @@ export class WeeklySummary extends Component {
   };
 
   handleMoveSelect = moveWeek => {
-    const moveSelect = this.state.moveSelect;
     this.setState({ moveSelect: moveWeek, movePopup: true });
   };
 
   handleMove = () => {
-    const moveSelect = this.state.moveSelect;
-    const newformElements = { ...this.state.formElements };
-    const activeTab = this.state.activeTab;
-    if (activeTab != moveSelect) {
+    const { moveSelect, formElements, activeTab, movePopup } = this.state;
+    const newformElements = { ...formElements };
+
+    if (activeTab !== moveSelect) {
       let movedContent = '';
       switch (activeTab) {
         case '1':
@@ -267,6 +313,8 @@ export class WeeklySummary extends Component {
           movedContent = newformElements.summaryThreeWeeksAgo;
           newformElements.summaryThreeWeeksAgo = '';
           break;
+        default:
+          break;
       }
       switch (moveSelect) {
         case '1':
@@ -281,61 +329,28 @@ export class WeeklySummary extends Component {
         case '4':
           newformElements.summaryThreeWeeksAgo = movedContent;
           break;
+        default:
+          break;
       }
     }
-    //confitm move or not
-    const movePop = this.state.movePopup;
-    this.toggleMovePopup(movePop);
+    // confitm move or not
+    this.toggleMovePopup(movePopup);
     return newformElements;
-  };
-
-  // Minimum word count of 50 (handle words that also use non-ASCII characters by counting whitespace rather than word character sequences).
-  regexPattern = new RegExp(/^\s*(?:\S+(?:\s+|$)){50,}$/);
-  schema = {
-    mediaUrl: Joi.string()
-      .trim()
-      .uri()
-      .required()
-      .label('Media URL'),
-    summary: Joi.string()
-      .allow('')
-      .regex(this.regexPattern)
-      .label('Minimum 50 words'), // Allow empty string OR the minimum word count of 50.
-    summaryLastWeek: Joi.string()
-      .allow('')
-      .regex(this.regexPattern)
-      .label('Minimum 50 words'),
-    summaryBeforeLast: Joi.string()
-      .allow('')
-      .regex(this.regexPattern)
-      .label('Minimum 50 words'),
-    summaryThreeWeeksAgo: Joi.string()
-      .allow('')
-      .regex(this.regexPattern)
-      .label('Minimum 50 words'),
-    weeklySummariesCount: Joi.optional(),
-    mediaConfirm: Joi.boolean()
-      .invalid(false)
-      .label('Media Confirm'),
-    editorConfirm: Joi.boolean()
-      .invalid(false)
-      .label('Editor Confirm'),
-    proofreadConfirm: Joi.boolean()
-      .invalid(false)
-      .label('Proofread Confirm'),
   };
 
   validate = () => {
     const options = { abortEarly: false };
-    const result = Joi.validate(this.state.formElements, this.schema, options);
-    if (!result.error) return null;
-    const errors = {};
-    for (let item of result.error.details) errors[item.path[0]] = item.message;
-    return errors;
+    const { formElements } = this.state;
+    const result = Joi.validate(formElements, this.schema, options);
+    return result?.error?.details.reduce((pre, cur) => {
+      // eslint-disable-next-line no-param-reassign
+      pre[cur.path[0]] = cur.message;
+      return pre;
+    }, {});
   };
 
   validateProperty = ({ name, value, type, checked }) => {
-    let attr = type === 'checkbox' ? checked : value;
+    const attr = type === 'checkbox' ? checked : value;
     const obj = { [name]: attr };
     const schema = { [name]: this.schema[name] };
     const { error } = Joi.validate(obj, schema);
@@ -350,59 +365,79 @@ export class WeeklySummary extends Component {
   };
 
   handleInputChange = event => {
+    const {
+      formElements: _formElements,
+      mediaChangeConfirm,
+      errors: _errors,
+      editPopup,
+    } = this.state;
+
     event.persist();
     const { name, value } = event.target;
-    const formElements = { ...this.state.formElements };
-    if (this.state.mediaChangeConfirm) {
-      const errors = { ...this.state.errors };
+    const formElements = { ..._formElements };
+    if (mediaChangeConfirm) {
+      const errors = { ..._errors };
+
       const errorMessage = this.validateProperty(event.target);
       if (errorMessage) errors[name] = errorMessage;
       else delete errors[name];
       formElements[name] = value;
       this.setState({ formElements, errors });
     } else {
-      this.toggleShowPopup(this.state.editPopup);
+      this.toggleShowPopup(editPopup);
     }
   };
 
-  handleMediaChange = event => {
+  handleMediaChange = () => {
+    const { editPopup } = this.state;
     this.setState({
       mediaChangeConfirm: true,
       mediaFirstChange: true,
     });
 
-    this.toggleShowPopup(this.state.editPopup);
+    this.toggleShowPopup(editPopup);
   };
 
   handleEditorChange = (content, editor) => {
+    const { errors: _errors, formElements: _formElements } = this.state;
     // Filter out blank pagagraphs inserted by tinymce replacing new line characters. Need those removed so Joi could do word count checks properly.
     const filteredContent = content.replace(/<p>&nbsp;<\/p>/g, '');
-    const errors = { ...this.state.errors };
+
+    const wordCount = editor.plugins.wordcount.getCount();
+
+    const errors = { ..._errors };
     const errorMessage = this.validateEditorProperty(filteredContent, editor.id);
+    const errorWordCountMessage = this.validateEditorProperty(wordCount, 'wordCount');
+
     if (errorMessage) errors[editor.id] = errorMessage;
     else delete errors[editor.id];
 
-    const formElements = { ...this.state.formElements };
+    if (errorWordCountMessage) errors.wordCount = errorWordCountMessage;
+    else delete errors.wordCount;
+
+    const formElements = { ..._formElements, wordCount };
+
     formElements[editor.id] = content;
     this.setState({ formElements, errors });
   };
 
   handleCheckboxChange = event => {
+    const { errors: _errors, formElements: _formElements } = this.state;
     event.persist();
     const { name, checked } = event.target;
-    const errors = { ...this.state.errors };
+    const errors = { ..._errors };
     const errorMessage = this.validateProperty(event.target);
     if (errorMessage) errors[name] = errorMessage;
     else delete errors[name];
 
-    const formElements = { ...this.state.formElements };
+    const formElements = { ..._formElements };
     formElements[name] = checked;
     this.setState({ formElements, errors });
   };
 
-  handleChangeInSummary = async() => {
+  handleChangeInSummary = async () => {
     // Extract state variables for ease of access
-    let {
+    const {
       submittedDate,
       formElements,
       uploadDatesElements,
@@ -411,15 +446,14 @@ export class WeeklySummary extends Component {
       dueDateLastWeek,
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
+      submittedCountInFourWeeks,
+      moveConfirm,
     } = this.state;
     let newformElements = { ...formElements };
-    let newOriginSummaries = { ...originSummaries };
-    let newUploadDatesElements = { ...uploadDatesElements };
-    let dueDates = [dueDate, dueDateLastWeek, dueDateBeforeLast, dueDateThreeWeeksAgo];
-    //Move or not, if did move, update the newformElements
-    const moveSelect = this.state.moveSelect;
-    const activeTab = this.state.activeTab;
-    const moveConfirm = this.state.moveConfirm;
+    const newOriginSummaries = { ...originSummaries };
+    const newUploadDatesElements = { ...uploadDatesElements };
+    const dueDates = [dueDate, dueDateLastWeek, dueDateBeforeLast, dueDateThreeWeeksAgo];
+    // Move or not, if did move, update the newformElements
     if (moveConfirm) {
       newformElements = this.handleMove();
     }
@@ -432,18 +466,19 @@ export class WeeklySummary extends Component {
       'uploadDateThreeWeeksAgo',
     ];
     // Calculate currentSubmittedCount using reduce
-    let currentSubmittedCount = summaries.reduce((count, summary) => {
+    const currentSubmittedCount = summaries.reduce((count, summary) => {
       return newformElements[summary] !== '' ? count + 1 : count;
     }, 0);
-    const diffInSubmittedCount = currentSubmittedCount - this.state.submittedCountInFourWeeks;
+    const diffInSubmittedCount = currentSubmittedCount - submittedCountInFourWeeks;
     if (diffInSubmittedCount !== 0) {
       this.setState({ summariesCountShowing: newformElements.weeklySummariesCount + 1 });
     }
+    // eslint-disable-next-line no-shadow
     const updateSummary = (summary, uploadDate, dueDate) => {
       if (newformElements[summary] !== newOriginSummaries[summary]) {
         newOriginSummaries[summary] = newformElements[summary];
         newUploadDatesElements[uploadDate] =
-          newformElements[summary] == '' ? dueDate : submittedDate;
+          newformElements[summary] === '' ? dueDate : submittedDate;
         this.setState({
           formElements: newformElements,
           uploadDatesElements: newUploadDatesElements,
@@ -452,9 +487,13 @@ export class WeeklySummary extends Component {
       }
     };
     // Loop through summaries and update state variables
+    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < summaries.length; i++) {
       updateSummary(summaries[i], uploadDates[i], dueDates[i]);
     }
+
+    // eslint-disable-next-line no-shadow
+    const { updateWeeklySummaries, asUser, currentUser } = this.props;
 
     // Construct the modified weekly summaries
     const modifiedWeeklySummaries = {
@@ -468,26 +507,28 @@ export class WeeklySummary extends Component {
     };
 
     // Update weekly summaries
-    return this.props.updateWeeklySummaries(
-      this.props.asUser || this.props.currentUser.userid,
-      modifiedWeeklySummaries,
-    );
+    return updateWeeklySummaries(asUser || currentUser.userid, modifiedWeeklySummaries);
   };
 
   // Updates user profile and weekly summaries
   updateUserData = async userId => {
-    await this.props.getUserProfile(userId);
-    await this.props.getWeeklySummaries(userId);
+    // eslint-disable-next-line no-shadow
+    const { getUserProfile, getWeeklySummaries } = this.props;
+    await getUserProfile(userId);
+    await getWeeklySummaries(userId);
   };
+
   // Handler for success scenario after save
   handleSaveSuccess = async toastIdOnSave => {
+    const { asUser, currentUser } = this.props;
     toast.success('✔ The data was saved successfully!', {
       toastId: toastIdOnSave,
       pauseOnFocusLoss: false,
       autoClose: 3000,
     });
-    await this.updateUserData(this.props.asUser || this.props.currentUser.userid);
+    await this.updateUserData(asUser || currentUser.userid);
   };
+
   // Handler for error scenario after save
   handleSaveError = toastIdOnSave => {
     toast.error('✘ The data could not be saved!', {
@@ -522,10 +563,11 @@ export class WeeklySummary extends Component {
     if (event) {
       event.preventDefault();
     }
+    const { moveConfirm, moveSelect } = this.state;
     this.state.moveConfirm = true;
     this.mainSaveHandler(false);
-    if (this.state.moveConfirm) {
-      this.toggleTab(this.state.moveSelect);
+    if (moveConfirm) {
+      this.toggleTab(moveSelect);
     }
   };
 
@@ -537,6 +579,7 @@ export class WeeklySummary extends Component {
   };
 
   handleClose = () => {
+    // eslint-disable-next-line react/destructuring-assignment
     this.props.setPopup(false);
   };
 
@@ -551,7 +594,13 @@ export class WeeklySummary extends Component {
       dueDateLastWeek,
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
+      summariesCountShowing,
+      mediaFirstChange,
+      editPopup,
+      movePopup,
     } = this.state;
+
+    const { isDashboard, isPopup, isModal } = this.props;
 
     // Create an object containing labels for each summary tab:
     // - 'This Week' for the current week's tab
@@ -576,7 +625,10 @@ export class WeeklySummary extends Component {
         <Container>
           <Row className="align-self-center" data-testid="error">
             <Col>
-              <Alert color="danger">Fetch error! {fetchError.message}</Alert>
+              <Alert color="danger">
+                Fetch error!
+                {fetchError.message}
+              </Alert>
             </Col>
           </Row>
         </Container>
@@ -593,21 +645,21 @@ export class WeeklySummary extends Component {
       );
     }
 
-    if (this.props.isDashboard) {
-      return <DueDateTime isShow={this.props.isPopup} dueDate={moment(dueDate)} />;
+    if (isDashboard) {
+      return <DueDateTime isShow={isPopup} dueDate={moment(dueDate)} />;
     }
 
     return (
-      <Container fluid={this.props.isModal ? true : false} className="bg--white-smoke py-3 mb-5">
+      <Container fluid={!!isModal} className="bg--white-smoke py-3 mb-5">
         <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
         <Row>
           <Col md="9">
-            Total submitted:{' '}
-            {this.state.summariesCountShowing || this.state.formElements.weeklySummariesCount}
+            Total submitted:
+            {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
-            <Button className="btn--dark-sea-green" onClick={this.handleClose}>
+            <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyle}>
               Close this window
             </Button>
           </Col>
@@ -615,7 +667,7 @@ export class WeeklySummary extends Component {
         <Form className="mt-4">
           <Nav tabs>
             {Object.values(summariesLabels).map((weekName, i) => {
-              let tId = String(i + 1);
+              const tId = String(i + 1);
               return (
                 <NavItem key={tId}>
                   <NavLink
@@ -633,7 +685,7 @@ export class WeeklySummary extends Component {
           </Nav>
           <TabContent activeTab={activeTab} className="p-2 weeklysummarypane">
             {Object.keys(summariesLabels).map((summaryName, i) => {
-              let tId = String(i + 1);
+              const tId = String(i + 1);
               return (
                 <TabPane tabId={tId} key={tId}>
                   <Row>
@@ -641,11 +693,15 @@ export class WeeklySummary extends Component {
                       <FormGroup>
                         <Label for={summaryName} className="summary-instructions-row">
                           <div>
-                            Enter your weekly summary below. (required){' '}
+                            Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
                           <UncontrolledDropdown>
-                            <DropdownToggle className="px-5 btn--dark-sea-green" caret>
+                            <DropdownToggle
+                              className="px-5 btn--dark-sea-green"
+                              caret
+                              style={boxStyle}
+                            >
                               Move This Summary
                             </DropdownToggle>
                             <DropdownMenu>
@@ -699,7 +755,8 @@ export class WeeklySummary extends Component {
                       {(errors.summary ||
                         errors.summaryLastWeek ||
                         errors.summaryBeforeLast ||
-                        errors.summaryThreeWeeksAgo) && (
+                        errors.summaryThreeWeeksAgo ||
+                        errors.wordCount) && (
                         <Alert color="danger">
                           The summary must contain a minimum of 50 words.
                         </Alert>
@@ -711,12 +768,12 @@ export class WeeklySummary extends Component {
             })}
             <Row>
               <Col>
-                {formElements.mediaUrl && !this.state.mediaFirstChange ? (
+                {formElements.mediaUrl && !mediaFirstChange ? (
                   <FormGroup className="media-url">
                     <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
                     <Label for="mediaUrl" className="mt-1">
                       <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
-                        Your DropBox Media Files Link (Share your files here){' '}
+                        Your DropBox Media Files Link (Share your files here)
                       </a>
                       <MediaURLTooltip />
                     </Label>
@@ -724,7 +781,8 @@ export class WeeklySummary extends Component {
                 ) : (
                   <Col>
                     <Label for="mediaUrl" className="mt-1">
-                      Dropbox link to your weekly media files. (required) <MediaURLTooltip />
+                      Dropbox link to your weekly media files. (required)
+                      <MediaURLTooltip />
                     </Label>
                     <Row form>
                       <Col md={8}>
@@ -740,7 +798,7 @@ export class WeeklySummary extends Component {
                           />
                         </FormGroup>
                         {
-                          <Modal isOpen={this.state.editPopup}>
+                          <Modal isOpen={editPopup}>
                             <ModalHeader> Warning!</ModalHeader>
                             <ModalBody>
                               Whoa Tiger! Are you sure you want to do that? This link needs to be
@@ -750,13 +808,13 @@ export class WeeklySummary extends Component {
                             <ModalFooter>
                               <Button onClick={this.handleMediaChange} style={boxStyle}>
                                 Confirm
-                              </Button>{' '}
+                              </Button>
                               <Button
-                                onClick={() => this.toggleShowPopup(this.state.editPopup)}
+                                onClick={() => this.toggleShowPopup(editPopup)}
                                 style={boxStyle}
                               >
                                 Close
-                              </Button>{' '}
+                              </Button>
                             </ModalFooter>
                           </Modal>
                         }
@@ -784,16 +842,18 @@ export class WeeklySummary extends Component {
                 )}
 
                 <Row form>
-                  {
-                    <Modal isOpen={this.state.movePopup} toggle={this.toggleMovePopup}>
-                      <ModalHeader> Warning!</ModalHeader>
-                      <ModalBody>Are you SURE you want to move the summary?</ModalBody>
-                      <ModalFooter>
-                        <Button onClick={this.handleMoveSave}>Confirm and Save</Button>
-                        <Button onClick={this.toggleMovePopup}>Close</Button>
-                      </ModalFooter>
-                    </Modal>
-                  }
+                  <Modal isOpen={movePopup} toggle={this.toggleMovePopup}>
+                    <ModalHeader> Warning!</ModalHeader>
+                    <ModalBody>Are you SURE you want to move the summary?</ModalBody>
+                    <ModalFooter>
+                      <Button onClick={this.handleMoveSave} style={boxStyle}>
+                        Confirm and Save
+                      </Button>
+                      <Button onClick={this.toggleMovePopup} style={boxStyle}>
+                        Close
+                      </Button>
+                    </ModalFooter>
+                  </Modal>
                 </Row>
                 <Row>
                   <Col>
@@ -866,7 +926,7 @@ export class WeeklySummary extends Component {
                     <FormGroup className="mt-2">
                       <Button
                         className="px-5 btn--dark-sea-green"
-                        disabled={this.validate()}
+                        disabled={Boolean(this.validate())}
                         onClick={this.handleSave}
                         style={boxStyle}
                       >
@@ -888,9 +948,11 @@ WeeklySummary.propTypes = {
   currentUser: PropTypes.shape({
     userid: PropTypes.string.isRequired,
   }).isRequired,
+  // eslint-disable-next-line react/forbid-prop-types, react/require-default-props
   fetchError: PropTypes.any,
   getWeeklySummaries: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.object.isRequired,
   updateWeeklySummaries: PropTypes.func.isRequired,
 };
@@ -904,8 +966,8 @@ const mapStateToProps = ({ auth, weeklySummaries }) => ({
 
 const mapDispatchToProps = dispatch => {
   return {
-    getWeeklySummaries: getWeeklySummaries,
-    updateWeeklySummaries:(userId,weeklySummary)=> updateWeeklySummaries(userId,weeklySummary)(dispatch),
+    updateWeeklySummaries: (userId, weeklySummary) =>
+      updateWeeklySummaries(userId, weeklySummary)(dispatch),
     getWeeklySummaries: userId => getWeeklySummaries(userId)(dispatch),
     getUserProfile: userId => getUserProfile(userId)(dispatch),
   };

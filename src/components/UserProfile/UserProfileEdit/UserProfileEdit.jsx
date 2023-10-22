@@ -934,6 +934,7 @@ class UserProfileEdit extends Component {
                       onDeleteTeam={this.onDeleteTeam}
                       role={requestorRole}
                       edit
+                      userProfile={this.state ? this.state.userProfile : []}
                     />
                   </TabPane>
                   <TabPane tabId="4">

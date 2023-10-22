@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById} from '../../../actions/information';
 import styles from './EditableInfoModal.css';
+import { boxStyle } from 'styles';
 
 // New RichTextEditor component
 const RichTextEditor = ({ disabled, value, onEditorChange }) => (
@@ -57,8 +58,7 @@ export class EditableInfoModal extends Component {
   };
   
   
-  async componentDidMount() {
-    await this.props.getInfoCollections();
+  componentDidMount() {
     const {infoCollections, role, areaName, fontSize, isPermissionPage} = this.props;
     let content = '';
     let visible = '0';
@@ -267,13 +267,14 @@ export class EditableInfoModal extends Component {
               <Col md={{ size: 1}} style={{paddingLeft:'5px'}}>
                 <Button
                   className='saveBtn' 
-                  onClick={this.handleSave}>Save</Button>
+                  onClick={this.handleSave}
+                  style={boxStyle}>Save</Button>
               </Col>)
             }
           <Col 
             md={{ size: 1}}
             >
-            <Button onClick={this.handleClose}>Close</Button>
+            <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
           </Col>
           </Row>
           </ModalFooter>
@@ -303,10 +304,10 @@ const mapStateToProps = ({infoCollections }) => ({
   
 const mapDispatchToProps = dispatch => {
   return {
-    getInfoCollections: ()=> dispatch(getInfoCollections()),
-    updateInfoCollection: (infoId, updatedInfo)=>dispatch(updateInfoCollection(infoId, updatedInfo)),
-    addInfoCollection: (newInfo)=>dispatch(addInfoCollection(newInfo)),
-    deleteInfoCollectionById: (infoId)=>dispatch(deleteInfoCollectionById(infoId)), 
+    getInfoCollections: () => dispatch(getInfoCollections()),
+    updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
+    addInfoCollection: (newInfo) => dispatch(addInfoCollection(newInfo)),
+    deleteInfoCollectionById: (infoId) => dispatch(deleteInfoCollectionById(infoId)), 
   };
 };
 
