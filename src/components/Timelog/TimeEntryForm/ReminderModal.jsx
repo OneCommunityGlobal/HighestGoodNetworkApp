@@ -10,7 +10,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
  * @param {*} props.inputs
  * @param {Func} cancelChange
  */
-const ReminderModal = props => {
+function ReminderModal(props) {
   return (
     <Modal isOpen={props.visible}>
       <ModalHeader>Reminder</ModalHeader>
@@ -29,6 +29,6 @@ const ReminderModal = props => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default ReminderModal;

@@ -13,7 +13,7 @@ import {
 import { useSelector } from 'react-redux';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
-const TimelogNavbar = ({ userId }) => {
+function TimelogNavbar({ userId }) {
   const { firstName, lastName } = useSelector(state => state.userProfile);
   const [collapsed, setCollapsed] = useState(true);
 
@@ -79,6 +79,6 @@ const TimelogNavbar = ({ userId }) => {
       </Navbar>
     </div>
   );
-};
+}
 
 export default TimelogNavbar;
