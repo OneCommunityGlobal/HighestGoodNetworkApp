@@ -45,6 +45,7 @@ src/components/SummaryBar/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
+src/components/Timelog/**
 src/components/Timer/**
 src/components/UpdatePassword/**
 src/components/UserManagement/**
