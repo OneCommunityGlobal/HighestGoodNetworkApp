@@ -10,7 +10,7 @@ function DeleteModal({ timeEntry, userProfile, projectCategory, taskClassificati
   const [isOpen, setOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const toggle = () => setOpen(!isOpen);
+  const toggle = () => setOpen(isOpen => !isOpen);
 
   const deleteEntry = async event => {
     if (event) {
