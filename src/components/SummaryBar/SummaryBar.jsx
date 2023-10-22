@@ -49,7 +49,7 @@ const SummaryBar = props => {
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
 
   const matchUser = asUser == authenticateUserId ? true : false;
-
+  
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   useEffect(() => {
     setUserProfile(gsUserprofile);
@@ -272,8 +272,25 @@ const SummaryBar = props => {
       : '';
   };
 
+  const getSummaryMsg = date => {
+    const pstDateObj = new Intl.DateTimeFormat('en-US', {
+      timeZone: "America/New_York"
+    });
+    console.log("Curr Date:",date.getDay());
+    const datePST = pstDateObj.format(date);
+    console.log("Curr Day",new Date(pstDateObj));
+    if(datePST.getDay() == "Thursday"){
+      return "You still need to complete the weekly summary, by FRIDAY at midnight (Pacific Time), for your manager's review Click here to submit it.";
+    }
+    return 'You still need to complete the weekly summary. Click here to submit it.';
+
+  }
+
   if (userProfile !== undefined && summaryBarData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
+    const currDate = new Date();
+    const summaryMsg = getSummaryMsg(currDate);
+    console.log("***********Current Date: ",summaryMsg)
     //const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container
@@ -392,13 +409,11 @@ const SummaryBar = props => {
                       'You have submitted your weekly summary.'
                     ) : matchUser ? (
                       <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                                                You still need to complete the weekly summary, by FRIDAY at midnight (Pacific Time), for your manager's review
- Click here to submit it.
+                      {summaryMsg}
                       </span>
                     ) : (
                       <span className="summary-toggle">
-                                                You still need to complete the weekly summary, by FRIDAY at midnight (Pacific Time), for your manager's review
- Click here to submit it.
+                      {summaryMsg}
                       </span>
                     )}
                   </font>
