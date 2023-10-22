@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-function EffortBar({ activeTab, projectsSelected }) {
+const EffortBar = ({ activeTab, projectsSelected }) => {
   const data = useSelector(state =>
     activeTab === 4 ? state.timeEntries.period : state.timeEntries.weeks[activeTab - 1],
   );
@@ -32,6 +32,6 @@ function EffortBar({ activeTab, projectsSelected }) {
       <span className="bg-success col-md-4 p-1">Total Effort: {totalTime.toFixed(2)} hrs</span>
     </div>
   );
-}
+};
 
 export default EffortBar;

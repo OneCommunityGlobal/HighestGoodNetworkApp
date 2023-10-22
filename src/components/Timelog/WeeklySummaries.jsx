@@ -1,7 +1,7 @@
 import React from 'react';
 import parse from 'html-react-parser';
 
-function WeeklySummaries({ userProfile }) {
+const WeeklySummaries = ({ userProfile }) => {
   if (!userProfile.weeklySummaries || userProfile.weeklySummaries.length < 3) {
     return <div>No weekly summaries available</div>;
   }
@@ -14,15 +14,16 @@ function WeeklySummaries({ userProfile }) {
           {parse(summary)}
         </div>
       );
+    } else {
+      return (
+        <div>
+          <h3>{title}</h3>
+          <p>
+            {userProfile.firstName} {userProfile.lastName} did not submit a summary.
+          </p>
+        </div>
+      );
     }
-    return (
-      <div>
-        <h3>{title}</h3>
-        <p>
-          {userProfile.firstName} {userProfile.lastName} did not submit a summary.
-        </p>
-      </div>
-    );
   };
 
   return (
@@ -32,6 +33,6 @@ function WeeklySummaries({ userProfile }) {
       {renderSummary("The week before last's summary", userProfile.weeklySummaries[2]?.summary)}
     </div>
   );
-}
+};
 
 export default WeeklySummaries;

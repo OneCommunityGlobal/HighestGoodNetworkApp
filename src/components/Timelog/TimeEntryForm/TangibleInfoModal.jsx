@@ -6,7 +6,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
  * @param {Boolean} props.visible
  * @param {Func} props.setVisible
  */
-function TangibleInfoModal(props) {
+const TangibleInfoModal = props => {
   return (
     <Modal isOpen={props.visible}>
       <ModalHeader>Info</ModalHeader>
@@ -25,6 +25,6 @@ function TangibleInfoModal(props) {
       </ModalFooter>
     </Modal>
   );
-}
+};
 
 export default TangibleInfoModal;
