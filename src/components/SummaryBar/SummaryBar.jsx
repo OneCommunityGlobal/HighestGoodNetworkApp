@@ -20,7 +20,7 @@ import './SummaryBar.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS, ApiEndpoint } from '../../utils/URL';
-import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
+// import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
 import hasPermission from '../../utils/permissions';
 import taskIcon from './task_icon.png';
 import badgesIcon from './badges_icon.png';
@@ -32,7 +32,14 @@ import httpService from '../../services/httpService';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 function SummaryBar(props) {
-  const { asUser, summaryBarData, hasPermission, toggleSubmitForm } = props;
+  const {
+    asUser,
+    summaryBarData,
+    hasPermission: userHasPermission,
+    toggleSubmitForm,
+    submittedSummary,
+  } = props;
+
   const [userProfile, setUserProfile] = useState(undefined);
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
@@ -48,7 +55,7 @@ function SummaryBar(props) {
 
   const matchUser = asUser === authenticateUserId;
 
-  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = userHasPermission('putUserProfileImportantInfo');
   useEffect(() => {
     setUserProfile(gsUserprofile);
   }, [gsUserprofile]);
@@ -123,6 +130,12 @@ function SummaryBar(props) {
     in: false,
     information: '',
   };
+  const getWeeklySummary = user => {
+    const latestSummary = user?.weeklySummaries?.[0];
+    return latestSummary && new Date() < new Date(latestSummary.dueDate)
+      ? latestSummary.summary
+      : '';
+  };
 
   useEffect(() => {
     if (summaryBarData && userProfile !== undefined) {
@@ -175,7 +188,7 @@ function SummaryBar(props) {
     data.lastName = userProfile.lastName;
     data.email = userProfile.email;
 
-    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${userProfile._id}`, data).catch(e => {});
+    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${userProfile._id}`, data).catch(() => {});
     openReport();
   };
   //
@@ -265,12 +278,38 @@ function SummaryBar(props) {
     window.location.hash = '#badgesearned';
   };
 
-  const getWeeklySummary = user => {
-    const latestSummary = user?.weeklySummaries?.[0];
-    return latestSummary && new Date() < new Date(latestSummary.dueDate)
-      ? latestSummary.summary
-      : '';
-  };
+  let summaryText = '';
+
+  if (weeklySummary || submittedSummary) {
+    summaryText = 'You have submitted your weekly summary.';
+  } else if (matchUser) {
+    summaryText = 'You still need to complete the weekly summary. Click here to submit it.';
+  } else {
+    summaryText = 'You still need to complete the weekly summary. Click here to submit it.';
+  }
+
+  function getLabelContent(arg1, arg2) {
+    if (arg1 === 'suggestion') {
+      if (arg2 === 'delete') {
+        return 'Delete category (Write the suggestion category number from the dropdown to delete it).';
+      }
+      return 'Add category';
+    }
+    if (arg2 === 'add') {
+      return 'Add Field';
+    }
+    return 'Delete field (Copy the field name to delete it).';
+  }
+
+  function getPlaceholderText(arg1, arg2) {
+    if (arg1 === 'suggestion') {
+      if (arg2 === 'delete') {
+        return 'write the category number, like 1 or 2 etc';
+      }
+      return 'write the category name';
+    }
+    return 'write the field name';
+  }
 
   if (userProfile !== undefined && summaryBarData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
@@ -382,18 +421,12 @@ function SummaryBar(props) {
 
               <div className="col-8 border-black bg--white-smoke d-flex align-items-center">
                 <div className="m-auto p-2 text-center">
-                  <font onClick={toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
-                    {weeklySummary || props.submittedSummary ? (
-                      'You have submitted your weekly summary.'
-                    ) : matchUser ? (
-                      <span className="summary-toggle" onClick={toggleSubmitForm}>
-                        You still need to complete the weekly summary. Click here to submit it.
-                      </span>
-                    ) : (
-                      <span className="summary-toggle">
-                        You still need to complete the weekly summary. Click here to submit it.
-                      </span>
-                    )}
+                  <font
+                    onClick={toggleSubmitForm}
+                    className="text--black med_text_summary align-middle summary-toggle"
+                    size="3"
+                  >
+                    {summaryText}
                   </font>
                 </div>
               </div>
@@ -530,25 +563,13 @@ function SummaryBar(props) {
                   {editType !== '' && (
                     <FormGroup>
                       <Label for="newField">
-                        {extraFieldForSuggestionForm === 'suggestion'
-                          ? editType === 'delete'
-                            ? 'Delete category (Write the suggestion category number from the dropdown to delete it).'
-                            : 'Add category'
-                          : editType === 'add'
-                          ? 'Add Field'
-                          : 'Delete field (Copy the field name to delete it).'}
+                        {getLabelContent(extraFieldForSuggestionForm, editType)}
                       </Label>
                       <Input
                         type="textarea"
                         name="newField"
                         id="newField"
-                        placeholder={
-                          extraFieldForSuggestionForm === 'suggestion'
-                            ? editType === 'delete'
-                              ? 'write the category number, like 1 or 2 etc'
-                              : 'write the category name'
-                            : 'write the field name'
-                        }
+                        placeholder={getPlaceholderText(extraFieldForSuggestionForm, editType)}
                         required
                       />
                     </FormGroup>
@@ -579,7 +600,7 @@ function SummaryBar(props) {
                     type="select"
                     name="suggestioncate"
                     id="suggestioncate"
-                    defaultValue={''}
+                    defaultValue=""
                     required
                   >
                     <option disabled value="" hidden>
@@ -587,7 +608,7 @@ function SummaryBar(props) {
                       -- select an option --{' '}
                     </option>
                     {suggestionCategory.map((item, index) => {
-                      return <option key={index} value={item}>{`${index + 1}. ${item}`}</option>;
+                      return <option key={item} value={item}>{`${index + 1}. ${item}`}</option>;
                     })}
                   </Input>
                 </FormGroup>
@@ -604,8 +625,8 @@ function SummaryBar(props) {
                   </FormGroup>
                 )}
                 {inputFiled.length > 0 &&
-                  inputFiled.map((item, index) => (
-                    <FormGroup key={index}>
+                  inputFiled.map(item => (
+                    <FormGroup key={item}>
                       <Label for="title">{item} </Label>
                       <Input type="textbox" name={item} id={item} placeholder="" required />
                     </FormGroup>
@@ -713,7 +734,7 @@ function SummaryBar(props) {
                 </FormGroup>
                 <FormGroup>
                   <Label for="severity">Severity/Priority (How Bad is the Bug?) </Label>
-                  <Input type="select" name="severity" id="severity" defaultValue={''} required>
+                  <Input type="select" name="severity" id="severity" defaultValue="" required>
                     <option hidden value="" disabled>
                       {' '}
                       -- select an option --{' '}
