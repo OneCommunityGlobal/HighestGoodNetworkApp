@@ -18,7 +18,7 @@ src/styles.js
 src/utils/**
 src/__tests__/**
 
-
+build/**
 
 src/components/App.jsx
 src/components/AutoReload/**
