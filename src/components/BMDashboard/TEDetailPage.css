@@ -1,0 +1,13 @@
+.TEDetailPage__span{
+background-color: #e6f5f2;
+border: 1px solid #e5e5e6;
+border-radius: 5px;
+padding: 0.5em;
+}
+
+.TEDetailPage__image{
+  border: 1px solid #e5e5e6;
+  border-radius: 5px; 
+  width: 150px;
+  height: auto;
+}

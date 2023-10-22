@@ -47,6 +47,7 @@ import BMLogin from 'components/BMDashboard/Login';
 import MaterialsList from 'components/BMDashboard/MaterialsList';
 
 import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+import TEDetailPage from 'components/BMDashboard/TEDetailPage';
 
 
 export default (
@@ -165,6 +166,8 @@ export default (
       <Route path="/bmdashboard/login" component={BMLogin} />
       <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
       <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+      <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={TEDetailPage} />  
+          
       {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
       <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
       
