@@ -80,7 +80,7 @@ const BlueSquareLayout = props => {
   
   const handleSubmit = async event => {
     event.preventDefault();
-    if (fetchState.isSet && IsReasonUpdated) { //if reason already exists
+    if (fetchState.isSet && IsReasonUpdated) { //if reason already exists and if it is changed by the user
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await patchReason(userProfile._id, { date: date, message: reason });
       if (response.status !== 200) {
@@ -131,7 +131,9 @@ const BlueSquareLayout = props => {
             className="w-100"
             size="md"
             style={boxStyle}
-            //disabled={true} //remove the disabled condition to make the Schedule Blue Square button available.
+            //disable the scheduler button if no blue square is assigned to the user
+            //length<2 because already one dummy blue square is present on every profile
+            disabled={userProfile?.infringements.length<2}
             title="This functionality doesn't work currently. Please contact your manager."
           >
             {fetchState.isFetching ? (
