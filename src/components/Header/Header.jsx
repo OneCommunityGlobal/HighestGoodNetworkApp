@@ -208,7 +208,7 @@ export const Header = props => {
                     {canCreatePopup || canUpdatePopup ? (
                       <>
                         <DropdownItem divider />
-                        <DropdownItem tag={Link} to={`/admin/`}>
+                        <DropdownItem tag={Link} to={`/popupmanagement`}>
                           {POPUP_MANAGEMENT}
                         </DropdownItem>
                       </>
