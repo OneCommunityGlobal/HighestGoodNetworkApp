@@ -306,7 +306,7 @@ class AddUserProfile extends Component {
                       </Col>
                     </Row>
                     <Row className="user-add-row">
-                      <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                      <Col md={{ size: 4 }} className="text-md-right my-2">
                         <Label>Actual Password</Label>
                       </Col>
                       <Col md="6">
