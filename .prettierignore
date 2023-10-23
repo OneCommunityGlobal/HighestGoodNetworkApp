@@ -19,7 +19,6 @@ src/__tests__/**
 
 src/components/App.jsx
 src/components/AutoReload/**
-src/components/AutoUpdate/**
 src/components/Badge/**
 src/components/common/**
 src/components/Header/**
