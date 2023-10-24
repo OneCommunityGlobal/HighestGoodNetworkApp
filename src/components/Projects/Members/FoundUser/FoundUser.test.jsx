@@ -1,10 +1,11 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, getByTestId, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux'; 
 import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import FoundUser from './FoundUser';
 
-const mockStore = configureMockStore();
+const mockStore = configureMockStore([thunk]);
 
 describe('FoundUser Component', () => {
   const sampleUser = {
@@ -89,28 +90,33 @@ describe('FoundUser Component', () => {
 
     it('calls assignProject function when the assign button is clicked', () => {
 
-    // const assignProject = jest.fn();
+    const assignProject = jest.fn();
      
-    // const initialState = {};
-    // const store = mockStore(initialState);
+    const initialState = {};
+    const store = mockStore(initialState);
 
-    // const { getByRole } = render(
-    //   <Provider store={store}>
-    //     <FoundUser {...sampleUser} assignProject={assignProject} />
-    //   </Provider>
-    // );
-    // const assignButton = getByRole('button');
+    const { getByRole } = render(
+      <Provider store={store}>
+        <FoundUser {...sampleUser} assignProject={assignProject} />
+      </Provider>
+    );
+    const assignButton = getByRole('button');
 
-    // // Simulate a button click
-    // fireEvent.click(assignButton);
+    // Simulate a button click
+    fireEvent.click(assignButton);
 
-    // // Verify that the assignProject function is called with the expected arguments
-    // expect(assignProject).toHaveBeenCalledWith(
-    //   'project123',
-    //   'user123',
-    //   'Assign',
-    //   'John',
-    //   'Smith'
-    // );
+      waitFor(() => {
+        expect(assignProject).toBeCalled();
+      });
+      // Verify that the assignProject function is called with the expected arguments
+      waitFor(() => {
+        expect(assignProject).toHaveBeenCalledWith(
+          'project123',
+          'user123',
+          'Assign',
+          'John',
+          'Smith'
+        );
+      });       
   });
 });
