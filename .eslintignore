@@ -5,7 +5,7 @@
 src/actions/**
 src/App.css
 src/config.json
-src/constants/**
+
 src/index.js
 src/languages/**
 src/reducers/**
@@ -22,7 +22,6 @@ src/__tests__/**
 
 src/components/App.jsx
 src/components/AutoReload/**
-src/components/AutoUpdate/**
 src/components/Badge/**
 src/components/common/**
 src/components/Header/**
