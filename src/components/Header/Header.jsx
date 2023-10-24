@@ -6,7 +6,7 @@ import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/NewTimer';
-import OldTimer from '../Timer/Timer';
+// import OldTimer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
   LOGO,
@@ -110,7 +110,7 @@ export const Header = props => {
           style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
           {isAuthenticated && <Timer />}
-          {isAuthenticated && <OldTimer />}
+          {/* {isAuthenticated && <OldTimer />} */}
           {isAuthenticated && (
             <div className="owner-message">
               <OwnerMessage />

@@ -49,7 +49,7 @@ import { boxStyle } from 'styles';
  * @returns
  */
 const TimeEntryForm = props => {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer = () => {}, sendClear, sendStop } = props;
+  const { userId, edit, data, isOpen, toggle, timer, resetTimer = () => {}, sendClear = () => {}, sendStop  = () => {} } = props;
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 

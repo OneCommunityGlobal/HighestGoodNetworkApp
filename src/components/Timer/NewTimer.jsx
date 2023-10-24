@@ -3,14 +3,15 @@ import moment from 'moment';
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { BsAlarmFill } from 'react-icons/bs';
 import {
-  BsAlarmFill,
-  BsPlusCircleFill,
-  BsFillPlayCircleFill,
-  BsStopCircleFill,
-  BsPauseCircleFill,
-} from 'react-icons/bs';
-import { AiFillMinusCircle } from 'react-icons/ai';
+  FaPlusCircle,
+  FaMinusCircle,
+  FaPlayCircle,
+  FaPauseCircle,
+  FaStopCircle,
+  FaUndoAlt,
+} from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
@@ -67,9 +68,17 @@ export default function NewTimer() {
     startAt: Date.now(),
   };
 
+  const MAX_HOURS = 5;
+  const MIN_MINS = 1;
+
+  const userId = useSelector(state => state.auth.user.userid);
+  const userProfile = useSelector(state => state.auth.user);
+
   const [message, setMessage] = useState(defaultMessage);
   const { time, paused, started, goal, startAt } = message;
+
   const [running, setRunning] = useState(false);
+  const [confirmationResetModal, setConfirmationResetModal] = useState(false);
   const [logTimeEntryModal, setLogTimeEntryModal] = useState(false);
   const [oneMinuteMinimumModal, setOneMinuteMinimumModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
@@ -78,18 +87,17 @@ export default function NewTimer() {
   const [timerIsOverModalOpen, setTimerIsOverModalIsOpen] = useState(false);
   const [userCanAddGoal, setUserCanAddGoal] = useState(true);
   const [userCanRemoveGoal, setUserCanRemoveGoal] = useState(true);
-  const [userCanStop, setUserCanStop] = useState(true);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
+  const audioRef = useRef(null);
 
   const data = {
     isTangible: true,
   };
 
-  const userId = useSelector(state => state.auth.user.userid);
-  const userProfile = useSelector(state => state.auth.user);
-
-  const audioRef = useRef(null);
+  const timeToLog = moment.duration(goal - remaining);
+  const logHours = timeToLog.hours();
+  const logMinutes = timeToLog.minutes();
 
   const wsMessageHandler = useMemo(
     () => ({
@@ -121,10 +129,6 @@ export default function NewTimer() {
   };
 
   const handleLogTime = () => {
-    const timeToLog = moment.duration(goal - remaining);
-    const hours = timeToLog.hours();
-    const minutes = timeToLog.minutes();
-    setLogTimer({ hours, minutes });
     toggleLogTimeModal(true);
   };
 
@@ -132,7 +136,7 @@ export default function NewTimer() {
 
   const toggleTimeIsOver = () => {
     setTimerIsOverModalIsOpen(!timerIsOverModalOpen);
-    if (running && !triggerAudio) setTriggerAudio(!triggerAudio);
+    setTriggerAudio(!triggerAudio);
   };
 
   const handleAddButton = useCallback(
@@ -141,9 +145,9 @@ export default function NewTimer() {
         .duration(goal)
         .add(duration, 'minutes')
         .asHours();
-      if (goalAfterAdditionAsHours >= 10) {
-        toast.error('Goal time cannot be set over 10 hours!');
-        sendSetGoal(moment.duration(10, 'hours').asMilliseconds());
+      if (goalAfterAdditionAsHours >= MAX_HOURS) {
+        toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
+        sendSetGoal(moment.duration(MAX_HOURS, 'hours').asMilliseconds());
       } else {
         sendAddGoal(moment.duration(duration, 'minutes').asMilliseconds());
       }
@@ -162,10 +166,10 @@ export default function NewTimer() {
         .subtract(duration, 'minutes')
         .asMinutes();
       if (started && remainingtimeAfterRemoval <= 0) {
-        toast.error('Remaining time is already less than 15 minutes!');
-      } else if (goalAfterRemovalAsMinutes < 15) {
-        toast.error('Timer cannot be set less than 15 minutes!');
-        sendSetGoal(moment.duration(15, 'minutes').asMilliseconds());
+        toast.error(`Remaining time is already less than ${duration} minutes!`);
+      } else if (goalAfterRemovalAsMinutes < MIN_MINS) {
+        toast.error(`Timer cannot be set less than ${MIN_MINS} minutes!`);
+        sendSetGoal(moment.duration(MIN_MINS, 'minutes').asMilliseconds());
       } else {
         sendRemoveGoal(moment.duration(duration, 'minutes').asMilliseconds());
       }
@@ -208,12 +212,15 @@ export default function NewTimer() {
       started: startedLJM,
       goal: goalLJM,
     } = lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
+    const maxHoursAsMillieseconds = moment.duration(MAX_HOURS, 'hours').asMilliseconds();
+    const minMinutesAsMillieseconds = moment.duration(MIN_MINS, 'minutes').asMilliseconds();
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
     setInacModal(forcedPauseLJM);
-    setUserCanRemoveGoal((startedLJM && timeLJM > 900000) || goalLJM > 900000);
-    setUserCanAddGoal(goalLJM <= 35100000); // 9h 45min as milliseconds
-    setUserCanStop(startedLJM);
+    setUserCanRemoveGoal(
+      (startedLJM && timeLJM > minMinutesAsMillieseconds) || goalLJM > minMinutesAsMillieseconds,
+    );
+    setUserCanAddGoal(goalLJM <= maxHoursAsMillieseconds); // 9h 45min as milliseconds
   }, [lastJsonMessage]);
 
   useEffect(() => {
@@ -237,6 +244,7 @@ export default function NewTimer() {
 
   useEffect(() => {
     checkRemainingTime();
+    setLogTimer({ hours: logHours, minutes: logMinutes });
   }, [remaining]);
 
   useEffect(() => {
@@ -267,43 +275,54 @@ export default function NewTimer() {
           {moment.utc(remaining).format('HH:mm:ss')}
         </button>
       </div>
-      <div className={css.addBtn}>
-        <button type="button" onClick={() => handleAddButton(15)}>
-          <BsPlusCircleFill
+      <div className={css.btns}>
+        <button
+          type="button"
+          onClick={() => {
+            handleAddButton(15);
+          }}
+        >
+          <FaPlusCircle
             className={cs(css.transitionColor, userCanAddGoal ? css.btn : css.btnDisabled)}
             fontSize="1.5rem"
           />
         </button>
         <button type="button" onClick={() => handleSubtractButton(15)}>
-          <AiFillMinusCircle
+          <FaMinusCircle
             className={cs(css.transitionColor, userCanRemoveGoal ? css.btn : css.btnDisabled)}
-            fontSize="1.7rem"
+            fontSize="1.5rem"
           />
         </button>
+        {!started || paused ? (
+          <button type="button" onClick={sendStart}>
+            <FaPlayCircle className={cs(css.btn, css.transitionColor)} fontSize="1.5rem" />
+          </button>
+        ) : (
+          <button type="button" onClick={sendPause}>
+            <FaPauseCircle className={cs(css.btn, css.transitionColor)} fontSize="1.5rem" />
+          </button>
+        )}
+        <button type="button" onClick={handleStopButton} disable={`${!started}`}>
+          <FaStopCircle
+            className={cs(css.transitionColor, started ? css.btn : css.btnDisabled)}
+            fontSize="1.5rem"
+          />
+        </button>
+        <button type="button" onClick={() => setConfirmationResetModal(true)}>
+          <FaUndoAlt className={cs(css.transitionColor, css.btn)} fontSize="1.3rem" />
+        </button>
       </div>
-      {!started || paused ? (
-        <button type="button" onClick={sendStart}>
-          <BsFillPlayCircleFill className={cs(css.btn, css.transitionColor)} fontSize="1.5rem" />
-        </button>
-      ) : (
-        <button type="button" onClick={sendPause}>
-          <BsPauseCircleFill className={cs(css.btn, css.transitionColor)} fontSize="1.5rem" />
-        </button>
-      )}
-      <button type="button" onClick={handleStopButton} disable={`${!userCanStop}`}>
-        <BsStopCircleFill
-          className={cs(css.transitionColor, userCanStop ? css.btn : css.btnDisabled)}
-          fontSize="1.5rem"
-        />
-      </button>
+
       <div className={cs(css.timer, !showTimer && css.hideTimer)}>
         <div className={css.timerContent}>
           {readyState === ReadyState.OPEN ? (
             <Countdown
               message={message}
+              timerRange={{ MAX_HOURS, MIN_MINS }}
               running={running}
               wsMessageHandler={wsMessageHandler}
               remaining={remaining}
+              setConfirmationResetModal={setConfirmationResetModal}
               handleAddButton={handleAddButton}
               handleSubtractButton={handleSubtractButton}
               handleStopButton={handleStopButton}
@@ -328,6 +347,26 @@ export default function NewTimer() {
         )}
       </div>
       <audio ref={audioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
+      <Modal
+        isOpen={confirmationResetModal}
+        toggle={() => setConfirmationResetModal(!confirmationResetModal)}
+        centered
+        size="md"
+      >
+        <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset Time</ModalHeader>
+        <ModalBody>Are you sure you want to reset your time?</ModalBody>
+        <ModalFooter>
+          <Button
+            color="primary"
+            onClick={() => {
+              sendClear();
+              setConfirmationResetModal(false);
+            }}
+          >
+            Yes, reset time!
+          </Button>{' '}
+        </ModalFooter>
+      </Modal>
       <Modal size="md" isOpen={inacModal} toggle={() => setInacModal(!inacModal)} centered>
         <ModalHeader toggle={() => setInacModal(!inacModal)}>Timer Paused</ModalHeader>
         <ModalBody>
@@ -362,13 +401,14 @@ export default function NewTimer() {
       </Modal>
       <Modal isOpen={timerIsOverModalOpen} toggle={toggleTimeIsOver} centered size="md">
         <ModalHeader toggle={toggleTimeIsOver}>Time Complete!</ModalHeader>
-        <ModalBody>Click below if you’d like to add time or Log Time.</ModalBody>
+        <ModalBody>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
+          logMinutes ? ` ${logMinutes} minutes` : ''
+        }. Click below if you’d like to add time or Log Time.`}</ModalBody>
         <ModalFooter>
           <Button
             color="primary"
             onClick={() => {
-              setTimerIsOverModalIsOpen(false);
-              setTriggerAudio(false);
+              toggleTimeIsOver();
               handleLogTime();
             }}
           >
@@ -379,6 +419,7 @@ export default function NewTimer() {
             onClick={() => {
               toggleTimeIsOver();
               handleAddButton(15);
+              sendStart();
             }}
           >
             Add More Time

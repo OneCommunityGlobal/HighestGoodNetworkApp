@@ -42,20 +42,30 @@
 
 .content .remainingTime {
   position: relative;
+  display: flex;
+  gap: 0.05rem;
+  justify-content: center;
 }
 
-.content .timeValue {
+.content .timeDisplay {
+  min-width: 3rem;
   font-weight: bolder;
-  font-size: 2.5rem;
+  font-size: 2rem;
   margin-top: -0.5rem;
+  text-align: center;
 }
 
 .content .label {
   font-size: 0.7rem;
-  text-transform: uppercase;
   font-weight: bolder;
-  display: flex;
-  justify-content: space-around;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.content .timeColon {
+  margin-top: -0.2rem;
+  font-size: 1.7rem;
+  font-weight: bolder;
 }
 
 .content .operators {
