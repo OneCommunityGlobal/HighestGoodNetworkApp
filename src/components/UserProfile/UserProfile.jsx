@@ -54,8 +54,10 @@ import { connect, useDispatch } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
+import { updateTask } from 'actions/task';
 
 function UserProfile(props) {
+  console.log('props inside of user profile ', props);
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -219,7 +221,13 @@ function UserProfile(props) {
 
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const userProjects = await axios.get(ENDPOINTS.USER_PROJECTS(userId));
+      // console.log('usr projects', userProjects);
+
       const newUserProfile = response.data;
+
+      // console.log('response is', response);
+
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
@@ -432,7 +440,7 @@ function UserProfile(props) {
       }
       await loadUserProfile();
       await loadUserTasks();
-      setSaved(false)
+      setSaved(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
@@ -562,8 +570,8 @@ function UserProfile(props) {
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner'
-      ? canAddDeleteEditOwners
-      : canPutUserProfile;
+    ? canAddDeleteEditOwners
+    : canPutUserProfile;
 
   const canEdit = canEditUserProfile || isUserSelf;
 
@@ -653,9 +661,7 @@ function UserProfile(props) {
               </Alert>
             ) : null}
             {!codeValid ? (
-              <Alert color="danger">
-                The code format should be A-AAA or AAAAA.
-              </Alert>
+              <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
@@ -715,10 +721,7 @@ function UserProfile(props) {
             <p className="proile-rating">
               From : <span>{formatDate(userProfile.createdDate)}</span>
               {'   '}
-              To:{' '}
-              <span>
-                {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
-              </span>
+              To: <span>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
@@ -961,8 +964,8 @@ function UserProfile(props) {
                             if (selfIsDevAdminUneditable) {
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                                'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                                  'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                               );
                               return `#`;
                             }
@@ -987,7 +990,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1043,7 +1046,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1071,7 +1074,6 @@ function UserProfile(props) {
                 <ModalBody>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
-
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
@@ -1087,7 +1089,9 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
-                    canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                    canEditTeamCode={
+                      props.hasPermission('editTeamCode') || requestorRole == 'Owner'
+                    }
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
                     codeValid={codeValid}
@@ -1110,7 +1114,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1171,7 +1175,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1219,7 +1223,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1260,8 +1264,8 @@ function UserProfile(props) {
                     if (selfIsDevAdminUneditable) {
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                        'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                        'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                       );
                       return `#`;
                     }
@@ -1287,7 +1291,7 @@ function UserProfile(props) {
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
-                    setSaved={()=>setSaved(true)}
+                    setSaved={() => setSaved(true)}
                   />
                   {activeTab !== '3' && (
                     <span
