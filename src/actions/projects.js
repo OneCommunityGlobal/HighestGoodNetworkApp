@@ -109,6 +109,21 @@ export const modifyProject = (type, projectId, projectName, category, isActive) 
   };
 };
 
+export const fetchProjectsByCategory = (category) => {
+  const request = axios.get(ENDPOINTS.PROJECTS_BY_CATEGORY + category);
+  return async dispatch => {
+    await dispatch(setProjectsStart());
+    request
+      .then(res => {
+        dispatch(setProjects(res.data));
+      })
+      .catch(err => {
+        console.log('Error', err);
+        dispatch(setProjectsError());
+      });
+  };
+};
+
 /** *****************************************
  * PLAIN OBJECT ACTIONS
  ****************************************** */

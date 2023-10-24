@@ -5,21 +5,22 @@ import { FormGroup, Input, Label, Form, Row, Col, Button } from 'reactstrap';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { fetchAllProjects } from 'actions/projects';
+import { fetchProjectsByCategory } from 'actions/projects';
 import { getMaterialsByProjAndCheckInOutSuccess, resetMaterialsByProjAndCheckInOut } from 'actions/inventoryMaterial';
 import Select from 'react-select';
 
-function LogMaterialsInputs({ date, setDate }) {
+function LogMaterialsInputs({ date, setDate, checkInOut, setCheckInOut }) {
 
   const [project, setProject] = useState('');
-  const [checkInOut, setCheckInOut] = useState(1);
+
   const projects = useSelector(state => state.allProjects.projects)
   const [formattedProjects, setFormattedProjects] = useState([]);
+  const today = moment(new Date()).format('YYYY-MM-DD')
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchAllProjects());
     dispatch(resetMaterialsByProjAndCheckInOut())
+    dispatch(fetchProjectsByCategory('Housing'));
   }, []);
 
   useEffect(() => {
@@ -63,7 +64,7 @@ function LogMaterialsInputs({ date, setDate }) {
                 Date:
               </Label>
               <Col lg={10} md={9}>
-                <Input value={date} onChange={dateHandler} id='selectdate' name='select' type="date">
+                <Input max={today} value={date} onChange={dateHandler} id='selectdate' name='select' type="date">
                 </Input>
               </Col>
             </Row>

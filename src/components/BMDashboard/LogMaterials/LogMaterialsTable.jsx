@@ -1,21 +1,23 @@
-import { postMaterialLog } from 'actions/inventoryMaterial';
+import { postMaterialLog, resetLogMaterialsResult, resetMaterialsByProjAndCheckInOut } from 'actions/inventoryMaterial';
 import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Label, Table, Row, Col, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 
-function LogMaterialsTable({ date }) {
+function LogMaterialsTable({ date, checkInOut }) {
 
   const materials = useSelector(state => state.inventoryMaterials.materials);
   const [materialsState, setMaterialsState] = useState(materials);
   const [postMaterialLogData, setPostMaterialLogData] = useState({});
+  const [error, setError] = useState(false)
   const logMaterialsResult = useSelector(state => state.inventoryMaterials.logMaterialsResult);
   const dispatch = useDispatch();
 
   const initializeLogValue = () => {
     let _materialsState = materials.map((material) => {
       material.logValue = '';
+      material.error = '';
       return material;
     })
     setMaterialsState(_materialsState);
@@ -27,22 +29,53 @@ function LogMaterialsTable({ date }) {
   }, [materials])
 
   useEffect(() => {
-    if (logMaterialsResult?.success != null)
+    if (logMaterialsResult?.success != null) {
       toast.success(logMaterialsResult?.success)
-    else if (logMaterialsResult?.error != null)
+      dispatch(resetLogMaterialsResult())
+    }
+    else if (logMaterialsResult?.error != null) {
       toast.error(logMaterialsResult?.error)
+      dispatch(resetLogMaterialsResult())
+    }
   }, [logMaterialsResult])
 
 
   const logValueHandler = (e, material_obj) => {
-    material_obj.logValue = e.target.value;
+
+    if (checkInOut == 0) {
+      if (e.target.value > +material_obj.stockAvailable) {
+        material_obj.error = 'Please enter a value less than or equal to Stock Available';
+        material_obj.logValue = e.target.value;
+        setMaterialsState([...materialsState]);
+        setError(true);
+        return;
+      }
+    }
+    else {
+      if (e.target.value > +material_obj.stockUsed) {
+        material_obj.error = 'Please enter a value less than or equal to Stock Used';
+        material_obj.logValue = e.target.value;
+        setMaterialsState([...materialsState]);
+        setError(true);
+        return;
+      }
+    }
+
+    material_obj.logValue = e.target.value; material_obj.error = '';
     setMaterialsState([...materialsState]);
     postMaterialLogData[material_obj._id] = material_obj;
+    if (error == true) setError(false);
   }
 
   const onSubmitHandler = () => {
-    dispatch(postMaterialLog(postMaterialLogData, date));
-    initializeLogValue();
+    if (error) {
+      toast.error('Please resolve all the errors before submitting the log')
+    }
+    else {
+      dispatch(postMaterialLog(postMaterialLogData, date));
+      initializeLogValue();
+    }
+
   }
 
 
@@ -85,18 +118,22 @@ function LogMaterialsTable({ date }) {
                   <td>  {material.stockAvailable} </td>
                   <td>  {material.stockUsed} </td>
                   <td>
-                    <Row className="justify-content-start align-items-center">
-                      <Col lg={10} md={9}>
-                        <Input placeholder='Please the log amount used'
-                          onChange={(e) => logValueHandler(e, materialsState[idx])}
-                          value={materialsState[idx]?.logValue}
-                          id={'log' + material._id} type="number">
+                    <Row >
+                      <Col lg={9} md={8}>
+                        <Row className="justify-content-start align-items-start">
+                          <Input placeholder='Please the log amount used'
+                            onChange={(e) => logValueHandler(e, materialsState[idx])}
+                            value={materialsState[idx]?.logValue}
+                            id={'log' + material._id} type="number" max={material.stockAvailable}>
 
-                        </Input>
+                          </Input>
+                          <br />
+                          <span className='err'> {material.error} </span>
+                        </Row>
                       </Col>
                       <Label
                         for={'log' + material._id}
-                        lg={2} md={3}
+                        lg={3} md={4}
                       >
                         {material.inventoryItemType.uom}
                       </Label>

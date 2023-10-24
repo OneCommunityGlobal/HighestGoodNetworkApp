@@ -107,3 +107,9 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+.err {
+  color: red;
+  font-size: 11px;
+  font-style: italic;
+}

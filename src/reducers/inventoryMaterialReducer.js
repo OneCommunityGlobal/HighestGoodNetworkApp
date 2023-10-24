@@ -11,8 +11,15 @@ export const inventoryMaterialsCollectionsReducer = (state = initialState, actio
   switch (action.type) {
     case actions.RESET_MATERIALS_BY_PROJ_CHECKINOUT:
       return {
-        ...initialState,
-        logMaterialsResult: { ...initialState.logMaterialsResult }
+        materials: [],
+        loading: false,
+        materialsfetchError: null,
+        logMaterialsResult: { success: null, error: null }
+      };
+    case actions.RESET_LOG_MATERIALS_RESULT:
+      return {
+        ...state,
+        logMaterialsResult: { success: null, error: null }
       };
     case actions.FETCH_MATERIALS_BY_PROJ_CHECKINOUT_BEGIN:
       return {

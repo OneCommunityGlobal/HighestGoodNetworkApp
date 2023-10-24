@@ -18,6 +18,9 @@ export const fetchMaterialsByProjAndCheckInOutError = result => ({
 export const resetMaterialsByProjAndCheckInOut = () => ({
   type: actions.RESET_MATERIALS_BY_PROJ_CHECKINOUT
 });
+export const resetLogMaterialsResult = () => ({
+  type: actions.RESET_LOG_MATERIALS_RESULT
+})
 export const postedLogMaterialsResult = (result) => ({
   type: actions.POSTED_LOG_MATERIALS_RESULT,
   payload: result
