@@ -47,14 +47,13 @@ export const TeamMembersPopup = React.memo(props => {
     let sortedList = []
 
     if (sort === 0) {
-      const groupByPermissionList = props.members.teamMembers.reduce((pre, cur) => {
+      const groupByPermissionList = props.members?.teamMembers?.reduce((pre, cur) => {
         const role = cur.role;
         pre[role] ? pre[role].push(cur) : pre[role] = [cur]
         return pre;
-      }, {})
-      console.log(groupByPermissionList);
+      }, {}) ?? {}
       sortedList = Object.keys(groupByPermissionList)
-        .toSorted(sortByPermission)
+        .sort(sortByPermission)
         .map(key => groupByPermissionList[key])
         .map(list => list.toSorted(sortByAlpha))
         .flat()
