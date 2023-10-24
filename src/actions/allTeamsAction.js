@@ -194,12 +194,12 @@ export const deleteTeamMember = (teamId, userId) => {
 /**
  * Adding an existing user to team
  */
-export const addTeamMember = (teamId, userId, firstName, lastName) => {
+export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime) => {
   const requestData = { users: [{ userId, operation: 'Assign' }] };
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async (dispatch) => {
     teamMemberAddPromise.then(() => {
-      dispatch(teamMemberAddAction({ _id: userId, firstName, lastName }));
+      dispatch(teamMemberAddAction({ _id: userId, firstName, lastName, role, addDateTime }));
     });
   };
 };
