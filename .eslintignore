@@ -24,9 +24,9 @@ src/components/App.jsx
 src/components/AutoReload/**
 src/components/AutoUpdate/**
 src/components/Badge/**
-src/components/BMDashboard/**
 src/components/common/**
 src/components/Header/**
+src/components/BMDashboard/BMHeader/**
 src/components/Inventory/**
 src/components/Login/**
 src/components/ManageMemberships/**

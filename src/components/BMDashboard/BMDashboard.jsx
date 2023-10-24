@@ -302,6 +302,6 @@ export const BMDashboard = () => {
       </main>
     </Container>
   );
-};
+}
 
 export default BMDashboard;

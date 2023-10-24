@@ -1,4 +1,3 @@
-import React from 'react';
 import { Row } from 'reactstrap';
 import ProjectSummary from './ProjectSummary';
 
@@ -18,6 +17,6 @@ const ProjectsList = ({ projects }) => {
       )}
     </Row>
   );
-};
+}
 
 export default ProjectsList;

@@ -1,0 +1,1 @@
+export const SET_MATERIALS = 'SET_MATERIALS';
