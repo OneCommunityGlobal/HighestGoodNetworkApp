@@ -16,12 +16,14 @@ const dummyProjects = [
         title: 'forklift',
         image: 'https://www.theforkliftcenter.com/images/forklift-hero-left.png',
         rentedOnDate: '',
+        rentDuration: '',
       },
       {
         inventoryItemId: 2,
         title: 'saw',
         image: 'https://www.theforkliftcenter.com/images/forklift-hero-left.png',
         rentedOnDate: '',
+        rentDuration: '',
       },
     ],
     materials: [
@@ -82,12 +84,14 @@ const dummyProjects = [
         title: 'forklift',
         image: 'https://www.theforkliftcenter.com/images/forklift-hero-left.png',
         rentedOnDate: '',
+        rentDuration: '',
       },
       {
         inventoryItemId: 2,
         title: 'saw',
         image: 'https://www.theforkliftcenter.com/images/forklift-hero-left.png',
         rentedOnDate: '',
+        rentDuration: '',
       },
     ],
     materials: [
@@ -148,12 +152,14 @@ const dummyProjects = [
         title: 'forklift',
         image: 'https://www.theforkliftcenter.com/images/forklift-hero-left.png',
         rentedOnDate: '',
+        rentDuration: '',
       },
       {
         inventoryItemId: 2,
         title: 'saw',
         image: 'https://www.theforkliftcenter.com/images/forklift-hero-left.png',
         rentedOnDate: '',
+        rentDuration: '',
       },
     ],
     materials: [
@@ -214,12 +220,14 @@ const dummyProjects = [
         title: 'forklift',
         image: 'https://www.theforkliftcenter.com/images/forklift-hero-left.png',
         rentedOnDate: '',
+        rentDuration: '',
       },
       {
         inventoryItemId: 2,
         title: 'saw',
         image: 'https://www.theforkliftcenter.com/images/forklift-hero-left.png',
         rentedOnDate: '',
+        rentDuration: '',
       },
     ],
     materials: [
