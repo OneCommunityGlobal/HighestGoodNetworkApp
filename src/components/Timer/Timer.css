@@ -1,9 +1,9 @@
-.timer button {
+.old-timer button {
   min-width: 3.75rem;
   box-shadow: none !important;
 }
 
-.timer .badge {
+.old-timer .badge {
   font-size: 1.5rem;
   font-variant-numeric: tabular-nums;
 }
@@ -13,7 +13,7 @@
 }
 
 @media (min-width: 1550px) {
-  .timer {
+  .old-timer {
     display: flex;
   }
 }
