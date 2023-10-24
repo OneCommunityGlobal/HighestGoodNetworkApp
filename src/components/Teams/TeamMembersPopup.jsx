@@ -52,6 +52,7 @@ export const TeamMembersPopup = React.memo(props => {
         pre[role] ? pre[role].push(cur) : pre[role] = [cur]
         return pre;
       }, {})
+      console.log(groupByPermissionList);
       sortedList = Object.keys(groupByPermissionList)
         .toSorted(sortByPermission)
         .map(key => groupByPermissionList[key])
@@ -97,7 +98,7 @@ export const TeamMembersPopup = React.memo(props => {
       "assistant manager",
       "volunteer"
     ]
-    return rolesPermission.indexOf(a) - rolesPermission.indexOf(b);
+    return rolesPermission.indexOf(a.toLowerCase()) - rolesPermission.indexOf(b.toLowerCase());
   }, [])
 
   const icons = {
