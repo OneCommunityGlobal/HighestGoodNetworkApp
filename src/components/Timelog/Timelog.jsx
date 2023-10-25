@@ -47,7 +47,7 @@ import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 
-const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
+const doesUserHaveTaskWithWBS = (userId, tasks = []) => {
   if (!Array.isArray(tasks)) return false;
 
   for (const task of tasks) {
@@ -77,10 +77,10 @@ function useDeepEffect(effectFunc, deps) {
 }
 
 function Timelog(props) {
+  const { isDashboard, match, asUser } = props;
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
 
   // access the store states
   const auth = useSelector(state => state.auth);
@@ -110,7 +110,7 @@ function Timelog(props) {
     }
 
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
-    if (!props.isDashboard) {
+    if (!isDashboard) {
       tab = 1;
     }
     return tab;
@@ -137,12 +137,12 @@ function Timelog(props) {
     setState({ ...state, isTimeEntriesLoading: true });
     try {
       await Promise.all([
-        props.getTimeEntriesForWeek(userId, 0),
-        props.getTimeEntriesForWeek(userId, 1),
-        props.getTimeEntriesForWeek(userId, 2),
-        props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate),
-        props.getUserProjects(userId),
-        props.getAllRoles(),
+        getTimeEntriesForWeek(userId, 0),
+        getTimeEntriesForWeek(userId, 1),
+        getTimeEntriesForWeek(userId, 2),
+        getTimeEntriesForPeriod(userId, state.fromDate, state.toDate),
+        getUserProjects(userId),
+        getAllRoles(),
         props.getUserTask(userId),
       ]);
     } catch (e) {
@@ -197,11 +197,8 @@ function Timelog(props) {
 
   const handleSearch = e => {
     e.preventDefault();
-    const userId =
-      props.match && props.match.params.userId
-        ? props.match.params.userId
-        : props.asUser || auth.user.userid;
-    props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate);
+    const userId = match && match.params.userId ? match.params.userId : asUser || auth.user.userid;
+    getTimeEntriesForPeriod(userId, state.fromDate, state.toDate);
   };
 
   const startOfWeek = offset => {
@@ -284,7 +281,7 @@ function Timelog(props) {
     }
     const options = projects.map(
       project =>
-        project?.projectId != undefined && (
+        project?.projectId !== undefined && (
           <option value={project.projectId} key={project.projectId}>
             {' '}
             {project.projectName}{' '}
