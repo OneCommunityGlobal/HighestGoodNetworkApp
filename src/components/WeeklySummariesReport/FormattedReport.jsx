@@ -284,7 +284,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
     }
   };
 
-  const handleCodeChange = e => {
+  const handleCodeChange = async e => {
     const { value } = e.target;
 
     if (value.length <= 5) {
@@ -292,7 +292,11 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
       if (regexTest) {
         setHasError(false);
         setTeamCode(value);
-        handleOnChange(summary, value);
+        try {
+          await handleOnChange(summary, value);
+        } catch (error) {
+          console.error("Error in handleOnChange:", error);
+        }
       } else {
         setTeamCode(value);
         setHasError(true);
@@ -311,7 +315,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
               value={teamCode}
               onChange={e => {
                 if (e.target.value !== teamCode) {
-                  handleCodeChange(e);
+                  handleCodeChange(e).then(r => r);
                 }
               }}
               placeholder="X-XXX"

@@ -1651,6 +1651,7 @@ export default {
             'getUserProfiles',
             'getProjectMembers',
             'getWeeklySummaries',
+            'editTeamCode',
             // 'getReportsPage',?
             'getTimeZoneAPIKey',
             'checkLeadTeamOfXplus',
