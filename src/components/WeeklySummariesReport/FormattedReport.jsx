@@ -79,7 +79,7 @@ function FormattedReport({
 
     const openEmailClientWithBatchInNewTab = batch => {
       const emailAddresses = batch.join(', ');
-      const mailtoLink = `mailto:${emailAddresses}`;
+      const mailtoLink = `mailto:?bcc=${emailAddresses}`;
       window.open(mailtoLink, '_blank');
     };
 
@@ -146,7 +146,9 @@ function ReportDetails({
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-
+  if(summary.lastName === "lallouache"){
+    console.log(summary)
+  }
   return (
     <li className="list-group-item px-0" ref={ref}>
       <ListGroup className="px-0" flush>
@@ -174,34 +176,15 @@ function ReportDetails({
                 canEditSummaryCount={canEditSummaryCount}
               />
             </ListGroupItem>
-            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <p>
-                  <b
-                    style={{
-                      color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                    }}
-                  >
-                    Hours logged:{' '}
-                  </b>
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              </ListGroupItem>
-            )}
-            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <b
-                  style={{
-                    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                  }}
-                >
-                  Hours logged:
-                </b>
-                <span className="ml-2">
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
-              </ListGroupItem>
-            )}
+            <ListGroupItem>
+              <b style={{color: textColors[summary?.weeklySummaryOption] || textColors.Default}}>
+                Hours logged:
+              </b>
+              {(hoursLogged >= summary.promisedHoursByWeek[weekIndex])
+                ? <p>{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</p>
+                : <span className="ml-2">{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</span>
+              }
+            </ListGroupItem>
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
@@ -268,7 +251,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 function TeamCodeRow({ canEditTeamCode, summary }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
+  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
@@ -276,34 +259,25 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
       await axios.patch(url, { key: 'teamCode', value: newStatus });
     } catch (err) {
       // eslint-disable-next-line no-alert
-      alert('An error occurred while attempting to save the new team code change to the profile.');
+      alert(
+        `An error occurred while attempting to save the new team code change to the profile.${err}`,
+      );
     }
   };
 
   const handleCodeChange = e => {
-    let { value } = e.target;
-    if (e.target.value.length === 1) {
-      value = `${e.target.value}-`;
-    }
-    if (e.target.value === '-') {
-      value = '';
-    }
-    if (e.target.value.length === 2) {
-      if (e.target.value.includes('-')) {
-        value = e.target.value.replace('-', '');
-      } else {
-        value = `${e.target.value.charAt(0)}-${e.target.value.charAt(1)}`;
-      }
-    }
+    const { value } = e.target;
 
-    const regexTest = fullCodeRegex.test(value);
-    if (regexTest) {
-      setHasError(false);
-      setTeamCode(value);
-      handleOnChange(summary, value);
-    } else {
-      setTeamCode(value);
-      setHasError(true);
+    if (value.length <= 5) {
+      const regexTest = fullCodeRegex.test(value);
+      if (regexTest) {
+        setHasError(false);
+        setTeamCode(value);
+        handleOnChange(summary, value);
+      } else {
+        setTeamCode(value);
+        setHasError(true);
+      }
     }
   };
 
@@ -311,7 +285,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
     <>
       <div className="teamcode-wrapper">
         {canEditTeamCode ? (
-          <div style={{ width: '100px', paddingRight: '5px' }}>
+          <div style={{ width: '107px', paddingRight: '5px' }}>
             <Input
               id="codeInput"
               value={teamCode}
@@ -333,7 +307,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
       </div>
       {hasError ? (
         <Alert className="code-alert" color="danger">
-          Please enter a code in the format of X-XXX
+          NOT SAVED! The code format must be A-AAA or AAAAA.
         </Alert>
       ) : null}
     </>
