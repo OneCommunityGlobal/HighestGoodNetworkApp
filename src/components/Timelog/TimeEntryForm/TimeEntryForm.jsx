@@ -43,7 +43,6 @@ import { boxStyle } from 'styles';
  * @param {function} props.toggle Toggles the visability of this modal
  * @param {boolean} props.isOpen Whether or not this modal is visible
  * @param {*} props.timer
- * @param {boolean} props.data.disabled
  * @param {boolean} props.data.isTangible
  * @param {*} props.userProfile
  * @param {function} props.resetTimer
@@ -52,17 +51,8 @@ import { boxStyle } from 'styles';
  * @returns
  */
 const TimeEntryForm = props => {
-  const {
-    userId,
-    edit,
-    data,
-    isOpen,
-    toggle,
-    timer,
-    resetTimer,
-    LoggedInuserId,
-    curruserId,
-  } = props;
+
+  const { userId, edit, data, isOpen, toggle, timer, LoggedInuserId, curruserId, resetTimer = () => {}, sendClear = () => {}, sendStop  = () => {} } = props;
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
@@ -85,7 +75,6 @@ const TimeEntryForm = props => {
     editNotice: true,
   };
 
-  const [isSubmitting, setSubmitting] = useState(false);
   const [inputs, setInputs] = useState(edit ? data : initialFormValues);
   const [errors, setErrors] = useState({});
   const [close, setClose] = useState(false);
@@ -448,7 +437,7 @@ const TimeEntryForm = props => {
   const handleSubmit = async event => {
     //Validation and variable initialization
     if (event) event.preventDefault();
-    if (isSubmitting) return;
+
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
@@ -478,8 +467,6 @@ const TimeEntryForm = props => {
     //Update userprofile hoursByCategory
     const curruserProfile = await dispatch(getUserProfile(userId));
 
-    //Send the time entry to the server
-    setSubmitting(true);
 
     let timeEntryStatus;
     if (edit) {
@@ -495,7 +482,6 @@ const TimeEntryForm = props => {
       }
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
     }
-    setSubmitting(false);
 
     if (timeEntryStatus !== 200) {
       toggle();
@@ -528,6 +514,7 @@ const TimeEntryForm = props => {
           'Your time entry was successfully recorded, but an error occurred while asking the server to reset your timer. There is no need to submit your hours a second time, and doing so will result in a duplicate time entry.',
         );
       }
+      sendClear();
     } else if (!reminder.notice) {
       setReminder(reminder => ({
         ...reminder,
@@ -535,7 +522,10 @@ const TimeEntryForm = props => {
       }));
     }
 
-    if (fromTimer) clearForm();
+    if (fromTimer) {
+      sendStop();
+      clearForm();
+    }
     setReminder(initialReminder);
 
     if (!props.edit) setInputs(initialFormValues);
@@ -824,6 +814,7 @@ TimeEntryForm.propTypes = {
   resetTimer: PropTypes.func,
   LoggedInuserId: PropTypes.string,
   curruserId: PropTypes.string,
+  handleStop: PropTypes.func,
 };
 
 export default connect(null, { hasPermission })(TimeEntryForm);

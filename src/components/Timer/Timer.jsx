@@ -155,7 +155,7 @@ function Timer() {
   const padZero = number => `0${number}`.slice(-2);
 
   return (
-    <div style={{ zIndex: 2 }} className="timer">
+    <div style={{ zIndex: 2 }} className="old-timer">
       <Button onClick={reset} color="secondary" className="mr-1 align-middle">
         Clear
       </Button>
