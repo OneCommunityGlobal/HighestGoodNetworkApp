@@ -60,8 +60,6 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: [],
       teamCodes: [],
       colorOptions: [],
-      currentSessionTeamCodes: [],
-      testingString: "testingString"
     };
   }
 
@@ -153,7 +151,6 @@ export class WeeklySummariesReport extends Component {
      */
     const teamCodeGroup = {};
     const teamCodes = [];
-    const currentSessionTeamCodes = [];
     const colorOptionGroup = new Set();
     const colorOptions = [];
 
@@ -191,12 +188,6 @@ export class WeeklySummariesReport extends Component {
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
       });
 
-    teamCodes.forEach((el) => {
-      currentSessionTeamCodes.push(el);
-    })
-
-    console.log("currentSessionTeamCodes before the setState ", currentSessionTeamCodes);
-
     this.setState({
       loading,
       allRoleInfo: [],
@@ -210,7 +201,6 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: summariesCopy,
       colorOptions,
       teamCodes,
-      currentSessionTeamCodes,
     });
     await getInfoCollections();
     const role = authUser?.role;
@@ -239,21 +229,91 @@ export class WeeklySummariesReport extends Component {
     }
   }
 
-  teamCodeChange = (text) => {
+  // componentDidUpdate(preProps, preState) {
+  //   const { teamCodes } = this.props;
+  //   if (teamCodes !== preState.teamCodes) {
+  //     console.log("New team code added");
+  //     this.setState({ teamCodes });
+  //   }
+  // }
+
+  refreshTeamCodes = async () => {
+
+    // reusing code from above @ componentDidMount
+    const { getWeeklySummariesReport } = this.props;
+    // 1. fetch report
+    const res = await getWeeklySummariesReport();
+    // eslint-disable-next-line react/destructuring-assignment
+    const summaries = res?.data;
+    // console.log(summaries);
+
+    // 2. shallow copy and sort
+    let summariesCopy = [...summaries];
+    summariesCopy = this.alphabetize(summariesCopy);
+
+    // 3. add new key of promised hours by week
+    summariesCopy = summariesCopy.map(summary => {
+      // append the promised hours starting from the latest week (this week)
+      const promisedHoursByWeek = this.weekDates.map(weekDate =>
+        this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+      );
+      return { ...summary, promisedHoursByWeek };
+    });
+
+    const teamCodeGroup = {};
+    const teamCodes = [];
+    const colorOptionGroup = new Set();
+    const colorOptions = [];
+
+    summariesCopy.forEach(summary => {
+      const code = summary.teamCode || 'noCodeLabel';
+      if (teamCodeGroup[code]) {
+        teamCodeGroup[code].push(summary);
+      } else {
+        teamCodeGroup[code] = [summary];
+      }
+
+      if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
+    });
+
+    Object.keys(teamCodeGroup).forEach(code => {
+      if (code !== 'noCodeLabel') {
+        teamCodes.push({
+          value: code,
+          label: `${code} (${teamCodeGroup[code].length})`,
+        });
+      }
+    });
+    colorOptionGroup.forEach(option => {
+      colorOptions.push({
+        value: option,
+        label: option,
+      });
+    });
+    colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+    teamCodes
+      .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+      .push({
+        value: '',
+        label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+      });
+    this.setState({ teamCodes });
+  }
+
+  // this is passed through to FormattedReport.jsx all the way to TeamCodeRow (line 254)
+  teamCodeChange = async () => {
     console.log("Testing on WeeklySummariesReport.jsx");
-    console.log(`Passed through ${text}`);
-    console.log(this.testingString);
-    console.log('currentSessionTeamCodes previously was :', this.currentSessionTeamCodes);
+    this.refreshTeamCodes();
   }
 
   // componentDidUpdate(preProps) {
-  //   const {summaries} = preProps
+  //   const { summaries } = preProps
+  //   console.log("Summaries in componentDidUpdate w/ preProps", summaries);
 
   //   if (this.props.summaries !== summaries) {
-  //     let summariesCopy = [...summaries];
+  //     let summariesCopy = [...this.props.summaries];
   //     summariesCopy = this.alphabetize(summariesCopy);
 
-  //     // 3. add new key of promised hours by week
   //     summariesCopy = summariesCopy.map(summary => {
   //       // append the promised hours starting from the latest week (this week)
   //       const promisedHoursByWeek = this.weekDates.map(weekDate =>
@@ -262,7 +322,50 @@ export class WeeklySummariesReport extends Component {
   //       return { ...summary, promisedHoursByWeek };
   //     });
 
-  //     this.setState({filteredSummaries: summariesCopy, summaries: summariesCopy})
+  //     const teamCodeGroup = {};
+  //     const teamCodes = [];
+  //     const colorOptionGroup = new Set();
+  //     const colorOptions = [];
+
+  //     summariesCopy.forEach(summary => {
+  //       const code = summary.teamCode || 'noCodeLabel';
+  //       if (teamCodeGroup[code]) {
+  //         teamCodeGroup[code].push(summary);
+  //       } else {
+  //         teamCodeGroup[code] = [summary];
+  //       }
+
+  //       if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
+  //     });
+  //     console.log("teamCodeGroup after forEach", teamCodeGroup);
+
+  //     Object.keys(teamCodeGroup).forEach(code => {
+  //       if (code !== 'noCodeLabel') {
+  //         teamCodes.push({
+  //           value: code,
+  //           label: `${code} (${teamCodeGroup[code].length})`,
+  //         });
+  //       }
+  //     });
+  //     console.log("teamCodes after forEach", teamCodes);
+
+  //     colorOptionGroup.forEach(option => {
+  //       colorOptions.push({
+  //         value: option,
+  //         label: option,
+  //       });
+  //     });
+
+  //     colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+  //     teamCodes
+  //       .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+  //       .push({
+  //         value: '',
+  //         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+  //       });
+
+  //     this.setState({ filteredSummaries: summariesCopy, summaries: summariesCopy, teamCodes: teamCodes });
+  //     console.log("Summaries has changed, new state being set");
   //   }
   // }
 

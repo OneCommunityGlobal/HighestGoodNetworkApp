@@ -260,7 +260,7 @@ function TeamCodeRow({ canEditTeamCode, handleTeamCodeChange, summary }) {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
     try {
       await axios.patch(url, { key: 'teamCode', value: newStatus });
-      handleTeamCodeChange(newStatus);
+      handleTeamCodeChange();
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
