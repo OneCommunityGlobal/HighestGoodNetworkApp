@@ -36,7 +36,6 @@ describe('FoundUser Component', () => {
   it('renders user data correctly', () => {
     const { getByText, getByRole } = renderUserTable(sampleUser);
 
-    // Verify that user data is displayed correctly
     expect(getByText('1')).toBeInTheDocument();
     expect(getByText('John Smith')).toBeInTheDocument();
     expect(getByText('john.smith@example.com')).toBeInTheDocument();
@@ -58,7 +57,6 @@ describe('FoundUser Component', () => {
 
     const { queryByRole } = renderUserTable(assignedUser);
 
-    // Verify that the button is not rendered
     const assignButton = queryByRole('button');
     expect(assignButton).toBeNull();
   });
@@ -66,7 +64,6 @@ describe('FoundUser Component', () => {
   it('generates the correct user profile link', () => {
     const { getByText } = renderUserTable(sampleUser);
 
-    // Verify that the user profile link is generated correctly
     const profileLink = getByText('John Smith');
     expect(profileLink).toHaveAttribute('href', '/userprofile/user123');
   });
@@ -76,14 +73,12 @@ describe('FoundUser Component', () => {
     const { getByRole } = renderUserTable(sampleUser, assignProject);
     const assignButton = getByRole('button');
 
-    // Simulate a button click
     fireEvent.click(assignButton);
 
     waitFor(() => {
       expect(assignProject).toBeCalled();
     });
 
-    // Verify that the assignProject function is called with the expected arguments
     waitFor(() => {
       expect(assignProject).toHaveBeenCalledWith(
         'project123',
