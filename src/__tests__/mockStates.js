@@ -1071,7 +1071,7 @@ export const rolesMock = {
           'getUserProfiles',
           'getProjectMembers',
           'getWeeklySummaries',
-          'editTeamCode',
+          // 'editTeamCode',
           // 'getReportsPage',?
           'getTimeZoneAPIKey',
           'checkLeadTeamOfXplus',

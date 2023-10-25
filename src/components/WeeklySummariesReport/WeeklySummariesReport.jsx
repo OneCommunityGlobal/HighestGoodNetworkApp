@@ -86,6 +86,7 @@ export class WeeklySummariesReport extends Component {
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
     this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner' || auth.user.role === 'Administrator';
+    // console.log('this.codeEditPermission', this.codeEditPermission, auth.user.role);
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
