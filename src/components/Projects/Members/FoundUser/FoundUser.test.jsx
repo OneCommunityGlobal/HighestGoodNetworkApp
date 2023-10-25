@@ -7,6 +7,21 @@ import FoundUser from './FoundUser';
 
 const mockStore = configureMockStore([thunk]);
 
+const renderUserTable = (user, assignProject) => {
+  const initialState = {}; 
+  const store = mockStore(initialState);
+
+  return render(
+    <Provider store={store}>
+      <table>
+        <tbody>
+          <FoundUser {...user} assignProject={assignProject} />
+        </tbody>
+      </table>
+    </Provider>
+  );
+};
+
 describe('FoundUser Component', () => {
   const sampleUser = {
     index: 0,
@@ -19,15 +34,8 @@ describe('FoundUser Component', () => {
   };
 
   it('renders user data correctly', () => {
-    const initialState = {}; 
-    const store = mockStore(initialState);
+    const { getByText, getByRole } = renderUserTable(sampleUser);
 
-    const { getByText, getByRole } = render(
-      <Provider store={store}> 
-        <FoundUser {...sampleUser} />
-      </Provider>
-    );
-    
     // Verify that user data is displayed correctly
     expect(getByText('1')).toBeInTheDocument();
     expect(getByText('John Smith')).toBeInTheDocument();
@@ -35,88 +43,55 @@ describe('FoundUser Component', () => {
     expect(getByRole('button')).toBeInTheDocument();
   });
 
-  it('should render the assign button if user is not assigned', () => {
+  it('should render the assign button if the user is not assigned', () => {
+    const { getByRole } = renderUserTable(sampleUser);
 
-    const initialState = {};
-    const store = mockStore(initialState);
-
-    const { getByRole } = render(
-      <Provider store={store}>
-        <FoundUser {...sampleUser} />
-      </Provider>
-    );
-    
     const assignButton = getByRole('button');
     expect(assignButton).toBeInTheDocument();
   });
 
-
-  it('should not render the assign button if user is already assigned', () => {
+  it('should not render the assign button if the user is already assigned', () => {
     const assignedUser = {
       ...sampleUser,
       assigned: true,
-    }
+    };
 
-    const initialState = {};
-    const store = mockStore(initialState);
+    const { queryByRole } = renderUserTable(assignedUser);
 
-    const { queryByRole } = render(
-      <Provider store={store}>
-        <FoundUser {...assignedUser} />
-      </Provider>
-    );
-
-    //verify that button is not rendered
+    // Verify that the button is not rendered
     const assignButton = queryByRole('button');
     expect(assignButton).toBeNull();
   });
 
   it('generates the correct user profile link', () => {
+    const { getByText } = renderUserTable(sampleUser);
 
-
-    const initialState = {};
-    const store = mockStore(initialState);
-
-    const { getByText } = render(
-      <Provider store={store}>
-        <FoundUser {...sampleUser} />
-      </Provider>
-    );
-    
     // Verify that the user profile link is generated correctly
     const profileLink = getByText('John Smith');
     expect(profileLink).toHaveAttribute('href', '/userprofile/user123');
   });
 
-    it('calls assignProject function when the assign button is clicked', () => {
-
+  it('calls assignProject function when the assign button is clicked', () => {
     const assignProject = jest.fn();
-     
-    const initialState = {};
-    const store = mockStore(initialState);
-
-    const { getByRole } = render(
-      <Provider store={store}>
-        <FoundUser {...sampleUser} assignProject={assignProject} />
-      </Provider>
-    );
+    const { getByRole } = renderUserTable(sampleUser, assignProject);
     const assignButton = getByRole('button');
 
     // Simulate a button click
     fireEvent.click(assignButton);
 
-      waitFor(() => {
-        expect(assignProject).toBeCalled();
-      });
-      // Verify that the assignProject function is called with the expected arguments
-      waitFor(() => {
-        expect(assignProject).toHaveBeenCalledWith(
-          'project123',
-          'user123',
-          'Assign',
-          'John',
-          'Smith'
-        );
-      });       
+    waitFor(() => {
+      expect(assignProject).toBeCalled();
+    });
+
+    // Verify that the assignProject function is called with the expected arguments
+    waitFor(() => {
+      expect(assignProject).toHaveBeenCalledWith(
+        'project123',
+        'user123',
+        'Assign',
+        'John',
+        'Smith'
+      );
+    });
   });
 });
