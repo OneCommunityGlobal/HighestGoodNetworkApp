@@ -126,10 +126,6 @@ export default function Timer() {
     setLogTimeEntryModal(modal => !modal);
   };
 
-  const handleLogTime = () => {
-    toggleLogTimeModal(true);
-  };
-
   const toggleTimer = () => setShowTimer(timer => !timer);
 
   const toggleTimeIsOver = () => {
@@ -187,7 +183,7 @@ export default function Timer() {
     if (goal - remaining < 60000) {
       setOneMinuteMinimumModal(true);
     } else {
-      handleLogTime();
+      toggleLogTimeModal();
     }
   };
 
@@ -211,13 +207,8 @@ export default function Timer() {
      * so that message state and other states like running, inacMoal ... will be updated together
      * at the same time.
      */
-    const {
-      time: timeLJM,
-      paused: pausedLJM,
-      forcedPause: forcedPauseLJM,
-      started: startedLJM,
-      goal: goalLJM,
-    } = lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
+    const { paused: pausedLJM, forcedPause: forcedPauseLJM, started: startedLJM } =
+      lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
     setInacModal(forcedPauseLJM);
@@ -440,7 +431,7 @@ export default function Timer() {
             color="primary"
             onClick={() => {
               toggleTimeIsOver();
-              handleLogTime();
+              toggleLogTimeModal();
             }}
           >
             Log Time

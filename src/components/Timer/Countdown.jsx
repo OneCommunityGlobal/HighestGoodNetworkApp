@@ -79,15 +79,15 @@ export default function Countdown({
   };
 
   const validateTime = () => {
-    const dur = moment.duration(hours, 'hours').add(minutes, 'minutes');
-    if (dur.asHours() > MAX_HOURS) {
+    const duration = moment.duration(hours, 'hours').add(minutes, 'minutes');
+    if (duration.asHours() > MAX_HOURS) {
       toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
       sendSetGoal(moment.duration(MAX_HOURS, 'hours').asMilliseconds());
-    } else if (dur.asMinutes() < MIN_MINS) {
+    } else if (duration.asMinutes() < MIN_MINS) {
       toast.error(`Timer cannot be set less than ${MIN_MINS} minutes!`);
       sendSetGoal(moment.duration(MIN_MINS, 'minutes').asMilliseconds());
     } else {
-      sendSetGoal(dur.asMilliseconds());
+      sendSetGoal(duration.asMilliseconds());
     }
     setEditing(false);
   };
