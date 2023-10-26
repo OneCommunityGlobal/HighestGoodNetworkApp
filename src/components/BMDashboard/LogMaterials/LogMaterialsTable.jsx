@@ -72,7 +72,8 @@ function LogMaterialsTable({ date, checkInOut }) {
       toast.error('Please resolve all the errors before submitting the log')
     }
     else {
-      dispatch(postMaterialLog(postMaterialLogData, date));
+      let temppostMaterialLogData = Object.values(postMaterialLogData).filter(d => d.logValue != "")
+      dispatch(postMaterialLog(temppostMaterialLogData, date));
       initializeLogValue();
     }
 
