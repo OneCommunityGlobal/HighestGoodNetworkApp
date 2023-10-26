@@ -4,19 +4,17 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  position: relative;
 }
 
 .crossIcon {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  right: 0;
+  top: 1rem;
+  right: 1rem;
 }
 
 .countdown .infoDisplay {
   font-size: 1.5rem;
-  /* height: 2rem; */
   text-align: center;
 }
 

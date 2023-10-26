@@ -12,7 +12,7 @@ import {
 } from 'react-icons/bs';
 import { FaSave, FaAngleUp, FaAngleDown } from 'react-icons/fa';
 import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import cs from 'classnames';
 import { toast } from 'react-toastify';
 import { BsXLg } from 'react-icons/bs';
@@ -42,12 +42,12 @@ export default function Countdown({
 }) {
   const { MAX_HOURS, MIN_MINS } = timerRange;
 
-  const { started, goal } = message;
+  const { started, goal, initialGoal } = message;
   const { sendStart, sendPause, sendSetGoal } = wsMessageHandler;
 
   const [editing, setEditing] = useState(false);
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(0);
+  const [initialHours, setInitialHours] = useState(moment.duration(initialGoal).hours());
+  const [initialMinutes, setInitialMinutes] = useState(moment.duration(initialGoal).minutes());
   const hourRef = useRef(null);
   const minRef = useRef(null);
 
@@ -69,17 +69,17 @@ export default function Countdown({
     const updatedValue = Math.max(Number(min), Math.min(Number(max), Number(value)));
     switch (ref) {
       case hourRef:
-        setHours(updatedValue);
+        setInitialHours(updatedValue);
         break;
       case minRef:
-        setMinutes(updatedValue);
+        setInitialMinutes(updatedValue);
         break;
       default:
     }
   };
 
   const validateTime = () => {
-    const duration = moment.duration(hours, 'hours').add(minutes, 'minutes');
+    const duration = moment.duration(initialHours, 'hours').add(initialMinutes, 'minutes');
     if (duration.asHours() > MAX_HOURS) {
       toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
       sendSetGoal(moment.duration(MAX_HOURS, 'hours').asMilliseconds());
@@ -92,55 +92,50 @@ export default function Countdown({
     setEditing(false);
   };
 
-  const handleHourChange = amount => {
-    const newHour = hours + amount;
+  const handleInitialHourChange = amount => {
+    const newHour = initialHours + amount;
     switch (true) {
       case newHour <= 0:
-        if (minutes < MIN_MINS) {
+        if (initialMinutes < MIN_MINS) {
           toast.error(`Timer cannot be set less than ${MIN_MINS} minutes!`);
-          setMinutes(MIN_MINS);
+          setInitialMinutes(MIN_MINS);
         }
-        setHours(0);
+        setInitialHours(0);
         break;
       case newHour >= MAX_HOURS:
-        if (minutes > 0) {
+        if (initialMinutes > 0) {
           toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
-          setMinutes(0);
+          setInitialMinutes(0);
         }
-        setHours(MAX_HOURS);
+        setInitialHours(MAX_HOURS);
         break;
       default:
-        setHours(newHour);
+        setInitialHours(newHour);
     }
   };
 
-  const handleMinuteChange = amout => {
-    const newMin = minutes + amout;
+  const handleInitialMinuteChange = amout => {
+    const newMin = initialMinutes + amout;
     switch (true) {
-      case hours === 0 && newMin < MIN_MINS:
+      case initialHours === 0 && newMin < MIN_MINS:
         toast.error(`Timer cannot be set less than ${MIN_MINS} minutes!`);
-        setMinutes(MIN_MINS);
+        setInitialMinutes(MIN_MINS);
         break;
       case newMin < 0:
-        setHours(prevHour => prevHour - 1);
-        setMinutes(45);
+        setInitialHours(prevHour => prevHour - 1);
+        setInitialMinutes(45);
         break;
-      case hours === MAX_HOURS && newMin > 0:
+      case initialHours === MAX_HOURS && newMin > 0:
         toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
         break;
       case newMin >= 60:
-        setHours(prevHours => prevHours + 1);
-        setMinutes(0);
+        setInitialHours(prevHours => prevHours + 1);
+        setInitialMinutes(0);
         break;
       default:
-        setMinutes(newMin);
+        setInitialMinutes(newMin);
     }
   };
-
-  useEffect(() => {
-    setHours(moment.utc(goal).hours());
-    setMinutes(moment.utc(goal).minutes());
-  }, [message]);
 
   return (
     <div className={css.countdown}>
@@ -273,13 +268,13 @@ export default function Countdown({
           </div>
         ) : (
           <>
-            <strong>Goal for today</strong>
+            <strong>Initial Goal</strong>
             <div className={cs(css.goal, editing ? css.goalEditing : '')}>
               <div className={css.numberWrapper}>
                 {editing && (
                   <FaAngleUp
                     className={cs(css.transitionColor, css.up)}
-                    onClick={() => handleHourChange(1)}
+                    onClick={() => handleInitialHourChange(1)}
                   />
                 )}
                 <Input
@@ -287,7 +282,7 @@ export default function Countdown({
                   className={editing ? css.editing : ''}
                   min={0}
                   max={MAX_HOURS}
-                  value={Number(hours).toString()}
+                  value={Number(initialHours).toString()}
                   onChange={e => forceMinMax(e, hourRef)}
                   disabled={!editing}
                   innerRef={hourRef}
@@ -295,7 +290,7 @@ export default function Countdown({
                 {editing && (
                   <FaAngleDown
                     className={cs(css.transitionColor, css.down)}
-                    onClick={() => handleHourChange(-1)}
+                    onClick={() => handleInitialHourChange(-1)}
                   />
                 )}
               </div>
@@ -304,14 +299,16 @@ export default function Countdown({
                 {editing && (
                   <FaAngleUp
                     className={cs(css.transitionColor, css.up)}
-                    onClick={() => handleMinuteChange(hours === 0 && minutes < 15 ? 1 : 15)}
+                    onClick={() =>
+                      handleInitialMinuteChange(initialHours === 0 && initialMinutes < 15 ? 1 : 15)
+                    }
                   />
                 )}
                 <Input
                   type="number"
                   min={0}
                   max={59}
-                  value={Number(minutes)
+                  value={Number(initialMinutes)
                     .toString()
                     .padStart(2, '0')}
                   onChange={e => forceMinMax(e, minRef)}
@@ -321,7 +318,11 @@ export default function Countdown({
                 {editing && (
                   <FaAngleDown
                     className={cs(css.transitionColor, css.down)}
-                    onClick={() => handleMinuteChange(hours === 0 && minutes <= 15 ? -1 : -15)}
+                    onClick={() =>
+                      handleInitialMinuteChange(
+                        initialHours === 0 && initialMinutes <= 15 ? -1 : -15,
+                      )
+                    }
                   />
                 )}
               </div>

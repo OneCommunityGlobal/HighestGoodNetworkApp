@@ -66,6 +66,7 @@ export default function Timer() {
     forcedPause: false,
     started: false,
     goal: 900000,
+    initialGoal: 900000,
     startAt: Date.now(),
   };
 
@@ -334,40 +335,42 @@ export default function Timer() {
         </button>
       </div>
 
-      <div className={cs(css.timer, !showTimer && css.hideTimer)}>
-        <div className={css.timerContent}>
-          {readyState === ReadyState.OPEN ? (
-            <Countdown
-              message={message}
-              timerRange={{ MAX_HOURS, MIN_MINS }}
-              running={running}
-              wsMessageHandler={wsMessageHandler}
-              remaining={remaining}
-              setConfirmationResetModal={setConfirmationResetModal}
-              checkBtnAvail={checkBtnAvail}
-              handleAddButton={handleAddButton}
-              handleSubtractButton={handleSubtractButton}
-              handleStopButton={handleStopButton}
-              toggleTimer={toggleTimer}
+      {showTimer && (
+        <div className={css.timer}>
+          <div className={css.timerContent}>
+            {readyState === ReadyState.OPEN ? (
+              <Countdown
+                message={message}
+                timerRange={{ MAX_HOURS, MIN_MINS }}
+                running={running}
+                wsMessageHandler={wsMessageHandler}
+                remaining={remaining}
+                setConfirmationResetModal={setConfirmationResetModal}
+                checkBtnAvail={checkBtnAvail}
+                handleAddButton={handleAddButton}
+                handleSubtractButton={handleSubtractButton}
+                handleStopButton={handleStopButton}
+                toggleTimer={toggleTimer}
+              />
+            ) : (
+              <TimerStatus readyState={readyState} message={message} toggleTimer={toggleTimer} />
+            )}
+          </div>
+          {logTimeEntryModal && (
+            <TimeEntryForm
+              edit={false}
+              userId={userId}
+              toggle={toggleLogTimeModal}
+              isOpen={logTimeEntryModal}
+              timer={logTimer}
+              data={data}
+              sendStop={sendStop}
+              LoggedInuserId={userId}
+              curruserId={curruserProfile._id}
             />
-          ) : (
-            <TimerStatus readyState={readyState} message={message} />
           )}
         </div>
-        {logTimeEntryModal && (
-          <TimeEntryForm
-            edit={false}
-            userId={userId}
-            toggle={toggleLogTimeModal}
-            isOpen={logTimeEntryModal}
-            timer={logTimer}
-            data={data}
-            sendStop={sendStop}
-            LoggedInuserId={userId}
-            curruserId={curruserProfile._id}
-          />
-        )}
-      </div>
+      )}
       <audio ref={audioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
       <Modal
         isOpen={confirmationResetModal}
