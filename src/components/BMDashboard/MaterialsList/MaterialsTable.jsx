@@ -3,15 +3,22 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 
 import RecordsModal from './RecordsModal';
+import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
 
 export default function MaterialsTable({ filteredMaterials }) {
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
 
-  const handleEditRecordsClick = () => {
-    // open records editor
-    return null;
+  //Update Material Form
+  const [updateModal, setUpdateModal] = useState(false);
+  const [updateRecord, setUpdateRecord] = useState(null)
+
+  const handleEditRecordsClick = (selectedMaterial, type) => {
+    if (type == 'Update') {
+      setUpdateModal(true);
+      setUpdateRecord(selectedMaterial)
+    }
   };
 
   const handleViewRecordsClick = (data, type) => {
@@ -28,6 +35,11 @@ export default function MaterialsTable({ filteredMaterials }) {
         record={record}
         setRecord={setRecord}
         recordType={recordType}
+      />
+      <UpdateMaterialModal
+        modal={updateModal}
+        setModal={setUpdateModal}
+        record={updateRecord}
       />
       <div className="materials_table_container">
         <Table>
@@ -74,7 +86,7 @@ export default function MaterialsTable({ filteredMaterials }) {
                       </Button>
                     </td>
                     <td className="materials_cell">
-                      <button type="button" onClick={handleEditRecordsClick}>
+                      <button type="button" onClick={() => handleEditRecordsClick(mat, 'Update')}>
                         <BiPencil />
                       </button>
                       <Button
