@@ -23,7 +23,6 @@ import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
 import { updateUserProfile } from 'actions/userProfile';
 
-import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
@@ -45,11 +44,10 @@ import { boxStyle } from 'styles';
  * @param {*} props.timer
  * @param {boolean} props.data.isTangible
  * @param {*} props.userProfile
- * @param {function} props.resetTimer
  * @returns
  */
 const TimeEntryForm = props => {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer = () => {}, sendClear = () => {}, sendStop  = () => {} } = props;
+  const { userId, edit, data, isOpen, toggle, timer, sendClear, sendStop } = props;
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
@@ -497,15 +495,9 @@ const TimeEntryForm = props => {
 
     //Clear the form and clean up.
     if (fromTimer) {
-      const timerStatus = await dispatch(stopTimer(userId));
-      if (timerStatus === 200 || timerStatus === 201) {
-        resetTimer();
-      } else {
-        alert(
-          'Your time entry was successfully recorded, but an error occurred while asking the server to reset your timer. There is no need to submit your hours a second time, and doing so will result in a duplicate time entry.',
-        );
-      }
       sendClear();
+      sendStop();
+      clearForm();
     } else if (!reminder.notice) {
       setReminder(reminder => ({
         ...reminder,
@@ -513,10 +505,6 @@ const TimeEntryForm = props => {
       }));
     }
 
-    if (fromTimer) {
-      sendStop();
-      clearForm();
-    }
     setReminder(initialReminder);
 
     if (!props.edit) setInputs(initialFormValues);
@@ -795,7 +783,6 @@ TimeEntryForm.propTypes = {
   timer: PropTypes.any,
   data: PropTypes.any.isRequired,
   userProfile: PropTypes.any.isRequired,
-  resetTimer: PropTypes.func,
   handleStop: PropTypes.func,
 };
 
