@@ -17,7 +17,6 @@ import cs from 'classnames';
 import { toast } from 'react-toastify';
 import { BsXLg } from 'react-icons/bs';
 import css from './Countdown.module.css';
-import { transitionColor } from './NewTimer.module.css';
 
 function getClockIcon(index) {
   const clockIoncs = [BsHourglassBottom, BsHourglassSplit, BsHourglassTop];
@@ -35,6 +34,7 @@ export default function Countdown({
   wsMessageHandler,
   remaining,
   setConfirmationResetModal,
+  checkBtnAvail,
   handleAddButton,
   handleSubtractButton,
   handleStopButton,
@@ -62,16 +62,6 @@ export default function Countdown({
   const shouldDisplay = {
     hour: !!remainingHours,
     minute: !!remainingHours || !!remainingMinutes,
-  };
-
-  const checkBtnAvail = addition => {
-    const remainingDuration = moment.duration(remaining);
-    const goalDuration = moment.duration(goal);
-    return (
-      remainingDuration.asMinutes() + addition > 0 &&
-      goalDuration.asMinutes() + addition >= MIN_MINS &&
-      goalDuration.asHours() + addition / 60 <= MAX_HOURS
-    );
   };
 
   const forceMinMax = (event, ref) => {
@@ -183,7 +173,7 @@ export default function Countdown({
                 onClick={() => setConfirmationResetModal(true)}
                 className={cs(css.transitionColor, css.resetIcon)}
                 fontSize="2rem"
-                title="Reset the timer"
+                title="Reset timer"
               />
             )}
             <span>Time Remaining</span>
@@ -214,23 +204,31 @@ export default function Countdown({
             <div className={css.operators}>
               {running ? (
                 <button type="button" onClick={sendPause}>
-                  <BsPauseFill className={cs(transitionColor, css.operator)} fontSize="2.5rem" />
+                  <BsPauseFill
+                    className={cs(css.transitionColor, css.operator)}
+                    fontSize="2.5rem"
+                  />
                 </button>
               ) : (
                 <button type="button" onClick={sendStart} disabled={remaining === 0}>
                   <BsPlay
                     className={cs(
-                      transitionColor,
+                      css.transitionColor,
                       css.operator,
                       remaining === 0 ? css.operatorDisabled : '',
                     )}
                     fontSize="2.5rem"
+                    title="Start timer"
                   />
                 </button>
               )}
               {started && (
                 <button type="button" onClick={handleStopButton}>
-                  <BsStopFill className={cs(transitionColor, css.operator)} fontSize="2.5rem" />
+                  <BsStopFill
+                    className={cs(css.transitionColor, css.operator)}
+                    fontSize="2.5rem"
+                    title="Stop timer and log time"
+                  />
                 </button>
               )}
             </div>
@@ -244,37 +242,33 @@ export default function Countdown({
               size="sm"
               type="button"
               aria-label="remove 15 minutes"
-              className={cs(css.btn, checkBtnAvail(15) ? '' : css.btnDisabled)}
               onClick={() => handleSubtractButton(15)}
             >
-              -15 m
+              <span className={cs(css.btn, checkBtnAvail(-15) ? '' : css.btnDisabled)}>-15 m</span>
             </button>
             <button
               size="sm"
               type="button"
               aria-label="add 15 minutes"
-              className={cs(css.btn, checkBtnAvail(15) ? '' : css.btnDisabled)}
               onClick={() => handleAddButton(15)}
             >
-              +15 m
+              <span className={cs(css.btn, checkBtnAvail(15) ? '' : css.btnDisabled)}>+15 m</span>
             </button>
             <button
               size="sm"
               type="button"
               aria-label="add 30 minutes"
-              className={cs(css.btn, checkBtnAvail(30) ? '' : css.btnDisabled)}
               onClick={() => handleAddButton(30)}
             >
-              +30 m
+              <span className={cs(css.btn, checkBtnAvail(30) ? '' : css.btnDisabled)}>+30 m</span>
             </button>
             <button
               size="sm"
               type="button"
               aria-label="add 1 hour"
-              className={cs(css.btn, checkBtnAvail(60) ? '' : css.btnDisabled)}
               onClick={() => handleAddButton(60)}
             >
-              +1 h
+              <span className={cs(css.btn, checkBtnAvail(60) ? '' : css.btnDisabled)}>+1 h</span>
             </button>
           </div>
         ) : (
@@ -284,7 +278,7 @@ export default function Countdown({
               <div className={css.numberWrapper}>
                 {editing && (
                   <FaAngleUp
-                    className={cs(transitionColor, css.up)}
+                    className={cs(css.transitionColor, css.up)}
                     onClick={() => handleHourChange(1)}
                   />
                 )}
@@ -300,7 +294,7 @@ export default function Countdown({
                 />
                 {editing && (
                   <FaAngleDown
-                    className={cs(transitionColor, css.down)}
+                    className={cs(css.transitionColor, css.down)}
                     onClick={() => handleHourChange(-1)}
                   />
                 )}
@@ -309,7 +303,7 @@ export default function Countdown({
               <div className={css.numberWrapper}>
                 {editing && (
                   <FaAngleUp
-                    className={cs(transitionColor, css.up)}
+                    className={cs(css.transitionColor, css.up)}
                     onClick={() => handleMinuteChange(hours === 0 && minutes < 15 ? 1 : 15)}
                   />
                 )}
@@ -326,19 +320,19 @@ export default function Countdown({
                 />
                 {editing && (
                   <FaAngleDown
-                    className={cs(transitionColor, css.down)}
+                    className={cs(css.transitionColor, css.down)}
                     onClick={() => handleMinuteChange(hours === 0 && minutes <= 15 ? -1 : -15)}
                   />
                 )}
               </div>
               {editing ? (
                 <FaSave
-                  className={cs(transitionColor, css.goalBtn)}
+                  className={cs(css.transitionColor, css.goalBtn)}
                   onClick={() => validateTime()}
                 />
               ) : (
                 <BsFillPenFill
-                  className={cs(transitionColor, css.goalBtn)}
+                  className={cs(css.transitionColor, css.goalBtn)}
                   onClick={() => setEditing(true)}
                 />
               )}
