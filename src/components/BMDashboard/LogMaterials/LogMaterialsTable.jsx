@@ -1,4 +1,4 @@
-import { postMaterialLog, resetLogMaterialsResult, resetMaterialsByProjAndCheckInOut } from 'actions/inventoryMaterial';
+import { postMaterialLog, resetLogMaterialsResult, resetMaterialsByProjAndCheckInOut } from 'actions/bmdashboard/inventoryMaterial';
 import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -72,7 +72,8 @@ function LogMaterialsTable({ date, checkInOut }) {
       toast.error('Please resolve all the errors before submitting the log')
     }
     else {
-      dispatch(postMaterialLog(postMaterialLogData, date));
+      let tempPostMaterialLogData = Object.values(postMaterialLogData).filter(d => d.logValue != "")
+      dispatch(postMaterialLog(tempPostMaterialLogData, date));
       initializeLogValue();
     }
 

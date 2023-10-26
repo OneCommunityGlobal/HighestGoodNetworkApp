@@ -1,6 +1,6 @@
 import axios from 'axios';
-import * as actions from '../constants/inventoryMaterial';
-import { ENDPOINTS } from '../utils/URL';
+import * as actions from '../../constants/bmdashboard/inventoryMaterial';
+import { ENDPOINTS } from '../../utils/URL';
 
 
 // ACTION CREATORS
