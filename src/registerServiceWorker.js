@@ -16,6 +16,32 @@ const isLocalhost = Boolean(
     window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/),
 );
 
+function registerValidSW(swUrl) {
+  navigator.serviceWorker
+    .register(swUrl)
+    .then(originalRegistration => {
+      const registration = { ...originalRegistration }; // Clone the object
+      registration.onupdatefound = () => {
+        const installingWorker = registration.installing;
+        installingWorker.onstatechange = () => {
+          if (installingWorker.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+              // eslint-disable-next-line no-console
+              console.log('New content is available; please refresh.');
+            } else {
+              // eslint-disable-next-line no-console
+              console.log('Content is cached for offline use.');
+            }
+          }
+        };
+      };
+    })
+    .catch(error => {
+      // eslint-disable-next-line no-console
+      console.error('Error during service worker registration:', error);
+    });
+}
+
 function checkValidServiceWorker(swUrl) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(swUrl)
@@ -37,6 +63,7 @@ function checkValidServiceWorker(swUrl) {
       }
     })
     .catch(() => {
+      // eslint-disable-next-line no-console
       console.log('No internet connection found. App is running in offline mode.');
     });
 }
@@ -62,6 +89,7 @@ export default function register() {
         // Add some additional logging to localhost, pointing developers to the
         // service worker/PWA documentation.
         navigator.serviceWorker.ready.then(() => {
+          // eslint-disable-next-line no-console
           console.log(
             'This web app is being served cache-first by a service ' +
               'worker. To learn more, visit https://goo.gl/SC7cgQ',
@@ -73,35 +101,6 @@ export default function register() {
       }
     });
   }
-}
-
-function registerValidSW(swUrl) {
-  navigator.serviceWorker
-    .register(swUrl)
-    .then(registration => {
-      registration.onupdatefound = () => {
-        const installingWorker = registration.installing;
-        installingWorker.onstatechange = () => {
-          if (installingWorker.state === 'installed') {
-            if (navigator.serviceWorker.controller) {
-              // At this point, the old content will have been purged and
-              // the fresh content will have been added to the cache.
-              // It's the perfect time to display a "New content is
-              // available; please refresh." message in your web app.
-              console.log('New content is available; please refresh.');
-            } else {
-              // At this point, everything has been precached.
-              // It's the perfect time to display a
-              // "Content is cached for offline use." message.
-              console.log('Content is cached for offline use.');
-            }
-          }
-        };
-      };
-    })
-    .catch(error => {
-      console.error('Error during service worker registration:', error);
-    });
 }
 
 export function unregister() {
