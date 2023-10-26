@@ -86,8 +86,6 @@ export default function Timer() {
   const [showTimer, setShowTimer] = useState(false);
   const [triggerAudio, setTriggerAudio] = useState(false);
   const [timerIsOverModalOpen, setTimerIsOverModalIsOpen] = useState(false);
-  const [userCanAddGoal, setUserCanAddGoal] = useState(true);
-  const [userCanRemoveGoal, setUserCanRemoveGoal] = useState(true);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
   const audioRef = useRef(null);
@@ -120,7 +118,6 @@ export default function Timer() {
     sendClear,
     sendStop,
     sendAckForced,
-    sendSetGoal,
     sendAddGoal,
     sendRemoveGoal,
   } = wsMessageHandler;
@@ -221,15 +218,9 @@ export default function Timer() {
       started: startedLJM,
       goal: goalLJM,
     } = lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
-    const maxHoursAsMillieseconds = moment.duration(MAX_HOURS, 'hours').asMilliseconds();
-    const minMinutesAsMillieseconds = moment.duration(MIN_MINS, 'minutes').asMilliseconds();
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
     setInacModal(forcedPauseLJM);
-    setUserCanRemoveGoal(
-      (startedLJM && timeLJM > minMinutesAsMillieseconds) || goalLJM > minMinutesAsMillieseconds,
-    );
-    setUserCanAddGoal(goalLJM <= maxHoursAsMillieseconds); // 9h 45min as milliseconds
   }, [lastJsonMessage]);
 
   useEffect(() => {
