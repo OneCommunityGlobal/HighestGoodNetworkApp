@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import {
@@ -33,7 +33,7 @@ import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import { ENDPOINTS } from '../../../utils/URL';
-import { getTimeEntryFormData } from './selectors';
+import getTimeEntryFormData from './selectors';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -50,9 +50,9 @@ import { getTimeEntryFormData } from './selectors';
  * @returns
  */
 function TimeEntryForm(props) {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const { userId, edit, data, isOpen, toggle, timer, resetTimer, isTaskUpdated } = props;
+  const canEditTimeEntry = hasPermission('editTimeEntry');
+  const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -139,7 +139,7 @@ function TimeEntryForm(props) {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, [props.isTaskUpdated]);
+  }, [isTaskUpdated]);
 
   // grab form data before editing
   useEffect(() => {
@@ -164,8 +164,8 @@ function TimeEntryForm(props) {
   };
 
   useEffect(() => {
-    const fetchProjects = async userId => {
-      await dispatch(getUserProjects(userId));
+    const fetchProjects = async id => {
+      await dispatch(getUserProjects(id));
     };
     fetchProjects(userId);
     return () => fetchProjects(userId);
@@ -385,26 +385,32 @@ function TimeEntryForm(props) {
     // if change timeEntry from intangible to tangible, we need add hours on categories
     if (oldIsTangible === 'false' && currIsTangible === 'true') {
       userProfile.totalIntangibleHrs -= currEntryTime;
-      isFindCategory
-        ? (hoursByCategory[category] += currEntryTime)
-        : (hoursByCategory.unassigned += currEntryTime);
+      if (isFindCategory) {
+        hoursByCategory[category] += currEntryTime;
+      } else {
+        hoursByCategory.unassigned += currEntryTime;
+      }
     }
 
     // if change timeEntry from tangible to intangible, we need deduct hours on categories
     if (oldIsTangible === 'true' && currIsTangible === 'false') {
       userProfile.totalIntangibleHrs += currEntryTime;
-      isFindCategory
-        ? (hoursByCategory[category] -= currEntryTime)
-        : (hoursByCategory.unassigned -= currEntryTime);
+      if (isFindCategory) {
+        hoursByCategory[category] -= currEntryTime;
+      } else {
+        hoursByCategory.unassigned -= currEntryTime;
+      }
     }
 
     // if timeEntry is tangible before and after edit
     if (oldIsTangible === 'true' && currIsTangible === 'true') {
       // if project didn't change, add timeDifference on category
       if (oldProjectId === currProjectId) {
-        isFindCategory
-          ? (hoursByCategory[category] += timeDifference)
-          : (hoursByCategory.unassigned += timeDifference);
+        if (isFindCategory) {
+          hoursByCategory[category] += timeDifference;
+        } else {
+          hoursByCategory.unassigned += timeDifference;
+        }
       } else {
         const foundOldProject = projects.find(project => project._id === oldProjectId);
         const foundOldTask = tasks.find(task => task._id === oldProjectId);
@@ -414,13 +420,16 @@ function TimeEntryForm(props) {
           : foundOldTask.classification.toLowerCase();
 
         const isFindOldCategory = Object.keys(hoursByCategory).find(key => key === category);
-        isFindOldCategory
-          ? (hoursByCategory[oldCategory] -= oldEntryTime)
-          : (hoursByCategory.unassigned -= oldEntryTime);
-
-        isFindCategory
-          ? (hoursByCategory[category] += currEntryTime)
-          : (hoursByCategory.unassigned += currEntryTime);
+        if (isFindOldCategory) {
+          hoursByCategory[oldCategory] -= oldEntryTime;
+        } else {
+          hoursByCategory.unassigned -= oldEntryTime;
+        }
+        if (isFindCategory) {
+          hoursByCategory[category] += currEntryTime;
+        } else {
+          hoursByCategory.unassigned += currEntryTime;
+        }
       }
     }
     checkNegativeNumber(userProfile);

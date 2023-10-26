@@ -59,39 +59,48 @@ function TimeEntry({ data, displayYear, userProfile }) {
     // Update intangible hours property in userprofile
     const formattedHours = parseFloat(data.hours) + parseFloat(data.minutes) / 60;
     const { hoursByCategory } = userProfile;
+    const updatedUserProfile = { userProfile };
     if (data.projectName) {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
       // change tangible to intangible
       if (data.isTangible) {
-        userProfile.totalIntangibleHrs += formattedHours;
-        isFindCategory
-          ? (hoursByCategory[projectCategory] -= formattedHours)
-          : (hoursByCategory.unassigned -= formattedHours);
+        updatedUserProfile.totalIntangibleHrs += formattedHours;
+        if (isFindCategory) {
+          hoursByCategory[projectCategory] -= formattedHours;
+        } else {
+          hoursByCategory.unassigned -= formattedHours;
+        }
       } else {
         // change intangible to tangible
-        userProfile.totalIntangibleHrs -= formattedHours;
-        isFindCategory
-          ? (hoursByCategory[projectCategory] += formattedHours)
-          : (hoursByCategory.unassigned += formattedHours);
+        updatedUserProfile.totalIntangibleHrs -= formattedHours;
+        if (isFindCategory) {
+          hoursByCategory[projectCategory] += formattedHours;
+        } else {
+          hoursByCategory.unassigned += formattedHours;
+        }
       }
     } else {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === taskClassification);
       // change tangible to intangible
       if (data.isTangible) {
-        userProfile.totalIntangibleHrs += formattedHours;
-        isFindCategory
-          ? (hoursByCategory[taskClassification] -= formattedHours)
-          : (hoursByCategory.unassigned -= formattedHours);
+        updatedUserProfile.totalIntangibleHrs += formattedHours;
+        if (isFindCategory) {
+          hoursByCategory[taskClassification] -= formattedHours;
+        } else {
+          hoursByCategory.unassigned -= formattedHours;
+        }
       } else {
         // change intangible to tangible
-        userProfile.totalIntangibleHrs -= formattedHours;
-        isFindCategory
-          ? (hoursByCategory[taskClassification] += formattedHours)
-          : (hoursByCategory.unassigned += formattedHours);
+        updatedUserProfile.totalIntangibleHrs -= formattedHours;
+        if (isFindCategory) {
+          hoursByCategory[taskClassification] += formattedHours;
+        } else {
+          hoursByCategory.unassigned += formattedHours;
+        }
       }
     }
     checkNegativeNumber(userProfile);
-    dispatch(updateUserProfile(userProfile._id, userProfile));
+    dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
   };
 
   return (

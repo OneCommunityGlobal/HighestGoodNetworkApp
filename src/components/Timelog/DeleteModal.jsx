@@ -20,8 +20,9 @@ function DeleteModal({ timeEntry, userProfile, projectCategory, taskClassificati
     dispatch(deleteTimeEntry(timeEntry));
     // update hours
     const formattedHours = parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
+    const updatedUserProfile = { ...userProfile };
     if (!timeEntry.isTangible) {
-      userProfile.totalIntangibleHrs -= formattedHours;
+      updatedUserProfile.totalIntangibleHrs -= formattedHours;
     } else {
       const category = projectCategory || taskClassification;
       const { hoursByCategory } = userProfile;
@@ -34,10 +35,7 @@ function DeleteModal({ timeEntry, userProfile, projectCategory, taskClassificati
       timeEntry.minutes / 60
     ).toFixed(2);
 
-    const updatedUserProfile = {
-      ...userProfile,
-      totalcommittedHours: parseInt(newHour, 10),
-    };
+    updatedUserProfile.totalcommittedHours = parseInt(newHour, 10);
 
     dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
   };
