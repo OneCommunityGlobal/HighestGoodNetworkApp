@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { fetchProjectsByCategory } from 'actions/projects';
-import { getMaterialsByProjAndCheckInOutSuccess, resetMaterialsByProjAndCheckInOut } from 'actions/inventoryMaterial';
+import { getMaterialsByProjAndCheckInOutSuccess, resetMaterialsByProjAndCheckInOut } from 'actions/bmdashboard/inventoryMaterial';
 import Select from 'react-select';
 
 function LogMaterialsInputs({ date, setDate, checkInOut, setCheckInOut }) {

@@ -28,7 +28,7 @@ import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
-import { inventoryMaterialsCollectionsReducer } from './inventoryMaterialReducer';
+import { inventoryMaterialsCollectionsReducer } from './bmdashboard/inventoryMaterialReducer';
 
 export default combineReducers({
   auth: authReducer,

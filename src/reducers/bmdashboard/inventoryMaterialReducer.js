@@ -1,4 +1,4 @@
-import * as actions from '../constants/inventoryMaterial';
+import * as actions from '../../constants/bmdashboard/inventoryMaterial';
 
 const initialState = {
   materials: [],
