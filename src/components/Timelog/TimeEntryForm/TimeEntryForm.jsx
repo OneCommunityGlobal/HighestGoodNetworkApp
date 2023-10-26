@@ -50,7 +50,7 @@ import { boxStyle } from 'styles';
  */
 const TimeEntryForm = props => {
 
-  const { userId, edit, data, isOpen, toggle, timer, LoggedInuserId, curruserId, sendClear, sendStop } = props;
+  const { userId, edit, data, isOpen, toggle, timer, LoggedInuserId, curruserId, sendStop } = props;
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
@@ -502,20 +502,6 @@ const TimeEntryForm = props => {
       }
     }
 
-    //Clear the form and clean up.
-    if (fromTimer) {
-      sendClear();
-      sendStop();
-      clearForm();
-    } else if (!reminder.notice) {
-      setReminder(reminder => ({
-        ...reminder,
-        editNotice: !reminder.editNotice,
-      }));
-    }
-
-    setReminder(initialReminder);
-
     if (!props.edit) setInputs(initialFormValues);
 
     await getUserProfile(userId)(dispatch);
@@ -526,6 +512,19 @@ const TimeEntryForm = props => {
 
     await dispatch(getUserProfile(curruserId));
     await dispatch(getTimeEntriesForWeek(curruserId, 0));
+
+    //Clear the form and clean up.
+    if (fromTimer) {
+      sendStop();
+      clearForm();
+    } else if (!reminder.notice) {
+      setReminder(reminder => ({
+        ...reminder,
+        editNotice: !reminder.editNotice,
+      }));
+    }
+
+    setReminder(initialReminder);
     if (isOpen) toggle();
   };
 
@@ -798,7 +797,6 @@ TimeEntryForm.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   timer: PropTypes.any,
   data: PropTypes.any.isRequired,
-  userProfile: PropTypes.any.isRequired,
   LoggedInuserId: PropTypes.string,
   curruserId: PropTypes.string,
   handleStop: PropTypes.func,

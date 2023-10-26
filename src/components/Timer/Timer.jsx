@@ -73,7 +73,7 @@ export default function Timer() {
   const MIN_MINS = 1;
 
   const userId = useSelector(state => state.auth.user.userid);
-  const userProfile = useSelector(state => state.auth.user);
+  const curruserProfile = useSelector(state => state.userProfile);
 
   const [message, setMessage] = useState(defaultMessage);
   const { time, paused, started, goal, startAt } = message;
@@ -362,9 +362,9 @@ export default function Timer() {
             isOpen={logTimeEntryModal}
             timer={logTimer}
             data={data}
-            userProfile={userProfile}
-            sendClear={sendClear}
             sendStop={sendStop}
+            LoggedInuserId={userId}
+            curruserId={curruserProfile._id}
           />
         )}
       </div>
