@@ -27,9 +27,10 @@ import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
-import { infoCollectionsReducer} from './informationReducer';
+import { infoCollectionsReducer } from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import { materialsReducer } from './bmdashboard/materialsReducer';
+import { bmProjectsReducer } from './bmdashboard/projectsReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -64,5 +65,6 @@ export default combineReducers({
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
-  materials: materialsReducer
+  materials: materialsReducer,
+  bmProjects: bmProjectsReducer
 });

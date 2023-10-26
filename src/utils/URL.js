@@ -8,7 +8,7 @@ export const ENDPOINTS = {
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
-  INFO_COLLECTION: infoId =>`${APIEndpoint}/informations/${infoId}`,
+  INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
@@ -125,7 +125,9 @@ export const ENDPOINTS = {
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
-  BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`
+  BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`,
+  BM_USER_PROJECTS: `${APIEndpoint}/bm/getUserActiveBMProjects`
+
 };
 
 export const ApiEndpoint = APIEndpoint;

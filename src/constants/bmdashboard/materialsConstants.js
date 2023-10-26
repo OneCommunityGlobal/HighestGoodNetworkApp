@@ -1,2 +1,3 @@
 export const SET_MATERIALS = 'SET_MATERIALS';
+export const SET_USER_PROJECTS = 'SET_USER_PROJECTS';
 export default SET_MATERIALS;
