@@ -1,8 +1,7 @@
-import React from 'react';
 import { Row } from 'reactstrap';
 import ProjectSummary from './ProjectSummary';
 
-const ProjectsList = ({ projects }) => {
+function ProjectsList({ projects }) {
   const listItems = projects.map(project => {
     return (
       <li className="project-summary" key={project.projectId}>
@@ -15,6 +14,6 @@ const ProjectsList = ({ projects }) => {
       <ul className="projects-list">{listItems}</ul>
     </Row>
   );
-};
+}
 
 export default ProjectsList;
