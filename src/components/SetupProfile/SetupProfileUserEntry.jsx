@@ -317,8 +317,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         weeklycommittedHours: Number(userProfile.weeklyCommittedHours.trim()),
         collaborationPreference: userProfile.collaborationPreference.trim(),
         privacySettings: {
-          email: false,
-          phoneNumber: false,
+          email: true,
+          phoneNumber: true,
         },
         jobTitle: userProfile.jobTitle.trim(),
         timeZone: userProfile.timeZone.trim(),
