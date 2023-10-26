@@ -1,11 +1,26 @@
 import React from 'react';
-import { render, fireEvent, getByTestId, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux'; 
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import FoundUser from './FoundUser';
 
 const mockStore = configureMockStore([thunk]);
+
+const renderUserTable = (user, assignProject) => {
+  const initialState = {};
+  const store = mockStore(initialState);
+
+  return render(
+    <Provider store={store}> 
+      <table>
+        <tbody>
+          <FoundUser {...user} assignProject={assignProject} />
+        </tbody>
+      </table>
+      </Provider>
+  )
+}
 
 describe('FoundUser Component', () => {
   const sampleUser = {
@@ -19,14 +34,8 @@ describe('FoundUser Component', () => {
   };
 
   it('renders user data correctly', () => {
-    const initialState = {}; 
-    const store = mockStore(initialState);
-
-    const { getByText, getByRole } = render(
-      <Provider store={store}> 
-        <FoundUser {...sampleUser} />
-      </Provider>
-    );
+    
+    const { getByText, getByRole } = renderUserTable(sampleUser);
     
     // Verify that user data is displayed correctly
     expect(getByText('1')).toBeInTheDocument();
@@ -37,14 +46,7 @@ describe('FoundUser Component', () => {
 
   it('should render the assign button if user is not assigned', () => {
 
-    const initialState = {};
-    const store = mockStore(initialState);
-
-    const { getByRole } = render(
-      <Provider store={store}>
-        <FoundUser {...sampleUser} />
-      </Provider>
-    );
+    const { getByRole } = renderUserTable(sampleUser);
     
     const assignButton = getByRole('button');
     expect(assignButton).toBeInTheDocument();
@@ -57,14 +59,7 @@ describe('FoundUser Component', () => {
       assigned: true,
     }
 
-    const initialState = {};
-    const store = mockStore(initialState);
-
-    const { queryByRole } = render(
-      <Provider store={store}>
-        <FoundUser {...assignedUser} />
-      </Provider>
-    );
+    const { queryByRole } = renderUserTable(assignedUser);
 
     //verify that button is not rendered
     const assignButton = queryByRole('button');
@@ -73,15 +68,7 @@ describe('FoundUser Component', () => {
 
   it('generates the correct user profile link', () => {
 
-
-    const initialState = {};
-    const store = mockStore(initialState);
-
-    const { getByText } = render(
-      <Provider store={store}>
-        <FoundUser {...sampleUser} />
-      </Provider>
-    );
+    const { getByText } = renderUserTable(sampleUser);
     
     // Verify that the user profile link is generated correctly
     const profileLink = getByText('John Smith');
@@ -91,15 +78,8 @@ describe('FoundUser Component', () => {
     it('calls assignProject function when the assign button is clicked', () => {
 
     const assignProject = jest.fn();
-     
-    const initialState = {};
-    const store = mockStore(initialState);
 
-    const { getByRole } = render(
-      <Provider store={store}>
-        <FoundUser {...sampleUser} assignProject={assignProject} />
-      </Provider>
-    );
+    const { getByRole } = renderUserTable(sampleUser, assignProject);
     const assignButton = getByRole('button');
 
     // Simulate a button click
