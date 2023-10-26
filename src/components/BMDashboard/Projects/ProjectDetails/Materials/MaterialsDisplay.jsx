@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card } from 'reactstrap';
 import Materials from './Materials';
 
