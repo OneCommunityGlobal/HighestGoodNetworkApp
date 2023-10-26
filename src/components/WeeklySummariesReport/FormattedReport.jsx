@@ -253,14 +253,15 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 
 function TeamCodeRow({ canEditTeamCode, handleTeamCodeChange, summary }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
+  const [_teamCode, set_TeamCode] = useState(teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
 
-  const handleOnChange = async (userProfileSummary, newStatus) => {
+  const handleOnChange = async (userProfileSummary, oldTeamCode, newTeamCode) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
     try {
-      await axios.patch(url, { key: 'teamCode', value: newStatus });
-      handleTeamCodeChange();
+      await axios.patch(url, { key: 'teamCode', value: newTeamCode });
+      handleTeamCodeChange(oldTeamCode, newTeamCode);
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -276,8 +277,11 @@ function TeamCodeRow({ canEditTeamCode, handleTeamCodeChange, summary }) {
       const regexTest = fullCodeRegex.test(value);
       if (regexTest) {
         setHasError(false);
-        setTeamCode(value);
-        handleOnChange(summary, value);
+        setTeamCode(() => {
+          handleOnChange(summary, _teamCode, value);
+          return value
+        })
+        set_TeamCode(value);
       } else {
         setTeamCode(value);
         setHasError(true);

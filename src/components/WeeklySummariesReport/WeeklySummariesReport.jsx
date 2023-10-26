@@ -237,73 +237,83 @@ export class WeeklySummariesReport extends Component {
   //   }
   // }
 
-  refreshTeamCodes = async () => {
+  // refreshTeamCodes = async () => {
 
-    // reusing code from above @ componentDidMount
-    const { getWeeklySummariesReport } = this.props;
-    // 1. fetch report
-    const res = await getWeeklySummariesReport();
-    // eslint-disable-next-line react/destructuring-assignment
-    const summaries = res?.data;
-    // console.log(summaries);
+  //   // reusing code from above @ componentDidMount
+  //   const { getWeeklySummariesReport } = this.props;
+  //   // 1. fetch report
+  //   const res = await getWeeklySummariesReport();
+  //   // eslint-disable-next-line react/destructuring-assignment
+  //   const summaries = res?.data;
+  //   // console.log(summaries);
 
-    // 2. shallow copy and sort
-    let summariesCopy = [...summaries];
-    summariesCopy = this.alphabetize(summariesCopy);
+  //   // 2. shallow copy and sort
+  //   let summariesCopy = [...summaries];
+  //   summariesCopy = this.alphabetize(summariesCopy);
 
-    // 3. add new key of promised hours by week
-    summariesCopy = summariesCopy.map(summary => {
-      // append the promised hours starting from the latest week (this week)
-      const promisedHoursByWeek = this.weekDates.map(weekDate =>
-        this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-      );
-      return { ...summary, promisedHoursByWeek };
-    });
+  //   // 3. add new key of promised hours by week
+  //   summariesCopy = summariesCopy.map(summary => {
+  //     // append the promised hours starting from the latest week (this week)
+  //     const promisedHoursByWeek = this.weekDates.map(weekDate =>
+  //       this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+  //     );
+  //     return { ...summary, promisedHoursByWeek };
+  //   });
 
-    const teamCodeGroup = {};
-    const teamCodes = [];
-    const colorOptionGroup = new Set();
-    const colorOptions = [];
+  //   const teamCodeGroup = {};
+  //   const teamCodes = [];
+  //   const colorOptionGroup = new Set();
+  //   const colorOptions = [];
 
-    summariesCopy.forEach(summary => {
-      const code = summary.teamCode || 'noCodeLabel';
-      if (teamCodeGroup[code]) {
-        teamCodeGroup[code].push(summary);
-      } else {
-        teamCodeGroup[code] = [summary];
-      }
+  //   summariesCopy.forEach(summary => {
+  //     const code = summary.teamCode || 'noCodeLabel';
+  //     if (teamCodeGroup[code]) {
+  //       teamCodeGroup[code].push(summary);
+  //     } else {
+  //       teamCodeGroup[code] = [summary];
+  //     }
 
-      if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
-    });
+  //     if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
+  //   });
 
-    Object.keys(teamCodeGroup).forEach(code => {
-      if (code !== 'noCodeLabel') {
-        teamCodes.push({
-          value: code,
-          label: `${code} (${teamCodeGroup[code].length})`,
-        });
-      }
-    });
-    colorOptionGroup.forEach(option => {
-      colorOptions.push({
-        value: option,
-        label: option,
-      });
-    });
-    colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
-    teamCodes
-      .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
-      .push({
-        value: '',
-        label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
-      });
-    this.setState({ teamCodes });
-  }
+  //   Object.keys(teamCodeGroup).forEach(code => {
+  //     if (code !== 'noCodeLabel') {
+  //       teamCodes.push({
+  //         value: code,
+  //         label: `${code} (${teamCodeGroup[code].length})`,
+  //       });
+  //     }
+  //   });
+  //   colorOptionGroup.forEach(option => {
+  //     colorOptions.push({
+  //       value: option,
+  //       label: option,
+  //     });
+  //   });
+  //   colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+  //   teamCodes
+  //     .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+  //     .push({
+  //       value: '',
+  //       label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+  //     });
+  //   this.setState({ teamCodes });
+  // }
 
   // this is passed through to FormattedReport.jsx all the way to TeamCodeRow (line 254)
-  teamCodeChange = async () => {
+  teamCodeChange = (oldTeamCode, newTeamCode) => {
     console.log("Testing on WeeklySummariesReport.jsx");
-    this.refreshTeamCodes();
+    this.setState((state) => {
+      const { selectedCodes, teamCodes } = state;
+      const oldCodeIndex = selectedCodes.findIndex(code => code.value === oldTeamCode);
+      selectedCodes[oldCodeIndex].value = newTeamCode;
+      selectedCodes[oldCodeIndex].label = selectedCodes[oldCodeIndex].label.replace(oldTeamCode, newTeamCode);
+      return {
+        selectedCodes: [...selectedCodes],
+        teamCodes: [...teamCodes],
+      }
+    });
+    // this.refreshTeamCodes();
   }
 
   // componentDidUpdate(preProps) {
