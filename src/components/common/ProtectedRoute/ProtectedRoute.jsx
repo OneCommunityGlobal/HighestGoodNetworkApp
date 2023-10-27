@@ -7,6 +7,7 @@ const ProtectedRoute = ({
   render,
   auth,
   roles,
+  allowedRoles,
   routePermissions,
   ...rest
 }) => {
@@ -27,7 +28,9 @@ const ProtectedRoute = ({
   if (userPermissions?.some(perm => perm === routePermissions)) {
     hasPermissionToAccess = true;
   }
-
+  if (allowedRoles?.some(allowRole => allowRole === auth?.user?.role)){
+    hasPermissionToAccess = true;
+  }
   return (
     <Route
       {...rest}
