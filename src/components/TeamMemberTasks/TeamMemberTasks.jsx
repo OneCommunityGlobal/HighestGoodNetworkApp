@@ -125,6 +125,21 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
+  const updateTaskStatus = useCallback(async (taskId, updatedTask) => {
+    const newTask = {
+      updatedTask,
+      taskId,
+    };
+    const url = ENDPOINTS.TASK_UPDATE_STATUS(newTask.taskId);
+    try {
+      await axios.put(url, newTask.updatedTask);
+    } catch (error) {
+      toast.error('Failed to update task');
+    }
+    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, true));
+    props.handleUpdateTask();
+  }, []);
+
   const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
@@ -437,9 +452,10 @@ const TeamMemberTasks = React.memo(props => {
                       handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                       handleTaskModalOption={handleTaskModalOption}
                       userRole={userRole}
-                      updateTask={onUpdateTask}
+                      updateTaskStatus={updateTaskStatus}
                       roles={props.roles}
                       userPermissions={props.userPermissions}
+                      userId={userId}
                     />
                   );
                 } else {
@@ -453,7 +469,7 @@ const TeamMemberTasks = React.memo(props => {
                         handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                         handleTaskModalOption={handleTaskModalOption}
                         userRole={userRole}
-                        updateTask={onUpdateTask}
+                        updateTaskStatus={updateTaskStatus}
                         roles={props.roles}
                         userPermissions={props.userPermissions}
                         userId={userId}

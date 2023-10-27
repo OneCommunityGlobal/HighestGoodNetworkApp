@@ -55,7 +55,7 @@
 }
 
 @media (min-width: 482px) {
-  .teamcode-wrapper{
+  .teamcode-wrapper {
     display: flex;
     white-space: nowrap;
     align-items: center;
@@ -71,16 +71,17 @@
   .options {
     max-height: 570px;
     overflow-y: scroll;
+    font-family: 'Courier New', Courier, monospace;
   }
 
   .options::-webkit-scrollbar {
     width: 5px;
   }
-  
+
   .options::-webkit-scrollbar-track {
     background: rgb(0, 0, 0, 0);
   }
-  
+
   .options::-webkit-scrollbar-thumb {
     background: rgb(206, 212, 218);
     border-radius: 8px;
