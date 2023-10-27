@@ -97,6 +97,7 @@ const TimeEntry = ({ data, displayYear, userProfile, LoggedInuserId, curruserId 
     dispatch(updateUserProfile(userProfile._id, userProfile));
     dispatch(getUserProfile(curruserId));
     dispatch(getTimeEntriesForWeek(curruserId, 0));
+    window.location.reload();
   };
 
   return (
