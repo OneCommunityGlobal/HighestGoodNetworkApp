@@ -57,7 +57,6 @@ import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { updateTask } from 'actions/task';
 
 function UserProfile(props) {
-  console.log('props inside of user profile ', props);
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -221,12 +220,8 @@ function UserProfile(props) {
 
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const userProjects = await axios.get(ENDPOINTS.USER_PROJECTS(userId));
-      // console.log('usr projects', userProjects);
 
       const newUserProfile = response.data;
-
-      // console.log('response is', response);
 
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
