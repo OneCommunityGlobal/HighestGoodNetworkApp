@@ -88,29 +88,29 @@ function ProjectSummary({ project }) {
     <>
       <h2 className="project-summary_header">{project.projectName} summary</h2>
       <div className="project-summary_content">
-        <div>
+        <div className="project-summary_item">
           Total hours of work done: <span className="project-summary_span"></span>
         </div>
-        <div>
+        <div className="project-summary_item">
           Total cost of materials: <span className="project-summary_span"></span>
         </div>
-        <div>
+        <div className="project-summary_item">
           Total cost of equipment: <span className="project-summary_span"></span>
         </div>
-        <div>
+        <div className="project-summary_item">
           Total wastage: <span className="project-summary_span"></span>
         </div>
-        <div>
+        <div className="project-summary_item">
           No of teams: <span className="project-summary_span"> {project.teams.length}</span>
         </div>
-        <div>
+        <div className="project-summary_item">
           Total number of tools/equipment:{' '}
           <span className="project-summary_span">{project.tools.length}</span>
         </div>
-        <div>
+        <div className="project-summary_item">
           Equipment return due in 72hrs: <span className="project-summary_span"></span>
         </div>
-        <div>
+        <div className="project-summary_item">
           Number of materials with quantity less than 20% left:{' '}
           <span className="project-summary_span"></span>
         </div>
