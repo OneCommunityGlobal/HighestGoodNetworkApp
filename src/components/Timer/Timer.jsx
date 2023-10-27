@@ -356,20 +356,20 @@ export default function Timer() {
               <TimerStatus readyState={readyState} message={message} toggleTimer={toggleTimer} />
             )}
           </div>
-          {logTimeEntryModal && (
-            <TimeEntryForm
-              edit={false}
-              userId={userId}
-              toggle={toggleLogTimeModal}
-              isOpen={logTimeEntryModal}
-              timer={logTimer}
-              data={data}
-              sendStop={sendStop}
-              LoggedInuserId={userId}
-              curruserId={curruserProfile._id}
-            />
-          )}
         </div>
+      )}
+      {logTimeEntryModal && (
+        <TimeEntryForm
+          edit={false}
+          userId={userId}
+          toggle={toggleLogTimeModal}
+          isOpen={logTimeEntryModal}
+          timer={logTimer}
+          data={data}
+          sendStop={sendStop}
+          LoggedInuserId={userId}
+          curruserId={curruserProfile._id}
+        />
       )}
       <audio ref={audioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
       <Modal
