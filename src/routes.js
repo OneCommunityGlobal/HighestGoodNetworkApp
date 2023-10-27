@@ -107,7 +107,7 @@ export default (
             path="/projects"
             exact
             component={Projects}
-            allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+            allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
             routePermissions={[RoutePermissions.projects, RoutePermissions.projectManagement_fullFunctionality, 
               RoutePermissions.projectManagement_addTeamMembersUploadNewWBS]}
           />
