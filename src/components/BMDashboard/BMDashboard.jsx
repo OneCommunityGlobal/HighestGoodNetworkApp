@@ -319,6 +319,7 @@ const dummyProjects = [
         amountTotal: '100lb',
         amountUsed: '80lb',
         cost: '200',
+        amountWasted: '10lb',
       },
       {
         inventoryItemId: 4,
@@ -327,6 +328,7 @@ const dummyProjects = [
         amountTotal: '100lb',
         amountUsed: '95lb',
         cost: '200',
+        amountWasted: '10lb',
       },
     ],
     teams: [
@@ -392,6 +394,14 @@ const dummyProjects = [
         rentDuration: '',
         cost: '100',
       },
+      {
+        inventoryItemId: 3,
+        title: 'leafblower',
+        image: 'https://www.theforkliftcenter.com/images/forklift-hero-left.png',
+        rentedOnDate: '',
+        rentDuration: '',
+        cost: '200',
+      },
     ],
     materials: [
       {
@@ -401,6 +411,7 @@ const dummyProjects = [
         amountTotal: '100lb',
         amountUsed: '80lb',
         cost: '100',
+        amountWasted: '10lb',
       },
       {
         inventoryItemId: 4,
@@ -409,6 +420,7 @@ const dummyProjects = [
         amountTotal: '100lb',
         amountUsed: '95lb',
         cost: '200',
+        amountWasted: '10lb',
       },
     ],
     teams: [
@@ -483,6 +495,7 @@ const dummyProjects = [
         amountTotal: '100lb',
         amountUsed: '80lb',
         cost: '100',
+        amountWasted: '10lb',
       },
       {
         inventoryItemId: 4,
@@ -491,6 +504,7 @@ const dummyProjects = [
         amountTotal: '100lb',
         amountUsed: '95lb',
         cost: '100',
+        amountWasted: '10lb',
       },
     ],
     teams: [
@@ -565,6 +579,7 @@ const dummyProjects = [
         amountTotal: '100lb',
         amountUsed: '80lb',
         cost: '100',
+        amountWasted: '10lb',
       },
       {
         inventoryItemId: 4,
@@ -573,6 +588,7 @@ const dummyProjects = [
         amountTotal: '100lb',
         amountUsed: '95lb',
         cost: '200',
+        amountWasted: '10lb',
       },
     ],
     teams: [

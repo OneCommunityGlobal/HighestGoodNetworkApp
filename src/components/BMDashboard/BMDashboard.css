@@ -40,8 +40,11 @@ overflow-y: auto;
   font-weight: bold;
 }
 
-.project-summary p{
+.project-summary_content{
   margin: 0;
   font-size: clamp(0.9em, 2.5vw, 1em);
 }
 
+.project-summary_span{
+
+}
