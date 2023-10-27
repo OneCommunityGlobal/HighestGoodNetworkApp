@@ -4,10 +4,10 @@ import { useSelector, useDispatch } from 'react-redux';
 // import { useLocation } from 'react-router-dom';
 import { getAllItemTypes } from 'actions/itemTypes';
 import { fetchAllProjects } from 'actions/projects';
-import AddMaterialForm from './AddMaterialForm/AddMaterialForm';
-import './AddMaterials.css';
+import AddMaterialForm from './PurchaseMaterialForm/PurchaseMaterialForm';
+import './PurchaseMaterials.css';
 
-export default function AddMaterials() {
+export default function PurchaseMaterials() {
   const allProjects = useSelector(state => state.allProjects);
   const itemTypes = useSelector(state => state.itemTypes);
   const dispatch = useDispatch();

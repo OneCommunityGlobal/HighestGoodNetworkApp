@@ -7,18 +7,18 @@ import { isValidMediaUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
 import { postMaterial } from '../../../../actions/materials';
-import './AddMaterialForm.css';
+import './PurchaseMaterialForm.css';
 
 // AddMaterialsForm will take in an array of project objects
 // and optionally a selected project object
-export default function AddMaterialsForm(props) {
+export default function PurchaseMaterialForm(props) {
   const {
     projects,
     selectedProject,
-    canAddNewMaterial,
-    canAddNewMeasurement,
+    // canAddNewMaterial,
+    // canAddNewMeasurement,
     materials,
-    measurements,
+    // measurements,
   } = props;
 
   const [formInputs, setFormInputs] = useState({
@@ -125,7 +125,7 @@ export default function AddMaterialsForm(props) {
     <Form className="add-materials-form" onSubmit={handleSubmit}>
       <Row>
         <Col>
-          <h1 style={{ fontSize: '1.3rem' }}>ADD MATERIAL</h1>
+          <h1 style={{ fontSize: '1.3rem' }}>Purchase Materials Request</h1>
         </Col>
       </Row>
       <Row>
@@ -187,7 +187,7 @@ export default function AddMaterialsForm(props) {
               </FormGroup>
             </Col>
           </Row>
-          {canAddNewMaterial && (
+          {/* {canAddNewMaterial && (
             <Row>
               <Col>
                 <FormGroup check>
@@ -210,8 +210,8 @@ export default function AddMaterialsForm(props) {
                 </FormGroup>
               </Col>
             </Row>
-          )}
-          <Row>
+          )} */}
+          {/* <Row>
             <Col xs="12" sm="8">
               <FormGroup>
                 <Label for="invoice">Invoice Number or ID</Label>
@@ -226,7 +226,7 @@ export default function AddMaterialsForm(props) {
                 />
               </FormGroup>
             </Col>
-          </Row>
+          </Row> */}
           <Row className="price-currency">
             <Col xs="12" sm="7" md="8">
               <FormGroup>
@@ -261,7 +261,7 @@ export default function AddMaterialsForm(props) {
               </FormGroup>
             </Col>
           </Row>
-          <Row>
+          {/* <Row>
             <Col xs="12" sm="7">
               <FormGroup>
                 <Label for="measurement">Unit of Measurement</Label>
@@ -293,8 +293,8 @@ export default function AddMaterialsForm(props) {
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          {canAddNewMeasurement && (
+          </Row> */}
+          {/* {canAddNewMeasurement && (
             <Row>
               <Col>
                 <FormGroup check>
@@ -317,7 +317,7 @@ export default function AddMaterialsForm(props) {
                 </FormGroup>
               </Col>
             </Row>
-          )}
+          )} */}
           <Row>
             <Col xs="12" sm="4">
               <FormGroup>
@@ -421,7 +421,7 @@ export default function AddMaterialsForm(props) {
               </FormGroup>
             </Col>
           </Row>
-          <Row>
+          {/* <Row>
             <Col>
               <FormGroup>
                 <Label for="material-image">Upload Material Picture</Label>
@@ -445,7 +445,7 @@ export default function AddMaterialsForm(props) {
                 />
               </FormGroup>
             </Col>
-          </Row>
+          </Row> */}
           <Row>
             <Col>
               <div className="total-price">
