@@ -84,6 +84,15 @@ const dummyProject = {
 };
 
 function ProjectSummary({ project }) {
+  const totalMaterialsCost = project.materials.reduce((total, material) => {
+    return total + parseInt(material.cost);
+  }, 0);
+
+
+   const totalEquipmentCost = project.tools.reduce((total, tool) => {
+     return total + parseInt(tool.cost);
+   }, 0);
+  
   return (
     <>
       <h2 className="project-summary_header">{project.projectName} summary</h2>
@@ -92,10 +101,12 @@ function ProjectSummary({ project }) {
           Total hours of work done: <span className="project-summary_span"></span>
         </div>
         <div className="project-summary_item">
-          Total cost of materials: <span className="project-summary_span"></span>
+          Total cost of materials:{' '}
+          <span className="project-summary_span">{totalMaterialsCost} </span>
         </div>
         <div className="project-summary_item">
-          Total cost of equipment: <span className="project-summary_span"></span>
+          Total cost of equipment:{' '}
+          <span className="project-summary_span">{totalEquipmentCost}</span>
         </div>
         <div className="project-summary_item">
           Total wastage: <span className="project-summary_span"></span>
