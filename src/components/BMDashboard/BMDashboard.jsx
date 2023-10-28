@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Container } from 'reactstrap';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
+import { connect } from 'react-redux';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import './BMDashboard.css';
-import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
 
-//data for project details
+// data for project details
 
 // const dummyProjects = [
 //   {
@@ -287,7 +288,7 @@ import { ENDPOINTS } from 'utils/URL';
 //   },
 // ];
 
-//data for projects summary
+// data for projects summary
 
 const dummyProjects = [
   {
@@ -636,16 +637,20 @@ const dummyProjects = [
   },
 ];
 
-export const BMDashboard = () => {
+export function BMDashboard(props) {
+  // const { auth } = props;
 
+  // const [projects, setProjects] = useState([]);
 
-  //TO DO: api call to fetch data
-  // const fetchData = () => {
-  //   const response = axios.get(ENDPOINTS.PROJECTS_LIST);
-  // } 
+  // const fetchData = async () => {
+  //   const { data } = await axios.get(`${ENDPOINTS.BM_PROJECTS_LIST}/${auth.user.userid}`);
+  //   console.log('fetched', data);
+  //   setProjects(data.projects);
+  // };
 
+  // // fetch projects data on pageload
   // useEffect(() => {
-  //   fetchData()
+  //   fetchData();
   // }, []);
 
   return (
@@ -653,18 +658,22 @@ export const BMDashboard = () => {
       <header className="bm-dashboard__header">
         <h1>Building and Inventory Management Dashboard</h1>
       </header>
-      
       <main>
         {dummyProjects ? (
           <>
-        <ProjectSelectForm projects={dummyProjects} />
-        <ProjectsList projects={dummyProjects} /></>
+            <ProjectSelectForm projects={dummyProjects} />
+            <ProjectsList projects={dummyProjects} />
+          </>
         ) : (
-            <div>Loading...</div>
-        )}        
+          <div>Loading...</div>
+        )}
       </main>
     </Container>
   );
 }
 
-export default BMDashboard;
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps)(BMDashboard);

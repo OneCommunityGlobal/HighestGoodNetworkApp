@@ -85,20 +85,19 @@ const dummyProject = {
 
 function ProjectSummary({ project }) {
   const totalMaterialsCost = project.materials.reduce((total, material) => {
-    return total + parseInt(material.cost);
+    return total + parseInt(material.cost, 10);
   }, 0);
 
+  const totalEquipmentCost = project.tools.reduce((total, tool) => {
+    return total + parseInt(tool.cost, 10);
+  }, 0);
 
-   const totalEquipmentCost = project.tools.reduce((total, tool) => {
-     return total + parseInt(tool.cost);
-   }, 0);
-  
   return (
     <>
       <h2 className="project-summary_header">{project.projectName} summary</h2>
       <div className="project-summary_content">
         <div className="project-summary_item">
-          Total hours of work done: <span className="project-summary_span"></span>
+          Total hours of work done: <span className="project-summary_span" />
         </div>
         <div className="project-summary_item">
           Total cost of materials:{' '}
@@ -109,7 +108,7 @@ function ProjectSummary({ project }) {
           <span className="project-summary_span">{totalEquipmentCost}</span>
         </div>
         <div className="project-summary_item">
-          Total wastage: <span className="project-summary_span"></span>
+          Total wastage: <span className="project-summary_span" />
         </div>
         <div className="project-summary_item">
           No of teams: <span className="project-summary_span"> {project.teams.length}</span>
@@ -119,11 +118,11 @@ function ProjectSummary({ project }) {
           <span className="project-summary_span">{project.tools.length}</span>
         </div>
         <div className="project-summary_item">
-          Equipment return due in 72hrs: <span className="project-summary_span"></span>
+          Equipment return due in 72hrs: <span className="project-summary_span" />
         </div>
         <div className="project-summary_item">
           Number of materials with quantity less than 20% left:{' '}
-          <span className="project-summary_span"></span>
+          <span className="project-summary_span" />
         </div>
       </div>
     </>
