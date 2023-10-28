@@ -59,7 +59,7 @@ export const Header = props => {
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
   // Projects
-  const canSeeProjectManagementTab = props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canSeeProjectManagementTab = props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab') || props.auth.user.role=== 'Manager';
   const canPostProject = props.hasPermission('postProject');
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
