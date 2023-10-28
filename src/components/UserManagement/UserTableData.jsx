@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import ResetPasswordButton from './ResetPasswordButton';
-import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
+import {
+  DELETE,
+  PAUSE,
+  RESUME,
+  SET_FINAL_DAY,
+  CANCEL,
+  SELECT,
+  SHOW,
+  ADD,
+} from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import hasPermission from 'utils/permissions';
@@ -57,6 +66,24 @@ const UserTableData = React.memo(props => {
             toast.success('Email Copied!');
           }}
         />
+      </td>
+      <td className="image_cell">
+        <button
+          type="button"
+          className={`btn btn-outline-${props.hasProfilePic === 1 ? 'success' : 'warning'} btn-sm`}
+          style={boxStyle}
+          onClick={e => {
+            props.onSelectProfilePicClick(props.user, null);
+          }}
+        >
+          {isChanging
+            ? '...'
+            : props.hasProfilePic > 0
+            ? props.hasProfilePic > 1
+              ? SELECT
+              : SHOW
+            : ADD}
+        </button>
       </td>
       <td>{props.user.weeklycommittedHours}</td>
       <td>

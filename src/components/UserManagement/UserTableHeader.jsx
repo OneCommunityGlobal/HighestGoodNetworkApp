@@ -5,6 +5,7 @@ import {
   LAST_NAME,
   ROLE,
   EMAIL,
+  IMAGE,
   WKLY_COMMITTED_HRS,
   PAUSE,
   USER_RESUME_DATE,
@@ -34,6 +35,9 @@ const UserTableHeader = React.memo(props => {
       </th>
       <th scope="col" id="usermanagement_email">
         {EMAIL}
+      </th>
+      <th scope="col" id="usermanagement_image">
+        {IMAGE}
       </th>
       <th scope="col" id="usermanagement_hrs">
         {WKLY_COMMITTED_HRS}
