@@ -9,16 +9,17 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+// import { useHistory } from "react-router-dom";
+import { formatDate } from 'utils/formatDate';
 
 /**
  * The body row of the user table
  */
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
-  const history = useHistory();
-//const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-
+  // const history = useHistory();
+  const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
+  // const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   console.log("user table", props)
   /**
@@ -49,7 +50,7 @@ const UserTableData = React.memo(props => {
       </td>
       <td>
         <a href={`/userprofile/${props.user._id}`}>{props.user.firstName}</a>
-      </td>
+      </td>i
       <td>
         <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
       </td>
