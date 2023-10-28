@@ -4,6 +4,7 @@ import ReactHtmlParser from 'react-html-parser';
 import './filteredTimeEntries.css';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 import moment from 'moment';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
@@ -58,20 +59,18 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
   };
 
   useEffect(() => {
-    if (!data.projectId) return; // some projectId are empty strings. calling PROJECT_BY_ID will return 400
-
     axios
       .get(ENDPOINTS.PROJECT_BY_ID(data.projectId))
       .then(res => {
         setProjectCategory(res?.data.category.toLowerCase() || '');
         setProjectName(res?.data?.projectName || '');
       })
-      .catch(err => console.log(err));
+      .catch(() => {
+        toast.error(`There was a problem fetching the project with ID ${data.projectId}.`);
+      });
   }, []);
 
   useEffect(() => {
-    if (!data.projectId) return; // some projectId are empty strings. calling GET_TASK will return 400
-
     axios
       // Note: Here taskId is stored in projectId since no taskId field in timeEntry schema
       .get(ENDPOINTS.GET_TASK(data.projectId))
@@ -79,7 +78,9 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
         setTaskClassification(res?.data?.classification.toLowerCase() || '');
         setTaskName(res?.data?.taskName || '');
       })
-      .catch(err => console.log(err));
+      .catch(() => {
+        toast.error(`There was a problem fetching tasks for the project with ID ${data.projectId}.`);
+      });
   }, []);
 
   return (
