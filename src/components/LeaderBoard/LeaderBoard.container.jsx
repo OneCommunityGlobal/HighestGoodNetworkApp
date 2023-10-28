@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
-import { get, round, maxBy } from 'lodash';
-import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
+import { get, round } from 'lodash';
 import Leaderboard from './Leaderboard';
 import { getcolor, getprogress } from '../../utils/effortColors';
 import { getMouseoverText } from '../../actions/mouseoverTextAction';

@@ -42,7 +42,6 @@ function LeaderBoard({
   // getLeaderboardData,
   // getOrgData,
   getMouseoverText,
-  leaderBoardData,
   loggedInUser,
   organizationData,
   timeEntries,
@@ -60,7 +59,6 @@ function LeaderBoard({
   const [isLoadingmember, setisLoadingmember] = useState(false);
 
   const userId = asUser || loggedInUser.userId;
-  const isAdmin = ['Owner', 'Administrator', 'Core Team'].includes(loggedInUser.role);
 
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
@@ -101,19 +99,26 @@ function LeaderBoard({
     if (leaderBoardData.length) {
       const maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
       leaderBoardData = leaderBoardData.map(element => {
-        element.didMeetWeeklyCommitment =
-          element.totaltangibletime_hrs >= element.weeklycommittedHours;
-        element.weeklycommitted = round(element.weeklycommittedHours, 2);
-        element.tangibletime = round(element.totaltangibletime_hrs, 2);
-        element.intangibletime = round(element.totalintangibletime_hrs, 2);
-        element.tangibletimewidth = round((element.totaltangibletime_hrs * 100) / maxTotal, 0);
-        element.intangibletimewidth = round((element.totalintangibletime_hrs * 100) / maxTotal, 0);
-        element.barcolor = getcolor(element.totaltangibletime_hrs);
-        element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
-        element.totaltime = round(element.totaltime_hrs, 2);
-        element.isVisible = element.role === 'Volunteer' || element.isVisible;
+        const updatedElement = { ...element };
+        updatedElement.didMeetWeeklyCommitment =
+          updatedElement.totaltangibletime_hrs >= updatedElement.weeklycommittedHours;
+        updatedElement.weeklycommitted = round(updatedElement.weeklycommittedHours, 2);
+        updatedElement.tangibletime = round(updatedElement.totaltangibletime_hrs, 2);
+        updatedElement.intangibletime = round(updatedElement.totalintangibletime_hrs, 2);
+        updatedElement.tangibletimewidth = round(
+          (updatedElement.totaltangibletime_hrs * 100) / maxTotal,
+          0,
+        );
+        updatedElement.intangibletimewidth = round(
+          (updatedElement.totalintangibletime_hrs * 100) / maxTotal,
+          0,
+        );
+        updatedElement.barcolor = getcolor(updatedElement.totaltangibletime_hrs);
+        updatedElement.barprogress = getProgressValue(updatedElement.totaltangibletime_hrs, 40);
+        updatedElement.totaltime = round(updatedElement.totaltime_hrs, 2);
+        updatedElement.isVisible = updatedElement.role === 'Volunteer' || updatedElement.isVisible;
 
-        return element;
+        return updatedElement;
       });
     }
     setleaderboarddata([...leaderBoardData]);
@@ -126,6 +131,32 @@ function LeaderBoard({
       getdata();
     }
   }, [loggedInUser]);
+
+  // get user team members
+  const getMyTeam = async () => {
+    let member = [];
+    if (userTeams) {
+      const promises = userTeams.map(userTeam => getTeamMembers(userTeam._id)(dispatch));
+      Promise.all(promises).then(results => {
+        let mergedResults = member;
+        results.forEach(res => {
+          let filteredResult = res;
+          if (mergedResults.length > 0) {
+            mergedResults.forEach(user => {
+              filteredResult = filteredResult.filter(item => user._id !== item._id);
+            });
+          }
+          mergedResults = mergedResults.concat(filteredResult);
+        });
+        member = mergedResults;
+      });
+      const filteredlist = leaderboarddata.filter(user => {
+        return member.some(memberItem => user.personId === memberItem._id);
+      });
+      setmyTeamData([...filteredlist]);
+      setShowLeaderboard([...filteredlist]);
+    }
+  };
 
   // if user role is core team or admin or owner instead of showing all members show only team members by default.//loggedInUser.role
   useDeepEffect(() => {
@@ -151,35 +182,12 @@ function LeaderBoard({
             }
           }
         }
-      } catch {}
+      } catch (error) {
+        throw new Error(error);
+      }
     }
   }, [leaderboarddata, userRole]);
 
-  // get user team members
-  const getMyTeam = async () => {
-    let member = [];
-    let res;
-    if (userTeams) {
-      for (let i = 0; i < userTeams?.length; i++) {
-        res = await getTeamMembers(userTeams[i]._id)(dispatch);
-        if (member.length > 0) {
-          member.forEach(user => {
-            res = res.filter(item => user._id !== item._id);
-          });
-        }
-        member = member.concat(res);
-      }
-      const filteredlist = leaderboarddata.filter(user => {
-        for (let i = 0; i < member.length; i++) {
-          if (user.personId === member[i]._id) {
-            return user;
-          }
-        }
-      });
-      setmyTeamData([...filteredlist]);
-      setShowLeaderboard([...filteredlist]);
-    }
-  };
   // my team toggle button
   const toggleTeamView = () => {
     if (isTeamTab) {
@@ -310,9 +318,10 @@ function LeaderBoard({
         </h3>
         {(loggedInUser.role === 'Owner' ||
           loggedInUser.role === 'Administrator' ||
-          loggedInUser.role == 'Core Team') &&
+          loggedInUser.role === 'Core Team') &&
           userTeams?.length > 0 && (
             <button
+              type="button"
               className="circle-border my-team"
               style={{
                 backgroundColor: isTeamTab ? skyblue : 'slategray',
@@ -403,8 +412,8 @@ function LeaderBoard({
             {isLoadingmember ? (
               <Loading />
             ) : (
-              showLeaderboard.map((item, key) => (
-                <tr key={key}>
+              showLeaderboard.map(item => (
+                <tr key={item.personId}>
                   <td className="align-middle">
                     <div>
                       <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
