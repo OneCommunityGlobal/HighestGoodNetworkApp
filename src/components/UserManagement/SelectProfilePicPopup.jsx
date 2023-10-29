@@ -12,7 +12,8 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 const SelectProfilePicPopUp = React.memo(props => {
   const [selectedPic, setSelectedPic] = useState();
   const [newPic, setNewPic] = useState();
-  const storedPic = [props.user?.profilePic].flat();
+  const storedPics = props.user?.storedPics;
+  const profilePic = props.user?.profilePic;
   const userProfile = useSelector(state => state.userProfile);
 
   const closePopup = e => {
@@ -27,6 +28,7 @@ const SelectProfilePicPopUp = React.memo(props => {
   const saveChange = async e => {
     try {
       await props.getUserProfile(props.user._id);
+      console.log(selectedPic[0])
       const updatedProfile = {
         ...userProfile,
         profilePic: selectedPic[0],
@@ -44,7 +46,9 @@ const SelectProfilePicPopUp = React.memo(props => {
     setNewPic(newURL);
   };
 
-  const selectPic = (pic, id) => {
+  const selectPic = async (pic, id) => {
+    await props.getUserProfile(props.user._id);
+    console.log(userProfile)
     const selected = [pic].flat();
     setSelectedPic(selected);
     document.querySelectorAll('.dashboardimg').forEach(element => {
@@ -59,19 +63,35 @@ const SelectProfilePicPopUp = React.memo(props => {
       <ModalBody>
         <b>Please choose the profile picture:</b>
         <div>
-          {storedPic.map((pic, index) => {
-            return (
-              <img
-                src={`${pic || '/pfp-default-header.png'}`}
-                alt=""
-                style={{ maxWidth: '60px', maxHeight: '60px' }}
-                className="dashboardimg"
-                key={`pic_fetched_'+${index}`}
-                id={`pic_fetched_'+${index}`}
-                onClick={e => selectPic(pic, `pic_fetched_'+${index}`)}
-              />
-            );
-          })}
+          {
+            (Array.isArray(profilePic) && profilePic.length > 0) ?
+              profilePic.map((pic, index) => (
+                <img
+                  src={`${pic || '/pfp-default-header.png'}`}
+                  alt=""
+                  style={{ maxWidth: '60px', maxHeight: '60px' }}
+                  className="dashboardimg"
+                  key={`pic_fetched_'+${index}`}
+                  id={`pic_fetched_'+${index}`}
+                  onClick={e => selectPic(pic, `pic_fetched_'+${index}`)}
+                />
+              ))
+              :
+              (Array.isArray(storedPics) && storedPics.length > 0) ?
+                storedPics.map((pic, index) => (
+                  <img
+                    src={`${pic || '/pfp-default-header.png'}`}
+                    alt=""
+                    style={{ maxWidth: '60px', maxHeight: '60px' }}
+                    className="dashboardimg"
+                    key={`pic_fetched_'+${index}`}
+                    id={`pic_fetched_'+${index}`}
+                    onClick={e => selectPic(pic, `pic_fetched_'+${index}`)}
+                  />
+                ))
+                :
+                null
+          }
           {newPic && (
             <img
               src={`${newPic || '/pfp-default-header.png'}`}
