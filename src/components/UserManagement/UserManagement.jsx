@@ -32,6 +32,7 @@ import LogTimeOffPopUp from './logTimeOffPopUp';
 import { Table } from 'react-bootstrap';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { toast } from 'react-toastify';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -288,10 +289,16 @@ class UserManagement extends React.PureComponent {
    * Call back on log time off button click
    */
   onLogTimeOffClick = user => {
-    this.setState({
-      logTimeOffPopUpOpen: true,
-      userForTimeOff: user,
-    });
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
+    if(canManageTimeOffRequests){
+      this.setState({
+        logTimeOffPopUpOpen: true,
+        userForTimeOff: user,
+      });
+    }else{
+      toast.warn(`You do not have permission to manage time-off requests.`)
+    }
+  
   };
 
   /**

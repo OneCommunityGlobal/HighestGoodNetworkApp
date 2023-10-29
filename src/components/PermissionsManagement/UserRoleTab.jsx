@@ -60,6 +60,7 @@ export const permissionLabel = {
   editUserProfile: 'Edit User Profile',
   changeUserStatus: 'Change User Status',
   handleBlueSquare: 'Handle Blue Squares',
+  manageTimeOffRequests: 'Manage Time Off Requests',
   assignOnlyBlueSquares: 'Only Assign Blue Squares',
   adminLinks: 'Manage Admin Links in User Profile',
   editUserProfile: 'Edit User Profile',

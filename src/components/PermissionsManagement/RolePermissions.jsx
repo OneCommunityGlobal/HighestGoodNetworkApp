@@ -105,6 +105,7 @@ export const  modalInfo = {
   'Toggle Summary Submit Form (Others)':
     'Gives the user permission to change the requirement to the user to submit a summary.',
   'Handle Blue Squares': 'Gives the user permission to Update/Delete/Edit any blue square.',
+  'Manage Time Off Requests': 'Gives the user permission to Add/Delete/Edit Time off requests.',
   'Only Assign Blue Squares': 'Gives the user permission to add blue squares to any user.',
   'See Permissions Management Tab and Edit Permission':
     'Gives the user permission to access the Permissions Management tab.',

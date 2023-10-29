@@ -225,6 +225,30 @@ const LogTimeOffPopUp = React.memo(props => {
     return true;
   };
 
+  const checkIfRequestOverlapsWithOtherRequests = data => {
+    if (allRequests[props.user._id]?.length > 0) {
+      const isAnyOverlapingRequests = allRequests[props.user._id].some(request => {
+        const requestStartingDate = moment(request.startingDate);
+        if (request._id !== data.id && requestStartingDate.isAfter(moment(data.dateOfLeave)) ) {
+          const endOfVacation = moment(data.dateOfLeave)
+            .tz('America/Los_Angeles')
+            .add(Number(data.numberOfWeeks), 'week')
+            .subtract(1, 'second');
+          return endOfVacation.isAfter(requestStartingDate);
+        }
+      });
+
+      if (isAnyOverlapingRequests) {
+        setUpdateRequestDataErrors(prev => ({
+          ...prev,
+          numberOfWeeksError: 'You cannot make this request overlap with other existing requests',
+        }));
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleAddRequest = e => {
     e.preventDefault();
     setRequestDataErrors(initialRequestDataErrors);
@@ -232,7 +256,7 @@ const LogTimeOffPopUp = React.memo(props => {
     if (!validateDateOfLeave(requestData)) return;
     if (!validateNumberOfWeeks(requestData, false)) return;
     if (!validateReasonForLeave(requestData, false)) return;
-    // if (!validateDateIsNotBeforeToday(requestData)) return;
+    if (!validateDateIsNotBeforeToday(requestData)) return;
     if (!validateDateIsNotBeforeEndOfOtherRequests(requestData)) return;
 
     const data = {
@@ -253,7 +277,7 @@ const LogTimeOffPopUp = React.memo(props => {
 
     if (!validateNumberOfWeeks(updateRequestData, true)) return;
     if (!validateReasonForLeave(updateRequestData, true)) return;
-
+    if (!checkIfRequestOverlapsWithOtherRequests(updateRequestData)) return;
     const data = {
       reason: updateRequestData.reasonForLeave,
       startingDate: moment(updateRequestData.dateOfLeave)

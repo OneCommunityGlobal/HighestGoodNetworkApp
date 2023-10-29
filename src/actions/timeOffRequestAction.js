@@ -126,12 +126,11 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
 
   moment.tz.setDefault('America/Los_Angeles');
 
-  const currentDate = moment();
   const requestStartingDate = moment(startingDate);
   const requestEndingDate = moment(endingDate);
 
-  const currentWeekStart = currentDate.clone().startOf('week');
-  const currentWeekEnd = currentDate.clone().endOf('week');
+  const currentWeekStart = moment().startOf('week').add(1, 'second');
+  const currentWeekEnd = moment().endOf('week').subtract(1, 'second');
 
   // Check if the current week falls within the date range of the request
   if (
