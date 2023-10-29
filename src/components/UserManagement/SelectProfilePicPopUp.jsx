@@ -64,18 +64,15 @@ const SelectProfilePicPopUp = React.memo(props => {
         <b>Please choose the profile picture:</b>
         <div>
           {
-            (Array.isArray(profilePic) && profilePic.length > 0) ?
-              profilePic.map((pic, index) => (
-                <img
-                  src={`${pic || '/pfp-default-header.png'}`}
-                  alt=""
-                  style={{ maxWidth: '60px', maxHeight: '60px' }}
-                  className="dashboardimg"
-                  key={`pic_fetched_'+${index}`}
-                  id={`pic_fetched_'+${index}`}
-                  onClick={e => selectPic(pic, `pic_fetched_'+${index}`)}
-                />
-              ))
+            profilePic ?
+              <img
+                src={`${profilePic || '/pfp-default-header.png'}`}
+                alt=""
+                style={{ maxWidth: '60px', maxHeight: '60px' }}
+                className="dashboardimg"
+                id={'currentProfilePic'}
+                onClick={e => selectPic(profilePic, 'currentProfilePic')}
+              />
               :
               (Array.isArray(storedPics) && storedPics.length > 0) ?
                 storedPics.map((pic, index) => (
