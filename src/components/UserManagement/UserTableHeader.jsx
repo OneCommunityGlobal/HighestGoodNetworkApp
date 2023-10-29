@@ -10,7 +10,7 @@ import {
   USER_RESUME_DATE,
   MANAGE_FINAL_DAY,
   USER_START_DATE,
-  USER_END_DATE
+  USER_END_DATE,
   REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 import userTableDataPermissions from 'utils/userTableDataPermissions';

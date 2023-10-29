@@ -4,7 +4,6 @@ import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { formatDateFromDescriptionString,formatTimeOffRequests } from 'utils/formatDateFromDescriptionString';
-import { color } from 'd3';
 
 const BlueSquare = (props) => {
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
