@@ -244,12 +244,13 @@ const BadgeReport = props => {
 
   const handleDeleteBadge = index => {
     setShowModal(true);
-    setBadgesToDelete(index);
+    setBadgesToDelete((indices) => [...indices, index]);
   };
 
   const handleCancel = () => {
     setShowModal(false);
-    setBadgesToDelete([]);
+    // fix bug to not clear
+    setBadgesToDelete(badgesToDelete.splice(-1,1)); // remove last index that we added
   };
 
   const handleDeleteAfterSave = () => {
@@ -266,13 +267,29 @@ const BadgeReport = props => {
 
   const deleteBadge = () => {
     let newBadges = sortBadges.slice();
-    const [deletedBadge] = newBadges.splice(badgesToDelete, 1);
+    let deletedIndex = badgesToDelete.splice(-1,1);
+
+    const [deletedBadge] = newBadges.splice(deletedIndex, 1); // delete last index only
+    
+    if (deletedBadge) {
+      updateRemainingIdiciesInBadgesDeleteList(badgesToDelete, deletedIndex);
+    }
+
     if (deletedBadge.featured) {
       setNumFeatured(--numFeatured);
     }
     setSortBadges(newBadges);
     setShowModal(false);
-    setBadgesToDelete([]);
+    setBadgesToDelete(badgesToDelete);
+  };
+
+  const updateRemainingIdiciesInBadgesDeleteList = (badgesToDelete, deletedIndex) => {
+    // updates the indices that are offset of deleted index.
+    for (let i = 0; i < badgesToDelete.length; i++) {
+      if (badgesToDelete[i] > deletedIndex) {
+        badgesToDelete[i] = badgesToDelete[i] - 1;
+      }
+    }
   };
 
   const saveChanges = async () => {
