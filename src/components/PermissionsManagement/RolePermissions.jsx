@@ -12,6 +12,8 @@ import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import PermissionsPresetsModal from './PermissionsPresetsModal.jsx';
+import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
@@ -29,12 +31,27 @@ const mapPermissionToLabel = permissions => {
   return label;
 };
 
-export const  modalInfo = {
+export const mainPermissions = [
+  'See All the Reports Tab',
+  'See User Management Tab (Full Functionality)',
+  'See Badge Management Tab (Full Functionality)',
+  'See Project Management Tab (Full Functionality)',
+  'Edit Task',
+  'See Teams Management Tab (Full Functionality)',
+  'Edit Timelog Information',
+  'Edit User Profile',
+  'See Popup Management Tab (create and update popups)',
+  'See Permissions Management Tab',
+  'See Summary Indicator',
+  'See Visibility Icon',
+];
+
+export const modalInfo = {
   'See Only Weekly Summary Reports Tab':
     'Make the "Other Links" -> "Reports" button appear/accessible.',
   'See User Management Tab (Full Functionality)':
     'Make the "Other Links" -> "User Management" button appear/accessible and be able to create, delete, and update users.',
-    'See Badge Management Tab (Full Functionality)':
+  'See Badge Management Tab (Full Functionality)':
     'Make the "Other Links" -> "Badge Management" button appear and then have the ability to create, delete, and update badges. ',
   'Delete Badge':
     'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
@@ -70,26 +87,26 @@ export const  modalInfo = {
     'Gives the user permission to add any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Find user input"',
   'Unassign User in Project':
     'Gives the user permission to remove any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Minus button"',
-    'See Teams Management Tab (Full Functionality)':
+  'See Teams Management Tab (Full Functionality)':
     'Make the "Other Links" -> "Teams" button appear and be able to add/delete teams, edit team names, and add/delete members.',
   'Edit/Delete Team': 'Gives the user permission to Edit or delete a team.',
   'Create Team': 'Gives the user permission to create a team.',
   'Assign Users Team':
-  'Gives the user permission to add a user to a team from their profile page. "User Profile" -> "Teams" -> "Assign Team"',
+    'Gives the user permission to add a user to a team from their profile page. "User Profile" -> "Teams" -> "Assign Team"',
   'Edit Timelog Information': 'Gives the user permission to edit any time log entry.',
   'Edit Project Category or Status':
-  'Gives the user permission to edit the category or the status of any Project. "Other Links" -> "Projects"',
+    'Gives the user permission to edit the category or the status of any Project. "Other Links" -> "Projects"',
   'Add Time Entry (Others)':
     'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button"',
   'Delete Time Entry (Others)':
     'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
   'Toggle Tangible Time Self':
-  'Gives the user permission to toggle the Tanglible check when editing their own time entry.',
+    'Gives the user permission to toggle the Tanglible check when editing their own time entry.',
   'Toggle Tangible/Intangible Time Others':
     'Gives the user permission to toggle the tanglible check when editing a time entry of another user.',
-    'Edit Own Time Entry':
+  'Edit Own Time Entry':
     'Gives the user permission to edit any time entry on their own time logs tab "Dashboard" -> "Current Time Log" -> "Pencil Icon"',
-    'Delete Own Time Entry':
+  'Delete Own Time Entry':
     'Gives the user permission to delete any time entry on their own time logs tab "Dashboard" -> "Current Time Log" -> "Trash Icon"',
   'Change User Status':
     'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
@@ -113,19 +130,17 @@ export const  modalInfo = {
     'Gives the user permission to submit weekly summary for another user',
   'Change the Bio Announcement Status':
     'Gives the user permission to change the annoucement status',
-    'Change Date on Intangible Time Entry':
+  'Change Date on Intangible Time Entry':
     'Gives the user permission to edit the date when adding an intangible time entry.',
-  'See Summary Indicator' : 
+  'See Summary Indicator':
     'Give the ability to see on the dashboard the green ✓ indicator for when a summary has been submitted. ',
-  'See Visibility Icon' : 
+  'See Visibility Icon':
     'Give the ability to see on the dashboard the eye indicator for when a person is invisible. ',
-
+  'Edit Team 4-Digit Codes':
+    'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
 };
 
 function RolePermissions(props) {
-  
-  const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
-
   const [permissions, setPermissions] = useState(mapPermissionToLabel(props.permissions));
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
@@ -135,10 +150,16 @@ function RolePermissions(props) {
   const history = useHistory();
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
-  
+  const [showPresetModal, setShowPresetModal] = useState(false);
+
   useEffect(() => {
     setRoleName(props.role);
+    props.getPresets(props.role);
   }, []);
+
+  useEffect(() => {
+    setPermissions(mapPermissionToLabel(props.permissions));
+  }, [props.roles]);
 
   const toggleDeleteRoleModal = () => {
     setDeleteRoleModal(!deleteRoleModal);
@@ -173,6 +194,21 @@ function RolePermissions(props) {
 
   const onAddPermission = permission => {
     setPermissions(previous => [...previous, permission]);
+  };
+
+  const saveNewPreset = async () => {
+    let count = 1;
+    while (props.presets.some(preset => preset.presetName === 'New Preset ' + count)) {
+      count += 1;
+    }
+    const newPreset = {
+      presetName: 'New Preset ' + count,
+      roleName: props.role,
+      permissions: permissions.map(perm => {
+        return getKeyByValue(permissionLabel, perm);
+      }),
+    };
+    props.createNewPreset(newPreset);
   };
 
   const updateInfo = async () => {
@@ -230,13 +266,41 @@ function RolePermissions(props) {
             )}
           </div>
           {props?.userRole === 'Owner' && (
-            <div className="name-container__btns">
-              <Button className="btn_save" color="success" onClick={() => updateInfo()} style={boxStyle}>
-                Save
-              </Button>
-              <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
-                Delete Role
-              </Button>
+            <div className="name-container__btn_columns">
+              <div className="name-container__btns">
+                <Button
+                  className="btn_save"
+                  color="success"
+                  onClick={() => {
+                    saveNewPreset();
+                  }}
+                  style={boxStyle}
+                >
+                  Create New Preset
+                </Button>
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    setShowPresetModal(!showPresetModal);
+                  }}
+                  style={boxStyle}
+                >
+                  Load Presets
+                </Button>
+              </div>
+              <div className="name-container__btns">
+                <Button
+                  className="btn_save"
+                  color="success"
+                  onClick={() => updateInfo()}
+                  style={boxStyle}
+                >
+                  Save
+                </Button>
+                <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
+                  Delete Role
+                </Button>
+              </div>
             </div>
           )}
           <Modal isOpen={editRoleNameModal} toggle={toggleEditRoleNameModal}>
@@ -269,58 +333,30 @@ function RolePermissions(props) {
         <h2 className="user-role-tab__h2">Permission List</h2>
       </header>
       <ul className="user-role-tab__permissionList">
-        {props.permissionsList.map((permission) => (
-          mainPermissions.includes(permission) ?
+        {props.permissionsList.map(permission => (
           <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , fontSize: '20px'}}>
+            <p
+              style={{
+                color: permissions.includes(permission) ? 'green' : 'red',
+                fontSize: mainPermissions.includes(permission) && '20px',
+                paddingLeft: !mainPermissions.includes(permission) && '50px',
+              }}
+            >
               {permission}
             </p>
             <div className="icon-button-container">
-            <div className='infos'>
-              <i
-                data-toggle="tooltip"
-                data-placement="center"
-                title="Click for more information"
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={() => {
-                  handleModalOpen(permission);
-                }}
-              />
+              <div className="infos">
+                <i
+                  data-toggle="tooltip"
+                  data-placement="center"
+                  title="Click for more information"
+                  aria-hidden="true"
+                  className="fa fa-info-circle"
+                  onClick={() => {
+                    handleModalOpen(permission);
+                  }}
+                />
               </div>
-              <Button
-                className="icon-button"
-                color={permissions.includes(permission) ? 'danger' : 'success'}
-                onClick={() => {
-                  permissions.includes(permission)
-                    ? onRemovePermission(permission)
-                    : onAddPermission(permission);
-                  setChanged(true);
-                }}
-                disabled={props?.userRole !== 'Owner'}
-                style={boxStyle}
-              >
-                {permissions.includes(permission) ? 'Delete' : 'Add'}
-              </Button>
-            </div>
-          </li>:
-           <li className="user-role-tab__permissions" key={permission}>
-            <p style={{ color: permissions.includes(permission) ? 'green' : 'red' , paddingLeft: '50px'}}>
-              {permission}
-            </p>
-            <div className="icon-button-container">
-              <div className='infos'>
-              <i
-                data-toggle="tooltip"
-                data-placement="center"
-                title="Click for more information"
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={() => {
-                  handleModalOpen(permission);
-                }}
-              />
-               </div>
               <Button
                 className="icon-button"
                 color={permissions.includes(permission) ? 'danger' : 'success'}
@@ -360,7 +396,11 @@ function RolePermissions(props) {
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal} id='#modal2-body_new-role--padding'>
+      <Modal
+        isOpen={infoRoleModal}
+        toggle={toggleInfoRoleModal}
+        id="#modal2-body_new-role--padding"
+      >
         <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
         <ModalBody>{modalContent}</ModalBody>
         <ModalFooter>
@@ -370,15 +410,40 @@ function RolePermissions(props) {
           </Button>
         </ModalFooter>
       </Modal>
+      <Modal
+        isOpen={showPresetModal}
+        toggle={() => {
+          setShowPresetModal(previous => !previous);
+        }}
+        id="modal-content__new-role"
+      >
+        <ModalHeader
+          toggle={() => {
+            setShowPresetModal(previous => !previous);
+          }}
+          cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+        >
+          Role Presets
+        </ModalHeader>
+        <ModalBody id="modal-body_new-role--padding">
+          <PermissionsPresetsModal
+            roleId={props.roleId}
+            roleName={props.role}
+            onApply={perms => setPermissions(mapPermissionToLabel(perms))}
+          />
+        </ModalBody>
+      </Modal>
     </>
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles });
+const mapStateToProps = state => ({ roles: state.role.roles, presets: state.rolePreset.presets });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
   updateRole: (roleId, updatedRole) => dispatch(updateRole(roleId, updatedRole)),
+  getPresets: role => dispatch(getPresetsByRole(role)),
+  createNewPreset: newPreset => dispatch(createNewPreset(newPreset)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RolePermissions);

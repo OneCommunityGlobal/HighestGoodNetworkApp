@@ -9,6 +9,8 @@ import {
   PAUSE,
   USER_RESUME_DATE,
   MANAGE_FINAL_DAY,
+  USER_START_DATE,
+  USER_END_DATE
   REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 import userTableDataPermissions from 'utils/userTableDataPermissions';
@@ -50,7 +52,10 @@ const UserTableHeader = React.memo(props => {
         {USER_RESUME_DATE}
       </th>
       <th scope="col" id="usermanagement_resume_date">
-        End Date
+        {USER_START_DATE}
+      </th>
+      <th scope="col" id="usermanagement_resume_date">
+        {USER_END_DATE}
       </th>
       {userTableDataPermissions(props.authRole, props.roleSearchText) && (
         <th scope="col" id="usermanagement_delete"></th>

@@ -39,12 +39,25 @@ import BadgeManagement from './components/Badge/BadgeManagement';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 
+// BM Dashboard
+import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
+import BMDashboard from 'components/BMDashboard';
+import BMLogin from 'components/BMDashboard/Login';
+
+import MaterialsList from 'components/BMDashboard/MaterialsList';
+
+import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+
+
 export default (
   <>
     <Switch>
       <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
       <>
+        {/* Comment out the Header component and its import during phase 2 development. */}
         <Header />
+        {/* Uncomment BMHeader and its import during phase 2 development. */}
+        {/* <BMHeader /> */}
         <AutoUpdate />
         <ToastContainer />
         <Switch>
@@ -52,7 +65,7 @@ export default (
           <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
           <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} />
           <ProtectedRoute path="/project/members/:projectId" component={Members} />
-          <ProtectedRoute path="/admin" component={Admin} />
+          <ProtectedRoute path="/popupmanagement" component={Admin} />
           <ProtectedRoute path="/timelog/" exact component={Timelog} />
           <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
           <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
@@ -95,7 +108,8 @@ export default (
             exact
             component={Projects}
             allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-            routePermissions={RoutePermissions.projects}
+            routePermissions={[RoutePermissions.projects, RoutePermissions.projectManagement_fullFunctionality, 
+              RoutePermissions.projectManagement_addTeamMembersUploadNewWBS]}
           />
           <ProtectedRoute
             path="/projects"
@@ -123,7 +137,7 @@ export default (
             path="/permissionsmanagement"
             exact
             component={PermissionsManagement}
-            routePermissions={RoutePermissions.permissionsManagement}
+            routePermissions={[RoutePermissions.permissionsManagement,RoutePermissions.userPermissionsManagement]}
           />
           <ProtectedRoute
             path="/permissionsmanagement/:userRole"
@@ -145,6 +159,29 @@ export default (
           />
           <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
+      {/* ----- BEGIN BM Dashboard Routing ----- */}
+
+      <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
+      <Route path="/bmdashboard/login" component={BMLogin} />
+      <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
+      <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+      {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
+      <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+      
+  
+      
+      {/* ----- END BM Dashboard Routing ----- */}
+
+      <Route path="/login" component={Login} />
+      <Route path="/forgotpassword" component={ForgotPassword} />
+      <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
+      <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
+      <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
+      <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
+      <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+      <Route path="/Logout" component={Logout} />
+      <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+      <ProtectedRoute path="/" exact component={Dashboard} />
           <Route path="/login" component={Login} />
           <Route path="/forgotpassword" component={ForgotPassword} />
           <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />

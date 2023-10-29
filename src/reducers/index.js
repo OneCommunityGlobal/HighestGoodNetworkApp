@@ -24,10 +24,12 @@ import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
+import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+import { materialsReducer } from './bmdashboard/materialsReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer"
 
 export default combineReducers({
@@ -58,9 +60,11 @@ export default combineReducers({
   teamMemberTasks: teamMemberTasksReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
+  rolePreset: rolePresetReducer,
   ownerMessage: ownerMessageReducer,
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
+  materials: materialsReducer
   timeOffRequests: timeOffRequestsReducer,
 });

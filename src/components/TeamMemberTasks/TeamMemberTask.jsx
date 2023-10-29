@@ -27,7 +27,7 @@ const TeamMemberTask = React.memo(
     handleTaskModalOption,
     userRole,
     userId,
-    updateTask,
+    updateTaskStatus,
     showWhoHasTimeOff,
     onTimeOff,
     goingOnTimeOff,
@@ -198,7 +198,7 @@ const TeamMemberTask = React.memo(
                               myUserId={userId}
                               myRole={userRole}
                               task={task}
-                              updateTask={updateTask}
+                              updateTask={updateTaskStatus}
                               style={boxStyle}
                             />
                           </div>

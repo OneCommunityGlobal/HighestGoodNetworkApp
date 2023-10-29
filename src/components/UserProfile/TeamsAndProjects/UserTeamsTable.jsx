@@ -9,33 +9,24 @@ import { connect } from 'react-redux';
 
 const UserTeamsTable = props => {
   const [tooltipOpen, setTooltip] = useState(false);
-  const [teamCode, setTeamCode] = useState(props.userProfile.teamCode);
+  const [teamCode, setTeamCode] = useState(props.userProfile? props.userProfile.teamCode: props.teamCode);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^[A-Z]-[A-Z]{3}$/;
+  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = e => {
     let value = e.target.value;
-    if (e.target.value.length == 1) {
-      value = e.target.value + "-";
-    }
-    if (e.target.value == "-") {
-      value = "";
-    }
-    if (e.target.value.length == 2) {
-      if(e.target.value.includes("-")) {
-        value = e.target.value.replace("-", "");
-      } else {
-        value = e.target.value.charAt(0) + "-" + e.target.value.charAt(1);
-      }
-    }
     
     const regexTest = fullCodeRegex.test(value);
     if (regexTest) {
       props.setCodeValid(true);
       setTeamCode(value);
-      props.setUserProfile({ ...props.userProfile, teamCode: value });
+      if (props.userProfile) {
+        props.setUserProfile({ ...props.userProfile, teamCode: value });
+      } else {
+        props.onAssignTeamCode(value);
+      }
     } else {
       setTeamCode(value);
       props.setCodeValid(false);
@@ -62,7 +53,7 @@ const UserTeamsTable = props => {
           )}
           <div className="row" style={{ margin: '0 auto'}}>
             <Col
-              md={props.edit ? '7' : '10'}
+              md={canAssignTeamToUsers ? '7' : '10'}
               style={{
                 backgroundColor: ' #e9ecef',
                 border: '1px solid #ced4da',
@@ -71,32 +62,28 @@ const UserTeamsTable = props => {
             >
               <span className="teams-span">Teams</span>
             </Col>
-            {props.edit && props.role && (
+            {props.edit && props.role && canAssignTeamToUsers && (
               <Col md="3" style={{padding: '0'}}>
-                {canAssignTeamToUsers ? (
-                  props.disabled ? (
-                    <>
-                      <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignteam" toggle={toggleTooltip}>
-                        Please save changes before assign team
-                      </Tooltip>
-                      <Button className="btn-addteam" id='btn-assignteam' color="primary" style={boxStyle} disabled>
-                        Assign Team
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      onClick={() => {
-                        props.onButtonClick();
-                      }}
-                      style={boxStyle}
-                    >
+                {props.disabled ? (
+                  <>
+                    <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignteam" toggle={toggleTooltip}>
+                      Please save changes before assign team
+                    </Tooltip>
+                    <Button className="btn-addteam" id='btn-assignteam' color="primary" style={boxStyle} disabled>
                       Assign Team
                     </Button>
-                  )
+                  </>
                 ) : (
-                  <></>
+                  <Button
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                    style={boxStyle}
+                   >
+                    Assign Team
+                  </Button>
                 )}
               </Col>
             )}
@@ -109,7 +96,9 @@ const UserTeamsTable = props => {
                   placeholder="X-XXX"
                 />
               ) : (
-                `${teamCode == ''? "No assigned team code": teamCode}`
+                <div style={{paddingTop: '6px', textAlign: 'center'}}>
+                  {teamCode == ''? "No assigned team code": teamCode}
+                </div>
               )}
             </Col>
           </div>
@@ -201,7 +190,9 @@ const UserTeamsTable = props => {
                     placeholder="X-XXX"
                   />
                 ) : (
-                  `${teamCode == ''? "No assigned team code": teamCode}`
+                  <div style={{paddingTop: '6px', textAlign: 'center'}}>
+                    {teamCode == ''? "No assigned team code": teamCode}
+                  </div>
                 )}
             </Col>
           </div>

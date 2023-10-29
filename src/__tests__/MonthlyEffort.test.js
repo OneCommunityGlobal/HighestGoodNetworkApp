@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import { MonthlyEffort } from './MonthlyEffort';
+import { MonthlyEffort } from '../components/MonthlyEffort/MonthlyEffort';
 
 describe('Monthly Effort component structure', () => {
   let mountedMonthlyEffort, props;
