@@ -83,14 +83,13 @@ const dummyProject = {
   ],
 };
 
-function ProjectSummary({ project }) {
-  const totalMaterialsCost = project.materials.reduce((total, material) => {
-    return total + parseInt(material.cost, 10);
-  }, 0);
+function calculateTotalCost(items) {
+  return items.reduce((total, item) => total + parseInt(item.cost, 10), 0);
+}
 
-  const totalEquipmentCost = project.tools.reduce((total, tool) => {
-    return total + parseInt(tool.cost, 10);
-  }, 0);
+function ProjectSummary({ project }) {
+  const totalMaterialsCost = calculateTotalCost(project.materials);
+  const totalEquipmentCost = calculateTotalCost(project.tools);
 
   return (
     <>
