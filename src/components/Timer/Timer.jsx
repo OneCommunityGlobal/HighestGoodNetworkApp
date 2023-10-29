@@ -15,7 +15,6 @@ import {
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
-import ReactTooltip from 'react-tooltip';
 import css from './Timer.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import config from '../../config.json';
@@ -58,6 +57,7 @@ export default function Timer() {
     ADD_GOAL: 'ADD_TO_GOAL=',
     REMOVE_GOAL: 'REMOVE_FROM_GOAL=',
     ACK_FORCED: 'ACK_FORCED',
+    START_CHIME: 'START_CHIME=',
   };
 
   const defaultMessage = {
@@ -67,6 +67,7 @@ export default function Timer() {
     started: false,
     goal: 900000,
     initialGoal: 900000,
+    chiming: false,
     startAt: Date.now(),
   };
 
@@ -82,10 +83,8 @@ export default function Timer() {
   const [running, setRunning] = useState(false);
   const [confirmationResetModal, setConfirmationResetModal] = useState(false);
   const [logTimeEntryModal, setLogTimeEntryModal] = useState(false);
-  const [oneMinuteMinimumModal, setOneMinuteMinimumModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
-  const [triggerAudio, setTriggerAudio] = useState(false);
   const [timerIsOverModalOpen, setTimerIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
@@ -106,6 +105,7 @@ export default function Timer() {
       sendClear: () => sendMessage(action.CLEAR_TIMER),
       sendStop: () => sendMessage(action.STOP_TIMER),
       sendAckForced: () => sendMessage(action.ACK_FORCED),
+      sendStartChime: state => sendMessage(action.START_CHIME.concat(state)),
       sendSetGoal: timerGoal => sendMessage(action.SET_GOAL.concat(timerGoal)),
       sendAddGoal: duration => sendMessage(action.ADD_GOAL.concat(duration)),
       sendRemoveGoal: duration => sendMessage(action.REMOVE_GOAL.concat(duration)),
@@ -119,6 +119,7 @@ export default function Timer() {
     sendClear,
     sendStop,
     sendAckForced,
+    sendStartChime,
     sendAddGoal,
     sendRemoveGoal,
   } = wsMessageHandler;
@@ -131,18 +132,29 @@ export default function Timer() {
 
   const toggleTimeIsOver = () => {
     setTimerIsOverModalIsOpen(!timerIsOverModalOpen);
-    setTriggerAudio(!triggerAudio);
+    sendStartChime(!timerIsOverModalOpen);
   };
 
-  const checkBtnAvail = addition => {
-    const remainingDuration = moment.duration(remaining);
-    const goalDuration = moment.duration(goal);
-    return (
-      remainingDuration.asMinutes() + addition > 0 &&
-      goalDuration.asMinutes() + addition >= MIN_MINS &&
-      goalDuration.asHours() + addition / 60 <= MAX_HOURS
-    );
-  };
+  const checkBtnAvail = useCallback(
+    addition => {
+      const remainingDuration = moment.duration(remaining);
+      const goalDuration = moment.duration(goal);
+      return (
+        remainingDuration.asMinutes() + addition > 0 &&
+        goalDuration.asMinutes() + addition >= MIN_MINS &&
+        goalDuration.asHours() + addition / 60 <= MAX_HOURS
+      );
+    },
+    [remaining],
+  );
+
+  const handleStartButton = useCallback(() => {
+    if (remaining === 0) {
+      toast.error('There is no more Remaining time, please add more or log your passed time');
+    } else {
+      sendStart();
+    }
+  }, [remaining]);
 
   const handleAddButton = useCallback(
     duration => {
@@ -180,25 +192,24 @@ export default function Timer() {
     [remaining],
   );
 
-  const handleStopButton = () => {
+  const handleStopButton = useCallback(() => {
     if (goal - remaining < 60000) {
-      setOneMinuteMinimumModal(true);
+      toast.error(`You need at least 1 minute to log time!`);
     } else {
       toggleLogTimeModal();
     }
-  };
+  }, [remaining]);
 
   const updateRemaining = () => {
-    if (!running) return remaining;
+    if (!running) return;
     const now = moment.utc();
     const timePassed = moment.duration(now.diff(startAt)).asMilliseconds();
-    return setRemaining(time > timePassed ? time - timePassed : 0);
+    setRemaining(time > timePassed ? time - timePassed : 0);
   };
 
   const checkRemainingTime = () => {
     if (remaining === 0) {
       sendPause();
-      toggleTimeIsOver();
     }
   };
 
@@ -208,11 +219,16 @@ export default function Timer() {
      * so that message state and other states like running, inacMoal ... will be updated together
      * at the same time.
      */
-    const { paused: pausedLJM, forcedPause: forcedPauseLJM, started: startedLJM } =
-      lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
+    const {
+      paused: pausedLJM,
+      forcedPause: forcedPauseLJM,
+      started: startedLJM,
+      chiming: chimingLJM,
+    } = lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
     setInacModal(forcedPauseLJM);
+    setTimerIsOverModalIsOpen(chimingLJM);
   }, [lastJsonMessage]);
 
   useEffect(() => {
@@ -235,13 +251,12 @@ export default function Timer() {
   }, [running, message]);
 
   useEffect(() => {
-    ReactTooltip.rebuild();
     checkRemainingTime();
     setLogTimer({ hours: logHours, minutes: logMinutes });
   }, [remaining]);
 
   useEffect(() => {
-    if (triggerAudio) {
+    if (timerIsOverModalOpen) {
       window.focus();
       audioRef.current.play();
     } else {
@@ -249,17 +264,18 @@ export default function Timer() {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-  }, [triggerAudio]);
+  }, [timerIsOverModalOpen]);
 
   return (
     <div className={css.timerContainer}>
-      <ReactTooltip id="tooltip" place="bottom" type="dark" effect="solid" delayShow={500} />
-      <BsAlarmFill
-        className={cs(css.transitionColor, css.btn)}
-        fontSize="2rem"
-        onClick={toggleTimer}
-      />
-      <div className={css.previewContainer}>
+      <button type="button" onClick={toggleTimer}>
+        <BsAlarmFill
+          className={cs(css.transitionColor, css.btn)}
+          fontSize="2rem"
+          title="Open timer dropdown"
+        />
+      </button>
+      <div className={css.previewContainer} title="Open timer dropdown">
         <Progress multi style={{ height: '6px' }}>
           <Progress bar value={100 * (1 - remaining / goal)} color="success" animated={running} />
           <Progress bar value={2} color="light" />
@@ -275,32 +291,25 @@ export default function Timer() {
           onClick={() => {
             handleAddButton(15);
           }}
-          data-for="tooltip"
-          data-tip="Add 15min"
+          title="Add 15min"
         >
           <FaPlusCircle
             className={cs(css.transitionColor, checkBtnAvail(15) ? css.btn : css.btnDisabled)}
             fontSize="1.5rem"
           />
         </button>
-        <button
-          type="button"
-          onClick={() => handleSubtractButton(15)}
-          data-for="tooltip"
-          data-tip="Subtract 15min"
-        >
+        <button type="button" onClick={() => handleSubtractButton(15)} title="Subtract 15min">
           <FaMinusCircle
             className={cs(css.transitionColor, checkBtnAvail(-15) ? css.btn : css.btnDisabled)}
             fontSize="1.5rem"
           />
         </button>
         {!started || paused ? (
-          <button type="button" onClick={sendStart}>
+          <button type="button" onClick={handleStartButton}>
             <FaPlayCircle
-              className={cs(css.btn, css.transitionColor)}
+              className={cs(css.transitionColor, remaining !== 0 ? css.btn : css.btnDisabled)}
               fontSize="1.5rem"
-              data-for="tooltip"
-              data-tip="Start timer"
+              title="Start timer"
             />
           </button>
         ) : (
@@ -308,8 +317,7 @@ export default function Timer() {
             <FaPauseCircle
               className={cs(css.btn, css.transitionColor)}
               fontSize="1.5rem"
-              data-for="tooltip"
-              data-tip="Pause timer"
+              title="Pause timer"
             />
           </button>
         )}
@@ -317,20 +325,17 @@ export default function Timer() {
           type="button"
           onClick={handleStopButton}
           disable={`${!started}`}
-          data-for="tooltip"
-          data-tip="Stop timer and log time"
+          title="Stop timer and log time"
         >
           <FaStopCircle
-            className={cs(css.transitionColor, started ? css.btn : css.btnDisabled)}
+            className={cs(
+              css.transitionColor,
+              started && goal - remaining >= 60000 ? css.btn : css.btnDisabled,
+            )}
             fontSize="1.5rem"
           />
         </button>
-        <button
-          type="button"
-          onClick={() => setConfirmationResetModal(true)}
-          data-for="tooltip"
-          data-tip="Reset timer"
-        >
+        <button type="button" onClick={() => setConfirmationResetModal(true)} title="Reset timer">
           <FaUndoAlt className={cs(css.transitionColor, css.btn)} fontSize="1.3rem" />
         </button>
       </div>
@@ -347,6 +352,7 @@ export default function Timer() {
                 remaining={remaining}
                 setConfirmationResetModal={setConfirmationResetModal}
                 checkBtnAvail={checkBtnAvail}
+                handleStartButton={handleStartButton}
                 handleAddButton={handleAddButton}
                 handleSubtractButton={handleSubtractButton}
                 handleStopButton={handleStopButton}
@@ -410,19 +416,6 @@ export default function Timer() {
             I understand
           </Button>
         </ModalFooter>
-      </Modal>
-      <Modal
-        size="md"
-        isOpen={oneMinuteMinimumModal}
-        toggle={() => setOneMinuteMinimumModal(!oneMinuteMinimumModal)}
-        centered
-      >
-        <ModalHeader toggle={() => setOneMinuteMinimumModal(!oneMinuteMinimumModal)}>
-          Alert
-        </ModalHeader>
-        <ModalBody>
-          <strong>You need at least 1 minute to log time!</strong>
-        </ModalBody>
       </Modal>
       <Modal isOpen={timerIsOverModalOpen} toggle={toggleTimeIsOver} centered size="md">
         <ModalHeader toggle={toggleTimeIsOver}>Time Complete!</ModalHeader>

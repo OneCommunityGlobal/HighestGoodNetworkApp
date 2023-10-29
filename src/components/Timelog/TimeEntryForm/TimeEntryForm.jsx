@@ -82,6 +82,7 @@ const TimeEntryForm = props => {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
@@ -433,6 +434,7 @@ const TimeEntryForm = props => {
   };
 
   const handleSubmit = async event => {
+    setSubmitting(true);
     //Validation and variable initialization
     if (event) event.preventDefault();
 
@@ -526,6 +528,7 @@ const TimeEntryForm = props => {
 
     setReminder(initialReminder);
     if (isOpen) toggle();
+    setSubmitting(false);
   };
 
   const handleInputChange = event => {
@@ -781,8 +784,8 @@ const TimeEntryForm = props => {
             Clear Form
           </Button>
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-          <Button color="primary" onClick={handleSubmit} style={boxStyle}>
-            {edit ? 'Save' : 'Submit'}
+          <Button color="primary" onClick={handleSubmit} style={boxStyle} disabled={submitting}>
+            {edit ? 'Save' : (submitting ? 'Submitting...' : 'Submit')}
           </Button>
         </ModalFooter>
       </Modal>

@@ -22,9 +22,14 @@ function getClockIcon(index) {
   const clockIoncs = [BsHourglassBottom, BsHourglassSplit, BsHourglassTop];
   const ClockIcon = clockIoncs[index];
   if (index === 3) {
-    return <BsHourglassTop style={{ transform: 'rotate(-90deg)', fontSize: '1.5rem' }} />;
+    return (
+      <BsHourglassTop
+        style={{ transform: 'rotate(-90deg)', fontSize: '1.5rem' }}
+        title="Counting"
+      />
+    );
   }
-  return <ClockIcon fontSize="1.5rem" />;
+  return <ClockIcon fontSize="1.5rem" title="Counting" />;
 }
 
 export default function Countdown({
@@ -35,6 +40,7 @@ export default function Countdown({
   remaining,
   setConfirmationResetModal,
   checkBtnAvail,
+  handleStartButton,
   handleAddButton,
   handleSubtractButton,
   handleStopButton,
@@ -43,7 +49,7 @@ export default function Countdown({
   const { MAX_HOURS, MIN_MINS } = timerRange;
 
   const { started, goal, initialGoal } = message;
-  const { sendStart, sendPause, sendSetGoal } = wsMessageHandler;
+  const { sendPause, sendSetGoal } = wsMessageHandler;
 
   const [editing, setEditing] = useState(false);
   const [initialHours, setInitialHours] = useState(moment.duration(initialGoal).hours());
@@ -139,7 +145,11 @@ export default function Countdown({
 
   return (
     <div className={css.countdown}>
-      <BsXLg className={cs(css.transitionColor, css.crossIcon)} onClick={toggleTimer} />
+      <BsXLg
+        className={cs(css.transitionColor, css.crossIcon)}
+        onClick={toggleTimer}
+        title="close timer dropdown"
+      />
       <div className={css.infoDisplay}>
         <h4>{`Goal: ${moment.utc(goal).format('HH:mm:ss')}`}</h4>
         <h6>
@@ -202,10 +212,11 @@ export default function Countdown({
                   <BsPauseFill
                     className={cs(css.transitionColor, css.operator)}
                     fontSize="2.5rem"
+                    title="Pause timer"
                   />
                 </button>
               ) : (
-                <button type="button" onClick={sendStart} disabled={remaining === 0}>
+                <button type="button" onClick={handleStartButton}>
                   <BsPlay
                     className={cs(
                       css.transitionColor,
@@ -330,11 +341,13 @@ export default function Countdown({
                 <FaSave
                   className={cs(css.transitionColor, css.goalBtn)}
                   onClick={() => validateTime()}
+                  title="save initial goal"
                 />
               ) : (
                 <BsFillPenFill
                   className={cs(css.transitionColor, css.goalBtn)}
                   onClick={() => setEditing(true)}
+                  title="edit initial goal"
                 />
               )}
             </div>
