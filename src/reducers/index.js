@@ -65,6 +65,6 @@ export default combineReducers({
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
-  materials: materialsReducer
+  materials: materialsReducer, 
   timeOffRequests: timeOffRequestsReducer,
 });

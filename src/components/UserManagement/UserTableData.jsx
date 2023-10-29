@@ -78,7 +78,7 @@ const UserTableData = React.memo(props => {
       <td className="centered-td">
         <button
           className={`btn btn-outline-primary btn-sm${
-            props.timeOffRequests.length > 0 ? ` time-off-request-btn-moved` : ''
+            props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
           }`}
           onClick={e => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
