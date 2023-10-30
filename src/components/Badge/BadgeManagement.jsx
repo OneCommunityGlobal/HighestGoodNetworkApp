@@ -28,12 +28,14 @@ const BadgeManagement = props => {
         margin: 20,
       }}
     >
+    <div className="text-center">
         <EditableInfoModal
           areaName="BadgeManagement"
           fontSize={24}
           isPermissionPage={true}
           role={role} // Pass the 'role' prop to EditableInfoModal
         />
+        </div>
       <Nav pills>
         <NavItem>
           <NavLink

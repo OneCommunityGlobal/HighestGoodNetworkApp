@@ -120,6 +120,7 @@ const LeaderBoard = ({
             className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
             onClick={updateLeaderboardHandler}
           />
+          &nbsp;
           <EditableInfoModal
             areaName="LeaderboardOrigin"
             role={loggedInUser.role}

@@ -420,18 +420,20 @@ const Timelog = props => {
             summaryBarData={summaryBarData}
           />
           <br />
+        
         </Container>
+        
       ) : (
-        ''
-      )}
-      <div className="text-center">
+        <div className="text-center">
         <EditableInfoModal
           areaName="DashboardTimelog"
           fontSize={30}
           isPermissionPage={true}
           role={auth.user.role}
         />
-      </div>
+        </div>
+      )}
+      
       {state.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
@@ -443,6 +445,7 @@ const Timelog = props => {
               </div>
             </div>
           ) : null}
+          
           <Row>
             <Col md={12}>
               <Card>
@@ -451,7 +454,7 @@ const Timelog = props => {
                     <Col md={11}>
                       <CardTitle tag="h4">
                       <div className="d-flex align-items-center">
-                        <span className="mb-1 mr-2">Tasks and Timelogs</span>
+                        <span className="mb-1 mr-2">Taasks and Timelogs</span>
                         <EditableInfoModal
                           areaName="TasksAndTimelogInfoPoint"
                           fontSize={22}
