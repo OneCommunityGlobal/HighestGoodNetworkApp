@@ -454,9 +454,10 @@ const Timelog = props => {
                     <Col md={11}>
                       <CardTitle tag="h4">
                       <div className="d-flex align-items-center">
-                        <span className="mb-1 mr-2">Taasks and Timelogs</span>
+                        <span className="mb-1 mr-2">Tasks and Timelogs</span>
                         <EditableInfoModal
                           areaName="TasksAndTimelogInfoPoint"
+                          areaTitle="Tasks and Timelogs"
                           fontSize={22}
                           isPermissionPage={true}
                           role={auth.user.role} // Pass the 'role' prop to EditableInfoModal

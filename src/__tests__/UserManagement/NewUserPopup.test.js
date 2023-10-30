@@ -6,7 +6,6 @@ import { renderWithProvider } from '../utils';
 import thunk from 'redux-thunk';
 
 import NewUserPopup from '../../components/UserManagement/NewUserPopup';
-import { Provider } from 'react-redux'; // Import Provider
 
 jest.mock('../../components/UserProfile/AddNewUserProfile', () => {
   const userprofile = () => (
@@ -17,20 +16,13 @@ jest.mock('../../components/UserProfile/AddNewUserProfile', () => {
   return userprofile;
 });
 
-// Mock the Redux store state with the 'role' property
-const initialState = {
-  userProfile: {
-    role: 'userRoleValue', // Replace with the actual role value you want to test
-  },
-};
-
 const mockStore = configureStore([thunk]);
 
 describe('new user popup', () => {
   const onUserPopupClose = jest.fn();
   let store;
   beforeEach(() => {
-    store = mockStore(initialState); // Provide the initial state with the 'role' property
+    store = mockStore();
     renderWithProvider(<NewUserPopup open onUserPopupClose={onUserPopupClose} />, { store });
   });
   describe('Structure', () => {
