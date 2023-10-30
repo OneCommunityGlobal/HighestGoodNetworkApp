@@ -47,6 +47,8 @@ import BMLogin from 'components/BMDashboard/Login';
 import MaterialsList from 'components/BMDashboard/MaterialsList';
 
 import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+// Lesson
+import LessonForm from 'components/Lesson/LessonForm';
 
 
 export default (
@@ -171,7 +173,14 @@ export default (
   
       
       {/* ----- END BM Dashboard Routing ----- */}
-
+  {/* ----- BEGIN Lesson Routing ----- */}
+  <ProtectedRoute
+            path="/lessonform"
+            exact
+            component={LessonForm}
+            
+          />
+  {/* ----- END Lesson Routing ----- */}
       <Route path="/login" component={Login} />
       <Route path="/forgotpassword" component={ForgotPassword} />
       <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
