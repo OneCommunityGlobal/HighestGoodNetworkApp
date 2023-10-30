@@ -11,25 +11,22 @@ import { connect } from 'react-redux';
 const TeamMembersPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
-    setSortOrder(0);
+    setSortOrder(0)
   };
   const [selectedUser, onSelectUser] = useState(undefined);
   const [isValidUser, onValidation] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [memberList, setMemberList] = useState([]);
-  const [sortOrder, setSortOrder] = useState(0);
+  const [sortOrder, setSortOrder] = useState(0)
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
+
+
   const onAddUser = () => {
-    if (selectedUser) {
-      const isDuplicate = props.members.teamMembers.some(x => x._id === selectedUser._id);
-      if (!isDuplicate) {
-        props.onAddUser(selectedUser);
-        setSearchText('');
-      } else {
-        setSearchText('');
-      }
+    if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
+      props.onAddUser(selectedUser);
+      setSearchText('');
     } else {
       onValidation(false);
     }
@@ -45,24 +42,44 @@ const TeamMembersPopup = React.memo(props => {
    * -1: ascending order by date
    * 0: alphabetized order by name
    * 1: descending order by date
-   */
+  */
   const sortList = (sort = 0) => {
-    let sortedList = [];
+    let sortedList = []
+    let newList = []
 
     if (sort === 0) {
-      sortedList = props.members.teamMembers.toSorted(sortByAlpha);
+
+      let roleArr = [{ priority: 1, role: "owner" }, { priority: 2, role: "administrator" },
+      { priority: 3, role: "core team" }, { priority: 4, role: "manager" }, { priority: 5, role: 'mentor' },
+      { priority: 6, role: "assistant manager" }, { priority: 7, role: "volunteer" }]
+ 
+      props.usersdata.userProfiles.map(elem => {
+        props.members.teamMembers.map(team => {
+          if (elem._id == team._id) {
+            sortedList.push(elem)
+          }
+        })
+      })
+      sortedList.map((elem, i) => {
+        roleArr.map(role => {
+          if (elem.role.toLowerCase() == role["role"]) {
+            let o = Object.assign({}, elem)
+            o.priority = role['priority']
+            newList.push(o)
+          }
+        })
+      })
+      sortedList = newList.sort((a, b) => a.priority - b.priority)
     } else {
       const sortByDateList = props.members.teamMembers.toSorted((a, b) => {
         return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
       });
 
-      const dataList = Object.values(
-        sortByDateList.reduce((pre, cur) => {
-          const date = moment(cur.addDateTime).format('MMM-DD-YY');
-          pre[date] ? pre[date].push(cur) : (pre[date] = [cur]);
-          return pre;
-        }, {}),
-      );
+      const dataList = Object.values(sortByDateList.reduce((pre, cur) => {
+        const date = moment(cur.addDateTime).format("MMM-DD-YY");
+        pre[date] ? pre[date].push(cur) : pre[date] = [cur]
+        return pre;
+      }, {}));
 
       dataList.forEach(item => {
         sortedList.push(...item.toSorted(sortByAlpha));
@@ -70,32 +87,37 @@ const TeamMembersPopup = React.memo(props => {
     }
 
     setMemberList(sortedList);
-  };
+  }
+
+  let returnUserRole = (user) => {
+    let rolesArr = ["Manager", "Mentor", "Assistant Manager"]
+    if (rolesArr.includes(user.role)) return true
+  }
 
   const sortByAlpha = useCallback((a, b) => {
     const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
     const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
     return nameA.localeCompare(nameB);
-  });
+  })
 
   const icons = {
     '-1': { icon: faSortUp },
     '0': { icon: faSort, style: { color: 'lightgrey' } },
-    '1': { icon: faSortDown },
-  };
+    '1': { icon: faSortDown }
+  }
 
   const toggleOrder = useCallback(() => {
-    setSortOrder(pre => {
+    setSortOrder((pre) => {
       if (pre !== -1) {
         return pre - 1;
       }
       return 1;
-    });
-  });
+    })
+  })
 
   useEffect(() => {
-    sortList(sortOrder);
-  }, [props.members.teamMembers, sortOrder]);
+    sortList(sortOrder)
+  }, [props.members.teamMembers, sortOrder])
 
   useEffect(() => {
     onValidation(true);
@@ -103,7 +125,7 @@ const TeamMembersPopup = React.memo(props => {
 
   return (
     <Container fluid>
-      <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} size="lg">
+      <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} size='lg'>
         <ModalHeader toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
           {canAssignTeamToUsers && (
@@ -119,57 +141,39 @@ const TeamMembersPopup = React.memo(props => {
               </Button>
             </div>
           )}
-          {isValidUser === false ? (
-            <Alert color="danger">Please choose a valid user.</Alert>
-          ) : (
-            <></>
-          )}
-          <div>
-            <table className="table table-bordered table-responsive-sm">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>User Name</th>
-                  {hasPermission(
-                    props.requestorRole,
-                    'assignTeamToUser',
-                    props.roles,
-                    props.userPermissions,
-                  ) && <th> </th>}
-                </tr>
-              </thead>
-              <tbody>
-                {props.members.teamMembers.length > 0 ? (
-                  props.members.teamMembers.map((user, index) => (
-                    <tr key={`team_member_${index}`}>
-                      <td>{index + 1}</td>
-                      <td>{`${user.firstName} ${user.lastName}`}</td>
-                      {hasPermission(
-                        props.requestorRole,
-                        'assignTeamToUser',
-                        props.roles,
-                        props.userPermissions,
-                      ) && (
-                        <td>
-                          <Button
-                            color="danger"
-                            onClick={() => {
-                              props.onDeleteClick(`${user._id}`);
-                            }}
-                            style={boxStyle}
-                          >
-                            Delete
-                          </Button>
-                        </td>
-                      )}
-                    </tr>
-                  ))
-                ) : (
-                  <></>
-                )}
-              </tbody>
-            </table>
-          </div>
+          {!isValidUser && <Alert color="danger">Please choose a valid user.</Alert>}
+          <table className="table table-bordered table-responsive-sm">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>User Name</th>
+                <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>Date Added <FontAwesomeIcon {...icons[sortOrder]} /></th>
+                {canAssignTeamToUsers && <th />}
+              </tr>
+            </thead>
+            <tbody>
+              {props.members.teamMembers.length > 0 &&
+                memberList.toSorted().map((user, index) => (
+                  <tr key={`team_member_${index}`}>
+                    <td>{index + 1}</td>
+                    <td>{returnUserRole(user) ? <b>{user.firstName} {user.lastName} ({user.role})</b> : <span>{user.firstName} {user.lastName} ({user.role})</span>} </td>
+                    <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
+                    {canAssignTeamToUsers && (
+                      <td>
+                        <Button
+                          color="danger"
+                          onClick={() => props.onDeleteClick(`${user._id}`)}
+                          style={boxStyle}
+                        >
+                          Delete
+                        </Button>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={closePopup} style={boxStyle}>

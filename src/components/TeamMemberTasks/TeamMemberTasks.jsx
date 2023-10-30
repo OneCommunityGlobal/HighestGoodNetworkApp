@@ -112,7 +112,7 @@ const TeamMemberTasks = React.memo(props => {
       taskId,
     };
     submitTasks(newTask);
-    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
+    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, true));
     props.handleUpdateTask();
   }, []);
 
