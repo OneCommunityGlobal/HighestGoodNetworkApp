@@ -1,4 +1,5 @@
 import React from 'react';
+import './../projects.css';
 import {
   PROJECT_NAME,
   ACTIVE,

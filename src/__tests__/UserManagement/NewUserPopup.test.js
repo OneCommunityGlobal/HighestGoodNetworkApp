@@ -15,7 +15,6 @@ jest.mock('../../components/UserProfile/AddNewUserProfile', () => {
   );
   return userprofile;
 });
-
 const mockStore = configureStore([thunk]);
 
 describe('new user popup', () => {
