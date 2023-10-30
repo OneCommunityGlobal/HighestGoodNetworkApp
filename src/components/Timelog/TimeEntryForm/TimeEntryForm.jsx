@@ -442,7 +442,10 @@ const TimeEntryForm = props => {
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
 
-    if (!validateForm(isTimeModified)) return;
+    if (!validateForm(isTimeModified)) {
+      setSubmitting(false);
+      return;
+    }
 
     //Construct the timeEntry object
     const timeEntry = {
