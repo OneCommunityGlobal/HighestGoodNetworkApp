@@ -19,7 +19,8 @@ export const getUserProfile = userId => {
       }
     });
     if (!loggedOut) {
-      await dispatch(getUserProfileActionCreator(res.data));
+      const resp = await dispatch(getUserProfileActionCreator(res.data));
+      return resp.payload;
     }
   };
 };
@@ -59,7 +60,7 @@ export const updateUserProfile = (userId, userProfile) => {
 export const updateUserProfileProperty = (userProfile, key, value) => {
   const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfile._id);
   return async dispatch => {
-    const res = await axios.patch(url, {key, value});
+    const res = await axios.patch(url, { key, value });
     if (res.status === 200) {
       await dispatch(getUserProfileActionCreator(userProfile));
     }

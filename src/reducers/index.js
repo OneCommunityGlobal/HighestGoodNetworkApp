@@ -17,7 +17,6 @@ import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
 import { wbsReducer } from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
-import { timerReducer } from './timerReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
@@ -29,6 +28,7 @@ import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+import { materialsReducer } from './bmdashboard/materialsReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -51,7 +51,6 @@ export default combineReducers({
   tasks: taskReducer,
   errors: errorsReducer,
   timeEntries: timeEntriesReducer,
-  timer: timerReducer,
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,
@@ -63,4 +62,5 @@ export default combineReducers({
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
+  materials: materialsReducer
 });

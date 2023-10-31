@@ -79,7 +79,7 @@ function FormattedReport({
 
     const openEmailClientWithBatchInNewTab = batch => {
       const emailAddresses = batch.join(', ');
-      const mailtoLink = `mailto:${emailAddresses}`;
+      const mailtoLink = `mailto:?bcc=${emailAddresses}`;
       window.open(mailtoLink, '_blank');
     };
 
@@ -146,7 +146,9 @@ function ReportDetails({
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-
+  if(summary.lastName === "lallouache"){
+    console.log(summary)
+  }
   return (
     <li className="list-group-item px-0" ref={ref}>
       <ListGroup className="px-0" flush>
@@ -174,34 +176,15 @@ function ReportDetails({
                 canEditSummaryCount={canEditSummaryCount}
               />
             </ListGroupItem>
-            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <p>
-                  <b
-                    style={{
-                      color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                    }}
-                  >
-                    Hours logged:{' '}
-                  </b>
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              </ListGroupItem>
-            )}
-            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <b
-                  style={{
-                    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                  }}
-                >
-                  Hours logged:
-                </b>
-                <span className="ml-2">
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
-              </ListGroupItem>
-            )}
+            <ListGroupItem>
+              <b style={{color: textColors[summary?.weeklySummaryOption] || textColors.Default}}>
+                Hours logged:
+              </b>
+              {(hoursLogged >= summary.promisedHoursByWeek[weekIndex])
+                ? <p>{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</p>
+                : <span className="ml-2">{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</span>
+              }
+            </ListGroupItem>
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>

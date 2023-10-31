@@ -1,1 +1,3 @@
-export { default } from './BMDashboard';
+import BMDashboard from './BMDashboard';
+
+export default BMDashboard;

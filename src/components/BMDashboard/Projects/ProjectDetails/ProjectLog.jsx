@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, Table } from 'reactstrap';
 
 const DummyData = [
@@ -61,7 +60,7 @@ function ProjectLog() {
             <th>Team</th>
             <th>Current Task</th>
             <th>Total Hrs</th>
-            <th>Today's Hrs</th>
+            <th>Today&apos;s Hrs</th>
           </tr>
         </thead>
         <tbody>{tableRows}</tbody>

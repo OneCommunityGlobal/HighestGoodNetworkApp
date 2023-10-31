@@ -16,7 +16,6 @@ import {
 } from 'reactstrap';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { getHeaderData } from '../../actions/authActions';
-import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
@@ -272,7 +271,6 @@ const mapStateToProps = state => ({
 });
 export default connect(mapStateToProps, {
   getHeaderData,
-  getTimerData,
   getAllRoles,
   hasPermission,
 })(Header);
