@@ -81,10 +81,7 @@ function LeaderBoard({
     }
   }, [leaderBoardData]);
 
-  const [isOpen, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const toggle = () => setOpen(isOpenState => !isOpenState);
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
