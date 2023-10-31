@@ -54,6 +54,7 @@ import { connect, useDispatch } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
+import { toast } from 'react-toastify';
 
 function UserProfile(props) {
   /* Constant values */
@@ -96,6 +97,7 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [summaryIntro, setSummaryIntro] = useState('');
 
   const userProfileRef = useRef();
 
@@ -202,6 +204,33 @@ function UserProfile(props) {
     setIsProjectsEqual(compare);
   };
 
+  const loadSummaryIntroDetails = async (teamId, user) => {
+    const { firstName, lastName } = user;
+    const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+    const { data } = res;
+
+    const memberSubmitted = [];
+    const memberNotSubmitted = [];
+
+    data.forEach(member => {
+      member.weeklySummaries[0].summary !== ''
+        ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
+        : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+    });
+    const memberSubmittedString =
+      memberSubmitted.length !== 0
+        ? memberSubmitted.join(', ')
+        : '<list all team members names included in the summary>.';
+    const memberDidntSubmitString =
+      memberNotSubmitted.length !== 0
+        ? memberSubmitted.join(', ')
+        : '<list all team members names NOT included in the summary>';
+
+    const summaryIntroString = `This week’s summary was managed by ${firstName} ${lastName} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+
+    setSummaryIntro(summaryIntroString);
+  };
+
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
@@ -215,11 +244,18 @@ function UserProfile(props) {
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
+
     if (!userId) return;
 
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
+
+      const teamId = newUserProfile?.teams[0]?._id;
+      if (teamId) {
+        await loadSummaryIntroDetails(teamId, response.data);
+      }
+
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
@@ -432,7 +468,7 @@ function UserProfile(props) {
       }
       await loadUserProfile();
       await loadUserTasks();
-      setSaved(false)
+      setSaved(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
     }
@@ -555,6 +591,7 @@ function UserProfile(props) {
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
+  const canGetProjectMembers = props.hasPermission('getProjectMembers');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
@@ -562,8 +599,8 @@ function UserProfile(props) {
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner'
-      ? canAddDeleteEditOwners
-      : canPutUserProfile;
+    ? canAddDeleteEditOwners
+    : canPutUserProfile;
 
   const canEdit = canEditUserProfile || isUserSelf;
 
@@ -653,9 +690,7 @@ function UserProfile(props) {
               </Alert>
             ) : null}
             {!codeValid ? (
-              <Alert color="danger">
-                The code format should be A-AAA or AAAAA.
-              </Alert>
+              <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
@@ -710,15 +745,27 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
+              {canGetProjectMembers && teams.length !== 0 ? (
+                <Button
+                  onClick={() => {
+                    navigator.clipboard.writeText(summaryIntro);
+                    toast.success('Summary Intro Copied!');
+                  }}
+                  color="primary"
+                  size="sm"
+                  title="Generates the summary intro for your team and copies it to your clipboard for easy use."
+                >
+                  Generate Summary Intro
+                </Button>
+              ) : (
+                ''
+              )}
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
               From : <span>{formatDate(userProfile.createdDate)}</span>
               {'   '}
-              To:{' '}
-              <span>
-                {userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}
-              </span>
+              To: <span>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
@@ -961,8 +1008,8 @@ function UserProfile(props) {
                             if (selfIsDevAdminUneditable) {
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                                'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                                  'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                               );
                               return `#`;
                             }
@@ -987,7 +1034,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1043,7 +1090,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1071,7 +1118,6 @@ function UserProfile(props) {
                 <ModalBody>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
-
                     teamsData={props?.allTeams?.allTeamsData || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
@@ -1087,7 +1133,9 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
-                    canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                    canEditTeamCode={
+                      props.hasPermission('editTeamCode') || requestorRole == 'Owner'
+                    }
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
                     codeValid={codeValid}
@@ -1110,7 +1158,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1171,7 +1219,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1219,7 +1267,7 @@ function UserProfile(props) {
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
-                            setSaved={()=>setSaved(true)}
+                            setSaved={() => setSaved(true)}
                           />
                           <span
                             onClick={() => {
@@ -1260,8 +1308,8 @@ function UserProfile(props) {
                     if (selfIsDevAdminUneditable) {
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                        'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                        'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                       );
                       return `#`;
                     }
@@ -1287,7 +1335,7 @@ function UserProfile(props) {
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
-                    setSaved={()=>setSaved(true)}
+                    setSaved={() => setSaved(true)}
                   />
                   {activeTab !== '3' && (
                     <span
