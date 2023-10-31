@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Button, Input, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { forgotPassword } from '../../services/authorizationService';
+import forgotPassword from '../../services/authorizationService';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
 
