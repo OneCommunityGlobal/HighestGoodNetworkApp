@@ -49,7 +49,6 @@ export function Header(props) {
     getAllRoles,
     hasPermission,
     getHeaderData,
-    getTimerData,
   } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
@@ -58,6 +57,7 @@ export function Header(props) {
   // Reports
   const canGetWeeklySummaries = hasPermission('getWeeklySummaries');
   // Users
+
   const canPostUserProfile = hasPermission('postUserProfile');
   const canDeleteUserProfile = hasPermission('deleteUserProfile');
   const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
@@ -84,7 +84,6 @@ export function Header(props) {
   useEffect(() => {
     if (auth.isAuthenticated) {
       getHeaderData(auth.user.userid);
-      getTimerData(auth.user.userid);
       if (auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
@@ -93,7 +92,7 @@ export function Header(props) {
 
   const roles = role?.roles;
   useEffect(() => {
-    if (roles.length === 0) {
+    if (roles.length === 0 && isAuthenticated) {
       getAllRoles();
     }
   }, []);
@@ -210,7 +209,7 @@ export function Header(props) {
                     {canCreatePopup || canUpdatePopup ? (
                       <>
                         <DropdownItem divider />
-                        <DropdownItem tag={Link} to="/admin/">
+                        <DropdownItem tag={Link} to="/popupmanagement">
                           {POPUP_MANAGEMENT}
                         </DropdownItem>
                       </>
