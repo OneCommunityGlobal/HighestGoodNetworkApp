@@ -1,10 +1,12 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Button, Input, Alert } from 'reactstrap';
+import { Button, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
-import forgotPassword from '../../services/authorizationService';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
+import forgotPassword from '../../services/authorizationService';
 
 const ForgotPassword = React.memo(() => {
   const [message, setMessage] = useState({});
