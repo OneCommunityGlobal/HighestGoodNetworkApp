@@ -80,11 +80,9 @@ const LeaderBoard = ({
   }, [leaderBoardData]);
 
   const [isOpen, setOpen] = useState(false);
-  const [modalContent, setContent] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const toggle = () => setOpen(isOpen => !isOpen);
-
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -110,7 +108,7 @@ const LeaderBoard = ({
     <div>
       <h3>
         <div className="d-flex align-items-center">
-        <span className="mr-2">Leaderboard</span>
+          <span className="mr-2">Leaderboard</span>
           <i
             data-toggle="tooltip"
             data-placement="right"
@@ -126,38 +124,24 @@ const LeaderBoard = ({
             areaTitle="Leaderboard"
             role={loggedInUser.role}
             fontSize={24}
-            isPermissionPage={true}
+            isPermissionPage
           />
         </div>
       </h3>
       {!isVisible && (
         <Alert color="warning">
-        <div className="d-flex align-items-center">
-
-          Note: You are currently invisible to the team(s) you are on.&nbsp;&nbsp;
-          <EditableInfoModal
-            areaName="LeaderboardInvisibleInfoPoint"
-            areaTitle="Leaderboard settings"
-            role={loggedInUser.role}
-            fontSize={24}
-            isPermissionPage={true}
-          />
-                  </div>
-
+          <div className="d-flex align-items-center">
+            Note: You are currently invisible to the team(s) you are on.{' '}
+            <EditableInfoModal
+              areaName="LeaderboardInvisibleInfoPoint"
+              areaTitle="Leaderboard settings"
+              role={loggedInUser.role}
+              fontSize={24}
+              isPermissionPage
+            />
+          </div>
         </Alert>
       )}
-      <span className="leaderboard">
-        <Modal isOpen={isOpen} toggle={toggle}>
-          <ModalHeader toggle={toggle}>Leaderboard Info</ModalHeader>
-          <ModalBody>{modalContent}</ModalBody>
-          <ModalFooter>
-            <Button onClick={toggle} color="secondary" className="float-left">
-              {' '}
-              Ok{' '}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      </span>
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <Table className="leaderboard table-fixed">
           <thead>
