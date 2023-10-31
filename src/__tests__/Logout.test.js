@@ -3,7 +3,6 @@ import mockState from './mockAdminState.js';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ApiEndpoint, ENDPOINTS } from '../utils/URL';
-const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 
 window.confirm = jest.fn(() => true);
@@ -49,9 +48,6 @@ const server = setupServer(
         },
       ]),
     );
-  }),
-  rest.get(timerUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
   }),
   rest.get('http://*/hash.txt', (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({}));
