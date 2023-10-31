@@ -320,6 +320,7 @@ export class WeeklySummariesReport extends Component {
                 <span className="mr-2">Weekly Summaries Reports page</span>
                 <EditableInfoModal
                   areaName="WeeklySummariesReport"
+                  areaTitle="Weekly Summaries Report"
                   role={role}
                   fontSize={24}
                   isPermissionPage

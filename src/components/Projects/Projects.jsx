@@ -149,6 +149,7 @@ export class Projects extends Component {
           <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
           <EditableInfoModal
             areaName="projectsInfoModal"
+            areaTitle="Projects"
             fontSize={30}
             isPermissionPage={true}
             role={role}

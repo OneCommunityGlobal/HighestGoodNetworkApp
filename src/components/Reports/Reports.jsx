@@ -302,6 +302,7 @@ class ReportsPage extends Component {
             <span className="mr-2">Reports Page</span>
             <EditableInfoModal
               areaName="ReportsPage"
+              areaTitle="Reports Page"
               role={userRole}
               fontSize={26}
               isPermissionPage={true}
@@ -444,6 +445,7 @@ class ReportsPage extends Component {
                 <div style={{ display: 'inline-block', marginLeft: 10 }}>
                 <EditableInfoModal
                   areaName="totalProjectReportInfoPoint"
+                  areaTitle="Total Project Report"
                   role={userRole}
                   fontSize={15}
                   isPermissionPage={true}
@@ -459,6 +461,7 @@ class ReportsPage extends Component {
                 <div style={{ display: 'inline-block', marginLeft: 10 }}>
                 <EditableInfoModal
                   areaName="totalPeopleReportInfoPoint"
+                  areaTitle="Total People Report"
                   role={userRole}
                   fontSize={15}
                   isPermissionPage={true}
@@ -472,6 +475,7 @@ class ReportsPage extends Component {
                 <div style={{ display: 'inline-block', marginLeft: 10 }}>
                 <EditableInfoModal
                   areaName="totalTeamReportInfoPoint"
+                  areaTitle="Total Team Report"
                   role={userRole}
                   fontSize={15}
                   isPermissionPage={true}

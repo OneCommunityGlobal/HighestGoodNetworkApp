@@ -427,6 +427,7 @@ const Timelog = props => {
         <div className="text-center">
         <EditableInfoModal
           areaName="DashboardTimelog"
+          areaTitle="Timelog"
           fontSize={30}
           isPermissionPage={true}
           role={auth.user.role}

@@ -30,6 +30,7 @@ const NewUserPopup = React.memo(props => {
     <div className="text-center">
       <EditableInfoModal
           areaName="UserManagment"
+          areaTitle="User Management"
           fontSize={24}
           isPermissionPage={true}
           role={role} // Pass the 'role' prop to EditableInfoModal
@@ -43,6 +44,7 @@ const NewUserPopup = React.memo(props => {
           Create New User&nbsp;
           <EditableInfoModal
             areaName="NewUserPopup"
+            areaTitle="New User"
             fontSize={24}
             isPermissionPage={true}
             role={role} // Pass the 'role' prop to EditableInfoModal

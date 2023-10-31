@@ -40,6 +40,7 @@ const ProjectTableHeader = props => {
           <span className="mr-2">{WBS}</span>
           <EditableInfoModal
             areaName="ProjectTableHeaderWBS"
+            areaTitle="WBS"
             fontSize={24}
             isPermissionPage={true}
             role={role}

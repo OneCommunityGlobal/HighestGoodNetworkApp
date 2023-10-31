@@ -665,6 +665,7 @@ function UserProfile(props) {
               />{' '} */}
               <EditableInfoModal
                 areaName="UserProfileInfoModal"
+                areaTitle="User Profile"
                 fontSize={24}
                 isPermissionPage={true}
                 role={requestorRole} // Pass the 'role' prop to EditableInfoModal

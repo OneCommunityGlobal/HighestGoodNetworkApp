@@ -65,21 +65,13 @@ export const Badges = props => {
               <span>
                 <EditableInfoModal
                   areaName="FeaturedBadgesInfoPoint"
+                  areaTitle="Featured Badges"
                   fontSize={20}
                   isPermissionPage={true}
                   role={props.role}
                 />
               </span>
             </div>
-            {/* <span className="badge-header-title d-flex align-items-center">
-              Featured Badges 
-              <EditableInfoModal
-                areaName="NumberOfBadgesInfoPoint"
-                fontSize={30}
-                isPermissionPage={true}
-                role={props.role}
-              />
-            </span> */}
             <div>
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
@@ -146,6 +138,7 @@ export const Badges = props => {
           </span>
           <EditableInfoModal
             areaName="NumberOfBadgesInfoPoint"
+            areaTitle="Number of Badges"
             role={props.role}
             fontSize={20}
             isPermissionPage={true}

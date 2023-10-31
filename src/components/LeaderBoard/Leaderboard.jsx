@@ -123,6 +123,7 @@ const LeaderBoard = ({
           &nbsp;
           <EditableInfoModal
             areaName="LeaderboardOrigin"
+            areaTitle="Leaderboard"
             role={loggedInUser.role}
             fontSize={24}
             isPermissionPage={true}
@@ -136,6 +137,7 @@ const LeaderBoard = ({
           Note: You are currently invisible to the team(s) you are on.&nbsp;&nbsp;
           <EditableInfoModal
             areaName="LeaderboardInvisibleInfoPoint"
+            areaTitle="Leaderboard settings"
             role={loggedInUser.role}
             fontSize={24}
             isPermissionPage={true}
@@ -166,6 +168,7 @@ const LeaderBoard = ({
                   <span className="mr-2">Name</span>
                   <EditableInfoModal
                     areaName="Leaderboard"
+                    areaTitle="Team Members Navigation"
                     role={loggedInUser.role}
                     fontSize={18}
                     isPermissionPage={true}
