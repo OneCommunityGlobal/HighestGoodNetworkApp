@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
 
-const ProjectSelectForm = ({ projects }) => {
+function ProjectSelectForm({ projects }) {
   const history = useHistory();
   const [selectedProjectId, setSelectedProjectId] = useState('');
 
@@ -20,9 +20,10 @@ const ProjectSelectForm = ({ projects }) => {
 
   const handleButtonClick = () => {
     if (selectedProjectId) {
-      //navigate to a new page with information about the selected project
+      // navigate to a new page with information about the selected project
       history.push(`/bmdashboard/projects/${selectedProjectId}`);
     } else {
+      // eslint-disable-next-line no-alert
       alert('Please select an option first');
     }
   };
@@ -57,6 +58,6 @@ const ProjectSelectForm = ({ projects }) => {
       </Row>
     </Form>
   );
-};
+}
 
 export default ProjectSelectForm;

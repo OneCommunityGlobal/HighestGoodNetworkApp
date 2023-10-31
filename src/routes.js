@@ -40,18 +40,24 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoMo
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 
 // BM Dashboard
-// import ProtectedBMRoute from 'components/common/BMDashboard/BMProtectedRoute/ProtectedBMRoute';
 import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
+
+import MaterialsList from 'components/BMDashboard/MaterialsList';
+
 import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+
 
 export default (
   <>
     <Switch>
       <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
       <>
+        {/* Comment out the Header component and its import during phase 2 development. */}
         <Header />
+        {/* Uncomment BMHeader and its import during phase 2 development. */}
+        {/* <BMHeader /> */}
         <AutoUpdate />
         <ToastContainer />
         <Switch>
@@ -59,7 +65,7 @@ export default (
           <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
           <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} />
           <ProtectedRoute path="/project/members/:projectId" component={Members} />
-          <ProtectedRoute path="/admin" component={Admin} />
+          <ProtectedRoute path="/popupmanagement" component={Admin} />
           <ProtectedRoute path="/timelog/" exact component={Timelog} />
           <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
           <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
@@ -158,6 +164,10 @@ export default (
       <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
       <Route path="/bmdashboard/login" component={BMLogin} />
       <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
+      <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+      {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
+      <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+      
   
       
       {/* ----- END BM Dashboard Routing ----- */}
