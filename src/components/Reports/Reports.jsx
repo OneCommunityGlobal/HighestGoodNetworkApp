@@ -1,8 +1,9 @@
+// eslint-disable-next-line no-unused-vars
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import moment from 'moment';
 import { Container, Button } from 'reactstrap';
 import DatePicker from 'react-datepicker';
+import ReactTooltip from 'react-tooltip';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
@@ -16,7 +17,6 @@ import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
 import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';
-import ReactTooltip from 'react-tooltip';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
 import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
@@ -34,44 +34,44 @@ class ReportsPage extends Component {
       showTotalTeam: false,
       showTotalProject: false,
       teamNameSearchText: '',
-      teamMembersPopupOpen: false,
-      deleteTeamPopupOpen: false,
-      createNewTeamPopupOpen: false,
-      teamStatusPopupOpen: false,
+      // teamMembersPopupOpen: false,
+      // deleteTeamPopupOpen: false,
+      // createNewTeamPopupOpen: false,
+      // teamStatusPopupOpen: false,
       wildCardSearchText: '',
-      selectedTeamId: 0,
-      selectedTeam: '',
+      // selectedTeamId: 0,
+      // selectedTeam: '',
       checkActive: '',
-      formElements: {
-        summary: '',
-        summaryLastWeek: '',
-        summaryBeforeLast: '',
-        mediaUrl: '',
-        weeklySummariesCount: 0,
-        mediaConfirm: false,
-      },
-      dueDate: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .toISOString(),
-      dueDateLastWeek: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .subtract(1, 'week')
-        .toISOString(),
-      dueDateBeforeLast: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .subtract(2, 'week')
-        .toISOString(),
-      activeTab: '1',
-      errors: {},
-      fetchError: null,
-      loading: true,
+      // formElements: {
+      //   summary: '',
+      //   summaryLastWeek: '',
+      //   summaryBeforeLast: '',
+      //   mediaUrl: '',
+      //   weeklySummariesCount: 0,
+      //   mediaConfirm: false,
+      // },
+      // dueDate: moment()
+      //   .tz('America/Los_Angeles')
+      //   .endOf('week')
+      //   .toISOString(),
+      // dueDateLastWeek: moment()
+      //   .tz('America/Los_Angeles')
+      //   .endOf('week')
+      //   .subtract(1, 'week')
+      //   .toISOString(),
+      // dueDateBeforeLast: moment()
+      //   .tz('America/Los_Angeles')
+      //   .endOf('week')
+      //   .subtract(2, 'week')
+      //   .toISOString(),
+      // activeTab: '1',
+      // errors: {},
+      // fetchError: null,
+      // loading: true,
       teamSearchData: {},
       peopleSearchData: [],
       projectSearchData: {},
-      users: {},
+      // users: {},
       startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
       teamMemberList: {},
@@ -89,15 +89,15 @@ class ReportsPage extends Component {
   }
 
   async componentDidMount() {
-    this.props.fetchAllProjects(); // Fetch to get all projects
-    this.props.getAllUserTeams();
+    fetchAllProjects(); // Fetch to get all projects
+    getAllUserTeams();
     this.setState({
       showProjects: false,
       showPeople: false,
       showTeams: false,
       checkActive: '',
     });
-    this.props.getAllUserProfile();
+    getAllUserProfile();
   }
 
   /**
@@ -109,82 +109,14 @@ class ReportsPage extends Component {
     });
   };
 
-  filteredProjectList = projects => {
-    const filteredList = projects.filter(project => {
-      // Applying the search filters before creating each team table data element
-      if (
-        (project.projectName &&
-          project.projectName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
-          this.state.wildCardSearchText === '') ||
-        // the wild card search, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          project.projectName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
-      ) {
-        return project;
-      }
-      return false;
-    });
-
-    return filteredList;
-  };
-
-  filteredTeamList = allTeams => {
-    const filteredList = allTeams?.filter(team => {
-      // Applying the search filters before creating each team table data element
-      if (
-        (team.teamName &&
-          team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1 &&
-          this.state.wildCardSearchText === '') ||
-        // the wild card search, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1)
-      ) {
-        return team;
-      }
-      return false;
-    });
-
-    return filteredList;
-  };
-
-  filteredPeopleList = userProfiles => {
-    const filteredList = userProfiles.filter(userProfile => {
-      // Applying the search filters before creating each team table data element
-      if (
-        (userProfile.firstName &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
-          this.state.wildCardSearchText === '') ||
-        // the wild card search, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1) ||
-        (this.state.wildCardSearchText !== '' &&
-          userProfile.lastName &&
-          userProfile.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
-      ) {
-        return (
-          new Date(Date.parse(userProfile.createdDate)) >= this.state.startDate &&
-          this.state.startDate <= new Date(Date.parse(userProfile?.endDate)) <= this.state.endDate
-        );
-      }
-      return false;
-    });
-
-    return filteredList;
-  };
-
   setActive() {
-    this.setState(state => ({
+    this.setState(() => ({
       checkActive: 'true',
     }));
   }
 
   setAll() {
-    this.setState(state => ({
+    this.setState(() => ({
       checkActive: '',
     }));
   }
@@ -200,6 +132,76 @@ class ReportsPage extends Component {
       teamMemberList: list,
     }));
   }
+
+  filteredPeopleList = userProfiles => {
+    const { teamNameSearchText, wildCardSearchText, startDate, endDate } = this.state;
+
+    const filteredList = userProfiles.filter(userProfile => {
+      // Applying the search filters before creating each team table data element
+      if (
+        (userProfile.firstName &&
+          userProfile.firstName.toLowerCase().indexOf(teamNameSearchText.toLowerCase()) > -1 &&
+          wildCardSearchText === '') ||
+        // the wild card search, the search text can be match with any item
+        (wildCardSearchText !== '' &&
+          userProfile.firstName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1) ||
+        (wildCardSearchText !== '' &&
+          userProfile.lastName &&
+          userProfile.lastName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1)
+      ) {
+        return (
+          new Date(Date.parse(userProfile.createdDate)) >= startDate &&
+          startDate <= new Date(Date.parse(userProfile?.endDate)) &&
+          new Date(Date.parse(userProfile?.endDate)) <= endDate
+        );
+      }
+      return false;
+    });
+
+    return filteredList;
+  };
+
+  filteredTeamList = allTeams => {
+    const { teamNameSearchText, wildCardSearchText } = this.state;
+
+    const filteredList = allTeams?.filter(team => {
+      // Applying the search filters before creating each team table data element
+      if (
+        (team.teamName &&
+          team.teamName.toLowerCase().indexOf(teamNameSearchText.toLowerCase()) > -1 &&
+          wildCardSearchText === '') ||
+        // the wild card search, the search text can be match with any item
+        (wildCardSearchText !== '' &&
+          team.teamName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1)
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    return filteredList;
+  };
+
+  filteredProjectList = projects => {
+    const { teamNameSearchText, wildCardSearchText } = this.state;
+
+    const filteredList = projects.filter(project => {
+      // Applying the search filters before creating each project table data element
+      if (
+        (project.projectName &&
+          project.projectName.toLowerCase().indexOf(teamNameSearchText.toLowerCase()) > -1 &&
+          wildCardSearchText === '') ||
+        // the wild card search, the search text can be match with any item
+        (wildCardSearchText !== '' &&
+          project.projectName.toLowerCase().indexOf(wildCardSearchText.toLowerCase()) > -1)
+      ) {
+        return true;
+      }
+      return false;
+    });
+
+    return filteredList;
+  };
 
   showProjectTable() {
     this.setState(prevState => ({
@@ -255,6 +257,7 @@ class ReportsPage extends Component {
       showTotalPeople: false,
     }));
   }
+
   showTotalProject() {
     this.setState(prevState => ({
       showProjects: false,
@@ -267,29 +270,49 @@ class ReportsPage extends Component {
   }
 
   render() {
-    const { projects } = this.props.state.allProjects;
-    const { allTeams } = this.props.state.allTeamsData;
-    const { userProfiles } = this.props.state.allUserProfiles;
+    const {
+      state: { allProjects, allTeamsData, allUserProfiles },
+    } = this.props;
+
+    const {
+      checkActive,
+      startDate,
+      endDate,
+      teamSearchData,
+      peopleSearchData,
+      projectSearchData,
+      showProjects,
+      showPeople,
+      showTeams,
+      showTotalProject,
+      showTotalPeople,
+      showTotalTeam,
+      teamMemberList,
+    } = this.state;
+
+    const { projects } = allProjects;
+    const { allTeams } = allTeamsData;
+    const { userProfiles } = allUserProfiles;
     this.state.teamSearchData = this.filteredTeamList(allTeams);
     this.state.peopleSearchData = this.filteredPeopleList(userProfiles);
     this.state.projectSearchData = this.filteredProjectList(projects);
-    if (this.state.checkActive === 'true') {
+    if (checkActive === 'true') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === true);
       this.state.projectSearchData = projects.filter(project => project.isActive === true);
       this.state.peopleSearchData = userProfiles.filter(user => user.isActive === true);
-      this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
-      this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
-      this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
-    } else if (this.state.checkActive === 'false') {
+      this.state.teamSearchData = this.filteredTeamList(teamSearchData);
+      this.state.peopleSearchData = this.filteredPeopleList(peopleSearchData);
+      this.state.projectSearchData = this.filteredProjectList(projectSearchData);
+    } else if (checkActive === 'false') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === false);
       this.state.projectSearchData = projects.filter(project => project.isActive === false);
       this.state.peopleSearchData = userProfiles.filter(user => user.isActive === false);
-      this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
-      this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
-      this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
+      this.state.teamSearchData = this.filteredTeamList(teamSearchData);
+      this.state.peopleSearchData = this.filteredPeopleList(peopleSearchData);
+      this.state.projectSearchData = this.filteredProjectList(projectSearchData);
     }
-    if (this.state.startDate != null && this.state.endDate != null) {
-      this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
+    if (startDate != null && endDate != null) {
+      this.state.peopleSearchData = this.filteredPeopleList(peopleSearchData);
     }
     return (
       <Container fluid className="mb-5 container-component-wrapper">
@@ -300,28 +323,31 @@ class ReportsPage extends Component {
           </div>
           <div className="category-container">
             <button
-              className={`card-category-item ${this.state.showProjects ? 'selected' : ''}`}
+              type="button"
+              className={`card-category-item ${showProjects ? 'selected' : ''}`}
               onClick={this.showProjectTable}
             >
               <h3 className="card-category-item-title"> Projects</h3>
-              <h3 className="card-category-item-number">{this.state.projectSearchData.length} </h3>
-              <img src={projectsImage} alt="Image that representes the projects" />
+              <h3 className="card-category-item-number">{projectSearchData.length} </h3>
+              <img src={projectsImage} alt="representes the projects" />
             </button>
             <button
-              className={`card-category-item ${this.state.showPeople ? 'selected' : ''}`}
+              type="button"
+              className={`card-category-item ${showPeople ? 'selected' : ''}`}
               onClick={this.showPeopleTable}
             >
               <h3 className="card-category-item-title"> People </h3>
-              <h3 className="card-category-item-number">{this.state.peopleSearchData.length}</h3>
-              <img src={peopleImage} alt="Image that representes the people" />
+              <h3 className="card-category-item-number">{peopleSearchData.length}</h3>
+              <img src={peopleImage} alt="representes the people" />
             </button>
             <button
-              className={`card-category-item ${this.state.showTeams ? 'selected' : ''}`}
+              type="button"
+              className={`card-category-item ${showTeams ? 'selected' : ''}`}
               onClick={this.showTeamsTable}
             >
               <h3 className="card-category-item-title"> Teams </h3>
-              <h3 className="card-category-item-number">{this.state.teamSearchData?.length}</h3>
-              <img src={teamsImage} alt="Image that representes the teams" />
+              <h3 className="card-category-item-number">{teamSearchData?.length}</h3>
+              <img src={teamsImage} alt="representes the teams" />
             </button>
             {/* <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showProjectTable}>
               <i className="fa fa-folder" aria-hidden="true" />
@@ -347,6 +373,7 @@ class ReportsPage extends Component {
           </div>
           <div className="mt-4 bg-white p-3 rounded-5">
             <div>
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a>Select a Filter</a>
             </div>
             <div>
@@ -389,11 +416,11 @@ class ReportsPage extends Component {
                   Start Date
                 </label>
                 <DatePicker
-                  selected={this.state.startDate}
+                  selected={startDate}
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
                   maxDate={new Date()}
                   onChange={date => {
-                    if (date > new Date(DATE_PICKER_MIN_DATE) && date <= this.state.endDate) {
+                    if (date > new Date(DATE_PICKER_MIN_DATE) && date <= endDate) {
                       this.setState({ startDate: date });
                     }
                   }}
@@ -407,11 +434,11 @@ class ReportsPage extends Component {
                   End Date
                 </label>
                 <DatePicker
-                  selected={this.state.endDate}
+                  selected={endDate}
                   maxDate={new Date()}
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
                   onChange={date => {
-                    if (date >= this.state.startDate) {
+                    if (date >= startDate) {
                       this.setState({ endDate: date });
                     }
                   }}
@@ -423,9 +450,7 @@ class ReportsPage extends Component {
             <div className="total-report-container">
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalProject}>
-                  {this.state.showTotalProject
-                    ? 'Hide Total Project Report'
-                    : 'Show Total Project Report'}
+                  {showTotalProject ? 'Hide Total Project Report' : 'Show Total Project Report'}
                 </Button>
                 <i
                   className="fa fa-info-circle"
@@ -442,17 +467,15 @@ class ReportsPage extends Component {
                   <br />
                   Projects must have had at least 1 hour logged to them to be included.
                   <br />
-                  A 'Total Hours' section will show the total tangible time logged to all projects
-                  during the selected period.
+                  A &apos;Total Hours&apos; section will show the total tangible time logged to all
+                  projects projects projects projects projects projects during the selected period.
                   <br />A detail report will list all the projects and hours contributed by each
                   during that time period.
                 </ReactTooltip>
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalPeople}>
-                  {this.state.showTotalPeople
-                    ? 'Hide Total People Report'
-                    : 'Show Total People Report'}
+                  {showTotalPeople ? 'Hide Total People Report' : 'Show Total People Report'}
                 </Button>
                 <i
                   className="fa fa-info-circle"
@@ -468,15 +491,15 @@ class ReportsPage extends Component {
                   <br />
                   Peole must have had at least 10 hours logged for them to be included.
                   <br />
-                  A 'Total Hours' section will show the total tangible time logged by all people
-                  during the selected period.
+                  A &apos;Total Hours&apos; section will show the total tangible time logged by all
+                  people during the selected period.
                   <br />A detail report will list all the people and hours contributed by each
                   during that time period.
                 </ReactTooltip>
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalTeam}>
-                  {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
+                  {showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
                 </Button>
                 <i
                   className="fa fa-info-circle"
@@ -493,8 +516,8 @@ class ReportsPage extends Component {
                   <br />
                   The team must have had at least 10 hours logged for them to be included.
                   <br />
-                  A 'Total Hours' section will show the total tangible time logged by all the teams
-                  during the selected period.
+                  A &apos;Total Hours&apos; section will show the total tangible time logged by all
+                  the teams during the selected period.
                   <br />A detail report will list all the teams and hours contributed by each during
                   that time period.
                 </ReactTooltip>
@@ -503,31 +526,31 @@ class ReportsPage extends Component {
           </div>
         </div>
         <div className="table-data-container mt-5">
-          {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
-          {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
-          {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
-          {this.state.showTotalProject && (
+          {showPeople && <PeopleTable userProfiles={peopleSearchData} />}
+          {showProjects && <ProjectTable projects={projectSearchData} />}
+          {showTeams && <TeamTable allTeams={teamSearchData} />}
+          {showTotalProject && (
             <TotalProjectReport
-              startDate={this.state.startDate}
-              endDate={this.state.endDate}
+              startDate={startDate}
+              endDate={endDate}
               userProfiles={userProfiles}
             />
           )}
-          {this.state.showTotalPeople && (
+          {showTotalPeople && (
             <TotalPeopleReport
-              startDate={this.state.startDate}
-              endDate={this.state.endDate}
+              startDate={startDate}
+              endDate={endDate}
               userProfiles={userProfiles}
             />
           )}
-          {this.state.showTotalTeam && (
+          {showTotalTeam && (
             <TotalTeamReport
-              startDate={this.state.startDate}
-              endDate={this.state.endDate}
+              startDate={startDate}
+              endDate={endDate}
               userProfiles={userProfiles}
               allTeams={allTeams}
               passTeamMemberList={this.setTeamMemberList}
-              savedTeamMemberList={this.state.teamMemberList}
+              savedTeamMemberList={teamMemberList}
             />
           )}
         </div>
