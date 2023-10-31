@@ -220,6 +220,10 @@ function UserProfile(props) {
 
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const userProjects = await axios.get(ENDPOINTS.USER_PROJECTS(userId));
+
+      // console.log(response.data);
+      // console.log('uiser proiejcts', userProjects.data);
 
       const newUserProfile = response.data;
 
