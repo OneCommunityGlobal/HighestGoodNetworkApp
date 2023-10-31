@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -19,7 +19,7 @@ function useDeepEffect(effectFunc, deps) {
   const prevDeps = useRef(deps);
   useEffect(() => {
     const isSame = prevDeps.current.every((obj, index) => {
-      let isItEqual = isEqual(obj, deps[index]);
+      const isItEqual = isEqual(obj, deps[index]);
       return isItEqual;
     });
     if (isFirst.current || !isSame) {
@@ -31,7 +31,7 @@ function useDeepEffect(effectFunc, deps) {
   }, deps);
 }
 
-const LeaderBoard = ({
+function LeaderBoard({
   getLeaderboardData,
   getOrgData,
   getMouseoverText,
@@ -42,10 +42,10 @@ const LeaderBoard = ({
   isVisible,
   asUser,
   totalTimeMouseoverText,
-}) => {
-  const userId = asUser ? asUser : loggedInUser.userId;
-  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); //??? this permission doesn't exist?
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); //??? this permission doesn't exist?
+}) {
+  const userId = asUser || loggedInUser.userId;
+  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
@@ -76,15 +76,16 @@ const LeaderBoard = ({
           }
         }
       }
-    } catch {}
+    } catch (error) {
+      throw new Error(error);
+    }
   }, [leaderBoardData]);
 
   const [isOpen, setOpen] = useState(false);
   const [modalContent, setContent] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const toggle = () => setOpen(isOpen => !isOpen);
-
+  const toggle = () => setOpen(isOpenState => !isOpenState);
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -217,8 +218,8 @@ const LeaderBoard = ({
                 </span>
               </td>
             </tr>
-            {leaderBoardData.map((item, key) => (
-              <tr key={key}>
+            {leaderBoardData.map(item => (
+              <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
@@ -244,7 +245,18 @@ const LeaderBoard = ({
                     }}
                   >
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div onClick={() => dashboardToggle(item)}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        dashboardToggle(item);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          dashboardToggle(item);
+                        }
+                      }}
+                    >
                       {hasLeaderboardPermissions(loggedInUser.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
@@ -278,7 +290,7 @@ const LeaderBoard = ({
                     </div>
                     {hasSummaryIndicatorPermission && item.hasSummary && (
                       <div
-                        title={`Weekly Summary Submitted`}
+                        title="Weekly Summary Submitted"
                         style={{
                           color: '#32a518',
                           cursor: 'default',
@@ -296,7 +308,7 @@ const LeaderBoard = ({
                   </Link>
                   &nbsp;&nbsp;&nbsp;
                   {hasVisibilityIconPermission && !item.isVisible && (
-                    <i className="fa fa-eye-slash" title="User is invisible"></i>
+                    <i className="fa fa-eye-slash" title="User is invisible" />
                   )}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
@@ -326,6 +338,6 @@ const LeaderBoard = ({
       </div>
     </div>
   );
-};
+}
 
 export default LeaderBoard;
