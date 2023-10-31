@@ -116,8 +116,11 @@ export class Projects extends Component {
 
     let showModalMsg = false;
 
-    const canPostProject = this.props.hasPermission('postProject');
+
     const role = this.props.state.userProfile.role;
+
+    const canPostProject = this.props.hasPermission('postProject') || this.props.hasPermission('seeProjectManagement');
+
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
     }

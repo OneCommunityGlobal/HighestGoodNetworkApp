@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../actions/authActions';
-import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
@@ -51,12 +50,14 @@ export const Header = props => {
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
+
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
   // Projects
+  const canSeeProjectManagementTab = props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
   const canPostProject = props.hasPermission('postProject');
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
@@ -68,7 +69,7 @@ export const Header = props => {
   const canUpdatePopup = props.hasPermission('updatePopup');
   // Roles
   const canPutRole = props.hasPermission('putRole');
-  // Permissions 
+  // Permissions
   const canManageUser = props.hasPermission('putUserProfilePermissions');
 
   const dispatch = useDispatch();
@@ -76,7 +77,6 @@ export const Header = props => {
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
-      props.getTimerData(props.auth.user.userid);
       if (props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
@@ -84,7 +84,7 @@ export const Header = props => {
   }, [props.auth.isAuthenticated]);
 
   useEffect(() => {
-    if (roles.length === 0) {
+    if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
   }, []);
@@ -136,26 +136,18 @@ export const Header = props => {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {canGetWeeklySummaries || canGetWeeklySummaries ? (
+              {canGetWeeklySummaries ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    {canGetWeeklySummaries ? (
-                      <>
                         <DropdownItem tag={Link} to="/reports">
                           {REPORTS}
                         </DropdownItem>
                         <DropdownItem tag={Link} to="/weeklysummariesreport">
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
-                      </>
-                    ) : (
-                      <DropdownItem tag={Link} to="/weeklysummariesreport">
-                        {WEEKLY_SUMMARIES_REPORT}
-                      </DropdownItem>
-                    )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
               ) : null}
@@ -174,6 +166,7 @@ export const Header = props => {
                 canPutUserProfileImportantInfo ||
                 canCreateBadges ||
                 canPostProject ||
+                canSeeProjectManagementTab ||
                 canDeleteTeam ||
                 canPutTeam ||
                 canCreatePopup ||
@@ -200,7 +193,7 @@ export const Header = props => {
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {canPostProject && (
+                    {(canPostProject || canSeeProjectManagementTab) && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
                       </DropdownItem>
@@ -213,7 +206,7 @@ export const Header = props => {
                     {canCreatePopup || canUpdatePopup ? (
                       <>
                         <DropdownItem divider />
-                        <DropdownItem tag={Link} to={`/admin/`}>
+                        <DropdownItem tag={Link} to={`/popupmanagement`}>
                           {POPUP_MANAGEMENT}
                         </DropdownItem>
                       </>
@@ -273,7 +266,6 @@ const mapStateToProps = state => ({
 });
 export default connect(mapStateToProps, {
   getHeaderData,
-  getTimerData,
   getAllRoles,
   hasPermission,
 })(Header);

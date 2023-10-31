@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 
-const TeamMembersPopup = React.memo(props => {
+export const TeamMembersPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
     setSortOrder(0)
@@ -132,6 +132,7 @@ const TeamMembersPopup = React.memo(props => {
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
+                existingMembers={props.members.teamMembers}
                 onAddUser={selectUser}
                 searchText={searchText}
                 setSearchText={setSearchText}

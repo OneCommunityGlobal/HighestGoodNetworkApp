@@ -14,8 +14,8 @@ import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const ProjectTableHeader = props => {
-  const canDeleteProject = props.hasPermission('deleteProject');
   const { role } = props; // Access the 'role' prop
+  const canDeleteProject = props.hasPermission('deleteProject') || props.hasPermission('seeProjectManagement');
 
   return (
     <tr>
