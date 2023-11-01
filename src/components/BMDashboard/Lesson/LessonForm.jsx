@@ -45,20 +45,22 @@ function LessonForm() {
     <div className="MasterContainer">
       <div className="FormContainer">
         <Form>
-          <Form.Group controlId="exampleForm.ControlTextarea1">
-            <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
-            <Form.Control
-              className="LessonPlaceholderText"
-              as="textarea"
-              placeholder="Enter the lesson you learn..."
-              rows={10}
-            />
-          </Form.Group>
-          <Form.Group controlId="exampleForm.ControlInput1">
-            {/* Can have multiple tags. Needs to add tag for belonging project name automatically. */}
-            <Form.Label>Add tag</Form.Label>
-            <Form.Control type="text" placeholder="Input tag for the lesson" />
-          </Form.Group>
+          <div className="WriteLessonAndTagDiv">
+            <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
+              <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
+              <Form.Control
+                className="LessonPlaceholderText"
+                as="textarea"
+                placeholder="Enter the lesson you learn..."
+                rows={10}
+              />
+            </Form.Group>
+            <Form.Group controlId="exampleForm.ControlInput1">
+              {/* Can have multiple tags. Needs to add tag for belonging project name automatically. */}
+              <Form.Label>Add tag</Form.Label>
+              <Form.Control type="text" placeholder="Input tag for the lesson" />
+            </Form.Group>
+          </div>
           <div className="FormSelectContainer">
             <div className="SingleFormSelect">
               <Form.Group controlId="Form.ControlSelect1">
@@ -85,7 +87,7 @@ function LessonForm() {
             </div>
           </div>
           <Form.Group controlId="exampleForm.ControlFile1">
-            <Form.Label>Drag and Drop Image or File</Form.Label>
+            <Form.Label>Upload Appendix</Form.Label>
             <input
               type="file"
               id="fileInput"

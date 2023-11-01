@@ -2,6 +2,10 @@
    padding: 5%;
    background-color: #FFFFFF;
    border-radius: 2%;
+     /* Override the max-width for form controls within your form */
+  .form-control {
+    max-width: unset !important;
+  }
 }
 .MasterContainer{
     padding-left: 20%;
@@ -59,15 +63,43 @@
   }
   .LessonFormButtonCancel{
     width:25%;
-    height: 45px;
+    height: 50px;
    background-color: #FFFFFF !important;
    color: #2E5061 !important; /* Change the text color (red in this example) */
    border-color: #2E5061 !important;
   }
   .LessonFormButtonSubmit{
+    
     width:25%;
-    height: 45px;
+    height: 50px;
     background-color:  #2E5061!important;
     color: #FFFFFF !important; /* Change the text color (red in this example) */
     border-color: #2E5061 !important;
    }
+   /* .WriteLessonAndTagDiv{
+    display:flex;
+    flex-direction: column;
+    width: 100%;
+   } */
+
+   @media (max-width: 570px) {
+    .FormSelectContainer {
+      align-items: center;
+      flex-direction: column;
+    }
+    .SingleFormSelect{
+    
+      width: 50%
+  }
+
+  .LessonFormButtonSubmit{
+    
+    width:45%;
+  
+   }
+
+   .LessonFormButtonCancel{
+    width:45%;
+ 
+  }
+  }
