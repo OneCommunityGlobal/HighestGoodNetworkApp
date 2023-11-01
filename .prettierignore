@@ -23,7 +23,6 @@ src/components/Badge/**
 src/components/common/**
 src/components/Header/**
 src/components/Inventory/**
-src/components/Login/**
 src/components/ManageMemberships/**
 src/components/Memberships/**
 src/components/MonthlyEffort/**

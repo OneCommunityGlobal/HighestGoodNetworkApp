@@ -10,7 +10,6 @@ import { ENDPOINTS , ApiEndpoint } from '../utils/URL';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import routes from './../routes';
 const url = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
-const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let requestedLeaderBoard = false;
 let refreshed = false;
@@ -75,9 +74,6 @@ const server = setupServer(
   }),
   rest.get(userProjectsUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json([]));
-  }),
-  rest.get(timerUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
   }),
   rest.get('*', (req, res, ctx) => {
     console.error(
