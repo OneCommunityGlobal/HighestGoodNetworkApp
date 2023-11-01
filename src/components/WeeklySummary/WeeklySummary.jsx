@@ -250,6 +250,8 @@ export class WeeklySummary extends Component {
       mediaChangeConfirm: false,
       mediaFirstChange: false,
     });
+
+    // console.log('this.props.userRole in WeeklySummary: ', this.props.userRole);
   }
 
   doesDateBelongToWeek = (dueDate, weekIndex) => {
@@ -731,7 +733,7 @@ export class WeeklySummary extends Component {
                               </DropdownItem>
                             </DropdownMenu>
                           </UncontrolledDropdown>
-                          <CurrentPromptModal />
+                          <CurrentPromptModal userRole={this.props.userRole} userId={this.props.asUser} />
                         </Label>
                         <Editor
                           init={{

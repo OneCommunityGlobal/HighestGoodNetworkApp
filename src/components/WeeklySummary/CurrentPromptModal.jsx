@@ -1,11 +1,21 @@
-import { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
+// import { connect } from 'react-redux';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { updateDashboardData, getDashboardDataAI } from '../../actions/dashboard';
 
-function CurrentPromptModal() {
+function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);
+
+  const dispatch = useDispatch();
+  const [prompt, setPrompt] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const toggle = () => setModal(!modal);
 
@@ -14,9 +24,60 @@ function CurrentPromptModal() {
   Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment.
   Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`;
 
+  // const dashboardDataAIPrompt =
+  //   props.state.dashboardData.aIPromptText === '' || props.state.dashboardData.aIPromptText === null
+  //     ? currentPrompt
+  //     : props.state.dashboardData.aIPromptText;
+
+  // Fetch the prompt when the component mounts or the modal opens
+  useEffect(() => {
+    if (modal) {
+      setLoading(true);
+      dispatch(getDashboardDataAI())
+        .then((response) => {
+          if (response) {
+            //console.log('response: ', response.aIPromptText);
+            setPrompt(response.aIPromptText);
+          } else {
+            setPrompt(currentPrompt); // Fallback to hardcoded prompt if fetched prompt is empty
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching AI prompt:', error);
+          setPrompt(currentPrompt); // Fallback to hardcoded prompt in case of error
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [modal]);
+
+
+  console.log('props.userRole: ', props.userRole);
+
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(currentPrompt);
     toast.success('Prompt Copied!');
+  };
+
+  const handleSavePrompt = () => {
+    setLoading(true);
+    dispatch(updateDashboardData(prompt))
+      .then(() => {
+        toast.success('Prompt Updated!');
+        setIsEditing(false);
+      })
+      .catch((error) => {
+        console.error('Error updating AI prompt:', error);
+        toast.error('Failed to update prompt.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const handleEditPrompt = (event) => {
+    setPrompt(event.target.value);
   };
 
   return (
@@ -41,13 +102,42 @@ function CurrentPromptModal() {
         or similar AI text completion tool
         <br />
       </ReactTooltip>
-      <Modal isOpen={modal} toggle={toggle}>
+      {/* <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Current AI Prompt </ModalHeader>
         <ModalBody>{currentPrompt}</ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={handleCopyToClipboard} style={boxStyle}>
             Copy Prompt
           </Button>
+        </ModalFooter>
+      </Modal> */}
+
+      <Modal isOpen={modal} toggle={toggle}>
+        <ModalHeader toggle={toggle}>Current AI Prompt</ModalHeader>
+        <ModalBody>
+          {loading ? (
+            <div>Loading...</div>
+          ) : isEditing ? (
+            <Input type="textarea" value={prompt} onChange={handleEditPrompt} />
+          ) : (
+            <div>{prompt}</div>
+          )}
+        </ModalBody>
+        <ModalFooter>
+          {props.userRole === 'Owner' && (
+            <Button color="secondary" onClick={() => setIsEditing(!isEditing)} disabled={loading}>
+              {isEditing ? 'Cancel' : 'Edit'}
+            </Button>
+          )}
+          {isEditing ? (
+            <Button color="primary" onClick={handleSavePrompt} disabled={loading}>
+              Save
+            </Button>
+          ) : (
+            <Button color="primary" onClick={handleCopyToClipboard}>
+              Copy Prompt
+            </Button>
+          )}
         </ModalFooter>
       </Modal>
     </div>

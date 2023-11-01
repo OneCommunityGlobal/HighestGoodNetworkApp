@@ -64,7 +64,12 @@ export function Dashboard(props) {
               onKeyDown={toggle}
               tabIndex="0"
             >
-              <WeeklySummary isDashboard isPopup={popup} asUser={userId} />
+              <WeeklySummary
+                isDashboard
+                isPopup={popup}
+                asUser={userId}
+                userRole={auth.user.role}
+              />
             </div>
           </div>
         </Col>
@@ -77,7 +82,7 @@ export function Dashboard(props) {
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary asUser={userId} setPopup={setPopup} />
+                <WeeklySummary asUser={userId} setPopup={setPopup} userRole={auth.user.role} />
               </div>
             </div>
           ) : null}

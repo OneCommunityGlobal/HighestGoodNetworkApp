@@ -27,6 +27,7 @@ import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
+import { dashboardDataReducer } from './dashboardDataReducer';
 import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -62,6 +63,7 @@ export default combineReducers({
   rolePreset: rolePresetReducer,
   ownerMessage: ownerMessageReducer,
   ownerStandardMessage: ownerStandardMessageReducer,
+  dashboardData: dashboardDataReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
   materials: materialsReducer

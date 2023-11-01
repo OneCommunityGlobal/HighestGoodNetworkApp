@@ -1,7 +1,14 @@
-export const dashboardDataReducer = (dashboardData = null, action) => {
-  if (action.type === 'GET_DASHBOARD_DATA') {
-    return action.payload;
-  }
+const initialState = null
 
-  return dashboardData;
+export const dashboardDataReducer = (dashboardData = initialState, action) => {
+  switch (action.type) {
+    case 'GET_AI_PROMPT_TEXT':
+      return action.payload
+
+    case 'UPDATE_AI_PROMPT_TEXT':
+      return dashboardData
+      
+    default:
+      return dashboardData
+  }
 };
