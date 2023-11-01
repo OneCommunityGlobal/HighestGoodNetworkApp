@@ -160,7 +160,13 @@ export const Header = props => {
                     )}
                   </DropdownMenu>
               </UncontrolledDropdown>
-              ) : null}
+              ) : 
+              <NavItem>
+                <NavLink tag={Link} to="/teamlocations">
+                  {TEAM_LOCATIONS}
+                </NavLink>
+              </NavItem>
+            }
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">

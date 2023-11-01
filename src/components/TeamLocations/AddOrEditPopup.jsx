@@ -43,6 +43,7 @@ function AddOrEditPopup({
   submitText,
 }) {
   const [locationData, setLocationData] = useState(initialLocationData);
+  const [timeZone, setTimeZone] = useState('');
   const [errors, setErrors] = useState({
     firstName: null,
     lastName: null,
@@ -68,11 +69,9 @@ function AddOrEditPopup({
     if (key) {
       try {
         const res = await getUserTimeZone(location, key);
-        if (
-          res.data.status.code === 200 &&
-          res.data.results &&
-          res.data.results.length
-        ) {
+        if (res.data.status.code === 200 && res.data.results && res.data.results.length) {
+          let timezone = res.data.results[0].annotations.timezone.name;
+          console.log('timezone------------', timezone);
           let currentLocation = {
             userProvided: location,
             coords: {
@@ -86,32 +85,30 @@ function AddOrEditPopup({
             ...prev,
             location: currentLocation,
           }));
-        } else if(res.data.status.code !== 200) {
-          throw new Error('Something went wrong with a request')
+          setTimeZone(timezone);
+        } else if (res.data.status.code !== 200) {
+          throw new Error('Something went wrong with a request');
         } else {
-          throw new Error('Invalid location')
+          throw new Error('Invalid location');
         }
-      } catch(err) {
+      } catch (err) {
         toast.error(err.message);
       }
-
     }
   };
   useEffect(() => {
     if (isEdit) {
       const priorData = {
-        firstName: editProfile.firstName,
-        lastName: editProfile.lastName,
-        jobTitle: Array.isArray(editProfile.jobTitle) ? editProfile.jobTitle.join(' ') : editProfile.jobTitle,
+        firstName: editProfile.firstName || 'Prior to HGN Data Collection',
+        lastName: editProfile.lastName || 'Prior to HGN Data Collection',
+        jobTitle: Array.isArray(editProfile.jobTitle)
+          ? editProfile.jobTitle.join(' ')
+          : editProfile.jobTitle || 'Prior to HGN Data Collection',
         location: editProfile.location,
         _id: editProfile._id,
-        type: editProfile.type
+        type: editProfile.type,
       };
-      for (let key in priorData) {
-        if (!priorData[key]) {
-          priorData[key] = 'Prior to HGN Data Collection';
-        }
-      }
+
       setLocationData(priorData);
     } else {
       setLocationData(initialLocationData);
@@ -143,6 +140,8 @@ function AddOrEditPopup({
   const onSubmitHandler = async e => {
     e.preventDefault();
     const currentErrors = {};
+
+    // check if fields are not empty
     Object.keys(locationData).forEach(item => {
       locationData[item] = Array.isArray(item) ? item.join(' ') : locationData[item];
       if (item === 'location') {
@@ -161,53 +160,57 @@ function AddOrEditPopup({
       return;
     }
 
-    if (isAdd) {
-      try {
-        const res = await createLocation(locationData);
+    let newLocationObject = {};
+
+    // removing prior data titles
+    for (let key in locationData) {
+      if (locationData[key] === 'Prior to HGN Data Collection' && key !== 'title') {
+        newLocationObject[key] = '';
+      } else {
+        newLocationObject[key] = locationData[key];
+      }
+    }
+
+    if (editProfile && editProfile.type === 'user') {
+      newLocationObject.timeZone = timeZone;
+    }
+
+    try {
+      if (isAdd) {
+        const res = await createLocation(newLocationObject);
         if (!res) {
           throw new Error();
         }
         onClose();
         toast.success('A person successfully added to a map!');
-        setManuallyUserProfiles(prev => [
-          ...prev,
-          {
-            firstName:
-              locationData.firstName !== 'Prior to HGN Data Collection'
-                ? locationData.firstName
-                : '',
-            lastName:
-              locationData.lastName !== 'Prior to HGN Data Collection' ? locationData.lastName : '',
-            jobTitle:
-              locationData.jobTitle !== 'Prior to HGN Data Collection' ? locationData.jobTitle : '',
-            location: locationData.location,
-          },
-        ]);
-        setLocationData(initialLocationData);
-      } catch (err) {
+        setManuallyUserProfiles(prev => [...prev, { ...res.data, type: 'm_user' }]);
+        setLocationData(newLocationObject);
+      } else if (isEdit) {
+        const res = await editLocation(newLocationObject);
+        if (!res || res.status !== 200) {
+          throw new Error();
+        }
+        if (res.data.type === 'm_user') {
+          setManuallyUserProfiles(prev => {
+            const filtered = prev.filter(item => item._id !== res.data._id);
+            return [...filtered, res.data];
+          });
+        } else {
+          setUserProfiles(prev => {
+            const filtered = prev.filter(item => item._id !== res.data._id);
+            return [...filtered, res.data];
+          });
+        }
         onClose();
-        toast.error(err.message);
-      }
-    } else if (isEdit) {
-      const res = await editLocation(locationData);
-      if (!res || res.status !== 200) {
-        throw new Error();
-      }
-      if(res.data.type === 'm_user') {
-        setManuallyUserProfiles(prev => {
-          const filtered = prev.filter(item => item._id !== res.data._id)
-          return [...filtered, res.data]
-        })
+        toast.success('User successfully edited!');
+        setTimeZone('');
+        setLocationData(initialLocationData)
       } else {
-        setUserProfiles(prev => {
-          const filtered = prev.filter(item => item._id !== res.data._id)
-          return [...filtered, res.data]
-        })
+        return;
       }
+    } catch (err) {
       onClose();
-      toast.success('User successfully edited!');
-    } else {
-      return;
+      toast.error(err.message);
     }
   };
 

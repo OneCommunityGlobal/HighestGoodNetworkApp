@@ -5,31 +5,28 @@ import { boxStyle } from 'styles';
 function RemoveUserPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
   return (
     <Modal isOpen={open} toggle={onClose} className={'modal-dialog modal-md'}>
-      <ModalHeader
-        toggle={onClose}
-        cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
-      >
+      <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
         Add New User Location
       </ModalHeader>
       <ModalBody>
         <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
-          <table className="table table-bordered table-responsive-md">
-            <thead>
-              <tr>
-                <th style={{ width: '70px' }}>#</th>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {userProfiles.length > 0 ? (
-                userProfiles.map((user, index) => {
+          {userProfiles.length > 0 ? (
+            <table className="table table-bordered table-responsive-md">
+              <thead>
+                <tr>
+                  <th style={{ width: '70px' }}>#</th>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userProfiles.map((user, index) => {
                   let userName = '';
-                  if(user.firstName && user.lastName) {
-                    userName = `${user.firstName}, ${user.lastName}`
+                  if (user.firstName && user.lastName) {
+                    userName = `${user.firstName} ${user.lastName}`;
                   } else {
-                    userName = user.firstName || user.lastName || '-'
+                    userName = user.firstName || user.lastName || '-';
                   }
                   return (
                     <tr key={user._id}>
@@ -38,25 +35,41 @@ function RemoveUserPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                       <td>{`${user.location.city ? user.location.city + ',' : ''} ${
                         user.location.country
                       }`}</td>
-                      <td style={{ textAlign: 'center', display: 'flex', gap: '10px' }}>
-                        <Button
-                          color="danger"
-                          onClick={() => removeUser(user._id)}
-                          style={boxStyle}
-                          className='btn mr-1 btn-sm'
+                      <td>
+                        <div
+                          style={{
+                            display: 'flex',
+                          }}
                         >
-                          Delete
-                        </Button>
-                        <Button color="Primary" className='btn btn-outline-success mr-1 btn-sm' onClick={() => setEdit(user)}>Edit</Button>
+                          {user.type === 'm_user' && (
+                            <Button
+                              color="danger"
+                              onClick={() => removeUser(user._id, userName)}
+                              style={boxStyle}
+                              className="btn mr-1 btn-sm"
+                            >
+                              Remove
+                            </Button>
+                          )}
+                          <Button
+                            color="Primary"
+                            className="btn btn-outline-success mr-1 btn-sm"
+                            onClick={() => setEdit(user)}
+                          >
+                            Edit
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );
-                })
-              ) : (
-                <></>
-              )}
-            </tbody>
-          </table>
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <p className="d-flex justify-content-center align-center">
+              There are no users to remove or edit.
+            </p>
+          )}
         </div>
       </ModalBody>
       <ModalFooter>
