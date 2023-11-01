@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Container,
   Row,
@@ -8,33 +8,38 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Progress,
   Form,
   FormGroup,
   Label,
   Input,
-  FormText,
 } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
-import task_icon from './task_icon.png';
-import badges_icon from './badges_icon.png';
-import bluesquare_icon from './bluesquare_icon.png';
-import report_icon from './report_icon.png';
-import suggestions_icon from './suggestions_icon.png';
-import httpService from '../../services/httpService';
-import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { ENDPOINTS, ApiEndpoint } from '../../utils/URL';
+// import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
+import hasPermission from '../../utils/permissions';
+import taskIcon from './task_icon.png';
+import badgesIcon from './badges_icon.png';
+import bluesquareIcon from './bluesquare_icon.png';
+import reportIcon from './report_icon.png';
+import suggestionsIcon from './suggestions_icon.png';
+import httpService from '../../services/httpService';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
-import hasPermission from 'utils/permissions';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { toast } from 'react-toastify';
 
-const SummaryBar = props => {
-  const { asUser, summaryBarData } = props;
+function SummaryBar(props) {
+  const {
+    asUser,
+    summaryBarData,
+    hasPermission: userHasPermission,
+    toggleSubmitForm,
+    submittedSummary,
+  } = props;
+
   const [userProfile, setUserProfile] = useState(undefined);
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
@@ -48,9 +53,9 @@ const SummaryBar = props => {
   const gsUserTasks = useSelector(state => state.userTask);
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
 
-  const matchUser = asUser == authenticateUserId ? true : false;
+  const matchUser = asUser === authenticateUserId;
 
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = userHasPermission('putUserProfileImportantInfo');
   useEffect(() => {
     setUserProfile(gsUserprofile);
   }, [gsUserprofile]);
@@ -66,7 +71,7 @@ const SummaryBar = props => {
       const newUserProfile = response.data;
       setUserProfile(newUserProfile);
     } catch (err) {
-      console.log('User Profile not loaded.');
+      // console.log('User Profile not loaded.');
     }
   };
 
@@ -79,13 +84,13 @@ const SummaryBar = props => {
       const newUserTasks = response.data;
       setTasks(newUserTasks.length);
     } catch (err) {
-      console.log('User Tasks not loaded.');
+      // console.log('User Tasks not loaded.');
     }
   };
 
   useEffect(() => {
     // Fetch user profile only if the selected timelog is of different user
-    if (!matchUser || gsUserprofile._id != asUser) {
+    if (!matchUser || gsUserprofile._id !== asUser) {
       loadUserProfile();
       getUserTask();
     } else {
@@ -94,21 +99,12 @@ const SummaryBar = props => {
     }
   }, [asUser]);
 
-  useEffect(() => {
-    if (summaryBarData && userProfile !== undefined) {
-      setInfringements(getInfringements());
-      setBadges(getBadges());
-      setTotalEffort(summaryBarData.tangibletime);
-      setWeeklySummary(getWeeklySummary(userProfile));
-    }
-  }, [userProfile, summaryBarData]);
-
-  //Get infringement count from userProfile
+  // Get infringement count from userProfile
   const getInfringements = () => {
     return userProfile && userProfile.infringements ? userProfile.infringements.length : 0;
   };
 
-  //Get badges count from userProfile
+  // Get badges count from userProfile
   const getBadges = () => {
     if (!userProfile || !userProfile.badgeCollection) {
       return 0;
@@ -126,14 +122,29 @@ const SummaryBar = props => {
     return totalBadges;
   };
 
-  const getState = useSelector(state => {
-    return state;
-  });
+  // const getState = useSelector(state => {
+  //   return state;
+  // });
 
   const initialInfo = {
     in: false,
     information: '',
   };
+  const getWeeklySummary = user => {
+    const latestSummary = user?.weeklySummaries?.[0];
+    return latestSummary && new Date() < new Date(latestSummary.dueDate)
+      ? latestSummary.summary
+      : '';
+  };
+
+  useEffect(() => {
+    if (summaryBarData && userProfile !== undefined) {
+      setInfringements(getInfringements());
+      setBadges(getBadges());
+      setTotalEffort(summaryBarData.tangibletime);
+      setWeeklySummary(getWeeklySummary(userProfile));
+    }
+  }, [userProfile, summaryBarData]);
 
   const [suggestionCategory, setSuggestionCategory] = useState([]);
   const [inputFiled, setInputField] = useState([]);
@@ -143,14 +154,14 @@ const SummaryBar = props => {
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
-  //refactored for rading form values
+  // refactored for rading form values
   const readFormData = formid => {
-    let form = document.getElementById(formid);
-    let formData = new FormData(form);
-    let data = {};
+    const form = document.getElementById(formid);
+    const formData = new FormData(form);
+    const data = {};
     let isvalid = true;
 
-    formData.forEach(function(value, key) {
+    formData.forEach((value, key) => {
       if (value.trim() !== '') {
         data[key] = value;
       } else {
@@ -173,11 +184,11 @@ const SummaryBar = props => {
   const sendBugReport = event => {
     event.preventDefault();
     const data = readFormData('bugReportForm');
-    data['firstName'] = userProfile.firstName;
-    data['lastName'] = userProfile.lastName;
-    data['email'] = userProfile.email;
+    data.firstName = userProfile.firstName;
+    data.lastName = userProfile.lastName;
+    data.email = userProfile.email;
 
-    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${userProfile._id}`, data).catch(e => {});
+    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${userProfile._id}`, data).catch(() => {});
     openReport();
   };
   //
@@ -193,7 +204,7 @@ const SummaryBar = props => {
       return newarr;
     });
   };
-  //add new text field or suggestion category by owner class and update the backend
+  // add new text field or suggestion category by owner class and update the backend
   const editField = async event => {
     event.preventDefault();
     const data = readFormData('newFieldForm');
@@ -212,7 +223,7 @@ const SummaryBar = props => {
       seteditType('');
       httpService
         .post(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`, data)
-        .catch(e => {});
+        .catch(() => {});
     } else {
       toast.error('Please fill all fields with valid values.');
     }
@@ -226,7 +237,7 @@ const SummaryBar = props => {
       setShowSuggestionModal(prev => !prev);
       const res = await httpService
         .post(`${ApiEndpoint}/dashboard/makesuggestion/${userProfile._id}`, data)
-        .catch(e => {});
+        .catch(() => {});
       if (res.status === 200) {
         toast.success('Email sent successfully!');
       } else {
@@ -240,17 +251,19 @@ const SummaryBar = props => {
   const openSuggestionModal = async () => {
     if (!showSuggestionModal) {
       try {
-        let res = await httpService.get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`);
-        
+        const res = await httpService.get(
+          `${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`,
+        );
+
         if (res && res.status === 200) {
           setSuggestionCategory(res.data.suggestion);
           setInputField(res.data.field);
         } else {
-          console.error(res.status);
+          // console.error(res.status);
           // Handle the error as needed
         }
       } catch (error) {
-        console.error('Error:', error);
+        // console.error('Error:', error);
         // Handle the error
       }
     }
@@ -265,16 +278,42 @@ const SummaryBar = props => {
     window.location.hash = '#badgesearned';
   };
 
-  const getWeeklySummary = user => {
-    const latestSummary = user?.weeklySummaries?.[0];
-    return latestSummary && new Date() < new Date(latestSummary.dueDate)
-      ? latestSummary.summary
-      : '';
-  };
+  let summaryText = '';
+
+  if (weeklySummary || submittedSummary) {
+    summaryText = 'You have submitted your weekly summary.';
+  } else if (matchUser) {
+    summaryText = 'You still need to complete the weekly summary. Click here to submit it.';
+  } else {
+    summaryText = 'You still need to complete the weekly summary. Click here to submit it.';
+  }
+
+  function getLabelContent(arg1, arg2) {
+    if (arg1 === 'suggestion') {
+      if (arg2 === 'delete') {
+        return 'Delete category (Write the suggestion category number from the dropdown to delete it).';
+      }
+      return 'Add category';
+    }
+    if (arg2 === 'add') {
+      return 'Add Field';
+    }
+    return 'Delete field (Copy the field name to delete it).';
+  }
+
+  function getPlaceholderText(arg1, arg2) {
+    if (arg1 === 'suggestion') {
+      if (arg2 === 'delete') {
+        return 'write the category number, like 1 or 2 etc';
+      }
+      return 'write the category name';
+    }
+    return 'write the field name';
+  }
 
   if (userProfile !== undefined && summaryBarData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
-    //const weeklySummary = getWeeklySummary(userProfile);
+    // const weeklySummary = getWeeklySummary(userProfile);
     return (
       <Container
         fluid
@@ -296,7 +335,7 @@ const SummaryBar = props => {
               </font>
               <CardTitle className="text--black align-middle" tag="h3">
                 <div>
-                  {userProfile.firstName + ' '}
+                  {`${userProfile.firstName} `}
                   {userProfile.lastName}
                 </div>
               </CardTitle>
@@ -346,20 +385,15 @@ const SummaryBar = props => {
                 <div className="border-red col-4 bg--white-smoke no-gutters">
                   <div className="py-1"> </div>
                   {matchUser || canPutUserProfileImportantInfo ? (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
                     <p
-                      className={
-                        'text-center summary-toggle large_text_summary text--black text-danger'
-                      }
-                      onClick={props.toggleSubmitForm}
+                      className="text-center summary-toggle large_text_summary text--black text-danger"
+                      onClick={toggleSubmitForm}
                     >
                       !
                     </p>
                   ) : (
-                    <p
-                      className={
-                        'text-center summary-toggle large_text_summary text--black text-danger'
-                      }
-                    >
+                    <p className="text-center summary-toggle large_text_summary text--black text-danger">
                       !
                     </p>
                   )}
@@ -372,7 +406,10 @@ const SummaryBar = props => {
               ) : (
                 <div className="border-green col-4 bg--dark-green">
                   <div className="py-1"> </div>
-                  <p onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
+                  <p
+                    onClick={toggleSubmitForm}
+                    className="text-center large_text_summary text--black summary-toggle"
+                  >
                     ✓
                   </p>
                   <font className="text-center text--black" size="3">
@@ -382,23 +419,14 @@ const SummaryBar = props => {
                 </div>
               )}
 
-              <div
-                className="col-8 border-black bg--white-smoke d-flex align-items-center"
-
-              >
+              <div className="col-8 border-black bg--white-smoke d-flex align-items-center">
                 <div className="m-auto p-2 text-center">
-                  <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
-                    {weeklySummary || props.submittedSummary ? (
-                      'You have submitted your weekly summary.'
-                    ) : matchUser ? (
-                      <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                        You still need to complete the weekly summary. Click here to submit it.
-                      </span>
-                    ) : (
-                      <span className="summary-toggle">
-                        You still need to complete the weekly summary. Click here to submit it.
-                      </span>
-                    )}
+                  <font
+                    onClick={toggleSubmitForm}
+                    className="text--black med_text_summary align-middle summary-toggle"
+                    size="3"
+                  >
+                    {summaryText}
                   </font>
                 </div>
               </div>
@@ -413,17 +441,17 @@ const SummaryBar = props => {
                   <span>{tasks}</span>
                 </div>
                 {matchUser ? (
-                  <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
+                  <img className="sum_img" src={taskIcon} alt="" onClick={onTaskClick} />
                 ) : (
-                  <img className="sum_img" src={task_icon} alt=""></img>
+                  <img className="sum_img" src={taskIcon} alt="" />
                 )}
               </div>
               &nbsp;&nbsp;
               <div className="image_frame">
                 {matchUser ? (
-                  <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
+                  <img className="sum_img" src={badgesIcon} alt="" onClick={onBadgeClick} />
                 ) : (
-                  <img className="sum_img" src={badges_icon} alt="" />
+                  <img className="sum_img" src={badgesIcon} alt="" />
                 )}
                 <div className="redBackgroup">
                   <span>{badges}</span>
@@ -433,14 +461,14 @@ const SummaryBar = props => {
               <div className="image_frame">
                 {matchUser ? (
                   <Link to={`/userprofile/${userProfile._id}#bluesquare`}>
-                    <img className="sum_img" src={bluesquare_icon} alt="" />
+                    <img className="sum_img" src={bluesquareIcon} alt="" />
                     <div className="redBackgroup">
                       <span>{infringements}</span>
                     </div>
                   </Link>
                 ) : (
                   <div>
-                    <img className="sum_img" src={bluesquare_icon} alt="" />
+                    <img className="sum_img" src={bluesquareIcon} alt="" />
                     <div className="redBackgroup">
                       <span>{infringements}</span>
                     </div>
@@ -450,9 +478,9 @@ const SummaryBar = props => {
               &nbsp;&nbsp;
               <div className="image_frame">
                 {matchUser ? (
-                  <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
+                  <img className="sum_img" src={reportIcon} alt="" onClick={openReport} />
                 ) : (
-                  <img className="sum_img" src={report_icon} alt="" />
+                  <img className="sum_img" src={reportIcon} alt="" />
                 )}
               </div>
               &nbsp;&nbsp;
@@ -460,12 +488,12 @@ const SummaryBar = props => {
                 {matchUser ? (
                   <img
                     className="sum_img"
-                    src={suggestions_icon}
+                    src={suggestionsIcon}
                     alt=""
                     onClick={openSuggestionModal}
                   />
                 ) : (
-                  <img className="sum_img" src={suggestions_icon} alt="" />
+                  <img className="sum_img" src={suggestionsIcon} alt="" />
                 )}
               </div>
             </div>
@@ -510,7 +538,7 @@ const SummaryBar = props => {
                           onChange={() => seteditType('add')}
                           type="radio"
                           name="action"
-                          value={'add'}
+                          value="add"
                           required
                         />{' '}
                         Add
@@ -522,7 +550,7 @@ const SummaryBar = props => {
                           onChange={() => seteditType('delete')}
                           type="radio"
                           name="action"
-                          value={'delete'}
+                          value="delete"
                           required
                           disabled={
                             extraFieldForSuggestionForm === 'field' && inputFiled.length === 0
@@ -535,25 +563,13 @@ const SummaryBar = props => {
                   {editType !== '' && (
                     <FormGroup>
                       <Label for="newField">
-                        {extraFieldForSuggestionForm === 'suggestion'
-                          ? editType === 'delete'
-                            ? 'Delete category (Write the suggestion category number from the dropdown to delete it).'
-                            : 'Add category'
-                          : editType === 'add'
-                          ? 'Add Field'
-                          : 'Delete field (Copy the field name to delete it).'}
+                        {getLabelContent(extraFieldForSuggestionForm, editType)}
                       </Label>
                       <Input
                         type="textarea"
                         name="newField"
                         id="newField"
-                        placeholder={
-                          extraFieldForSuggestionForm === 'suggestion'
-                            ? editType === 'delete'
-                              ? 'write the category number, like 1 or 2 etc'
-                              : 'write the category name'
-                            : 'write the field name'
-                        }
+                        placeholder={getPlaceholderText(extraFieldForSuggestionForm, editType)}
                         required
                       />
                     </FormGroup>
@@ -584,7 +600,7 @@ const SummaryBar = props => {
                     type="select"
                     name="suggestioncate"
                     id="suggestioncate"
-                    defaultValue={''}
+                    defaultValue=""
                     required
                   >
                     <option disabled value="" hidden>
@@ -592,7 +608,7 @@ const SummaryBar = props => {
                       -- select an option --{' '}
                     </option>
                     {suggestionCategory.map((item, index) => {
-                      return <option key={index} value={item}>{`${index + 1}. ${item}`}</option>;
+                      return <option key={item} value={item}>{`${index + 1}. ${item}`}</option>;
                     })}
                   </Input>
                 </FormGroup>
@@ -609,8 +625,8 @@ const SummaryBar = props => {
                   </FormGroup>
                 )}
                 {inputFiled.length > 0 &&
-                  inputFiled.map((item, index) => (
-                    <FormGroup key={index}>
+                  inputFiled.map(item => (
+                    <FormGroup key={item}>
                       <Label for="title">{item} </Label>
                       <Input type="textbox" name={item} id={item} placeholder="" required />
                     </FormGroup>
@@ -621,12 +637,12 @@ const SummaryBar = props => {
                   </legend>
                   <FormGroup check>
                     <Label check>
-                      <Input type="radio" name="confirm" value={'yes'} required /> Yes
+                      <Input type="radio" name="confirm" value="yes" required /> Yes
                     </Label>
                   </FormGroup>
                   <FormGroup check>
                     <Label check>
-                      <Input type="radio" name="confirm" value={'no'} required /> No
+                      <Input type="radio" name="confirm" value="no" required /> No
                     </Label>
                   </FormGroup>
                 </FormGroup>
@@ -718,7 +734,7 @@ const SummaryBar = props => {
                 </FormGroup>
                 <FormGroup>
                   <Label for="severity">Severity/Priority (How Bad is the Bug?) </Label>
-                  <Input type="select" name="severity" id="severity" defaultValue={''} required>
+                  <Input type="select" name="severity" id="severity" defaultValue="" required>
                     <option hidden value="" disabled>
                       {' '}
                       -- select an option --{' '}
@@ -743,9 +759,8 @@ const SummaryBar = props => {
         </Row>
       </Container>
     );
-  } else {
-    return <div>Loading</div>;
   }
-};
+  return <div>Loading</div>;
+}
 
 export default connect(null, { hasPermission })(SummaryBar);

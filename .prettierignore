@@ -16,6 +16,7 @@ src/styles.js
 src/utils/**
 src/__tests__/**
 
+build/**
 
 src/components/App.jsx
 src/components/AutoReload/**
@@ -35,7 +36,7 @@ src/components/Projects/**
 src/components/RenderInfringement/**
 src/components/Reports/**
 src/components/SetupProfile/**
-src/components/SummaryBar/**
+# src/components/SummaryBar/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
