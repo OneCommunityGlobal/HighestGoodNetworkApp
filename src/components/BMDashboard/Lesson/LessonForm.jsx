@@ -90,38 +90,38 @@ function LessonForm() {
               </Form.Group>
             </div>
           </div>
-          <Form.Group controlId="exampleForm.ControlFile1">
-            <Form.Label>Upload Appendix</Form.Label>
-            <input
-              type="file"
-              id="fileInput"
-              style={{ display: 'none' }}
-              onChange={handleFileSelection}
-            />
-            <div
-              role="button"
-              tabIndex={0}
-              onClick={handleClick}
-              onKeyPress={handleKeyPress}
-              // onMouseDown={handleMouseDown}
-              // onTouchStart={handleTouchStart}
-              // onDrop={handleDrop}
-              // onDragOver={handleDragOver}
-              className="dragAndDropStyle"
-            >
-              {selectedFile ? (
-                <p>Selected File: {selectedFile.name}</p>
-              ) : (
-                <div className="TextAndImageDiv">
-                  <div className="ImageDiv" style={style} />
+          <div className="DragAndDropFormGroup">
+            <Form.Group controlId="exampleForm.ControlFile1">
+              <Form.Label>Upload Appendix</Form.Label>
+              <input
+                type="file"
+                id="fileInput"
+                style={{ display: 'none' }}
+                onChange={handleFileSelection}
+              />
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={handleClick}
+                onKeyPress={handleKeyPress}
+                // onMouseDown={handleMouseDown}
+                // onTouchStart={handleTouchStart}
+                // onDrop={handleDrop}
+                // onDragOver={handleDragOver}
+                className="dragAndDropStyle"
+              >
+                {selectedFile ? (
+                  <p>Selected File: {selectedFile.name}</p>
+                ) : (
+                  <div className="TextAndImageDiv">
+                    <div className="ImageDiv" style={style} />
 
-                  <p className="DragandDropText">
-                    Drag and drop a file here, or click to select one
-                  </p>
-                </div>
-              )}
-            </div>
-          </Form.Group>
+                    <p className="DragandDropText">Drag and drop a file here</p>
+                  </div>
+                )}
+              </div>
+            </Form.Group>
+          </div>
           <div className="ButtonDiv">
             <Button className="LessonFormButtonCancel" type="cancel">
               Cancel

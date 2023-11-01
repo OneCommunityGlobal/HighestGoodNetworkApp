@@ -1,7 +1,7 @@
 .FormContainer{
    padding: 5%;
    background-color: #FFFFFF;
-   border-radius: 2%;
+   border-radius: 3%;
      /* Override the max-width for form controls within your form */
   .form-control {
     max-width: unset !important;
@@ -35,14 +35,15 @@
 }
 .dragAndDropStyle {
     border: 2px dashed #cccccc;
-    padding: 20px;
+    padding: .5%;
     text-align: center;
     cursor: pointer;
-    
+    height: 10vh;
+    border-radius: 3%;
   }
   .ImageDiv {
-    width: 100px; /* Set the desired width */
-    height: 100px; /* Set the desired height */
+    width: 50px; /* Set the desired width */
+    height: 50px; /* Set the desired height */
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: center center;
@@ -98,4 +99,10 @@
     width:45%;
  
   }
+  }
+  @media (max-width: 650px) {
+    .dragAndDropStyle {
+      height: 100%
+    }
+
   }
