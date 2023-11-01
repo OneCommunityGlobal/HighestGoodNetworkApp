@@ -43,7 +43,6 @@
   .ImageDiv {
     width: 100px; /* Set the desired width */
     height: 100px; /* Set the desired height */
-    background-image: url("https://th.bing.com/th/id/OIP.wAJfYvAqiiV4lwGBr2TMAwHaHa?pid=ImgDet&w=173&h=173&c=7");
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: center center;
@@ -76,12 +75,9 @@
     color: #FFFFFF !important; /* Change the text color (red in this example) */
     border-color: #2E5061 !important;
    }
-   /* .WriteLessonAndTagDiv{
-    display:flex;
-    flex-direction: column;
-    width: 100%;
-   } */
-
+ .DragandDropText{
+  color: #B0B0B0;
+ }
    @media (max-width: 570px) {
     .FormSelectContainer {
       align-items: center;

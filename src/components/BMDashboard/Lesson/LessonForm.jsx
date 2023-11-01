@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './LessonForm.css';
+import Noimg from './images/Noimg3.jpg';
 
+const style = {
+  backgroundImage: `url(${Noimg})`,
+};
 function LessonForm() {
   const [selectedFile, setSelectedFile] = useState(null);
   // TODO fix handleDrop
@@ -109,9 +113,11 @@ function LessonForm() {
                 <p>Selected File: {selectedFile.name}</p>
               ) : (
                 <div className="TextAndImageDiv">
-                  <div className="ImageDiv" />
+                  <div className="ImageDiv" style={style} />
 
-                  <p>Drag and drop a file here, or click to select one</p>
+                  <p className="DragandDropText">
+                    Drag and drop a file here, or click to select one
+                  </p>
                 </div>
               )}
             </div>
