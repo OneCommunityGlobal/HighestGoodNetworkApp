@@ -4,28 +4,58 @@ import './LessonForm.css';
 
 function LessonForm() {
   const [selectedFile, setSelectedFile] = useState(null);
+  // TODO fix handleDrop
+  // const handleDrop = (e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation(); // Prevent the default behavior
+  //   console.log("handledrop")
+  //   const file = e.target.files[0]; // Get the selected file
+  //   setSelectedFile(file);
+  // };
 
-  const handleDrop = e => {
-    e.preventDefault();
-    // console.log("hi")
-    const file = e.dataTransfer.files[0];
-    setSelectedFile(file);
+  // const handleDragOver = e => {
+  //   e.preventDefault();
+  //   // console.log("hi")
+  // };
+  const handleFileSelection = e => {
+    const file = e.target.files[0]; // Get the selected file
+    setSelectedFile(file); // Update the state with the selected file
   };
 
-  const handleDragOver = e => {
-    e.preventDefault();
-    // console.log("hi")
+  const handleClick = () => {
+    // console.log(selectedFile,"hi click")
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+      fileInput.click();
+    }
   };
 
+  const handleKeyPress = () => {
+    // console.log("hi Keypress")
+  };
+
+  // const handleMouseDown = () => {
+  //   console.log("hi mousedown")
+  // };
+
+  // const handleTouchStart = () => {
+  //   console.log("hi touchstart")
+  // };
   return (
     <div className="MasterContainer">
       <div className="FormContainer">
         <Form>
           <Form.Group controlId="exampleForm.ControlTextarea1">
             <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
-            <Form.Control as="textarea" rows={10} />
+            <Form.Control
+              className="LessonPlaceholderText"
+              as="textarea"
+              placeholder="Enter the lesson you learn..."
+              rows={10}
+            />
           </Form.Group>
           <Form.Group controlId="exampleForm.ControlInput1">
+            {/* Can have multiple tags. Needs to add tag for belonging project name automatically. */}
             <Form.Label>Add tag</Form.Label>
             <Form.Control type="text" placeholder="Input tag for the lesson" />
           </Form.Group>
@@ -43,6 +73,7 @@ function LessonForm() {
             </div>
             <div className="SingleFormSelect">
               <Form.Group controlId="Form.ControlSelect2">
+                {/* By default the lesson can be read by anyone. The author can change the permission to only public to certain roles. */}
                 <Form.Label>View by</Form.Label>
                 <FormControl as="select" aria-label="Default select example">
                   <option>All</option>
@@ -55,7 +86,23 @@ function LessonForm() {
           </div>
           <Form.Group controlId="exampleForm.ControlFile1">
             <Form.Label>Drag and Drop Image or File</Form.Label>
-            <div onDrop={handleDrop} onDragOver={handleDragOver} className="dragAndDropStyle">
+            <input
+              type="file"
+              id="fileInput"
+              style={{ display: 'none' }}
+              onChange={handleFileSelection}
+            />
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={handleClick}
+              onKeyPress={handleKeyPress}
+              // onMouseDown={handleMouseDown}
+              // onTouchStart={handleTouchStart}
+              // onDrop={handleDrop}
+              // onDragOver={handleDragOver}
+              className="dragAndDropStyle"
+            >
               {selectedFile ? (
                 <p>Selected File: {selectedFile.name}</p>
               ) : (

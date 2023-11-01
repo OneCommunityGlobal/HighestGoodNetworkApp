@@ -10,9 +10,14 @@
     padding-bottom: 1%;
      background-color: #E8F4F9;
 }
-.LessonLable{
-    font-size: x-large;
+.LessonLabel{
+    font-size: larger;
     font-weight: bold;
+}
+.LessonPlaceholderText::placeholder {
+  font-size: 16px; 
+  color: #CED4DA; 
+  
 }
 .FormSelectContainer{
     display: flex;
