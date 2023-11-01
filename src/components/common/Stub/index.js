@@ -1,1 +1,3 @@
-export { Stub } from './Stub';
+import Stub from './Stub';
+
+export default Stub;

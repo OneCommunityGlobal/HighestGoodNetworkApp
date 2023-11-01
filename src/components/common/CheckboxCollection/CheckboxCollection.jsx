@@ -1,14 +1,12 @@
-import React from 'react';
-
-const CheckboxCollection = ({ items, error, pathName, isChecked, onChange, ...rest }) => {
+function CheckboxCollection({ items, error, pathName, isChecked, onChange, ...rest }) {
   const getCheckBox = element => (
-    <div className={`form-check`} key={element._id}>
+    <div className="form-check" key={element._id}>
       <input
         {...rest}
         id={element._id}
         value={element[pathName]}
         name={element[pathName]}
-        className={`form-check-input`}
+        className="form-check-input"
         type="checkbox"
         checked={isChecked(element._id)}
         {...rest}
@@ -26,6 +24,6 @@ const CheckboxCollection = ({ items, error, pathName, isChecked, onChange, ...re
       {error && <div className="alert alert-danger mt-1">{error}</div>}
     </div>
   );
-};
+}
 
 export default CheckboxCollection;

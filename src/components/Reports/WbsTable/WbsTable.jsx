@@ -1,4 +1,4 @@
-import { Stub } from 'components/common/Stub';
+import Stub from 'components/common/Stub';
 import React from 'react';
 import './WbsTable.css';
 

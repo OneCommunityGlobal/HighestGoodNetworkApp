@@ -1,1 +1,3 @@
-export { Checkbox } from './Checkbox';
+import Checkout from './Checkbox';
+
+export default Checkout;

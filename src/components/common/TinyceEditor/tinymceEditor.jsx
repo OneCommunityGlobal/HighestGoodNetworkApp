@@ -1,7 +1,6 @@
-import React from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 
-const TinyMCEEditor = ({ label, name, error, className, value, ...rest }) => {
+function TinyMCEEditor({ label, name, error, className, value, ...rest }) {
   const config = {
     plugins: 'autolink link image lists print preview',
     toolbar: 'undo redo | bold italic | alignleft aligncenter alignright',
@@ -16,12 +15,12 @@ const TinyMCEEditor = ({ label, name, error, className, value, ...rest }) => {
         id={name}
         name={name}
         config={config}
-        className={`form-control`}
+        className="form-control"
       />
 
       {error && <div className="alert alert-danger mt-1">{error}</div>}
     </div>
   );
-};
+}
 
 export default TinyMCEEditor;

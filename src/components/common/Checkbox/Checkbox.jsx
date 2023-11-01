@@ -1,6 +1,6 @@
 import './Checkbox.css';
 
-export const Checkbox = ({ onChange, value, label, id, wrapperClassname }) => {
+export default function Checkbox({ onChange, value, label, id, wrapperClassname }) {
   return (
     <div className={`checkbox-wrapper ${wrapperClassname}`}>
       <input
@@ -16,4 +16,4 @@ export const Checkbox = ({ onChange, value, label, id, wrapperClassname }) => {
       </label>
     </div>
   );
-};
+}

@@ -52,6 +52,7 @@ module.exports = {
     'import/no-named-as-default': 'off',
     'no-alert': 'error',
     'no-console': 'error',
+    'react/jsx-props-no-spreading': 'off',
   },
   overrides: [
     {

@@ -1,6 +1,4 @@
-import React from 'react';
-
-const Radio = ({ name, label, options, error, value, ...rest }) => {
+function Radio({ name, label, options, error, value, ...rest }) {
   return (
     <div className="form-group">
       {options.map(item => (
@@ -22,6 +20,6 @@ const Radio = ({ name, label, options, error, value, ...rest }) => {
       {error && <div className="alert alert-danger">{error}</div>}
     </div>
   );
-};
+}
 
 export default Radio;

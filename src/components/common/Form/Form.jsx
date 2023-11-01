@@ -1,15 +1,16 @@
-import React, { useState, Component } from 'react';
+/* eslint-disable react/no-unused-class-component-methods */
+import { Component } from 'react';
 import Joi from 'joi';
 import { cloneDeep, isEqual, groupBy } from 'lodash';
+import { Link } from 'react-router-dom';
+import { boxStyle } from 'styles';
 import Input from '../Input';
 import Dropdown from '../Dropdown';
-import Radio from '../Radio/';
+import Radio from '../Radio';
 import Image from '../Image';
 import FileUpload from '../FileUpload';
-import { Link } from 'react-router-dom';
 import TinyMCEEditor from '../TinyceEditor/tinymceEditor';
 import CheckboxCollection from '../CheckboxCollection';
-import { boxStyle } from 'styles';
 
 /* const Form = () => {
   const [data, setData] = useState({});
@@ -210,32 +211,37 @@ import { boxStyle } from 'styles';
 }; */
 
 class Form extends Component {
-  state = {
-    data: {},
-    errors: {},
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: {},
+      errors: {},
+    };
+  }
 
   resetForm = () => this.setState(cloneDeep(this.initialState));
 
   handleInput = ({ currentTarget: input }) => {
     this.handleState(input.name, input.value);
   };
+
   handleRichTextEditor = ({ target }) => {
-    let { id } = target;
+    const { id } = target;
     this.handleState(id, target.getContent());
   };
 
   handleCollection = (collection, item, action, index = null) => {
-    let data = this.state.data[collection] || [];
+    // const data = this.state.data[collection] || [];
+    const { data } = this.state; // Destructure data from state
     switch (action) {
       case 'create':
-        data.push(item);
+        data[collection].push(item);
         break;
       case 'edit':
-        data[index] = item;
+        data[collection][index] = item;
         break;
       case 'delete':
-        data.splice(index, 1);
+        data[collection].splice(index, 1);
         break;
       default:
         break;
@@ -246,7 +252,7 @@ class Form extends Component {
   handleFileUpload = (e, readAsType = 'data') => {
     const file = e.target.files[0];
     const reader = new FileReader();
-    let name = e.target.name;
+    const { name } = e.target;
     if (file) {
       switch (readAsType) {
         case 'data':
@@ -260,7 +266,7 @@ class Form extends Component {
   };
 
   handleState = (name, value) => {
-    let { errors, data } = this.state;
+    const { errors, data } = this.state;
     data[name] = value;
     const errorMessage = this.validateProperty(name, value);
     if (errorMessage) {
@@ -271,16 +277,20 @@ class Form extends Component {
     this.setState({ data, errors });
   };
 
-  isStateChanged = () => !isEqual(this.state.data, this.initialState.data);
+  isStateChanged = () => {
+    const { data } = this.state; // Destructure data from state
+    return !isEqual(data, this.initialState.data);
+  };
 
   validateProperty = (name, value) => {
     const obj = { [name]: value };
     const schema = { [name]: this.schema[name] };
-    let refs = schema[name]._refs;
+    const refs = schema[name]._refs;
     if (refs) {
       refs.forEach(ref => {
         schema[ref] = this.schema[ref];
-        obj[ref] = this.state.data[ref];
+        const { data } = this.state;
+        obj[ref] = data[ref];
       });
     }
     const { error } = Joi.validate(obj, schema);
@@ -289,9 +299,10 @@ class Form extends Component {
   };
 
   validateForm = () => {
-    let errors = {};
+    const errors = {};
     const options = { abortEarly: false };
-    const { error } = Joi.validate(this.state.data, this.schema, options);
+    const { data } = this.state;
+    const { error } = Joi.validate(data, this.schema, options);
 
     if (!error) return null;
     error.details.forEach(element => {
@@ -304,6 +315,7 @@ class Form extends Component {
     });
     return errors;
   };
+
   handleSubmit = e => {
     e.preventDefault();
     e.stopPropagation();
@@ -315,6 +327,7 @@ class Form extends Component {
 
   renderButton(label) {
     return (
+      // eslint-disable-next-line react/button-has-type
       <button disabled={this.validateForm()} className="btn btn-primary" style={boxStyle}>
         {label}
       </button>
@@ -350,7 +363,7 @@ class Form extends Component {
   }
 
   renderInput({ name, label, type = 'text', ...rest }) {
-    let { data, errors } = { ...this.state };
+    const { data, errors } = { ...this.state };
     return (
       <Input
         name={name}
@@ -363,8 +376,10 @@ class Form extends Component {
       />
     );
   }
+
+  // eslint-disable-next-line no-unused-vars
   renderRadio({ name, label, type = 'text', ...rest }) {
-    let { data, errors } = { ...this.state };
+    const { data, errors } = { ...this.state };
     return (
       <Radio
         name={name}
@@ -377,19 +392,19 @@ class Form extends Component {
   }
 
   renderFileUpload({ name, ...rest }) {
-    let { errors } = { ...this.state };
+    const { errors } = { ...this.state };
     return (
       <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
     );
   }
 
   renderCheckboxCollection({ collectionName, ...rest }) {
-    let { errors } = { ...this.state };
+    const { errors } = { ...this.state };
     return <CheckboxCollection error={errors[collectionName]} {...rest} />;
   }
 
   renderImage({ name, label, ...rest }) {
-    let { data, errors } = { ...this.state };
+    const { data, errors } = { ...this.state };
     return (
       <Image
         name={name}
@@ -402,6 +417,7 @@ class Form extends Component {
     );
   }
 
+  // eslint-disable-next-line class-methods-use-this
   renderLink({ label, to, className }) {
     return (
       <Link to={to} className={className}>

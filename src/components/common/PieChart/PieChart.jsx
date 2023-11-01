@@ -4,12 +4,12 @@ import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
 
-export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => {
+export function PieChart({ data, dataLegend, pieChartId, dataLegendHeader }) {
   const [totalHours, setTotalHours] = useState(0);
 
   // create the pie chart
   const getCreateSvgPie = totalValue => {
-    var svg = d3
+    const svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
       .append('svg')
       .attr('id', `pie-chart-${pieChartId}`)
@@ -31,9 +31,9 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   const pie = d3.pie().value(d => d[1]);
 
   useEffect(() => {
-    const data_ready = pie(Object.entries(data));
+    const dataReady = pie(Object.entries(data));
 
-    let totalValue = data_ready
+    const totalValue = dataReady
       .map(obj => obj.value)
       .reduce((a, c) => {
         return a + c;
@@ -42,7 +42,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
 
     getCreateSvgPie(totalValue)
       .selectAll('whatever')
-      .data(data_ready)
+      .data(dataReady)
       .join('path')
       .attr(
         'd',
@@ -81,4 +81,6 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
       </div>
     </div>
   );
-};
+}
+
+export default PieChart;

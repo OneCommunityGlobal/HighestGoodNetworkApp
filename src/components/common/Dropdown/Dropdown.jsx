@@ -1,6 +1,4 @@
-import React from 'react';
-
-const Dropdown = ({ value, name, label, options, className, error, ...rest }) => {
+function Dropdown({ value, name, label, options, className, error, ...rest }) {
   return (
     <div className={`form-group ${className}`}>
       <label htmlFor={name}>{label}</label>
@@ -16,6 +14,6 @@ const Dropdown = ({ value, name, label, options, className, error, ...rest }) =>
       {error && <div className="alert alert-danger">{error}</div>}
     </div>
   );
-};
+}
 
 export default Dropdown;
