@@ -27,14 +27,14 @@ const NewUserPopup = React.memo(props => {
 
   return (
     <>
-    <div className="text-center">
-      <EditableInfoModal
-          areaName="UserManagment"
-          areaTitle="User Management"
-          fontSize={24}
-          isPermissionPage={true}
-          role={role} // Pass the 'role' prop to EditableInfoModal
-        />
+      <div className="text-center" style={{ paddingTop: '1rem' }}>
+        <EditableInfoModal
+            areaName="UserManagment"
+            areaTitle="User Management"
+            fontSize={24}
+            isPermissionPage={true}
+            role={role} // Pass the 'role' prop to EditableInfoModal
+          />
         </div>
         <Modal isOpen={props.open} toggle={closePopup} className={'modal-dialog modal-lg'}>
         <ModalHeader
