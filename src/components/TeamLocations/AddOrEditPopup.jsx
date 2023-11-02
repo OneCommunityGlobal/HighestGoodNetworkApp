@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
-import { getUserTimeZone } from 'services/timezoneApiService';
+import getUserTimeZone from 'services/timezoneApiService';
 import { useSelector } from 'react-redux';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';

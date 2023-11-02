@@ -251,7 +251,6 @@ function TeamLocations() {
         />
         <MarkerClusterGroup chunkedLoading>
           {mapMarkers.map(profile => {
-            console.log(profile);
             let userName = '';
             if (profile.firstName && profile.lastName) {
               userName = `${profile.firstName} ${`${profile.lastName[0]}.`}`;
