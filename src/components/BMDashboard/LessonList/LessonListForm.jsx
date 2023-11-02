@@ -1,0 +1,10 @@
+import { useState } from 'react';
+
+function LessonList() {
+  return (
+    <div>
+      <h2>Lesson list</h2>
+    </div>
+  );
+}
+export default LessonList;
