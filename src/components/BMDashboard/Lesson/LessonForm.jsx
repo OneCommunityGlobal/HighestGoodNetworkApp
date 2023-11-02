@@ -9,19 +9,7 @@ const style = {
 function LessonForm() {
   const [selectedFile, setSelectedFile] = useState(null);
   const dropTargetRef = useRef(null);
-  // TODO fix handleDrop
-  // const handleDrop = (e) => {
-  //   e.preventDefault();
-  //   e.stopPropagation(); // Prevent the default behavior
-  //   console.log("handledrop")
-  //   const file = e.target.files[0]; // Get the selected file
-  //   setSelectedFile(file);
-  // };
 
-  // const handleDragOver = e => {
-  //   e.preventDefault();
-  //   // console.log("hi")
-  // };
   const handleFileSelection = e => {
     const file = e.target.files[0]; // Get the selected file
     setSelectedFile(file); // Update the state with the selected file
