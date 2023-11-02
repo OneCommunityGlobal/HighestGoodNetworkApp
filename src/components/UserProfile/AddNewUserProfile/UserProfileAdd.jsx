@@ -448,7 +448,9 @@ class AddUserProfile extends Component {
                   color="primary"
                   block
                   size="lg"
-                  onClick={() => this.createUserProfile(false)}
+                  onClick={() => {
+                    this.createUserProfile(false);
+                  }}
                   style={boxStyle}
                 >
                   Create

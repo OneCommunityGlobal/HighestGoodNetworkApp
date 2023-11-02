@@ -31,7 +31,6 @@
     "js-levenshtein": "^1.1.6",
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.9.4",
-    "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
     "moment": "^2.29.2",
     "moment-timezone": "^0.5.33",
