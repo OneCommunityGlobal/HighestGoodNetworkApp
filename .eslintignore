@@ -9,7 +9,6 @@ src/config.json
 src/index.js
 src/languages/**
 src/reducers/**
-src/services/**
 src/styles.js
 src/utils/**
 src/__tests__/**
