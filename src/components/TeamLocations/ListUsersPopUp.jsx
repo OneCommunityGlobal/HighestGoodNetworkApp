@@ -3,7 +3,7 @@ import { boxStyle } from 'styles';
 
 function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
   return (
-    <Modal isOpen={open} toggle={onClose} className='modal-dialog modal-md'>
+    <Modal isOpen={open} toggle={onClose} className="modal-dialog modal-md">
       <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
         Add New User Location
       </ModalHeader>
@@ -31,7 +31,7 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                     <tr key={user._id}>
                       <td>{index + 1}</td>
                       <td>{userName}</td>
-                      <td>{`${user.location.city ? `${user.location.city}, `: ''} ${
+                      <td>{`${user.location.city ? `${user.location.city}, ` : ''} ${
                         user.location.country
                       }`}</td>
                       <td>
@@ -43,7 +43,7 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                           {user.type === 'm_user' && (
                             <Button
                               color="danger"
-                              onClick={() => removeUser(user._id, userName)}
+                              onClick={() => removeUser(user._id)}
                               style={boxStyle}
                               className="btn mr-1 btn-sm"
                             >

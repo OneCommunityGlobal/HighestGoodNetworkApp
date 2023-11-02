@@ -7,6 +7,7 @@ import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import { createLocation, editLocation } from 'services/mapLocationsService';
 import { useEffect } from 'react';
+
 const initialLocationData = {
   firstName: 'Prior to HGN Data Collection',
   lastName: 'Prior to HGN Data Collection',

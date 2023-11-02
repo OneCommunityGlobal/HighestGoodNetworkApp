@@ -54,7 +54,7 @@ function TeamLocations() {
   const searchHandler = e => {
     setSearchText(e.target.value);
   };
-  const removeLocation = async (id, name) => {
+  const removeLocation = async id => {
     try {
       const res = await axios.delete(`${ApiEndpoint}/mapLocations/${id}`);
       if (res.status === 200) {
@@ -182,7 +182,7 @@ function TeamLocations() {
                                         color="danger"
                                         style={boxStyle}
                                         className="btn mr-1 btn-sm"
-                                        onClick={() => removeLocation(profile._id, userName)}
+                                        onClick={() => removeLocation(profile._id)}
                                       >
                                         Remove
                                       </Button>
@@ -288,7 +288,7 @@ function TeamLocations() {
                           <Button
                             color="danger"
                             className="btn btn-outline-error mr-1 btn-sm"
-                            onClick={() => removeLocation(profile._id, userName)}
+                            onClick={() => removeLocation(profile._id)}
                             style={boxStyle}
                           >
                             Remove
