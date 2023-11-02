@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 function Image({ label, name, error, className, ...rest }) {
   return (
     <div className={`form-group ${className}`}>

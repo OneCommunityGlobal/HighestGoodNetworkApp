@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { Editor } from '@tinymce/tinymce-react';
 
 function TinyMCEEditor({ label, name, error, className, value, ...rest }) {

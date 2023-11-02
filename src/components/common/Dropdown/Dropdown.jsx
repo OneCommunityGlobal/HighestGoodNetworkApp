@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 function Dropdown({ value, name, label, options, className, error, ...rest }) {
   return (
     <div className={`form-group ${className}`}>

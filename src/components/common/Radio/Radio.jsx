@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 function Radio({ name, label, options, error, value, ...rest }) {
   return (
     <div className="form-group">

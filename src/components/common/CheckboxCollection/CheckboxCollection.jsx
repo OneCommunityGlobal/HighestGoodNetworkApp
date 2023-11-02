@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 function CheckboxCollection({ items, error, pathName, isChecked, onChange, ...rest }) {
   const getCheckBox = element => (
     <div className="form-check" key={element._id}>
