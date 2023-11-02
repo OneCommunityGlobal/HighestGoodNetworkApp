@@ -475,6 +475,7 @@ const BasicInformationTab = props => {
                   <EditableInfoModal
                   role={role}
                   areaName={'roleInfo'}
+                  areaTitle="Roles"
                   fontSize={30}
                   />
                 </div>
