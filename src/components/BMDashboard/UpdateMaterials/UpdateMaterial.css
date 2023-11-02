@@ -37,6 +37,13 @@
   justify-content: start;
 }
 
+.materialFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+  display: flex;
+  justify-content: start;
+}
 
 
 .materialFormValue {

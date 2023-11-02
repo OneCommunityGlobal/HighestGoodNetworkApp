@@ -4,8 +4,11 @@ import { BiPencil } from 'react-icons/bi';
 
 import RecordsModal from './RecordsModal';
 import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
+import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
+import { useDispatch } from 'react-redux';
 
 export default function MaterialsTable({ filteredMaterials }) {
+  const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
@@ -16,6 +19,7 @@ export default function MaterialsTable({ filteredMaterials }) {
 
   const handleEditRecordsClick = (selectedMaterial, type) => {
     if (type == 'Update') {
+      dispatch(resetMaterialUpdate())
       setUpdateModal(true);
       setUpdateRecord(selectedMaterial)
     }

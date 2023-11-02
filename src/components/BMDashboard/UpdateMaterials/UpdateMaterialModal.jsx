@@ -1,11 +1,11 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
-import moment from 'moment';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import UpdateMaterial from './UpdateMaterial';
 import './UpdateMaterial.css'
 
 function UpdateMaterialModal({ modal, setModal, record }) {
   if (record) {
+
     const toggle = () => {
       setModal(false);
     };

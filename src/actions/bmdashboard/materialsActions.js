@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { ENDPOINTS } from "utils/URL";
-import { SET_MATERIALS, SET_USER_PROJECTS } from "constants/bmdashboard/materialsConstants";
+import { SET_MATERIALS, SET_USER_PROJECTS, POST_UPDATE_MATERIAL_START, POST_UPDATE_MATERIAL_END, RESET_UPDATE_MATERIAL } from "constants/bmdashboard/materialsConstants";
 import { GET_ERRORS } from "constants/errors";
 
 export const fetchAllMaterials = () => {
@@ -28,6 +28,20 @@ export const fetchUserActiveBMProjects = () => {
   }
 }
 
+export const postMaterialUpdate = (payload) => {
+  return async dispatch => {
+    dispatch(materialUpdateStart())
+    axios.post(ENDPOINTS.BM_UPDATE_MATERIAL, payload)
+      .then(res => {
+        console.log(res.data)
+        dispatch(materialUpdateEnd(res.data))
+      })
+      .catch(err => {
+        dispatch(setErrors(err))
+      })
+  }
+}
+
 export const setMaterials = payload => {
   return {
     type: SET_MATERIALS,
@@ -47,4 +61,21 @@ export const setUserProjects = payload => {
     type: SET_USER_PROJECTS,
     payload
   }
+}
+
+export const materialUpdateStart = () => {
+  return {
+    type: POST_UPDATE_MATERIAL_START
+  }
+}
+
+export const materialUpdateEnd = payload => {
+  return {
+    type: POST_UPDATE_MATERIAL_END,
+    payload
+  }
+}
+
+export const resetMaterialUpdate = () => {
+  return { type: RESET_UPDATE_MATERIAL }
 }
