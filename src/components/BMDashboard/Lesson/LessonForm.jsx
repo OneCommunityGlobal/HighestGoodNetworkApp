@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './LessonForm.css';
 import Noimg from './images/Noimg3.jpg';
@@ -8,6 +8,7 @@ const style = {
 };
 function LessonForm() {
   const [selectedFile, setSelectedFile] = useState(null);
+  const dropTargetRef = useRef(null);
   // TODO fix handleDrop
   // const handleDrop = (e) => {
   //   e.preventDefault();
@@ -38,13 +39,15 @@ function LessonForm() {
     // console.log("hi Keypress")
   };
 
-  // const handleMouseDown = () => {
-  //   console.log("hi mousedown")
-  // };
+  const handleDragOver = e => {
+    e.preventDefault();
+  };
 
-  // const handleTouchStart = () => {
-  //   console.log("hi touchstart")
-  // };
+  const handleDrop = e => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    setSelectedFile(file);
+  };
   return (
     <div className="MasterContainer">
       <div className="FormContainer">
@@ -104,10 +107,9 @@ function LessonForm() {
                 tabIndex={0}
                 onClick={handleClick}
                 onKeyPress={handleKeyPress}
-                // onMouseDown={handleMouseDown}
-                // onTouchStart={handleTouchStart}
-                // onDrop={handleDrop}
-                // onDragOver={handleDragOver}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                ref={dropTargetRef}
                 className="dragAndDropStyle"
               >
                 {selectedFile ? (
