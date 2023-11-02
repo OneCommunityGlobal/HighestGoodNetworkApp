@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import { get } from 'lodash';
+import { assign, get } from 'lodash';
 import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
@@ -39,7 +39,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { getUserTimeZone } from 'services/timezoneApiService';
+import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
@@ -115,13 +115,13 @@ class AddUserProfile extends Component {
     this.state.showphone = true;
     this.onCreateNewUser();
   }
-
+  
+  
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
-
     return (
       <StickyContainer>
         <DuplicateNamePopup
@@ -430,6 +430,7 @@ class AddUserProfile extends Component {
                     codeValid={this.state.codeValid}
                     setCodeValid={this.setCodeValid}
                     edit
+                    userProfile={this.state.userProfile}
                   />
                 </TabPane>
               </TabContent>
@@ -482,7 +483,6 @@ class AddUserProfile extends Component {
   onAssignTeam = assignedTeam => {
     const teams = [...this.state.teams];
     teams.push(assignedTeam);
-
     this.setState({
       teams: teams,
     });
@@ -670,6 +670,12 @@ class AddUserProfile extends Component {
               return;
             } else {
               toast.success('User profile created.');
+              this.state.userProfile._id = res.data._id;
+              if(this.state.teams.length > 0){
+                this.state.teams.forEach((team) => {
+                  this.props.addTeamMember(team._id, res.data._id, res.data.firstName, res.data.lastName)
+                })
+              }
             }
             this.props.userCreated();
           })
