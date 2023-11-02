@@ -6,7 +6,7 @@ import { Button, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
-import { forgotPassword } from '../../services/authorizationService';
+import forgotPassword from '../../services/authorizationService';
 
 const ForgotPassword = React.memo(() => {
   const [message, setMessage] = useState({});
