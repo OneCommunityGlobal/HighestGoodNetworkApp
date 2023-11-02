@@ -9,11 +9,7 @@ src/config.json
 src/index.js
 src/languages/**
 src/reducers/**
-src/registerServiceWorker.js
-src/routes.js
 src/services/**
-src/setupTests.js
-src/store.js
 src/styles.js
 src/utils/**
 src/__tests__/**
