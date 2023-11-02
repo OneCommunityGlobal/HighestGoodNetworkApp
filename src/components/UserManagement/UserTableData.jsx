@@ -108,7 +108,7 @@ const UserTableData = React.memo(props => {
       {checkPermissionsOnOwner() ? null : (
         <td>
         {
-          props.auth.user.userid === props.user._id ? '': 
+          props.auth?.user.userid === props.user._id ? '': 
                   <><span className="usermanagement-actions-cell">
                       <button
                         type="button"
