@@ -157,11 +157,11 @@
   }
   .table-data-container::-webkit-scrollbar {
     display: none;
-  }  
+  }
   .category-container {
     display: flex;
-    flex-direction: column;    
-  }  
+    flex-direction: column;
+  }
   .card-category-item {
     width: 100%;
     padding: 16px;

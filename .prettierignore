@@ -21,7 +21,6 @@ src/components/App.jsx
 src/components/AutoReload/**
 src/components/Badge/**
 src/components/common/**
-src/components/Header/**
 src/components/Inventory/**
 src/components/ManageMemberships/**
 src/components/Memberships/**
