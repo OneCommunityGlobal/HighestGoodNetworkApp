@@ -1,10 +1,9 @@
-import React from 'react';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { boxStyle } from 'styles';
 
-function RemoveUserPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
+function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
   return (
-    <Modal isOpen={open} toggle={onClose} className={'modal-dialog modal-md'}>
+    <Modal isOpen={open} toggle={onClose} className='modal-dialog modal-md'>
       <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
         Add New User Location
       </ModalHeader>
@@ -32,7 +31,7 @@ function RemoveUserPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                     <tr key={user._id}>
                       <td>{index + 1}</td>
                       <td>{userName}</td>
-                      <td>{`${user.location.city ? user.location.city + ',' : ''} ${
+                      <td>{`${user.location.city ? `${user.location.city}, `: ''} ${
                         user.location.country
                       }`}</td>
                       <td>
@@ -55,6 +54,7 @@ function RemoveUserPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                             color="Primary"
                             className="btn btn-outline-success mr-1 btn-sm"
                             onClick={() => setEdit(user)}
+                            style={boxStyle}
                           >
                             Edit
                           </Button>
@@ -73,7 +73,7 @@ function RemoveUserPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={onClose}>
+        <Button color="secondary" onClick={onClose} style={boxStyle}>
           Close
         </Button>
       </ModalFooter>
@@ -81,4 +81,4 @@ function RemoveUserPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
   );
 }
 
-export default RemoveUserPopUp;
+export default ListUsersPopUp;

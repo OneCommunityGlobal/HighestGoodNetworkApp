@@ -1,17 +1,5 @@
-import React, { useState } from 'react';
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
-  Row,
-  Col,
-  Form,
-} from 'reactstrap';
-import httpService from '../../services/httpService';
-import { ENDPOINTS } from 'utils/URL';
+import { useState } from 'react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
 import { getUserTimeZone } from 'services/timezoneApiService';
 import { useSelector } from 'react-redux';
@@ -19,6 +7,7 @@ import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import { createLocation, editLocation } from 'services/mapLocationsService';
 import { useEffect } from 'react';
+
 const initialLocationData = {
   firstName: 'Prior to HGN Data Collection',
   lastName: 'Prior to HGN Data Collection',
@@ -50,29 +39,28 @@ function AddOrEditPopup({
     jobTitle: null,
     location: null,
   });
-  const key = useSelector(state => state.timeZoneAPI.userAPIKey);
+  const apiKey = useSelector(state => state.timeZoneAPI.userAPIKey);
 
   const getCoordsHandler = async () => {
     const location = locationData.location.userProvided;
     if (!location) {
-      alert('Please enter valid location');
+      toast.error('Please enter valid location');
       return;
     }
-    if (!key) {
-      alert("Timezone key doesn't exist");
+    if (!apiKey) {
+      toast.error("Timezone key doesn't exist");
       return;
     }
     if (errors.location === 'Please get the coordinates of location') {
       setErrors(prev => ({ ...prev, location: null }));
     }
 
-    if (key) {
+    if (apiKey) {
       try {
-        const res = await getUserTimeZone(location, key);
+        const res = await getUserTimeZone(location, apiKey);
         if (res.data.status.code === 200 && res.data.results && res.data.results.length) {
-          let timezone = res.data.results[0].annotations.timezone.name;
-          console.log('timezone------------', timezone);
-          let currentLocation = {
+          const timezone = res.data.results[0].annotations.timezone.name;
+          const currentLocation = {
             userProvided: location,
             coords: {
               lat: res.data.results[0].geometry.lat,
@@ -160,16 +148,16 @@ function AddOrEditPopup({
       return;
     }
 
-    let newLocationObject = {};
+    const newLocationObject = {};
 
     // removing prior data titles
-    for (let key in locationData) {
+    Object.keys(locationData).forEach(key => {
       if (locationData[key] === 'Prior to HGN Data Collection' && key !== 'title') {
         newLocationObject[key] = '';
       } else {
         newLocationObject[key] = locationData[key];
       }
-    }
+    });
 
     if (editProfile && editProfile.type === 'user') {
       newLocationObject.timeZone = timeZone;
@@ -204,7 +192,7 @@ function AddOrEditPopup({
         onClose();
         toast.success('User successfully edited!');
         setTimeZone('');
-        setLocationData(initialLocationData)
+        setLocationData(initialLocationData);
       } else {
         return;
       }
@@ -228,7 +216,7 @@ function AddOrEditPopup({
   }
 
   return (
-    <Modal isOpen={open} toggle={onClose} className={'modal-dialog modal-lg'}>
+    <Modal isOpen={open} toggle={onClose} className="modal-dialog modal-lg">
       <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
         {title}
       </ModalHeader>
@@ -266,11 +254,12 @@ function AddOrEditPopup({
             error={errors.jobTitle}
           />
           <div>
-            <label htmlFor="location">Location</label>
+            <p className="mb-2">Location</p>
             <div id="location" className="d-flex justify-content-stretch gap-1">
               <div className="w-50 mr-1 position-relative">
                 <input
                   type="text"
+                  id="location"
                   name="location"
                   value={locationValue}
                   placeholder="Please enter user location"
@@ -305,14 +294,14 @@ function AddOrEditPopup({
             {errors.location && <div className="alert alert-danger mt-1">{errors.location}</div>}
           </div>
           <div className="text-center">
-            <Button className="btn btn-primary mt-5" type="submit" color="primary">
+            <Button className="btn btn-primary mt-5" type="submit" color="primary" style={boxStyle}>
               {submitText}
             </Button>
           </div>
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={onClose}>
+        <Button style={boxStyle} color="secondary" onClick={onClose}>
           Close
         </Button>
       </ModalFooter>
