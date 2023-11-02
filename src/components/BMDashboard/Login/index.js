@@ -1,1 +1,3 @@
-export { default } from './BMLogin';
+import BMLogin from './BMLogin';
+
+export default BMLogin;

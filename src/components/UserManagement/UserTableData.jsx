@@ -48,11 +48,29 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
       </td>
-      <td>
-        <a href={`/userprofile/${props.user._id}`}>{props.user.firstName}</a>
-      </td>i
-      <td>
-        <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+
+      <td className="email_cell">
+      <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
+        <FontAwesomeIcon
+          className="copy_icon"
+          icon={faCopy}
+          onClick={() => {
+            navigator.clipboard.writeText(props.user.firstName);
+            toast.success('First Name Copied!');
+          }}
+        />
+      </td>
+       <td className="email_cell">
+       <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+        <FontAwesomeIcon
+          className="copy_icon"
+          icon={faCopy}
+          onClick={() => {
+            navigator.clipboard.writeText(props.user.lastName);
+            toast.success('Last Name Copied!');
+          }}
+        />
+
       </td>
       <td>{props.user.role}</td>
       <td className="email_cell">
@@ -104,7 +122,18 @@ const UserTableData = React.memo(props => {
           : ''}
       </td>
       <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
-      <td>{props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}</td>
+      
+       <td className="email_cell">
+      {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
+        <FontAwesomeIcon
+          className="copy_icon"
+          icon={faCopy}
+          onClick={() => {
+            navigator.clipboard.writeText(props.user.endDate ? formatDate(props.user.endDate) : 'N/A');
+            toast.success('End Date Copied!');
+          }}
+        />
+      </td>
       {checkPermissionsOnOwner() ? null : (
         <td>
         {
