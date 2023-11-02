@@ -1038,7 +1038,7 @@ export const rolesMock = {
           'deleteTeam',
           'putTeam',
           'assignTeamToUsers',
-          // 'editTeamCode',
+          'editTeamCode',
           // Time Entries
           'editTimeEntry',
           'deleteTimeEntry',

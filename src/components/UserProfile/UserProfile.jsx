@@ -938,7 +938,7 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
-                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner' || requestorRole == 'Administrator'}
+                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole === 'Owner' || requestorRole === 'Administrator'}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
