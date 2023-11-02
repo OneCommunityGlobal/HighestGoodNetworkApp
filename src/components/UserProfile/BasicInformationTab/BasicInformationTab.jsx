@@ -17,12 +17,12 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import { formatDate } from 'utils/formatDate';
 
 const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
   const { firstName, lastName } = userProfile;
   if (canEdit) {
     return (
       <>
-        <Col md="3" >
+        <Col md="3">
           <FormGroup>
             <Input
               type="text"
@@ -194,7 +194,7 @@ const Phone = props => {
               handleUserProfile={handleUserProfile}
             />
             <PhoneInput
-              inputClass='phone-input-style'
+              inputClass="phone-input-style"
               country={'us'}
               value={phoneNumber}
               onChange={phoneNumber => {
@@ -274,12 +274,11 @@ const BasicInformationTab = props => {
     role,
     loadUserProfile,
   } = props;
-
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
-  const [location, setLocation] = useState('');
-  let topMargin = "6px";
-  if(isUserSelf){
-    topMargin = "0px";
+
+  let topMargin = '6px';
+  if (isUserSelf) {
+    topMargin = '0px';
   }
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
@@ -480,7 +479,9 @@ const BasicInformationTab = props => {
                     );
                   })}
                   {canAddDeleteEditOwners && (
-                    <option value="Owner" style={{marginLeft:"5px"}}>Owner</option>
+                    <option value="Owner" style={{ marginLeft: '5px' }}>
+                      Owner
+                    </option>
                   )}
                 </select>
               </FormGroup>
@@ -504,7 +505,7 @@ const BasicInformationTab = props => {
         </Row>
         {canEdit && (
           <Row>
-            <Col md={{ size: 5, offset: 0}} >
+            <Col md={{ size: 5, offset: 0 }}>
               <Label>Location</Label>
             </Col>
             <Col>
@@ -515,13 +516,13 @@ const BasicInformationTab = props => {
                     value={userProfile.location.userProvided || ''}
                   />
                 </Col>
-                <Col className='p-0'>
+                <Col className="p-0">
                   <Button
                     color="secondary"
                     block
                     onClick={onClickGetTimeZone}
                     style={boxStyle}
-                    className='px-0'
+                    className="px-0"
                   >
                     Get Time Zone
                   </Button>
@@ -532,7 +533,7 @@ const BasicInformationTab = props => {
             <Col md="1"></Col>
           </Row>
         )}
-        <Row style={{ marginTop:'15px', marginBottom: '10px'}}>
+        <Row style={{ marginTop: '15px', marginBottom: '10px' }}>
           <Col>
             <Label>Time Zone</Label>
           </Col>
@@ -741,7 +742,11 @@ const BasicInformationTab = props => {
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
-                    return <option key={roleName} value={roleName}>{roleName}</option>;
+                    return (
+                      <option key={roleName} value={roleName}>
+                        {roleName}
+                      </option>
+                    );
                   })}
                   {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>

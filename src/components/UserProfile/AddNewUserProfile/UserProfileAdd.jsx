@@ -51,7 +51,7 @@ import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 const nextDay = new Date();
-nextDay.setDate(nextDay.getDate()+1);
+nextDay.setDate(nextDay.getDate() + 1);
 
 class AddUserProfile extends Component {
   constructor(props) {
@@ -100,7 +100,7 @@ class AddUserProfile extends Component {
     
 
     const { user } = this.props.auth;
-    this.canAddDeleteEditOwners = user && user.role === 'Owner'
+    this.canAddDeleteEditOwners = user && user.role === 'Owner';
   }
 
   popupClose = () => {
@@ -452,7 +452,9 @@ class AddUserProfile extends Component {
                   color="primary"
                   block
                   size="lg"
-                  onClick={() => this.createUserProfile(false)}
+                  onClick={() => {
+                    this.createUserProfile(false);
+                  }}
                   style={boxStyle}
                 >
                   Create

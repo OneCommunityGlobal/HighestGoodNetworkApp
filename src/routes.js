@@ -28,6 +28,7 @@ import WBSDetail from './components/Projects/WBS/WBSDetail';
 import SingleTask from './components/Projects/WBS/SingleTask';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
 import TeamLocations from './components/TeamLocations';
+import TeamLocations from './components/TeamLocations';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
