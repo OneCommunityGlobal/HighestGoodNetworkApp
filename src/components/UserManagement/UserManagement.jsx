@@ -29,6 +29,7 @@ import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { Table } from 'react-bootstrap';
+import SelectProfilePicPopUp from './SelectProfilePicPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 
 class UserManagement extends React.PureComponent {
@@ -51,6 +52,7 @@ class UserManagement extends React.PureComponent {
       deletePopupOpen: false,
       isPaused: false,
       finalDayDateOpen: false,
+      profilePicOpen: false,
       setupNewUserPopupOpen: false,
     };
   }
@@ -121,6 +123,7 @@ class UserManagement extends React.PureComponent {
    * 3. Popup to choose the delete option upon clicking delete button.
    * 4. Popup to confirm the action of setting a user active or inactive upon the status column click.
    * 5. Popup to show the last day selection
+   * 6. Popup to show and select the profile pictures matched
    */
   popupElements = () => {
     let user_name = this.state?.selectedUser?.firstName + '_' + this.state?.selectedUser?.lastName
@@ -162,6 +165,11 @@ class UserManagement extends React.PureComponent {
         <SetupNewUserPopup
           open={this.state.setupNewUserPopupOpen}
           onClose={this.handleNewUserSetupPopup}
+        />
+        <SelectProfilePicPopUp
+          open={this.state.profilePicOpen}
+          onClose={this.profilePicPopupClose}
+          user={this.state.selectedUser}
         />
       </React.Fragment>
     );
@@ -211,6 +219,8 @@ class UserManagement extends React.PureComponent {
               user={user}
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
+              hasProfilePic={user.profilePic ? [user.profilePic].flat().length : 0}
+              onSelectProfilePicClick={that.onSelectProfilePicClick}
             />
           );
         });
@@ -270,6 +280,16 @@ class UserManagement extends React.PureComponent {
         selectedUser: user,
       });
     }
+  };
+
+  /**
+   * Call back on Select or Show button click to trigger the action to update user profile picture
+   */
+  onSelectProfilePicClick = user => {
+    this.setState({
+      profilePicOpen: true,
+      selectedUser: user,
+    });
   };
 
   /**
@@ -336,7 +356,7 @@ class UserManagement extends React.PureComponent {
    * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
    */
   onActiveInactiveClick = user => {
-    const authRole = this?.props?.state?.auth?.user.role||user.role
+    const authRole = this?.props?.state?.auth?.user.role || user.role;
     const canChangeUserStatus = hasPermission('changeUserStatus');
     if (!canChangeUserStatus) {
       //permission to change the status of any user on the user profile page or User Management Page.
@@ -376,6 +396,15 @@ class UserManagement extends React.PureComponent {
   activeInactivePopupClose = () => {
     this.setState({
       activeInactivePopupOpen: false,
+    });
+  };
+
+  /**
+   * Callback to close the profile picture popup on close button click.
+   */
+  profilePicPopupClose = () => {
+    this.setState({
+      profilePicOpen: false,
     });
   };
 
