@@ -83,7 +83,13 @@ const ReviewButton = ({
     return <></>;
   };
   
-  
+  const sendReviewBtn = event => { 
+    event.preventDefault(); 
+    const newStatus = reviewStatus === "Unsubmitted" ? "Submitted" : "Reviewed";
+    updReviewStat(newStatus);
+    sendReviewReq(event);
+  }
+
   const sendReviewReq = event => {
     event.preventDefault();
     var data = {};
@@ -107,9 +113,7 @@ const ReviewButton = ({
         <ModalFooter>
           <Button
             onClick={(e) => {
-              const newStatus = reviewStatus === "Unsubmitted" ? "Submitted" : "Reviewed";
-              updReviewStat(newStatus);
-              sendReviewReq(e);
+              sendReviewBtn(e);
             }}
             color="primary"
             className="float-left"
