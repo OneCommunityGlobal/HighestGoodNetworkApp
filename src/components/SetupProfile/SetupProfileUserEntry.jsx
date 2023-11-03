@@ -21,7 +21,7 @@ import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { getUserTimeZone } from '../../services/timezoneApiService';
+import  getUserTimeZone from '../../services/timezoneApiService';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
@@ -29,12 +29,13 @@ import jwtDecode from 'jwt-decode';
 import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
 
-const SetupProfileUserEntry = ({ token }) => {
+const SetupProfileUserEntry = ({ token, userEmail }) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
   const containSpecialCar = RegExp(/[!@#$%^&*(),.?":{}|<>]/);
   const containCap = RegExp(/[A-Z]/);
+  const containLow = RegExp(/[a-z]/);
+  const containNumb = RegExp(/\d/);
   const [APIkey, setAPIkey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -43,11 +44,10 @@ const SetupProfileUserEntry = ({ token }) => {
     lastName: '',
     password: '',
     confirmPassword: '',
-    email: '',
+    email: userEmail,
     phoneNumber: null,
     weeklyCommittedHours: '10',
     collaborationPreference: 'Zoom',
-    privacySettings: { email: true, phoneNumber: true },
     jobTitle: '',
     timeZone: '',
     location: '',
@@ -61,7 +61,6 @@ const SetupProfileUserEntry = ({ token }) => {
     confirmPassword: '',
     email: '',
     phoneNumber: '',
-    weeklyCommittedHours: '',
     collaborationPreference: '',
     jobTitle: '',
     timeZone: '',
@@ -89,15 +88,6 @@ const SetupProfileUserEntry = ({ token }) => {
     setUserProfile(prevProfile => ({
       ...prevProfile,
       [id]: value,
-    }));
-  };
-
-  const handleToggle = event => {
-    const { id } = event.target;
-    const key = id === 'emailPubliclyAccessible' ? 'email' : 'phoneNumber';
-    setUserProfile(prevProfile => ({
-      ...prevProfile,
-      privacySettings: { ...prevProfile.privacySettings, [key]: !prevProfile.privacySettings[key] },
     }));
   };
 
@@ -144,15 +134,15 @@ const SetupProfileUserEntry = ({ token }) => {
       .catch(err => console.log(err));
   };
 
-  const handleFormSubmit = e => {
-    e.preventDefault();
-
+  const validateFormData = () => {
     // Validate firstName
+    let isDataValid = true;
     if (userProfile.firstName.trim() === '') {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         firstName: 'First Name is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -166,29 +156,11 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         lastName: 'Last Name is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         lastName: '',
-      }));
-    }
-
-    // Validate email
-
-    if (userProfile.email.trim() === '') {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        email: 'Email is required',
-      }));
-    } else if (!patt.test(userProfile.email)) {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        email: 'Email is not valid',
-      }));
-    } else {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        email: '',
       }));
     }
 
@@ -199,11 +171,13 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         phoneNumber: 'Phone is required',
       }));
+      isDataValid = false;
     } else if (userProfile.phoneNumber.trim().length < 10) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         phoneNumber: 'Phone is not valid',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -218,20 +192,25 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         password: 'Password is required',
       }));
+      isDataValid = false;
     } else if (userProfile.password.trim().length < 8) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         password: 'Password must be at least 8 characters long',
       }));
+      isDataValid = false;
     } else if (
-      !containCap.test(userProfile.password.trim()) &&
-      !containSpecialCar.test(userProfile.password.trim())
+      !containCap.test(userProfile.password.trim()) ||
+      !containSpecialCar.test(userProfile.password.trim()) ||
+      !containLow.test(userProfile.password.trim()) ||
+      !containNumb.test(userProfile.password.trim())
     ) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         password:
-          'Password must contain special characters [!@#$%^&*(),.?":{}|<>] and capital letters.',
+          'Password must contain special characters [!@#$%^&*(),.?":{}|<>], Uppercase, Lowercase and Number.',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -246,11 +225,13 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         confirmPassword: 'Confirm password is required',
       }));
+      isDataValid = false;
     } else if (userProfile.password.trim() !== userProfile.confirmPassword.trim()) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         confirmPassword: 'Password confirmation does not match',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -265,24 +246,11 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         jobTitle: 'Job Title is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         jobTitle: '',
-      }));
-    }
-
-    // Validate Weekly Committed Hours
-
-    if (Number(userProfile.weeklyCommittedHours) <= 0) {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        weeklyCommittedHours: 'Weekly Committed Hours can not be 0',
-      }));
-    } else {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        weeklyCommittedHours: '',
       }));
     }
 
@@ -293,6 +261,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         collaborationPreference: 'Video Call Preference can not be empty',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -307,6 +276,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         location: 'Location is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -321,6 +291,7 @@ const SetupProfileUserEntry = ({ token }) => {
         ...prevErrors,
         timeZoneFilter: 'Set time zone is required',
       }));
+      isDataValid = false;
     } else {
       setFormErrors(prevErrors => ({
         ...prevErrors,
@@ -328,8 +299,15 @@ const SetupProfileUserEntry = ({ token }) => {
       }));
     }
 
-    // Submit the form if there are no errors
-    if (Object.values(formErrors).every(err => err === '')) {
+    return isDataValid;
+  };
+
+  const handleFormSubmit = e => {
+    e.preventDefault();
+
+    const isDataValid = validateFormData();
+
+    if (isDataValid) {
       const data = {
         firstName: userProfile.firstName.trim(),
         lastName: userProfile.lastName.trim(),
@@ -339,8 +317,8 @@ const SetupProfileUserEntry = ({ token }) => {
         weeklycommittedHours: Number(userProfile.weeklyCommittedHours.trim()),
         collaborationPreference: userProfile.collaborationPreference.trim(),
         privacySettings: {
-          email: userProfile.privacySettings.email,
-          phoneNumber: userProfile.privacySettings.phoneNumber,
+          email: true,
+          phoneNumber: true,
         },
         jobTitle: userProfile.jobTitle.trim(),
         timeZone: userProfile.timeZone.trim(),
@@ -361,7 +339,14 @@ const SetupProfileUserEntry = ({ token }) => {
           }
         })
         .catch(error => {
-          console.log(error);
+          if (error.response.data === 'email already in use') {
+            setFormErrors(prevErrors => ({
+              ...prevErrors,
+              email: 'This email is already in use, Please contact your manager',
+            }));
+            console.log('in akwkejkwer');
+          }
+          console.log(error.response);
         });
     }
   };
@@ -502,9 +487,9 @@ const SetupProfileUserEntry = ({ token }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Email</Label>
+                  <Label>Email/Phone</Label>
                 </Col>
-                <Col md="6">
+                <Col md="3">
                   <FormGroup>
                     <Input
                       type="email"
@@ -512,27 +497,13 @@ const SetupProfileUserEntry = ({ token }) => {
                       id="email"
                       placeholder="Email"
                       value={userProfile.email}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
+                      readOnly={true}
                       invalid={formErrors.email !== ''}
                     />
                     <FormFeedback>{formErrors.email}</FormFeedback>
-                    <ToggleSwitch
-                      switchType="email"
-                      state={userProfile.privacySettings.email}
-                      handleUserProfile={e => {
-                        handleToggle(e);
-                      }}
-                    />
                   </FormGroup>
                 </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>Phone</Label>
-                </Col>
-                <Col md="6">
+                <Col md="3">
                   <FormGroup>
                     <PhoneInput
                       country="US"
@@ -540,6 +511,7 @@ const SetupProfileUserEntry = ({ token }) => {
                       limitMaxLength="true"
                       value={userProfile.phoneNumber}
                       onChange={phone => phoneChange(phone)}
+                      inputStyle={{ width: '100%' }}
                     />
                     <Input
                       style={{
@@ -548,34 +520,6 @@ const SetupProfileUserEntry = ({ token }) => {
                       invalid={formErrors.phoneNumber !== ''}
                     />
                     <FormFeedback>{formErrors.phoneNumber}</FormFeedback>
-                  </FormGroup>
-                  <ToggleSwitch
-                    switchType="phone"
-                    state={userProfile.privacySettings.phoneNumber}
-                    handleUserProfile={e => {
-                      handleToggle(e);
-                    }}
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>Weekly Committed Hours</Label>
-                </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <Input
-                      type="number"
-                      name="weeklyCommittedHours"
-                      id="weeklyCommittedHours"
-                      placeholder="Weekly Committed Hours"
-                      value={userProfile.weeklyCommittedHours}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      invalid={formErrors.weeklyCommittedHours !== ''}
-                    />
-                    <FormFeedback>{formErrors.weeklyCommittedHours}</FormFeedback>
                   </FormGroup>
                 </Col>
               </Row>
@@ -660,7 +604,6 @@ const SetupProfileUserEntry = ({ token }) => {
                   </div>
                 </Col>
               </Row>
-
               <Row className="mt-1 mb-3">
                 <Col md="12">
                   <Row>

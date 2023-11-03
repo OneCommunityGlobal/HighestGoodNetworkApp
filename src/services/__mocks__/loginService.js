@@ -1,4 +1,4 @@
-let getCurrentUser_result;
+let getCurrentUserResult;
 const getCurrentUseroptions = {
   userPresent: { foo: 'bar', baz: 'masklsd' },
   userNotPresent: null,
@@ -9,15 +9,18 @@ const getCurrentUseroptions = {
   },
 };
 
+// eslint-disable-next-line no-use-before-define
 getCurrentUser.__setValue = option => {
-  getCurrentUser_result = getCurrentUseroptions[option];
+  getCurrentUserResult = getCurrentUseroptions[option];
 };
 
 export function getCurrentUser() {
-  return getCurrentUser_result;
+  return getCurrentUserResult;
 }
 
+// eslint-disable-next-line no-unused-vars
 export function login(credentials) {
+  // eslint-disable-next-line no-console
   console.log('Invoking fake login method of loginService');
   return 'Success';
 }
