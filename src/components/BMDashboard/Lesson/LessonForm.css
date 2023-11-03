@@ -1,4 +1,5 @@
 .FormContainer{
+
    padding: 5%;
    background-color: #FFFFFF;
    border-radius: 3%;
@@ -8,6 +9,7 @@
   }
 }
 .MasterContainer{
+  height:100%;
     padding-left: 20%;
     padding-right: 20%;
     padding-top: 5%;
