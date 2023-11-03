@@ -23,7 +23,7 @@
 
 .people-table-row > div {
   flex: 1;
-  max-width: calc((100% - 42px) / 9);
+  max-width: calc((100% - 42px) / 9); 
   padding: 4px;
   text-align: center;
 }
