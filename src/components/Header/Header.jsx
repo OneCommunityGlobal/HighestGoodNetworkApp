@@ -149,9 +149,18 @@ export const Header = props => {
                         <DropdownItem tag={Link} to="/weeklysummariesreport">
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
+                        <DropdownItem tag={Link} to="/teamlocations">
+                          {TEAM_LOCATIONS}
+                        </DropdownItem>
                   </DropdownMenu>
-                </UncontrolledDropdown>
-              ) : null}
+              </UncontrolledDropdown>
+              ) : 
+              <NavItem>
+                <NavLink tag={Link} to="/teamlocations">
+                  {TEAM_LOCATIONS}
+                </NavLink>
+              </NavItem>
+            }
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">
