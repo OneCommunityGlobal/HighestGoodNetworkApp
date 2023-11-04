@@ -35,10 +35,10 @@ import { formatDate } from 'utils/formatDate';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
-  let [sortBadges, setSortBadges] = useState(props.badges.slice() || []);
+  let [sortBadges, setSortBadges] = useState(JSON.parse(JSON.stringify(props.badges)) || []);
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
-  let [badgesToDelete, setBadgesToDelete] = useState([]);
+  let [badgeToDelete, setBadgeToDelete] = useState([]);
 
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
@@ -165,7 +165,7 @@ const BadgeReport = props => {
   };
 
   useEffect(() => {
-    setSortBadges(props.badges.slice() || []);
+    setSortBadges(JSON.parse(JSON.stringify(props.badges)) || []);
     let newBadges = sortBadges.slice();
     newBadges.sort((a, b) => {
       if (a.badge.ranking === 0) return 1;
@@ -192,15 +192,13 @@ const BadgeReport = props => {
   const countChange = (badge, index, newValue) => {
     let newBadges = sortBadges.slice();
     let value = newValue.length === 0 ? 0 : parseInt(newValue);
+    const oldBadge = JSON.parse(JSON.stringify(badge));
     newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
     if (
-      (value === 0 && badgesToDelete.indexOf(index) === -1) ||
-      (newValue.length === 0 && badgesToDelete.indexOf(index) === -1)
+      (value === 0  || newValue.length === 0)
     ) {
-      setBadgesToDelete(prevBadges => [...prevBadges, index]);
-    }
-    if (value > 0) {
-      setBadgesToDelete(prevBadges => prevBadges.filter(badge => badge !== index));
+      // upon reaching 0, show delete modal
+      handleDeleteBadge(oldBadge);
     }
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -242,58 +240,31 @@ const BadgeReport = props => {
     setSortBadges(newBadges);
   };
 
-  const handleDeleteBadge = index => {
+  const handleDeleteBadge = oldBadge => {
     setShowModal(true);
-    setBadgesToDelete((indices) => [...indices, index]);
+    setBadgeToDelete(oldBadge);
   };
 
   const handleCancel = () => {
     setShowModal(false);
-    // fix bug to not clear
-    setBadgesToDelete(badgesToDelete.splice(-1,1)); // remove last index that we added
-  };
-
-  const handleDeleteAfterSave = () => {
-    let newBadges = sortBadges;
-    let indexToDelete = badgesToDelete;
-    badgesToDelete.forEach(index => {
-      indexToDelete = indexToDelete.filter(index => index !== null);
-      newBadges.splice(indexToDelete[0], 1);
-      indexToDelete = indexToDelete.map(index => (index === 0 ? null : index - 1));
-      indexToDelete.shift();
-    });
-    setSortBadges(newBadges);
+    if (badgeToDelete) {
+      const index = sortBadges.findIndex((badge) => badge.badge._id === badgeToDelete.badge._id);
+      countChange(badgeToDelete, index, badgeToDelete.count);
+    }
+    setBadgeToDelete([]);
   };
 
   const deleteBadge = () => {
-    let newBadges = sortBadges.slice();
-    let deletedIndex = badgesToDelete.splice(-1,1);
-
-    const [deletedBadge] = newBadges.splice(deletedIndex, 1); // delete last index only
-    
-    if (deletedBadge) {
-      updateRemainingIdiciesInBadgesDeleteList(badgesToDelete, deletedIndex);
-    }
-
-    if (deletedBadge.featured) {
+    let newBadges = sortBadges.filter(badge => badge.badge._id !== badgeToDelete.badge._id);
+    if (badgeToDelete.featured) {
       setNumFeatured(--numFeatured);
     }
     setSortBadges(newBadges);
     setShowModal(false);
-    setBadgesToDelete(badgesToDelete);
-  };
-
-  const updateRemainingIdiciesInBadgesDeleteList = (badgesToDelete, deletedIndex) => {
-    // updates the indices that are offset of deleted index.
-    for (let i = 0; i < badgesToDelete.length; i++) {
-      if (badgesToDelete[i] > deletedIndex) {
-        badgesToDelete[i] = badgesToDelete[i] - 1;
-      }
-    }
+    setBadgeToDelete([]);
   };
 
   const saveChanges = async () => {
-    badgesToDelete.length > 0 && handleDeleteAfterSave();
     let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
@@ -394,7 +365,7 @@ const BadgeReport = props => {
                         <button
                           type="button"
                           className="btn btn-outline-danger"
-                          onClick={e => handleDeleteBadge(index)}
+                          onClick={e => handleDeleteBadge(sortBadges[index])}
                         >
                           Delete
                         </button>
@@ -594,7 +565,7 @@ const BadgeReport = props => {
                               {canDeleteBadges ? (
                                 <div
                                   className="btn btn-danger"
-                                  onClick={e => handleDeleteBadge(index)}
+                                  onClick={e => handleDeleteBadge(sortBadges[index])}
                                 >
                                   Delete
                                 </div>
