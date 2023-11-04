@@ -237,73 +237,72 @@ export class WeeklySummariesReport extends Component {
   //   }
   // }
 
-  refreshTeamCodes = async () => {
+  teamCodeChange = (oldTeamCode, newTeamCode) => {
+    this.setState((state) => {
+      const { selectedCodes, teamCodes } = state;
 
-    // reusing code from above @ componentDidMount
-    const { getWeeklySummariesReport } = this.props;
-    // 1. fetch report
-    const res = await getWeeklySummariesReport();
-    // eslint-disable-next-line react/destructuring-assignment
-    const summaries = res?.data;
-    // console.log(summaries);
-
-    // 2. shallow copy and sort
-    let summariesCopy = [...summaries];
-    summariesCopy = this.alphabetize(summariesCopy);
-
-    // 3. add new key of promised hours by week
-    summariesCopy = summariesCopy.map(summary => {
-      // append the promised hours starting from the latest week (this week)
-      const promisedHoursByWeek = this.weekDates.map(weekDate =>
-        this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-      );
-      return { ...summary, promisedHoursByWeek };
-    });
-
-    const teamCodeGroup = {};
-    const teamCodes = [];
-    const colorOptionGroup = new Set();
-    const colorOptions = [];
-
-    summariesCopy.forEach(summary => {
-      const code = summary.teamCode || 'noCodeLabel';
-      if (teamCodeGroup[code]) {
-        teamCodeGroup[code].push(summary);
-      } else {
-        teamCodeGroup[code] = [summary];
+      const innerCodeChangeFunction = (newTeamCodeLabel) => {
+        const oldTeamCodeIndex = teamCodes.findIndex(code => code.value === oldTeamCode);
+        console.log("teamCodes[oldTeamCodeIndex] at THE TOP is ", teamCodes[oldTeamCodeIndex]);
+        // teamCodes[oldTeamCodeIndex].value = newTeamCode;
+        // update currently selectedCodes to reflect a change in #
+        const oldSelectedCodeIndex = selectedCodes.findIndex(code => code.value === oldTeamCode);
+        let oldSelectedCodeNum = Number(regExp.exec(selectedCodes[oldSelectedCodeIndex].label)[1]);
+        if (oldSelectedCodeNum == 1) {
+          // remove oldTeamCode from dropdown list 
+          teamCodes.splice(oldTeamCodeIndex, 1);
+          selectedCodes.splice(oldSelectedCodeIndex, 1);
+          // if selected teamCode has only ONE to display, set selected to none after the change?
+        } else {
+          console.log("teamCodes[oldTeamCodeIndex] is ", teamCodes[oldTeamCodeIndex]);
+          oldSelectedCodeNum -= 1;
+          selectedCodes[oldSelectedCodeIndex].label = `${oldTeamCode} (${oldSelectedCodeNum})`;
+          selectedCodes[oldSelectedCodeIndex].value = oldTeamCode;
+          console.log("selectedCodes within else ", selectedCodes);
+          teamCodes[oldTeamCodeIndex].value = newTeamCode;
+          // if (newTeamCodeLabel) {
+          //   console.log("newTeamCodeLabel is ", newTeamCodeLabel);
+          //   teamCodes[oldTeamCodeIndex].label = newTeamCodeLabel
+          // } 
+        }
       }
 
-      if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
-    });
+      const alreadyUsingNewTeamCode = teamCodes.findIndex(code => code.value === newTeamCode);
 
-    Object.keys(teamCodeGroup).forEach(code => {
-      if (code !== 'noCodeLabel') {
-        teamCodes.push({
-          value: code,
-          label: `${code} (${teamCodeGroup[code].length})`,
-        });
+      // regex for number within parentheses - ex: (5)
+      const regExp = /\(([^)]+)\)/;
+
+      // if the newTeamCode is already in use 
+      if (alreadyUsingNewTeamCode != -1) {
+        // increasing label number for team code that already exists
+        let labelNum = Number(regExp.exec(teamCodes[alreadyUsingNewTeamCode].label)[1]);
+        labelNum += 1;
+        teamCodes[alreadyUsingNewTeamCode].label = teamCodes[alreadyUsingNewTeamCode].label.replace(regExp, `(${labelNum})`)
+
+        innerCodeChangeFunction(teamCodes[alreadyUsingNewTeamCode].label);
+      }
+      // newTeamCode is not in use so need to make a new one
+      else {
+        innerCodeChangeFunction();
+        teamCodes.push({ label: `${newTeamCode} (1)`, value: newTeamCode });
+        teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+        // const oldSelectedCodeIndex = selectedCodes.findIndex(code => code.value === oldTeamCode);
+        // selectedCodes[oldSelectedCodeIndex].value = newTeamCode;
+        // selectedCodes[oldSelectedCodeIndex].label = selectedCodes[oldSelectedCodeIndex].label.replace(oldTeamCode, newTeamCode);
+      }
+
+      // case 1: multiple teams with 1 selected team code (label > 1)
+
+      //case 2: 1 team with 1 selected team code (label = 1)
+
+      //case 3: 
+      // ensure that currently selected team code stays the same BUT the dropdown is updated correctly
+      // in the case of team code already existing, do not create another one but increase label by 1?
+      return {
+        selectedCodes: [...selectedCodes],
+        teamCodes: [...teamCodes],
       }
     });
-    colorOptionGroup.forEach(option => {
-      colorOptions.push({
-        value: option,
-        label: option,
-      });
-    });
-    colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
-    teamCodes
-      .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
-      .push({
-        value: '',
-        label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
-      });
-    this.setState({ teamCodes });
-  }
-
-  // this is passed through to FormattedReport.jsx all the way to TeamCodeRow (line 254)
-  teamCodeChange = async () => {
-    console.log("Testing on WeeklySummariesReport.jsx");
-    this.refreshTeamCodes();
   }
 
   // componentDidUpdate(preProps) {
