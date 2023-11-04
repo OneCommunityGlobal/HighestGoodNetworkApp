@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import ReportTableSearchPanel from './components/Reports/ReportTableSearchPanel';
+import ReportTableSearchPanel from '../components/Reports/ReportTableSearchPanel';
 
 describe('<ReportTableSearchPanel />', () => {
 
