@@ -56,6 +56,7 @@ import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
+import SelectProfilePicPopUp from 'components/UserManagement/SelectProfilePicPopUp';
 
 
 function UserProfile(props) {
@@ -100,6 +101,7 @@ function UserProfile(props) {
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
+  const [profilePicOpen, setProfilePicOpen] = useState(false);
 
   const userProfileRef = useRef();
 
@@ -581,7 +583,7 @@ function UserProfile(props) {
     );
   }
 
-  const { firstName, lastName, profilePic, jobTitle = '' } = userProfile;
+  const { firstName, lastName, profilePic, storedPics, jobTitle = '' } = userProfile;
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
@@ -633,6 +635,12 @@ function UserProfile(props) {
     setUserEndDate(endDate);
   };
 
+  const onSelectProfilePicClick = () => {
+    setProfilePicOpen(true);
+  };
+  const profilePicPopupClose = () => {
+    setProfilePicOpen(false);
+  };
   return (
     <div>
       <ActiveInactiveConfirmationPopup
@@ -657,6 +665,12 @@ function UserProfile(props) {
           role={requestorRole}
         />
       )}
+      {profilePicOpen && (
+        <SelectProfilePicPopUp
+          open={profilePicOpen}
+          onClose={profilePicPopupClose}
+          user={userProfile}
+        />)}
       <TabToolTips />
       <BasicToolTips />
       {/* <InfoModal isOpen={infoModal} toggle={toggleInfoModal} /> */}
@@ -671,17 +685,27 @@ function UserProfile(props) {
                 className="profilePicture"
               />
               {canEdit ? (
-                <div className="image-button file btn btn-lg btn-primary" style={boxStyle}>
-                  Change Photo
-                  <Input
-                    style={{ width: '100%', height: '100%', zIndex: '2' }}
-                    type="file"
-                    name="newProfilePic"
-                    id="newProfilePic"
-                    onChange={handleImageUpload}
-                    accept="image/png,image/jpeg, image/jpg"
-                  />
-                </div>
+                <>
+                  <div className="image-button file btn btn-lg btn-primary" style={boxStyle}>
+                    Change Photo
+                    <Input
+                      style={{ width: '100%', height: '100%', zIndex: '2' }}
+                      type="file"
+                      name="newProfilePic"
+                      id="newProfilePic"
+                      onChange={handleImageUpload}
+                      accept="image/png,image/jpeg, image/jpg"
+                    />
+                  </div>
+                  {storedPics.length > 0 && (
+                    <div className="image-button file btn btn-lg btn-primary"
+                      style={boxStyle}
+                      onClick={onSelectProfilePicClick}
+                    >
+                      Select Photo
+                    </div>
+                  )}
+                </>
               ) : null}
             </div>
           </Col>
