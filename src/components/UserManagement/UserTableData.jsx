@@ -18,8 +18,8 @@ import { formatDate } from 'utils/formatDate';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   // const history = useHistory();
-  const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
-  // const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  // const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   console.log("user table", props)
   /**
