@@ -242,7 +242,6 @@ export class WeeklySummariesReport extends Component {
   teamCodeChange = (oldTeamCode, newTeamCode) => {
     this.setState((state) => {
       const { selectedCodes, teamCodes } = state;
-
       const innerCodeChangeFunction = (newTeamCodeLabel) => {
         const oldTeamCodeIndex = teamCodes.findIndex(code => code.value === oldTeamCode);
         console.log("teamCodes[oldTeamCodeIndex] at THE TOP is ", teamCodes[oldTeamCodeIndex]);
@@ -270,7 +269,6 @@ export class WeeklySummariesReport extends Component {
       }
 
       const alreadyUsingNewTeamCode = teamCodes.findIndex(code => code.value === newTeamCode);
-
       // regex for number within parentheses - ex: (5)
       const regExp = /\(([^)]+)\)/;
 
