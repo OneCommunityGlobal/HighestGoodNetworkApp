@@ -32,7 +32,6 @@ export const ENDPOINTS = {
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
-  TIMER: userId => `${APIEndpoint}/timer/${userId}`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
   TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,

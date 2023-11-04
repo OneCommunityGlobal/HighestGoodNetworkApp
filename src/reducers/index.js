@@ -17,7 +17,6 @@ import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
 import { wbsReducer } from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
-import { timerReducer } from './timerReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
@@ -53,7 +52,6 @@ export default combineReducers({
   tasks: taskReducer,
   errors: errorsReducer,
   timeEntries: timeEntriesReducer,
-  timer: timerReducer,
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,

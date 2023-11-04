@@ -19,20 +19,21 @@ import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
 const TeamMemberTask = React.memo(
+  
   ({
-    user,
-    handleMarkAsDoneModal,
-    handleRemoveFromTaskModal,
-    handleOpenTaskNotificationModal,
-    handleTaskModalOption,
-    userRole,
-    userId,
-    updateTaskStatus,
-    showWhoHasTimeOff,
+      user,
+      handleMarkAsDoneModal,
+      handleRemoveFromTaskModal,
+      handleOpenTaskNotificationModal,
+      handleTaskModalOption,
+      userRole,
+      userId,
+      updateTaskStatus,
+      showWhoHasTimeOff,
     onTimeOff,
     goingOnTimeOff,
   }) => {
-    const ref = useRef(null);
+      const ref = useRef(null);
 
     const [totalHoursRemaining, activeTasks] = useMemo(() => {
       let totalHoursRemaining = 0;
@@ -58,11 +59,11 @@ const TeamMemberTask = React.memo(
           ),
       );
 
-      return [totalHoursRemaining, activeTasks];
-    }, [user]);
+        return [totalHoursRemaining, activeTasks];
+      }, [user]);
     const dispatch = useDispatch();
-    const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
-    const [isTruncated, setIsTruncated] = useState(canTruncate);
+      const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
+      const [isTruncated, setIsTruncated] = useState(canTruncate);
     const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
 
     const thisWeekHours = user.totaltangibletime_hrs;
@@ -103,6 +104,7 @@ const TeamMemberTask = React.memo(
                   color: user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
                 }}
                 icon={faCircle}
+                data-testid="icon"
               />
             </div>
           </td>
@@ -134,7 +136,10 @@ const TeamMemberTask = React.memo(
                       <tr key={`${task._id}${index}`} className="task-break">
                         <td data-label="Task(s)" className="task-align">
                           <div className="team-member-tasks-content">
-                            <Link to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}>
+                            <Link
+                              to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
+                              data-testid={`${task.taskName}`}
+                            >
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
                             <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
@@ -165,6 +170,7 @@ const TeamMemberTask = React.memo(
                                       taskNotificationId,
                                     );
                                   }}
+                                  data-taskid={`task-info-icon-${task.taskName}`}
                                 />
                               </>
                             ) : null}
@@ -177,6 +183,7 @@ const TeamMemberTask = React.memo(
                                   handleMarkAsDoneModal(user.personId, task);
                                   handleTaskModalOption('Checkmark');
                                 }}
+                                data-testid={`tick-${task.taskName}`}
                               />
                             )}
                             {canUpdateTask && (
@@ -188,6 +195,7 @@ const TeamMemberTask = React.memo(
                                   handleRemoveFromTaskModal(user.personId, task);
                                   handleTaskModalOption('XMark');
                                 }}
+                                data-testid={`Xmark-${task.taskName}`}
                               />
                             )}
                             <TeamMemberTaskIconsInfo />
@@ -206,12 +214,16 @@ const TeamMemberTask = React.memo(
                         {task.hoursLogged != null && task.estimatedHours != null && (
                           <td data-label="Progress" className="team-task-progress">
                             {isAllowedToSeeDeadlineCount && (
-                              <span className="deadlineCount" title="Deadline Follow-up Count">
+                              <span
+                                className="deadlineCount"
+                                title="Deadline Follow-up Count"
+                                data-testid={`deadline-${task.taskName}`}
+                              >
                                 {task.deadlineCount === undefined ? 0 : task.deadlineCount}
                               </span>
                             )}
                             <div>
-                              <span>
+                              <span data-testid={`times-${task.taskName}`}>
                                 {`${parseFloat(task.hoursLogged.toFixed(2))}
                             of
                           ${parseFloat(task.estimatedHours.toFixed(2))}`}

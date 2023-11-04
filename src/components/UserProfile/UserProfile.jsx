@@ -34,7 +34,7 @@ import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
-import InfoModal from './InfoModal';
+// import InfoModal from './InfoModal';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 import SaveButton from './UserProfileEdit/SaveButton';
@@ -52,9 +52,11 @@ import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect, useDispatch } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
+import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
+
 
 function UserProfile(props) {
   /* Constant values */
@@ -81,7 +83,7 @@ function UserProfile(props) {
   const [originalProjects, setOriginalProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
-  const [infoModal, setInfoModal] = useState(false);
+  // const [infoModal, setInfoModal] = useState(false);
   const [formValid, setFormValid] = useState(initialFormValid);
   const [blueSquareChanged, setBlueSquareChanged] = useState(false);
   const [type, setType] = useState('');
@@ -476,9 +478,9 @@ function UserProfile(props) {
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
 
-  const toggleInfoModal = () => {
-    setInfoModal(!infoModal);
-  };
+  // const toggleInfoModal = () => {
+  //   setInfoModal(!infoModal);
+  // };
 
   const toggleTab = tab => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -657,7 +659,7 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      <InfoModal isOpen={infoModal} toggle={toggleInfoModal} />
+      {/* <InfoModal isOpen={infoModal} toggle={toggleInfoModal} /> */}
       <Container className="emp-profile">
         <Row>
           <Col md="4" id="profileContainer">
@@ -694,7 +696,7 @@ function UserProfile(props) {
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
-              <i
+              {/* <i
                 data-toggle="tooltip"
                 data-placement="right"
                 title="Click for more information"
@@ -702,7 +704,14 @@ function UserProfile(props) {
                 aria-hidden="true"
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
-              />{' '}
+              />{' '} */}
+              <EditableInfoModal
+                areaName="UserProfileInfoModal"
+                areaTitle="User Profile"
+                fontSize={24}
+                isPermissionPage={true}
+                role={requestorRole} // Pass the 'role' prop to EditableInfoModal
+              />
               <ActiveCell
                 isActive={userProfile.isActive}
                 user={userProfile}

@@ -192,7 +192,7 @@ class UserManagement extends React.PureComponent {
        */
       return usersSearchData
         .sort((a, b) => {
-          if (a.createdDate > b.createdDate) return -1;
+          if (a.createdDate >= b.createdDate) return -1;
           if (a.createdDate < b.createdDate) return 1;
           return 0;
         })
