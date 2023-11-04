@@ -34,7 +34,7 @@
   font-size: 15px;
   color: #1C8BCC;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .materialFormError {
@@ -42,15 +42,24 @@
   font-size: 11px !important;
   color: red;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
 }
 
+.materialFormTableError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+}
+
+.materialFormErrorClr {
+  color: red;
+}
 
 .materialFormValue {
   font-weight: 400;
   font-size: 15px;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .materialButtonOutline {

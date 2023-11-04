@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { ENDPOINTS } from "utils/URL";
-import { SET_MATERIALS, SET_USER_PROJECTS, POST_UPDATE_MATERIAL_START, POST_UPDATE_MATERIAL_END, RESET_UPDATE_MATERIAL } from "constants/bmdashboard/materialsConstants";
+import { SET_MATERIALS, SET_USER_PROJECTS, POST_UPDATE_MATERIAL_START, POST_UPDATE_MATERIAL_END, RESET_UPDATE_MATERIAL, POST_UPDATE_MATERIAL_ERROR } from "constants/bmdashboard/materialsConstants";
 import { GET_ERRORS } from "constants/errors";
 
 export const fetchAllMaterials = () => {
@@ -36,8 +36,14 @@ export const postMaterialUpdate = (payload) => {
         console.log(res.data)
         dispatch(materialUpdateEnd(res.data))
       })
-      .catch(err => {
-        dispatch(setErrors(err))
+      .catch(function (error) {
+        if (error.response) {
+          dispatch(materialUpdateError(error.response.data));
+        } else if (error.request) {
+          dispatch(materialUpdateError(error.request));
+        } else {
+          dispatch(materialUpdateError(error));
+        }
       })
   }
 }
@@ -72,6 +78,13 @@ export const materialUpdateStart = () => {
 export const materialUpdateEnd = payload => {
   return {
     type: POST_UPDATE_MATERIAL_END,
+    payload
+  }
+}
+
+export const materialUpdateError = payload => {
+  return {
+    type: POST_UPDATE_MATERIAL_ERROR,
     payload
   }
 }

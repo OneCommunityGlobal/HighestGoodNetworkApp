@@ -1,5 +1,4 @@
-import React from 'react'
-import riversand from './riversand.jpg'
+import React from 'react';
 import './UpdateMaterial.css'
 import { Container } from 'reactstrap'
 import * as moment from 'moment'
@@ -9,9 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { fetchUserActiveBMProjects, postMaterialUpdate, resetMaterialUpdate } from 'actions/bmdashboard/materialsActions'
 import { toast } from 'react-toastify'
-import { update } from 'lodash'
 
-function UpdateMaterial({ record }) {
+function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
 
   const dispatch = useDispatch();
   const projects = useSelector(state => state.bmProjects.projects)
@@ -21,20 +19,27 @@ function UpdateMaterial({ record }) {
   }, [])
 
   useEffect(() => {
-    if (postMaterialUpdateResult.loading == false && postMaterialUpdateResult.result != null) {
+    if (postMaterialUpdateResult.loading == false && postMaterialUpdateResult.error == true) {
+      toast.error(`${postMaterialUpdateResult.result}`);
+      dispatch(resetMaterialUpdate())
+    }
+    else if (postMaterialUpdateResult.loading == false && postMaterialUpdateResult.result != null) {
       toast.success(`Updated ${record?.inventoryItemType?.name} successfully`);
       dispatch(resetMaterialUpdate())
     }
   }, [postMaterialUpdateResult])
 
 
+  const omitKey1 = 'updateRecord'
+  const { purchaseRecord, [omitKey1]: _, usageRecord, ...rest } = record;
   const [updateRecord, setUpdateRecord] = useState({
     date: moment(new Date()).format('YYYY-MM-DD'),
     quantityUsed: 0,
     quantityWasted: 0,
     QtyUsedLogUnit: 'unit',
     QtyWastedLogUnit: 'unit',
-    material: record
+    material: rest,
+    newAvailable: undefined
   })
 
   const [validations, setValidations] = useState({
@@ -44,7 +49,21 @@ function UpdateMaterial({ record }) {
   })
 
   const changeRecordHandler = (e) => {
-    setUpdateRecord({ ...updateRecord, [e.target.name]: e.target.value });
+    let value = e.target.value;
+    if (e.target.name == 'quantityWasted' || e.target.name == 'quantityUsed') {
+      if (value.match(/\./g)) {
+        const [, decimal] = value.split('.');
+        if (decimal?.length > 2) {
+          //value = Number(value).toFixed(2);
+          return;
+        }
+      }
+      if (Number(value) < 0) return;
+    }
+
+    updateRecord[e.target.name] = value;
+
+
     if (e.target.name == 'quantityUsed') {
       validate(e.target.value, updateRecord.quantityWasted, updateRecord.QtyUsedLogUnit, updateRecord.QtyWastedLogUnit)
     }
@@ -64,7 +83,7 @@ function UpdateMaterial({ record }) {
 
   const validate = (qtyUsed, qtyWasted, QtyUsedLogUnit, QtyWastedLogUnit) => {
 
-    let available = record.stockAvailable;
+    let available = record?.stockAvailable;
     let valUsed = +qtyUsed;
     let valWasted = +qtyWasted;
     if (QtyUsedLogUnit == 'percent') {
@@ -74,27 +93,41 @@ function UpdateMaterial({ record }) {
       valWasted = (+qtyWasted / 100) * available;
     }
 
-    if (valUsed > record?.stockAvailable) {
-      validations.quantityUsed = "Please enter a value less than available stock for Quantity Used";
+    valUsed = Number.parseFloat((valUsed).toFixed(2))
+    valWasted = Number.parseFloat((valWasted).toFixed(2))
+    if (valUsed > available) {
+      validations.quantityUsed = "Quantity Used exceeds the available stock";
     }
     else {
       validations.quantityUsed = "";
     }
 
-    if (valWasted > record?.stockAvailable) {
-      validations.quantityWasted = "Please enter a value less than available stock for Quantity Wasted";
+    if (valWasted > available) {
+      validations.quantityWasted = "Quantity Wasted exceeds the available stock";
     }
     else {
       validations.quantityWasted = "";
     }
 
-    if ((valUsed + valWasted) > record?.stockAvailable) {
-      validations.quantityTogether = `Please check your Used and Wasted values. They exceed the available stock which sums up to around ${valUsed + valWasted}`;
+    if ((valUsed + valWasted) > available) {
+      validations.quantityTogether = `Sum of Used and Wasted values exceeds available stock with a value of ${valUsed + valWasted}`;
     }
     else {
       validations.quantityTogether = "";
     }
     setValidations({ ...validations })
+    let newAvailable = available - (valUsed + valWasted);
+
+    if (newAvailable != available) {
+      newAvailable = Number.parseFloat((newAvailable).toFixed(2))
+      updateRecord.newAvailable = newAvailable
+      setUpdateRecord({ ...updateRecord });
+    }
+    else {
+      updateRecord.newAvailable = ''
+      setUpdateRecord({ ...updateRecord });
+    }
+    if (bulk == true) sendUpdatedRecord(updateRecord)
   }
 
   const submitHandler = (e) => {
@@ -104,187 +137,290 @@ function UpdateMaterial({ record }) {
   }
 
   return (
-    <div >
-      <Container fluid className='updateMaterialContainer'>
-        <div className='updateMaterialPage'>
-          <div className='updateMaterial'>
-            <Form>
-
-              {/* <img className='materialImage' alt='materialImage' src={riversand} /> */}
-              <FormGroup row className='align-items-center justify-content-start'>
-                <Label
-                  for="updateMaterialName"
-                  sm={4}
-                  className='materialFormLabel'
-                >
-                  Material
-                </Label>
-                <Col sm={6} className='materialFormValue'>
-                  <b>{record?.inventoryItemType?.name}</b>
-                </Col>
-              </FormGroup>
-
-              <FormGroup row className='align-items-center'>
-                <Label
-                  for="updateMaterialProject"
-                  sm={4}
-                  className='materialFormLabel'
-                >
-                  Project Name
-                </Label>
-                <Col sm={8} className='materialFormValue'>
-                  {record?.project.projectName}
-                </Col>
-              </FormGroup>
-
-              <FormGroup row className='align-items-center justify-content-start'>
-                <Label
-                  for="updateMaterialDate"
-                  sm={4}
-                  className='materialFormLabel'
-                >
-                  Date
-                </Label>
-                <Col sm={6} className='materialFormValue'>
-                  <Input
-                    id="updateMaterialDate"
-                    name="date"
-                    type="date"
-                    value={updateRecord.date}
-                    disabled={true}
-                  />
-                </Col>
-              </FormGroup>
-
-              <FormGroup row className='align-items-center justify-content-start'>
-                <Label
-                  for="updateMaterialUnit"
-                  sm={4}
-                  className='materialFormLabel'
-                >
-                  Available
-                </Label>
-                <Col sm={6} className='materialFormValue'>
-                  {record?.stockAvailable}
-                </Col>
-              </FormGroup>
-
-              <FormGroup row>
-                <Label
-                  for="updateMaterialQuantityUsed"
-                  sm={4}
-                  className='materialFormLabel'
-                >
-                  Quantity Used
-                </Label>
-                <Col sm={4} className='materialFormValue'>
-                  <Input
-                    id="updateMaterialQuantityUsed"
-                    name="quantityUsed"
-                    placeholder="Used"
-                    type="number"
-                    value={updateRecord.quantityUsed}
-                    onChange={(e) => changeRecordHandler(e)}
-                    min={0}
-                  />
-                </Col>
-                <Col sm={{ size: 4 }} className='materialFormValue'>
-                  <Input
-                    id="updateMaterialQtyUsedLogUnitSelect"
-                    name="QtyUsedLogUnit"
-                    type="select"
-                    value={updateRecord.action}
-                    onChange={(e) => changeRecordHandler(e)}
-                  >
-                    <option value='unit'>{record?.inventoryItemType?.uom}</option>
-                    <option value='percent'>%</option>
-                  </Input>
-                </Col>
-
+    < >
+      {
+        bulk == true ?
+          <>
+            <tr key={record._id}>
+              <td scope="row">   {idx}  </td>
+              <td>  {record.inventoryItemType.name}  </td>
+              <td>  {record.stockAvailable} </td>
+              <td>
+                <Input
+                  id="updateMaterialQuantityUsed"
+                  name="quantityUsed"
+                  placeholder="Used"
+                  type="number"
+                  value={updateRecord.quantityUsed}
+                  onChange={(e) => changeRecordHandler(e)}
+                  min={0}
+                />
                 {
                   validations.quantityUsed != ""
                   &&
-                  <Label
-                    for="updateMaterialQuantityUsedError"
-                    sm={12}
-                    className='materialFormError'
-                  >
+                  <div className='materialFormTableError'>
                     {validations.quantityUsed}
-                  </Label>
+                  </div>
                 }
-
-              </FormGroup>
-              <FormGroup row>
-                <Label
-                  for="updateMaterialquantityWasted"
-                  sm={4}
-                  className='materialFormLabel'
+              </td>
+              <td>
+                <Input
+                  id="updateMaterialQtyUsedLogUnitSelect"
+                  name="QtyUsedLogUnit"
+                  type="select"
+                  value={updateRecord.action}
+                  onChange={(e) => changeRecordHandler(e)}
                 >
-                  Quantity Wasted
-                </Label>
-                <Col sm={4} className='materialFormValue'>
-                  <Input
-                    id="updateMaterialquantityWasted"
-                    name="quantityWasted"
-                    type="number"
-                    placeholder='Wasted'
-                    value={updateRecord.quantityWasted}
-                    onChange={(e) => changeRecordHandler(e)}
-                    min={0}
-                  />
-                </Col>
-                <Col sm={{ size: 4 }} className='materialFormValue'>
-                  <Input
-                    id="updateMaterialQtyWastedLogUnitSelect"
-                    name="QtyWastedLogUnit"
-                    type="select"
-                    value={updateRecord.QtyWastedLogUnit}
-                    onChange={(e) => changeRecordHandler(e)}
-                  >
-                    <option value='unit'>{record?.inventoryItemType?.uom}</option>
-                    <option value='percent'>%</option>
-                  </Input>
-                </Col>
+                  <option value='unit'>{record?.inventoryItemType?.uom}</option>
+                  <option value='percent'>%</option>
+                </Input>
+              </td>
+              <td>
+                <Input
+                  id="updateMaterialquantityWasted"
+                  name="quantityWasted"
+                  type="number"
+                  placeholder='Wasted'
+                  value={updateRecord.quantityWasted}
+                  onChange={(e) => changeRecordHandler(e)}
+                  min={0}
+                />
                 {
                   validations.quantityWasted != ""
                   &&
-                  <Label
-                    for="updateMaterialQuantityWastedError"
-                    sm={12}
-                    className='materialFormError'
-                  >
+                  <div className='materialFormTableError'>
                     {validations.quantityWasted}
-                  </Label>
+                  </div>
                 }
 
-              </FormGroup>
+              </td>
+              <td>
+                <Input
+                  id="updateMaterialQtyWastedLogUnitSelect"
+                  name="QtyWastedLogUnit"
+                  type="select"
+                  value={updateRecord.QtyWastedLogUnit}
+                  onChange={(e) => changeRecordHandler(e)}
+                >
+                  <option value='unit'>{record?.inventoryItemType?.uom}</option>
+                  <option value='percent'>%</option>
+                </Input>
+              </td>
+              <td>
+                <span className={updateRecord.newAvailable < 0 ? 'materialFormErrorClr' : undefined}>
+                  {updateRecord.newAvailable}
+                </span>
+              </td>
+            </tr>
+            <tr >
+              <td colSpan={7} className='materialFormTableError'>
+
+                {validations.quantityTogether}
+
+              </td>
+            </tr>
+
+          </> :
+          <Container fluid className='updateMaterialContainer'>
+            <div className='updateMaterialPage'>
+              <div className='updateMaterial'>
+                <Form>
+
+                  {/* <img className='materialImage' alt='materialImage' src={riversand} /> */}
+                  <FormGroup row className='align-items-center justify-content-start'>
+                    <Label
+                      for="updateMaterialName"
+                      sm={4}
+                      className='materialFormLabel'
+                    >
+                      Material
+                    </Label>
+                    <Col sm={6} className='materialFormValue'>
+                      <b>{record?.inventoryItemType?.name}</b>
+                    </Col>
+                  </FormGroup>
+
+                  <FormGroup row className='align-items-center'>
+                    <Label
+                      for="updateMaterialProject"
+                      sm={4}
+                      className='materialFormLabel'
+                    >
+                      Project Name
+                    </Label>
+                    <Col sm={8} className='materialFormValue'>
+                      {record?.project.projectName}
+                    </Col>
+                  </FormGroup>
+
+                  <FormGroup row className='align-items-center justify-content-start'>
+                    <Label
+                      for="updateMaterialDate"
+                      sm={4}
+                      className='materialFormLabel'
+                    >
+                      Date
+                    </Label>
+                    <Col sm={6} className='materialFormValue'>
+                      <Input
+                        id="updateMaterialDate"
+                        name="date"
+                        type="date"
+                        value={updateRecord.date}
+                        disabled={true}
+                      />
+                    </Col>
+                  </FormGroup>
+
+                  <FormGroup row className='align-items-center justify-content-start'>
+                    <Label
+                      for="updateMaterialUnit"
+                      sm={4}
+                      className='materialFormLabel'
+                    >
+                      Available
+                    </Label>
+                    <Col sm={6} className='materialFormValue'>
+                      {record?.stockAvailable}
+                    </Col>
+                  </FormGroup>
+
+                  {
+                    updateRecord.newAvailable != undefined &&
+                    <FormGroup row className='align-items-center justify-content-start'>
+                      <Label
+                        for="updateMaterialUnit"
+                        sm={4}
+                        className='materialFormLabel'
+                      >
+                        New Available
+                      </Label>
+                      <Col sm={6} className='materialFormValue'>
+
+                        <span className={updateRecord.newAvailable < 0 ? 'materialFormErrorClr' : undefined}>
+                          {updateRecord.newAvailable}
+                        </span>
+                      </Col>
+                    </FormGroup>
+                  }
+
+                  <FormGroup row>
+                    <Label
+                      for="updateMaterialQuantityUsed"
+                      sm={4}
+                      className='materialFormLabel'
+                    >
+                      Quantity Used
+                    </Label>
+                    <Col sm={4} className='materialFormValue'>
+                      <Input
+                        id="updateMaterialQuantityUsed"
+                        name="quantityUsed"
+                        placeholder="Used"
+                        type="number"
+                        value={updateRecord.quantityUsed}
+                        onChange={(e) => changeRecordHandler(e)}
+                        min={0}
+                      />
+                    </Col>
+                    <Col sm={{ size: 4 }} className='materialFormValue'>
+                      <Input
+                        id="updateMaterialQtyUsedLogUnitSelect"
+                        name="QtyUsedLogUnit"
+                        type="select"
+                        value={updateRecord.action}
+                        onChange={(e) => changeRecordHandler(e)}
+                      >
+                        <option value='unit'>{record?.inventoryItemType?.uom}</option>
+                        <option value='percent'>%</option>
+                      </Input>
+                    </Col>
+
+                    {
+                      validations.quantityUsed != ""
+                      &&
+                      <Label
+                        for="updateMaterialQuantityUsedError"
+                        sm={12}
+                        className='materialFormError'
+                      >
+                        {validations.quantityUsed}
+                      </Label>
+                    }
+
+                  </FormGroup>
+                  <FormGroup row>
+                    <Label
+                      for="updateMaterialquantityWasted"
+                      sm={4}
+                      className='materialFormLabel'
+                    >
+                      Quantity Wasted
+                    </Label>
+                    <Col sm={4} className='materialFormValue'>
+                      <Input
+                        id="updateMaterialquantityWasted"
+                        name="quantityWasted"
+                        type="number"
+                        placeholder='Wasted'
+                        value={updateRecord.quantityWasted}
+                        onChange={(e) => changeRecordHandler(e)}
+                        min={0}
+                      />
+                    </Col>
+                    <Col sm={{ size: 4 }} className='materialFormValue'>
+                      <Input
+                        id="updateMaterialQtyWastedLogUnitSelect"
+                        name="QtyWastedLogUnit"
+                        type="select"
+                        value={updateRecord.QtyWastedLogUnit}
+                        onChange={(e) => changeRecordHandler(e)}
+                      >
+                        <option value='unit'>{record?.inventoryItemType?.uom}</option>
+                        <option value='percent'>%</option>
+                      </Input>
+                    </Col>
+                    {
+                      validations.quantityWasted != ""
+                      &&
+                      <Label
+                        for="updateMaterialQuantityWastedError"
+                        sm={12}
+                        className='materialFormError'
+                      >
+                        {validations.quantityWasted}
+                      </Label>
+                    }
+
+                  </FormGroup>
 
 
-              {
-                validations.quantityTogether != ""
-                &&
-                <FormGroup row>
-                  <Label
-                    for="updateMaterialQuantityTogetherError"
-                    sm={12}
-                    className='materialFormError'
-                  >
-                    {validations.quantityTogether}
-                  </Label>
-                </FormGroup>
-              }
+                  {
+                    validations.quantityTogether != ""
+                    &&
+                    <FormGroup row>
+                      <Label
+                        for="updateMaterialQuantityTogetherError"
+                        sm={12}
+                        className='materialFormError'
+                      >
+                        {validations.quantityTogether}
+                      </Label>
+                    </FormGroup>
+                  }
 
 
-              <FormGroup row className='d-flex justify-content-right'>
-                <Button disabled={postMaterialUpdateResult.loading} className='materialButtonBg' onClick={(e) => submitHandler(e)}>
-                  Update Material
-                </Button>
-              </FormGroup>
-            </Form>
-          </div>
-        </div>
-      </Container>
-    </div>
+                  <FormGroup row className='d-flex justify-content-right'>
+                    <Button disabled={postMaterialUpdateResult.loading || (updateRecord.newAvailable < 0)} className='materialButtonBg' onClick={(e) => submitHandler(e)}>
+                      Update Material
+                    </Button>
+                  </FormGroup>
+                </Form>
+              </div>
+            </div>
+          </Container>
+      }
+    </>
   )
 }
 

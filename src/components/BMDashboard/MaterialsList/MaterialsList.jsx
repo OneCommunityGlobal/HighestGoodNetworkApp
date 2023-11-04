@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import BMError from '../shared/BMError';
@@ -13,21 +13,24 @@ export function MaterialsList(props) {
   const [filteredMaterials, setFilteredMaterials] = useState(materials);
   const [selectedProject, setSelectedProject] = useState('all');
   const [isError, setIsError] = useState(false);
+  const postMaterialUpdateResult = useSelector(state => state.updateMaterials)
 
   // dispatch materials fetch action
   // response is mapped to materials or errors in redux store
   useEffect(() => {
-    dispatch(fetchAllMaterials());
-  }, []);
+    if (postMaterialUpdateResult.result != null && postMaterialUpdateResult.loading == false)
+      dispatch(fetchAllMaterials());
+  }, [postMaterialUpdateResult.result]);
 
   // filter materials data by project
   useEffect(() => {
+    console.log('materials', materials)
     if (selectedProject === 'all') {
       return setFilteredMaterials(materials);
     }
     const filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject);
     return setFilteredMaterials(filterMaterials);
-  }, [selectedProject]);
+  }, [selectedProject, materials]);
 
   // trigger error state if an error object is added to props
   useEffect(() => {

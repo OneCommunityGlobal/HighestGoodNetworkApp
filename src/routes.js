@@ -48,6 +48,7 @@ import MaterialsList from 'components/BMDashboard/MaterialsList';
 
 import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
 import UpdateMaterial from 'components/BMDashboard/UpdateMaterials/UpdateMaterial';
+import UpdateMaterialsBulk from 'components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk';
 
 
 export default (
@@ -167,7 +168,7 @@ export default (
           <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
           <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
           {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-          <BMProtectedRoute path="/bmdashboard/updateMaterial" component={UpdateMaterial} />
+          <BMProtectedRoute path="/bmdashboard/updateMaterials" component={UpdateMaterialsBulk} />
           <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
 
