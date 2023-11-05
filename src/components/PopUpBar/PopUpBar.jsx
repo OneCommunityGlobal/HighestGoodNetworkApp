@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import './PopUpBar.css';
 
 const PopUpBar = props => {
