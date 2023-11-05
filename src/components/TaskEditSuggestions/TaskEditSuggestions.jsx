@@ -1,13 +1,22 @@
-import Loading from 'components/common/Loading';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector, connect } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Table } from 'reactstrap';
+import Loading from '../common/Loading';
 import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
 import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
 import { getTaskEditSuggestionsData } from './selectors';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
 
-export const TaskEditSuggestions = () => {
+function SortArrow({ sortDirection }) {
+  if (sortDirection === 'asc') {
+    return <i className="fa fa-arrow-up" />;
+  }
+  if (sortDirection === 'desc') {
+    return <i className="fa fa-arrow-down" />;
+  }
+}
+
+export default function TaskEditSuggestions() {
   const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
   const [currentTaskEditSuggestion, setCurrentTaskEditSuggestion] = useState();
 
@@ -16,26 +25,14 @@ export const TaskEditSuggestions = () => {
     taskEditSuggestions,
     userSortDirection,
     dateSuggestedSortDirection,
-    userRole,
   } = useSelector(getTaskEditSuggestionsData);
 
   const dispatch = useDispatch();
 
-  const handleToggleTaskEditSuggestionModal = currentTaskEditSuggestion => {
-    setCurrentTaskEditSuggestion(currentTaskEditSuggestion);
+  const handleToggleTaskEditSuggestionModal = currTaskEditSug => {
+    setCurrentTaskEditSuggestion(currTaskEditSug);
     setIsTaskEditSuggestionModalOpen(!isTaskEditSuggestionModalOpen);
   };
-
-  const SortArrow = ({ sortDirection }) => {
-    if (sortDirection === 'asc') {
-      return <i className="fa fa-arrow-up"></i>;
-    } else if (sortDirection === 'desc') {
-      return <i className="fa fa-arrow-down"></i>;
-    } else {
-      return <></>;
-    }
-  };
-
   return (
     <Container>
       <h1 className="mt-3">Task Edit Suggestions</h1>
@@ -53,7 +50,7 @@ export const TaskEditSuggestions = () => {
                   User <SortArrow sortDirection={userSortDirection} />
                 </th>
                 <th>Task</th>
-                <th></th>
+                {/* <th /> */}
               </tr>
             </thead>
             <tbody>
@@ -75,4 +72,4 @@ export const TaskEditSuggestions = () => {
       />
     </Container>
   );
-};
+}
