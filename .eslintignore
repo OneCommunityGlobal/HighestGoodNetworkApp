@@ -27,7 +27,7 @@ src/components/MonthlyEffort/**
 src/components/NewProfileLink/**
 src/components/OwnerMessage/**
 src/components/PermissionsManagement/**
-src/components/PopUpBar/**
+# src/components/PopUpBar/**
 src/components/ProfileLinks/**
 src/components/Projects/**
 src/components/RenderInfringement/**

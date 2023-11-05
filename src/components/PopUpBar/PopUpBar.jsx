@@ -1,7 +1,7 @@
 // import React from 'react';
 import './PopUpBar.css';
 
-const PopUpBar = props => {
+function PopUpBar(props) {
   const { userProfile } = props;
   const { firstName, lastName } = userProfile;
   return (
@@ -9,6 +9,6 @@ const PopUpBar = props => {
       {`You are currently viewing the dashboard for ${firstName} ${lastName}`}.
     </div>
   );
-};
+}
 
 export default PopUpBar;
