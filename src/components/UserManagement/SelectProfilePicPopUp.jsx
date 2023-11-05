@@ -9,7 +9,7 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 /**
  * Modal popup to show the user profile picture
  */
-const SelectProfilePicPopUp = React.memo(props => {
+const SelectProfilePicPopup = React.memo(props => {
   const [selectedPic, setSelectedPic] = useState();
   const [newPic, setNewPic] = useState();
   const storedPics = props.user?.storedPics;
@@ -133,4 +133,4 @@ const mapStateToProps = state => state;
 export default connect(mapStateToProps, {
   getUserProfile,
   updateUserProfile,
-})(SelectProfilePicPopUp);
+})(SelectProfilePicPopup);

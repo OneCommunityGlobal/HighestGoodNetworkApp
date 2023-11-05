@@ -29,7 +29,7 @@ import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { Table } from 'react-bootstrap';
-import SelectProfilePicPopUp from './SelectProfilePicPopUp';
+import SelectProfilePicPopup from './SelectProfilePicPopup';
 import SetupNewUserPopup from './setupNewUserPopup';
 
 class UserManagement extends React.PureComponent {
@@ -166,7 +166,7 @@ class UserManagement extends React.PureComponent {
           open={this.state.setupNewUserPopupOpen}
           onClose={this.handleNewUserSetupPopup}
         />
-        <SelectProfilePicPopUp
+        <SelectProfilePicPopup
           open={this.state.profilePicOpen}
           onClose={this.profilePicPopupClose}
           user={this.state.selectedUser}

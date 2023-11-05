@@ -56,7 +56,7 @@ import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
-import SelectProfilePicPopUp from 'components/UserManagement/SelectProfilePicPopUp';
+import SelectProfilePicPopup from 'components/UserManagement/SelectProfilePicPopup';
 
 
 function UserProfile(props) {
@@ -666,7 +666,7 @@ function UserProfile(props) {
         />
       )}
       {profilePicOpen && (
-        <SelectProfilePicPopUp
+        <SelectProfilePicPopup
           open={profilePicOpen}
           onClose={profilePicPopupClose}
           user={userProfile}
@@ -697,16 +697,18 @@ function UserProfile(props) {
                       accept="image/png,image/jpeg, image/jpg"
                     />
                   </div>
-                  {storedPics.length > 0 && (
-                    <div className="image-button file btn btn-lg btn-primary"
-                      style={boxStyle}
-                      onClick={onSelectProfilePicClick}
-                    >
-                      Select Photo
-                    </div>
-                  )}
                 </>
               ) : null}
+            </div>
+            <div className='profile-pic-selector'>
+              {storedPics && (
+                <div className="image-button file btn btn-lg btn-primary"
+                  style={boxStyle}
+                  onClick={onSelectProfilePicClick}
+                >
+                  Select Photo
+                </div>
+              )}
             </div>
           </Col>
           <Col md="8">

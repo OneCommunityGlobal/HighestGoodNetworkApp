@@ -30,6 +30,7 @@
   color: green;
 }
 
+
 .emp-profile {
   padding-top: 20px;
   padding-left: 3%;
@@ -196,7 +197,12 @@
   font-weight: bold;
   margin: 5px;
 }
-
+.profile-pic-selector {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
 .profile-functions-tablet {
   display: none;
 }
