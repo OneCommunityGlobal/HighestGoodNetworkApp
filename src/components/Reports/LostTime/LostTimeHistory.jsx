@@ -1,98 +1,115 @@
 import axios from 'axios';
-import { entries } from 'lodash';
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import HistoryTable from './HistoryTable';
 
+function LostTimeHistory(props) {
 
+  const [entriesList, setEntriesList] = useState([]);
+  const [dataLoading, setDataLoading] = useState(true);
 
-class LostTimeHistory extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      entriesList: [],
-      dataLoading: true,
-    };
+  const isOpen = props.isOpen;
+  const type = props.type;
+  const fromDate = props.startDate.toLocaleDateString('en-CA');
+  const toDate = props.endDate.toLocaleDateString('en-CA');
 
-    this.loadLostTimeEntries = this.loadLostTimeEntries.bind(this);
+  const idList = props.allData.map(data => data._id);
+
+  useEffect(() => {
+    loadLostTimeEntries(type, idList, fromDate, toDate).then(res => {
+      setEntriesList(res);
+      setDataLoading(false);
+    });
+  }, []);
+
+  const reload = () => {
+    setDataLoading(true);
+    loadLostTimeEntries(type, idList, fromDate, toDate).then(res => {
+      setEntriesList(res);
+      setDataLoading(false);
+    });
   }
 
-  loadLostTimeEntries = async (projectList, userList, teamList, fromDate, toDate) => {
-    let url = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
-    const projTimeEntries = await axios
-      .post(url, { projects: projectList, fromDate, toDate })
-      .then(res => {
-        return res.data.map(entry => {
-          return {
-            entryType: entry.entryType,
-            name: entry.projectName,
-            date: entry.dateOfWork,
-            hours: entry.hours,
-            minutes: entry.minutes,
-            isTangible: entry.isTangible,
-          };
-        });
-      });
-
-    url = ENDPOINTS.TIME_ENTRIES_LOST_USER_LIST;
-    const personTimeEntries = await axios
-      .post(url, { users: userList, fromDate, toDate })
-      .then(res => {
-        return res.data.map(entry => {
-          return {
-            entryType: entry.entryType,
-            name: entry.firstName + ' ' + entry.lastName,
-            hours: entry.hours,
-            minutes: entry.minutes,
-            isTangible: entry.isTangible,
-            date: entry.dateOfWork,
-          };
-        });
-      });
-
-    url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
-    const teamTimeEntries = await axios
-      .post(url, { teams: teamList, fromDate, toDate })
-      .then(res => {
-        return res.data.map(entry => {
-          return {
-            entryType: entry.entryType,
-            name: entry.teamName,
-            hours: entry.hours,
-            minutes: entry.minutes,
-            isTangible: entry.isTangible,
-            date: entry.dateOfWork,
-          };
-        });
-      });
-
-    return [...projTimeEntries, ...personTimeEntries, ...teamTimeEntries];
+  const alphabetize = timeEntries => {
+    const temp = [...timeEntries];
+    return temp.sort((a, b) =>
+      `${a.name} ${a.date}`.localeCompare(`${b.name} ${b.date}`),
+    );
   };
 
-  render() {
-    const isOpen = this.props.isOpen;
-    const fromDate = this.props.startDate.toLocaleDateString('en-CA');
-    const toDate = this.props.endDate.toLocaleDateString('en-CA');
-  
-    const userList = this.props.users.map(user => user._id);
-    const projectList = this.props.projects.map(proj => proj._id);
-    const teamList = this.props.teams.map(team => team._id);
-    this.loadLostTimeEntries(projectList, userList, teamList, fromDate, toDate).then(res => {
-      this.setState(() => ({
-        entriesList: res,
-        dataLoading: false,
-      }));
-    });
+  const loadLostTimeEntries = async (type, idList, fromDate, toDate) => {
+    let timeEntries = [];
+    if(type == 'project') {
+      let url = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+      timeEntries = await axios
+        .post(url, { projects: idList, fromDate, toDate })
+        .then(res => {
+          return res.data.map(entry => {
+            return {
+              _id: entry._id,
+              dataId: entry.projectId,
+              entryType: entry.entryType,
+              name: entry.projectName,
+              date: entry.dateOfWork,
+              hours: entry.hours,
+              minutes: entry.minutes,
+              isTangible: entry.isTangible,
+            };
+          });
+        });
+    } else if(type == 'person') {
+      let url = ENDPOINTS.TIME_ENTRIES_LOST_USER_LIST;
+      timeEntries = await axios
+        .post(url, { users: idList, fromDate, toDate })
+        .then(res => {
+          return res.data.map(entry => {
+            return {
+              _id: entry._id,
+              dataId: entry.personId._id,
+              entryType: entry.entryType,
+              name: entry.firstName + ' ' + entry.lastName,
+              hours: entry.hours,
+              minutes: entry.minutes,
+              isTangible: entry.isTangible,
+              date: entry.dateOfWork,
+            };
+          });
+        });
+    } else {
+      let url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
+      timeEntries = await axios
+        .post(url, { teams: idList, fromDate, toDate })
+        .then(res => {
+          return res.data.map(entry => {
+            return {
+              _id: entry._id,
+              dataId: entry.teamId,
+              entryType: entry.entryType,
+              name: entry.teamName,
+              hours: entry.hours,
+              minutes: entry.minutes,
+              isTangible: entry.isTangible,
+              date: entry.dateOfWork,
+            };
+          });
+        });
+    }
 
-    return (
-        <div className="table-data-container mt-5">
-          {isOpen && <HistoryTable 
-            entriesList={this.state.entriesList}
-            dataLoading={this.state.dataLoading}
-          />}
-        </div>
-    );
-  }
+    timeEntries = alphabetize(timeEntries);
+
+    return timeEntries;
+  };
+
+  return (
+      <div className="table-data-container mt-5">
+        {isOpen && <HistoryTable 
+          entriesList={entriesList}
+          dataLoading={dataLoading}
+          allData={props.allData}
+          reload={reload}
+        />}
+      </div>
+  );
 }
 
 export default LostTimeHistory;

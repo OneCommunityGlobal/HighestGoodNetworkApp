@@ -35,8 +35,10 @@ class ReportsPage extends Component {
       showTotalPeople: false,
       showTotalTeam: false,
       showTotalProject: false,
-      showAddTime: false,
-      showAddHistory: false,
+      showAddTimeForm: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+      showAddProjHistory: false,
       teamNameSearchText: '',
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
@@ -87,7 +89,9 @@ class ReportsPage extends Component {
     this.showTotalPeople = this.showTotalPeople.bind(this);
     this.showTotalTeam = this.showTotalTeam.bind(this);
     this.showTotalProject = this.showTotalProject.bind(this);
-    this.showAddHistory = this.showAddHistory.bind(this);
+    this.showAddPersonHistory = this.showAddPersonHistory.bind(this);
+    this.showAddTeamHistory = this.showAddTeamHistory.bind(this);
+    this.showAddProjHistory = this.showAddProjHistory.bind(this);
     this.setActive = this.setActive.bind(this);
     this.setInActive = this.setInActive.bind(this);
     this.setAll = this.setAll.bind(this);
@@ -217,8 +221,10 @@ class ReportsPage extends Component {
       showTotalProject: false,
       showTotalTeam: false,
       showTotalPeople: false,
-      showAddTime: !prevState.showAddTime,
-      showAddHistory: false,
+      showAddTimeForm: !prevState.showAddTimeForm,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
@@ -236,8 +242,10 @@ class ReportsPage extends Component {
       showTotalProject: false,
       showTotalTeam: false,
       showTotalPeople: false,
-      showAddTime: false,
-      showAddHistory: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
@@ -249,8 +257,10 @@ class ReportsPage extends Component {
       showTotalProject: false,
       showTotalTeam: false,
       showTotalPeople: false,
-      showAddTime: false,
-      showAddHistory: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
@@ -262,8 +272,10 @@ class ReportsPage extends Component {
       showTotalProject: false,
       showTotalTeam: false,
       showTotalPeople: false,
-      showAddTime: false,
-      showAddHistory: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
@@ -275,8 +287,10 @@ class ReportsPage extends Component {
       showTotalProject: false,
       showTotalPeople: !prevState.showTotalPeople,
       showTotalTeam: false,
-      showAddTime: false,
-      showAddHistory: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
@@ -288,8 +302,10 @@ class ReportsPage extends Component {
       showTotalProject: false,
       showTotalTeam: !prevState.showTotalTeam,
       showTotalPeople: false,
-      showAddTime: false,
-      showAddHistory: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
   showTotalProject() {
@@ -300,12 +316,14 @@ class ReportsPage extends Component {
       showTotalProject: !prevState.showTotalProject,
       showTotalTeam: false,
       showTotalPeople: false,
-      showAddTime: false,
-      showAddHistory: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
-  showAddHistory() {
+  showAddProjHistory() {
     this.setState(prevState => ({
       showProjects: false,
       showPeople: false,
@@ -313,10 +331,43 @@ class ReportsPage extends Component {
       showTotalProject: false,
       showTotalTeam: false,
       showTotalPeople: false,
-      showAddTime: false,
-      showAddHistory: !prevState.showAddHistory,
+      showAddTimeForm: false,
+      showAddProjHistory: !prevState.showAddProjHistory,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
+
+  showAddPersonHistory() {
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: !prevState.showAddPersonHistory,
+      showAddTeamHistory: false,
+    }));
+  }
+
+  showAddTeamHistory() {
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: !prevState.showAddTeamHistory,
+    }));
+  }
+  
 
   render() {
     const { projects } = this.props.state.allProjects;
@@ -552,6 +603,8 @@ class ReportsPage extends Component {
                 </ReactTooltip>
               </div>
             </div>
+          </div>
+          <div className="mt-4 bg-white p-3 rounded-5">
             <div className='lost-time-container'>
               <div className='lost-time-item'>
                 <Button color='success' onClick={this.setAddTime} >
@@ -572,24 +625,28 @@ class ReportsPage extends Component {
                   The lost time can be added to individuals, projects or teams in the system.
                 </ReactTooltip>
               </div>
+            </div>
+            <div className='lost-time-container'>
               <div className='lost-time-item'>
-                <Button color='info' onClick={this.showAddHistory}>
-                  {this.state.showAddHistory
-                    ? 'Hide Lost Time Add History'
-                    : 'Show Lost Time Add History'}
+                <Button color='info' onClick={this.showAddProjHistory}>
+                  {this.state.showAddProjHistory
+                    ? 'Hide Project Lost Time'
+                    : 'Show Project Lost Time'}
                 </Button>
-                <i
-                  className="fa fa-info-circle"
-                  data-tip
-                  data-for="addHistoryTip"
-                  data-delay-hide="0"
-                  aria-hidden="true"
-                  title=""
-                  style={{ paddingLeft: '.32rem' }}
-                />
-                <ReactTooltip id="addHistoryTip" place="bottom" effect="solid">
-                  Click this button to see time entries add history to verify the validity. The additions can be edit.
-                </ReactTooltip>
+              </div>
+              <div className='lost-time-item'>
+                <Button color='info' onClick={this.showAddPersonHistory}>
+                  {this.state.showAddPersonHistory
+                    ? 'Hide Person Lost Time'
+                    : 'Show Person Lost Time'}
+                </Button>
+              </div>
+              <div className='lost-time-item'>
+                <Button color='info' onClick={this.showAddTeamHistory}>
+                  {this.state.showAddTeamHistory
+                    ? 'Hide Team Lost Time'
+                    : 'Show Team Lost Time'}
+                </Button>
               </div>
             </div>
           </div>
@@ -623,21 +680,40 @@ class ReportsPage extends Component {
               savedTeamMemberList={this.state.teamMemberList}
             />
           )}
-          <AddLostTime
-              isOpen = {this.state.showAddTime}
+          {this.state.showAddTimeForm && 
+            <AddLostTime
+              isOpen = {this.state.showAddTimeForm}
               toggle = {this.setAddTime}
-              projects = {projects}
-              teams = {{allTeams: allTeams}}
-              users = {{userProfiles: userProfiles}}
-            />
-          {this.state.showAddHistory && (
-            <LostTimeHistory
-              isOpen={this.state.showAddHistory}
-              startDate={this.state.startDate}
-              endDate={this.state.endDate}
               projects = {projects}
               teams = {allTeams}
               users = {userProfiles}
+            />
+  }
+          {this.state.showAddPersonHistory && (
+            <LostTimeHistory
+              type={"person"}
+              isOpen={this.state.showAddPersonHistory}
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              allData = {userProfiles}
+            />
+          )}
+          {this.state.showAddTeamHistory && (
+            <LostTimeHistory
+              type={"team"}
+              isOpen={this.state.showAddTeamHistory}
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              allData = {allTeams}
+            />
+          )}
+          {this.state.showAddProjHistory && (
+            <LostTimeHistory
+              type={"project"}
+              isOpen={this.state.showAddProjHistory}
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              allData = {projects}
             />
           )}
         </div>

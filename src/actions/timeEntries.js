@@ -89,7 +89,9 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   return async dispatch => {
     try {
       const res = await axios.put(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      if (timeEntry.personId) {
+        dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -102,7 +104,9 @@ export const deleteTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.delete(url);
-      dispatch(updateTimeEntries(timeEntry));
+      if (timeEntry.personId) {
+        dispatch(updateTimeEntries(timeEntry));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;

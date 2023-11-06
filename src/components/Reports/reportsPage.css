@@ -118,14 +118,14 @@
 .lost-time-container {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
-  padding: 16px 0;
+  justify-content: center;
+  padding: 0px 0px 16px 0px;
 }
 
 .lost-time-item {
   display: flex;
   flex-direction: row;
-  margin: 0px 25px 0px 0px;
+  margin: 0px 12px;
 }
 
 .type-container {
@@ -195,6 +195,12 @@
     justify-content: space-around;
     gap: 1rem;
   }
+  .lost-time-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 1rem;
+  }
 }
 
 @media screen and (max-width: 700px) {
@@ -216,11 +222,5 @@
     font-size: 24px;
     font-weight: 700;
     margin: 8px 0;
-  }
-  .lost-time-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    gap: 1rem;
   }
 }

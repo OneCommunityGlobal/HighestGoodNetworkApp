@@ -13,12 +13,10 @@ import { postTimeEntry } from 'actions/timeEntries';
 import { Editor } from '@tinymce/tinymce-react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { useStateManager } from 'react-select';
 
 const AddLostTime = props => {
 
   const initialForm = {
-    // entryType: '',
     projectId: undefined,
     personId: undefined,
     teamId: undefined,
@@ -28,20 +26,7 @@ const AddLostTime = props => {
     hours: 0,
     minutes: 0,
     isTangible: true,
-    notes: '',
-    hoursCategory: 'unassigned',
   };
-
-  const categoryOptions = [
-    { value: 'unassigned', text: 'unassigned' },
-    { value: 'housing', text: 'housing' },
-    { value: 'food', text: 'food' },
-    { value: 'education', text: 'education' },
-    { value: 'society', text: 'society' },
-    { value: 'energy', text: 'energy' },
-    { value: 'economics', text: 'economics' },
-    { value: 'stewardship', text: 'stewardship' },
-  ];
 
   const dispatch = useDispatch();
 
@@ -121,7 +106,7 @@ const AddLostTime = props => {
           <FormGroup>
             <Label>Name</Label>
             <MemberAutoComplete
-              userProfileData={props.users}
+              userProfileData={{userProfiles: props.users}}
               onAddUser={selectUser}
               searchText={searchText}
               setSearchText={setSearchText}
@@ -132,22 +117,6 @@ const AddLostTime = props => {
               </div>
             )}
           </FormGroup>
-          <FormGroup>
-            <Label for='hoursCategory'>Category</Label>
-            <Input
-                type="select"
-                name="hoursCategory"
-                id="hoursCategory"
-                value={inputs.hoursCategory}
-                onChange={handleInputChange}
-              >
-                {categoryOptions.map(({ value, text }) => (
-                  <option key={value} value={value}>
-                    {text}
-                  </option>
-                ))}
-              </Input>
-          </FormGroup>
         </>
       )
     } else if (entryType == 'team') {
@@ -155,7 +124,7 @@ const AddLostTime = props => {
         <FormGroup>
           <Label>Team Name</Label>
           <AddTeamsAutoComplete
-            teamsData={props.teams}
+            teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
             selectedTeam={selectedTeam}
           />
@@ -255,7 +224,7 @@ const AddLostTime = props => {
     if (isTangible !== 'true') {
       userProfile.totalIntangibleHrs += volunteerTime;
     } else {
-      hoursByCategory[inputs.hoursCategory] += volunteerTime;
+      hoursByCategory['unassigned'] += volunteerTime;
     }
 
     try {
@@ -276,7 +245,6 @@ const AddLostTime = props => {
       dateOfWork: inputs.dateOfWork,
       projectId: inputs.projectId,
       teamId: inputs.teamId,
-      notes: inputs.notes,
       isTangible: inputs.isTangible.toString(),
       entryType: entryType,
     };
@@ -398,31 +366,6 @@ const AddLostTime = props => {
                   <small>{errors.time}</small>
                 </div>
               )}
-            </FormGroup>
-            <FormGroup>
-              <Label for="notes">Notes</Label>
-              <Editor
-                init={{
-                  menubar: false,
-                  placeholder: 'Description and reference link',
-                  plugins:
-                    'advlist autolink autoresize lists link charmap table paste help wordcount',
-                  toolbar:
-                    'bold italic underline link removeformat | bullist numlist outdent indent |\
-                                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                    subscript superscript charmap  | help',
-                  branding: false,
-                  min_height: 180,
-                  max_height: 300,
-                  autoresize_bottom_margin: 1,
-                  content_style: 'body { cursor: text !important; }',
-                }}
-                id="notes"
-                name="notes"
-                className="form-control"
-                value={inputs.notes}
-                onEditorChange={(content, editor) => setInputs(inputs => ({ ...inputs, [editor.id]: content }))}
-              />
             </FormGroup>
             <FormGroup check>
               <Label check>

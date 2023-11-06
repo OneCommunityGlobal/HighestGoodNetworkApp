@@ -8,6 +8,7 @@ const AddTeamsAutoComplete = React.memo(props => {
 
   useEffect(() => {
     if (!props.selectedTeam) onInputChange('');
+    else onInputChange(props.selectedTeam.teamName);
   }, [props.selectedTeam]);
 
   return (

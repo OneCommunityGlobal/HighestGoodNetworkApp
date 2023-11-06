@@ -8,6 +8,7 @@ const AddProjectsAutoComplete = React.memo(props => {
 
   useEffect(() => {
     if (!props.selectedProject) onInputChange('');
+    else onInputChange(props.selectedProject.projectName);
   }, [props.selectedProject]);
 
   return (

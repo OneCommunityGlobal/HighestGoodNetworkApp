@@ -43,7 +43,6 @@ const TotalTeamReport = props => {
 
   const matchTeamUser = async teamList => {
     //get the members of each team in the team list
-    //console.log('Load team-members list');
     const allTeamMembersPromises = teamList.map(team => dispatch(getTeamMembers(team._id)));
     const allTeamMembers = await Promise.all(allTeamMembersPromises);
     const teamUserList = allTeamMembers.map((team, i) => {
@@ -102,7 +101,6 @@ const TotalTeamReport = props => {
 
   const loadTimeEntriesForPeriod = async () => {
     //get the time entries of every user in the selected time range.
-    //console.log('Load time entries within the time range');
     let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
@@ -229,7 +227,6 @@ const TotalTeamReport = props => {
 
   useEffect(() => {
     //Load the team-members list (if not loaded), time entries and userId-name list.
-    //console.log('First render');
     if (props.savedTeamMemberList.length > 0) {
       setAllTeamsMembers(props.savedTeamMemberList);
       setTeamMemberLoaded(true);
@@ -253,7 +250,6 @@ const TotalTeamReport = props => {
     setDataReady(false);
     if (teamMemberLoaded) {
       //Re-render: reload the time entries when the date changes
-      //console.log('Refresh data');
       loadTimeEntriesForPeriod().then(() => {
         setDataLoading(false);
         setDataRefresh(true);
@@ -264,7 +260,6 @@ const TotalTeamReport = props => {
   useEffect(() => {
     if (!dataLoading && teamMemberLoaded && dataRefresh) {
       //Re-render: action on the reloaded entry data for presentation
-      //console.log('Reformat data');
       if (!props.savedTeamMemberList.length) {
         //pass the team-members list to the reports page to avoid loading it again
         props.passTeamMemberList(allTeamsMembers);
