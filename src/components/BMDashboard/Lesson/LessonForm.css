@@ -2,14 +2,16 @@
 
    padding: 5%;
    background-color: #FFFFFF;
-   border-radius: 3%;
+   border-radius: 1%;
      /* Override the max-width for form controls within your form */
   .form-control {
     max-width: unset !important;
   }
 }
 .MasterContainer{
-  height: 140vh;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
     padding-left: 10%;
     padding-right: 10%;
     padding-top: 5%;
@@ -19,6 +21,9 @@
 .LessonLabel{
     font-size: larger;
     font-weight: bold;
+}
+.LessonPlaceholderText{
+  min-height: 20vh;
 }
 .LessonPlaceholderText::placeholder {
   font-size: 16px; 
@@ -40,8 +45,8 @@
     padding: .5%;
     text-align: center;
     cursor: pointer;
-    height: 80%;
-    border-radius: 3%;
+    
+    border-radius: 1%;
   }
   .ImageDiv {
     width: 50px; /* Set the desired width */
