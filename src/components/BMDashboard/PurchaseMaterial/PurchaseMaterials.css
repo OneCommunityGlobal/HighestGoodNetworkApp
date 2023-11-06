@@ -1,3 +1,9 @@
+.purchase-materials-header {
+  margin: 1rem auto;
+  padding: 0 1rem;
+  max-width: 1000px;
+}
+
 .add-materials-page form {
   max-width: 1000px;
   padding: 1rem;

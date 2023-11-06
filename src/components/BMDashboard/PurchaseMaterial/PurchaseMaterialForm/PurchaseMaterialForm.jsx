@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import PhoneInput from 'react-phone-input-2';
+// import PhoneInput from 'react-phone-input-2';
 import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import { isValidMediaUrl } from 'utils/checkValidURL';
+// import { isValidMediaUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
 import { postMaterial } from '../../../../actions/materials';
@@ -24,7 +24,7 @@ export default function PurchaseMaterialForm(props) {
   const [formInputs, setFormInputs] = useState({
     projectId: selectedProject?._id || '',
     material: '',
-    newMaterial: false,
+    // newMaterial: false,
     invoice: '',
     unitPrice: '',
     currency: '',
@@ -115,20 +115,72 @@ export default function PurchaseMaterialForm(props) {
     });
   };
 
-  const calculateTotal = (unitPrice, quantity, shipping, tax) => {
-    const subTotal = unitPrice * quantity;
-    const shippingFee = shipping * 1;
-    return (shippingFee + subTotal + subTotal * (tax / 100)).toFixed(2);
-  };
+  // const calculateTotal = (unitPrice, quantity, shipping, tax) => {
+  //   const subTotal = unitPrice * quantity;
+  //   const shippingFee = shipping * 1;
+  //   return (shippingFee + subTotal + subTotal * (tax / 100)).toFixed(2);
+  // };
 
   return (
     <Form className="add-materials-form" onSubmit={handleSubmit}>
-      <Row>
+      {/* <Row>
         <Col>
-          <h1 style={{ fontSize: '1.3rem' }}>Purchase Materials Request</h1>
+          <h1 style={{ fontSize: '1.3rem' }}>Purchase Materials</h1>
+          <FormText>
+            Important: this form initiates a purchase request for approval/action by project admins.
+          </FormText>
         </Col>
-      </Row>
-      <Row>
+      </Row> */}
+      <FormGroup>
+        <Label for="projectId">Project</Label>
+        <Input
+          id="projectId"
+          name="projectId"
+          type="select"
+          invalid={trySubmit && formInputs.projectId === ''}
+          value={formInputs.projectId}
+          onChange={handleChange}
+        >
+          <option value="">-- select an option --</option>
+          {projects.map(el => (
+            <option value={el._id} key={el._id}>
+              {el.projectName}
+            </option>
+          ))}
+        </Input>
+      </FormGroup>
+      <FormGroup>
+        <Label for="material">Material Name</Label>
+        <Input
+          id="material"
+          name="material"
+          type="select"
+          invalid={trySubmit && formInputs.material === ''}
+          value={formInputs.material}
+          onChange={handleChange}
+        >
+          <option value="">-- select an option --</option>
+          {materials.map(el => (
+            <option value={el._id} key={el._id}>
+              {el.name}
+            </option>
+          ))}
+        </Input>
+      </FormGroup>
+      <FormGroup>
+        <Label for="quantity">Quantity</Label>
+        <Input
+          id="quantity"
+          name="quantity"
+          type="number"
+          invalid={trySubmit && formInputs.quantity === ''}
+          value={formInputs.quantity}
+          min={1}
+          onChange={handleChange}
+        />
+      </FormGroup>
+
+      {/* <Row>
         <Col xs="12" md="6">
           <Row>
             <Col xs="12" sm="9">
@@ -155,8 +207,8 @@ export default function PurchaseMaterialForm(props) {
           <Row>
             <Col xs="12" sm="9">
               <FormGroup>
-                <Label for="material">Material Name</Label>
-                {formInputs.newMaterial ? (
+                <Label for="material">Material Name</Label> */}
+      {/* {formInputs.newMaterial ? (
                   <Input
                     id="material"
                     name="material"
@@ -167,27 +219,26 @@ export default function PurchaseMaterialForm(props) {
                     placeholder="Add new material"
                     onChange={handleChange}
                   />
-                ) : (
-                  <Input
-                    id="material"
-                    name="material"
-                    type="select"
-                    invalid={trySubmit && formInputs.material === ''}
-                    value={formInputs.material}
-                    onChange={handleChange}
-                  >
-                    <option value="">-- select an option --</option>
-                    {materials.map(el => (
-                      <option value={el._id} key={el._id}>
-                        {el.name}
-                      </option>
-                    ))}
-                  </Input>
-                )}
+                ) : ( */}
+      {/* <Input
+                  id="material"
+                  name="material"
+                  type="select"
+                  invalid={trySubmit && formInputs.material === ''}
+                  value={formInputs.material}
+                  onChange={handleChange}
+                >
+                  <option value="">-- select an option --</option>
+                  {materials.map(el => (
+                    <option value={el._id} key={el._id}>
+                      {el.name}
+                    </option>
+                  ))}
+                </Input>
               </FormGroup>
             </Col>
-          </Row>
-          {/* {canAddNewMaterial && (
+          </Row> */}
+      {/* {canAddNewMaterial && (
             <Row>
               <Col>
                 <FormGroup check>
@@ -211,7 +262,7 @@ export default function PurchaseMaterialForm(props) {
               </Col>
             </Row>
           )} */}
-          {/* <Row>
+      {/* <Row>
             <Col xs="12" sm="8">
               <FormGroup>
                 <Label for="invoice">Invoice Number or ID</Label>
@@ -227,7 +278,7 @@ export default function PurchaseMaterialForm(props) {
               </FormGroup>
             </Col>
           </Row> */}
-          <Row className="price-currency">
+      {/* <Row className="price-currency">
             <Col xs="12" sm="7" md="8">
               <FormGroup>
                 <Label for="unitPrice">Unit Price &#40;excl. taxes & shipping&#41;</Label>
@@ -260,8 +311,8 @@ export default function PurchaseMaterialForm(props) {
                 </Input>
               </FormGroup>
             </Col>
-          </Row>
-          {/* <Row>
+          </Row> */}
+      {/* <Row>
             <Col xs="12" sm="7">
               <FormGroup>
                 <Label for="measurement">Unit of Measurement</Label>
@@ -294,7 +345,7 @@ export default function PurchaseMaterialForm(props) {
               </FormGroup>
             </Col>
           </Row> */}
-          {/* {canAddNewMeasurement && (
+      {/* {canAddNewMeasurement && (
             <Row>
               <Col>
                 <FormGroup check>
@@ -318,7 +369,7 @@ export default function PurchaseMaterialForm(props) {
               </Col>
             </Row>
           )} */}
-          <Row>
+      {/* <Row>
             <Col xs="12" sm="4">
               <FormGroup>
                 <Label for="quantity">Quantity</Label>
@@ -334,9 +385,9 @@ export default function PurchaseMaterialForm(props) {
               </FormGroup>
             </Col>
           </Row>
-        </Col>
-        <Col xs="12" md="6">
-          <Row style={{ justifyContent: 'space-between' }}>
+        </Col> */}
+      {/* <Col xs="12" md="6"> */}
+      {/* <Row style={{ justifyContent: 'space-between' }}>
             <Col xs="12" sm="7">
               <FormGroup>
                 <Label for="shippingFee">Shipping Fee &#40;excl. taxes&#41;</Label>
@@ -366,8 +417,8 @@ export default function PurchaseMaterialForm(props) {
                 />
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+          </Row> */}
+      {/* <Row>
             <Col xs="12" sm="7">
               <FormGroup>
                 <Label for="purchaseDate">Purchased Date</Label>
@@ -381,8 +432,8 @@ export default function PurchaseMaterialForm(props) {
                 />
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+          </Row> */}
+      {/* <Row>
             <Col xs="12" sm="7">
               <FormGroup>
                 <Label for="phone">Supplier Phone Number</Label>
@@ -403,8 +454,8 @@ export default function PurchaseMaterialForm(props) {
                 />
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+          </Row> */}
+      {/* <Row>
             <Col>
               <FormGroup>
                 <Label for="link">Link to Buy</Label>
@@ -420,8 +471,8 @@ export default function PurchaseMaterialForm(props) {
                 />
               </FormGroup>
             </Col>
-          </Row>
-          {/* <Row>
+          </Row> */}
+      {/* <Row>
             <Col>
               <FormGroup>
                 <Label for="material-image">Upload Material Picture</Label>
@@ -446,7 +497,7 @@ export default function PurchaseMaterialForm(props) {
               </FormGroup>
             </Col>
           </Row> */}
-          <Row>
+      {/* <Row>
             <Col>
               <div className="total-price">
                 <span>
@@ -467,26 +518,17 @@ export default function PurchaseMaterialForm(props) {
                 </span>
               </div>
             </Col>
-          </Row>
-        </Col>
-      </Row>
+          </Row> */}
+      {/* </Col> */}
+      {/* </Row> */}
       <Row>
-        <Col>
-          <Button
-            type="button"
-            id="cancel"
-            color="secondary"
-            onClick={handleCancel}
-            style={boxStyle}
-          >
-            Cancel
-          </Button>
-        </Col>
-        <Col>
-          <Button type="submit" id="submit" color="primary" style={boxStyle}>
-            Submit
-          </Button>
-        </Col>
+        <Button type="button" id="cancel" color="secondary" onClick={handleCancel} style={boxStyle}>
+          Cancel
+        </Button>
+
+        <Button type="submit" id="submit" color="primary" style={boxStyle}>
+          Submit
+        </Button>
       </Row>
     </Form>
   );
