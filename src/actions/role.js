@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
-import * as types from "../constants/role";
+import * as types from '../constants/role';
 
 export const fetchAllRoles = roles => {
   return {
@@ -44,6 +44,8 @@ export const addNewRole = newRole => {
 };
 
 export const updateRole = (roleId, updatedRole) => {
+  // console.log('Updated role', updatedRole);
+
   return async dispatch => {
     try {
       const res = await axios.patch(ENDPOINTS.ROLES_BY_ID(roleId), updatedRole);
