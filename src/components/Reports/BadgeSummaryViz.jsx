@@ -38,6 +38,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
         return 0;
       });
       setSortedBadges(sortBadges);
+      console.log(sortedBadges[0].badge._id,"here")
     }
   }, [badges]);
 
@@ -116,11 +117,12 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                 Dates
                               </DropdownToggle>
                               <DropdownMenu>
-                                {value.earnedDate.map((date, index) => {
-                                  return <DropdownItem key={`date-${value._id}-${index}`}>{date}</DropdownItem>;
-                                })}
+                                {value.earnedDate.map((date, index) => (
+                                  <DropdownItem key={`date-${value._id}-${index}`}>
+                                    {date}
+                                  </DropdownItem>
+                                ))}
                               </DropdownMenu>
-
                             </UncontrolledDropdown>
                           </td>
                           <td>{value.count}</td>
