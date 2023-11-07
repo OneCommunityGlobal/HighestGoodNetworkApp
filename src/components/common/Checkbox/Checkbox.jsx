@@ -1,6 +1,7 @@
 import './Checkbox.css';
 
-export default function Checkbox({ onChange, value, label, id, wrapperClassname }) {
+// eslint-disable-next-line import/prefer-default-export
+export function Checkbox({ onChange, value, label, id, wrapperClassname }) {
   return (
     <div className={`checkbox-wrapper ${wrapperClassname}`}>
       <input

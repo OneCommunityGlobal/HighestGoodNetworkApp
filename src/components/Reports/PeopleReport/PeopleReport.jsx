@@ -27,7 +27,7 @@ import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
-import  Checkbox from '../../common/Checkbox';
+import  {Checkbox} from '../../common/Checkbox';
 
 class PeopleReport extends Component {
   constructor(props) {
