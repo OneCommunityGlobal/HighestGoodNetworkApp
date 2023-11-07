@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './LessonForm.css';
 import Noimg from './images/Noimg3.jpg';
@@ -8,7 +8,6 @@ const style = {
 };
 function LessonForm() {
   const [selectedFile, setSelectedFile] = useState(null);
-  const dropTargetRef = useRef(null);
 
   const handleFileSelection = e => {
     const file = e.target.files[0]; // Get the selected file
@@ -33,8 +32,13 @@ function LessonForm() {
 
   const handleDrop = e => {
     e.preventDefault();
+    const fileInput = document.getElementById('fileInput');
     const file = e.dataTransfer.files[0];
     setSelectedFile(file);
+    // Reset the file input value to clear the selection
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
   return (
     <div className="MasterContainer">
@@ -97,8 +101,7 @@ function LessonForm() {
                 onKeyPress={handleKeyPress}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
-                ref={dropTargetRef}
-                className="dragAndDropStyle"
+                className={`dragAndDropStyle ${selectedFile ? 'fileSelected' : ''}`}
               >
                 {selectedFile ? (
                   <p>Selected File: {selectedFile.name}</p>

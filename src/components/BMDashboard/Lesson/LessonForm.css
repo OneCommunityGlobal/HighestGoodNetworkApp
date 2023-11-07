@@ -3,7 +3,7 @@
   padding: 5%;
   background-color: #FFFFFF;
   border-radius: 1%;
-    /* Override the max-width for form controls within your form */
+    /* Override the max-width for form controls within form */
  .form-control {
    max-width: unset !important;
  }
@@ -15,7 +15,7 @@
    padding-left: 10%;
    padding-right: 10%;
    padding-top: 5%;
-   padding-bottom: 1%;
+   padding-bottom: 10%;
     background-color: #E8F4F9;
 }
 .LessonLabel{
@@ -48,9 +48,12 @@
    
    border-radius: 1%;
  }
+ .fileSelected {
+  border-color: #0b0b0b; 
+}
  .ImageDiv {
-   width: 50px; /* Set the desired width */
-   height: 50px; /* Set the desired height */
+   width: 50px; 
+   height: 50px; 
    background-size: 100%;
    background-repeat: no-repeat;
    background-position: center center;
@@ -72,7 +75,7 @@
    width:25%;
    height: 50px;
   background-color: #FFFFFF !important;
-  color: #2E5061 !important; /* Change the text color (red in this example) */
+  color: #2E5061 !important; 
   border-color: #2E5061 !important;
  }
  .LessonFormButtonSubmit{
@@ -80,7 +83,7 @@
    width:25%;
    height: 50px;
    background-color:  #2E5061!important;
-   color: #FFFFFF !important; /* Change the text color (red in this example) */
+   color: #FFFFFF !important;
    border-color: #2E5061 !important;
   }
 .DragandDropText{
@@ -106,10 +109,10 @@
    width:45%;
 
  }
- }
- @media (max-width: 650px) {
-   .dragAndDropStyle {
-     height: 100%
-   }
 
+ .MasterContainer{
+
+    padding-bottom: 20%;
+    
+ }
  }
