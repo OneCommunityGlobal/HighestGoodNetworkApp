@@ -32,7 +32,10 @@ const initialState = {
   selectedTeamName: 'Test Team',
   hasPermission: jest.fn(),
   members: {
-    teamMembers: { toSorted: jest.fn(() => []) },
+    teamMembers: {
+      toSorted: jest.fn(() => []),
+      reduce: jest.fn(() => {}),
+    },
   },
   roles: [{}],
   auth: {
