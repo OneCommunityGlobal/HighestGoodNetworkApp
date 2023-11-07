@@ -7,7 +7,6 @@ src/App.css
 src/config.json
 
 src/index.js
-src/languages/**
 src/reducers/**
 src/styles.js
 src/utils/**
@@ -19,6 +18,7 @@ src/components/App.jsx
 src/components/AutoReload/**
 src/components/Badge/**
 src/components/common/**
+src/components/Header/**
 src/components/BMDashboard/BMHeader/**
 src/components/Inventory/**
 src/components/ManageMemberships/**
