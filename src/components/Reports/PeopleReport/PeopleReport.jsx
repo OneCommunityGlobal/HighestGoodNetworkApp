@@ -91,11 +91,13 @@ class PeopleReport extends Component {
 
     if (match) {
       const { userId } = match.params;
-      await getUserProfile(userId);
-      await getUserTask(userId);
-      await getUserProjects(userId);
-      await getWeeklySummaries(userId);
-      await getTimeEntriesForPeriod(userId, fromDate, toDate);
+      await this.props.getUserProfile(userId);
+      await this.props.getUserTask(userId);
+      await this.props.getUserProjects(userId);
+      await this.props.getWeeklySummaries(userId);
+      await this.props.getTimeEntriesForPeriod(userId, fromDate, toDate);
+
+      const { userProfile, userTask, userProjects, timeEntries, auth } = this.props;
 
       this.setState({
         // eslint-disable-next-line react/no-unused-state
