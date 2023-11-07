@@ -160,11 +160,11 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                             {' '}
                             <img
                               src={value.badge.imageUrl}
-                              id={`popover_${value.id}`}
+                              id={`popover_${value._id}`}
                               alt="badge"
                             />
                           </td>
-                          <UncontrolledPopover trigger="hover" target={`popover_${value.id}`}>
+                          <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                             <Card className="text-center">
                               <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
                               <CardBody>
