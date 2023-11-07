@@ -38,7 +38,6 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
         return 0;
       });
       setSortedBadges(sortBadges);
-      console.log(sortedBadges[0].badge._id,"here")
     }
   }, [badges]);
 
@@ -118,6 +117,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                               </DropdownToggle>
                               <DropdownMenu>
                                 {value.earnedDate.map((date, index) => (
+                                  // eslint-disable-next-line react/no-array-index-key
                                   <DropdownItem key={`date-${value._id}-${index}`}>
                                     {date}
                                   </DropdownItem>
