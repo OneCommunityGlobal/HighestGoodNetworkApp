@@ -1,23 +1,57 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 
 import RecordsModal from './RecordsModal';
 
 export default function MaterialsTable({ filteredMaterials }) {
+  const [sortedData, setData]= useState(null);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
+  const [order,setOrder]= useState("ASC");
+
+
+  useEffect(() => {
+    if(filteredMaterials && filteredMaterials.length > 0) {
+      setData(filteredMaterials);
+    }
+  },[]);
+  
 
   const handleEditRecordsClick = () => {
     // open records editor
-    return null;
+     return null;
   };
 
   const handleViewRecordsClick = (data, type) => {
     setModal(true);
     setRecord(data);
     setRecordType(type);
+  };
+
+  const sortingAsc = (columnName) => {
+    const sorted = [].concat(...filteredMaterials)
+    .sort((a, b) => a.project.projectName > b.project.projectName ? 1 : -1);    
+    setData(sorted);
+    setOrder("DSC");
+  };
+
+  const sortingDesc = (columnName) => {
+    const sorted = [].concat(...filteredMaterials)
+    .sort((a, b) => a.project.projectName < b.project.projectName ? 1 : -1);
+    setData(sorted);
+    setOrder("ASC"); 
+  };
+
+  const doSorting = (columnName) => {
+    debugger;
+    if(order === 'ASC') {
+      sortingAsc(columnName);
+    }
+    else {
+      sortingDesc(columnName);
+    }
   };
 
   return (
@@ -33,8 +67,8 @@ export default function MaterialsTable({ filteredMaterials }) {
         <Table>
           <thead>
             <tr>
-              <th>Project</th>
-              <th>Name</th>
+              <th onClick={() => doSorting("Project")}>Project {order}</th>
+              <th onClick={() => doSorting("Name")}>Name {order}</th>
               <th>Unit</th>
               <th>Bought</th>
               <th>Used</th>
@@ -47,8 +81,8 @@ export default function MaterialsTable({ filteredMaterials }) {
             </tr>
           </thead>
           <tbody>
-            {filteredMaterials.length ? (
-              filteredMaterials.map(mat => {
+            {sortedData && sortedData.length > 0 ? (
+              sortedData.map(mat => {
                 return (
                   <tr key={mat._id}>
                     <td>{mat.project.projectName}</td>
