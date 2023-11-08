@@ -16,7 +16,7 @@ export default function MaterialsTable({ filteredMaterials }) {
     if(filteredMaterials && filteredMaterials.length > 0) {
       setData(filteredMaterials);
     }
-  },[]);
+  },filteredMaterials);
   
 
   const handleEditRecordsClick = () => {
@@ -31,21 +31,40 @@ export default function MaterialsTable({ filteredMaterials }) {
   };
 
   const sortingAsc = (columnName) => {
-    const sorted = [].concat(...filteredMaterials)
-    .sort((a, b) => a.project.projectName > b.project.projectName ? 1 : -1);    
+    let sorted =[];
+    if(columnName=="ProjectName")
+    {
+       sorted = [].concat(...sortedData)
+      .sort((a, b) => a.project.projectName >= b.project.projectName ? 1 : -1);    
+    }
+    else if(columnName=="InventoryItemType")
+    {
+      sorted = [].concat(...sortedData)
+      .sort((a, b) => a.inventoryItemType?.name >= b.inventoryItemType?.name ? 1 : -1);  
+    }
+    
     setData(sorted);
     setOrder("DSC");
   };
 
   const sortingDesc = (columnName) => {
-    const sorted = [].concat(...filteredMaterials)
-    .sort((a, b) => a.project.projectName < b.project.projectName ? 1 : -1);
+    let sorted =[];
+    if(columnName=="ProjectName")
+    {
+       sorted = [].concat(...sortedData)
+       .sort((a, b) => a.project.projectName <= b.project.projectName ? 1 : -1);
+    }
+    else if(columnName=="InventoryItemType")
+    {
+      sorted = [].concat(...sortedData)
+      .sort((a, b) => a.inventoryItemType?.name <= b.inventoryItemType?.name ? 1 : -1); 
+    }
+
     setData(sorted);
     setOrder("ASC"); 
   };
 
   const doSorting = (columnName) => {
-    debugger;
     if(order === 'ASC') {
       sortingAsc(columnName);
     }
@@ -67,8 +86,8 @@ export default function MaterialsTable({ filteredMaterials }) {
         <Table>
           <thead>
             <tr>
-              <th onClick={() => doSorting("Project")}>Project {order}</th>
-              <th onClick={() => doSorting("Name")}>Name {order}</th>
+              <th onClick={() => doSorting("ProjectName")}>Project {order}</th>
+              <th onClick={() => doSorting("InventoryItemType")}>Name {order}</th>
               <th>Unit</th>
               <th>Bought</th>
               <th>Used</th>
