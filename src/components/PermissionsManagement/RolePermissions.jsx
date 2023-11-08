@@ -137,10 +137,6 @@ export const modalInfo = {
     'Give the ability to see on the dashboard the eye indicator for when a person is invisible. ',
   'Edit Team 4-Digit Codes':
     'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
-  'Create New Preset' :
-    '\'Create New Preset\' saves current permissions into a new preset named \'New Preset #\' with the lowest number not already taken.',
-  'Load Presets' :
-    '\'Load Presets\' opens a list of presets saved for this role where they can be renamed, applied, or deleted.'
 };
 
 function RolePermissions(props) {
@@ -269,11 +265,17 @@ function RolePermissions(props) {
             )}
           </div>
           {props?.userRole === 'Owner' && (
-
-            <div style={{flexDirection:'row', display:'flex'}}>
+            <div style={{ flexDirection: 'row', display: 'flex' }}>
               <div className="name-container__btn_columns">
                 <div className="name-container__btns">
-                  <Button className="btn_save" color="success" onClick={()=>{ saveNewPreset()}} style={boxStyle}>
+                  <Button
+                    className="btn_save"
+                    color="success"
+                    onClick={() => {
+                      saveNewPreset();
+                    }}
+                    style={boxStyle}
+                  >
                     Create New Preset
                   </Button>
                   <Button
@@ -287,8 +289,12 @@ function RolePermissions(props) {
                   </Button>
                 </div>
                 <div className="name-container__btns">
-
-                  <Button className="btn_save" color="success" onClick={() => updateInfo()} style={boxStyle}>
+                  <Button
+                    className="btn_save"
+                    color="success"
+                    onClick={() => updateInfo()}
+                    style={boxStyle}
+                  >
                     Save
                   </Button>
                   <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
@@ -297,8 +303,14 @@ function RolePermissions(props) {
                 </div>
               </div>
 
-              <div className="icon-button-container" style={{position: 'relative', width:'0', height:'0'}}>
-                <div className='name-container__btns' style={{position: 'absolute', left: '10px', top: '20px'}}>
+              <div
+                className="icon-button-container"
+                style={{ position: 'relative', width: '0', height: '0' }}
+              >
+                <div
+                  className="name-container__btns"
+                  style={{ position: 'absolute', left: '10px', top: '20px' }}
+                >
                   <i
                     data-toggle="tooltip"
                     data-placement="center"
@@ -365,19 +377,18 @@ function RolePermissions(props) {
               {permission}
             </p>
             <div className="icon-button-container">
-
-            <div className='infos'>
-              <i
-                data-toggle="tooltip"
-                data-placement="center"
-                title="Click for more information"
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={() => {
-                  handleModalOpen(permission);
-                }}
-              />
-            </div>
+              <div className="infos">
+                <i
+                  data-toggle="tooltip"
+                  data-placement="center"
+                  title="Click for more information"
+                  aria-hidden="true"
+                  className="fa fa-info-circle"
+                  onClick={() => {
+                    handleModalOpen(permission);
+                  }}
+                />
+              </div>
               <Button
                 className="icon-button"
                 color={permissions.includes(permission) ? 'danger' : 'success'}

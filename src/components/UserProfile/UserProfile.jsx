@@ -34,7 +34,7 @@ import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
-import InfoModal from './InfoModal';
+// import InfoModal from './InfoModal';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 import SaveButton from './UserProfileEdit/SaveButton';
@@ -52,6 +52,7 @@ import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect, useDispatch } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
+import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
@@ -81,7 +82,7 @@ function UserProfile(props) {
   const [originalProjects, setOriginalProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
-  const [infoModal, setInfoModal] = useState(false);
+  // const [infoModal, setInfoModal] = useState(false);
   const [formValid, setFormValid] = useState(initialFormValid);
   const [blueSquareChanged, setBlueSquareChanged] = useState(false);
   const [type, setType] = useState('');
@@ -98,7 +99,6 @@ function UserProfile(props) {
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
-  const [usersRole, setUsersRole] = useState('');
 
   const userProfileRef = useRef();
 
@@ -205,6 +205,33 @@ function UserProfile(props) {
     setIsProjectsEqual(compare);
   };
 
+  const loadSummaryIntroDetails = async (teamId, user) => {
+    const { firstName, lastName } = user;
+    const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+    const { data } = res;
+
+    const memberSubmitted = [];
+    const memberNotSubmitted = [];
+
+    data.forEach(member => {
+      member.weeklySummaries[0].summary !== ''
+        ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
+        : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+    });
+    const memberSubmittedString =
+      memberSubmitted.length !== 0
+        ? memberSubmitted.join(', ')
+        : '<list all team members names included in the summary>.';
+    const memberDidntSubmitString =
+      memberNotSubmitted.length !== 0
+        ? memberSubmitted.join(', ')
+        : '<list all team members names NOT included in the summary>';
+
+    const summaryIntroString = `This week’s summary was managed by ${firstName} ${lastName} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+
+    setSummaryIntro(summaryIntroString);
+  };
+
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
@@ -216,46 +243,52 @@ function UserProfile(props) {
       .catch(err => console.log(err));
   };
 
-  const loadSummaryIntroDetails = async teamId => {
-    const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
-    const { data } = res;
+  // const loadSummaryIntroDetails = async teamId => {
+  //   const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+  //   const { data } = res;
 
-    const memberSubmitted = [];
-    const memberNotSubmitted = [];
-    let manager = '';
+  //   const memberSubmitted = [];
+  //   const memberNotSubmitted = [];
+  //   let manager = '';
 
-    data.forEach(member => {
-      if (member.role === 'Manager') {
-        manager = `${member.firstName} ${member.lastName}`;
-      }
-      member.weeklySummaries[0].summary !== ''
-        ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
-        : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
-    });
+  //   data.forEach(member => {
+  //     if (member.role === 'Manager') {
+  //       manager = `${member.firstName} ${member.lastName}`;
+  //     }
+  //     member.weeklySummaries[0].summary !== ''
+  //       ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
+  //       : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+  //   });
 
-    manager = manager === '' ? '<Your Name>' : manager;
-    const memberSubmittedString =
-      memberSubmitted.length !== 0
-        ? memberSubmitted.join(', ')
-        : '<list all team members names included in the summary>.';
-    const memberDidntSubmitString =
-      memberNotSubmitted.length !== 0
-        ? memberSubmitted.join(', ')
-        : '<list all team members names NOT included in the summary>';
+  //   manager = manager === '' ? '<Your Name>' : manager;
+  //   const memberSubmittedString =
+  //     memberSubmitted.length !== 0
+  //       ? memberSubmitted.join(', ')
+  //       : '<list all team members names included in the summary>.';
+  //   const memberDidntSubmitString =
+  //     memberNotSubmitted.length !== 0
+  //       ? memberSubmitted.join(', ')
+  //       : '<list all team members names NOT included in the summary>';
 
-    const summaryIntroString = `This week’s summary was managed by ${manager} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+  //   const summaryIntroString = `This week’s summary was managed by ${manager} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
 
-    setSummaryIntro(summaryIntroString);
-  };
+  //   setSummaryIntro(summaryIntroString);
+  // };
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
+
     if (!userId) return;
 
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-      await loadSummaryIntroDetails(newUserProfile.teams[0]._id);
+
+      const teamId = newUserProfile?.teams[0]?._id;
+      if (teamId) {
+        await loadSummaryIntroDetails(teamId, response.data);
+      }
+
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
@@ -476,9 +509,9 @@ function UserProfile(props) {
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
 
-  const toggleInfoModal = () => {
-    setInfoModal(!infoModal);
-  };
+  // const toggleInfoModal = () => {
+  //   setInfoModal(!infoModal);
+  // };
 
   const toggleTab = tab => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -591,7 +624,7 @@ function UserProfile(props) {
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
-  const canSeeSummaryIntroBtn = props.hasPermission('seeSummaryIntroButton');
+  const canGetProjectMembers = props.hasPermission('getProjectMembers');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
@@ -657,7 +690,7 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      <InfoModal isOpen={infoModal} toggle={toggleInfoModal} />
+      {/* <InfoModal isOpen={infoModal} toggle={toggleInfoModal} /> */}
       <Container className="emp-profile">
         <Row>
           <Col md="4" id="profileContainer">
@@ -694,7 +727,7 @@ function UserProfile(props) {
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
-              <i
+              {/* <i
                 data-toggle="tooltip"
                 data-placement="right"
                 title="Click for more information"
@@ -702,7 +735,14 @@ function UserProfile(props) {
                 aria-hidden="true"
                 className="fa fa-info-circle"
                 onClick={toggleInfoModal}
-              />{' '}
+              />{' '} */}
+              <EditableInfoModal
+                areaName="UserProfileInfoModal"
+                areaTitle="User Profile"
+                fontSize={24}
+                isPermissionPage={true}
+                role={requestorRole} // Pass the 'role' prop to EditableInfoModal
+              />
               <ActiveCell
                 isActive={userProfile.isActive}
                 user={userProfile}
@@ -745,7 +785,7 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
-              {canSeeSummaryIntroBtn ? (
+              {canGetProjectMembers && teams.length !== 0 ? (
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);

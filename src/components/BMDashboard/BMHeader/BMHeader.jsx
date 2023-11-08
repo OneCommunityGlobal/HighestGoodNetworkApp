@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../../actions/authActions';
-import { getTimerData } from '../../../actions/timer';
 import { getAllRoles } from '../../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
@@ -90,7 +89,6 @@ export const Header = props => {
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
-      props.getTimerData(props.auth.user.userid);
       if (props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
@@ -321,7 +319,6 @@ const mapStateToProps = state => ({
 });
 export default connect(mapStateToProps, {
   getHeaderData,
-  getTimerData,
   getAllRoles,
   hasPermission,
 })(Header);

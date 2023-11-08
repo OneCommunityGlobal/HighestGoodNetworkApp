@@ -81,7 +81,7 @@ function FormattedReport({
 
     const openEmailClientWithBatchInNewTab = batch => {
       const emailAddresses = batch.join(', ');
-      const mailtoLink = `mailto:${emailAddresses}`;
+      const mailtoLink = `mailto:?bcc=${emailAddresses}`;
       window.open(mailtoLink, '_blank');
     };
 

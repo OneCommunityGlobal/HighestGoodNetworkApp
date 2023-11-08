@@ -71,6 +71,7 @@
   .options {
     max-height: 570px;
     overflow-y: scroll;
+    font-family: 'Courier New', Courier, monospace;
   }
 
   .options::-webkit-scrollbar {

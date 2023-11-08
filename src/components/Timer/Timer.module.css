@@ -1,0 +1,106 @@
+.timerContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-right: 1rem;
+  gap: 0.5rem;
+  z-index: 30;
+  user-select: none;
+  -moz-user-select: none;
+}
+
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.preview {
+  font-size: 1.2rem;
+  font-weight: bold;
+  width: 100px;
+  background-color: rgba(82, 92, 102, 1);
+  color: white;
+  border-radius: 0 0 0.5rem 0.5rem;
+  padding: 0.25rem 0.65rem;
+}
+
+.btns {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+}
+
+/* @media (max-width: 768px) {
+  .timer-container .add-btn span {
+    display: none;
+  }
+} */
+
+.timer {
+  position: absolute;
+  width: 280px;
+  height: 400px;
+  left: 0;
+  top: 4rem;
+  background: #343a40;
+  border-radius: 1rem;
+  box-shadow: 15px 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+}
+
+.timerContent {
+  /* position: relative; */
+  padding: 1rem;
+  /* padding-top: 2rem; */
+  margin-bottom: auto;
+  margin-top: auto;
+  gap: 1rem;
+  color: white;
+}
+
+.timer .btnNormal {
+  color: rgba(237, 104, 138, 1);
+  cursor: pointer;
+}
+
+.timer .btnDisabled {
+  color: gray;
+  cursor: not-allowed;
+}
+
+.hideTimer {
+  display: none;
+}
+
+.btnNormal:hover {
+  color: #fda4af;
+  background-color: #881337;
+}
+
+.btn {
+  cursor: pointer;
+  color: white;
+}
+
+.timerContainer .disabled {
+  cursor: not-allowed;
+  color: gray;
+  background: transparent;
+  border: none;
+}
+
+.btn:hover {
+  color: #ed688a;
+}
+
+.btnDisabled {
+  cursor: not-allowed;
+  color: #837175;
+}
+
+.transitionColor {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
