@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -29,7 +29,7 @@ import {
   Alert,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons'
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
@@ -244,6 +244,18 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         <b>{summaryDateText}</b>
       </p>
       {summaryContent}
+      {
+        summaryContent &&
+        <FontAwesomeIcon
+          className="copy_icon"
+          icon={faCopy}
+          onClick={() => {
+            navigator.clipboard.writeText(summaryText);
+            toast.success('Weekly Summary Copied!');
+          }}
+        />
+      }
+
     </>
   );
 }
