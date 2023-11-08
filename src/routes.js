@@ -45,7 +45,7 @@ import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
 
 import MaterialsList from 'components/BMDashboard/MaterialsList';
-import PurchaseMaterials from 'components/BMDashboard/PurchaseMaterial';
+import PurchaseMaterials from 'components/BMDashboard/MaterialPurchaseRequest';
 import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
 
 
@@ -164,7 +164,7 @@ export default (
 
       <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
       <Route path="/bmdashboard/login" component={BMLogin} />
-      <BMProtectedRoute path="/bmdashboard/purchase-materials" component={PurchaseMaterials} />
+      <BMProtectedRoute path="/bmdashboard/materials/purchase" component={PurchaseMaterials} />
       <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
       <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
       {/* Temporary route to redirect all subdirectories to login if unauthenticated */}

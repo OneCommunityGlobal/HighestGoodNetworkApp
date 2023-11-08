@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 // import PhoneInput from 'react-phone-input-2';
@@ -6,23 +6,25 @@ import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 // import { isValidMediaUrl } from 'utils/checkValidURL';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
-import { postMaterial } from '../../../../actions/materials';
-import './PurchaseMaterialForm.css';
+import { postMaterial } from '../../../actions/materials';
+import './PurchaseForm.css';
 
-// AddMaterialsForm will take in an array of project objects
-// and optionally a selected project object
-export default function PurchaseMaterialForm(props) {
-  const {
-    projects,
-    selectedProject,
-    // canAddNewMaterial,
-    // canAddNewMeasurement,
-    materials,
-    // measurements,
-  } = props;
+export default function PurchaseForm({ projects, materialTypes }) {
+  const [projectId, setProjectId] = useState('');
+  const [matTypeId, setMatTypeId] = useState('');
+  const [qty, setQty] = useState('');
+  const [unit, setUnit] = useState('');
+
+  // change displayed unit of measurement based on selected material
+  useEffect(() => {
+    if (projects.length) {
+      const matType = materialTypes.find(type => type._id === matTypeId);
+      setUnit(matType.unit);
+    }
+  }, [matTypeId]);
 
   const [formInputs, setFormInputs] = useState({
-    projectId: selectedProject?._id || '',
+    // projectId: selectedProject?._id || '',
     material: '',
     // newMaterial: false,
     invoice: '',
@@ -44,35 +46,35 @@ export default function PurchaseMaterialForm(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const linkRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
+  // const linkRegex = /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)?$/;
 
   const schema = Joi.object({
     projectId: Joi.string().required(),
     material: Joi.string().required(),
-    newMaterial: Joi.boolean().required(),
-    invoice: Joi.string().required(),
-    unitPrice: Joi.number()
-      .positive()
-      .required(),
-    currency: Joi.string().required(),
+    // newMaterial: Joi.boolean().required(),
+    // invoice: Joi.string().required(),
+    // unitPrice: Joi.number()
+    //   .positive()
+    //   .required(),
+    // currency: Joi.string().required(),
     quantity: Joi.number()
       .positive()
       .integer()
       .required(),
-    measurement: Joi.string().required(),
-    newMeasurement: Joi.boolean().required(),
-    purchaseDate: Joi.date().required(),
-    shippingFee: Joi.number()
-      .positive()
-      .required(),
-    taxRate: Joi.number()
-      .positive()
-      .required(),
-    phone: Joi.string().required(),
-    link: Joi.string()
-      .required()
-      .regex(linkRegex),
-    description: Joi.string().required(),
+    // measurement: Joi.string().required(),
+    // newMeasurement: Joi.boolean().required(),
+    // purchaseDate: Joi.date().required(),
+    // shippingFee: Joi.number()
+    //   .positive()
+    //   .required(),
+    // taxRate: Joi.number()
+    //   .positive()
+    //   .required(),
+    // phone: Joi.string().required(),
+    // link: Joi.string()
+    //   .required()
+    //   .regex(linkRegex),
+    // description: Joi.string().required(),
   });
 
   const handleSubmit = async e => {
@@ -84,7 +86,7 @@ export default function PurchaseMaterialForm(props) {
       dispatch(postMaterial(formInputs));
       // TODO: check status to display success or error toast message
       setFormInputs({
-        projectId: selectedProject?._id || '',
+        // projectId: selectedProject?._id || '',
         material: '',
         newMaterial: false,
         invoice: '',
@@ -132,54 +134,55 @@ export default function PurchaseMaterialForm(props) {
         </Col>
       </Row> */}
       <FormGroup>
-        <Label for="projectId">Project</Label>
+        <Label for="select-project">Project</Label>
         <Input
-          id="projectId"
-          name="projectId"
+          id="select-project"
+          // name="projectId"
           type="select"
-          invalid={trySubmit && formInputs.projectId === ''}
-          value={formInputs.projectId}
-          onChange={handleChange}
+          // invalid={trySubmit && formInputs.projectId === ''}
+          value={projectId}
+          onChange={({ currentTarget }) => setProjectId(currentTarget.value)}
+          disabled={!projects.length}
         >
-          <option value="">-- select an option --</option>
-          {projects.map(el => (
-            <option value={el._id} key={el._id}>
-              {el.projectName}
+          <option value=""> </option>
+          {projects.map(({ _id, name }) => (
+            <option value={_id} key={_id}>
+              {name}
             </option>
           ))}
         </Input>
       </FormGroup>
       <FormGroup>
-        <Label for="material">Material Name</Label>
+        <Label for="select-material">Material</Label>
         <Input
-          id="material"
-          name="material"
+          id="select-material"
+          // name="material"
           type="select"
-          invalid={trySubmit && formInputs.material === ''}
-          value={formInputs.material}
-          onChange={handleChange}
+          // invalid={trySubmit && formInputs.material === ''}
+          value={matTypeId}
+          onChange={({ currentTarget }) => setMatTypeId(currentTarget.value)}
         >
-          <option value="">-- select an option --</option>
-          {materials.map(el => (
-            <option value={el._id} key={el._id}>
-              {el.name}
+          <option value=""> </option>
+          {materialTypes.map(({ _id, name }) => (
+            <option value={_id} key={_id}>
+              {name}
             </option>
           ))}
         </Input>
       </FormGroup>
       <FormGroup>
-        <Label for="quantity">Quantity</Label>
+        <Label for="select-quantity">Quantity</Label>
         <Input
-          id="quantity"
-          name="quantity"
+          id="select-quantity"
+          // name="quantity"
           type="number"
-          invalid={trySubmit && formInputs.quantity === ''}
-          value={formInputs.quantity}
+          // invalid={trySubmit && formInputs.quantity === ''}
+          value={qty}
           min={1}
-          onChange={handleChange}
+          onChange={({ currentTarget }) => setQty(currentTarget.value)}
         />
       </FormGroup>
-
+      {unit}
       {/* <Row>
         <Col xs="12" md="6">
           <Row>
@@ -526,7 +529,12 @@ export default function PurchaseMaterialForm(props) {
           Cancel
         </Button>
 
-        <Button type="submit" id="submit" color="primary" style={boxStyle}>
+        <Button
+          type="submit"
+          color="primary"
+          style={boxStyle}
+          disabled={!projectId || !matTypeId || !qty}
+        >
           Submit
         </Button>
       </Row>
