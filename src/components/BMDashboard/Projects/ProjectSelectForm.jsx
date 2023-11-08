@@ -10,16 +10,15 @@ function ProjectSelectForm({ projects }) {
 
   const selectOptions = projects.map(project => {
     return (
-      <option key={project.projectId} value={project.projectId}>
-        {project.projectName}
+      <option key={project._id} value={project._id}>
+        {project.name}
       </option>
     );
   });
 
   const handleOptionChange = event => {
     setError(false);
-    setSelectedProjectId(event.target.value);
-    
+    setSelectedProjectId(event.target.value);   
   };
 
   const handleButtonClick = () => {
