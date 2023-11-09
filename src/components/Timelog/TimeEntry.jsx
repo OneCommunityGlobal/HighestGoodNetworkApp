@@ -54,6 +54,7 @@ const TimeEntry = ({ data, displayYear, userProfile, LoggedInuserId, curruserId 
   const toggleTangibility = () => {
     const newData = {
       ...data,
+      curruserId: curruserId,
       isTangible: !data.isTangible,
       timeSpent: `${data.hours}:${data.minutes}:00`,
     };

@@ -122,7 +122,7 @@ const updateTimeEntries = (timeEntry, oldDateOfWork) => {
     const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
 
     if (offset <= 2 && offset >= 0) {
-      dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
+      dispatch(getTimeEntriesForWeek(timeEntry.curruserId, offset));
     }
   };
 };
