@@ -34,6 +34,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 
 const textColors = {
   Default: '#000000',
