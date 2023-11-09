@@ -4,9 +4,6 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'react
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
-// import { connect } from 'react-redux';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { updateDashboardData, getDashboardDataAI } from '../../actions/dashboard';
 
 function CurrentPromptModal(props) {
@@ -19,32 +16,27 @@ function CurrentPromptModal(props) {
 
   const toggle = () => setModal(!modal);
 
-  // const currentPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.
-  // Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'.
-  // Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment.
-  // Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`;
-
-  // const dashboardDataAIPrompt =
-  //   props.state.dashboardData.aIPromptText === '' || props.state.dashboardData.aIPromptText === null
-  //     ? currentPrompt
-  //     : props.state.dashboardData.aIPromptText;
+  const fallbackPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.
+  Write it as only one paragraph. It must be only one paragraph. Keep it less than 500 words. Start the paragraph with 'This week'.
+  Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment.
+  Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`;
 
   // Fetch the prompt when the component mounts or the modal opens
   useEffect(() => {
     if (modal) {
       setLoading(true);
       dispatch(getDashboardDataAI())
-        .then((response) => {
+        .then(response => {
           if (response) {
             //console.log('response: ', response.aIPromptText);
             setPrompt(response.aIPromptText);
           } else {
-            setPrompt(currentPrompt); // Fallback to hardcoded prompt if fetched prompt is empty
+            setPrompt(fallbackPrompt); // Fallback to hardcoded prompt if fetched prompt is empty
           }
         })
-        .catch((error) => {
-          console.error('Error fetching AI prompt:', error);
-          setPrompt(currentPrompt); // Fallback to hardcoded prompt in case of error
+        .catch(error => {
+          //console.error('Error fetching AI prompt:', error);
+          setPrompt(fallbackPrompt); // Fallback to hardcoded prompt in case of error
         })
         .finally(() => {
           setLoading(false);
@@ -52,8 +44,7 @@ function CurrentPromptModal(props) {
     }
   }, [modal]);
 
-
-  console.log('props.userRole: ', props.userRole);
+  //console.log('props.userRole: ', props.userRole);
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(prompt);
@@ -67,8 +58,8 @@ function CurrentPromptModal(props) {
         toast.success('Prompt Updated!');
         setIsEditing(false);
       })
-      .catch((error) => {
-        console.error('Error updating AI prompt:', error);
+      .catch(error => {
+        //console.error('Error updating AI prompt:', error);
         toast.error('Failed to update prompt.');
       })
       .finally(() => {
@@ -76,7 +67,7 @@ function CurrentPromptModal(props) {
       });
   };
 
-  const handleEditPrompt = (event) => {
+  const handleEditPrompt = event => {
     setPrompt(event.target.value);
   };
 
@@ -102,15 +93,6 @@ function CurrentPromptModal(props) {
         or similar AI text completion tool
         <br />
       </ReactTooltip>
-      {/* <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Current AI Prompt </ModalHeader>
-        <ModalBody>{currentPrompt}</ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleCopyToClipboard} style={boxStyle}>
-            Copy Prompt
-          </Button>
-        </ModalFooter>
-      </Modal> */}
 
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Current AI Prompt</ModalHeader>
