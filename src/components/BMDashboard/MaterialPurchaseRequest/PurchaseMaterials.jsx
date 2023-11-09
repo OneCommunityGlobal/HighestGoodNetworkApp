@@ -11,8 +11,8 @@ import './PurchaseMaterials.css';
 export default function PurchaseMaterials() {
   const [projects, setProjects] = useState([]);
   const [materialTypes, setMaterialTypes] = useState([]);
-  console.log(materialTypes);
-  console.log(projects);
+  // console.log(materialTypes);
+  // console.log(projects);
   // const allProjects = useSelector(state => state.allProjects);
   // const itemTypes = useSelector(state => state.itemTypes);
 

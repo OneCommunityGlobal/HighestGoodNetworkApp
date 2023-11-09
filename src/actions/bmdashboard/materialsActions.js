@@ -16,6 +16,12 @@ export const fetchAllMaterials = () => {
   } 
 }
 
+export const purchaseMaterial = async (body) => {
+  return axios.post(ENDPOINTS.BM_MATERIALS, body)
+    .then(res => res)
+    .catch(err => console.log(err))
+}
+
 export const setMaterials = payload => {
   return {
     type: SET_MATERIALS,
