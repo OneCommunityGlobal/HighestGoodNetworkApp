@@ -1,0 +1,1 @@
+export const SET_BM_PROJECTS = 'SET_BM_PROJECTS';
