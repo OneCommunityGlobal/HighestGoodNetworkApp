@@ -39,7 +39,7 @@ describe('BadgeTableFilter component', () => {
     };
     renderComponent(mockData);
   });
-  it('check name box', async () => {
+  it('check name box', () => {
     const mockData = {
       name: 'badge',
       description: '',
