@@ -239,68 +239,49 @@ export class WeeklySummariesReport extends Component {
   //   }
   // }
 
-  teamCodeChange = (oldTeamCode, newTeamCode) => {
+  teamCodeChange = (oldTeamCode, newTeamCode, userId) => {
     this.setState((state) => {
-      const { selectedCodes, teamCodes } = state;
-      const innerCodeChangeFunction = (newTeamCodeLabel) => {
-        const oldTeamCodeIndex = teamCodes.findIndex(code => code.value === oldTeamCode);
-        console.log("teamCodes[oldTeamCodeIndex] at THE TOP is ", teamCodes[oldTeamCodeIndex]);
-        // teamCodes[oldTeamCodeIndex].value = newTeamCode;
-        // update currently selectedCodes to reflect a change in #
-        const oldSelectedCodeIndex = selectedCodes.findIndex(code => code.value === oldTeamCode);
-        let oldSelectedCodeNum = Number(regExp.exec(selectedCodes[oldSelectedCodeIndex].label)[1]);
-        if (oldSelectedCodeNum == 1) {
-          // remove oldTeamCode from dropdown list 
-          teamCodes.splice(oldTeamCodeIndex, 1);
-          selectedCodes.splice(oldSelectedCodeIndex, 1);
-          // if selected teamCode has only ONE to display, set selected to none after the change?
-        } else {
-          console.log("teamCodes[oldTeamCodeIndex] is ", teamCodes[oldTeamCodeIndex]);
-          oldSelectedCodeNum -= 1;
-          selectedCodes[oldSelectedCodeIndex].label = `${oldTeamCode} (${oldSelectedCodeNum})`;
-          selectedCodes[oldSelectedCodeIndex].value = oldTeamCode;
-          console.log("selectedCodes within else ", selectedCodes);
-          teamCodes[oldTeamCodeIndex].value = newTeamCode;
-          // if (newTeamCodeLabel) {
-          //   console.log("newTeamCodeLabel is ", newTeamCodeLabel);
-          //   teamCodes[oldTeamCodeIndex].label = newTeamCodeLabel
-          // } 
-        }
-      }
-
-      const alreadyUsingNewTeamCode = teamCodes.findIndex(code => code.value === newTeamCode);
-      // regex for number within parentheses - ex: (5)
+      const { selectedCodes, teamCodes, summaries } = state;
       const regExp = /\(([^)]+)\)/;
 
-      // if the newTeamCode is already in use 
-      if (alreadyUsingNewTeamCode != -1) {
-        // increasing label number for team code that already exists
-        let labelNum = Number(regExp.exec(teamCodes[alreadyUsingNewTeamCode].label)[1]);
-        labelNum += 1;
-        teamCodes[alreadyUsingNewTeamCode].label = teamCodes[alreadyUsingNewTeamCode].label.replace(regExp, `(${labelNum})`)
+      // find summary within summaries that matches _id & change that summary's teamCode
+      const foundSummary = summaries.find(obj => obj._id === userId);
+      foundSummary.teamCode = newTeamCode;
 
-        innerCodeChangeFunction(teamCodes[alreadyUsingNewTeamCode].label);
+      // console.log(selectedCodes);
+      // console.log(teamCodes);
+      // console.log(foundSummary);
+
+      // within teamCodes, decrease num on label for oldTeamCode 
+      const foundOldTeam = teamCodes.find(obj => obj.value === oldTeamCode);
+      let foundOldTeamLabelNum = Number(regExp.exec(foundOldTeam.label)[1]);
+      // if that num of label is 1 (and will become 0), remove that teamCode entirely from teamCode
+      if (foundOldTeamLabelNum === 1) {
+        const foundOldTeamIndex = teamCodes.findIndex(obj => obj.value === oldTeamCode);
+        teamCodes.splice(foundOldTeamIndex, 1)
       }
-      // newTeamCode is not in use so need to make a new one
+      // otherwise, subtract 1 from the oldTeam label number
       else {
-        innerCodeChangeFunction();
-        teamCodes.push({ label: `${newTeamCode} (1)`, value: newTeamCode });
-        teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
-        // const oldSelectedCodeIndex = selectedCodes.findIndex(code => code.value === oldTeamCode);
-        // selectedCodes[oldSelectedCodeIndex].value = newTeamCode;
-        // selectedCodes[oldSelectedCodeIndex].label = selectedCodes[oldSelectedCodeIndex].label.replace(oldTeamCode, newTeamCode);
+        foundOldTeamLabelNum -= 1;
+        foundOldTeam.label = `${oldTeamCode} (${foundOldTeamLabelNum})`;
       }
 
-      // case 1: multiple teams with 1 selected team code (label > 1)
-
-      //case 2: 1 team with 1 selected team code (label = 1)
-
-      //case 3: 
-      // ensure that currently selected team code stays the same BUT the dropdown is updated correctly
-      // in the case of team code already existing, do not create another one but increase label by 1?
+      const foundNewTeam = teamCodes.find(obj => obj.value === newTeamCode);
+      // if newTeam code already exists, find that and add 1 to its value
+      if (foundNewTeam) {
+        let foundNewTeamLabelNum = Number(regExp.exec(foundNewTeam.label)[1]);
+        foundNewTeamLabelNum += 1;
+        foundNewTeam.label = `${newTeamCode} (${foundNewTeamLabelNum})`;
+      }
+      // if newTeam code does not exist, create a team code with value of newTeamCode & label of newTeamCode (1)
+      else {
+        teamCodes.push({ label: `${newTeamCode} (1)`, value: newTeamCode });
+      }
+      teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
       return {
         selectedCodes: [...selectedCodes],
         teamCodes: [...teamCodes],
+        summaries: [...summaries],
       }
     });
   }
