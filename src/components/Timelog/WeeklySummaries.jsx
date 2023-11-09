@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
-import ReactHtmlParser from 'react-html-parser';
 import './Timelog.css'
 import updateWeeklySummaries from 'actions/weeklySummaries';
 import { updateUserProfile } from 'actions/userProfile';
 import hasPermission from 'utils/permissions';
 import { connect, useDispatch, useSelector } from 'react-redux';
+import { Editor } from '@tinymce/tinymce-react';
 
 const WeeklySummaries = ({ userProfile }) => {
   // Initialize state variables for editing and original summaries
@@ -17,15 +17,13 @@ const WeeklySummaries = ({ userProfile }) => {
   ]);
   const [originalSummaries, setOriginalSummaries] = useState([...editedSummaries]);
 
-  // const hasPermission = useSelector(state => state.hasPermission); // Assuming you have the permissions in your Redux state
-  // const canEditSummary = hasPermission('editWeeklySummaryOptions');
-  // if(canEditSummary){
-  //   console.log("Yes");
-  // }
-  // else{
-  //   console.log("No");
-  // }
   const dispatch = useDispatch();
+  const canEdit = dispatch(hasPermission('putUserProfile'));
+  // const currentUserID = useState(userProfile._id);
+  const currentUserID = userProfile._id;
+  const { user } = useSelector(state => state.auth);
+  const loggedInUserId = user.userid;
+  // const loggedInUserId = useSelector(state => state.userProfile._id);
 
   if (!userProfile.weeklySummaries || userProfile.weeklySummaries.length < 3) {
     return <div>No weekly summaries available</div>;
@@ -57,9 +55,7 @@ const WeeklySummaries = ({ userProfile }) => {
 
   const handleSave = (index) => {
     // Save the edited summary content and toggle off editing mode
-    
     const editedSummary = editedSummaries[index];
-    // const editedSummary = editedSummary1.replace(/{{NEWLINE}}/g, "\n");
     // Check if the edited summary is not blank and contains at least 50 words
     const wordCount = editedSummary.split(/\s+/).filter(Boolean).length;
     if (editedSummary.trim() !== '' && wordCount >= 50) {
@@ -83,34 +79,42 @@ const WeeklySummaries = ({ userProfile }) => {
 
   const renderSummary = (title, summary, index) => {
     if (editing[index]) {
-      // const stripHtmlTags = (html) => {
-      //   const tmp = document.createElement("div");
-      //   tmp.innerHTML = html.replace(/\n/g, "<br>");
-      //   return tmp.textContent || tmp.innerText || "";
-      // };
-      // const editedContentWithPlaceholder = editedSummaries[index].replace(/\n/g, "{{NEWLINE}}");
-      // Render an edit form when editing is active
       return (
         <div>
           <h3>{title}</h3>
-          <textarea
-            className = "edit-textarea"
+          <Editor
+            init={{
+              menubar: false,
+              plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+              toolbar:
+                'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+              branding: false,
+              min_height: 180,
+              max_height: 500,
+              autoresize_bottom_margin: 1,
+            }}
             value={editedSummaries[index]}
-            // value={stripHtmlTags(editedContentWithPlaceholder)}
-            // value={stripHtmlTags(editedSummaries[index])}
-            onChange={(event) => handleSummaryChange(event, index)}
+            onEditorChange={(content) => handleSummaryChange({ target: { value: content } }, index)}
           />
           <button className = "button save-button" onClick={() => handleSave(index)}>Save</button>
           <button className = "button cancel-button" onClick={() => handleCancel(index)}>Cancel</button>
         </div>
       );
-    } else if (summary) {
+    } else if (summary && (canEdit || currentUserID == loggedInUserId)) {
       // Display the summary with an "Edit" button
       return (
         <div>
           <h3>{title}</h3>
           {parse(editedSummaries[index])}
           <button className = "button edit-button" onClick={() => toggleEdit(index)}>Edit</button>
+        </div>
+      );
+    } else if (summary){
+      // Display the summary with an "Edit" button
+      return (
+        <div>
+          <h3>{title}</h3>
+          {parse(editedSummaries[index])}
         </div>
       );
     } else {
@@ -135,6 +139,6 @@ const WeeklySummaries = ({ userProfile }) => {
   );
 };
 
-const mapStateToProps = state => state;
-export default connect(mapStateToProps, { hasPermission })(WeeklySummaries);
-// export default WeeklySummaries;
+// const mapStateToProps = state => state;
+// export default connect(mapStateToProps, { hasPermission })(WeeklySummaries);
+export default WeeklySummaries;
