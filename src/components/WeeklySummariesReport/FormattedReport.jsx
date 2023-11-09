@@ -63,7 +63,7 @@ function FormattedReport({
   canEditTeamCode,
   auth,
 }) {
-  if (auth?.user?.role){console.log(auth.user.role)}
+  // if (auth?.user?.role){console.log(auth.user.role)}
 
   return (
     <>
