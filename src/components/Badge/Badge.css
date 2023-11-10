@@ -9,18 +9,28 @@
   height: 50px;
   width: 50px;
   margin: 5px;
+  overflow: inherit;
+}
+
+.badge_image_md > img {
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+  overflow: inherit;
 }
 
 .badge_image_lg > img {
   border-radius: 50%;
   height: 200px;
   width: 200px;
+  overflow: inherit;
 }
 
 .badge_image_mini > img {
   border-radius: 50%;
   height: 25px;
   width: 25px;
+  overflow: inherit;
 }
 
 .badge_count {

@@ -1,23 +1,34 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
-import PopupText from './PopupText/';
-import { fetchAllPopupEditor } from './../../actions/popupEditorAction';
+import PopupText from './PopupText';
+import { fetchAllPopupEditor } from '../../actions/popupEditorAction';
 import './style.css';
 
-const Admin = props => {
+function Admin(props) {
+  const { popupEditor } = props;
   useEffect(() => {
-    console.log('props', props);
-    props.fetchAllPopupEditor();
+    fetchAllPopupEditor();
   }, [1]);
 
   return (
-    <>
-      <div className="container mt-3">
-        {props.popupEditor.popupItems.map((item, index) => (
-          <PopupText key={index} title={item.popupName} content={item.popupContent} id={item._id} />
-        ))}
-      </div>
-    </>
+    <div className="container mt-3">
+      {popupEditor.popupItems.length === 0 ? (
+        <p style={{ textAlign: 'center' }}>
+          A popup is needed for this. Help us make the app better by sharing with the Admin what you
+          did to get this screen.
+        </p>
+      ) : (
+        popupEditor.popupItems.map(item => (
+          <PopupText
+            key={item._id}
+            title={item.popupName}
+            content={item.popupContent}
+            id={item._id}
+          />
+        ))
+      )}
+    </div>
   );
-};
+}
+
 export default connect(state => state, { fetchAllPopupEditor })(Admin);

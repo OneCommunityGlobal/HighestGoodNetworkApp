@@ -33,6 +33,12 @@
   align-items: center;
 }
 
+.name-container__btn_columns {
+  display: flex;
+  flex-direction: row;
+  column-gap: 1rem;
+}
+
 .name-container__btns {
   display: flex;
   flex-direction: column;
@@ -105,4 +111,9 @@
   height: 40px; /* You can adjust this value */
   line-height: 40px; /* This should be the same as the height */
   min-width: 80px; /* Optional: Sets a minimum width for the button */
+}
+
+.info-button {
+  height: 40px;
+  width: 80px;
 }

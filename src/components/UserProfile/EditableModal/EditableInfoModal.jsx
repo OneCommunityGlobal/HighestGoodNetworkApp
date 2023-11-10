@@ -60,7 +60,8 @@ export class EditableInfoModal extends Component {
   
   async componentDidMount() {
     await this.props.getInfoCollections();
-    const {infoCollections, role, areaName, fontSize, isPermissionPage} = this.props;
+    const {infoCollections, role, areaTitle, areaName, fontSize, isPermissionPage} = this.props;
+
     let content = '';
     let visible = '0';
     if (Array.isArray(infoCollections)) {
@@ -228,7 +229,7 @@ export class EditableInfoModal extends Component {
         />
         {editableModalOpen && (
           <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg">
-          <ModalHeader>Welcome to Information Page!</ModalHeader>
+          <ModalHeader>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
           <ModalBody>
           {this.state.editing
                 ? <RichTextEditor
@@ -305,10 +306,10 @@ const mapStateToProps = ({infoCollections }) => ({
   
 const mapDispatchToProps = dispatch => {
   return {
-    getInfoCollections: ()=> dispatch(getInfoCollections()),
-    updateInfoCollection: (infoId, updatedInfo)=>dispatch(updateInfoCollection(infoId, updatedInfo)),
-    addInfoCollection: (newInfo)=>dispatch(addInfoCollection(newInfo)),
-    deleteInfoCollectionById: (infoId)=>dispatch(deleteInfoCollectionById(infoId)), 
+    getInfoCollections: () => dispatch(getInfoCollections()),
+    updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
+    addInfoCollection: (newInfo) => dispatch(addInfoCollection(newInfo)),
+    deleteInfoCollectionById: (infoId) => dispatch(deleteInfoCollectionById(infoId)), 
   };
 };
 

@@ -50,14 +50,14 @@
   padding-top: 7px;
   border-radius: 55%;
   width: 38px;
-  height: 27px;
+  height: 26px;
   background: #800080;
   color: #fff;
   text-align: center;
   font: 11px Arial, sans-serif;
   position: absolute;
-  right: 40px;
-  bottom: 12px;
+  right: 34px;
+  bottom: 26px;
   z-index: 0;
 }
 

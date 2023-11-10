@@ -210,6 +210,44 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTe
             </div>
           </div>
         );
+      case 'active_members':
+      if (state) {
+        return (
+          <div className="blueSqare">
+            <div className={style.switchSection}>
+              <div className={style.switchContainer}>
+                Active
+                <input
+                  data-testid="active-switch"
+                  id="showActiveMembersOnly"
+                  type="checkbox"
+                  className={style.toggle}
+                  onChange={handleUserProfile}
+                />
+                All
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className="blueSqare">
+          <div className={style.switchSection}>
+            <div className={style.switchContainer}>
+              Active
+              <input
+                data-testid="active-switch"
+                id="showActiveMembersOnly"
+                type="checkbox"
+                className={style.toggle}
+                defaultChecked
+                onChange={handleUserProfile}
+              />
+              All
+            </div>
+          </div>
+        </div>
+      );
     default:
       break;
   }

@@ -21,7 +21,7 @@ import { connect } from 'react-redux';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import InfoModal from './InfoModal';
 
-const TeamMembersPopup = React.memo(props => {
+export const TeamMembersPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
     setSortOrder(0);
@@ -64,7 +64,16 @@ const TeamMembersPopup = React.memo(props => {
     let sortedList = [];
 
     if (sort === 0) {
-      sortedList = props.members.teamMembers.toSorted(sortByAlpha);
+      const groupByPermissionList = props.members?.teamMembers?.reduce((pre, cur) => {
+        const role = cur.role;
+        pre[role] ? pre[role].push(cur) : pre[role] = [cur]
+        return pre;
+      }, {}) ?? {}
+      sortedList = Object.keys(groupByPermissionList)
+        .sort(sortByPermission)
+        .map(key => groupByPermissionList[key])
+        .map(list => list.toSorted(sortByAlpha))
+        .flat()
     } else {
       const sortByDateList = props.members.teamMembers.toSorted((a, b) => {
         return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
@@ -82,15 +91,33 @@ const TeamMembersPopup = React.memo(props => {
         sortedList.push(...item.toSorted(sortByAlpha));
       });
     }
-
     setMemberList(sortedList);
   };
+
+  let returnUserRole = (user) => {
+    let rolesArr = ["Manager", "Mentor", "Assistant Manager"]
+    if (rolesArr.includes(user.role)) return true
+  }
 
   const sortByAlpha = useCallback((a, b) => {
     const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
     const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
     return nameA.localeCompare(nameB);
-  });
+  }, [])
+
+  const sortByPermission = useCallback((a, b) => {
+    // Sort by index
+    const rolesPermission = [
+      "owner",
+      "administrator",
+      "core team",
+      "manager",
+      "mentor",
+      "assistant manager",
+      "volunteer"
+    ]
+    return rolesPermission.indexOf(a.toLowerCase()) - rolesPermission.indexOf(b.toLowerCase());
+  }, [])
 
   const icons = {
     '-1': { icon: faSortUp },
@@ -135,6 +162,7 @@ const TeamMembersPopup = React.memo(props => {
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
+                existingMembers={props.members.teamMembers}
                 onAddUser={selectUser}
                 searchText={searchText}
                 setSearchText={setSearchText}
