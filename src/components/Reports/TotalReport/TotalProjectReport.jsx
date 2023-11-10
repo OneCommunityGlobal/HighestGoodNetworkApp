@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-// eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './TotalReport.css';

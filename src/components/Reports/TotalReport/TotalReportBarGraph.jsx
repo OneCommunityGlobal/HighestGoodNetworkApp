@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import './TotalReportBarGraph.css';
 

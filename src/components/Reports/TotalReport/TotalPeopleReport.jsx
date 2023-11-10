@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-// eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './TotalReport.css';
@@ -90,8 +89,6 @@ function TotalPeopleReport(props) {
     }, {});
   };
 
-  // const { userProfiles } = props;
-
   const filterTenHourUser = userTimeList => {
     const filteredUsers = [];
     userTimeList.forEach(element => {
@@ -122,7 +119,6 @@ function TotalPeopleReport(props) {
     return summaryOfTime;
   };
 
-  // const { startDate, endDate } = props;
 
   const generateBarData = (groupedDate, isYear = false) => {
     if (isYear) {
@@ -150,8 +146,6 @@ function TotalPeopleReport(props) {
     return sumData;
   };
 
-  // const { endDate, startDate } = props;
-
   const checkPeriodForSummary = () => {
     const oneMonth = 1000 * 60 * 60 * 24 * 31;
     const diffDate = endDate - startDate;
@@ -166,8 +160,6 @@ function TotalPeopleReport(props) {
       }
     }
   };
-
-  // const { startDate, endDate } = props;
 
   useEffect(() => {
     loadTimeEntriesForPeriod().then(() => {
@@ -257,8 +249,7 @@ function TotalPeopleReport(props) {
         </div>
         {allPeople.length ? (
           <div className="total-detail">
-            {/* eslint-disable-next-line no-unused-vars */}
-            <Button onClick={e => onClickTotalPeopleDetail()}>
+            <Button onClick={() => onClickTotalPeopleDetail()}>
               {showTotalPeopleTable ? 'Hide Details' : 'Show Details'}
             </Button>
             <i
