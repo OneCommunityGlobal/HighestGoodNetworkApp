@@ -258,7 +258,10 @@ export class WeeklySummariesReport extends Component {
       // if that num of label is 1 (and will become 0), remove that teamCode entirely from teamCode
       if (foundOldTeamLabelNum === 1) {
         const foundOldTeamIndex = teamCodes.findIndex(obj => obj.value === oldTeamCode);
-        teamCodes.splice(foundOldTeamIndex, 1)
+        teamCodes.splice(foundOldTeamIndex, 1);
+        // remove non-existent oldTeamCode from selection
+        const foundSelectedOldTeam = selectedCodes.find(obj => obj.value === oldTeamCode);
+        selectedCodes.splice(foundSelectedOldTeam, 1);
       }
       // otherwise, subtract 1 from the oldTeam label number
       else {
