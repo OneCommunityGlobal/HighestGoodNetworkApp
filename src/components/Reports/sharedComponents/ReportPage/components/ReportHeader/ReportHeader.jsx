@@ -2,8 +2,7 @@ import classnames from 'classnames';
 import ReportBlock from '../ReportBlock/ReportBlock';
 import './ReportHeader.css';
 
-// eslint-disable-next-line import/prefer-default-export
-export function ReportHeader({ children, isActive, src, avatar, name }) {
+export default function ReportHeader({ children, isActive, src, avatar, name }) {
   return (
     <ReportBlock>
       <header className="report-header">

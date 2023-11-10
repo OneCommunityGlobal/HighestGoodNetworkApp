@@ -1,2 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
-export { ReportHeader } from './ReportHeader';
+import ReportHeader from './ReportHeader';
+
+export default ReportHeader;

@@ -1,4 +1,4 @@
-import { ReportHeader } from './components/ReportHeader';
+import ReportHeader from './components/ReportHeader';
 import ReportBlock from './components/ReportBlock/ReportBlock';
 import ReportCard from './components/ReportCard/ReportCard';
 import './ReportPage.css';
