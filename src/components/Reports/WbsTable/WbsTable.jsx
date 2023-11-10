@@ -1,6 +1,4 @@
 import { Stub } from 'components/common/Stub';
-// eslint-disable-next-line no-unused-vars
-import React from 'react';
 import './WbsTable.css';
 
 export default function WbsTable({ wbs, skip, take }) {
