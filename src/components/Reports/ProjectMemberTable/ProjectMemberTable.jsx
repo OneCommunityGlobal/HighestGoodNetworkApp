@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
 import { Stub } from '../../common/Stub';
@@ -117,18 +116,9 @@ export default function ProjectMemberTable({ projectMembers, skip, take, handleM
         <div className="reports-table-head-cell">ID</div>
       </div>
       <div>
-        {/* eslint-disable-next-line no-nested-ternary */}
-        {memberFilter === 'all-time' ? (
-          allMemberTable.length > 0 ? (
-            allMemberTable
-          ) : (
-            <Stub />
-          )
-        ) : activeMemberTable.length > 0 ? (
-          activeMemberTable
-        ) : (
-          <Stub />
-        )}
+        {memberFilter === 'all-time'
+          ? (allMemberTable.length > 0 && allMemberTable) || <Stub />
+          : (activeMemberTable.length > 0 && activeMemberTable) || <Stub />}
       </div>
     </div>
   );
