@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -42,8 +41,7 @@ function UserOptions({ tasks, setOneFilter, filters }) {
 }
 
 function TasksTable({ WbsTasksID }) {
-  // eslint-disable-next-line camelcase
-  const { get_tasks } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
+  const { getTasks } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
 
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
@@ -77,10 +75,10 @@ function TasksTable({ WbsTasksID }) {
       <div className="tasks-table-filters-wrapper">
         <div className="tasks-table-filters">
           {/* eslint-disable-next-line camelcase */}
-          <UserOptions tasks={get_tasks} setOneFilter={setOneFilter} filters={filters} />
+          <UserOptions tasks={getTasks} setOneFilter={setOneFilter} filters={filters} />
           <FilterOptions
             /* eslint-disable-next-line camelcase */
-            tasks={get_tasks}
+            tasks={getTasks}
             filterName="classification"
             width="180px"
             setOneFilter={setOneFilter}
@@ -88,14 +86,14 @@ function TasksTable({ WbsTasksID }) {
           />
           <FilterOptions
             /* eslint-disable-next-line camelcase */
-            tasks={get_tasks}
+            tasks={getTasks}
             filterName="priority"
             setOneFilter={setOneFilter}
             filters={filters}
           />
           <FilterOptions
             /* eslint-disable-next-line camelcase */
-            tasks={get_tasks}
+            tasks={getTasks}
             filterName="status"
             setOneFilter={setOneFilter}
             filters={filters}
@@ -132,8 +130,7 @@ function TasksTable({ WbsTasksID }) {
       </div>
 
       <TasksDetail
-        /* eslint-disable-next-line camelcase */
-        tasks_filter={get_tasks}
+        tasks_filter={getTasks}
         isAssigned={isAssigned}
         isActive={isActive}
         priority={filters.priority}
