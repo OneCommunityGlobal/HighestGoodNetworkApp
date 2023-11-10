@@ -73,7 +73,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                     {badges && badges.length ? (
                       sortedBadges &&
                       sortedBadges.map(value => (
-                        <tr key={value.badge.badgeId}>
+                        <tr key={value.badge._id}>
                           <td className="badge_image_sm">
                             {' '}
                             <img
@@ -152,7 +152,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                     {badges && badges.length ? (
                       sortedBadges &&
                       sortedBadges.map(value => (
-                        <tr key={value.id}>
+                        <tr key={value.badge._id}>
                           <td className="badge_image_sm">
                             {' '}
                             <img
