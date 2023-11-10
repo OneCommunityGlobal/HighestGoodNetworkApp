@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
   getDashboardDataAIPrompt as getDashboardDataAIPrompts,
   updateDashboardDataAIPrompt as updateDashboardDataAIPrompts,
-} from '../constants/dashBoard';
+} from '../constants/weeklySummariesAIPrompt';
 
 export const getDashboardDataAI = () => {
   const DashboardDataAIPromise = axios.get(ENDPOINTS.AI_PROMPT());

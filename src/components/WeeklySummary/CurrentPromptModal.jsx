@@ -4,7 +4,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'react
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
-import { updateDashboardData, getDashboardDataAI } from '../../actions/dashboard';
+import { updateDashboardData, getDashboardDataAI } from '../../actions/weeklySummariesAIPrompt';
 
 function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);
