@@ -54,7 +54,6 @@ const TimeEntry = ({ data, displayYear, userProfile, LoggedInuserId, curruserId 
   const toggleTangibility = () => {
     const newData = {
       ...data,
-      curruserId: curruserId,
       isTangible: !data.isTangible,
       timeSpent: `${data.hours}:${data.minutes}:00`,
     };
@@ -98,7 +97,6 @@ const TimeEntry = ({ data, displayYear, userProfile, LoggedInuserId, curruserId 
     dispatch(updateUserProfile(userProfile._id, userProfile));
     dispatch(getUserProfile(curruserId));
     dispatch(getTimeEntriesForWeek(curruserId, 0));
-    //window.location.reload();
   };
 
   return (
