@@ -6,10 +6,10 @@ import { FormGroup, Input, Label, Form, Row, Col, Button, FormText } from 'react
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { fetchUserActiveBMProjects, postMaterialUpdate, resetMaterialUpdate } from 'actions/bmdashboard/materialsActions'
+import { postMaterialUpdate, resetMaterialUpdate } from 'actions/bmdashboard/materialsActions'
 import { toast } from 'react-toastify'
 
-function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
+function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel }) {
 
   const dispatch = useDispatch();
   const postMaterialUpdateResult = useSelector(state => state.updateMaterials)
@@ -36,6 +36,10 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
     newAvailable: undefined
   }
   const [updateRecord, setUpdateRecord] = useState(recordInitialState)
+
+  useEffect(() => {
+    setUpdateRecord({ ...recordInitialState })
+  }, [cancel])
 
   const [validations, setValidations] = useState({
     quantityUsed: '',
@@ -127,7 +131,6 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    console.log(updateRecord)
     dispatch(postMaterialUpdate(updateRecord))
   }
 

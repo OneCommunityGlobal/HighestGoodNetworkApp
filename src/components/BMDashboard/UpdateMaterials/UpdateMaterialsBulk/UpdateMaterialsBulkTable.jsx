@@ -12,13 +12,18 @@ function UpdateMaterialsBulkTable({ date, project }) {
   const materials = useSelector(state => state.materials);
   const [materialsState, setMaterialsState] = useState([...materials])
   const postMaterialUpdateBulkResult = useSelector(state => state.updateMaterialsBulk)
+  const [cancel, setCancel] = useState(1);
   const updatedRecordsList = {};
 
 
   useEffect(() => {
-    console.log('materials', materials);
     setMaterialsState([...materials])
   }, [materials])
+
+  const cancelHandler = () => {
+    setCancel((cancel) => cancel == 1 ? 2 : 1);
+  }
+
 
 
   useEffect(() => {
@@ -98,13 +103,14 @@ function UpdateMaterialsBulkTable({ date, project }) {
               </>
               :
               materialsState?.map((material, idx) =>
-                <UpdateMaterial key={material._id + material.stockAvailable} idx={idx} bulk={true} record={material} sendUpdatedRecord={sendUpdatedRecordHandler} />
+                <UpdateMaterial key={material._id + material.stockAvailable} cancel={cancel}
+                  idx={idx} bulk={true} record={material} sendUpdatedRecord={sendUpdatedRecordHandler} />
               )
           }
         </tbody>
       </Table>
       <div style={{ marginRight: '0px', marginLeft: '0px' }} className='row justify-content-between '>
-        <Button size="md" className='logMButtons' outline >Cancel</Button>
+        <Button size="md" className='logMButtons' outline cancel={cancel} onClick={cancelHandler}>Cancel</Button>
         <Button size="md" className='logMButtonBg' onClick={(e) => submitHandler(e)} >Submit</Button>
       </div>
 
