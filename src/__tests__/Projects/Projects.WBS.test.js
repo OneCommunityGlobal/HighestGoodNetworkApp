@@ -14,6 +14,7 @@ import routes from '../../routes';
 const projectWBSUrl = ENDPOINTS.WBS('5ad91ec3590b19002asacd26');
 const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
 const leaderboardUrl = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
+const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let deleteWbsCalled = false;
 let addedWBSCalled = false;
@@ -78,6 +79,9 @@ const server = setupServer(
         },
       ]),
     );
+  }),
+  rest.get(timerUrl, (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({}));
   }),
   rest.get('*', (req, res, ctx) => {
     console.error(

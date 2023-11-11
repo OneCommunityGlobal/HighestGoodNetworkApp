@@ -21,7 +21,6 @@ import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -203,7 +202,6 @@ export class WeeklySummariesReport extends Component {
       colorOptions,
       teamCodes,
     });
-
     await getInfoCollections();
     const role = authUser?.role;
     const roleInfoNames = this.getAllRoles(summariesCopy);
@@ -348,8 +346,6 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-
-    const { role } = this.props;
     const {
       loading,
       activeTab,
@@ -387,23 +383,12 @@ export class WeeklySummariesReport extends Component {
         </Container>
       );
     }
+
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
-            <h3 className="mt-3 mb-5">
-              <div className="d-flex align-items-center">
-                <span className="mr-2">Weekly Summaries Reports page</span>
-                <EditableInfoModal
-                  areaName="WeeklySummariesReport"
-                  areaTitle="Weekly Summaries Report"
-                  role={role}
-                  fontSize={24}
-                  isPermissionPage
-                  className="p-2" // Add Bootstrap padding class to the EditableInfoModal
-                />
-              </div>
-            </h3>
+            <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
           </Col>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
@@ -516,7 +501,6 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
-  role: state.userProfile.role,
   auth: state.auth,
 });
 

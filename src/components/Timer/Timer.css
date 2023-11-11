@@ -1,0 +1,34 @@
+.old-timer button {
+  min-width: 3.75rem;
+  box-shadow: none !important;
+}
+
+.old-timer .badge {
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.button-container {
+  display: flex;
+}
+
+@media (min-width: 1550px) {
+  .old-timer {
+    display: flex;
+  }
+}
+
+/**
+@media (max-width: 1150px) { 
+    .timer button {
+        width: 2.25rem;
+        box-shadow: none !important;
+        font-size: 0.75rem;
+    }
+    
+    .timer .badge {
+        font-size: 0.75rem;
+        font-variant-numeric: tabular-nums;
+    }
+}
+*/

@@ -23,6 +23,7 @@ import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
 import { updateUserProfile } from 'actions/userProfile';
 
+import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
@@ -44,13 +45,14 @@ import { boxStyle } from 'styles';
  * @param {*} props.timer
  * @param {boolean} props.data.isTangible
  * @param {*} props.userProfile
+ * @param {function} props.resetTimer
  * @param {string} props.LoggedInuserId
  * @param {string} props.curruserId
  * @returns
  */
 const TimeEntryForm = props => {
 
-  const { userId, edit, data, isOpen, toggle, timer, LoggedInuserId, curruserId, sendStop } = props;
+  const { userId, edit, data, isOpen, toggle, timer, LoggedInuserId, curruserId, resetTimer = () => {}, sendClear = () => {}, sendStop  = () => {} } = props;
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
@@ -82,7 +84,6 @@ const TimeEntryForm = props => {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
-  const [submitting, setSubmitting] = useState(false);
 
   const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
@@ -434,7 +435,6 @@ const TimeEntryForm = props => {
   };
 
   const handleSubmit = async event => {
-    setSubmitting(true);
     //Validation and variable initialization
     if (event) event.preventDefault();
 
@@ -442,10 +442,7 @@ const TimeEntryForm = props => {
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
 
-    if (!validateForm(isTimeModified)) {
-      setSubmitting(false);
-      return;
-    }
+    if (!validateForm(isTimeModified)) return;
 
     //Construct the timeEntry object
     const timeEntry = {
@@ -507,6 +504,30 @@ const TimeEntryForm = props => {
       }
     }
 
+    //Clear the form and clean up.
+    if (fromTimer) {
+      const timerStatus = await dispatch(stopTimer(userId));
+      if (timerStatus === 200 || timerStatus === 201) {
+        resetTimer();
+      } else {
+        alert(
+          'Your time entry was successfully recorded, but an error occurred while asking the server to reset your timer. There is no need to submit your hours a second time, and doing so will result in a duplicate time entry.',
+        );
+      }
+      sendClear();
+    } else if (!reminder.notice) {
+      setReminder(reminder => ({
+        ...reminder,
+        editNotice: !reminder.editNotice,
+      }));
+    }
+
+    if (fromTimer) {
+      sendStop();
+      clearForm();
+    }
+    setReminder(initialReminder);
+
     if (!props.edit) setInputs(initialFormValues);
 
     await getUserProfile(userId)(dispatch);
@@ -517,21 +538,7 @@ const TimeEntryForm = props => {
 
     await dispatch(getUserProfile(curruserId));
     await dispatch(getTimeEntriesForWeek(curruserId, 0));
-
-    //Clear the form and clean up.
-    if (fromTimer) {
-      sendStop();
-      clearForm();
-    } else if (!reminder.notice) {
-      setReminder(reminder => ({
-        ...reminder,
-        editNotice: !reminder.editNotice,
-      }));
-    }
-
-    setReminder(initialReminder);
     if (isOpen) toggle();
-    setSubmitting(false);
   };
 
   const handleInputChange = event => {
@@ -787,8 +794,8 @@ const TimeEntryForm = props => {
             Clear Form
           </Button>
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-          <Button color="primary" onClick={handleSubmit} style={boxStyle} disabled={submitting}>
-            {edit ? 'Save' : (submitting ? 'Submitting...' : 'Submit')}
+          <Button color="primary" onClick={handleSubmit} style={boxStyle}>
+            {edit ? 'Save' : 'Submit'}
           </Button>
         </ModalFooter>
       </Modal>
@@ -803,6 +810,8 @@ TimeEntryForm.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   timer: PropTypes.any,
   data: PropTypes.any.isRequired,
+  userProfile: PropTypes.any.isRequired,
+  resetTimer: PropTypes.func,
   LoggedInuserId: PropTypes.string,
   curruserId: PropTypes.string,
   handleStop: PropTypes.func,

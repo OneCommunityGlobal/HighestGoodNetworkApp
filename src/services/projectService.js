@@ -3,5 +3,6 @@ import { ApiEndpoint } from '../utils/URL';
 
 const ApiUri = `${ApiEndpoint}/projects`;
 
-const getAllProjects = () => httpService.get(`${ApiUri}`);
-export default getAllProjects;
+export function getAllProjects() {
+  return httpService.get(`${ApiUri}`);
+}

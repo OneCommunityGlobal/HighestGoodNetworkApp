@@ -105,12 +105,11 @@ describe('Teams Reducer', () => {
         teamId: 42,
         teamName: 'name',
         isActive: true,
-        teamCode: 'code',
       },
     );
     expect(result).toMatchObject(
       fetched({
-        allTeams: [{ _id: 0 }, { _id: 42, teamName: 'name', isActive: true, teamCode: 'code' }, { _id: 100 }],
+        allTeams: [{ _id: 0 }, { _id: 42, teamName: 'name', isActive: true }, { _id: 100 }],
       }),
     );
   });

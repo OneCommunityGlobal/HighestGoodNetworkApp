@@ -4,17 +4,19 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  position: relative;
 }
 
 .crossIcon {
   position: absolute;
   cursor: pointer;
-  top: 1rem;
-  right: 1rem;
+  top: 0;
+  right: 0;
 }
 
 .countdown .infoDisplay {
   font-size: 1.5rem;
+  /* height: 2rem; */
   text-align: center;
 }
 
@@ -93,7 +95,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 0.8rem;
   gap: 0.5rem;
 }
 
@@ -204,10 +206,4 @@
   text-align: center;
   font-weight: bold;
   font-size: 1.5rem;
-}
-
-.transitionColor {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
 }

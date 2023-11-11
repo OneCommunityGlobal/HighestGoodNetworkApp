@@ -1,4 +1,3 @@
-import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -461,7 +460,7 @@ const TeamMemberTasks = React.memo(props => {
                   );
                 } else {
                   return (
-                    <Fragment key={user.personId}>
+                    <>
                       <TeamMemberTask
                         user={user}
                         key={user.personId}
@@ -479,13 +478,13 @@ const TeamMemberTasks = React.memo(props => {
                         timeEntriesList
                           .filter(timeEntry => timeEntry.personId === user.personId)
                           .map(timeEntry => (
-                            <tr className="table-row" key={timeEntry._id}>
+                            <tr className="table-row">
                               <td colSpan={3} style={{ padding: 0 }}>
                                 <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
                               </td>
                             </tr>
                           ))}
-                    </ Fragment>
+                    </>
                   );
                 }
               })
