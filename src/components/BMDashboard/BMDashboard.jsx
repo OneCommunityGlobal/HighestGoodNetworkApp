@@ -29,6 +29,9 @@ export function BMDashboard() {
     }
   }, [errors]);
 
+  console.log(Object.entries(errors).length);
+  console.log(isError);
+
   return (
     <Container className="justify-content-center align-items-center mw-80 px-4">
       <header className="bm-dashboard__header">
@@ -39,19 +42,10 @@ export function BMDashboard() {
           <BMError errors={errors} />
         ) : (
           <>
-            <ProjectSelectForm projects={projects} />
-            <ProjectsList projects={projects} />
+            <ProjectSelectForm />
+            <ProjectsList />
           </>
         )}
-        {/* {isError && <BMError errors={errors} />}
-        {!isError && projects.length ? (
-          <>
-            <ProjectSelectForm projects={projects} />
-            <ProjectsList projects={projects} />
-          </>
-        ) : (
-          <div>Loading...</div>
-        )} */}
       </main>
     </Container>
   );

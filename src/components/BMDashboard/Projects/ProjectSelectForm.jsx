@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
 import ErrorAlert from '../ErrorAlert';
 
-function ProjectSelectForm({ projects }) {
+function ProjectSelectForm() {
+  const projects = useSelector(state => state.bmProjects);
   const history = useHistory();
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [error, setError] = useState(false);
