@@ -98,6 +98,7 @@ function EmailsList({summaries, auth}){
           emails.push(summary.email);
         }
       });
+      
       const handleEmailButtonClick = () => {
         const batchSize = 90;
         const emailChunks = [];
