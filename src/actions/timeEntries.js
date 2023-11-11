@@ -22,8 +22,8 @@ export const getTimeEntriesForWeek = (userId, offset) => {
     .endOf('week')
     .subtract(offset, 'weeks')
     .format('YYYY-MM-DDTHH:mm:ss');
-
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
+  
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
