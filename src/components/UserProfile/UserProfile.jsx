@@ -701,7 +701,7 @@ function UserProfile(props) {
               ) : null}
             </div>
             <div className='profile-pic-selector'>
-              {storedPics && (
+              {storedPics.length > 0 && (
                 <div className="image-button file btn btn-lg btn-primary"
                   style={boxStyle}
                   onClick={onSelectProfilePicClick}
