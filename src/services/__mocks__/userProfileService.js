@@ -1,4 +1,4 @@
-let getUserProfile_result;
+let getUserProfileResult;
 const getUserProfileOptions = {
   userProfile: {
     name: 'Foobar',
@@ -7,10 +7,13 @@ const getUserProfileOptions = {
   },
 };
 
+// eslint-disable-next-line no-use-before-define
 getUserProfile.__setValue = option => {
-  getUserProfile_result = getUserProfileOptions[option];
+  getUserProfileResult = getUserProfileOptions[option];
 };
 
-export function getUserProfile() {
-  return getUserProfile_result;
+function getUserProfile() {
+  return getUserProfileResult;
 }
+
+export default getUserProfile;

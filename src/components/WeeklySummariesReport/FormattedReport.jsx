@@ -34,6 +34,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 
 const textColors = {
   Default: '#000000',
@@ -79,7 +80,7 @@ function FormattedReport({
 
     const openEmailClientWithBatchInNewTab = batch => {
       const emailAddresses = batch.join(', ');
-      const mailtoLink = `mailto:${emailAddresses}`;
+      const mailtoLink = `mailto:?bcc=${emailAddresses}`;
       window.open(mailtoLink, '_blank');
     };
 
@@ -120,13 +121,14 @@ function FormattedReport({
           containing a maximum of 90 addresses.
         </Tooltip>
         <FontAwesomeIcon
-          className="ml-2"
+          className="mx-2"
           onClick={handleEmailButtonClick}
           icon={faMailBulk}
           size="lg"
           style={{ color: '#0f8aa9', cursor: 'pointer' }}
           id="emailIcon"
         />
+        <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!"/>
       </div>
       <p>{emails.join(', ')}</p>
     </>

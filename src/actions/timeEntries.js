@@ -22,8 +22,8 @@ export const getTimeEntriesForWeek = (userId, offset) => {
     .endOf('week')
     .subtract(offset, 'weeks')
     .format('YYYY-MM-DDTHH:mm:ss');
-
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
+  
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
@@ -44,7 +44,9 @@ export const getTimeEntriesForWeek = (userId, offset) => {
 };
 
 export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
-  toDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DDTHH:mm:ss');
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
@@ -120,7 +122,7 @@ const updateTimeEntries = (timeEntry, oldDateOfWork) => {
     const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
 
     if (offset <= 2 && offset >= 0) {
-      dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
+      dispatch(getTimeEntriesForWeek(timeEntry.curruserId, offset));
     }
   };
 };
