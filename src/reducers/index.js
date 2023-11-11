@@ -32,6 +32,7 @@ import { mouseoverTextReducer } from './mouseoverTextReducer';
 import { materialsReducer } from './bmdashboard/materialsReducer';
 import { bmProjectsReducer } from './bmdashboard/projectsReducer';
 import { bmUpdateMaterialsReducer } from './bmdashboard/updateMaterialReducer';
+import { bmUpdateMaterialsBulkReducer } from './bmdashboard/updateMaterialBulkReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -68,5 +69,6 @@ export default combineReducers({
   mouseoverText: mouseoverTextReducer,
   materials: materialsReducer,
   bmProjects: bmProjectsReducer,
-  updateMaterials: bmUpdateMaterialsReducer
+  updateMaterials: bmUpdateMaterialsReducer,
+  updateMaterialsBulk: bmUpdateMaterialsBulkReducer
 });

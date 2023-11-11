@@ -126,8 +126,9 @@ export const ENDPOINTS = {
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`,
-  BM_USER_PROJECTS: `${APIEndpoint}/bm/getUserActiveBMProjects`,
-  BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/addUpdateMaterialRecord`
+  BM_USER_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
+  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`
 
 };
 

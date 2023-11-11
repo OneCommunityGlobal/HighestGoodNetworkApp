@@ -24,11 +24,10 @@ export function MaterialsList(props) {
 
   // filter materials data by project
   useEffect(() => {
-    console.log('materials', materials)
     if (selectedProject === 'all') {
       return setFilteredMaterials(materials);
     }
-    const filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject);
+    const filterMaterials = materials.filter(mat => mat.project.name === selectedProject);
     return setFilteredMaterials(filterMaterials);
   }, [selectedProject, materials]);
 

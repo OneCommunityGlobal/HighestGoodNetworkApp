@@ -12,11 +12,7 @@ import { toast } from 'react-toastify'
 function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
 
   const dispatch = useDispatch();
-  const projects = useSelector(state => state.bmProjects.projects)
   const postMaterialUpdateResult = useSelector(state => state.updateMaterials)
-  useEffect(() => {
-    dispatch(fetchUserActiveBMProjects())
-  }, [])
 
   useEffect(() => {
     if (postMaterialUpdateResult.loading == false && postMaterialUpdateResult.error == true) {
@@ -24,15 +20,13 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
       dispatch(resetMaterialUpdate())
     }
     else if (postMaterialUpdateResult.loading == false && postMaterialUpdateResult.result != null) {
-      toast.success(`Updated ${record?.inventoryItemType?.name} successfully`);
+      toast.success(`Updated ${record?.itemType?.name} successfully`);
       dispatch(resetMaterialUpdate())
     }
   }, [postMaterialUpdateResult])
 
-
-  const omitKey1 = 'updateRecord'
-  const { purchaseRecord, [omitKey1]: _, usageRecord, ...rest } = record;
-  const [updateRecord, setUpdateRecord] = useState({
+  const { purchaseRecord, ['updateRecord']: _, ...rest } = record;
+  let recordInitialState = {
     date: moment(new Date()).format('YYYY-MM-DD'),
     quantityUsed: 0,
     quantityWasted: 0,
@@ -40,7 +34,8 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
     QtyWastedLogUnit: 'unit',
     material: rest,
     newAvailable: undefined
-  })
+  }
+  const [updateRecord, setUpdateRecord] = useState(recordInitialState)
 
   const [validations, setValidations] = useState({
     quantityUsed: '',
@@ -93,8 +88,8 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
       valWasted = (+qtyWasted / 100) * available;
     }
 
-    valUsed = Number.parseFloat((valUsed).toFixed(2))
-    valWasted = Number.parseFloat((valWasted).toFixed(2))
+    valUsed = Number.parseFloat((valUsed).toFixed(4))
+    valWasted = Number.parseFloat((valWasted).toFixed(4))
     if (valUsed > available) {
       validations.quantityUsed = "Quantity Used exceeds the available stock";
     }
@@ -119,7 +114,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
     let newAvailable = available - (valUsed + valWasted);
 
     if (newAvailable != available) {
-      newAvailable = Number.parseFloat((newAvailable).toFixed(2))
+      newAvailable = Number.parseFloat((newAvailable).toFixed(4))
       updateRecord.newAvailable = newAvailable
       setUpdateRecord({ ...updateRecord });
     }
@@ -132,7 +127,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    //console.log(updateRecord)
+    console.log(updateRecord)
     dispatch(postMaterialUpdate(updateRecord))
   }
 
@@ -143,7 +138,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
           <>
             <tr key={record._id}>
               <td scope="row">   {idx}  </td>
-              <td>  {record.inventoryItemType.name}  </td>
+              <td>  {record.itemType.name}  </td>
               <td>  {record.stockAvailable} </td>
               <td>
                 <Input
@@ -168,10 +163,10 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
                   id="updateMaterialQtyUsedLogUnitSelect"
                   name="QtyUsedLogUnit"
                   type="select"
-                  value={updateRecord.action}
+                  value={updateRecord.QtyUsedLogUnit}
                   onChange={(e) => changeRecordHandler(e)}
                 >
-                  <option value='unit'>{record?.inventoryItemType?.uom}</option>
+                  <option value='unit'>{record?.itemType?.unit}</option>
                   <option value='percent'>%</option>
                 </Input>
               </td>
@@ -202,7 +197,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
                   value={updateRecord.QtyWastedLogUnit}
                   onChange={(e) => changeRecordHandler(e)}
                 >
-                  <option value='unit'>{record?.inventoryItemType?.uom}</option>
+                  <option value='unit'>{record?.itemType?.unit}</option>
                   <option value='percent'>%</option>
                 </Input>
               </td>
@@ -236,7 +231,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
                       Material
                     </Label>
                     <Col sm={6} className='materialFormValue'>
-                      <b>{record?.inventoryItemType?.name}</b>
+                      <b>{record?.itemType?.name}</b>
                     </Col>
                   </FormGroup>
 
@@ -249,7 +244,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
                       Project Name
                     </Label>
                     <Col sm={8} className='materialFormValue'>
-                      {record?.project.projectName}
+                      {record?.project.name}
                     </Col>
                   </FormGroup>
 
@@ -328,10 +323,10 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
                         id="updateMaterialQtyUsedLogUnitSelect"
                         name="QtyUsedLogUnit"
                         type="select"
-                        value={updateRecord.action}
+                        value={updateRecord.QtyUsedLogUnit}
                         onChange={(e) => changeRecordHandler(e)}
                       >
-                        <option value='unit'>{record?.inventoryItemType?.uom}</option>
+                        <option value='unit'>{record?.itemType?.unit}</option>
                         <option value='percent'>%</option>
                       </Input>
                     </Col>
@@ -376,7 +371,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord }) {
                         value={updateRecord.QtyWastedLogUnit}
                         onChange={(e) => changeRecordHandler(e)}
                       >
-                        <option value='unit'>{record?.inventoryItemType?.uom}</option>
+                        <option value='unit'>{record?.itemType?.unit}</option>
                         <option value='percent'>%</option>
                       </Input>
                     </Col>

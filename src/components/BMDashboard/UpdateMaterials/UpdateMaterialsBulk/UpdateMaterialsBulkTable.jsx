@@ -3,22 +3,62 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Label, Table, Row, Col, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
+import { fetchAllMaterials, postMaterialUpdateBulk, resetMaterialUpdateBulk } from 'actions/bmdashboard/materialsActions';
 import UpdateMaterial from '../UpdateMaterial';
 
-function UpdateMaterialsBulkTable({ date }) {
+function UpdateMaterialsBulkTable({ date, project }) {
 
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials);
+  const [materialsState, setMaterialsState] = useState([...materials])
+  const postMaterialUpdateBulkResult = useSelector(state => state.updateMaterialsBulk)
   const updatedRecordsList = {};
+
+
   useEffect(() => {
-    dispatch(fetchAllMaterials());
-  }, []);
+    console.log('materials', materials);
+    setMaterialsState([...materials])
+  }, [materials])
+
+
+  useEffect(() => {
+    if (postMaterialUpdateBulkResult.result == null) {
+      dispatch(fetchAllMaterials());
+    }
+  }, [postMaterialUpdateBulkResult.result]);
+
+  useEffect(() => {
+    if (project.value != '0') {
+      let _materials = materials.filter((mat) => mat.project.name == project.label)
+      setMaterialsState(_materials);
+    }
+    else {
+      setMaterialsState([...materials])
+    }
+  }, [project])
+
+
+
+  useEffect(() => {
+    if (postMaterialUpdateBulkResult.loading == false && postMaterialUpdateBulkResult.error == true) {
+      toast.error(`${postMaterialUpdateBulkResult.result}`);
+      dispatch(resetMaterialUpdateBulk())
+    }
+    else if (postMaterialUpdateBulkResult.loading == false && postMaterialUpdateBulkResult.result != null) {
+      toast.success(postMaterialUpdateBulkResult.result);
+      dispatch(resetMaterialUpdateBulk())
+    }
+  }, [postMaterialUpdateBulkResult])
+
 
   const submitHandler = (e) => {
     e.preventDefault();
-    let tempPostMaterialUpdateData = Object.values(updatedRecordsList).filter(d => d.newAvailable != "")
+    let tempPostMaterialUpdateData = Object.values(updatedRecordsList).filter(d => d.newAvailable != "") //In case , user enters and removes data
     console.log('updatedRecordsList', tempPostMaterialUpdateData)
+    dispatch(postMaterialUpdateBulk(tempPostMaterialUpdateData))
+
+    //Reset materials
+
   }
 
   const sendUpdatedRecordHandler = (updatedRecord) => {
@@ -50,15 +90,15 @@ function UpdateMaterialsBulkTable({ date }) {
         </thead>
         <tbody >
           {
-            materials.length == 0 ?
+            materialsState.length == 0 ?
               <>
                 <tr align="center">
                   <td colSpan={6}> <i>Please select a project that has valid material data! </i></td>
                 </tr>
               </>
               :
-              materials.map((material, idx) =>
-                <UpdateMaterial key={idx} idx={idx} bulk={true} record={material} sendUpdatedRecord={sendUpdatedRecordHandler} />
+              materialsState?.map((material, idx) =>
+                <UpdateMaterial key={material._id + material.stockAvailable} idx={idx} bulk={true} record={material} sendUpdatedRecord={sendUpdatedRecordHandler} />
               )
           }
         </tbody>

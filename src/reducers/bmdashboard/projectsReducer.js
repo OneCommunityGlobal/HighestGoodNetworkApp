@@ -9,7 +9,7 @@ export const bmProjectsReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_USER_PROJECTS:
       return {
-        projects: action.payload.projects,
+        projects: action.payload,
         loading: false
       };
     default:

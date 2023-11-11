@@ -30,56 +30,52 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
 }
 
 export function Record({ record, recordType }) {
-  if (recordType === 'Usage') {
-    return (
-      <>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Qty</th>
-            <th>Creator</th>
-          </tr>
-        </thead>
-        <tbody>
-          {record.map(({ date, quantityUsed, createdBy }) => {
-            return (
-              <tr key={date + createdBy._id}>
-                <td>{moment(date).format('MM/DD/YY')}</td>
-                <td>{quantityUsed}</td>
-                <td>
-                  <a href={`/userprofile/${createdBy._id}`}>
-                    {`${createdBy.firstName} ${createdBy.lastName}`}
-                  </a>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </>
-    );
-  }
+  // if (recordType === 'Usage') {
+  //   return (
+  //     <>
+  //       <thead>
+  //         <tr>
+  //           <th>Date</th>
+  //           <th>Qty</th>
+  //           <th>Creator</th>
+  //         </tr>
+  //       </thead>
+  //       <tbody>
+  //         {record.map(({ date, quantityUsed, createdBy }) => {
+  //           return (
+  //             <tr key={date + createdBy._id}>
+  //               <td>{moment(date).format('MM/DD/YY')}</td>
+  //               <td>{quantityUsed}</td>
+  //               <td>
+  //                 <a href={`/userprofile/${createdBy._id}`}>
+  //                   {`${createdBy.firstName} ${createdBy.lastName}`}
+  //                 </a>
+  //               </td>
+  //             </tr>
+  //           );
+  //         })}
+  //       </tbody>
+  //     </>
+  //   );
+  // }
   if (recordType === 'Update') {
     return (
       <>
         <thead>
           <tr>
             <th>Date</th>
-            <th>Qty</th>
-            <th>Action</th>
-            <th>Cause</th>
-            <th>Desc</th>
+            <th>Quantity Used</th>
+            <th>Quantity Wasted</th>
             <th>Creator</th>
           </tr>
         </thead>
         <tbody>
-          {record.map(({ date, quantity, action, cause, description, createdBy }) => {
+          {record.map(({ date, quantityUsed, quantityWasted, createdBy }) => {
             return (
               <tr key={date + createdBy._id}>
                 <td>{moment(date).format('MM/DD/YY')}</td>
-                <td>{quantity}</td>
-                <td>{action}</td>
-                <td>{cause}</td>
-                <td>{description}</td>
+                <td>{quantityUsed || '-'}</td>
+                <td>{quantityWasted || '-'}</td>
                 <td>
                   <a href={`/userprofile/${createdBy._id}`}>
                     {`${createdBy.firstName} ${createdBy.lastName}`}
@@ -98,29 +94,21 @@ export function Record({ record, recordType }) {
         <thead>
           <tr>
             <th>Date</th>
-            <th>PO</th>
-            <th>Seller</th>
-            <th>Qty</th>
-            <th>Subtotal</th>
-            <th>Taxes</th>
-            <th>Shipping</th>
+            <th>Status</th>
+            <th>Quantity</th>
             <th>Creator</th>
           </tr>
         </thead>
         <tbody>
-          {record.map(({ date, poId, sellerId, quantity, subtotal, tax, shipping, createdBy }) => {
+          {record.map(({ date, status, quantity, requestedBy }) => {
             return (
-              <tr key={date + createdBy._id}>
+              <tr key={date + requestedBy._id}>
                 <td>{moment(date).format('MM/DD/YY')}</td>
-                <td>{poId}</td>
-                <td>{sellerId}</td>
-                <td>{quantity}</td>
-                <td>{subtotal}</td>
-                <td>{tax}</td>
-                <td>{shipping}</td>
+                <td>{status}</td>
+                <td>{quantity || '-'}</td>
                 <td>
-                  <a href={`/userprofile/${createdBy._id}`}>
-                    {`${createdBy.firstName} ${createdBy.lastName}`}
+                  <a href={`/userprofile/${requestedBy._id}`}>
+                    {`${requestedBy.firstName} ${requestedBy.lastName}`}
                   </a>
                 </td>
               </tr>

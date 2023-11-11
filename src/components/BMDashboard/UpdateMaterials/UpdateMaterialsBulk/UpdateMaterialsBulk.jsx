@@ -9,13 +9,14 @@ import moment from 'moment';
 function UpdateMaterialsBulk() {
 
   const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
+  const [project, setProject] = useState('All Projects');
   return (
     <Container fluid className='logMaterialContainer'>
       <div className='logMaterialPage'>
         <div className='logMaterial'>
           <div className='logMaterialTitle'>MATERIAL DAILY ACTIVITIES UPDATE FORM</div>
-          <UpdateMaterialsBulkInputs date={date} setDate={setDate} />
-          <UpdateMaterialsBulkTable />
+          <UpdateMaterialsBulkInputs project={project} setProject={setProject} date={date} setDate={setDate} />
+          <UpdateMaterialsBulkTable project={project} date={date} />
         </div>
       </div>
     </Container>

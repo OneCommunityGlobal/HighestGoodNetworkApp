@@ -55,9 +55,7 @@ export default function MaterialsTable({ filteredMaterials }) {
               <th>Bought</th>
               <th>Used</th>
               <th>Available</th>
-              <th>Hold</th>
               <th>Waste</th>
-              <th>Usage</th>
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
@@ -67,28 +65,15 @@ export default function MaterialsTable({ filteredMaterials }) {
               filteredMaterials.map(mat => {
                 return (
                   <tr key={mat._id}>
-                    <td>{mat.project.projectName}</td>
+                    <td>{mat.project.name}</td>
                     {/* Note: optional chaining to prevent crashes while db work ongoing */}
-                    <td>{mat.inventoryItemType?.name}</td>
-                    <td>{mat.inventoryItemType?.uom}</td>
+                    <td>{mat.itemType?.name}</td>
+                    <td>{mat.itemType?.unit}</td>
                     <td>{mat.stockBought}</td>
                     <td>{mat.stockUsed}</td>
                     <td>{mat.stockAvailable}</td>
-                    <td>{mat.stockHeld}</td>
                     <td>{mat.stockWasted}</td>
-                    <td className="materials_cell">
-                      <button type="button" onClick={handleEditRecordsClick}>
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(mat.usageRecord, 'Usage')}
-                      >
-                        View
-                      </Button>
-                    </td>
+
                     <td className="materials_cell">
                       <button type="button" onClick={() => handleEditRecordsClick(mat, 'Update')}>
                         <BiPencil />
