@@ -4,11 +4,10 @@ function InfoModal({ isOpen, toggle }) {
   return (
     <div>
       <Modal isOpen={isOpen} toggle={toggle}>
-        <ModalHeader toggle={toggle}>See All functionality </ModalHeader>
+        <ModalHeader toggle={toggle}>Restrict the team member visiblity</ModalHeader>
         <ModalBody>
           <p>
-            Defualt value is disabled. If you want to restrict the user to unsee the team members
-            select enable
+            By default a user can see all the team members. Disable it if you want to restrict the user's visibility
           </p>
         </ModalBody>
         <ModalFooter>
