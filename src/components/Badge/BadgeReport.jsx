@@ -377,7 +377,9 @@ const BadgeReport = props => {
                         <button
                           type="button"
                           className="btn btn-outline-danger"
-                          onClick={e => handleDeleteBadge(index)}
+                          onClick={e => handleDeleteBadge(index)
+                          }
+                          style={boxStyle}
                         >
                           Delete
                         </button>
