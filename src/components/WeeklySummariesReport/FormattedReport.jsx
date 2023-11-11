@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom';
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
@@ -229,7 +231,20 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         .format('MMM-DD-YY');
       summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
-      return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
+      return (
+        <div style={style} className="weekly-summary-report-container">
+          <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
+          <FontAwesomeIcon
+            icon={faCopy}
+            className="copy-icon "
+            onClick={() => {
+              const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
+              navigator.clipboard.writeText(parsedSummary);
+              toast.success('Summary Copied!');
+            }}
+          />
+        </div>
+      );
     }
     if (
       summary?.weeklySummaryOption === 'Not Required' ||
