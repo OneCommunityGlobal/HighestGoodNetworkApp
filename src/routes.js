@@ -1,17 +1,25 @@
-import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
+import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
+import BMDashboard from 'components/BMDashboard';
+import BMLogin from 'components/BMDashboard/Login';
+import MaterialsList from 'components/BMDashboard/MaterialsList';
+
+import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+
 import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import AutoUpdate from 'components/AutoUpdate';
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import { RoutePermissions } from 'utils/routePermissions';
 import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
 import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import Timelog from './components/Timelog';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
 import Login from './components/Login';
@@ -36,53 +44,42 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
-import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
-import SetupProfile from 'components/SetupProfile/SetupProfile';
 
 // BM Dashboard
-import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
-import BMDashboard from 'components/BMDashboard';
-import BMLogin from 'components/BMDashboard/Login';
-
-import MaterialsList from 'components/BMDashboard/MaterialsList';
-
-import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
-
 
 export default (
-  <>
-    <Switch>
-      <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
-      <>
-        {/* Comment out the Header component and its import during phase 2 development. */}
-        <Header />
-        {/* Uncomment BMHeader and its import during phase 2 development. */}
-        {/* <BMHeader /> */}
-        <AutoUpdate />
-        <ToastContainer />
-        <Switch>
-          <ProtectedRoute path="/dashboard" exact component={Dashboard} />
-          <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
-          <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} />
-          <ProtectedRoute path="/project/members/:projectId" component={Members} />
-          <ProtectedRoute path="/popupmanagement" component={Admin} />
-          <ProtectedRoute path="/timelog/" exact component={Timelog} />
-          <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-          <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
-          <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
-          <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
-          <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
+  <Switch>
+    <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+    <>
+      {/* Comment out the Header component and its import during phase 2 development. */}
+      <Header />
+      {/* Uncomment BMHeader and its import during phase 2 development. */}
+      {/* <BMHeader /> */}
+      <AutoUpdate />
+      <ToastContainer />
+      <Switch>
+        <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+        <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} />
+        <ProtectedRoute path="/project/members/:projectId" component={Members} />
+        <ProtectedRoute path="/popupmanagement" component={Admin} />
+        <ProtectedRoute path="/timelog/" exact component={Timelog} />
+        <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
+        <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
+        <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
+        <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
+        <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
 
-          <ProtectedRoute
-            path="/inventory/:projectId"
-            component={Inventory}
-            routePermissions={RoutePermissions.inventoryProject}
-          />
-          <ProtectedRoute
-            path="/inventory/:projectId/wbs/:wbsId"
-            component={Inventory}
-            routePermissions={RoutePermissions.inventoryProjectWbs}
-          />
+        <ProtectedRoute
+          path="/inventory/:projectId"
+          component={Inventory}
+          routePermissions={RoutePermissions.inventoryProject}
+        />
+        <ProtectedRoute
+          path="/inventory/:projectId/wbs/:wbsId"
+          component={Inventory}
+          routePermissions={RoutePermissions.inventoryProjectWbs}
+        />
 
           <ProtectedRoute
             path="/weeklysummariesreport"
@@ -159,41 +156,38 @@ export default (
           />
           <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
-      {/* ----- BEGIN BM Dashboard Routing ----- */}
+        {/* ----- BEGIN BM Dashboard Routing ----- */}
 
-      <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
-      <Route path="/bmdashboard/login" component={BMLogin} />
-      <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
-      <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
-      {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-      <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
-      
-  
-      
-      {/* ----- END BM Dashboard Routing ----- */}
+        <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
+        <Route path="/bmdashboard/login" component={BMLogin} />
+        <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
+        <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+        {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
+        <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
-      <Route path="/login" component={Login} />
-      <Route path="/forgotpassword" component={ForgotPassword} />
-      <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
-      <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
-      <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
-      <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
-      <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-      <Route path="/Logout" component={Logout} />
-      <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-      <ProtectedRoute path="/" exact component={Dashboard} />
-          <Route path="/login" component={Login} />
-          <Route path="/forgotpassword" component={ForgotPassword} />
-          <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
-          <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
-          <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
-          <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
-          <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-          <Route path="/Logout" component={Logout} />
-          <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-          <ProtectedRoute path="/" exact component={Dashboard} />
-        </Switch>
-      </>
-    </Switch>
-  </>
+        {/* ----- END BM Dashboard Routing ----- */}
+
+        <Route path="/login" component={Login} />
+        <Route path="/forgotpassword" component={ForgotPassword} />
+        <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
+        <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
+        <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
+        <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
+        <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <Route path="/Logout" component={Logout} />
+        <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        <ProtectedRoute path="/" exact component={Dashboard} />
+        <Route path="/login" component={Login} />
+        <Route path="/forgotpassword" component={ForgotPassword} />
+        <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
+        <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
+        <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
+        <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
+        <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <Route path="/Logout" component={Logout} />
+        <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        <ProtectedRoute path="/" exact component={Dashboard} />
+      </Switch>
+    </>
+  </Switch>
 );

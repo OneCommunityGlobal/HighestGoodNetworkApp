@@ -9,7 +9,6 @@ src/languages/**
 src/reducers/**
 src/registerServiceWorker.js
 src/routes.js
-src/services/**
 src/setupTests.js
 src/store.js
 src/styles.js
@@ -23,7 +22,6 @@ src/components/Badge/**
 src/components/common/**
 src/components/Header/**
 src/components/Inventory/**
-src/components/Login/**
 src/components/ManageMemberships/**
 src/components/Memberships/**
 src/components/MonthlyEffort/**
