@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
-import { TaskEditSuggestionRow } from 'components/taskEditSuggestions/Components/TaskEditSuggestionRow';  
+import { TaskEditSuggestionRow } from 'components/TaskEditSuggestions/Components/TaskEditSuggestionRow';  
 
 // Mock the `datetimeToDate` function
 jest.mock('components/TeamMemberTasks/components/TaskDifferenceModal', () => ({
