@@ -20,7 +20,7 @@ export const Team = props => {
         className="teams__active--input"
         onClick={e => {
           canDeleteTeam || canPutTeam
-            ? props.onStatusClick(props.name, props.teamId, props.active, props.teamCode)
+            ? props.onStatusClick(props.name, props.teamId, props.active)
             : null;
         }}
         // style={boxStyle}
@@ -41,7 +41,7 @@ export const Team = props => {
           type="button"
           className="btn btn-outline-info"
           onClick={e => {
-            props.onMembersClick(props.teamId, props.name, props.teamCode);
+            props.onMembersClick(props.teamId, props.name);
           }}
           data-testid='members-btn'
         >
@@ -55,7 +55,7 @@ export const Team = props => {
               type="button"
               className="btn btn-outline-success"
               onClick={() => {
-                props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
+                props.onEditTeam(props.name, props.teamId, props.active);
               }}
               style={boxStyle}
             >
@@ -67,7 +67,7 @@ export const Team = props => {
               type="button"
               className="btn btn-outline-danger"
               onClick={() => {
-                props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
+                props.onDeleteClick(props.name, props.teamId, props.active);
               }}
               style={boxStyle}
             >

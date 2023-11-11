@@ -12,24 +12,20 @@ import {
 } from 'react-icons/bs';
 import { FaSave, FaAngleUp, FaAngleDown } from 'react-icons/fa';
 import moment from 'moment';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import cs from 'classnames';
 import { toast } from 'react-toastify';
 import { BsXLg } from 'react-icons/bs';
 import css from './Countdown.module.css';
+import { transitionColor } from './NewTimer.module.css';
 
 function getClockIcon(index) {
   const clockIoncs = [BsHourglassBottom, BsHourglassSplit, BsHourglassTop];
   const ClockIcon = clockIoncs[index];
   if (index === 3) {
-    return (
-      <BsHourglassTop
-        style={{ transform: 'rotate(-90deg)', fontSize: '1.5rem' }}
-        title="Counting"
-      />
-    );
+    return <BsHourglassTop style={{ transform: 'rotate(-90deg)', fontSize: '1.5rem' }} />;
   }
-  return <ClockIcon fontSize="1.5rem" title="Counting" />;
+  return <ClockIcon fontSize="1.5rem" />;
 }
 
 export default function Countdown({
@@ -39,8 +35,6 @@ export default function Countdown({
   wsMessageHandler,
   remaining,
   setConfirmationResetModal,
-  checkBtnAvail,
-  handleStartButton,
   handleAddButton,
   handleSubtractButton,
   handleStopButton,
@@ -48,12 +42,12 @@ export default function Countdown({
 }) {
   const { MAX_HOURS, MIN_MINS } = timerRange;
 
-  const { started, goal, initialGoal } = message;
-  const { sendPause, sendSetGoal } = wsMessageHandler;
+  const { started, goal } = message;
+  const { sendStart, sendPause, sendSetGoal } = wsMessageHandler;
 
   const [editing, setEditing] = useState(false);
-  const [initialHours, setInitialHours] = useState(moment.duration(initialGoal).hours());
-  const [initialMinutes, setInitialMinutes] = useState(moment.duration(initialGoal).minutes());
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
   const hourRef = useRef(null);
   const minRef = useRef(null);
 
@@ -70,86 +64,97 @@ export default function Countdown({
     minute: !!remainingHours || !!remainingMinutes,
   };
 
+  const checkBtnAvail = addition => {
+    const remainingDuration = moment.duration(remaining);
+    const goalDuration = moment.duration(goal);
+    return (
+      remainingDuration.asMinutes() + addition > 0 &&
+      goalDuration.asMinutes() + addition >= MIN_MINS &&
+      goalDuration.asHours() + addition / 60 <= MAX_HOURS
+    );
+  };
+
   const forceMinMax = (event, ref) => {
     const { value, min, max } = event.target;
     const updatedValue = Math.max(Number(min), Math.min(Number(max), Number(value)));
     switch (ref) {
       case hourRef:
-        setInitialHours(updatedValue);
+        setHours(updatedValue);
         break;
       case minRef:
-        setInitialMinutes(updatedValue);
+        setMinutes(updatedValue);
         break;
       default:
     }
   };
 
   const validateTime = () => {
-    const duration = moment.duration(initialHours, 'hours').add(initialMinutes, 'minutes');
-    if (duration.asHours() > MAX_HOURS) {
+    const dur = moment.duration(hours, 'hours').add(minutes, 'minutes');
+    if (dur.asHours() > MAX_HOURS) {
       toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
       sendSetGoal(moment.duration(MAX_HOURS, 'hours').asMilliseconds());
-    } else if (duration.asMinutes() < MIN_MINS) {
+    } else if (dur.asMinutes() < MIN_MINS) {
       toast.error(`Timer cannot be set less than ${MIN_MINS} minutes!`);
       sendSetGoal(moment.duration(MIN_MINS, 'minutes').asMilliseconds());
     } else {
-      sendSetGoal(duration.asMilliseconds());
+      sendSetGoal(dur.asMilliseconds());
     }
     setEditing(false);
   };
 
-  const handleInitialHourChange = amount => {
-    const newHour = initialHours + amount;
+  const handleHourChange = amount => {
+    const newHour = hours + amount;
     switch (true) {
       case newHour <= 0:
-        if (initialMinutes < MIN_MINS) {
+        if (minutes < MIN_MINS) {
           toast.error(`Timer cannot be set less than ${MIN_MINS} minutes!`);
-          setInitialMinutes(MIN_MINS);
+          setMinutes(MIN_MINS);
         }
-        setInitialHours(0);
+        setHours(0);
         break;
       case newHour >= MAX_HOURS:
-        if (initialMinutes > 0) {
+        if (minutes > 0) {
           toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
-          setInitialMinutes(0);
+          setMinutes(0);
         }
-        setInitialHours(MAX_HOURS);
+        setHours(MAX_HOURS);
         break;
       default:
-        setInitialHours(newHour);
+        setHours(newHour);
     }
   };
 
-  const handleInitialMinuteChange = amout => {
-    const newMin = initialMinutes + amout;
+  const handleMinuteChange = amout => {
+    const newMin = minutes + amout;
     switch (true) {
-      case initialHours === 0 && newMin < MIN_MINS:
+      case hours === 0 && newMin < MIN_MINS:
         toast.error(`Timer cannot be set less than ${MIN_MINS} minutes!`);
-        setInitialMinutes(MIN_MINS);
+        setMinutes(MIN_MINS);
         break;
       case newMin < 0:
-        setInitialHours(prevHour => prevHour - 1);
-        setInitialMinutes(45);
+        setHours(prevHour => prevHour - 1);
+        setMinutes(45);
         break;
-      case initialHours === MAX_HOURS && newMin > 0:
+      case hours === MAX_HOURS && newMin > 0:
         toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
         break;
       case newMin >= 60:
-        setInitialHours(prevHours => prevHours + 1);
-        setInitialMinutes(0);
+        setHours(prevHours => prevHours + 1);
+        setMinutes(0);
         break;
       default:
-        setInitialMinutes(newMin);
+        setMinutes(newMin);
     }
   };
 
+  useEffect(() => {
+    setHours(moment.utc(goal).hours());
+    setMinutes(moment.utc(goal).minutes());
+  }, [message]);
+
   return (
     <div className={css.countdown}>
-      <BsXLg
-        className={cs(css.transitionColor, css.crossIcon)}
-        onClick={toggleTimer}
-        title="close timer dropdown"
-      />
+      <BsXLg className={cs(css.transitionColor, css.crossIcon)} onClick={toggleTimer} />
       <div className={css.infoDisplay}>
         <h4>{`Goal: ${moment.utc(goal).format('HH:mm:ss')}`}</h4>
         <h6>
@@ -178,7 +183,7 @@ export default function Countdown({
                 onClick={() => setConfirmationResetModal(true)}
                 className={cs(css.transitionColor, css.resetIcon)}
                 fontSize="2rem"
-                title="Reset timer"
+                title="Reset the timer"
               />
             )}
             <span>Time Remaining</span>
@@ -209,32 +214,23 @@ export default function Countdown({
             <div className={css.operators}>
               {running ? (
                 <button type="button" onClick={sendPause}>
-                  <BsPauseFill
-                    className={cs(css.transitionColor, css.operator)}
-                    fontSize="2.5rem"
-                    title="Pause timer"
-                  />
+                  <BsPauseFill className={cs(transitionColor, css.operator)} fontSize="2.5rem" />
                 </button>
               ) : (
-                <button type="button" onClick={handleStartButton}>
+                <button type="button" onClick={sendStart} disabled={remaining === 0}>
                   <BsPlay
                     className={cs(
-                      css.transitionColor,
+                      transitionColor,
                       css.operator,
                       remaining === 0 ? css.operatorDisabled : '',
                     )}
                     fontSize="2.5rem"
-                    title="Start timer"
                   />
                 </button>
               )}
               {started && (
                 <button type="button" onClick={handleStopButton}>
-                  <BsStopFill
-                    className={cs(css.transitionColor, css.operator)}
-                    fontSize="2.5rem"
-                    title="Stop timer and log time"
-                  />
+                  <BsStopFill className={cs(transitionColor, css.operator)} fontSize="2.5rem" />
                 </button>
               )}
             </div>
@@ -248,44 +244,48 @@ export default function Countdown({
               size="sm"
               type="button"
               aria-label="remove 15 minutes"
+              className={cs(css.btn, checkBtnAvail(15) ? '' : css.btnDisabled)}
               onClick={() => handleSubtractButton(15)}
             >
-              <span className={cs(css.btn, checkBtnAvail(-15) ? '' : css.btnDisabled)}>-15 m</span>
+              -15 m
             </button>
             <button
               size="sm"
               type="button"
               aria-label="add 15 minutes"
+              className={cs(css.btn, checkBtnAvail(15) ? '' : css.btnDisabled)}
               onClick={() => handleAddButton(15)}
             >
-              <span className={cs(css.btn, checkBtnAvail(15) ? '' : css.btnDisabled)}>+15 m</span>
+              +15 m
             </button>
             <button
               size="sm"
               type="button"
               aria-label="add 30 minutes"
+              className={cs(css.btn, checkBtnAvail(30) ? '' : css.btnDisabled)}
               onClick={() => handleAddButton(30)}
             >
-              <span className={cs(css.btn, checkBtnAvail(30) ? '' : css.btnDisabled)}>+30 m</span>
+              +30 m
             </button>
             <button
               size="sm"
               type="button"
               aria-label="add 1 hour"
+              className={cs(css.btn, checkBtnAvail(60) ? '' : css.btnDisabled)}
               onClick={() => handleAddButton(60)}
             >
-              <span className={cs(css.btn, checkBtnAvail(60) ? '' : css.btnDisabled)}>+1 h</span>
+              +1 h
             </button>
           </div>
         ) : (
           <>
-            <strong>Initial Goal</strong>
+            <strong>Goal for today</strong>
             <div className={cs(css.goal, editing ? css.goalEditing : '')}>
               <div className={css.numberWrapper}>
                 {editing && (
                   <FaAngleUp
-                    className={cs(css.transitionColor, css.up)}
-                    onClick={() => handleInitialHourChange(1)}
+                    className={cs(transitionColor, css.up)}
+                    onClick={() => handleHourChange(1)}
                   />
                 )}
                 <Input
@@ -293,15 +293,15 @@ export default function Countdown({
                   className={editing ? css.editing : ''}
                   min={0}
                   max={MAX_HOURS}
-                  value={Number(initialHours).toString()}
+                  value={Number(hours).toString()}
                   onChange={e => forceMinMax(e, hourRef)}
                   disabled={!editing}
                   innerRef={hourRef}
                 />
                 {editing && (
                   <FaAngleDown
-                    className={cs(css.transitionColor, css.down)}
-                    onClick={() => handleInitialHourChange(-1)}
+                    className={cs(transitionColor, css.down)}
+                    onClick={() => handleHourChange(-1)}
                   />
                 )}
               </div>
@@ -309,17 +309,15 @@ export default function Countdown({
               <div className={css.numberWrapper}>
                 {editing && (
                   <FaAngleUp
-                    className={cs(css.transitionColor, css.up)}
-                    onClick={() =>
-                      handleInitialMinuteChange(initialHours === 0 && initialMinutes < 15 ? 1 : 15)
-                    }
+                    className={cs(transitionColor, css.up)}
+                    onClick={() => handleMinuteChange(hours === 0 && minutes < 15 ? 1 : 15)}
                   />
                 )}
                 <Input
                   type="number"
                   min={0}
                   max={59}
-                  value={Number(initialMinutes)
+                  value={Number(minutes)
                     .toString()
                     .padStart(2, '0')}
                   onChange={e => forceMinMax(e, minRef)}
@@ -328,26 +326,20 @@ export default function Countdown({
                 />
                 {editing && (
                   <FaAngleDown
-                    className={cs(css.transitionColor, css.down)}
-                    onClick={() =>
-                      handleInitialMinuteChange(
-                        initialHours === 0 && initialMinutes <= 15 ? -1 : -15,
-                      )
-                    }
+                    className={cs(transitionColor, css.down)}
+                    onClick={() => handleMinuteChange(hours === 0 && minutes <= 15 ? -1 : -15)}
                   />
                 )}
               </div>
               {editing ? (
                 <FaSave
-                  className={cs(css.transitionColor, css.goalBtn)}
+                  className={cs(transitionColor, css.goalBtn)}
                   onClick={() => validateTime()}
-                  title="save initial goal"
                 />
               ) : (
                 <BsFillPenFill
-                  className={cs(css.transitionColor, css.goalBtn)}
+                  className={cs(transitionColor, css.goalBtn)}
                   onClick={() => setEditing(true)}
-                  title="edit initial goal"
                 />
               )}
             </div>

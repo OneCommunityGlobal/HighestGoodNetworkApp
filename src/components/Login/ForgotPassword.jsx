@@ -1,12 +1,10 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Button, Input } from 'reactstrap';
+import { Button, Input, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
+import { forgotPassword } from '../../services/authorizationService';
 import Joi from 'joi';
 import { boxStyle } from 'styles';
-import forgotPassword from '../../services/authorizationService';
 
 const ForgotPassword = React.memo(() => {
   const [message, setMessage] = useState({});
@@ -49,7 +47,7 @@ const ForgotPassword = React.memo(() => {
       });
       return errors;
     });
-  // Joi.string().email({ minDomainSegments: 2 })
+  //Joi.string().email({ minDomainSegments: 2 })
   const emailSchema = Joi.string()
     .email()
     .regex(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+$/)
@@ -78,11 +76,12 @@ const ForgotPassword = React.memo(() => {
     const result = Joi.validate(user, schema, { abortEarly: false });
     const { error } = result;
     if (error) {
-      const errorData = error.details.reduce((pre, cur) => {
-        const name = cur.path[0];
-        pre[name] = cur.message;
-        return pre;
-      }, {});
+      const errorData = {};
+      for (let item of error.details) {
+        const name = item.path[0];
+        const message = item.message;
+        errorData[name] = message;
+      }
       setMessage(errorData);
     } else {
       const forgotPasswordData = {
@@ -99,7 +98,7 @@ const ForgotPassword = React.memo(() => {
             history.push('/login');
           }, 1000);
         })
-        .catch(() => {
+        .catch(error => {
           toast.error(
             `Well bummer, your entries don't match what is in our system. Don't give up though, you can do this!`,
           );
@@ -109,9 +108,9 @@ const ForgotPassword = React.memo(() => {
 
   const handleInput = e => {
     const { name, value } = e.target;
-    const errorData = { ...message };
+    let errorData = { ...message };
 
-    let validateResult = {};
+    var validateResult = {};
     if (name === 'email') {
       validateResult = Joi.validate({ [name]: value }, { email: emailSchema });
     } else if (name === 'firstName') {
@@ -126,7 +125,7 @@ const ForgotPassword = React.memo(() => {
     } else {
       delete errorData[name];
     }
-    const userData = { ...user };
+    let userData = { ...user };
     userData[name] = value;
     setUser(userData);
     setMessage(errorData);
@@ -135,9 +134,8 @@ const ForgotPassword = React.memo(() => {
   return (
     <div className="container mt-5">
       <form className="col-md-6 xs-12">
-        <label htmlFor="email">Email</label>
+        <label>Email</label>
         <Input
-          id="email"
           type="text"
           placeholder="Enter your email ID"
           name="email"
@@ -146,9 +144,8 @@ const ForgotPassword = React.memo(() => {
         />
         {message.email && <div className="alert alert-danger">{message.email}</div>}
 
-        <label htmlFor="firstName">First Name</label>
+        <label>First Name</label>
         <Input
-          id="firstName"
           type="text"
           placeholder="Enter your first name"
           name="firstName"
@@ -157,9 +154,8 @@ const ForgotPassword = React.memo(() => {
         />
         {message.firstName && <div className="alert alert-danger">{message.firstName}</div>}
 
-        <label htmlFor="lastName">Last Name</label>
+        <label>Last Name</label>
         <Input
-          id="lastName"
           type="text"
           placeholder="Enter your last name"
           name="lastName"

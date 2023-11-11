@@ -34,7 +34,6 @@ class Teams extends React.PureComponent {
       selectedTeamId: 0,
       selectedTeam: '',
       isActive: '',
-      selectedTeamCode: '',
     };
   }
 
@@ -106,7 +105,6 @@ class Teams extends React.PureComponent {
             name={team.teamName}
             teamId={team._id}
             active={team.isActive}
-            teamCode={team.teamCode}
             onMembersClick={this.onTeamMembersPopupShow}
             onDeleteClick={this.onDeleteTeamPopupShow}
             onStatusClick={this.onTeamStatusShow}
@@ -174,7 +172,6 @@ class Teams extends React.PureComponent {
           selectedStatus={this.state.isActive}
           onDeleteClick={this.onDeleteUser}
           onSetInactiveClick={this.onConfirmClick}
-          selectedTeamCode={this.state.selectedTeamCode}
         />
 
         <TeamStatusPopup
@@ -184,26 +181,24 @@ class Teams extends React.PureComponent {
           selectedTeamId={this.state.selectedTeamId}
           selectedStatus={this.state.isActive}
           onConfirmClick={this.onConfirmClick}
-          selectedTeamCode={this.state.selectedTeamCode}
         />
       </React.Fragment>
     );
   };
 
   onAddUser = user => {
-    this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
+    this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName);
   };
 
   /**
    * call back to show team members popup
    */
-  onTeamMembersPopupShow = (teamId, teamName, teamCode) => {
+  onTeamMembersPopupShow = (teamId, teamName) => {
     this.props.getTeamMembers(teamId);
     this.setState({
       teamMembersPopupOpen: true,
       selectedTeamId: teamId,
       selectedTeam: teamName,
-      selectedTeamCode: teamCode,
     });
   };
 
@@ -221,13 +216,12 @@ class Teams extends React.PureComponent {
   /**
    * call back to show delete team popup
    */
-  onDeleteTeamPopupShow = (deletedname, teamId, status, teamCode) => {
+  onDeleteTeamPopupShow = (deletedname, teamId, status) => {
     this.setState({
       deleteTeamPopupOpen: true,
       selectedTeam: deletedname,
       selectedTeamId: teamId,
       isActive: status,
-      selectedTeamCode: teamCode,
     });
   };
 
@@ -263,13 +257,12 @@ class Teams extends React.PureComponent {
     });
   };
 
-  onEidtTeam = (teamName, teamId, status, teamCode) => {
+  onEidtTeam = (teamName, teamId, status) => {
     this.setState({
       isEdit: true,
       createNewTeamPopupOpen: true,
       selectedTeam: teamName,
       selectedTeamId: teamId,
-      selectedTeamCode: teamCode,
       isActive: status,
     });
   };
@@ -277,12 +270,11 @@ class Teams extends React.PureComponent {
   /**
    * call back to show team status popup
    */
-  onTeamStatusShow = (teamName, teamId, isActive, teamCode) => {
+  onTeamStatusShow = (teamName, teamId, isActive) => {
     this.setState({
       teamStatusPopupOpen: true,
       selectedTeam: teamName,
       selectedTeamId: teamId,
-      selectedTeamCode: teamCode,
       isActive,
     });
   };
@@ -313,7 +305,7 @@ class Teams extends React.PureComponent {
    */
   addNewTeam = (name, isEdit) => {
     if (isEdit) {
-      this.props.updateTeam(name, this.state.selectedTeamId, this.state.isActive, this.state.selectedTeamCode);
+      this.props.updateTeam(name, this.state.selectedTeamId, this.state.isActive);
       alert('Team updated successfully');
     } else {
       this.props.postNewTeam(name, true);
@@ -341,8 +333,8 @@ class Teams extends React.PureComponent {
   /**
    * callback for changing the status of a team
    */
-  onConfirmClick = (teamName, teamId, isActive, teamCode) => {
-    this.props.updateTeam(teamName, teamId, isActive, teamCode);
+  onConfirmClick = (teamName, teamId, isActive) => {
+    this.props.updateTeam(teamName, teamId, isActive);
     this.setState({
       teamStatusPopupOpen: false,
       deleteTeamPopupOpen: false,

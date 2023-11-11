@@ -4,7 +4,6 @@ import ReactHtmlParser from 'react-html-parser';
 import './filteredTimeEntries.css';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { toast } from 'react-toastify';
 
 import moment from 'moment';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
@@ -65,9 +64,7 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
         setProjectCategory(res?.data.category.toLowerCase() || '');
         setProjectName(res?.data?.projectName || '');
       })
-      .catch(() => {
-        toast.error(`There was a problem fetching the project with ID ${data.projectId}.`);
-      });
+      .catch(err => console.log(err));
   }, []);
 
   useEffect(() => {
@@ -78,9 +75,7 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
         setTaskClassification(res?.data?.classification.toLowerCase() || '');
         setTaskName(res?.data?.taskName || '');
       })
-      .catch(() => {
-        toast.error(`There was a problem fetching tasks for the project with ID ${data.projectId}.`);
-      });
+      .catch(err => console.log(err));
   }, []);
 
   return (

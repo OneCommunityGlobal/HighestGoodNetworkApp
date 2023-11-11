@@ -1,9 +1,11 @@
+import React, { useState, useEffect, useRef } from 'react';
 import Joi from 'joi';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
+import { boxStyle } from 'styles';
 
 export class Login extends Form {
   state = {
@@ -47,8 +49,8 @@ export class Login extends Form {
   }
 
   doSubmit = async () => {
-    const { email } = this.state.data;
-    const { password } = this.state.data;
+    const email = this.state.data.email;
+    const password = this.state.data.password;
     this.props.loginUser({ email, password });
     this.setState({ errors: this.props.errors });
   };

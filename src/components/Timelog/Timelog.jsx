@@ -46,7 +46,6 @@ import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -420,6 +419,7 @@ const Timelog = props => {
 
   const isOwner = auth.user.userid === userId;
   const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
+
   return (
     <div>
       {!props.isDashboard ? (
@@ -431,21 +431,10 @@ const Timelog = props => {
             summaryBarData={summaryBarData}
           />
           <br />
-        
         </Container>
-        
       ) : (
-        <div className="text-center">
-        <EditableInfoModal
-          areaName="DashboardTimelog"
-          areaTitle="Timelog"
-          fontSize={30}
-          isPermissionPage={true}
-          role={auth.user.role}
-        />
-        </div>
+        ''
       )}
-      
       {state.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
@@ -457,7 +446,6 @@ const Timelog = props => {
               </div>
             </div>
           ) : null}
-          
           <Row>
             <Col md={12}>
               <Card>
@@ -465,16 +453,14 @@ const Timelog = props => {
                   <Row>
                     <Col md={11}>
                       <CardTitle tag="h4">
-                      <div className="d-flex align-items-center">
-                        <span className="mb-1 mr-2">Tasks and Timelogs</span>
-                        <EditableInfoModal
-                          areaName="TasksAndTimelogInfoPoint"
-                          areaTitle="Tasks and Timelogs"
-                          fontSize={22}
-                          isPermissionPage={true}
-                          role={auth.user.role} // Pass the 'role' prop to EditableInfoModal
+                        Tasks and Timelogs &nbsp;
+                        <i
+                          className="fa fa-info-circle"
+                          data-tip
+                          data-for="registerTip"
+                          aria-hidden="true"
+                          onClick={openInfo}
                         />
-                      </div>
                         <span style={{ padding: '0 5px' }}>
                           <ActiveCell
                             isActive={userProfile.isActive}
