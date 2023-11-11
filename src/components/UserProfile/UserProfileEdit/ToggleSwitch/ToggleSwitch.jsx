@@ -193,7 +193,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, UpdateTe
               <input
                 id="teamVisiblity"
                 type="checkbox"
-                className={style.toggle}
+                className={style.toggleTeamsVisibility}
                 checked={visiblity} // Assuming visiblity is a string
                 onChange={ (event)=>{
                   const isChecked = !visiblity;
