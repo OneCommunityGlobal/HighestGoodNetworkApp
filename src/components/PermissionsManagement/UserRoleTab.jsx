@@ -75,7 +75,6 @@ export const permissionLabel = {
   seePermissionsManagement: 'See Permissions Management Tab',
   submitWeeklySummaryForOthers: 'Submit Weekly Summary For Others',
   changeBioAnnouncement: 'Change the Bio Announcement Status',
-  seeSummaryIntroButton: 'See Summary Intro Button',
   seeAllReports: 'See All the Reports Tab',
   removeUserFromTask: 'View and Interact with Task “X”',
   seePermissionsManagement: 'See Permissions Management Tab and Edit Permission',
