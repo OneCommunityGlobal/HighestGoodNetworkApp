@@ -52,9 +52,12 @@ const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
 
   for (let task of tasks) {
-    for (let resource of task.resources) {
-      if (resource.userID == userId && resource.completedTask == false) {
-        return true;
+    // if the task is not assigned or not active, ignore it
+    if (task.isAssigned && task.isActive) {
+      for (let resource of task.resources) {
+        if (resource.userID == userId && resource.completedTask == false) {
+          return true;
+        }
       }
     }
   }
@@ -104,9 +107,7 @@ const Timelog = props => {
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
     Accounts assigned with tasks with no wbs return and empty array.
-    Accounts assigned with tasks with wbs return an array with that wbs data.
-    The problem: even after unassigning tasks the array keeps the wbs data.
-    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
+    Accounts assigned with tasks with wbs return an array with that wbs data.*/
 
     //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
     if (role === 'Volunteer' && !UserHaveTask) {
