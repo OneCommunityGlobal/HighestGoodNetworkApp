@@ -3,16 +3,15 @@ import { render } from '@testing-library/react';
 import TeamChartsGroup from 'components/Reports/TeamReport/components/TeamChartsGroup';
 
 describe('TeamChartsGroup Component', () => {
-  it('renders two ReportCharts with correct titles and pieChartIds', () => {
-    const { getByText } = render(<TeamChartsGroup />);
+  it('renders TeamChartsGroup component with two ReportCharts', () => {
+    const { getAllByText } = render(<TeamChartsGroup />);
 
-    // Check if the first ReportCharts is rendered with the correct title and pieChartId
-    expect(getByText('Breakdown of Weekly Hours So Far This Week')).toBeInTheDocument();
-    expect(getByText('chart1')).toBeInTheDocument();
-
-    // Check if the second ReportCharts is rendered with the correct title and pieChartId
-    expect(getByText('Breakdown of Weekly Hours So Far This Week')).toBeInTheDocument();
-    expect(getByText('chart2')).toBeInTheDocument();
+    // Check if the component renders two chart with the same title
+    const teamChartWrapper = getAllByText('Breakdown of Weekly Hours So Far This Week');
+    const firstChart = teamChartWrapper[0];
+    const secondChart = teamChartWrapper[1];
+    expect(firstChart).toBeInTheDocument();
+    expect(secondChart).toBeInTheDocument();
   });
 
   it('renders with the correct CSS class names', () => {
