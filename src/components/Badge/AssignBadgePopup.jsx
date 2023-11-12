@@ -58,14 +58,14 @@ const AssignBadgePopup = props => {
         </thead>
         <tbody>
           {filteredBadges.map((value, index) => (
-            <AssignTableRow badge={value} index={index} key={index} selectedBadges={props.selectedBadges}/>
+            <AssignTableRow badge={value} index={index} key={index} />
           ))}
         </tbody>
       </Table>
       <Button
         className="btn--dark-sea-green float-right"
         style={{ ...boxStyle, margin: 5 }}
-        onClick={props.submit}
+        onClick={props.toggle}
       >
         Confirm
       </Button>

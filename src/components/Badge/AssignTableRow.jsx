@@ -1,29 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
 import { connect } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 const AssignTableRow = props => {
   const [isOpen, setOpen] = useState(false);
-  const [isSelect, setSelect] = useState(false);
-
-  useEffect(() => {
-    if (props.selectedBadges && props.selectedBadges.includes(`assign-badge-${props.badge._id}`)) {
-      setSelect(true);
-    } else {
-      setSelect(false);
-    }
-  }, [props.selectedBadges, props.badge._id]);
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
   const handleCheckBoxChange = e => {
     if (e.target.checked) {
       props.addSelectBadge(e.target.id);
-      setSelect(true);
     } else {
       props.removeSelectBadge(e.target.id);
-      setSelect(false);
     }
   };
 
@@ -48,12 +37,7 @@ const AssignTableRow = props => {
       </td>
       <td>{props.badge.badgeName}</td>
       <td>
-        <CustomInput 
-          type="checkbox" 
-          id={`assign-badge-${props.badge._id}`}  
-          onChange={handleCheckBoxChange} 
-          checked={isSelect}
-        />
+        <CustomInput type="checkbox" onChange={handleCheckBoxChange} id={props.badge._id} />
       </td>
     </tr>
   );

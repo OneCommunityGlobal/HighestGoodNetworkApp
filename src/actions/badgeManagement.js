@@ -125,8 +125,6 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     selectedBadges.forEach(badgeId => {
       let included = false;
 
-      if(badgeId.includes("assign-badge-")) badgeId = badgeId.replace("assign-badge-", "");
-
       badgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
@@ -198,7 +196,6 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       let included = false;
       const formatedDate = moment().format('YYYY-MM-DD')
     
-      if(badgeId.includes("assign-badge-")) badgeId = badgeId.replace("assign-badge-", "");
 
       badgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
