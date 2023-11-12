@@ -1,25 +1,21 @@
 import React from "react";
-import { fireEvent, getByPlaceholderText, render, component, waitFor, within } from "@testing-library/react";
+import { fireEvent, within } from "@testing-library/react";
 import EditLinkModal from "components/UserProfile/UserProfileModal/EditLinkModal";
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { rolesMock, authMock, userProfileMock, userProjectMock } from "__tests__/mockStates";
-import { Provider } from "react-redux";
-import hasPermission from "utils/permissions";
+import { renderWithProvider } from "__tests__/utils";
 
 
 const VALID_URL = 'https://valid.url';
-const VALID_URL2 = 'https://valid.url.again';
 const INVALID_URL = 'invalid.';
 
 const EmptyLinkUserProfile= {
-  role: "Owner",
   adminLinks:[],
   personlLinks:[],
   mediaUrl: undefined,
 }
 const filledUserProfile = {
-  role: "Owner",
   adminLinks:
   [
     { Name: 'Google Doc', Link: VALID_URL },
@@ -31,6 +27,34 @@ const filledUserProfile = {
   ],
   mediaUrl:VALID_URL
 }
+
+describe('EditLinkModal permission checks', () =>{
+  const mockStore = configureStore([thunk]);
+  let store;
+  let component;
+  const props = {
+    isOpen: true,
+    closeModal: jest.fn(),
+    updateLink: jest.fn(),
+    userProfile:filledUserProfile,
+  };
+
+  beforeEach(() => {
+    store = mockStore({
+      auth: {...authMock,isAdmin:false,user:{...authMock.user, role:'Volunteer'}},
+      userProjects: userProjectMock,
+      userProfile: userProfileMock,
+      role: rolesMock.role
+    });
+
+    component = renderWithProvider(<EditLinkModal {...props} />, {store})
+  });
+  
+  it('should not display admin links input area for Volunteer', () =>{
+    // Two input elements for one exisintg Personal Link, another two for new added link
+    expect(component.getAllByRole('textbox').length).toBe(4);
+  })
+})
 
 describe('EditLinkModal with admin links and personal links', () => {
 
@@ -52,22 +76,9 @@ describe('EditLinkModal with admin links and personal links', () => {
       role: rolesMock.role
     });
 
-    component = render(
-      <Provider store={store}>
-        <EditLinkModal {...props} />
-      </Provider>
-    );
+    component = renderWithProvider(<EditLinkModal {...props} />, {store})
   });
-  
-  it('test hasPermission()', () =>{
-    store.dispatch(hasPermission('putUserProfileImportantInfo'))
-    const actions = store.getActions();
-    expect(actions).toBeDefined;
-  })
 
-  it('should not display input for admin links without permission', () =>{
-    // TODO
-  })
 
   it('should add new admin link when add button is clicked', () => {
     const newAdminLinkContainer = document.querySelector('.new-admin-links')
@@ -98,14 +109,14 @@ describe('EditLinkModal with admin links and personal links', () => {
     const mediaFolderLink = component.getByPlaceholderText('Enter Dropbox link');
     fireEvent.change(mediaFolderLink, {target: {value: 'changed url'}});
     expect(component.getByTestId('diff-media-url-warning')).toBeInTheDocument();
-    // * display original link
+    // Display original link
     expect(component.getByText(VALID_URL)).toBeInTheDocument();
   })
   
   it('should restore media url after "Cancel" button is clicked', () =>{
     const mediaFolderLink = component.getByPlaceholderText('Enter Dropbox link');
     const cancelButton = component.getByText('Cancel');
-    // Edit existing media url
+    //  Edit existing media url
     fireEvent.change(mediaFolderLink, {target: {value: 'changed url'}});
     fireEvent.click(cancelButton);
     expect(mediaFolderLink.value).toBe(VALID_URL);
@@ -132,7 +143,7 @@ describe('EditLinkModal with admin links and personal links', () => {
 });
 
 
-describe('Edit Link Modal with empty admin links', () =>{
+describe('Edit Link Modal with empty links', () =>{
   const mockStore = configureStore([thunk]);
   let store;
   let component;
@@ -151,11 +162,7 @@ describe('Edit Link Modal with empty admin links', () =>{
       role: rolesMock.role
     });
 
-    component = render(
-      <Provider store={store}>
-        <EditLinkModal {...props} />
-      </Provider>
-    );
+    component = renderWithProvider(<EditLinkModal {...props} />, {store})
   });
 
   it('should render special admin link labels when empty admin links', () =>{
@@ -167,12 +174,10 @@ describe('Edit Link Modal with empty admin links', () =>{
     expect(updateButton).toBeDisabled();
   })
 
-  it('should not popup warning when empty media url is changed',() =>{
-    // const mediaFolderLink = component.getByPlaceholderText('Enter Dropbox link');
-    // fireEvent.change(mediaFolderLink, {target: {value: 'INVALID_URL'}});
-    // expect(component.getByTestId('popup-warning')).not.toBeInTheDocument();
+  it('should not popup warning when empty media url is editing',() =>{
+    const mediaFolderLink = component.getByPlaceholderText('Enter Dropbox link');
+    fireEvent.change(mediaFolderLink, {target: {value: 'INVALID_URL'}});
+    expect(component.container).not.toHaveAttribute('data-testid','popup-warning');
   })
 })
-
-
 
