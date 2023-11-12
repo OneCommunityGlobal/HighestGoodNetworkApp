@@ -49,4 +49,13 @@ describe('TeamReportCharts', () => {
     const teamWeeklyChart = wrapper.find('PieChartInfoDetail').at(1); // Get the second chart which is totalTeamWeeklyWorkedHours Chart
     expect(teamWeeklyChart.prop('value')).toEqual(props.totalTeamWeeklyWorkedHours);
   });
+
+  // Test the style css
+  it('renders the correct colors for the pie chart slices', () => {
+    const wrapper = mount(<TeamReportCharts {...props} />);
+    const colors = ['#B88AD5', '#FAE386', '#E4E4E4'];
+    wrapper.find('path').forEach((path, index) => {
+      expect(path.prop('fill')).toEqual(colors[index]);
+    });
+  });
 });
