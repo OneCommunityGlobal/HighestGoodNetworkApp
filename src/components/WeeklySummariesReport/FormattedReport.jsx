@@ -201,13 +201,6 @@ function ReportDetails({
 }
 
 function WeeklySummaryMessage({ summary, weekIndex }) {
-  if (!summary) {
-    return (
-      <p>
-        <b>Weekly Summary:</b> Not provided!
-      </p>
-    );
-  }
 
   const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
   let summaryDate = moment()
@@ -215,7 +208,13 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     .endOf('week')
     .subtract(weekIndex, 'week')
     .format('YYYY-MMM-DD');
+
   let summaryDateText = `Weekly Summary (${summaryDate}):`;
+
+  const isSummaryNotRequiredOrNotProvided =
+    summary?.weeklySummaryOption === 'Not Required' ||
+    (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq);
+
   const summaryContent = (() => {
     if (summaryText) {
       const style = {
@@ -229,13 +228,12 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 
       return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
     }
-    if (
-      summary?.weeklySummaryOption === 'Not Required' ||
-      (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
-    ) {
+
+    if (isSummaryNotRequiredOrNotProvided) {
       return <p style={{ color: textColors['Not Required'] }}>Not required for this user</p>;
     }
     return <span style={{ color: 'red' }}>Not provided!</span>;
+
   })();
 
   return (
@@ -244,19 +242,31 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         <b>{summaryDateText}</b>
       </p>
       {summaryContent}
-      {
-        summaryContent &&
+
+      {!isSummaryNotRequiredOrNotProvided && summaryText && (
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(summaryText);
-            toast.success('Weekly Summary Copied!');
-          }}
+          onClick={() => copyToClipboard(summaryText)}
         />
-      }
-
+      )}
     </>
+  );
+}
+
+
+function copyToClipboard(htmlString) {
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = htmlString;
+  const textToCopy = tempElement.textContent || tempElement.innerText || '';
+
+  navigator.clipboard.writeText(textToCopy).then(
+    () => {
+      toast.success('Weekly Summary Copied!');
+    },
+    (err) => {
+      console.error('Failed to copy: ', err);
+    }
   );
 }
 
