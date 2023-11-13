@@ -1,4 +1,8 @@
-
-.pre-line{
-    white-space: pre-line;
-}
+.centered-container {
+    text-align: center;
+  }
+  
+  .centered-text {
+    display: inline-block;
+    margin-top: 10px;
+  }

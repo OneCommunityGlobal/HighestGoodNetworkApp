@@ -7,7 +7,7 @@ import Alert from 'react-bootstrap/Alert';
 import { useEffect } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
 import { boxStyle } from 'styles';
-import   './ScheduleReason.css';
+import   './ScheduleReasonModal.css';
 
 const ScheduleReasonModal = ({
   handleClose,
