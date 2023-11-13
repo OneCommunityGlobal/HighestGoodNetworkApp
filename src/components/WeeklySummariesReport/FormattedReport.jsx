@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom';
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
@@ -34,6 +36,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 
 const textColors = {
   Default: '#000000',
@@ -120,13 +123,14 @@ function FormattedReport({
           containing a maximum of 90 addresses.
         </Tooltip>
         <FontAwesomeIcon
-          className="ml-2"
+          className="mx-2"
           onClick={handleEmailButtonClick}
           icon={faMailBulk}
           size="lg"
           style={{ color: '#0f8aa9', cursor: 'pointer' }}
           id="emailIcon"
         />
+        <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!"/>
       </div>
       <p>{emails.join(', ')}</p>
     </>
@@ -227,7 +231,20 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         .format('MMM-DD-YY');
       summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
-      return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
+      return (
+        <div style={style} className="weekly-summary-report-container">
+          <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
+          <FontAwesomeIcon
+            icon={faCopy}
+            className="copy-icon "
+            onClick={() => {
+              const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
+              navigator.clipboard.writeText(parsedSummary);
+              toast.success('Summary Copied!');
+            }}
+          />
+        </div>
+      );
     }
     if (
       summary?.weeklySummaryOption === 'Not Required' ||
