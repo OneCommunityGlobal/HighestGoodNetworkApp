@@ -10,7 +10,6 @@ import { Link } from 'react-router-dom';
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
@@ -31,7 +30,7 @@ import {
   Alert,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons'
+import { faCopy, faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
