@@ -91,13 +91,23 @@ function TotalTeamReport(props) {
     });
     teamTimeEntries?.forEach(entry => {
       const key = entry.teamId;
+      if (!accTeam[key]) {
+        accTeam[key] = {
+          teamId: key,
+          teamName: entry.teamName,
+          hours: 0,
+          minutes: 0,
+          tangibleHours: 0,
+          tangibleMinutes: 0,
+        };
+      }
       const hours = parseInt(entry.hours);
       const minutes = parseInt(entry.minutes);
-      accTeam[key]['hours'] += hours;
-      accTeam[key]['minutes'] += minutes;
+      accTeam[key].hours += hours;
+      accTeam[key].minutes += minutes;
       if(entry.isTangible){
-        accTeam[key]['tangibleHours'] += hours;
-        accTeam[key]['tangibleMinutes'] += minutes;
+        accTeam[key].tangibleHours += hours;
+        accTeam[key].tangibleMinutes += minutes;
       }
     });
     return accTeam;
@@ -136,6 +146,7 @@ function TotalTeamReport(props) {
             minutes: entry.minutes,
             isTangible: entry.isTangible,
             date: entry.dateOfWork,
+            teamName: entry.teamName,
           };
         });
       })
@@ -261,7 +272,7 @@ function TotalTeamReport(props) {
       setAllTeamsMembers(savedTeamMemberList);
       setTeamMemberLoaded(true);
     } else {
-      matchTeamUser(allTeams).then(() => {
+      matchTeamUser(allTeamsData).then(() => {
         setTeamMemberLoaded(true);
       });
     }
