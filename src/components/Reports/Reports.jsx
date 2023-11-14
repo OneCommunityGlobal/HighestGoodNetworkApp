@@ -739,7 +739,7 @@ class ReportsPage extends Component {
               startDate={this.state.startDate}
               endDate={this.state.endDate}
               userProfiles={userProfiles}
-              allTeams={allTeams}
+              allTeamsData={allTeams}
               passTeamMemberList={this.setTeamMemberList}
               savedTeamMemberList={this.state.teamMemberList}
             />
