@@ -1,16 +1,16 @@
-import { Link } from 'react-router-dom';
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import Loading from '../../common/Loading';
 import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import { getTeamMembers } from '../../../actions/allTeamsAction';
+import Loading from '../../common/Loading';
 
-const TotalTeamReport = props => {
+function TotalTeamReport(props) {
   const dispatch = useDispatch();
   const [dataLoading, setDataLoading] = useState(true);
   const [dataRefresh, setDataRefresh] = useState(false);
@@ -27,14 +27,16 @@ const TotalTeamReport = props => {
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
   const [userNameList, setUserNameList] = useState({});
 
-  const fromDate = props.startDate.toLocaleDateString('en-CA');
-  const toDate = props.endDate.toLocaleDateString('en-CA');
-  const userList = props.userProfiles.map(user => user._id);
-  const teamList = props.allTeams.map(team => team._id);
+  const { startDate, endDate, userProfiles, allTeamsData } = props;
 
-  const filterTeamByEndDate = (teams, endDate) => {
+  const fromDate = startDate.toLocaleDateString('en-CA');
+  const toDate = endDate.toLocaleDateString('en-CA');
+  const userList = userProfiles.map(user => user._id);
+  const teamList = allTeamsData.map(team => team._id);
+
+  const filterTeamByEndDate = (teams, endDateTime) => {
     const filteredTeams = teams
-      .filter(team => new Date(Date.parse(team.createdDatetime)) < endDate)
+      .filter(team => new Date(Date.parse(team.createdDatetime)) < endDateTime)
       .map(entry => {
         return { teamId: entry.teamId, teamName: entry.teamName, members: entry.members };
       });
@@ -42,7 +44,8 @@ const TotalTeamReport = props => {
   };
 
   const matchTeamUser = async teamList => {
-    //get the members of each team in the team list
+    // get the members of each team in the team list
+    // console.log('Load team-members list');
     const allTeamMembersPromises = teamList.map(team => dispatch(getTeamMembers(team._id)));
     const allTeamMembers = await Promise.all(allTeamMembersPromises);
     const teamUserList = allTeamMembers.map((team, i) => {
@@ -57,13 +60,14 @@ const TotalTeamReport = props => {
           members: users,
         };
       }
+      return null;
     });
     setAllTeamsMembers(teamUserList);
   };
 
   const groupByTeam = (userTimeSum, teamList) => {
-    let accTeam = {};
-    teamList.map(team => {
+    const accTeam = {};
+    teamList.forEach(team => {
       const key = team.teamId;
       if (!accTeam[key]) {
         accTeam[key] = {
@@ -75,13 +79,13 @@ const TotalTeamReport = props => {
           tangibleMinutes: 0,
         };
       }
-      team.members.map(teamUser => {
+      team.members.forEach(teamUser => {
         const matchedUser = userTimeSum.filter(user => user.userId === teamUser)[0];
         if (matchedUser) {
-          accTeam[key]['tangibleHours'] += matchedUser['tangibleHours'];
-          accTeam[key]['tangibleMinutes'] += matchedUser['tangibleMinutes'];
-          accTeam[key]['hours'] += matchedUser['hours'];
-          accTeam[key]['minutes'] += matchedUser['minutes'];
+          accTeam[key].tangibleHours += matchedUser.tangibleHours;
+          accTeam[key].tangibleMinutes += matchedUser.tangibleMinutes;
+          accTeam[key].hours += matchedUser.hours;
+          accTeam[key].minutes += matchedUser.minutes;
         }
       });
     });
@@ -100,7 +104,8 @@ const TotalTeamReport = props => {
   };
 
   const loadTimeEntriesForPeriod = async () => {
-    //get the time entries of every user in the selected time range.
+    // get the time entries of every user in the selected time range.
+    // console.log('Load time entries within the time range');
     let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
@@ -116,6 +121,7 @@ const TotalTeamReport = props => {
         });
       })
       .catch(err => {
+        // eslint-disable-next-line no-console
         console.log(err.message);
       });
 
@@ -142,7 +148,7 @@ const TotalTeamReport = props => {
 
   const sumByUser = (objectArray, property) => {
     return objectArray.reduce((acc, obj) => {
-      var key = obj[property];
+      const key = obj[property];
       if (!acc[key]) {
         acc[key] = {
           userId: key,
@@ -152,12 +158,12 @@ const TotalTeamReport = props => {
           tangibleMinutes: 0,
         };
       }
-      if (obj['isTangible']) {
-        acc[key]['tangibleHours'] += Number(obj['hours']);
-        acc[key]['tangibleMinutes'] += Number(obj['minutes']);
+      if (obj.isTangible) {
+        acc[key].tangibleHours += Number(obj.hours);
+        acc[key].tangibleMinutes += Number(obj.minutes);
       }
-      acc[key]['hours'] += Number(obj['hours']);
-      acc[key]['minutes'] += Number(obj['minutes']);
+      acc[key].hours += Number(obj.hours);
+      acc[key].minutes += Number(obj.minutes);
       return acc;
     }, {});
   };
@@ -169,31 +175,19 @@ const TotalTeamReport = props => {
     } else if (timeRange === 'year') {
       range = 4;
     } else {
+      // eslint-disable-next-line no-console
       console.log('The time range should be month or year.');
     }
     return objectArray.reduce((acc, obj) => {
-      const key = obj['date'].substring(0, range);
+      const key = obj.date.substring(0, range);
       const month = acc[key] || [];
       month.push(obj);
       acc[key] = month;
       return acc;
     }, {});
   };
-
-  const summaryOfTimeRange = (timeRange, valid) => {
-    const groupedEntries = Object.entries(groupByTimeRange(allTimeEntries, timeRange));
-    let summaryOfTime = [];
-    groupedEntries.forEach(element => {
-      const groupedUsersOfTime = Object.values(sumByUser(element[1], 'userId'));
-      const groupedTeamsOfTime = Object.values(groupByTeam(groupedUsersOfTime, valid));
-      const contributedTEamsOfTime = filterTenHourTeam(groupedTeamsOfTime);
-      summaryOfTime.push({ timeRange: element[0], teamsOfTime: contributedTEamsOfTime });
-    });
-    return summaryOfTime;
-  };
-
   const filterTenHourTeam = teamTimeList => {
-    let filteredTeams = [];
+    const filteredTeams = [];
     teamTimeList.forEach(element => {
       const allTimeLogged = element.hours + element.minutes / 60.0;
       const allTangibleTimeLogged = element.tangibleHours + element.tangibleMinutes / 60.0;
@@ -208,30 +202,66 @@ const TotalTeamReport = props => {
     });
     return filteredTeams;
   };
-
+  const summaryOfTimeRange = (timeRange, valid) => {
+    const groupedEntries = Object.entries(groupByTimeRange(allTimeEntries, timeRange));
+    const summaryOfTime = [];
+    groupedEntries.forEach(element => {
+      const groupedUsersOfTime = Object.values(sumByUser(element[1], 'userId'));
+      const groupedTeamsOfTime = Object.values(groupByTeam(groupedUsersOfTime, valid));
+      const contributedTEamsOfTime = filterTenHourTeam(groupedTeamsOfTime);
+      summaryOfTime.push({ timeRange: element[0], teamsOfTime: contributedTEamsOfTime });
+    });
+    return summaryOfTime;
+  };
+  const generateBarData = (groupedDate, isYear = false) => {
+    if (isYear) {
+      const startMonth = startDate.getMonth();
+      const endMonth = endDate.getMonth();
+      const sumData = groupedDate.map(range => {
+        return {
+          label: range.timeRange,
+          value: range.teamsOfTime.length,
+          months: 12,
+        };
+      });
+      if (sumData.length > 1) {
+        sumData[0].months = 12 - startMonth;
+        sumData[sumData.length - 1].months = endMonth + 1;
+      }
+      return sumData;
+    }
+    const sumData = groupedDate.map(range => {
+      return {
+        label: range.timeRange,
+        value: range.teamsOfTime.length,
+      };
+    });
+    return sumData;
+  };
   const checkPeriodForSummary = () => {
     const oneMonth = 1000 * 60 * 60 * 24 * 31;
-    const diffDate = props.endDate - props.startDate;
-    const valid = filterTeamByEndDate(allTeamsMembers, props.endDate);
+    const diffDate = endDate - startDate;
+    const valid = filterTeamByEndDate(allTeamsMembers, endDate);
     if (diffDate > oneMonth) {
       setTeamInMonth(generateBarData(summaryOfTimeRange('month', valid)));
       setTeamInYear(generateBarData(summaryOfTimeRange('year', valid), true));
       if (diffDate <= oneMonth * 12) {
         setShowMonthly(true);
       }
-      if (props.startDate.getFullYear() !== props.endDate.getFullYear()) {
+      if (startDate.getFullYear() !== endDate.getFullYear()) {
         setShowYearly(true);
       }
     }
   };
 
   useEffect(() => {
-    //Load the team-members list (if not loaded), time entries and userId-name list.
-    if (props.savedTeamMemberList.length > 0) {
-      setAllTeamsMembers(props.savedTeamMemberList);
+    const { savedTeamMemberList } = props;
+
+    if (savedTeamMemberList.length > 0) {
+      setAllTeamsMembers(savedTeamMemberList);
       setTeamMemberLoaded(true);
     } else {
-      matchTeamUser(props.allTeams).then(() => {
+      matchTeamUser(allTeams).then(() => {
         setTeamMemberLoaded(true);
       });
     }
@@ -239,9 +269,9 @@ const TotalTeamReport = props => {
       setDataLoading(false);
       setDataRefresh(true);
     });
-    let nameList = {};
-    props.userProfiles.map(user => {
-      nameList[user._id] = user.firstName + ' ' + user.lastName;
+    const nameList = {};
+    userProfiles.forEach(user => {
+      nameList[user._id] = `${user.firstName} ${user.lastName}`;
     });
     setUserNameList(nameList);
   }, []);
@@ -249,23 +279,23 @@ const TotalTeamReport = props => {
   useEffect(() => {
     setDataReady(false);
     if (teamMemberLoaded) {
-      //Re-render: reload the time entries when the date changes
+      // Re-render: reload the time entries when the date changes
+      // console.log('Refresh data');
       loadTimeEntriesForPeriod().then(() => {
         setDataLoading(false);
         setDataRefresh(true);
       });
     }
-  }, [props.startDate, props.endDate]);
+  }, [startDate, endDate]);
 
   useEffect(() => {
+    const { savedTeamMemberList, passTeamMemberList } = props;
+
     if (!dataLoading && teamMemberLoaded && dataRefresh) {
-      //Re-render: action on the reloaded entry data for presentation
-      if (!props.savedTeamMemberList.length) {
-        //pass the team-members list to the reports page to avoid loading it again
-        props.passTeamMemberList(allTeamsMembers);
+      if (!savedTeamMemberList.length) {
+        passTeamMemberList(allTeamsMembers);
       }
-      //only consider the team created before the end date
-      const valid = filterTeamByEndDate(allTeamsMembers, props.endDate);
+      const valid = filterTeamByEndDate(allTeamsMembers, endDate);
       setShowMonthly(false);
       setShowYearly(false);
       const groupedUsers = Object.values(sumByUser(allTimeEntries, 'userId'));
@@ -285,7 +315,7 @@ const TotalTeamReport = props => {
 
   const onClickTeamName = teamId => {
     const elem = document.getElementById(`tr_${teamId}_child`);
-    if (elem.style.display != 'table-row') {
+    if (elem.style.display !== 'table-row') {
       elem.style.display = 'table-row';
     } else {
       elem.style.display = 'none';
@@ -293,43 +323,52 @@ const TotalTeamReport = props => {
   };
 
   const getMemberName = (teamId, userNames) => {
-    //given a team(id) and the userid-name list,
-    //return the list of member names of the team
-    let nameList = [];
+    // given a team(id) and the userid-name list,
+    // return the list of member names of the team
+    const nameList = [];
     allTeamsMembers
       .filter(team => team.teamId === teamId)[0]
       .members.forEach(member => {
-        nameList.push(userNames[member] + ', ');
+        nameList.push(`${userNames[member]}, `);
       });
     return nameList;
   };
 
-  const totalTeamTable = (totalTeam, userNameList) => {
+  const totalTeamTable = (totalTeam, userNameList2) => {
     let teamList = [];
     if (totalTeam.length > 0) {
       teamList = totalTeam
         .sort((a, b) => a.teamName.localeCompare(b.teamName))
         .map((team, index) => {
-          const nameList = getMemberName(team.teamId, userNameList);
+          const nameList = getMemberName(team.teamId, userNameList2);
           return (
             <tbody key={team.teamId}>
-              <tr id={`tr_${team.teamId}`} key={team.teamId + '_parent'}>
-                <td scope="row">
+              <tr id={`tr_${team.teamId}`} key={`${team.teamId}_parent`}>
+                <th scope="row">
                   <div>{index + 1}</div>
-                </td>
-                <td
-                  onClick={e => {
-                    onClickTeamName(team.teamId);
-                  }}
-                >
-                  {team.teamName}
+                </th>
+                <td>
+                  <button
+                    type="button" // Explicit type added here
+                    /* eslint-disable-next-line no-unused-vars */
+                    onClick={e => {
+                      onClickTeamName(team.teamId);
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onClickTeamName(team.teamId);
+                      }
+                    }}
+                  >
+                    {team.teamName}
+                  </button>
                 </td>
                 <td>{team.totalTime}</td>
               </tr>
               <tr
                 id={`tr_${team.teamId}_child`}
                 className="teams_child"
-                key={team.teamId + '_child'}
+                key={`${team.teamId}_child`}
               >
                 <td colSpan={3}>Members include: {nameList}</td>
               </tr>
@@ -352,33 +391,6 @@ const TotalTeamReport = props => {
         {teamList}
       </table>
     );
-  };
-
-  const generateBarData = (groupedDate, isYear = false) => {
-    if (isYear) {
-      const startMonth = props.startDate.getMonth();
-      const endMonth = props.endDate.getMonth();
-      const sumData = groupedDate.map(range => {
-        return {
-          label: range.timeRange,
-          value: range.teamsOfTime.length,
-          months: 12,
-        };
-      });
-      if (sumData.length > 1) {
-        sumData[0].months = 12 - startMonth;
-        sumData[sumData.length - 1].months = endMonth + 1;
-      }
-      return sumData;
-    } else {
-      const sumData = groupedDate.map(range => {
-        return {
-          label: range.timeRange,
-          value: range.teamsOfTime.length,
-        };
-      });
-      return sumData;
-    }
   };
 
   const totalTeamInfo = totalTeam => {
@@ -409,6 +421,7 @@ const TotalTeamReport = props => {
         </div>
         {totalTeam.length ? (
           <div className="total-detail">
+            {/* eslint-disable-next-line no-unused-vars */}
             <Button onClick={e => onClickTotalTeamDetail()}>
               {showTotalTeamTable ? 'Hide Details' : 'Show Details'}
             </Button>
@@ -444,5 +457,5 @@ const TotalTeamReport = props => {
       )}
     </div>
   );
-};
+}
 export default TotalTeamReport;
