@@ -1,11 +1,12 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
-import HistoryTable from './HistoryTable';
+import Loading from 'components/common/Loading';
+import EditHistoryModal from './EditHistoryModal';
 
 function LostTimeHistory(props) {
 
-  const [entriesList, setEntriesList] = useState([]);
+  const [entriesRow, setEntriesRow] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   const isOpen = props.isOpen;
@@ -16,18 +17,12 @@ function LostTimeHistory(props) {
   const idList = props.allData.map(data => data._id);
 
   useEffect(() => {
-    loadLostTimeEntries(type, idList, fromDate, toDate).then(res => {
-      setEntriesList(res);
-      setDataLoading(false);
-    });
+    loadLostTimeEntries(type, idList, fromDate, toDate);
   }, []);
 
   const reload = () => {
     setDataLoading(true);
-    loadLostTimeEntries(type, idList, fromDate, toDate).then(res => {
-      setEntriesList(res);
-      setDataLoading(false);
-    });
+    loadLostTimeEntries(type, idList, fromDate, toDate);
   }
 
   const alphabetize = timeEntries => {
@@ -97,18 +92,83 @@ function LostTimeHistory(props) {
 
     timeEntries = alphabetize(timeEntries);
 
-    return timeEntries;
+    let entriesRow = [];
+    if (timeEntries.length > 0) {
+      entriesRow = timeEntries.map((entry) => (
+        <tr id={`tr_${entry._id}`} key={entry._id}>
+          <td>
+            {entry.name}
+          </td>
+          <td>
+            {entry.date}
+          </td>
+          <td>
+            {entry.hours + ':' + entry.minutes}
+          </td>
+          <td>
+            {entry.isTangible ? (
+              <div className="isActive">
+                <i className="fa fa-circle" aria-hidden="true" />
+              </div>
+            ) : (
+              <div className="isNotActive">
+                <i className="fa fa-circle-o" aria-hidden="true" />
+              </div>
+            )}
+          </td>
+          <td>
+            <EditHistoryModal
+              _id={entry._id}
+              dataId={entry.dataId}
+              dateOfWork={entry.date}
+              hours={entry.hours}
+              minutes={entry.minutes}
+              isTangible={entry.isTangible}
+              entryType={entry.entryType}
+              allData={props.allData}
+              reload={reload}
+            />
+          </td>
+        </tr>
+      ));
+    }
+
+    setEntriesRow(entriesRow);
+    setDataLoading(false);
+
   };
 
   return (
-      <div className="table-data-container mt-5">
-        {isOpen && <HistoryTable 
-          entriesList={entriesList}
-          dataLoading={dataLoading}
-          allData={props.allData}
-          reload={reload}
-        />}
-      </div>
+    <div className="table-data-container mt-5">
+      {isOpen && (
+        dataLoading? (
+          <Loading/>
+        ): (
+          <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">
+                Name
+              </th>
+              <th scope="col">
+                Date
+              </th>
+              <th scope="col">
+                Time
+              </th>
+              <th scope="col">
+                Tangible
+              </th>
+              <th scope="col">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>{entriesRow}</tbody>
+        </table>
+        )
+      )}
+    </div>
   );
 }
 

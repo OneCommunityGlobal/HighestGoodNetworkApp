@@ -223,9 +223,7 @@ const EditHistoryModal = props => {
     }
 
     try {
-      // const url = ENDPOINTS.USER_PROFILE(personId);
       const url = ENDPOINTS.USER_PROFILE_PROPERTY(personId);
-      // await axios.put(url, userProfile);
       await axios.patch(url, { key: 'hoursByCategory', value: hoursByCategory });
       await axios.patch(url, { key: 'totalIntangibleHrs', value: userProfile.totalIntangibleHrs });
     } catch (error) {

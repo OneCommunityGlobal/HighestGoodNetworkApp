@@ -31,7 +31,6 @@ const TotalProjectReport = props => {
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
-        console.log(res.data);
         return res.data.map(entry => {
           return {
             projectId: entry.projectId,

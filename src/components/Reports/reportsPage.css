@@ -107,6 +107,7 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  padding: 8px 0px 8px 0px;
 }
 
 .total-report-item {
@@ -119,13 +120,13 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  padding: 0px 0px 16px 0px;
+  padding: 8px 0px 8px 0px;
 }
 
 .lost-time-item {
   display: flex;
   flex-direction: row;
-  margin: 0px 12px;
+  margin: 0px 25px 0px 0px;
 }
 
 .type-container {

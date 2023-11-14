@@ -10,7 +10,6 @@ import { boxStyle } from 'styles';
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from 'actions/userProfile';
 import { postTimeEntry } from 'actions/timeEntries';
-import { Editor } from '@tinymce/tinymce-react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 
@@ -228,8 +227,9 @@ const AddLostTime = props => {
     }
 
     try {
-      const url = ENDPOINTS.USER_PROFILE(personId);
-      await axios.put(url, userProfile);
+      const url = ENDPOINTS.USER_PROFILE_PROPERTY(personId);
+      await axios.patch(url, { key: 'hoursByCategory', value: hoursByCategory });
+      await axios.patch(url, { key: 'totalIntangibleHrs', value: userProfile.totalIntangibleHrs });
     } catch (error) {
       console.log(error);
     }

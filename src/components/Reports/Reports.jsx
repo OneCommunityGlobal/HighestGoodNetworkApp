@@ -373,6 +373,7 @@ class ReportsPage extends Component {
 
   render() {
     const userRole = this.props.state.userProfile.role;
+    const myRole = this.props.state.auth.user.role;
     const { projects } = this.props.state.allProjects;
     const { allTeams } = this.props.state.allTeamsData;
     const { userProfiles } = this.props.state.allUserProfiles;
@@ -586,53 +587,129 @@ class ReportsPage extends Component {
                 </div>
               </div>
             </div>
+            {myRole != 'Owner' && (
+              <div className='lost-time-container'>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddProjHistory}>
+                    {this.state.showAddProjHistory
+                      ? 'Hide Project Lost Time'
+                      : 'Show Project Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="projectLostTimeInfoPoint"
+                      areaTitle="Project Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddPersonHistory}>
+                    {this.state.showAddPersonHistory
+                      ? 'Hide Person Lost Time'
+                      : 'Show Person Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="personLostTimeInfoPoint"
+                      areaTitle="Person Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddTeamHistory}>
+                    {this.state.showAddTeamHistory
+                      ? 'Hide Team Lost Time'
+                      : 'Show Team Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="teamLostTimeInfoPoint"
+                      areaTitle="Team Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="mt-4 bg-white p-3 rounded-5">
-            <div className='lost-time-container'>
-              <div className='lost-time-item'>
-                <Button color='success' onClick={this.setAddTime} >
-                  Add Lost Time
-                </Button>
-                <i
-                  className="fa fa-info-circle"
-                  data-tip
-                  data-for="addTimeTip"
-                  data-delay-hide="0"
-                  aria-hidden="true"
-                  title=""
-                  style={{ paddingLeft: '.32rem' }}
-                />
-                <ReactTooltip id="addTimeTip" place="bottom" effect="solid">
-                  Click this button to add in lost hours for past years of volunteers.
-                  <br />
-                  The lost time can be added to individuals, projects or teams in the system.
-                </ReactTooltip>
+          {myRole === 'Owner' && (
+            <div className="mt-4 bg-white p-3 rounded-5">
+              <div className='lost-time-container'>
+                <div className='lost-time-item'>
+                  <Button color='success' onClick={this.setAddTime} >
+                    Add Lost Time
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="addLostTimeInfoPoint"
+                      areaTitle="Add Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className='lost-time-container'>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddProjHistory}>
+                    {this.state.showAddProjHistory
+                      ? 'Hide Project Lost Time'
+                      : 'Show Project Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="projectLostTimeInfoPoint"
+                      areaTitle="Project Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddPersonHistory}>
+                    {this.state.showAddPersonHistory
+                      ? 'Hide Person Lost Time'
+                      : 'Show Person Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="personLostTimeInfoPoint"
+                      areaTitle="Person Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddTeamHistory}>
+                    {this.state.showAddTeamHistory
+                      ? 'Hide Team Lost Time'
+                      : 'Show Team Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="teamLostTimeInfoPoint"
+                      areaTitle="Team Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-            <div className='lost-time-container'>
-              <div className='lost-time-item'>
-                <Button color='info' onClick={this.showAddProjHistory}>
-                  {this.state.showAddProjHistory
-                    ? 'Hide Project Lost Time'
-                    : 'Show Project Lost Time'}
-                </Button>
-              </div>
-              <div className='lost-time-item'>
-                <Button color='info' onClick={this.showAddPersonHistory}>
-                  {this.state.showAddPersonHistory
-                    ? 'Hide Person Lost Time'
-                    : 'Show Person Lost Time'}
-                </Button>
-              </div>
-              <div className='lost-time-item'>
-                <Button color='info' onClick={this.showAddTeamHistory}>
-                  {this.state.showAddTeamHistory
-                    ? 'Hide Team Lost Time'
-                    : 'Show Team Lost Time'}
-                </Button>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
         <div className="table-data-container mt-5">
           {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
@@ -667,7 +744,7 @@ class ReportsPage extends Component {
               savedTeamMemberList={this.state.teamMemberList}
             />
           )}
-          {this.state.showAddTimeForm && 
+          {(this.state.showAddTimeForm && myRole === 'Owner') && 
             <AddLostTime
               isOpen = {this.state.showAddTimeForm}
               toggle = {this.setAddTime}
@@ -675,7 +752,7 @@ class ReportsPage extends Component {
               teams = {allTeams}
               users = {userProfiles}
             />
-  }
+          }
           {this.state.showAddPersonHistory && (
             <LostTimeHistory
               type={"person"}
