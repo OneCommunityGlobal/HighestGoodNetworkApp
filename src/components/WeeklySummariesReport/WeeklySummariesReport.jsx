@@ -251,6 +251,56 @@ export class WeeklySummariesReport extends Component {
   //   }
   // }
 
+  teamCodeChange = (oldTeamCode, newTeamCode, userId) => {
+    this.setState((state) => {
+      const { selectedCodes, teamCodes, summaries } = state;
+      const regExp = /\(([^)]+)\)/;
+
+      // find summary within summaries that matches _id & change that summary's teamCode
+      const foundSummary = summaries.find(obj => obj._id === userId);
+      foundSummary.teamCode = newTeamCode;
+
+      // console.log(selectedCodes);
+      // console.log(teamCodes);
+      // console.log(foundSummary);
+
+      // within teamCodes, decrease num on label for oldTeamCode 
+      const foundOldTeam = teamCodes.find(obj => obj.value === oldTeamCode);
+      let foundOldTeamLabelNum = Number(regExp.exec(foundOldTeam.label)[1]);
+      // if that num of label is 1 (and will become 0), remove that teamCode entirely from teamCode
+      if (foundOldTeamLabelNum === 1) {
+        const foundOldTeamIndex = teamCodes.findIndex(obj => obj.value === oldTeamCode);
+        teamCodes.splice(foundOldTeamIndex, 1);
+        // remove non-existent oldTeamCode from selection
+        const foundSelectedOldTeam = selectedCodes.find(obj => obj.value === oldTeamCode);
+        selectedCodes.splice(foundSelectedOldTeam, 1);
+      }
+      // otherwise, subtract 1 from the oldTeam label number
+      else {
+        foundOldTeamLabelNum -= 1;
+        foundOldTeam.label = `${oldTeamCode} (${foundOldTeamLabelNum})`;
+      }
+
+      const foundNewTeam = teamCodes.find(obj => obj.value === newTeamCode);
+      // if newTeam code already exists, find that and add 1 to its value
+      if (foundNewTeam) {
+        let foundNewTeamLabelNum = Number(regExp.exec(foundNewTeam.label)[1]);
+        foundNewTeamLabelNum += 1;
+        foundNewTeam.label = `${newTeamCode} (${foundNewTeamLabelNum})`;
+      }
+      // if newTeam code does not exist, create a team code with value of newTeamCode & label of newTeamCode (1)
+      else {
+        teamCodes.push({ label: `${newTeamCode} (1)`, value: newTeamCode });
+      }
+      teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+      return {
+        selectedCodes: [...selectedCodes],
+        teamCodes: [...teamCodes],
+        summaries: [...summaries],
+      }
+    });
+  }
+
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
   }
@@ -490,6 +540,7 @@ export class WeeklySummariesReport extends Component {
                         badges={badges}
                         loadBadges={loadBadges}
                         canEditTeamCode={this.codeEditPermission}
+                        handleTeamCodeChange={this.teamCodeChange}
                       />
                     </Col>
                   </Row>
