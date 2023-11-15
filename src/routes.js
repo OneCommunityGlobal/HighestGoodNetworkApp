@@ -47,7 +47,7 @@ import BMLogin from 'components/BMDashboard/Login';
 import MaterialsList from 'components/BMDashboard/MaterialsList';
 
 import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
-import TEDetailPage from 'components/BMDashboard/TEDetailPage';
+import TEDetailPage from 'components/BMDashboard/Tools/ToolDetailPage';
 
 
 export default (

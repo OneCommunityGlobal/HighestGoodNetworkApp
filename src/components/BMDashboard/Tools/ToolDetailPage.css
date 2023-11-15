@@ -1,0 +1,27 @@
+.ToolDetailPage{
+font-size: clamp(0.9em, 2.5vw, 1em);
+}
+
+.ToolDetailPage__span{
+background-color: #e6f5f2;
+border: 1px solid #e5e5e6;
+border-radius: 5px;
+padding: 0.5em;
+margin-left: 1em;
+}
+
+.ToolDetailPage__image{
+  border: 1px solid #e5e5e6;
+  border-radius: 5px; 
+  width: 150px;
+  height: auto;
+}
+
+.ToolDetailPage__detail_item{
+  line-height: 2.5;
+}
+
+button.descriptionItem_button{
+ padding: 0em;
+ margin-bottom: 1em;
+}
