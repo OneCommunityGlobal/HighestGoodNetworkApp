@@ -29,7 +29,7 @@ export const DeleteTeamPopup = React.memo(props => {
         <Button
           color="warning"
           onClick={() => {
-            props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false);
+            props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false, props.selectedTeamCode);
           }}
           style={boxStyle}
         >
