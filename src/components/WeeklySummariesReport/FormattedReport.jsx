@@ -150,7 +150,7 @@ function ReportDetails({
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   if (summary.lastName === "lallouache") {
-    console.log(summary)
+    // console.log(summary)
   }
   return (
     <li className="list-group-item px-0" ref={ref}>
