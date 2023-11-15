@@ -232,7 +232,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
       return (
         <div style={style} className="weekly-summary-report-container">
           <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
-          <FontAwesomeIcon
+          {!isSummaryNotRequiredOrNotProvided && summaryText && (<FontAwesomeIcon
             icon={faCopy}
             className="copy-icon "
             onClick={() => {
@@ -241,6 +241,8 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
               toast.success('Summary Copied!');
             }}
           />
+          )}
+
         </div>
       );
     }
@@ -258,14 +260,6 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         <b>{summaryDateText}</b>
       </p>
       {summaryContent}
-
-      {!isSummaryNotRequiredOrNotProvided && summaryText && (
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => copyToClipboard(summaryText)}
-        />
-      )}
     </>
   );
 }
