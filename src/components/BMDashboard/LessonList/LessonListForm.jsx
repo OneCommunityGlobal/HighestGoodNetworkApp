@@ -77,7 +77,7 @@ function LessonList() {
             <Form.Label>Tags:</Form.Label>
             <InputGroup className="mb-3">
               {tags.map((tag, index) => (
-                <div key={tag + index} className="tag">
+                <div key={tag} className="tag">
                   <span>{tag}</span>
                   <Button variant="light" className="close-button" onClick={() => removeTag(index)}>
                     &times;
