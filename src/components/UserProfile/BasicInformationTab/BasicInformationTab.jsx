@@ -316,6 +316,8 @@ const BasicInformationTab = props => {
               country: response.data.results[0].components.country,
               city: response.data.results[0].components.city,
             };
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+            
             setTimeZoneFilter(timezone);
             setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
           } else {
