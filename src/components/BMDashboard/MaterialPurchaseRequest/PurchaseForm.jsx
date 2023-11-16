@@ -1,39 +1,45 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-// import PhoneInput from 'react-phone-input-2';
-import { Row, Col, Form, FormGroup, Label, Input, Button, FormFeedback } from 'reactstrap';
-// import { isValidMediaUrl } from 'utils/checkValidURL';
+import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
+
 import { boxStyle } from 'styles';
-// import { postMaterial } from '../../../actions/materials';
 import { purchaseMaterial } from 'actions/bmdashboard/materialsActions';
 import './PurchaseForm.css';
 
-export default function PurchaseForm({ projects, materialTypes }) {
+export default function PurchaseForm() {
+  const bmProjects = useSelector(state => state.bmProjects);
+  const matTypes = useSelector(state => state.bmInvTypes);
+  const history = useHistory();
+
   const [projectId, setProjectId] = useState('');
   const [matTypeId, setMatTypeId] = useState('');
   const [quantity, setQty] = useState('');
   const [unit, setUnit] = useState('');
+  const [priority, setPriority] = useState('Low');
+  const [brand, setBrand] = useState('');
   const [validationError, setValidationError] = useState('');
 
   // change displayed unit of measurement based on selected material
   useEffect(() => {
-    if (projects.length) {
-      const matType = materialTypes.find(type => type._id === matTypeId);
+    if (matTypeId) {
+      const matType = matTypes.find(type => type._id === matTypeId);
       setUnit(matType.unit);
-    }
+    } else setUnit('');
   }, [matTypeId]);
-
-  const history = useHistory();
 
   const schema = Joi.object({
     projectId: Joi.string().required(),
     matTypeId: Joi.string().required(),
     quantity: Joi.number()
-      .positive()
+      .min(1)
+      .max(999)
       .integer()
       .required(),
+    priority: Joi.string().required(),
+    brand: Joi.string().allow(''),
   });
 
   const handleSubmit = async e => {
@@ -42,8 +48,9 @@ export default function PurchaseForm({ projects, materialTypes }) {
       projectId,
       matTypeId,
       quantity,
+      priority,
+      brand,
     });
-    // setValidationError('Invalid form data. Please try again.');
     if (validate.error) {
       return setValidationError('Invalid form data. Please try again.');
     }
@@ -51,12 +58,19 @@ export default function PurchaseForm({ projects, materialTypes }) {
       projectId,
       matTypeId,
       quantity,
+      priority,
+      brand,
     };
     const response = await purchaseMaterial(body);
+    setProjectId('');
+    setMatTypeId('');
+    setQty('');
+    setPriority('Low');
+    setBrand('');
     if (response.status === 201) {
-      toast.success('Success: your purchase request has been logged.');
+      return toast.success('Success: your purchase request has been logged.');
     }
-    // console.log('response', response);
+    return toast.error(`${response.status} - ${response.statusText}`);
   };
 
   const handleCancel = e => {
@@ -65,24 +79,23 @@ export default function PurchaseForm({ projects, materialTypes }) {
   };
 
   return (
-    <Form className="add-materials-form" onSubmit={handleSubmit}>
+    <Form className="purchase-material-form" onSubmit={handleSubmit}>
       <FormGroup>
         <Label for="select-project">Project</Label>
         <Input
           id="select-project"
-          // name="projectId"
           type="select"
-          // invalid={trySubmit && formInputs.projectId === ''}
           value={projectId}
           onChange={({ currentTarget }) => {
             setValidationError('');
             setProjectId(currentTarget.value);
           }}
-          // onChange={handleChange}
-          disabled={!projects.length}
+          disabled={!bmProjects.length}
         >
-          <option value=""> </option>
-          {projects.map(({ _id, name }) => (
+          <option disabled hidden value="">
+            {' '}
+          </option>
+          {bmProjects.map(({ _id, name }) => (
             <option value={_id} key={_id}>
               {name}
             </option>
@@ -93,56 +106,88 @@ export default function PurchaseForm({ projects, materialTypes }) {
         <Label for="select-material">Material</Label>
         <Input
           id="select-material"
-          // name="materialTypeId"
           type="select"
-          // invalid={trySubmit && formInputs.material === ''}
           value={matTypeId}
           onChange={({ currentTarget }) => {
             setValidationError('');
             setMatTypeId(currentTarget.value);
           }}
-          // onChange={handleChange}
         >
-          <option value=""> </option>
-          {materialTypes.map(({ _id, name }) => (
+          <option disabled hidden value="">
+            {' '}
+          </option>
+          {matTypes.map(({ _id, name }) => (
             <option value={_id} key={_id}>
               {name}
             </option>
           ))}
         </Input>
       </FormGroup>
+      <div className="purchase-material-flex-group">
+        <FormGroup className="flex-group-qty">
+          <Label for="input-quantity">Quantity</Label>
+          <div className="flex-group-qty-container">
+            <Input
+              id="input-quantity"
+              type="number"
+              value={quantity}
+              min={1}
+              onChange={({ currentTarget }) => {
+                setValidationError('');
+                setQty(currentTarget.value);
+              }}
+            />
+            <span>{unit}</span>
+          </div>
+        </FormGroup>
+        <FormGroup>
+          <Label for="input-priority">Priority</Label>
+          <Input
+            id="input-priority"
+            type="select"
+            value={priority}
+            onChange={({ currentTarget }) => {
+              setValidationError('');
+              setPriority(currentTarget.value);
+            }}
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </Input>
+        </FormGroup>
+      </div>
       <FormGroup>
-        <Label for="select-quantity">Quantity</Label>
+        <Label for="input-brand">Preferred Brand (optional)</Label>
         <Input
-          id="select-quantity"
-          // name="quantity"
-          type="number"
-          // invalid={trySubmit && formInputs.quantity === ''}
-          value={quantity}
-          min={1}
+          type="text"
+          value={brand}
           onChange={({ currentTarget }) => {
             setValidationError('');
-            setQty(currentTarget.value);
+            setBrand(currentTarget.value);
           }}
-          // onChange={handleChange}
         />
-        {unit}
       </FormGroup>
       <div className="purchase-material-error">{validationError && <p>{validationError}</p>}</div>
-      <Row>
-        <Button type="button" id="cancel" color="secondary" onClick={handleCancel} style={boxStyle}>
+      <div className="purchase-material-buttons">
+        <Button
+          type="button"
+          id="cancel-button"
+          color="secondary"
+          onClick={handleCancel}
+          style={boxStyle}
+        >
           Cancel
         </Button>
-
         <Button
-          type="submit"
+          id="submit-button"
           color="primary"
           style={boxStyle}
-          disabled={!projectId || !matTypeId || !quantity || !!validationError}
+          disabled={!projectId || !matTypeId || !quantity || !priority || !!validationError}
         >
           Submit
         </Button>
-      </Row>
+      </div>
     </Form>
   );
 }

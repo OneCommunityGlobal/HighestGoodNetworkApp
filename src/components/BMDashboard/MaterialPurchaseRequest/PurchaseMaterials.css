@@ -1,30 +1,18 @@
+.purchase-material-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 1rem 2rem;
+  border: 1px solid #ccc;
+  border-radius: 40px;
+}
+
 .purchase-materials-header {
   margin: 1rem auto;
-  padding: 0 1rem;
-  max-width: 1000px;
 }
 
-.add-materials-page form {
-  max-width: 1000px;
-  padding: 1rem;
-  background-color: white;
-}
-
-.add-materials-page {
-  background-color: rgb(232, 244, 249);
-  height: 100%;
-}
-
-@media screen and (max-width: 424px) {
-  .add-materials-page {
-    padding: 0 !important;
-  }
-}
-
-@media screen and (min-width: 425px) {
-  .add-materials-page form {
-    border-radius: 0.5rem;
-    border: 1px solid rgb(220, 220, 220);
-    margin: 2rem auto 0 auto;
+@media screen and (max-width: 800px) {
+  .purchase-material-container {
+    width: 95%;
   }
 }

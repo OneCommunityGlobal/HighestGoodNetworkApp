@@ -19,7 +19,11 @@ export const fetchAllMaterials = () => {
 export const purchaseMaterial = async (body) => {
   return axios.post(ENDPOINTS.BM_MATERIALS, body)
     .then(res => res)
-    .catch(err => console.log(err))
+    .catch((err) => {
+      if(err.response) return err.response
+      else if (err.request) return err.request
+      else return err.message
+    })
 }
 
 export const setMaterials = payload => {

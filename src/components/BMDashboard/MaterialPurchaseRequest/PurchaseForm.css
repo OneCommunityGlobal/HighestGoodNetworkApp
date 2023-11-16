@@ -1,68 +1,51 @@
-/* 
-  Chrome, Safari, Edge, Opera 
-  Remove arrows from number inputs
-*/
-.remove-arrows::-webkit-outer-spin-button,
-.remove-arrows::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.purchase-material-form {
+  margin-top: 2rem;
 }
 
-/* 
-  Firefox
-  Remove arrows from number inputs
-*/
-.remove-arrows[type='number'] {
-  -moz-appearance: textfield;
-  appearance: textfield;
+.purchase-material-form input,
+.purchase-material-form select {
+  background-color: rgb(249, 249, 249);
 }
 
-.total-price {
-  font-size: 1.3rem;
-  background-color: rgb(245, 230, 230);
-  border-radius: 0.5rem;
-  padding: 0.3rem 1rem;
-  margin-bottom: 1rem;
+.purchase-material-flex-group {
   display: flex;
-  justify-content: space-between;
+  gap: 2rem;
 }
 
-.add-materials-form input,
-.add-materials-form select,
-.add-materials-form textarea {
-  background-color: rgb(249, 249, 249);
+.purchase-material-flex-group input {
+  width: 100px;
 }
 
-.add-materials-form .form-check {
-  margin-bottom: 1rem;
+.flex-group-qty {
+  width: 50%;
 }
 
-.add-materials-form #submit {
-  /* background-color: rgb(46, 80, 97);
-  border: 1px solid rgb(46, 80, 97); */
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  float: right;
+.flex-group-qty-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.add-materials-form #cancel {
-  /* background-color: white;
-  color: rgb(46, 80, 97);
-  border: 1px solid rgb(46, 80, 97); */
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
+.purchase-material-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 0 auto 2rem;
 }
 
-.add-materials-form .react-tel-input .form-control {
-  width: 100%;
-  background-color: rgb(249, 249, 249);
-}
-
-.price-currency {
-  justify-content: space-between;
+.purchase-material-buttons button {
+  width: 50%;
 }
 
 .purchase-material-error {
   height: 2.5rem;
   color: red;
+}
+
+@media screen and (max-width: 640px) {
+  .purchase-material-flex-group {
+    display: block;
+  }
+  .flex-group-qty {
+    width: auto;
+  }
 }
