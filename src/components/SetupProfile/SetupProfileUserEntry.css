@@ -1,0 +1,23 @@
+#coutry-rep-tooltip {
+  max-width: 400px;
+  background-color: #d1ecf1;
+  border: 1px solid black;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  font-size: 1rem;
+}
+
+#country-rep-info{
+    color: black;
+    margin-bottom: 0px;
+}
+#requirement-checkbox-wrap{
+    display: flex;
+    flex-direction: row;
+}
+
+#requirement-checkbox{
+    position: relative; 
+    top: 0.2rem;
+    margin-top: 0px;
+    margin-left: 0px;
+}
