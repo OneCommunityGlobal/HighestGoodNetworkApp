@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ToolModal from './ToolModal';
 import './ToolDetailPage.css';
 
-//TO DO: connect to backend and fetch single tool data by toolID
+// TO DO: connect to redux storage, fetch request to backend and fetch single tool data by toolID, remove dummy tool
 
 const dummyTool = {
   toolId: 1,
