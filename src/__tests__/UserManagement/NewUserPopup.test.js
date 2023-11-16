@@ -21,7 +21,11 @@ describe('new user popup', () => {
   const onUserPopupClose = jest.fn();
   let store;
   beforeEach(() => {
-    store = mockStore();
+    store = mockStore({
+      userProfile: {
+        role: 'userRole', // Provide the role here in the initial state
+      },
+    });
     renderWithProvider(<NewUserPopup open onUserPopupClose={onUserPopupClose} />, { store });
   });
   describe('Structure', () => {

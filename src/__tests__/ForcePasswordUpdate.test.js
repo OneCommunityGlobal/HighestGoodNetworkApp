@@ -95,7 +95,6 @@ describe('When user tries to input data', () => {
 });
 
 const url = ENDPOINTS.FORCE_PASSWORD;
-const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let passwordUpdated = false;
 //When user is sent to forced Password Update they are not
@@ -157,9 +156,6 @@ const server = setupServer(
         },
       ]),
     );
-  }),
-  rest.get(timerUrl, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
   }),
   //Any other requests error out
   rest.get('*', (req, res, ctx) => {

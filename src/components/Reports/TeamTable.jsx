@@ -1,12 +1,69 @@
 // eslint-disable-next-line no-unused-vars
-import React from 'react';
+import { React, useState } from 'react';
 import { Link } from 'react-router-dom';
-// These styles were not being used
-// import './TeamTable.css';
+import './TeamTable.css';
+import { Input, FormGroup, FormFeedback } from 'reactstrap';
+import { connect } from 'react-redux';
+import hasPermission from 'utils/permissions';
+import { updateTeam } from 'actions/allTeamsAction';
 
-function TeamTable({ allTeams }) {
+function TeamTable({ allTeams, auth, hasPermission }) {
   // Display project lists
   let TeamsList = [];
+  const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role == 'Owner';
+
+  const EditTeamCode = ({team}) => {
+
+    const [teamCode, setTeamCode] = useState(team.teamCode);
+    const [hasError, setHasError] = useState(false);
+    const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+
+    const handleOnChange = (value, team) => {
+      updateTeam(team.teamName, team._id, team.isActive, value);
+    };
+  
+    const handleCodeChange = e => {
+      let value = e.target.value;
+  
+      const regexTest = fullCodeRegex.test(value);
+      if (regexTest) {
+        setHasError(false);
+        setTeamCode(value);
+        handleOnChange(value, team);
+      } else {
+        setTeamCode(value);
+        setHasError(true);
+      }
+    };
+  
+    return (
+      <>
+        {canEditTeamCode ?
+          <div style={{paddingRight: "5px"}}>
+            <FormGroup>
+              <Input
+                id='codeInput'
+                value={teamCode}
+                onChange={e => {
+                  if(e.target.value != teamCode){
+                    handleCodeChange(e);
+                  }
+                }}
+                placeholder="X-XXX"
+                invalid={hasError}
+              />
+              <FormFeedback>
+              The code format must be A-AAA or AAAAA.
+              </FormFeedback>
+            </FormGroup>
+          </div>
+        : 
+          `${teamCode == ''? "No assigned code!": teamCode}`
+        }
+      </>
+    )
+  };
+
   if (allTeams.length > 0) {
     TeamsList = allTeams.map((team, index) => (
       <tr id={`tr_${team._id}`} key={team._id}>
@@ -27,6 +84,9 @@ function TeamTable({ allTeams }) {
             </div>
           )}
         </td>
+        <td>
+          <EditTeamCode team={team}/>
+        </td>
       </tr>
     ));
   }
@@ -41,6 +101,7 @@ function TeamTable({ allTeams }) {
           <th scope="col" id="projects__active">
             Active
           </th>
+          <th style={{width: '30%'}} scope="col">Team Code</th>
         </tr>
       </thead>
       <tbody>{TeamsList}</tbody>
@@ -48,4 +109,12 @@ function TeamTable({ allTeams }) {
   );
 }
 
-export default TeamTable;
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+const mapDispatchToProps = dispatch => ({
+  hasPermission: permission => dispatch(hasPermission(permission)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TeamTable);

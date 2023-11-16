@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../actions/authActions';
-import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import Timer from '../Timer/NewTimer';
-// import OldTimer from '../Timer/Timer';
+import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
   LOGO,
@@ -52,7 +50,7 @@ export const Header = props => {
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
- 
+
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
@@ -71,7 +69,7 @@ export const Header = props => {
   const canUpdatePopup = props.hasPermission('updatePopup');
   // Roles
   const canPutRole = props.hasPermission('putRole');
-  // Permissions 
+  // Permissions
   const canManageUser = props.hasPermission('putUserProfilePermissions');
 
   const dispatch = useDispatch();
@@ -79,7 +77,6 @@ export const Header = props => {
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
-      props.getTimerData(props.auth.user.userid);
       if (props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
@@ -87,7 +84,7 @@ export const Header = props => {
   }, [props.auth.isAuthenticated]);
 
   useEffect(() => {
-    if (roles.length === 0) {
+    if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
   }, []);
@@ -110,7 +107,6 @@ export const Header = props => {
           style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
           {isAuthenticated && <Timer />}
-          {/* {isAuthenticated && <OldTimer />} */}
           {isAuthenticated && (
             <div className="owner-message">
               <OwnerMessage />
@@ -207,18 +203,13 @@ export const Header = props => {
                         {TEAMS}
                       </DropdownItem>
                     )}
-                    {canCreatePopup || canUpdatePopup ? (
-                      <>
-                        <DropdownItem divider />
-                        <DropdownItem tag={Link} to={`/popupmanagement`}>
-                          {POPUP_MANAGEMENT}
-                        </DropdownItem>
-                      </>
-                    ) : null}
                     {(canPutRole || canManageUser) && (
+                      <>
+                      <DropdownItem divider />
                       <DropdownItem tag={Link} to="/permissionsmanagement">
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>
+                      </>
                     )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
@@ -270,7 +261,6 @@ const mapStateToProps = state => ({
 });
 export default connect(mapStateToProps, {
   getHeaderData,
-  getTimerData,
   getAllRoles,
   hasPermission,
 })(Header);

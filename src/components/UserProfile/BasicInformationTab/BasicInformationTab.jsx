@@ -7,7 +7,7 @@ import PhoneInput from 'react-phone-input-2';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
-import { getUserTimeZone } from 'services/timezoneApiService';
+import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
@@ -297,6 +297,8 @@ const BasicInformationTab = props => {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+            
             setTimeZoneFilter(timezone);
             setUserProfile({ ...userProfile, timeZone: timezone });
           } else {
@@ -475,6 +477,7 @@ const BasicInformationTab = props => {
                   <EditableInfoModal
                   role={role}
                   areaName={'roleInfo'}
+                  areaTitle="Roles"
                   fontSize={30}
                   />
                 </div>
