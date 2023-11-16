@@ -94,10 +94,15 @@ function FormattedReport({
     });
   };
 
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
+  const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
 
-  const toggleTooltip = () => {
-    setTooltipOpen(!tooltipOpen);
+  const toggleEmailTooltip = () => {
+    setEmailTooltipOpen(!emailTooltipOpen);
+  };
+
+  const toggleCopyTooltip = () => {
+    setCopyTooltipOpen(!copyTooltipOpen);
   };
 
   return (
@@ -120,7 +125,7 @@ function FormattedReport({
       </ListGroup>
       <div className="d-flex align-items-center">
         <h4>Emails</h4>
-        <Tooltip placement="top" isOpen={tooltipOpen} target="emailIcon" toggle={toggleTooltip}>
+        <Tooltip placement="top" isOpen={emailTooltipOpen} target="emailIcon" toggle={toggleEmailTooltip}>
           Launch the email client, organizing the recipient email addresses into batches, each
           containing a maximum of 90 addresses.
         </Tooltip>
@@ -132,7 +137,15 @@ function FormattedReport({
           style={{ color: '#0f8aa9', cursor: 'pointer' }}
           id="emailIcon"
         />
+
+        <Tooltip placement="top" isOpen={copyTooltipOpen} target="copytoclipboard" toggle={toggleCopyTooltip}>
+        Click to copy all emails.
+        </Tooltip>
+        <div id="copytoclipboard" >
         <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
+        </div>
+
+
       </div>
       <p>{emails.join(', ')}</p>
     </>
