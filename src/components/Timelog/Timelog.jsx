@@ -33,7 +33,7 @@ import ActiveCell from 'components/UserManagement/ActiveCell';
 import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from 'components/TeamMemberTasks';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
-import { getUserProfile, updateUserProfile, getUserTask } from '../../actions/userProfile';
+import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
 import { getAllRoles } from '../../actions/role';
 import TimeEntryForm from './TimeEntryForm';
@@ -147,7 +147,7 @@ const Timelog = props => {
         props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate),
         props.getUserProjects(userId),
         props.getAllRoles(),
-        props.getUserTask(userId),
+        props.getUserTasks(userId),
       ]);
     } catch (e) {
       setError(e);
@@ -782,7 +782,7 @@ export default connect(mapStateToProps, {
   getTimeEntriesForPeriod,
   getUserProjects,
   getUserProfile,
-  getUserTask,
+  getUserTasks,
   updateUserProfile,
   getAllRoles,
   hasPermission,

@@ -70,7 +70,7 @@ const SummaryBar = props => {
     }
   };
 
-  const getUserTask = async () => {
+  const getUserTasks = async () => {
     const userId = asUser;
     if (!userId) return;
 
@@ -87,7 +87,7 @@ const SummaryBar = props => {
     // Fetch user profile only if the selected timelog is of different user
     if (!matchUser || gsUserprofile._id != asUser) {
       loadUserProfile();
-      getUserTask();
+      getUserTasks();
     } else {
       setUserProfile(gsUserprofile);
       setTasks(gsUserTasks.length);

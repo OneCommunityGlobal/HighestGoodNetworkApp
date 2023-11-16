@@ -1,9 +1,9 @@
 import axios from 'axios';
 import {
-  getUserProfile as getUserProfileActionCreator,
-  getUserTask as getUserTaskActionCreator,
-  editFirstName as editFirstNameActionCreator,
-  putUserProfile as putUserProfileActionCreator,
+  GET_USER_PROFILE,
+  GET_USER_TASKS,
+  EDIT_FIRST_NAME,
+  EDIT_USER_PROFILE,
   CLEAR_USER_PROFILE,
 } from '../constants/userProfile';
 import { ENDPOINTS } from '../utils/URL';
@@ -25,14 +25,13 @@ export const getUserProfile = userId => {
   };
 };
 
-export const getUserTask = userId => {
+export const getUserTasks = userId => {
   const url = ENDPOINTS.TASKS_BY_USERID(userId);
   return async dispatch => {
-    const res = await axios.get(url).catch(error => {
-      if (error.status === 401) {
-      }
-    });
-    await dispatch(getUserTaskActionCreator(res.data));
+    const res = await axios.get(url);
+    if (res.status === 200) {
+      await dispatch(getUserTaskActionCreator(res.data));
+    }
   };
 };
 
@@ -67,3 +66,23 @@ export const updateUserProfileProperty = (userProfile, key, value) => {
     return res.status;
   };
 };
+
+export const getUserProfileActionCreator = data => ({
+  type: GET_USER_PROFILE,
+  payload: data,
+});
+
+export const getUserTaskActionCreator = data => ({
+  type: GET_USER_TASKS,
+  payload: data,
+});
+
+export const editFirstNameActionCreator = data => ({
+  type: EDIT_FIRST_NAME,
+  payload: data,
+});
+
+export const putUserProfileActionCreator = data => ({
+  type: EDIT_USER_PROFILE,
+  payload: data,
+});
