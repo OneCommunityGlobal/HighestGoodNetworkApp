@@ -7,6 +7,7 @@ const Radio = ({ name, label, options, error, value, ...rest }) => {
         <div className="form-check form-check-inline" key={item.value}>
           <input
             type="radio"
+            id={item.value}
             value={item.value}
             name={name}
             className="form-check-input"
