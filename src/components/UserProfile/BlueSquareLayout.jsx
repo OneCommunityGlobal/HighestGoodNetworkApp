@@ -133,7 +133,7 @@ const BlueSquareLayout = props => {
             style={boxStyle}
             //disable the scheduler button if no blue square is assigned to the user
             //length<2 because already one dummy blue square is present on every profile
-            disabled={userProfile?.infringements.length<2}
+            //disabled={userProfile?.infringements.length<2}
             >
             {fetchState.isFetching ? (
               <Spinner size="sm" animation="border" />
