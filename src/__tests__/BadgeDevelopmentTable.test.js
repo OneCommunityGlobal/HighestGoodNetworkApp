@@ -94,7 +94,7 @@ describe('BadgeDevelopmentTable component', () => {
     expect(actionElement.textContent).toBe('Action');
     expect(reportElement.textContent).toBe('Reports Page Notification');
   });
-  it('toolkit associated with ranking works properly', async () => {
+  it('tooltip associated with ranking works properly', async () => {
     const { container } = renderComponent(mockData);
     const iconElement = container.querySelector('.fa.fa-info-circle');
 
