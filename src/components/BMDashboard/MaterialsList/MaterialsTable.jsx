@@ -82,7 +82,7 @@ export default function MaterialsTable({ filteredMaterials }) {
                         color="primary"
                         outline
                         size="sm"
-                        onClick={() => handleViewRecordsClick(mat.updateRecord, 'Update')}
+                        onClick={() => handleViewRecordsClick(mat, 'Update')}
                       >
                         View
                       </Button>

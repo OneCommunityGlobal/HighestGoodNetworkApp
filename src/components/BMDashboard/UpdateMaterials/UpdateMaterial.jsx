@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { postMaterialUpdate, resetMaterialUpdate } from 'actions/bmdashboard/materialsActions'
 import { toast } from 'react-toastify'
 
-function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel }) {
+function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel, setModal }) {
 
   const dispatch = useDispatch();
   const postMaterialUpdateResult = useSelector(state => state.updateMaterials)
@@ -18,10 +18,12 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel }) {
     if (postMaterialUpdateResult.loading == false && postMaterialUpdateResult.error == true) {
       toast.error(`${postMaterialUpdateResult.result}`);
       dispatch(resetMaterialUpdate())
+      setModal(false);
     }
     else if (postMaterialUpdateResult.loading == false && postMaterialUpdateResult.result != null) {
       toast.success(`Updated ${record?.itemType?.name} successfully`);
       dispatch(resetMaterialUpdate())
+      setModal(false);
     }
   }, [postMaterialUpdateResult])
 
@@ -35,17 +37,19 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel }) {
     material: rest,
     newAvailable: undefined
   }
+  let validationsInitialState = {
+    quantityUsed: '',
+    quantityWasted: '',
+    quantityTogether: ''
+  }
   const [updateRecord, setUpdateRecord] = useState(recordInitialState)
 
   useEffect(() => {
     setUpdateRecord({ ...recordInitialState })
+    setValidations({ ...validationsInitialState })
   }, [cancel])
 
-  const [validations, setValidations] = useState({
-    quantityUsed: '',
-    quantityWasted: '',
-    quantityTogether: ''
-  })
+  const [validations, setValidations] = useState(validationsInitialState)
 
   const changeRecordHandler = (e) => {
     let value = e.target.value;
@@ -131,7 +135,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel }) {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(postMaterialUpdate(updateRecord))
+    dispatch(postMaterialUpdate(updateRecord));
   }
 
   return (
@@ -409,7 +413,8 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel }) {
 
 
                   <FormGroup row className='d-flex justify-content-right'>
-                    <Button disabled={postMaterialUpdateResult.loading || (updateRecord.newAvailable < 0)} className='materialButtonBg' onClick={(e) => submitHandler(e)}>
+                    <Button disabled={postMaterialUpdateResult.loading || (updateRecord.newAvailable < 0)}
+                      className='materialButtonBg' onClick={(e) => submitHandler(e)}>
                       Update Material
                     </Button>
                   </FormGroup>

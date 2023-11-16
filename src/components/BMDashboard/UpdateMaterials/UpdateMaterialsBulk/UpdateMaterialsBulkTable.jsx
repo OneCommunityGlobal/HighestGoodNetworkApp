@@ -27,9 +27,8 @@ function UpdateMaterialsBulkTable({ date, project }) {
 
 
   useEffect(() => {
-    if (postMaterialUpdateBulkResult.result == null) {
+    if (postMaterialUpdateBulkResult.result == null)
       dispatch(fetchAllMaterials());
-    }
   }, [postMaterialUpdateBulkResult.result]);
 
   useEffect(() => {
@@ -59,7 +58,6 @@ function UpdateMaterialsBulkTable({ date, project }) {
   const submitHandler = (e) => {
     e.preventDefault();
     let tempPostMaterialUpdateData = Object.values(updatedRecordsList).filter(d => d.newAvailable != "") //In case , user enters and removes data
-    console.log('updatedRecordsList', tempPostMaterialUpdateData)
     dispatch(postMaterialUpdateBulk(tempPostMaterialUpdateData))
 
     //Reset materials
@@ -110,7 +108,7 @@ function UpdateMaterialsBulkTable({ date, project }) {
         </tbody>
       </Table>
       <div style={{ marginRight: '0px', marginLeft: '0px' }} className='row justify-content-between '>
-        <Button size="md" className='logMButtons' outline cancel={cancel} onClick={cancelHandler}>Cancel</Button>
+        <Button size="md" className='logMButtons' outline onClick={cancelHandler}>Cancel</Button>
         <Button size="md" className='logMButtonBg' onClick={(e) => submitHandler(e)} >Submit</Button>
       </div>
 

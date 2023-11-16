@@ -70,12 +70,12 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.map(({ date, quantityUsed, quantityWasted, createdBy }) => {
+          {record.updateRecord.map(({ date, quantityUsed, quantityWasted, createdBy }) => {
             return (
               <tr key={date + createdBy._id}>
                 <td>{moment(date).format('MM/DD/YY')}</td>
-                <td>{quantityUsed || '-'}</td>
-                <td>{quantityWasted || '-'}</td>
+                <td>{quantityUsed + ' ' + record.itemType?.unit || '-'}</td>
+                <td>{quantityWasted + ' ' + record.itemType?.unit || '-'}</td>
                 <td>
                   <a href={`/userprofile/${createdBy._id}`}>
                     {`${createdBy.firstName} ${createdBy.lastName}`}

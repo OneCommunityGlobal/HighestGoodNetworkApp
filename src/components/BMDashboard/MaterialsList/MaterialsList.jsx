@@ -18,9 +18,8 @@ export function MaterialsList(props) {
   // dispatch materials fetch action
   // response is mapped to materials or errors in redux store
   useEffect(() => {
-    if (postMaterialUpdateResult.result != null && postMaterialUpdateResult.loading == false)
-      dispatch(fetchAllMaterials());
-  }, [postMaterialUpdateResult.result]);
+    dispatch(fetchAllMaterials());
+  }, [postMaterialUpdateResult.result]); //To refresh with new materials after update
 
   // filter materials data by project
   useEffect(() => {

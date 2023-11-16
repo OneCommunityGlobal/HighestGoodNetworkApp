@@ -17,7 +17,7 @@ function UpdateMaterialModal({ modal, setModal, record }) {
         </ModalHeader>
         <ModalBody>
           <div className='updateModalContainer' >
-            <UpdateMaterial record={record} />
+            <UpdateMaterial setModal={setModal} record={record} />
           </div>
         </ModalBody>
         <ModalFooter>
