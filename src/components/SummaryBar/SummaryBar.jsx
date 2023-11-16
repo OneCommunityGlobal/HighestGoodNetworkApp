@@ -221,6 +221,9 @@ const SummaryBar = props => {
   const sendUserSuggestion = async event => {
     event.preventDefault();
     const data = readFormData('suggestionForm');
+    data['firstName'] = userProfile.firstName;
+    data['lastName'] = userProfile.lastName;
+    data['email'] = userProfile.email;
 
     if (data) {
       setShowSuggestionModal(prev => !prev);
@@ -598,7 +601,7 @@ const SummaryBar = props => {
                 </FormGroup>
                 {takeInput && (
                   <FormGroup>
-                    <Label for="suggestion"> Write your suggestion. </Label>
+                    <Label for="suggestion"> Write your suggestion: </Label>
                     <Input
                       type="textarea"
                       name="suggestion"

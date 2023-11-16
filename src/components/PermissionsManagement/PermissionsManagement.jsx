@@ -64,6 +64,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                   <EditableInfoModal
                     role={role}
                     areaName={`${roleName}` + 'Info'}
+                    areaTitle={`${roleName}` + ' User Role'}
                     fontSize={18}
                     isPermissionPage
                   />
