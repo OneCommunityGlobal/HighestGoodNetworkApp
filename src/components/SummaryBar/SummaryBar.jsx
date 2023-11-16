@@ -273,19 +273,18 @@ const SummaryBar = props => {
   };
 
   const getSummaryMsg = date => {
-    if(date.getDay() == 5){
-      return "You still need to complete the weekly summary, by FRIDAY at midnight (Pacific Time), for your manager's review Click here to submit it.";
+    if((userProfile.role == "volunteer" || userProfile == "assistant manager") && userProfile.team.length > 0){
+      if(date.getDay() == 5){
+        return "You still need to complete the weekly summary, by FRIDAY at midnight (Pacific Time), for your manager's review Click here to submit it.";
+      }
     }
     return 'You still need to complete the weekly summary. Click here to submit it.';
-
   }
 
   if (userProfile !== undefined && summaryBarData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
     const currDate = new Date();
-    const summaryMsg = getSummaryMsg(currDate);
-    console.log("***********Current Date: ",summaryMsg)
-    //const weeklySummary = getWeeklySummary(userProfile);
+    const summaryMsg = getSummaryMsg(currDate, userProfile);
     return (
       <Container
         fluid
