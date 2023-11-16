@@ -12,22 +12,25 @@ import {
   InputGroupAddon,
   InputGroup,
   InputGroupText,
+  UncontrolledTooltip,
 } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
 import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
-import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import logo from '../../assets/images/logo.png';
 import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import  getUserTimeZone from '../../services/timezoneApiService';
+import getUserTimeZone from '../../services/timezoneApiService';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
+import RequirementModal from './requirementModal';
+import HomeCountryModal from './homeCountryModal';
+import './SetupProfileUserEntry.css';
 
 const SetupProfileUserEntry = ({ token, userEmail }) => {
   const dispatch = useDispatch();
@@ -72,13 +75,39 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     location: '',
     timeZoneFilterClicked: 'false',
   });
-
+  const [requirementModalOpen, setRequirementModalOpen] = useState(false);
+  const [requirementModalError, setrequirementModalError] = useState('');
+  const [requirementsBoxChecked, setrequirementsBoxChecked] = useState(false);
+  const [homecountryModalOpen, sethomecountryModalOpen] = useState(false);
+  const [homecountryLocation, setHomecountryLocation] =useState({
+    userProvided: '',
+    coords: { lat: '', lng: '' },
+    country: '',
+    city: '',
+  })
+  
   //  get the timezone API key using the setup token
   useEffect(() => {
     httpService.post(ENDPOINTS.TIMEZONE_KEY_BY_TOKEN(), { token }).then(response => {
       setAPIkey(response.data.userAPIKey);
     });
   }, []);
+
+  const toggleRequirementModal = () => {
+    setrequirementModalError("")
+    setRequirementModalOpen(prev => !prev)
+  };
+
+  const toggleHomecountryModal = () => {
+    if(requirementsBoxChecked){
+      sethomecountryModalOpen(prev => !prev)
+    }else{
+      setrequirementModalError("You need to read and accept the requirements first")
+    }
+    
+  };
+
+  const handleRequirementsBoxChecked = () => setrequirementsBoxChecked(!requirementsBoxChecked);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -95,22 +124,15 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       [id]: value,
     }));
   };
+
   const handleLocation = event => {
     const { id, value } = event.target;
     setUserProfile(prevProfile => ({
       ...prevProfile,
       [id]: {
         ...prevProfile.location,
-        userProvided: value
+        userProvided: value,
       },
-    }));
-  }
-  const handleToggle = event => {
-    const { id } = event.target;
-    const key = id === 'emailPubliclyAccessible' ? 'email' : 'phoneNumber';
-    setUserProfile(prevProfile => ({
-      ...prevProfile,
-      privacySettings: { ...prevProfile.privacySettings, [key]: !prevProfile.privacySettings[key] },
     }));
   };
 
@@ -156,7 +178,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
             ...prevProfile,
             timeZoneFilter: timezone,
             timeZone: timezone,
-            location: currentLocation
+            location: currentLocation,
           }));
         } else {
           alert('Invalid location or ' + response.data.status.message);
@@ -333,11 +355,20 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     return isDataValid;
   };
 
+  const areAllHomecountryValuesFilled = () => {
+    for (const key in homecountryLocation) {
+      if (typeof homecountryLocation[key] === 'string' && homecountryLocation[key].trim() === '') {
+        return false; 
+      }
+    }
+    return true; 
+  };
+
   const handleFormSubmit = e => {
     e.preventDefault();
 
     const isDataValid = validateFormData();
-
+    const homeCoutryDataExists = areAllHomecountryValuesFilled()
     if (isDataValid) {
       const data = {
         firstName: userProfile.firstName.trim(),
@@ -361,6 +392,25 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), data)
         .then(response => {
           if (response.status === 200) {
+            if(homeCoutryDataExists){
+                const homeCountryData = {
+                  firstName: userProfile.firstName.trim(),
+                  lastName: userProfile.lastName.trim(),
+                  jobTitle: userProfile.jobTitle.trim(),
+                  location: homecountryLocation,
+                }
+                httpService
+                .post(ENDPOINTS.MAP_LOCATIONS_BY_TOKEN(), homeCountryData)
+            }else{
+              const homeCountryData = {
+                firstName: userProfile.firstName.trim(),
+                lastName: userProfile.lastName.trim(),
+                jobTitle: userProfile.jobTitle.trim(),
+                location: userProfile.location,
+              }
+              httpService
+              .post(ENDPOINTS.MAP_LOCATIONS_BY_TOKEN(), homeCountryData)
+            }
             localStorage.setItem(tokenKey, response.data.token);
             httpService.setjwt(response.data.token);
             const decoded = jwtDecode(response.data.token);
@@ -599,7 +649,13 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                       </FormGroup>
                     </Col>
                     <Col md="6 pr-0">
-                      <Button color="secondary " block size="md" onClick={getTimeZone}>
+                      <Button
+                        color="secondary "
+                        block
+                        size="md"
+                        onClick={getTimeZone}
+                        id="setup-rofile-entry-tz-btn"
+                      >
                         Get Time Zone
                       </Button>
                       <Input
@@ -609,6 +665,67 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                         invalid={formErrors.timeZoneFilter !== ''}
                       />
                       <FormFeedback>{formErrors.timeZoneFilter}</FormFeedback>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+              <Row>
+                <Col md="2" className="text-md-right">
+                  <Label className="w-100  text-wrap">
+                    Do you represent a country other than your current residence?
+                    <i className="fa fa-info-circle ml-1" id="countryRep" />
+                    <UncontrolledTooltip
+                      placement="right"
+                      target="countryRep"
+                      id="coutry-rep-tooltip"
+                    >
+                      <p className="alert alert-info" id="country-rep-info">
+                        One Community is a global effort and international team that has had
+                        volunteers volunteering from and/or representing 60 countries around the
+                        world. Complete this field if you are currently residing in a country other
+                        than your own and wish to be represented on our global contributors map with
+                        your birth country instead of your current country or residence.
+                      </p>
+                    </UncontrolledTooltip>
+                  </Label>
+                </Col>
+
+                <Col md="6 pr-0">
+                  <Row>
+                    <Col md="6">
+                      <Button
+                        color="secondary "
+                        block
+                        size="md"
+                        id="setup-rofile-entry-rr-btn"
+                        onClick={toggleRequirementModal}
+                      >
+                        Read The Requirements
+                      </Button>
+                      <Input
+                        style={{
+                          display: 'none',
+                        }}
+                        invalid={requirementModalError !== ''}
+                      />
+                      <FormFeedback>{requirementModalError}</FormFeedback>
+                      <RequirementModal
+                        isOpen={requirementModalOpen}
+                        toggle={toggleRequirementModal}
+                        handleCheckbox={handleRequirementsBoxChecked}
+                        isChecked={requirementsBoxChecked}
+                      />
+                    </Col>
+                    <Col md="6 pr-0">
+                      <Button color="secondary " block size="md" id="setup-rofile-entry-hc-btn" onClick={toggleHomecountryModal}>
+                        Set Home Country
+                      </Button>
+                      <HomeCountryModal 
+                       isOpen={homecountryModalOpen}
+                       toggle={toggleHomecountryModal}
+                       apiKey={APIkey}
+                       setLocation={setHomecountryLocation}
+                      />
                     </Col>
                   </Row>
                 </Col>

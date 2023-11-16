@@ -99,6 +99,7 @@ export const ENDPOINTS = {
   SETUP_NEW_USER_PROFILE: () =>
     `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+  MAP_LOCATIONS_BY_TOKEN: () => `${APIEndpoint}/mapLocationsToken`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
 
