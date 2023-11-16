@@ -95,7 +95,6 @@ const Timelog = props => {
 
   const LoggedInuserId = auth.user.userid;
   const curruserId = props?.match?.params?.userId || props.asUser;
-
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = auth.user.role;

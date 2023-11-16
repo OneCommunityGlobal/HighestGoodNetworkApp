@@ -56,8 +56,9 @@ const TimeEntry = ({ data, displayYear, userProfile, LoggedInuserId, curruserId 
       ...data,
       isTangible: !data.isTangible,
       timeSpent: `${data.hours}:${data.minutes}:00`,
+      curruserId: curruserId,
     };
-    dispatch(editTimeEntry(data._id, newData));
+    dispatch(editTimeEntry(data._id, newData, data.dateOfWork));
 
     //Update intangible hours property in userprofile
     const formattedHours = parseFloat(data.hours) + parseFloat(data.minutes) / 60;
