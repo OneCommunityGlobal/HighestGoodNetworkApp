@@ -1,7 +1,7 @@
 /**
  * This is to store constants that relate to
  * actions which will be sent to the materials reducer
-*/
+ */
 
 // INIT MATERIALS
 export const FETCH_MATERIALS_START = 'FETCH_MATERIALS_START';
