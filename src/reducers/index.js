@@ -30,6 +30,7 @@ import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import { materialsReducer } from './bmdashboard/materialsReducer';
+import { toolByIdReducer } from './bmdashboard/toolByIdReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -64,5 +65,6 @@ export default combineReducers({
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
-  materials: materialsReducer
+  materials: materialsReducer,
+  tool: toolByIdReducer,
 });

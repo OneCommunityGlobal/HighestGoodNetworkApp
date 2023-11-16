@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import ToolModal from './ToolModal';
 import './ToolDetailPage.css';
 
+//TO DO: connect to backend and fetch single tool data by toolID
+
 const dummyTool = {
   toolId: 1,
   image:
