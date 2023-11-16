@@ -61,7 +61,7 @@ const ScheduleReasonModal = ({
             </Form.Label>
             <Form.Label>
               <p>
-                <em>To schedule your time off, you need to CHOOSE THE SUNDAY OF THE WEEK YOU’LL RETURN. This is the date needed so your reason ends up on the blue square that will be auto-issued AT THE END OF THE WEEK YOU'LL BE GONE.</em>
+                To schedule your time off, you need to CHOOSE THE SUNDAY OF THE WEEK YOU’LL RETURN. This is the date needed so your reason ends up on the blue square that will be auto-issued AT THE END OF THE WEEK YOU'LL BE GONE.
               </p>
             </Form.Label>
             <Form.Label>Choose the Sunday of the week you'll return: 
