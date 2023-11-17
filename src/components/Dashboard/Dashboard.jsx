@@ -47,6 +47,35 @@ export function Dashboard(props) {
   };
 
   useEffect(() => {
+    console.log('role: ', auth.user.role);
+
+    if (auth.user.role === 'Owner') {
+      // Owners don't see the modal
+      return;
+    }
+    if (auth.user.role === 'Assistant Manager' || auth.user.role === 'Volunteer') {
+      setModalVisible(true);
+      setModalContent(`If you are seeing this, it’s because you are on a team! As a member of a team, you
+                      need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific
+                      Time. This is so your manager has time to review it and submit and report on your
+                      entire team’s work by the usual Saturday night deadline. For any work you plan on
+                      completing Saturday, please take pictures as best you can and include it in your
+                      summary as if it were already done. By dismissing this notice, you acknowledge you
+                      understand and will do this.`);
+    } else if (auth.user.role === 'Manager') {
+      setModalVisible(true);
+      setModalContent(`If you are seeing this, it’s because you are a Manager of a team! Remember to turn 
+                      in your team’s work by the Saturday night at midnight (Pacific Time) deadline.
+                      Every member of your team gets a notice like this too. Theirs tells them to get you their 
+                      work 24 hours early so you have time to review it and submit it. If you have to remind them 
+                      repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
+      `);
+    }
+
+    console.log('modal visible: ', isModalVisible);
+  }, [auth.user.role]);
+
+  useEffect(() => {
     // eslint-disable-next-line react/destructuring-assignment
     props.getTimeZoneAPIKey();
   }, []);
@@ -67,15 +96,7 @@ export function Dashboard(props) {
         <ModalHeader toggle={closeModal}>Teamwork Deadline Reminder</ModalHeader>
         <ModalBody>
           <div>
-            <p>
-              If you are seeing this, it’s because you are on a team! As a member of a team, you
-              need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific
-              Time. This is so your manager has time to review it and submit and report on your
-              entire team’s work by the usual Saturday night deadline. For any work you plan on
-              completing Saturday, please take pictures as best you can and include it in your
-              summary as if it were already done. By dismissing this notice, you acknowledge you
-              understand and will do this.
-            </p>
+            <p>{modalContent}</p>
           </div>
         </ModalBody>
         <ModalFooter>
