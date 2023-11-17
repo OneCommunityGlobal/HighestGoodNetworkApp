@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Row, Col, Container } from 'reactstrap';
+import {
+  Row,
+  Col,
+  Container,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from 'reactstrap';
 import { connect } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
@@ -16,6 +25,8 @@ export function Dashboard(props) {
   const [userProfile, setUserProfile] = useState(undefined);
   const { match, auth } = props;
   const userId = match.params.userId || auth.user.userid;
+  const [isModalVisible, setModalVisible] = useState(true);
+  const [modalContent, setModalContent] = useState('');
 
   const toggle = () => {
     setPopup(!popup);
@@ -25,6 +36,14 @@ export function Dashboard(props) {
         elem.scrollIntoView();
       }
     }, 150);
+  };
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
   };
 
   useEffect(() => {
@@ -44,6 +63,28 @@ export function Dashboard(props) {
 
   return (
     <Container fluid>
+      <Modal isOpen={isModalVisible} toggle={toggleModal} backdrop="static">
+        <ModalHeader toggle={closeModal}>Teamwork Deadline Reminder</ModalHeader>
+        <ModalBody>
+          <div>
+            <p>
+              If you are seeing this, it’s because you are on a team! As a member of a team, you
+              need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific
+              Time. This is so your manager has time to review it and submit and report on your
+              entire team’s work by the usual Saturday night deadline. For any work you plan on
+              completing Saturday, please take pictures as best you can and include it in your
+              summary as if it were already done. By dismissing this notice, you acknowledge you
+              understand and will do this.
+            </p>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={closeModal}>
+            Dismiss
+          </Button>
+        </ModalFooter>
+      </Modal>
+
       {match.params.userId && auth.user.userid !== match.params.userId ? <PopUpBar /> : ''}
       <SummaryBar
         userProfile={userProfile}
