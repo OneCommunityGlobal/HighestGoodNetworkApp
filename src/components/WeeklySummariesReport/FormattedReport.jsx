@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom';
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
@@ -34,6 +36,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 
 const textColors = {
   Default: '#000000',
@@ -79,7 +82,7 @@ function FormattedReport({
 
     const openEmailClientWithBatchInNewTab = batch => {
       const emailAddresses = batch.join(', ');
-      const mailtoLink = `mailto:${emailAddresses}`;
+      const mailtoLink = `mailto:?bcc=${emailAddresses}`;
       window.open(mailtoLink, '_blank');
     };
 
@@ -90,10 +93,15 @@ function FormattedReport({
     });
   };
 
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
+  const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
 
-  const toggleTooltip = () => {
-    setTooltipOpen(!tooltipOpen);
+  const toggleEmailTooltip = () => {
+    setEmailTooltipOpen(!emailTooltipOpen);
+  };
+
+  const toggleCopyTooltip = () => {
+    setCopyTooltipOpen(!copyTooltipOpen);
   };
 
   return (
@@ -115,18 +123,26 @@ function FormattedReport({
       </ListGroup>
       <div className="d-flex align-items-center">
         <h4>Emails</h4>
-        <Tooltip placement="top" isOpen={tooltipOpen} target="emailIcon" toggle={toggleTooltip}>
+        <Tooltip placement="top" isOpen={emailTooltipOpen} target="emailIcon" toggle={toggleEmailTooltip}>
           Launch the email client, organizing the recipient email addresses into batches, each
           containing a maximum of 90 addresses.
         </Tooltip>
         <FontAwesomeIcon
-          className="ml-2"
+          className="mx-2"
           onClick={handleEmailButtonClick}
           icon={faMailBulk}
           size="lg"
           style={{ color: '#0f8aa9', cursor: 'pointer' }}
           id="emailIcon"
         />
+        <Tooltip placement="top" isOpen={copyTooltipOpen} target="copytoclipboard" toggle={toggleCopyTooltip}>
+        Click to copy all emails.
+        </Tooltip>
+        <div id="copytoclipboard" >
+        <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
+        </div>
+
+
       </div>
       <p>{emails.join(', ')}</p>
     </>
@@ -146,7 +162,9 @@ function ReportDetails({
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-
+  if(summary.lastName === "lallouache"){
+    console.log(summary)
+  }
   return (
     <li className="list-group-item px-0" ref={ref}>
       <ListGroup className="px-0" flush>
@@ -174,34 +192,15 @@ function ReportDetails({
                 canEditSummaryCount={canEditSummaryCount}
               />
             </ListGroupItem>
-            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <p>
-                  <b
-                    style={{
-                      color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                    }}
-                  >
-                    Hours logged:{' '}
-                  </b>
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              </ListGroupItem>
-            )}
-            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <b
-                  style={{
-                    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                  }}
-                >
-                  Hours logged:
-                </b>
-                <span className="ml-2">
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
-              </ListGroupItem>
-            )}
+            <ListGroupItem>
+              <b style={{color: textColors[summary?.weeklySummaryOption] || textColors.Default}}>
+                Hours logged:
+              </b>
+              {(hoursLogged >= summary.promisedHoursByWeek[weekIndex])
+                ? <p>{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</p>
+                : <span className="ml-2">{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</span>
+              }
+            </ListGroupItem>
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
@@ -244,7 +243,20 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         .format('MMM-DD-YY');
       summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
-      return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
+      return (
+        <div style={style} className="weekly-summary-report-container">
+          <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
+          <FontAwesomeIcon
+            icon={faCopy}
+            className="copy-icon "
+            onClick={() => {
+              const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
+              navigator.clipboard.writeText(parsedSummary);
+              toast.success('Summary Copied!');
+            }}
+          />
+        </div>
+      );
     }
     if (
       summary?.weeklySummaryOption === 'Not Required' ||
@@ -285,14 +297,16 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
   const handleCodeChange = e => {
     const { value } = e.target;
 
-    const regexTest = fullCodeRegex.test(value);
-    if (regexTest) {
-      setHasError(false);
-      setTeamCode(value);
-      handleOnChange(summary, value);
-    } else {
-      setTeamCode(value);
-      setHasError(true);
+    if (value.length <= 5) {
+      const regexTest = fullCodeRegex.test(value);
+      if (regexTest) {
+        setHasError(false);
+        setTeamCode(value);
+        handleOnChange(summary, value);
+      } else {
+        setTeamCode(value);
+        setHasError(true);
+      }
     }
   };
 
@@ -322,7 +336,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
       </div>
       {hasError ? (
         <Alert className="code-alert" color="danger">
-          The code format should be A-AAA or AAAAA.
+          NOT SAVED! The code format must be A-AAA or AAAAA.
         </Alert>
       ) : null}
     </>

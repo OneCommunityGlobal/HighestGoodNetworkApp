@@ -21,7 +21,7 @@ import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { getUserTimeZone } from '../../services/timezoneApiService';
+import  getUserTimeZone from '../../services/timezoneApiService';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
@@ -34,6 +34,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
   const history = useHistory();
   const containSpecialCar = RegExp(/[!@#$%^&*(),.?":{}|<>]/);
   const containCap = RegExp(/[A-Z]/);
+  const containLow = RegExp(/[a-z]/);
+  const containNumb = RegExp(/\d/);
   const [APIkey, setAPIkey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -198,13 +200,15 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       }));
       isDataValid = false;
     } else if (
-      !containCap.test(userProfile.password.trim()) &&
-      !containSpecialCar.test(userProfile.password.trim())
+      !containCap.test(userProfile.password.trim()) ||
+      !containSpecialCar.test(userProfile.password.trim()) ||
+      !containLow.test(userProfile.password.trim()) ||
+      !containNumb.test(userProfile.password.trim())
     ) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         password:
-          'Password must contain special characters [!@#$%^&*(),.?":{}|<>] and capital letters.',
+          'Password must contain special characters [!@#$%^&*(),.?":{}|<>], Uppercase, Lowercase and Number.',
       }));
       isDataValid = false;
     } else {
@@ -313,8 +317,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         weeklycommittedHours: Number(userProfile.weeklyCommittedHours.trim()),
         collaborationPreference: userProfile.collaborationPreference.trim(),
         privacySettings: {
-          email: false,
-          phoneNumber: false,
+          email: true,
+          phoneNumber: true,
         },
         jobTitle: userProfile.jobTitle.trim(),
         timeZone: userProfile.timeZone.trim(),

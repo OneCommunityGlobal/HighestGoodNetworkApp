@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../actions/authActions';
-import { getTimerData } from '../../actions/timer';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import '../../App.css';
 import {
   LOGO,
   DASHBOARD,
@@ -42,23 +39,18 @@ import {
 } from 'reactstrap';
 import Logout from '../Logout/Logout';
 import './Header.css';
-
-import { fetchTaskEditSuggestionCount } from 'components/TaskEditSuggestions/thunks';
-import { BsFillSunFill, BsFillMoonFill } from 'react-icons/bs';
-import hasPermission, { denyPermissionToSelfUpdateDevAdminDetails, cantUpdateDevAdminDetail  } from '../../utils/permissions'
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
-  const [checked, setChecked] = useState();
-  const [theme, setTheme] = useState('light');
 
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
- 
+
   const canPostUserProfile = props.hasPermission('postUserProfile');
   const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
@@ -77,8 +69,7 @@ export const Header = props => {
   const canUpdatePopup = props.hasPermission('updatePopup');
   // Roles
   const canPutRole = props.hasPermission('putRole');
-
-  // Permissions 
+  // Permissions
   const canManageUser = props.hasPermission('putUserProfilePermissions');
 
   const dispatch = useDispatch();
@@ -86,42 +77,17 @@ export const Header = props => {
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
-      props.getTimerData(props.auth.user.userid);
       if (props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
     }
   }, [props.auth.isAuthenticated]);
 
-  const toggleTheme = (e) => {
-    console.log("navbar toggle click")
-    if (theme === 'dark' ||  e.target.value === "checked") {
-      localStorage.setItem('mode',"light");
-      setTheme('light');
-    } else {
-      localStorage.setItem('mode',"dark");
-      setTheme('dark');
-    }
-  };
-
   useEffect(() => {
-    if (roles.length === 0) {
+    if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
-    
-    const mode = localStorage.getItem('mode');
-    if(mode){
-      setTheme(mode)
-      if(mode === 'dark'){
-        setChecked('checked')
-      }
-    }
   }, []);
-
-  useEffect(() => {
-    document.body.className = theme;
-    }, [theme]);
-
   const roles = props.role?.roles;
 
   const toggle = () => {
@@ -133,8 +99,8 @@ export const Header = props => {
   };
 
   return (
-    <div className="header-wrapper" >
-      <Navbar className="py-3 mb-3 navbar" color="dark" dark expand="xl">
+    <div className="header-wrapper">
+      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
@@ -147,14 +113,6 @@ export const Header = props => {
             </div>
           )}
         </div>
-        
-        {isAuthenticated && <div className={`${theme}-toggle`}> 
-          <button onClick={toggleTheme} className='dark-toggle'>
-            {theme === 'dark' ? (<BsFillMoonFill className='toggle-icon' style={{color: "yellow"}}/>) 
-            : (<BsFillSunFill className='toggle-icon' style={{color: "yellow"}}/>)}
-          </button>
-        </div>}
-       
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
@@ -245,18 +203,13 @@ export const Header = props => {
                         {TEAMS}
                       </DropdownItem>
                     )}
-                    {canCreatePopup || canUpdatePopup ? (
-                      <>
-                        <DropdownItem divider />
-                        <DropdownItem tag={Link} to={`/admin/`}>
-                          {POPUP_MANAGEMENT}
-                        </DropdownItem>
-                      </>
-                    ) : null}
                     {(canPutRole || canManageUser) && (
+                      <>
+                      <DropdownItem divider />
                       <DropdownItem tag={Link} to="/permissionsmanagement">
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>
+                      </>
                     )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
@@ -308,7 +261,6 @@ const mapStateToProps = state => ({
 });
 export default connect(mapStateToProps, {
   getHeaderData,
-  getTimerData,
   getAllRoles,
   hasPermission,
 })(Header);

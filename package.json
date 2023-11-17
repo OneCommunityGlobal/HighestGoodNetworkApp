@@ -41,6 +41,7 @@
     "react-autosuggest": "^10.1.0",
     "react-bootstrap": "^1.0.1",
     "react-calendar": "^3.7.0",
+    "react-circular-progressbar": "^2.1.0",
     "react-date-picker": "^8.4.0",
     "react-datepicker": "^3.7.0",
     "react-day-picker": "^7.4.8",
@@ -62,6 +63,7 @@
     "react-table": "^6.10.0",
     "react-toastify": "^5.3.1",
     "react-tooltip": "^4.2.10",
+    "react-use-websocket": "^3.0.0",
     "reactjs-popup": "^2.0.5",
     "reactstrap": "^8.4.1",
     "read-excel-file": "^5.5.3",
@@ -69,7 +71,8 @@
     "redux-actions": "^2.6.5",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
-    "tinymce": "^5.10.7",
+    "tinymce": "^5.10.8",
+    "uuid": "^9.0.1",
     "websocket-extensions": ">=0.1.4"
   },
   "scripts": {

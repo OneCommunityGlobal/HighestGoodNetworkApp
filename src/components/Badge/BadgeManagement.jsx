@@ -6,6 +6,7 @@ import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const BadgeManagement = props => {
   const [activeTab, setActiveTab] = useState('1');
@@ -13,6 +14,9 @@ const BadgeManagement = props => {
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
+
+  const { role } = props; // Access the 'role' prop
+
 
   useEffect(() => {
     props.fetchAllBadges();
@@ -26,6 +30,15 @@ const BadgeManagement = props => {
         margin: 20,
       }}
     >
+    <div className="text-center">
+        <EditableInfoModal
+          areaName="BadgeManagement"
+          areaTitle="Badge Management"
+          fontSize={24}
+          isPermissionPage={true}
+          role={role} // Pass the 'role' prop to EditableInfoModal
+        />
+        </div>
       <Nav pills>
         <NavItem>
           <NavLink
@@ -62,7 +75,11 @@ const BadgeManagement = props => {
   );
 };
 
-const mapStateToProps = state => ({ allBadgeData: state.badge.allBadgeData });
+const mapStateToProps = state => ({
+  allBadgeData: state.badge.allBadgeData,
+  role: state.userProfile.role,
+});
+
 
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),

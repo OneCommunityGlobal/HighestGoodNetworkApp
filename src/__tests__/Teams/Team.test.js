@@ -16,6 +16,7 @@ const teamProps = {
   name: 'Team Name',
   teamId: 1,
   active: true,
+  teamCode: 'X-XXX',
   onEditTeam: mockDefault,
   onDeleteClick: mockDefault,
   onMembersClick: mockDefault,
@@ -38,7 +39,7 @@ describe('Team component', () => {
     const editButton = screen.getByText('Edit');
     fireEvent.click(editButton);
 
-    expect(teamProps.onEditTeam).toHaveBeenCalledWith('Team Name', 1, true);
+    expect(teamProps.onEditTeam).toHaveBeenCalledWith('Team Name', 1, true, 'X-XXX');
   });
 
   it('should call onDeleteClick function', () => {
@@ -47,7 +48,7 @@ describe('Team component', () => {
     const deleteButton = screen.getByText('Delete');
     fireEvent.click(deleteButton);
 
-    expect(teamProps.onDeleteClick).toHaveBeenCalledWith('Team Name', 1, true);
+    expect(teamProps.onDeleteClick).toHaveBeenCalledWith('Team Name', 1, true, 'X-XXX');
   });
 
   it('should call onMembersClick function', () => {
@@ -56,15 +57,15 @@ describe('Team component', () => {
     const memberButton = screen.getByTestId('members-btn');
     fireEvent.click(memberButton);
 
-    expect(teamProps.onMembersClick).toHaveBeenCalledWith(1, 'Team Name');
+    expect(teamProps.onMembersClick).toHaveBeenCalledWith(1, 'Team Name', 'X-XXX');
   });
 
-  // it('should call onStatusClick function', () => {
-  //   renderWithProvider(<Team {...teamProps} />, { store });
+  it('should call onStatusClick function', () => {
+    renderWithProvider(<Team {...teamProps} />, { store });
 
-  //   const activeMarker = screen.getByTestId('active-marker');
-  //   fireEvent.click(activeMarker);
+    const activeMarker = screen.getByTestId('active-marker');
+    fireEvent.click(activeMarker);
 
-  //   expect(teamProps.onStatusClick).toHaveBeenCalledWith('Team Name', 1, true);
-  // });
+    expect(teamProps.onStatusClick).toHaveBeenCalledWith('Team Name', 1, true, 'X-XXX');
+  });
 });
