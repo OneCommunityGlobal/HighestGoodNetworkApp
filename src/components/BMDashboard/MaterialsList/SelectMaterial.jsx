@@ -1,15 +1,14 @@
-import { useEffect } from 'react';
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
-export default function SelectForm({ materials, selectedProject,selectedMaterial, setSelectedMaterial }) {
+export default function SelectForm({ materials,selectedProject,selectedMaterial,setSelectedMaterial }) {
  
   // create selectable projects
   let materialSet = [];
   if (materials.length) {
-   if(selectedProject=="all")
+   if(selectedProject==="all")
     materialSet = [...new Set(materials.map(m =>  m.inventoryItemType?.name))];
   else
-    materialSet = [...new Set(materials.filter(mat=>mat.project.projectName==selectedProject).map(m =>  m.inventoryItemType?.name))];
+    materialSet = [...new Set(materials.filter(mat=>mat.project.projectName===selectedProject).map(m =>  m.inventoryItemType?.name))];
     }
 
    return (
