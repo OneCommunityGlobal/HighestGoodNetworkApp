@@ -84,11 +84,11 @@ function TeamLocations() {
     }
   };
   // Get an array of all users' non-null countries (some locations may not be associated with a country)
-  const countries = userProfiles.map(user => user.country);
   // Get the number of unique countries
-  const totalUniqueCountries = [...new Set(countries)].length;
-
+  
   let mapMarkers = [...userProfiles, ...manuallyAddedProfiles];
+  const countries = mapMarkers.map(user => user.location.country);
+  const totalUniqueCountries = [...new Set(countries)].length;
   if (searchText) {
     mapMarkers = mapMarkers.filter(
       item =>
