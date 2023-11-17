@@ -62,6 +62,7 @@ const Team = props => {
             <i className="fa fa-circle-o" aria-hidden="true" />
           </div>
         )}
+        </button>
       </td>
       <td className="centered-cell">
         <button style={boxStyle}
