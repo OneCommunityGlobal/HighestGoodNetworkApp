@@ -70,75 +70,9 @@
   background-color: transparent !important;
 }
 
-.card {
-  height: 400px;
-  border: 2px solid #78BDDA !important;
-  background-color: #FBFBFB !important;
-  margin-bottom: 2rem;
-  overflow: hidden;
-}
-.card-header {
-  background-color: #78BDDA !important;
-  padding: 0.3rem 1.25rem !important;
-}
-.card-body{
-  min-height: 20vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.card-header:first-child {
-  border-radius: 0 !important;
-}
-.card-header-tabs{
-  margin-bottom: 0 !important;
-}
-.card-footer {
-  background-color: #E8F4F9 !important;
-  display: flex;
-  justify-content: space-between;
-  font-size: small;
-  padding: 0.3rem 0.625rem !important;
-  border-top: unset !important;
-}
-.card-footer:last-child {
-  border-radius: 0 !important;
-}
-.footer-items span{
-padding: 0 5px;
-}
-.nav{
-  justify-content: space-between;
-  color:white;
-}
-.nav-item{
-  font-size: small;
-}
-.nav-item-title{
-  font-weight:bold;
-  font-size:small;
-}
-
-.card-tag-and-file{
-  color:#78BDDA;
-
-}
-.card-text {
-  font-size: medium;
-}
-
 
   @media (max-width: 570px) {
    .form-select-container {
      flex-direction: column;
    }
- .card-footer{
-  font-size: x-small;
- }
- }
- @media (max-width: 767px) {
-  .card-text {
-    padding: 10px;
-    font-size: small;
   }
-}

@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './LessonListForm.css';
-import Card from 'react-bootstrap/Card';
-import Nav from 'react-bootstrap/Nav';
+import Lessons from './Lessons';
 
 function LessonList() {
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  // const lessonSummury = 'Lesson List Summary';
 
   const handleInputChange = event => {
     setInputValue(event.target.value);
@@ -93,35 +91,7 @@ function LessonList() {
             </InputGroup>
           </Form.Group>
         </Form>
-        <Card>
-          <Card.Header>
-            <Nav className="nav">
-              <Nav.Item className="nav-item-title">Title</Nav.Item>
-              <Nav.Item>Date: MM/DD/YYYY HH.MM.SS</Nav.Item>
-            </Nav>
-          </Card.Header>
-          <Card.Body>
-            <Card.Text className="card-tag-and-file">Tag: Weater</Card.Text>
-            <Card.Text>Lesson List Summary</Card.Text>
-            <Card.Text className="card-tag-and-file">File: xxx.xls</Card.Text>
-          </Card.Body>
-          <Card.Footer className="text-muted">
-            <div>Author: Name Name From: Project 1</div>
-            <div className="footer-items">
-              <span>Edit</span>
-              <span>Delete</span>
-              <span>
-                <FontAwesomeIcon
-                  className="ml-2"
-                  icon={faHeart}
-                  size="sm"
-                  style={{ color: '##7A7D81', cursor: 'pointer' }}
-                />
-                Like:0
-              </span>
-            </div>
-          </Card.Footer>
-        </Card>
+        <Lessons />
       </div>
     </div>
   );
