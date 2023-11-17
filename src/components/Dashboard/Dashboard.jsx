@@ -14,6 +14,8 @@ export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [userProfile, setUserProfile] = useState(undefined);
+  const [theme, setTheme] = useState('light');
+
   // let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
   const { match, auth } = props;
   const userId = match.params.userId || auth.user.userid;
@@ -26,6 +28,16 @@ export function Dashboard(props) {
         elem.scrollIntoView();
       }
     }, 150);
+  };
+
+  const toggleTheme = e => {
+    if (theme === 'dark' || e.target.value === 'checked') {
+      localStorage.setItem('mode', 'light');
+      setTheme('light');
+    } else {
+      localStorage.setItem('mode', 'dark');
+      setTheme('dark');
+    }
   };
 
   useEffect(() => {
@@ -74,6 +86,10 @@ export function Dashboard(props) {
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
           <Leaderboard asUser={userId} />
+        </Col>
+
+        <Col>
+          <button onClick={toggleTheme}>Toggle Theme</button>
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
