@@ -5,7 +5,6 @@ import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import './LessonCard.css';
 
 function LessonCard({ dummyData }) {
-  console.log(props.auth.user.userid)
   const lessonCards = dummyData.map(lesson => (
     <Card key={lesson.id}>
       <Card.Header>
