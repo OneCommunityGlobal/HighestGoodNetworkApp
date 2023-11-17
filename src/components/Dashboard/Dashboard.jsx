@@ -77,12 +77,20 @@ export function Dashboard(props) {
   useEffect(() => {
     loadUserDashboardProfile();
 
+    if (
+      auth.user.role === 'Owner' ||
+      auth.user.role === 'Administrator' ||
+      auth.user.role === 'Mentor'
+    ) {
+      console.log('No notification modal...');
+      return;
+    }
+
+    // TODO: Check for time
+
     if (userDashboardProfile?.teams && userDashboardProfile.teams.length > 0) {
       console.log('On a team...');
-      if (auth.user.role === 'Owner' || auth.user.role === 'Administrator') {
-        // Owners don't see the modal
-        return;
-      }
+
       if (auth.user.role === 'Assistant Manager' || auth.user.role === 'Volunteer') {
         setModalVisible(true);
         setModalContent(`If you are seeing this, it’s because you are on a team! As a member of a team, you
