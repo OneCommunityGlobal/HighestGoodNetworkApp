@@ -54,9 +54,6 @@
 }
 
 @media (max-width: 800px) {
-  .project-summary_content{
-    text-align: center;
-  }
   .project-summary_item {
     flex: 100%;
     margin: 5px;
