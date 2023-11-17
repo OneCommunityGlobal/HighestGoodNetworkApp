@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 
-const TeamStatusPopup = React.memo(props => {
+export const TeamStatusPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };
@@ -21,6 +21,7 @@ const TeamStatusPopup = React.memo(props => {
               props.selectedTeamName,
               props.selectedTeamId,
               !props.selectedStatus,
+              props.selectedTeamCode,
             );
           }}
         >

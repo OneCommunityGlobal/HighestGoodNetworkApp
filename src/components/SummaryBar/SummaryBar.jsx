@@ -221,6 +221,9 @@ const SummaryBar = props => {
   const sendUserSuggestion = async event => {
     event.preventDefault();
     const data = readFormData('suggestionForm');
+    data['firstName'] = userProfile.firstName;
+    data['lastName'] = userProfile.lastName;
+    data['email'] = userProfile.email;
 
     if (data) {
       setShowSuggestionModal(prev => !prev);
@@ -239,12 +242,19 @@ const SummaryBar = props => {
 
   const openSuggestionModal = async () => {
     if (!showSuggestionModal) {
-      let res = await httpService
-        .get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`)
-        .catch(e => {});
-      if (res.status == 200) {
-        setSuggestionCategory(res.data.suggestion);
-        setInputField(res.data.field);
+      try {
+        let res = await httpService.get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`);
+        
+        if (res && res.status === 200) {
+          setSuggestionCategory(res.data.suggestion);
+          setInputField(res.data.field);
+        } else {
+          console.error(res.status);
+          // Handle the error as needed
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        // Handle the error
       }
     }
     setShowSuggestionModal(prev => !prev);
@@ -365,10 +375,7 @@ const SummaryBar = props => {
               ) : (
                 <div className="border-green col-4 bg--dark-green">
                   <div className="py-1"> </div>
-                  <p
-                    onClick={props.toggleSubmitForm}
-                    className="text-center large_text_summary text--black summary-toggle"
-                  >
+                  <p onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
                     ✓
                   </p>
                   <font className="text-center text--black" size="3">
@@ -378,13 +385,12 @@ const SummaryBar = props => {
                 </div>
               )}
 
-              <div className="col-8 border-black bg--white-smoke d-flex align-items-center">
+              <div
+                className="col-8 border-black bg--white-smoke d-flex align-items-center"
+
+              >
                 <div className="m-auto p-2 text-center">
-                  <font
-                    onClick={props.toggleSubmitForm}
-                    className="text--black med_text_summary align-middle summary-toggle"
-                    size="3"
-                  >
+                  <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
                     {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
                     ) : matchUser ? (
@@ -595,7 +601,7 @@ const SummaryBar = props => {
                 </FormGroup>
                 {takeInput && (
                   <FormGroup>
-                    <Label for="suggestion"> Write your suggestion. </Label>
+                    <Label for="suggestion"> Write your suggestion: </Label>
                     <Input
                       type="textarea"
                       name="suggestion"

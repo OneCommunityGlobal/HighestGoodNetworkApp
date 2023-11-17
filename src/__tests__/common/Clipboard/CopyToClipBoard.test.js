@@ -1,0 +1,50 @@
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import CopyToClipboard from '../../../components/common/Clipboard/CopyToClipboard';
+
+// Mock the navigator.clipboard.writeText method
+const mockWriteText = jest.fn();
+
+// Mock the toast.success method
+const mockToastSuccess = jest.fn();
+
+beforeAll(() => {
+  Object.defineProperty(navigator, 'clipboard', {
+    value: { writeText: mockWriteText },
+    writable: true,
+  });
+
+  jest.mock('react-toastify', () => ({
+    toast: { success: mockToastSuccess },
+  }));
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+describe('CopyToClipboard', () => {
+  it('should copy to clipboard and show a success message', async () => {
+    const writeText = 'Text to be copied';
+    const message = 'Copy successful';
+
+    render(
+      <CopyToClipboard writeText={writeText} message={message} />
+    );
+
+    // Select the element using its class
+    const copyIcon = document.querySelector('.copy-to-clipboard');
+
+    // Simulate a click event on the icon
+    fireEvent.click(copyIcon);
+
+    // Ensure that writeText was called with the correct text
+    expect(mockWriteText).toHaveBeenCalledWith(writeText);
+
+    // Use setTimeout to give the component time to display the message
+    setTimeout(() => {
+      // Ensure that toast.success was called with the correct message
+      expect(mockToastSuccess).toHaveBeenCalledWith(message);
+    }, 1000);
+  });
+});
