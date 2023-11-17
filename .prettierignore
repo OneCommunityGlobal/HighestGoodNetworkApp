@@ -31,7 +31,6 @@ src/components/PermissionsManagement/**
 src/components/PopUpBar/**
 src/components/ProfileLinks/**
 src/components/Projects/**
-src/components/RenderInfringement/**
 src/components/Reports/**
 src/components/SetupProfile/**
 src/components/SummaryBar/**
