@@ -10,6 +10,8 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import { connect } from 'react-redux';
+import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
+import axios from 'axios';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
@@ -25,8 +27,10 @@ export function Dashboard(props) {
   const [userProfile, setUserProfile] = useState(undefined);
   const { match, auth } = props;
   const userId = match.params.userId || auth.user.userid;
-  const [isModalVisible, setModalVisible] = useState(true);
+  const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
+  const [userDashboardProfile, setUserDashboardProfile] = useState(undefined);
+  const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
 
   const toggle = () => {
     setPopup(!popup);
@@ -46,34 +50,94 @@ export function Dashboard(props) {
     setModalVisible(false);
   };
 
+  const loadUserDashboardProfile = async () => {
+    if (!userId || hasProfileLoaded) return;
+    try {
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const newUserProfile = response.data;
+      setUserDashboardProfile(newUserProfile);
+      setHasProfileLoaded(true); // Set flag to true after loading the profile
+    } catch (err) {
+      console.log('User Profile not loaded.', err);
+    }
+  };
+
+  // const loadUserProfile = async () => {
+  //   if (!userId) return;
+  //   try {
+  //     // console.log('profile...');
+  //     const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+  //     const newUserProfile = response.data;
+  //     setUserProfile(newUserProfile);
+  //   } catch (err) {
+  //     console.log('User Profile not loaded.', err);
+  //   }
+  // };
+
   useEffect(() => {
-    console.log('role: ', auth.user.role);
+    loadUserDashboardProfile();
 
-    if (auth.user.role === 'Owner') {
-      // Owners don't see the modal
-      return;
+    if (userDashboardProfile?.teams && userDashboardProfile.teams.length > 0) {
+      console.log('On a team...');
+      if (auth.user.role === 'Owner' || auth.user.role === 'Administrator') {
+        // Owners don't see the modal
+        return;
+      }
+      if (auth.user.role === 'Assistant Manager' || auth.user.role === 'Volunteer') {
+        setModalVisible(true);
+        setModalContent(`If you are seeing this, it’s because you are on a team! As a member of a team, you
+        need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific
+        Time. This is so your manager has time to review it and submit and report on your
+        entire team’s work by the usual Saturday night deadline. For any work you plan on
+        completing Saturday, please take pictures as best you can and include it in your
+        summary as if it were already done. By dismissing this notice, you acknowledge you
+        understand and will do this.`); // Assistant Manager or Volunteer message
+      } else if (auth.user.role === 'Manager') {
+        setModalVisible(true);
+        setModalContent(`If you are seeing this, it’s because you are a Manager of a team! Remember to turn 
+        in your team’s work by the Saturday night at midnight (Pacific Time) deadline.
+        Every member of your team gets a notice like this too. Theirs tells them to get you their 
+        work 24 hours early so you have time to review it and submit it. If you have to remind them 
+        repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
+        `); // Manager message
+      }
     }
-    if (auth.user.role === 'Assistant Manager' || auth.user.role === 'Volunteer') {
-      setModalVisible(true);
-      setModalContent(`If you are seeing this, it’s because you are on a team! As a member of a team, you
-                      need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific
-                      Time. This is so your manager has time to review it and submit and report on your
-                      entire team’s work by the usual Saturday night deadline. For any work you plan on
-                      completing Saturday, please take pictures as best you can and include it in your
-                      summary as if it were already done. By dismissing this notice, you acknowledge you
-                      understand and will do this.`);
-    } else if (auth.user.role === 'Manager') {
-      setModalVisible(true);
-      setModalContent(`If you are seeing this, it’s because you are a Manager of a team! Remember to turn 
-                      in your team’s work by the Saturday night at midnight (Pacific Time) deadline.
-                      Every member of your team gets a notice like this too. Theirs tells them to get you their 
-                      work 24 hours early so you have time to review it and submit it. If you have to remind them 
-                      repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
-      `);
-    }
+    // console.log('profile: ', userDashboardProfile);
+    // console.log(auth.user.role);
+  }, [userId, userDashboardProfile]);
 
-    console.log('modal visible: ', isModalVisible);
-  }, [auth.user.role]);
+  // useEffect(() => {
+  //   loadUserProfile();
+  // }, [userId]);
+
+  // useEffect(() => {
+  //   if (userProfile?.teams && userProfile.teams.length > 0) {
+  //     console.log('On a team...');
+  //     if (auth.user.role === 'Owner') {
+  //       // Owners don't see the modal
+  //       return;
+  //     }
+  //     if (auth.user.role === 'Assistant Manager' || auth.user.role === 'Volunteer') {
+  //       setModalVisible(true);
+  //       setModalContent(`If you are seeing this, it’s because you are on a team! As a member of a team, you
+  //                       need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific
+  //                       Time. This is so your manager has time to review it and submit and report on your
+  //                       entire team’s work by the usual Saturday night deadline. For any work you plan on
+  //                       completing Saturday, please take pictures as best you can and include it in your
+  //                       summary as if it were already done. By dismissing this notice, you acknowledge you
+  //                       understand and will do this.`);
+  //     } else if (auth.user.role === 'Manager') {
+  //       setModalVisible(true);
+  //       setModalContent(`If you are seeing this, it’s because you are a Manager of a team! Remember to turn
+  //                       in your team’s work by the Saturday night at midnight (Pacific Time) deadline.
+  //                       Every member of your team gets a notice like this too. Theirs tells them to get you their
+  //                       work 24 hours early so you have time to review it and submit it. If you have to remind them
+  //                       repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
+  //       `);
+  //     }
+  //   }
+  //   console.log('profile: ', userProfile);
+  // }, [userProfile]);
 
   useEffect(() => {
     // eslint-disable-next-line react/destructuring-assignment
