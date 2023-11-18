@@ -30,6 +30,7 @@ function AddOrEditPopup({
   isEdit,
   editProfile,
   submitText,
+  apiKey
 }) {
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
@@ -39,7 +40,6 @@ function AddOrEditPopup({
     jobTitle: null,
     location: null,
   });
-  const apiKey = useSelector(state => state.timeZoneAPI.userAPIKey);
 
   const getCoordsHandler = async () => {
     const location = locationData.location.userProvided;
