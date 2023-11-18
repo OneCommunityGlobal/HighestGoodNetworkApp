@@ -58,7 +58,7 @@ const SetupNewUserPopup = React.memo(props => {
             setAlert({ visibility: 'hidden', message: '', state: 'success' });
             setEmail('')
             setWeeklyCommittedHours(0)
-          },1000)
+          },2000)
         })
     }   
   };
