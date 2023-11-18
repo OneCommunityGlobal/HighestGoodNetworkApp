@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -30,6 +30,8 @@ import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
 import RequirementModal from './requirementModal';
 import HomeCountryModal from './homeCountryModal';
+import ProfilePictureModal from './profilePictureModal';
+import Image from 'react-bootstrap/Image';
 import './SetupProfileUserEntry.css';
 
 const SetupProfileUserEntry = ({ token, userEmail }) => {
@@ -61,6 +63,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     },
     timeZoneFilter: '',
     token,
+    profilePicture: '',
   });
   const [formErrors, setFormErrors] = useState({
     firstName: '',
@@ -79,13 +82,19 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
   const [requirementModalError, setrequirementModalError] = useState('');
   const [requirementsBoxChecked, setrequirementsBoxChecked] = useState(false);
   const [homecountryModalOpen, sethomecountryModalOpen] = useState(false);
-  const [homecountryLocation, setHomecountryLocation] =useState({
+  const [homecountryLocation, setHomecountryLocation] = useState({
     userProvided: '',
     coords: { lat: '', lng: '' },
     country: '',
     city: '',
-  })
-  
+  });
+  const [profilePictureModalOpen, setprofilePictureModalOpen] = useState(false);
+  const [profilePictureModalError, setprofilePictureModalError] = useState({
+    message: '',
+    type: '',
+  });
+  const pictureInputRef = useRef(null);
+
   //  get the timezone API key using the setup token
   useEffect(() => {
     httpService.post(ENDPOINTS.TIMEZONE_KEY_BY_TOKEN(), { token }).then(response => {
@@ -94,17 +103,20 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
   }, []);
 
   const toggleRequirementModal = () => {
-    setrequirementModalError("")
-    setRequirementModalOpen(prev => !prev)
+    setrequirementModalError('');
+    setRequirementModalOpen(prev => !prev);
   };
 
   const toggleHomecountryModal = () => {
-    if(requirementsBoxChecked){
-      sethomecountryModalOpen(prev => !prev)
-    }else{
-      setrequirementModalError("You need to read and accept the requirements first")
+    if (requirementsBoxChecked) {
+      sethomecountryModalOpen(prev => !prev);
+    } else {
+      setrequirementModalError('You need to read and accept the requirements first');
     }
-    
+  };
+
+  const toggleProfilePictureModal = () => {
+    setprofilePictureModalOpen(prev => !prev);
   };
 
   const handleRequirementsBoxChecked = () => setrequirementsBoxChecked(!requirementsBoxChecked);
@@ -134,6 +146,51 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         userProvided: value,
       },
     }));
+  };
+
+  const handleProfilePictureClick = () => {
+    pictureInputRef.current.click();
+  };
+
+  const handleProfilePictureUpload = e => {
+    
+    const pictureFile = e.target.files[0];
+    if (typeof pictureFile !== 'undefined') {
+      const PictureSizeInKB = pictureFile.size / 1024;
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+
+      if (!allowedTypes.includes(pictureFile.type)) {
+        setprofilePictureModalError(prev => ({
+          ...prev,
+          message: 'File type not permitted. Allowed types are png, jpeg and jpg',
+          type: 'fileType',
+        }));
+        setprofilePictureModalOpen(true);
+        pictureInputRef.current.value = null
+        return;
+      }
+
+      if (PictureSizeInKB > 50) {
+        setprofilePictureModalError(prev => ({
+          ...prev,
+          message: `The file you are trying to upload exceeds the maximum size of 50KB. You can either
+          choose a different file, or use an online file compressor.`,
+          type: 'size',
+        }));
+        setprofilePictureModalOpen(true);
+        pictureInputRef.current.value = null
+        return;
+      }
+
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(pictureFile);
+      fileReader.onloadend = () => {
+        setUserProfile(prevProfile => ({
+          ...prevProfile,
+          profilePicture: fileReader.result,
+        }));
+      };
+    }
   };
 
   const phoneChange = phone => {
@@ -358,17 +415,17 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
   const areAllHomecountryValuesFilled = () => {
     for (const key in homecountryLocation) {
       if (typeof homecountryLocation[key] === 'string' && homecountryLocation[key].trim() === '') {
-        return false; 
+        return false;
       }
     }
-    return true; 
+    return true;
   };
 
   const handleFormSubmit = e => {
     e.preventDefault();
 
     const isDataValid = validateFormData();
-    const homeCoutryDataExists = areAllHomecountryValuesFilled()
+    const homeCoutryDataExists = areAllHomecountryValuesFilled();
     if (isDataValid) {
       const data = {
         firstName: userProfile.firstName.trim(),
@@ -386,31 +443,14 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         timeZone: userProfile.timeZone.trim(),
         location: userProfile.location,
         token,
+        homeCountry: homeCoutryDataExists ? homecountryLocation : userProfile.location,
+        profilePicture: userProfile.profilePicture,
       };
 
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), data)
         .then(response => {
           if (response.status === 200) {
-            if(homeCoutryDataExists){
-                const homeCountryData = {
-                  firstName: userProfile.firstName.trim(),
-                  lastName: userProfile.lastName.trim(),
-                  jobTitle: userProfile.jobTitle.trim(),
-                  location: homecountryLocation,
-                }
-                httpService
-                .post(ENDPOINTS.MAP_LOCATIONS_BY_TOKEN(), homeCountryData)
-            }else{
-              const homeCountryData = {
-                firstName: userProfile.firstName.trim(),
-                lastName: userProfile.lastName.trim(),
-                jobTitle: userProfile.jobTitle.trim(),
-                location: userProfile.location,
-              }
-              httpService
-              .post(ENDPOINTS.MAP_LOCATIONS_BY_TOKEN(), homeCountryData)
-            }
             localStorage.setItem(tokenKey, response.data.token);
             httpService.setjwt(response.data.token);
             const decoded = jwtDecode(response.data.token);
@@ -446,8 +486,43 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
           <Col md="12">
             <Form>
               <Row>
+                <Col md="2" className="text-md-right my-2 pb-1">
+                  <Image
+                    src={userProfile.profilePicture || '/Portrait_Placeholder.png'}
+                    alt=""
+                    id="profile-picture"
+                  />
+                </Col>
+                <Col md="3" id="add-profile-picture-col">
+                  <input
+                    style={{ display: 'none' }}
+                    type="file"
+                    name="profilePicture"
+                    id="profilePicture"
+                    ref={pictureInputRef}
+                    onChange={handleProfilePictureUpload}
+                    accept="image/png,image/jpeg, image/jpg"
+                  />
+                  <Button
+                    className="btn btn-secondary btn-md btn-block"
+                    id="add-profile-picture-btn"
+                    onClick={handleProfilePictureClick}
+                  >
+                    add profile picture
+                  </Button>
+                  <ProfilePictureModal
+                    isOpen={profilePictureModalOpen}
+                    toggle={toggleProfilePictureModal}
+                    error={profilePictureModalError}
+                  />
+                </Col>
+                <Col md="3"></Col>
+              </Row>
+              <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Name</Label>
+                  <Label>
+                    Name<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="3">
                   <FormGroup>
@@ -484,7 +559,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Password</Label>
+                  <Label>
+                    Password<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="3">
                   <InputGroup>
@@ -547,7 +624,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Job Title</Label>
+                  <Label>
+                    Job Title<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md={{ size: 6 }}>
                   <FormGroup>
@@ -568,7 +647,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Email/Phone</Label>
+                  <Label>
+                    Email/Phone<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="3">
                   <FormGroup>
@@ -606,7 +687,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Video Call Preference</Label>
+                  <Label>
+                    Video Call Preference<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="6">
                   <FormGroup>
@@ -627,7 +710,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Location</Label>
+                  <Label>
+                    Location<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
 
                 <Col md="6 pr-0">
@@ -717,14 +802,20 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                       />
                     </Col>
                     <Col md="6 pr-0">
-                      <Button color="secondary " block size="md" id="setup-rofile-entry-hc-btn" onClick={toggleHomecountryModal}>
+                      <Button
+                        color="secondary "
+                        block
+                        size="md"
+                        id="setup-rofile-entry-hc-btn"
+                        onClick={toggleHomecountryModal}
+                      >
                         Set Home Country
                       </Button>
-                      <HomeCountryModal 
-                       isOpen={homecountryModalOpen}
-                       toggle={toggleHomecountryModal}
-                       apiKey={APIkey}
-                       setLocation={setHomecountryLocation}
+                      <HomeCountryModal
+                        isOpen={homecountryModalOpen}
+                        toggle={toggleHomecountryModal}
+                        apiKey={APIkey}
+                        setLocation={setHomecountryLocation}
                       />
                     </Col>
                   </Row>
@@ -732,7 +823,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Time Zone</Label>
+                  <Label>
+                    Time Zone<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="6">
                   <FormGroup>
