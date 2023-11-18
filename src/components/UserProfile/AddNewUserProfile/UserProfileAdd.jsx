@@ -524,6 +524,8 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+            
             this.setState({
               ...this.state,
               timeZoneFilter: timezone,
