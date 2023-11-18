@@ -62,7 +62,7 @@ export const Header = props => {
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
   // Teams
-  const canSeeTeamsManagementTab = props.hasPermission('seeTeamsManagement') || props.hasPermission('seeTeamsManagementTab');
+  const canSeeTeamsManagementTab = props.hasPermission('seeTeamsManagementTab');
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
   // Popups

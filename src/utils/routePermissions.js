@@ -12,7 +12,7 @@ export const RoutePermissions = {
   userPermissionsManagement: 'putUserProfilePermissions',
   permissionsManagement: 'putRole',
   permissionsManagementRole: 'putRole',
-  teamsManagement_fullFunctionality: 'seeTeamsManagement',
+  //teamsManagement_fullFunctionality: 'seeTeamsManagement',
   teamsManagement_createTeamsEditTeamMembers:'seeTeamsManagementTab',
   teams: 'putTeam',
   reports: 'getWeeklySummaries',
