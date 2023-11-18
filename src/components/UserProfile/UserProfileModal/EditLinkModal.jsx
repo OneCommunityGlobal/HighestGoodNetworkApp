@@ -17,9 +17,10 @@ import { connect } from 'react-redux';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const EditLinkModal = props => {
-  const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
+  const { isOpen, closeModal, updateLink, userProfile, handleSubmit, isUpdated } = props;
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canManageAdminLinks = props.hasPermission('adminLinks');
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
@@ -150,6 +151,7 @@ const EditLinkModal = props => {
   };
 
   const handleUpdate = async () => {
+    isUpdated();
     const isGoogleDocsValid = isValidGoogleDocsUrl(googleLink.Link);
     const isDropboxValid = isValidMediaUrl(mediaFolderLink.Link);
     const updatable =
@@ -191,7 +193,7 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {canPutUserProfileImportantInfo && (
+            {canPutUserProfileImportantInfo || canManageAdminLinks && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>

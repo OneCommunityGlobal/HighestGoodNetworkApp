@@ -18,6 +18,7 @@ const LinkModButton = props => {
         handleSubmit={handleSubmit}
         setChanged={setChanged}
         role={props.role}
+        isUpdated={props.isUpdated}
       />
       <span
         style={{

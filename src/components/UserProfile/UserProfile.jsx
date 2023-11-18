@@ -99,6 +99,7 @@ function UserProfile(props) {
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
+  const [isUpdated, setIsUpdated] = useState(false);
 
   const userProfileRef = useRef();
 
@@ -495,7 +496,7 @@ function UserProfile(props) {
     }
     try {
       await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
-
+  
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -625,6 +626,7 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('editUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canManageAdminLinks = props.hasPermission('adminLinks');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
@@ -663,6 +665,10 @@ function UserProfile(props) {
   const handleEndDate = async endDate => {
     setUserEndDate(endDate);
   };
+
+  const handleOnUpdate = () => {
+    setIsUpdated(true);
+  }
 
   return (
     <div>
@@ -852,6 +858,8 @@ function UserProfile(props) {
                 handleSubmit={handleSubmit}
                 role={requestorRole}
                 canEdit={canEdit}
+                canEditAdminLinks={canManageAdminLinks}
+                isUpdated={handleOnUpdate}
               />
               <BlueSquareLayout
                 userProfile={userProfile}
@@ -1061,7 +1069,7 @@ function UserProfile(props) {
                           </Button>
                         </Link>
                       )}
-                      {canEdit && (activeTab == '1' || canPutUserProfile) && (
+                      {canEdit || canManageAdminLinks && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
@@ -1071,6 +1079,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              !isUpdated ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1117,7 +1126,7 @@ function UserProfile(props) {
                 <ModalFooter>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canEdit && (activeTab == '1' || canPutUserProfile) && (
+                      {canEdit || canManageAdminLinks && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
@@ -1127,6 +1136,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              !isUpdated ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1185,7 +1195,7 @@ function UserProfile(props) {
                 <ModalFooter>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canEdit && (activeTab == '1' || canPutUserProfile) && (
+                      {canEdit || canManageAdminLinks && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
@@ -1195,6 +1205,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              !isUpdated ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1246,7 +1257,7 @@ function UserProfile(props) {
                 <ModalFooter>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canEdit && (activeTab == '1' || canPutUserProfile) && (
+                      {canEdit || canManageAdminLinks && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
@@ -1256,6 +1267,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              !isUpdated ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1294,7 +1306,7 @@ function UserProfile(props) {
                 <ModalFooter>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canEdit && (activeTab == '1' || canPutUserProfile) && (
+                      {canEdit || canManageAdminLinks && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
@@ -1304,6 +1316,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              !isUpdated ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1361,7 +1374,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && (activeTab === '1' || activeTab === '3' || canPutUserProfile) && (
+              {canEdit || canManageAdminLinks && (activeTab === '1' || activeTab === '3' || canPutUserProfile) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
@@ -1371,6 +1384,7 @@ function UserProfile(props) {
                       !formValid.lastName ||
                       !formValid.email ||
                       !codeValid ||
+                      !isUpdated ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
