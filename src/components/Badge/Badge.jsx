@@ -47,6 +47,19 @@ const Badge = props => {
     setOpenTypes(isOpenTypes => !isOpenTypes);
   };
 
+  const generateBadgeText = (totalBadge, badgeCollection, personalBestMaxHrs) => {
+    if (!totalBadge) return 'You have no badges. ';
+
+    const roundedHours = Math.floor(personalBestMaxHrs);
+    const personalMaxText = badgeCollection.find(badgeObj => badgeObj.badge.type === 'Personal Max')
+      ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
+      : '';
+
+    return `Bravo! You have earned ${totalBadge} ${
+      totalBadge === 1 ? 'badge' : 'badges'
+    }${personalMaxText}! `;
+  };
+
   useEffect(() => {
     const userId = props.userId;
     let count = 0;
@@ -72,8 +85,14 @@ const Badge = props => {
                 Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
               </CardHeader>
               <CardBody>
-                <NewBadges badges={props.userProfile.badgeCollection || []} />
-                <OldBadges badges={props.userProfile.badgeCollection || []} />
+                <NewBadges
+                  personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
+                  badges={props.userProfile.badgeCollection || []}
+                />
+                <OldBadges
+                  personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
+                  badges={props.userProfile.badgeCollection || []}
+                />
                 <CardText
                   style={{
                     fontWeight: 'bold',
@@ -81,11 +100,11 @@ const Badge = props => {
                     color: '#285739',
                   }}
                 >
-                  {totalBadge
-                    ? `Bravo! You have earned ${totalBadge} ${
-                        totalBadge == 1 ? 'badge' : 'badges'
-                      }! `
-                    : 'You have no badges. '}
+                  {generateBadgeText(
+                    totalBadge,
+                    props.userProfile.badgeCollection,
+                    props.userProfile.personalBestMaxHrs,
+                  )}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
                 <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard={true} />
