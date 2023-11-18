@@ -14,6 +14,8 @@ function UpdateMaterialsBulkTable({ date, project }) {
   const postMaterialUpdateBulkResult = useSelector(state => state.updateMaterialsBulk)
   const [cancel, setCancel] = useState(1);
   const updatedRecordsList = {};
+  const validationsList = {};
+  const [bulkValidationError, setbulkValidationError] = useState(false);
 
 
   useEffect(() => {
@@ -57,15 +59,21 @@ function UpdateMaterialsBulkTable({ date, project }) {
 
   const submitHandler = (e) => {
     e.preventDefault();
+    if (bulkValidationError) return;
+
     let tempPostMaterialUpdateData = Object.values(updatedRecordsList).filter(d => d.newAvailable != "") //In case , user enters and removes data
     dispatch(postMaterialUpdateBulk(tempPostMaterialUpdateData))
-
-    //Reset materials
-
   }
 
-  const sendUpdatedRecordHandler = (updatedRecord) => {
+  const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
     updatedRecordsList[updatedRecord.material._id] = updatedRecord;
+    validationsList[updatedRecord.material._id] = validationRecord;
+    if (!(validationRecord.quantityUsed == '' && validationRecord.quantityWasted == '' && validationRecord.quantityTogether == '')) {
+      setbulkValidationError(true);
+    }
+    else {
+      setbulkValidationError(false);
+    }
   }
 
   return (
@@ -109,7 +117,7 @@ function UpdateMaterialsBulkTable({ date, project }) {
       </Table>
       <div style={{ marginRight: '0px', marginLeft: '0px' }} className='row justify-content-between '>
         <Button size="md" className='logMButtons' outline onClick={cancelHandler}>Cancel</Button>
-        <Button size="md" className='logMButtonBg' onClick={(e) => submitHandler(e)} >Submit</Button>
+        <Button size="md" className='logMButtonBg' disabled={bulkValidationError} onClick={(e) => submitHandler(e)} >Submit</Button>
       </div>
 
     </div>

@@ -86,6 +86,8 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel, setModal
 
   const validate = (qtyUsed, qtyWasted, QtyUsedLogUnit, QtyWastedLogUnit) => {
 
+    qtyUsed == '' ? 0 : qtyUsed;
+    qtyWasted == '' ? 0 : qtyWasted;
     let available = record?.stockAvailable;
     let valUsed = +qtyUsed;
     let valWasted = +qtyWasted;
@@ -130,7 +132,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel, setModal
       updateRecord.newAvailable = ''
       setUpdateRecord({ ...updateRecord });
     }
-    if (bulk == true) sendUpdatedRecord(updateRecord)
+    if (bulk == true) sendUpdatedRecord(updateRecord, validations)
   }
 
   const submitHandler = (e) => {
