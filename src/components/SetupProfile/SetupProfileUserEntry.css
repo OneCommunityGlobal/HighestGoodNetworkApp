@@ -21,3 +21,20 @@
     margin-top: 0px;
     margin-left: 0px;
 }
+
+#profile-picture{
+    box-sizing: border-box;
+    height: 150px;
+    width: 150px;
+    border-radius: 50%;
+    padding: 4px;
+    border: 3px solid #d1ecf1;
+}
+#add-profile-picture-col{
+    box-sizing: border-box;
+    display: flex;
+    padding-bottom: 1rem;
+}
+#add-profile-picture-btn{
+    align-self: flex-end;
+}
