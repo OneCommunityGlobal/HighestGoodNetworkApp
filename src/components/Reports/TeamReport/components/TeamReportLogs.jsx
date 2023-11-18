@@ -1,5 +1,5 @@
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import './ReportLogs.css';
 
@@ -12,7 +12,7 @@ function TeamReportLogs({
 }) {
   return (
     <section>
-      <h2 className="teams-report-time-title">{title}</h2>
+      <h2 style={{ textAlign: 'center'}} className="teams-report-time-title">{ title }</h2>
       <div className="teams-report-time-logs-wrapper">
         <ReportPage.ReportBlock
           firstColor="#ff5e82"

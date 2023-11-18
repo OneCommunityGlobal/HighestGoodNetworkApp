@@ -5,7 +5,7 @@ import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
 import { weeklySummaryMockData1 } from './__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
 import { WeeklySummary } from './WeeklySummary';
-import { CountdownTimer } from './CountdownTimer';
+import CountdownTimer from './CountdownTimer';
 
 describe('WeeklySummary page', () => {
   describe('On page load', () => {
@@ -172,7 +172,6 @@ describe('WeeklySummary page', () => {
 
     describe('Media URL field', () => {
       it('should handle input change', async () => {
-
         // const labelText = screen.getByLabelText(/Link to your media files/i);
         // await userEvent.type(labelText, 'h');
         // expect(labelText).toHaveAttribute('value', 'h');
@@ -208,13 +207,13 @@ describe('WeeklySummary page', () => {
 
     describe('Confirm media checkbox', () => {
       it('should be unchecked by default and can be checked', () => {
-        const mediaCheckbox = screen.getByTestId("mediaConfirm")
+        const mediaCheckbox = screen.getByTestId('mediaConfirm');
         expect(mediaCheckbox).not.toBeChecked();
         userEvent.click(mediaCheckbox);
         expect(mediaCheckbox).toBeChecked();
       });
       it('should display an error message if a checkbox is unchecked after it was checked first', () => {
-        const mediaCheckbox = screen.getByTestId("mediaConfirm")
+        const mediaCheckbox = screen.getByTestId('mediaConfirm');
         expect(mediaCheckbox).not.toBeChecked();
         userEvent.click(mediaCheckbox);
         expect(mediaCheckbox).toBeChecked();
@@ -229,13 +228,13 @@ describe('WeeklySummary page', () => {
 
     describe('Confirm editor was used checkbox', () => {
       it('should be unchecked by default and can be checked', () => {
-        const editorCheckbox = screen.getByTestId("editorConfirm")
+        const editorCheckbox = screen.getByTestId('editorConfirm');
         expect(editorCheckbox).not.toBeChecked();
         userEvent.click(editorCheckbox);
         expect(editorCheckbox).toBeChecked();
       });
       it('should display an error message if a checkbox is unchecked after it was checked first', () => {
-        const editorCheckbox = screen.getByTestId("editorConfirm")
+        const editorCheckbox = screen.getByTestId('editorConfirm');
         expect(editorCheckbox).not.toBeChecked();
         userEvent.click(editorCheckbox);
         expect(editorCheckbox).toBeChecked();
@@ -250,13 +249,13 @@ describe('WeeklySummary page', () => {
 
     describe('Confirm proofread checkbox', () => {
       it('should be unchecked by default and can be checked', () => {
-        const proofreadCheckbox = screen.getByTestId("proofreadConfirm")
+        const proofreadCheckbox = screen.getByTestId('proofreadConfirm');
         expect(proofreadCheckbox).not.toBeChecked();
         userEvent.click(proofreadCheckbox);
         expect(proofreadCheckbox).toBeChecked();
       });
       it('should display an error message if a checkbox is unchecked after it was checked first', () => {
-        const proofreadCheckbox = screen.getByTestId("proofreadConfirm")
+        const proofreadCheckbox = screen.getByTestId('proofreadConfirm');
         expect(proofreadCheckbox).not.toBeChecked();
         userEvent.click(proofreadCheckbox);
         expect(proofreadCheckbox).toBeChecked();
@@ -288,9 +287,9 @@ describe('WeeklySummary page', () => {
         // const labelText = screen.getByLabelText(/Link to your media files/i);
         // await userEvent.type(labelText, 'https://www.example.com/');
         // check off the media URL concent checkbox
-        userEvent.click(screen.getByTestId("mediaConfirm"));
-        userEvent.click(screen.getByTestId("editorConfirm"));
-        userEvent.click(screen.getByTestId("proofreadConfirm"));
+        userEvent.click(screen.getByTestId('mediaConfirm'));
+        userEvent.click(screen.getByTestId('editorConfirm'));
+        userEvent.click(screen.getByTestId('proofreadConfirm'));
         expect(saveButton).toBeEnabled();
         userEvent.click(saveButton);
       });

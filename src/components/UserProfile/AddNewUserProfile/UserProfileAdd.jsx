@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import { get } from 'lodash';
+import { assign, get } from 'lodash';
 import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
@@ -39,13 +39,20 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { getUserTimeZone } from 'services/timezoneApiService';
+import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+const DATE_PICKER_MIN_DATE = '01/01/2010';
+const nextDay = new Date();
+nextDay.setDate(nextDay.getDate()+1);
+
 class AddUserProfile extends Component {
   constructor(props) {
     super(props);
@@ -71,6 +78,7 @@ class AddUserProfile extends Component {
         location: '',
         showphone: true,
         weeklySummaryOption: 'Required',
+        createdDate: nextDay,
       },
       formValid: {},
       formErrors: {
@@ -82,7 +90,13 @@ class AddUserProfile extends Component {
       location: '',
       timeZoneFilter: '',
       formSubmitted: false,
+      teamCode: '',
+      codeValid: false,
     };
+
+    
+    const { user } = this.props.auth;
+    this.canAddDeleteEditOwners = user && user.role === 'Owner'
   }
 
   popupClose = () => {
@@ -91,11 +105,18 @@ class AddUserProfile extends Component {
     });
   };
 
+  setCodeValid = isValid => {
+    this.setState({
+      codeValid: isValid,
+    });
+  };
+
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
   }
-
+  
+  
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
@@ -254,12 +275,7 @@ class AddUserProfile extends Component {
                           if (roleName === 'Owner') return;
                           return <option value={roleName}>{roleName}</option>;
                         })}
-                        {hasPermission(
-                          this.props.auth.user.role,
-                          'addDeleteEditOwners',
-                          this.props.role.roles,
-                          this.props.auth.user?.permissions?.frontPermissions,
-                        ) && <option value="Owner">Owner</option>}
+                        {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>
@@ -363,6 +379,26 @@ class AddUserProfile extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label>Start Date</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                    <div className="date-picker-item">                        
+                      <DatePicker
+                        selected={this.state.userProfile.createdDate}
+                        minDate={new Date(DATE_PICKER_MIN_DATE)}
+                        onChange={date => this.setState({ userProfile: {
+                          ...this.state.userProfile,
+                          createdDate: date,
+                        }})}
+                        className="form-control"
+                      />
+                      </div>
+                    </FormGroup>
+                  </Col>
+                </Row>
               </Form>
             </Col>
           </Row>
@@ -385,10 +421,16 @@ class AddUserProfile extends Component {
                     userTeams={this.state.teams}
                     teamsData={this.props ? this.props.allTeams.allTeamsData : []}
                     onAssignTeam={this.onAssignTeam}
+                    onAssignTeamCode={this.onAssignTeamCode}
                     onDeleteTeam={this.onDeleteTeam}
                     isUserAdmin={true}
                     role={this.props.auth.user.role}
+                    teamCode={this.state.teamCode}
+                    canEditTeamCode={true}
+                    codeValid={this.state.codeValid}
+                    setCodeValid={this.setCodeValid}
                     edit
+                    userProfile={this.state.userProfile}
                   />
                 </TabPane>
               </TabContent>
@@ -432,10 +474,15 @@ class AddUserProfile extends Component {
     });
   };
 
+  onAssignTeamCode = value => {
+    this.setState({
+      teamCode: value,
+    });
+  };
+
   onAssignTeam = assignedTeam => {
     const teams = [...this.state.teams];
     teams.push(assignedTeam);
-
     this.setState({
       teams: teams,
     });
@@ -477,6 +524,8 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+            
             this.setState({
               ...this.state,
               timeZoneFilter: timezone,
@@ -539,10 +588,11 @@ class AddUserProfile extends Component {
       timeZone,
       location,
       weeklySummaryOption,
+      createdDate,
     } = that.state.userProfile;
 
     const userData = {
-      password: '123Welcome!',
+      password: process.env.REACT_APP_DEF_PWD,
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -561,15 +611,47 @@ class AddUserProfile extends Component {
       timeZone: timeZone,
       location: location,
       allowsDuplicateName: allowsDuplicateName,
+      createdDate: createdDate,
+      teamCode: this.state.teamCode,
     };
 
     this.setState({ formSubmitted: true });
 
     if (googleDoc) {
-      userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc });
+      if (isValidGoogleDocsUrl(googleDoc)) {
+        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
+      } else{
+        toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
+        this.setState({
+          formValid: {
+            ...that.state.formValid,
+            googleDoc: false,
+          },
+          formErrors: {
+            ...that.state.formErrors,
+            googleDoc: 'Invalid Google Doc URL',
+          },
+        });
+        return;
+      }
     }
     if (dropboxDoc) {
-      userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc });
+      if (isValidMediaUrl(dropboxDoc)) {
+          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
+        } else {
+          toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+          this.setState({
+            formValid: {
+              ...that.state.formValid,
+              dropboxDoc: false,
+            },
+            formErrors: {
+              ...that.state.formErrors,
+              dropboxDoc: 'Invalid Dropbox Link URL',
+            },
+          });
+          return;
+        }
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
@@ -590,6 +672,12 @@ class AddUserProfile extends Component {
               return;
             } else {
               toast.success('User profile created.');
+              this.state.userProfile._id = res.data._id;
+              if(this.state.teams.length > 0){
+                this.state.teams.forEach((team) => {
+                  this.props.addTeamMember(team._id, res.data._id, res.data.firstName, res.data.lastName)
+                })
+              }
             }
             this.props.userCreated();
           })
@@ -922,4 +1010,5 @@ export default connect(mapStateToProps, {
   deleteTeamMember,
   addTeamMember,
   fetchAllProjects,
+  hasPermission,
 })(AddUserProfile);
