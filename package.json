@@ -72,7 +72,8 @@
     "redux-thunk": "^2.3.0",
     "tinymce": "^5.10.8",
     "uuid": "^9.0.1",
-    "websocket-extensions": ">=0.1.4"
+    "websocket-extensions": ">=0.1.4",
+    "word-wrap": "^1.2.5"
   },
   "scripts": {
     "prestart": "npm run test",

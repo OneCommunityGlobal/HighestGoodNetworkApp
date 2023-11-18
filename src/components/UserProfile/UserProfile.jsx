@@ -695,7 +695,7 @@ function UserProfile(props) {
               <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
             ) : null}
             <div className="profile-head">
-              <h5>{`${firstName} ${lastName}`}</h5>
+              <h5 className="mr-2">{`${firstName} ${lastName}`}</h5>
               {/* <i
                 data-toggle="tooltip"
                 data-placement="right"
@@ -712,6 +712,7 @@ function UserProfile(props) {
                 isPermissionPage={true}
                 role={requestorRole} // Pass the 'role' prop to EditableInfoModal
               />
+              <span className="mr-2">
               <ActiveCell
                 isActive={userProfile.isActive}
                 user={userProfile}
@@ -725,7 +726,9 @@ function UserProfile(props) {
                   setActiveInactivePopupOpen(true);
                 }}
               />
+              </span>
               {canEdit && (
+                <span className="mr-2">
                 <i
                   data-toggle="tooltip"
                   className="fa fa-clock-o"
@@ -741,6 +744,7 @@ function UserProfile(props) {
                     }
                   }}
                 />
+                </span>
               )}
               <Button
                 onClick={() => {

@@ -435,7 +435,7 @@ const Timelog = props => {
         </Container>
         
       ) : (
-        <div className="text-center">
+        <div className="custom-text-alignment">
         <EditableInfoModal
           areaName="DashboardTimelog"
           areaTitle="Timelog"
@@ -474,8 +474,8 @@ const Timelog = props => {
                           isPermissionPage={true}
                           role={auth.user.role} // Pass the 'role' prop to EditableInfoModal
                         />
-                      </div>
-                        <span style={{ padding: '0 5px' }}>
+                      
+                      <span className="mr-2">
                           <ActiveCell
                             isActive={userProfile.isActive}
                             user={userProfile}
@@ -496,6 +496,7 @@ const Timelog = props => {
                             props.match?.params?.userId || props.asUser || props.auth.user.userid
                           }
                         />
+                        </div>
                       </CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
                         Viewing time entries logged in the last 3 weeks

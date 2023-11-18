@@ -77,3 +77,14 @@
 .notActiveUser {
   color: #dee2e6;
 }
+
+
+.custom-text-alignment {
+  text-align: center;
+}
+
+@media (min-width: 992px) { 
+  .custom-text-alignment {
+      text-align: right;
+  }
+}

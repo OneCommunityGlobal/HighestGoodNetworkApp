@@ -22,7 +22,7 @@ const RoleInfoModal = ({info}) => {
         <i
           data-toggle="tooltip"
           data-placement="right"
-          title="Click for user class information"
+          title="Click for information about this"
           style={{ fontSize: 24, cursor: 'pointer', color: '#00CCFF', marginLeft: '5px'}}
           aria-hidden="true"
           className="fa fa-info-circle"

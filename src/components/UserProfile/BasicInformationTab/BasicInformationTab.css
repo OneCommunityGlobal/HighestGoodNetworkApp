@@ -1,10 +1,14 @@
 .basic-info-tab-tablet {
   display: none;
 }
-@media (max-width: 1199px) {
+/* @media (max-width: 1199px) {
   .phone-input-style.phone-input-style {
     width: 265px !important;
   }
+} */
+
+.phone-input-style {
+  width: 100% !important; /* Adjust the width as needed to match other inputs */
 }
 
 @media (max-width: 1024px) {
@@ -25,3 +29,5 @@
     font-weight: bold;
   }
 }
+
+
