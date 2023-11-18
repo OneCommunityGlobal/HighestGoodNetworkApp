@@ -13,6 +13,10 @@ import ReviewButton from './ReviewButton';
 import { useDispatch } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
+import googleDocIconGray from './google_doc_icon_gray.png';
+import googleDocIconPng from './google_doc_icon.png';
+import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
 const TeamMemberTask = React.memo(
@@ -65,11 +69,21 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+    const isAllowedToSeeGoogleDoc = userRole !== 'Volunteer';
     //^^^
 
     const dispatch = useDispatch();
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
+
+    const googleDocIcon = isAllowedToSeeGoogleDoc ? googleDocIconPng : googleDocIconGray;
+    const res = getWeeklySummariesReport();
+    const summaries = res?.data?? '';
+    // 2. shallow copy and sort
+    let summariesCopy = [...summaries];
+    // summariesCopy = this.alphabetize(summariesCopy);
+    // console.log(summariesCopy)
+    
 
     const handleTruncateTasksButtonClick = () => {
       if (!isTruncated) {
@@ -132,6 +146,20 @@ const TeamMemberTask = React.memo(
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
                             <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
+                          </div>
+                          <div className="team-member-google-doc-icon">
+                            <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
+                            {isAllowedToSeeGoogleDoc ? (
+                              <>
+                                &nbsp;&nbsp;
+                                <Link
+                                  to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
+                                  data-testid={`${task.taskName}`}
+                                >
+                                  <span>{`${task.num} ${task.taskName}`} </span>
+                                </Link>
+                              </>
+                            ) : null}
                           </div>
                           <div className="team-member-tasks-icons">
                             {task.taskNotifications.length > 0 &&
