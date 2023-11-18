@@ -622,7 +622,7 @@ function UserProfile(props) {
 
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canPutUserProfile = props.hasPermission('editUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
 
