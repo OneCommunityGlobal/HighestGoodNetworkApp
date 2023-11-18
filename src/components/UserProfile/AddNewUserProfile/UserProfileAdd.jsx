@@ -528,6 +528,7 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+            
             let currentLocation = {
               userProvided: location,
               coords: {
@@ -537,6 +538,8 @@ class AddUserProfile extends Component {
               country: response.data.results[0].components.country,
               city: response.data.results[0].components.city,
             };
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+            
             this.setState({
               ...this.state,
               timeZoneFilter: timezone,
