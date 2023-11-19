@@ -21,11 +21,11 @@ const TeamMemberTask = React.memo(
   ({
     user,
     userIndex,
-  handleMarkAsDoneModal,
+    handleMarkAsDoneModal,
     handleRemoveFromTaskModal,
     handleOpenTaskNotificationModal,
     handleFollowUp,
-  handleTaskModalOption,
+    handleTaskModalOption,
     userRole,
     userId,
     updateTaskStatus,
@@ -34,10 +34,6 @@ const TeamMemberTask = React.memo(
 
     const [totalHoursRemaining, activeTasks] = useMemo(() => {
       let totalHoursRemaining = 0;
-  const isAllowedToFollowUpWithPeople = userRole !== 'Volunteer';
-  const isFollowedUpWith = [];
-  const needFollowUp = [];
-
       if (user.tasks) {
         totalHoursRemaining = user.tasks.reduce((total, task) => {
           task.hoursLogged = task.hoursLogged || 0;
@@ -72,6 +68,9 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+    const isAllowedToFollowUpWithPeople = userRole !== 'Volunteer';
+    const isFollowedUpWith = [];
+    const needFollowUp = [];
     //^^^
 
     const dispatch = useDispatch();
@@ -89,56 +88,56 @@ const TeamMemberTask = React.memo(
       }
     };
 
-  if (user.tasks) {
-    user.tasks.forEach(task => {
-      const usersWithFollowUpCheck = task.resources?.filter(
-        resource => resource.userID === user.personId && resource.followedUp?.followUpCheck,
-      );
-      const usersNeedFollowUp = task.resources?.filter(
-        resource => resource.userID === user.personId && resource.followedUp?.needFollowUp,
-      );
-      if (usersWithFollowUpCheck?.length > 0) {
-        isFollowedUpWith.push(task._id);
-      }
-      if (usersNeedFollowUp?.length > 0) {
-        needFollowUp.push(task._id);
-      }
-    });
-  }
-  const followUpMouseoverText = task => {
-    const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
-    if (progressPersantage < 50) {
-      return 'Check this box once you’ve checked in for the first time with this team member to make sure they are clear on their task.';
-    } else if (progressPersantage >= 50 && progressPersantage < 75) {
-      return 'Your team member’s task should be at least 50% complete. Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed.';
-    } else if (progressPersantage >= 75 && progressPersantage < 90) {
-      return 'Your team member’s task should be at least 75% complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
-    } else if (progressPersantage >= 90) {
-      return 'Your team member’s task should be almost complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
+    if (user.tasks) {
+      user.tasks.forEach(task => {
+        const usersWithFollowUpCheck = task.resources?.filter(
+          resource => resource.userID === user.personId && resource.followedUp?.followUpCheck,
+        );
+        const usersNeedFollowUp = task.resources?.filter(
+          resource => resource.userID === user.personId && resource.followedUp?.needFollowUp,
+        );
+        if (usersWithFollowUpCheck?.length > 0) {
+          isFollowedUpWith.push(task._id);
+        }
+        if (usersNeedFollowUp?.length > 0) {
+          needFollowUp.push(task._id);
+        }
+      });
     }
-  };
+    const followUpMouseoverText = task => {
+      const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
+      if (progressPersantage < 50) {
+        return 'Check this box once you’ve checked in for the first time with this team member to make sure they are clear on their task.';
+      } else if (progressPersantage >= 50 && progressPersantage < 75) {
+        return 'Your team member’s task should be at least 50% complete. Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed.';
+      } else if (progressPersantage >= 75 && progressPersantage < 90) {
+        return 'Your team member’s task should be at least 75% complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
+      } else if (progressPersantage >= 90) {
+        return 'Your team member’s task should be almost complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
+      }
+    };
 
-  const handleCheckboxFollowUp = (taskId, userId, userIndex, taskIndex) => {
-    const task = user.tasks[taskIndex];
-    const followUpCheck = !isFollowedUpWith.includes(taskId);
-    const followUpPercentageDeadline =
-      ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
-    let data = {};
-    if (followUpCheck) {
-      data = {
-        followUpCheck,
-        followUpPercentageDeadline,
-        needFollowUp: false,
-      };
-    } else {
-      data = {
-        followUpCheck,
-        followUpPercentageDeadline: 0,
-        needFollowUp: followUpPercentageDeadline > 50,
-      };
-    }
-    handleFollowUp(taskId, userId, data, userIndex, taskIndex);
-  };
+    const handleCheckboxFollowUp = (taskId, userId, userIndex, taskIndex) => {
+      const task = user.tasks[taskIndex];
+      const followUpCheck = !isFollowedUpWith.includes(taskId);
+      const followUpPercentageDeadline =
+        ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
+      let data = {};
+      if (followUpCheck) {
+        data = {
+          followUpCheck,
+          followUpPercentageDeadline,
+          needFollowUp: false,
+        };
+      } else {
+        data = {
+          followUpCheck,
+          followUpPercentageDeadline: 0,
+          needFollowUp: followUpPercentageDeadline > 50,
+        };
+      }
+      handleFollowUp(taskId, userId, data, userIndex, taskIndex);
+    };
 
     return (
       <>
@@ -270,7 +269,8 @@ const TeamMemberTask = React.memo(
                               </span>
                             )}
                             <div className="team-task-progress-container">
-                              <span data-testid={`times-${task.taskName}`}
+                              <span
+                                data-testid={`times-${task.taskName}`}
                                 className={`team-task-progress-time ${
                                   isAllowedToFollowUpWithPeople
                                     ? ''

@@ -57,7 +57,7 @@
 }
 .team-task-progress-container {
   display: grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: 1fr repeat(2, auto);
   grid-template-rows: repeat(2, auto);
   row-gap: 10px;
   column-gap: 2px;
@@ -87,6 +87,7 @@
   height: 18px;
   outline: none;
   background-color: #e1f3e2;
+  margin-right: 5px;
 }
 .team-task-progress-follow-up-red {
   border: 2px solid red;
