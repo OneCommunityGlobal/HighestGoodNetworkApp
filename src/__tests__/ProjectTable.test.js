@@ -1,14 +1,13 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ProjectTable from '../components/Reports/ProjectTable'; // Adjust the import path as necessary
+import ProjectTable from '../components/Reports/ProjectTable';
 import { BrowserRouter } from 'react-router-dom';
 
 describe('ProjectTable component', () => {
   const mockProjects = [
     { _id: '1', projectName: 'Project Alpha', isActive: true },
     { _id: '2', projectName: 'Project Beta', isActive: false },
-    // Add more mock projects as needed
   ];
 
   const renderWithRouter = (ui, { route = '/' } = {}) => {
