@@ -44,7 +44,7 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
             }
             : user,
         ),
-        isLoading: false
+        isLoading: false,
       };
     case "SET_FOLLOWED_UP":
       return {
@@ -78,8 +78,9 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
       };
     case 'DELETE_TASK_NOTIFICATION_BEGIN':
       return {
-        ...state, isLoading: true
-      }
+        ...state,
+        isLoading: true,
+      };
     default:
       return state;
   }

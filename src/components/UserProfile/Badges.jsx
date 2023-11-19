@@ -16,12 +16,14 @@ import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
+import hasPermission from '../../utils/permissions';
 import { boxStyle } from 'styles';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
-  const permissionsUser = props.userProfile?.permissions?.frontPermissions;
+  const canAssignBadges = props.hasPermission('assignBadges');
 
   const toggle = () => setOpen(!isOpen);
 
@@ -36,7 +38,13 @@ export const Badges = props => {
   }, [isOpen, isAssignOpen]);
 
   // Determines what congratulatory text should displayed.
-  const badgesEarned = props.userProfile.badgeCollection.length;
+  const badgesEarned = props.userProfile.badgeCollection.reduce((acc, badge) => {
+    if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+      return acc + 1;
+    }
+    return acc + Math.round(Number(badge.count));
+  }, 0);
+  
   const subject = props.isUserSelf ? 'You have' : 'This person has';
   const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
@@ -50,9 +58,20 @@ export const Badges = props => {
       <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
         <CardHeader>
           <div className="badge-header">
-            <span className="badge-header-title">
-              Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
-            </span>
+            <div className="badge-header d-flex align-items-center">
+              <span className="badge-header-title">
+                Featured Badges
+              </span>
+              <span>
+                <EditableInfoModal
+                  areaName="FeaturedBadgesInfoPoint"
+                  areaTitle="Featured Badges"
+                  fontSize={20}
+                  isPermissionPage={true}
+                  role={props.role}
+                />
+              </span>
+            </div>
             <div>
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
@@ -72,14 +91,13 @@ export const Badges = props => {
                         setUserProfile={props.setUserProfile}
                         setOriginalUserProfile={props.setOriginalUserProfile}
                         handleSubmit={props.handleSubmit}
-                        permissionsUser={permissionsUser}
+                        isUserSelf={props.isUserSelf}
                       />
                     </ModalBody>
                   </Modal>
                 </>
               )}
-              {((props.canEdit && (props.role == 'Owner' || props.role == 'Administrator')) ||
-                props.userPermissions.includes('assignBadgeOthers')) && (
+              {canAssignBadges && (
                 <>
                   <Button
                     className="btn--dark-sea-green mr-2"
@@ -106,44 +124,53 @@ export const Badges = props => {
           </div>
         </CardHeader>
         <CardBody style={{ overflow: 'auto' }}>
-          <FeaturedBadges badges={props.userProfile.badgeCollection} />
+          <FeaturedBadges personalBestMaxHrs={props.userProfile.personalBestMaxHrs} badges={props.userProfile.badgeCollection} />
         </CardBody>
-        <CardFooter
-          style={{
-            fontWeight: 'bold',
-            fontSize: 18,
-            color: '#285739',
-          }}
-        >
-          {congratulatoryText}
-          <i className="fa fa-info-circle" id="CountInfo" />
+        <CardFooter style={{ display: 'flex', alignItems: 'center' }}>
+          <span
+            style={{
+              fontWeight: 'bold',
+              fontSize: 18,
+              color: '#285739',
+            }}
+          >
+            {congratulatoryText}
+          </span>
+          <EditableInfoModal
+            areaName="NumberOfBadgesInfoPoint"
+            areaTitle="Number of Badges"
+            role={props.role}
+            fontSize={20}
+            isPermissionPage={true}
+          />
         </CardFooter>
       </Card>
-      <UncontrolledTooltip
+      {/* <UncontrolledTooltip
         placement="right"
         target="FeaturedBadgeInfo"
         style={{ backgroundColor: '#666', color: '#fff' }}
       >
         <p className="badge_info_icon_text">
-          Holy Awesome, these are your profiles featured badges !!! Click "Select Featured" to bask
-          in the glory of your COMPLETE LIST!
+          Holy Awesome, these are your profiles featured badges !!! Click &quot;Select
+          Featured&quot; to bask in the glory of your COMPLETE LIST!
         </p>
         <p className="badge_info_icon_text">
-          Have a number bigger than "1" in the bottom righthand corner of a badge? That's how many
-          times you've earned the same badge! Do your Happy Dance you Champion!!
+          Have a number bigger than &quot;1&quot; in the bottom righthand corner of a badge?
+          That&apos;s how many times you&apos;ve earned the same badge! Do your Happy Dance you
+          Champion!!
         </p>
         <p className="badge_info_icon_text">
           No badges in this area? Uh, in that cases, everything said above is a bit premature. Sorry
           about that... Everyone must start somewhere, and in your case, that somewhere is with the
           big empty, desolate, bare and barren badge box below (BEDBABBBB). If we had a BEDBABBBB
-          badge, you'd earn it, but we don't, so this area is blank.
+          badge, you&apos;d earn it, but we don&apos;t, so this area is blank.
         </p>
         <p className="badge_info_icon_text">
-          No worries though, we're sure there are other areas of your life where you are a Champion
-          already. Stick with us long enough and this will be another one.
+          No worries though, we&apos;re sure there are other areas of your life where you are a
+          Champion already. Stick with us long enough and this will be another one.
         </p>
-      </UncontrolledTooltip>
-      <UncontrolledTooltip
+      </UncontrolledTooltip> */}
+      {/* <UncontrolledTooltip
         placement="auto"
         target="CountInfo"
         style={{ backgroundColor: '#666', color: '#fff' }}
@@ -156,13 +183,14 @@ export const Badges = props => {
           There are many things in life to be proud of. Some are even worth bragging about. If your
           number here is large, it definitely falls into the later category.
         </p>
-      </UncontrolledTooltip>
+      </UncontrolledTooltip> */}
     </>
   );
 };
 
 const mapDispatchToProps = dispatch => ({
   clearSelected: () => dispatch(clearSelected()),
+  hasPermission: (permission) => dispatch(hasPermission(permission)),
 });
 
 const mapStateToProps = state => ({

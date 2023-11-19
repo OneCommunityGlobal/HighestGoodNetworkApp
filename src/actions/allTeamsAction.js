@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -54,11 +53,12 @@ export const teamsDeleteAction = (team) => ({
 /**
  * Action for updating the status of a team
  */
-export const updateTeamAction = (teamId, isActive, teamName) => ({
+export const updateTeamAction = (teamId, isActive, teamName, teamCode) => ({
   type: UPDATE_TEAM,
   teamId,
   isActive,
   teamName,
+  teamCode,
 });
 
 /**
@@ -150,12 +150,12 @@ export const deleteTeam = (teamId) => {
 /**
  * updating the team status
  */
-export const updateTeam = (teamName, teamId, isActive) => {
-  const requestData = { teamName, isActive };
+export const updateTeam = (teamName, teamId, isActive, teamCode) => {
+  const requestData = { teamName, isActive, teamCode };
   const deleteTeamPromise = axios.put(ENDPOINTS.TEAM_DATA(teamId), requestData);
   return async (dispatch) => {
     deleteTeamPromise.then(() => {
-      dispatch(updateTeamAction(teamId, isActive, teamName));
+      dispatch(updateTeamAction(teamId, isActive, teamName, teamCode));
     });
   };
 };
@@ -195,12 +195,12 @@ export const deleteTeamMember = (teamId, userId) => {
 /**
  * Adding an existing user to team
  */
-export const addTeamMember = (teamId, userId, firstName, lastName) => {
+export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime) => {
   const requestData = { users: [{ userId, operation: 'Assign' }] };
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async (dispatch) => {
     teamMemberAddPromise.then(() => {
-      dispatch(teamMemberAddAction({ _id: userId, firstName, lastName }));
+      dispatch(teamMemberAddAction({ _id: userId, firstName, lastName, role, addDateTime }));
     });
   };
 };

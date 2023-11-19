@@ -25,7 +25,7 @@ export default () => {
     intialState,
     compose(applyMiddleware(...middleware), devTools),
   );
-  let persistor = persistStore(store);
+  const persistor = persistStore(store);
   return { store, persistor };
 };
 

@@ -4,43 +4,69 @@ import { connect } from 'react-redux';
 import './UserRoleTab.css';
 import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
+import { boxStyle } from 'styles';
 
 export const permissionLabel = {
-  seeWeeklySummaryReports: 'See Weekly Summary Reports Tab',
+  getWeeklySummaries: 'See Weekly Summary Reports Tab',
+  getWeeklySummaries: 'See Only Weekly Summary Reports Tab',
   seeUserManagement: 'See User Management Tab (delete and update users)',
   seeBadgeManagement: 'See Badge Management Tab (create badges)',
+  seeUserManagement: 'See User Management Tab (Full Functionality)',
+  seeBadgeManagement: 'See Badge Management Tab (Full Functionality)',
   deleteOwnBadge: 'Delete Badge',
   modifyOwnBadgeAmount: 'Modify Badge Amount',
   assignBadgeOthers: 'Assign Badges',
   seePopupManagement: 'See Popup Management Tab (create and update popups)',
-  seeProjectManagement: 'See Project Management Tab',
-  deleteWbs: 'Delete WBS',
-  addTask: 'Add Task',
-  deleteTask: 'Delete Task',
-  editTask: 'Edit Task',
-  suggestTask: 'Suggest Changes on a task',
-  addWbs: 'Add WBS',
+  //seeProjectManagement: 'See Project Management Tab',
+  seeProjectManagement: 'See Project Management Tab (Full Functionality)',
+  seeProjectManagementTab: 'See Project Management Tab (Add team members, upload new WBSs only)',
   addProject: 'Add Project',
   deleteProject: 'Delete Project',
   editProject: 'Edit Project',
+  editProject: 'Edit Project Category or Status',
+  seeUserProfileInProjects: 'See User Profiles in Projects',
   findUserInProject: 'Find User in Project',
   assignUserInProject: 'Assign User in Project',
   unassignUserInProject: 'Unassign User in Project',
+  addWbs: 'Add WBS',
+  deleteWbs: 'Delete WBS',
+  //addTask: 'Add Task',
+  //editTask: 'Edit Task',
+  //deleteTask: 'Delete Task',
+  //suggestTask: 'Suggest Changes on a task',
+  // Teams
   seeTeamsManagement: 'See Teams Management Tab',
   editDeleteTeam: 'Edit/Delete Team',
+  addWbs: 'Add WBS',
+  deleteWbs: 'Delete WBS',
+  // Tasks
+  postTask: 'Add Task',
+  updateTask: 'Edit Task',
+  deleteTask: 'Delete Task',
+  suggestTask: 'Suggest Changes on a task',
+  seeTeamsManagement: 'See Teams Management Tab (Full Functionality)',
   createTeam: 'Create Team',
   assignTeamToUser: 'Assign Team to User',
+  editDeleteTeam: 'Edit/Delete Team',
   editTimelogInfo: 'Edit Timelog Information',
   addTimeEntryOthers: 'Add Time Entry (Others)',
   deleteTimeEntryOthers: 'Delete Time Entry (Others)',
   toggleTangibleTime: 'Toggle Tangible Time',
+  toggleTangibleTime: 'Toggle Tangible Time Self',
+  toggleTangibleTimeOthers: 'Toggle Tangible/Intangible Time Others',
   changeIntangibleTimeEntryDate: 'Change Date on Intangible Time Entry',
   editTimeEntry: 'Edit Time Entry',
   deleteTimeEntry: 'Delete Time Entry',
+  editTimeEntry: 'Edit Own Time Entry',
+  deleteTimeEntry: 'Delete Own Time Entry',
+  editUserProfile: 'Edit User Profile',
   changeUserStatus: 'Change User Status',
+  handleBlueSquare: 'Handle Blue Squares',
+  assignOnlyBlueSquares: 'Only Assign Blue Squares',
   adminLinks: 'Manage Admin Links in User Profile',
   editUserProfile: 'Edit User Profile',
   seeUserProfileInProjects: 'See User Profiles in Projects',
+  assignTeamToUser: 'Assign Users Team',
   resetPasswordOthers: 'Reset Password (Others)',
   dataIsTangibleTimelog: 'Timelog Data is Tangible',
   toggleSubmitForm: 'Toggle Summary Submit Form (Others)',
@@ -49,8 +75,14 @@ export const permissionLabel = {
   seePermissionsManagement: 'See Permissions Management Tab',
   submitWeeklySummaryForOthers: 'Submit Weekly Summary For Others',
   changeBioAnnouncement: 'Change the Bio Announcement Status',
-  seeAllReports: 'See All the Reports Tab', 
+  seeSummaryIntroButton: 'See Summary Intro Button',
+  seeAllReports: 'See All the Reports Tab',
   removeUserFromTask: 'View and Interact with Task “X”',
+  seePermissionsManagement: 'See Permissions Management Tab and Edit Permission',
+  seePopupManagement: 'See Popup Management Tab (create and update popups)',
+  seeSummaryIndicator: 'See Summary Indicator',
+  seeVisibilityIcon: 'See Visibility Icon',
+  editTeamCode: 'Edit Team 4-Digit Codes',
 };
 
 const UserRoleTab = props => {
@@ -90,6 +122,7 @@ const UserRoleTab = props => {
       <button
         onClick={() => history.push('/permissionsmanagement')}
         className="userRoleTab__backBtn"
+        style={boxStyle}
       >
         Back
       </button>

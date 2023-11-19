@@ -1,10 +1,11 @@
-import { faClock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { Fragment } from 'react';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification, setFollowUp } from 'actions/task';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
-import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import { getTeamMemberTasksData } from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
@@ -17,8 +18,10 @@ import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
+import { toast } from 'react-toastify';
+// import InfiniteScroll from 'react-infinite-scroller';
 
-const TeamMemberTasks = props => {
+const TeamMemberTasks = React.memo(props => {
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
@@ -37,6 +40,8 @@ const TeamMemberTasks = props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
+  // const [displayData, setDisplayData] = useState([]);
+  // const [hasMore, setHasMore] = useState(true);
 
   //added it to keep track if the renderTeamsList should run
   const [shouldRun, setShouldRun] = useState(false);
@@ -102,15 +107,15 @@ const TeamMemberTasks = props => {
     setCurrentUserId('');
   };
 
-  const onUpdateTask = (taskId, updatedTask) => {
+  const onUpdateTask = useCallback((taskId, updatedTask) => {
     const newTask = {
       updatedTask,
       taskId,
     };
     submitTasks(newTask);
-    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, false));
+    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, true));
     props.handleUpdateTask();
-  };
+  }, []);
 
   const submitTasks = async updatedTasks => {
     const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
@@ -121,28 +126,43 @@ const TeamMemberTasks = props => {
     }
   };
 
-  const handleOpenTaskNotificationModal = (userId, task, taskNotifications = []) => {
+  const updateTaskStatus = useCallback(async (taskId, updatedTask) => {
+    const newTask = {
+      updatedTask,
+      taskId,
+    };
+    const url = ENDPOINTS.TASK_UPDATE_STATUS(newTask.taskId);
+    try {
+      await axios.put(url, newTask.updatedTask);
+    } catch (error) {
+      toast.error('Failed to update task');
+    }
+    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, true));
+    props.handleUpdateTask();
+  }, []);
+
+  const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setCurrentTaskNotifications(taskNotifications);
-    setTaskNotificationModal(!showTaskNotificationModal);
-  };
+    setTaskNotificationModal(prev => !prev);
+  }, []);
 
-  const handleMarkAsDoneModal = (userId, task) => {
+  const handleMarkAsDoneModal = useCallback((userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  };
+  }, []);
 
-  const handleRemoveFromTaskModal = (userId, task) => {
+  const handleRemoveFromTaskModal = useCallback((userId, task) => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
-  };
+  }, []);
 
-  const handleTaskModalOption = option => {
+  const handleTaskModalOption = useCallback(option => {
     setTaskModalOption(option);
-  };
+  }, []);
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     //if the authentitated user is seeing it's own notification
@@ -311,6 +331,21 @@ const TeamMemberTasks = props => {
     }
   };
 
+  // const loadFunc = useCallback(pageNum => {
+  //   if (teamList.length <= displayData.length) {
+  //     setHasMore(false);
+  //     return;
+  //   }
+
+  //   const start = pageNum * 10;
+  //   setDisplayData([...displayData, ...teamList.slice(start, start + 10)]);
+  //   setHasMore(true);
+  // });
+
+  // useEffect(() => {
+  //   loadFunc();
+  // }, [teamList]);
+
   return (
     <div className="container team-member-tasks">
       <header className="header-box">
@@ -360,7 +395,7 @@ const TeamMemberTasks = props => {
             </button>
           </div>
         ) : (
-          <Loading />
+          <SkeletonLoading template="TimelogFilter" />
         )}
       </header>
       <TaskDifferenceModal
@@ -391,7 +426,7 @@ const TeamMemberTasks = props => {
       )}
       <div className="table-container">
         <Table>
-          <thead className="pc-component">
+          <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
             <tr>
               {/* Empty column header for hours completed icon */}
               <th />
@@ -434,14 +469,9 @@ const TeamMemberTasks = props => {
               </th>
             </tr>
           </thead>
-
           <tbody>
             {isLoading ? (
-              <tr>
-                <td>
-                  <Loading />
-                </td>
-              </tr>
+              <SkeletonLoading template="TeamMemberTasks" />
             ) : (
               teamList.map((user, userIndex) => {
                 if (!isTimeLogActive) {
@@ -452,18 +482,19 @@ const TeamMemberTasks = props => {
                       userIndex={userIndex}
                       handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                       handleMarkAsDoneModal={handleMarkAsDoneModal}
-                      handleFollowUp={handleFollowUp}
                       handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                      handleFollowUp={handleFollowUp}
                       handleTaskModalOption={handleTaskModalOption}
                       userRole={userRole}
-                      updateTask={onUpdateTask}
+                      updateTaskStatus={updateTaskStatus}
                       roles={props.roles}
                       userPermissions={props.userPermissions}
+                      userId={userId}
                     />
                   );
                 } else {
                   return (
-                    <>
+                    <Fragment key={user.personId}>
                       <TeamMemberTask
                         user={user}
                         key={user.personId}
@@ -474,9 +505,10 @@ const TeamMemberTasks = props => {
                         handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                         handleTaskModalOption={handleTaskModalOption}
                         userRole={userRole}
-                        updateTask={onUpdateTask}
+                        updateTaskStatus={updateTaskStatus}
                         roles={props.roles}
                         userPermissions={props.userPermissions}
+                        userId={userId}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
@@ -488,7 +520,7 @@ const TeamMemberTasks = props => {
                               </td>
                             </tr>
                           ))}
-                    </>
+                    </ Fragment>
                   );
                 }
               })
@@ -498,13 +530,15 @@ const TeamMemberTasks = props => {
       </div>
     </div>
   );
-};
+});
 
 const mapStateToProps = state => ({
   auth: state.auth,
   userId: state.userProfile.id,
   managingTeams: state.userProfile.teams,
   teamsInfo: state.managingTeams,
+  roles: state.role.roles,
+  userPermissions: state.auth?.permissions?.frontPermissions,
 });
 
 export default connect(mapStateToProps, {

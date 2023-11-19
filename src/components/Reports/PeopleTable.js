@@ -1,13 +1,12 @@
-import React from 'react';
 import '../Teams/Team.css';
 import { Link } from 'react-router-dom';
 import './reports.css';
 import moment from 'moment';
 
-const PeopleTable = props => {
+function PeopleTable({ userProfiles }) {
   let PeopleList = [];
-  if (props.userProfiles.length > 0) {
-    PeopleList = props.userProfiles
+  if (userProfiles.length > 0) {
+    PeopleList = userProfiles
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
       .map((person, index) => (
         <tr className="teams__tr" id={`tr_${person._id}`} key={person._id}>
@@ -15,37 +14,47 @@ const PeopleTable = props => {
             <div>{index + 1}</div>
           </th>
           <td>
-            <Link to={`/peoplereport/${person._id}`} personId={person._id}>
-              {person.firstName} {person.lastName}
+            <Link to={`/peoplereport/${person._id}`}>
+              {person.firstName}{' '}
+              {person.lastName.length > 15 ? `${person.lastName.slice(0, 15)}...` : person.lastName}
             </Link>
           </td>
-          <td
-            className="teams__active--input"
-            onClick={e => {
-              person.onStatusClick(person.firstName, person._id, person.isActive);
-            }}
-          >
-            {person.isActive ? (
-              <div className="isActive">
-                <i className="fa fa-circle" aria-hidden="true" />
-              </div>
-            ) : (
-              <div className="isNotActive">
-                <i className="fa fa-circle-o" aria-hidden="true" />
-              </div>
-            )}
+          <td className="teams__active--input">
+            <div
+              onClick={() => {
+                person.onStatusClick(person.firstName, person._id, person.isActive);
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  person.onStatusClick(person.firstName, person._id, person.isActive);
+                }
+              }}
+            >
+              {person.isActive ? (
+                <div className="isActive">
+                  <i className="fa fa-circle" aria-hidden="true" />
+                </div>
+              ) : (
+                <div className="isNotActive">
+                  <i className="fa fa-circle-o" aria-hidden="true" />
+                </div>
+              )}
+            </div>
           </td>
-          <td>{moment(person.createdDate).format('MM/DD/YYYY')}</td>
-          <td>{moment(person.endDate).format('MM/DD/YYYY') || 'N/A'}</td>
-          {/* <td>
-          {person.blueSquares||"N/A"}
-        </td> */}
+          <td className="hide-mobile-start-end" style={{ width: '110px' }}>
+            {moment(person.createdDate).format('MM-DD-YY')}
+          </td>
+          <td className="hide-mobile-start-end" style={{ width: '110px' }}>
+            {moment(person.endDate).format('MM-DD-YY') || 'N/A'}
+          </td>
         </tr>
       ));
   }
 
   return (
-    <table className="table table-bordered table-responsive-sm">
+    <table className="table table-bordered">
       <thead>
         <tr>
           <th scope="col" id="projects__order">
@@ -55,13 +64,16 @@ const PeopleTable = props => {
           <th scope="col" id="projects__active">
             Active
           </th>
-          <th scope="col">Start Date</th>
-          <th scope="col">End Date</th>
-          {/* <th scope="col">Blue Squares</th> */}
+          <th className="hide-mobile-start-end" scope="col">
+            Start Date
+          </th>
+          <th className="hide-mobile-start-end" scope="col">
+            End Date
+          </th>
         </tr>
       </thead>
       <tbody>{PeopleList}</tbody>
     </table>
   );
-};
+}
 export default PeopleTable;

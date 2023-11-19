@@ -141,7 +141,7 @@
   display: inline-block;
   padding: 5px;
   margin-bottom: 5px;
-  min-width: 70px;
+  min-width: 60px;
 }
 
 .badge-list {
@@ -163,7 +163,7 @@
   font-size: 1rem;
 }
 
-.disabled-bar{
+.disabled-bar {
   opacity: 0.4;
   filter: alpha(opacity=40); /* msie */
 }
@@ -200,4 +200,9 @@
   .large_text_summary {
     font-size: 1.5rem;
   }
+}
+
+.text-center{
+  display: flex;
+  justify-content: center;
 }
