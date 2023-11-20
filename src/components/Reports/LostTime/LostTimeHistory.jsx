@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import Loading from 'components/common/Loading';
 import EditHistoryModal from './EditHistoryModal';
+import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 
 function LostTimeHistory(props) {
 
@@ -15,6 +17,7 @@ function LostTimeHistory(props) {
   const toDate = props.endDate.toLocaleDateString('en-CA');
 
   const idList = props.allData.map(data => data._id);
+  const canEditTimeEntry = props.hasPermission('editTimeEntry');
 
   useEffect(() => {
     loadLostTimeEntries(type, idList, fromDate, toDate);
@@ -116,19 +119,21 @@ function LostTimeHistory(props) {
               </div>
             )}
           </td>
-          <td>
-            <EditHistoryModal
-              _id={entry._id}
-              dataId={entry.dataId}
-              dateOfWork={entry.date}
-              hours={entry.hours}
-              minutes={entry.minutes}
-              isTangible={entry.isTangible}
-              entryType={entry.entryType}
-              allData={props.allData}
-              reload={reload}
-            />
-          </td>
+          {canEditTimeEntry &&
+            <td>
+              <EditHistoryModal
+                _id={entry._id}
+                dataId={entry.dataId}
+                dateOfWork={entry.date}
+                hours={entry.hours}
+                minutes={entry.minutes}
+                isTangible={entry.isTangible}
+                entryType={entry.entryType}
+                allData={props.allData}
+                reload={reload}
+              />
+            </td>
+          }
         </tr>
       ));
     }
@@ -159,9 +164,11 @@ function LostTimeHistory(props) {
               <th scope="col">
                 Tangible
               </th>
-              <th scope="col">
-                Action
-              </th>
+              {canEditTimeEntry && 
+                <th scope="col">
+                  Action
+                </th>
+              }
             </tr>
           </thead>
           <tbody>{entriesRow}</tbody>
@@ -172,4 +179,12 @@ function LostTimeHistory(props) {
   );
 }
 
-export default LostTimeHistory;
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+const mapDispatchToProps = dispatch => ({
+  hasPermission: permission => dispatch(hasPermission(permission)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LostTimeHistory);

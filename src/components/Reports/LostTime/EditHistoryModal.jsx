@@ -463,4 +463,8 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps, {getUserProfile})(EditHistoryModal);
+const mapDispatchToProps = dispatch => ({
+  getUserProfile: userId => dispatch(getUserProfile(userId)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(EditHistoryModal);
