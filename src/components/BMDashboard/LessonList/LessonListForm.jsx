@@ -7,17 +7,17 @@ import Lessons from './Lessons';
 function LessonList() {
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
-  // const lessonSummury = 'Lesson List Summary';
 
   const handleInputChange = event => {
     setInputValue(event.target.value);
   };
 
   const addTag = tag => {
-    if (tag !== '') {
+    // Check if the tag already exists
+    if (tags.indexOf(tag) === -1) {
       setTags([...tags, tag]);
-      setInputValue('');
     }
+    setInputValue('');
   };
   const handleInputKeyDown = event => {
     if (event.key === 'Enter' || event.key === ',') {
