@@ -22,7 +22,6 @@ src/components/Badge/**
 src/components/common/**
 src/components/Header/**
 src/components/Inventory/**
-src/components/ManageMemberships/**
 src/components/Memberships/**
 src/components/MonthlyEffort/**
 src/components/NewProfileLink/**
