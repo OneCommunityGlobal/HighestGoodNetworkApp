@@ -1,15 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Row,
-  Col,
-  Container,
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Card,
-} from 'reactstrap';
+import { Row, Col, Container, Button, Card } from 'reactstrap';
 import { connect } from 'react-redux';
 import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
@@ -41,10 +31,6 @@ export function Dashboard(props) {
         elem.scrollIntoView();
       }
     }, 150);
-  };
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
   };
 
   const closeModal = () => {
@@ -83,6 +69,7 @@ export function Dashboard(props) {
       auth.user.role === 'Administrator' ||
       auth.user.role === 'Mentor'
     ) {
+      setModalVisible(false);
       console.log('No notification modal...');
       return;
     }
@@ -165,20 +152,6 @@ export function Dashboard(props) {
 
   return (
     <Container fluid>
-      {/* <Modal isOpen={isModalVisible} toggle={toggleModal} backdrop="static">
-        <ModalHeader toggle={closeModal}>Teamwork Deadline Reminder</ModalHeader>
-        <ModalBody>
-          <div>
-            <p>{modalContent}</p>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={closeModal}>
-            Dismiss
-          </Button>
-        </ModalFooter>
-      </Modal> */}
-
       <div className="floating-header">
         {match.params.userId && auth.user.userid !== match.params.userId ? <PopUpBar /> : ''}
         <SummaryBar
@@ -189,23 +162,21 @@ export function Dashboard(props) {
           role={auth.user.role}
           summaryBarData={summaryBarData}
         />
-        <Card color="primary">
-          <div className="close-button">
-            <Button close />
-          </div>
-          <div className="card-content">
-            If you are seeing this, it’s because you are on a team! As a member of a team, you need
-            to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This
-            is so your manager has time to review it and submit and report on your entire team’s
-            work by the usual Saturday night deadline. For any work you plan on completing Saturday,
-            please take pictures as best you can and include it in your summary as if it were
-            already done. By dismissing this notice, you acknowledge you understand and will do
-            this.
-          </div>
-        </Card>
+        {isModalVisible && (
+          <Card color="primary">
+            <div className="close-button">
+              <Button close onClick={closeModal} />
+            </div>
+            <div className="card-content">{modalContent}</div>
+          </Card>
+        )}
       </div>
 
-      <div className="content-wrapper">
+      <div
+        style={{
+          'padding-top': isModalVisible ? '280px' : '200px',
+        }}
+      >
         <Row>
           <Col lg={{ size: 7 }}>&nbsp;</Col>
           <Col lg={{ size: 5 }}>

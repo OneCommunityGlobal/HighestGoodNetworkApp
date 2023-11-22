@@ -123,12 +123,9 @@ tr {
 .floating-header {
   position: fixed; /* Keeps the button in the same position on the screen */
   top: 95px; /* Distance from the bottom of the viewport */
+  left: 0px;
   right: 0px; /* Distance from the right of the viewport */
   z-index: 900; /* Ensures the button stays above other content */
-}
-
-.content-wrapper {
-  padding-top: 270px;
 }
 
 .close-button {
