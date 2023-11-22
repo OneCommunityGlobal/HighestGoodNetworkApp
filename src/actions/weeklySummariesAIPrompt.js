@@ -1,8 +1,8 @@
 import { ENDPOINTS } from '../utils/URL';
 import axios from 'axios';
 import {
-  getDashboardDataAIPrompt as getDashboardDataAIPrompts,
-  updateDashboardDataAIPrompt as updateDashboardDataAIPrompts,
+  getAIPrompt as getAIPrompt,
+  updateAIPrompt as updateAIPrompt,
 } from '../constants/weeklySummariesAIPrompt';
 
 export const getDashboardDataAI = () => {
@@ -10,11 +10,11 @@ export const getDashboardDataAI = () => {
   return async dispatch => {
     return DashboardDataAIPromise
       .then((res) => {
-        dispatch(getDashboardDataAIPrompts(res.data));
+        dispatch(getAIPrompt(res.data));
         return res.data;
       })
       .catch(() => {
-        dispatch(getDashboardDataAIPrompts(undefined));
+        dispatch(getAIPrompt(undefined));
       });
   };
 };
@@ -26,6 +26,6 @@ export const updateDashboardData = textPrompt => {
   return async dispatch => {
     await axios
       .put(ENDPOINTS.AI_PROMPT(), updatedData)
-      .then(dispatch(updateDashboardDataAIPrompts(textPrompt)));
+      .then(dispatch(updateAIPrompt(textPrompt)));
   };
 };
