@@ -40,8 +40,8 @@ export function Dashboard(props) {
     const today = new Date();
     localStorage.setItem(dismissalKey, today);
     setLastDismissed(today);
-    console.log('modal dismissed...it will pop up again next thursday...');
-    console.log('dismmisal key: ', dismissalKey);
+    // console.log('modal dismissed...it will pop up again next thursday...');
+    // console.log('dismmisal key: ', dismissalKey);
   };
 
   const getMostRecentThursday = date => {
@@ -71,13 +71,11 @@ export function Dashboard(props) {
       auth.user.role === 'Mentor'
     ) {
       setModalVisible(false);
-      console.log('No notification modal...');
+      // console.log('No notification modal...');
       return;
     }
 
-    // TODO: show message every week on Thursday. Once user dismiss the message, it will not show again in a week.
     const today = new Date();
-    // const lastDismissedDate = new Date(lastDismissed);
     const lastDismissedDate = lastDismissed ? new Date(lastDismissed) : null;
 
     // Check if today is Thursday or the stored date is before the most recent Thursday
@@ -87,7 +85,7 @@ export function Dashboard(props) {
       lastDismissedDate < getMostRecentThursday(today)
     ) {
       if (userDashboardProfile?.teams && userDashboardProfile.teams.length > 0) {
-        console.log('On a team...Header never shown this week...');
+        // console.log('On a team...Header never shown this week...');
 
         if (auth.user.role === 'Assistant Manager' || auth.user.role === 'Volunteer') {
           setModalVisible(true);
@@ -155,7 +153,7 @@ export function Dashboard(props) {
 
       <div
         style={{
-          'padding-top': isModalVisible ? '280px' : '200px',
+          paddingTop: isModalVisible ? '200px' : '130px',
         }}
       >
         <Row>
