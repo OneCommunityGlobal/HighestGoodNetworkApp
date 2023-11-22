@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
+import {
+  Row,
+  Col,
+  Container,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Card,
+} from 'reactstrap';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
@@ -57,7 +68,8 @@ export const Header = props => {
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
   // Projects
-  const canSeeProjectManagementTab = props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canSeeProjectManagementTab =
+    props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
   const canPostProject = props.hasPermission('postProject');
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
@@ -142,12 +154,12 @@ export const Header = props => {
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                        <DropdownItem tag={Link} to="/reports">
-                          {REPORTS}
-                        </DropdownItem>
-                        <DropdownItem tag={Link} to="/weeklysummariesreport">
-                          {WEEKLY_SUMMARIES_REPORT}
-                        </DropdownItem>
+                    <DropdownItem tag={Link} to="/reports">
+                      {REPORTS}
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/weeklysummariesreport">
+                      {WEEKLY_SUMMARIES_REPORT}
+                    </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
               ) : null}
@@ -205,10 +217,10 @@ export const Header = props => {
                     )}
                     {(canPutRole || canManageUser) && (
                       <>
-                      <DropdownItem divider />
-                      <DropdownItem tag={Link} to="/permissionsmanagement">
-                        {PERMISSIONS_MANAGEMENT}
-                      </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem tag={Link} to="/permissionsmanagement">
+                          {PERMISSIONS_MANAGEMENT}
+                        </DropdownItem>
                       </>
                     )}
                   </DropdownMenu>

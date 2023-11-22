@@ -9,7 +9,7 @@ body {
 
 #root {
   height: 100%;
-  overflow-x: auto; 
+  overflow-x: auto;
 }
 
 .App {
@@ -95,8 +95,7 @@ body {
   /*  90%to100%-red */
 }
 
-
-nav ul.navbar-nav li:last-child>div {
+nav ul.navbar-nav li:last-child > div {
   transform: translate3d(-26px, 40px, 0px) !important;
 }
 
@@ -114,9 +113,34 @@ nav ul.navbar-nav li:last-child>div {
   position: sticky;
   right: -30px;
   bottom: 10px;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 tr {
   content-visibility: auto;
+}
+
+.floating-header {
+  position: fixed; /* Keeps the button in the same position on the screen */
+  top: 95px; /* Distance from the bottom of the viewport */
+  right: 0px; /* Distance from the right of the viewport */
+  z-index: 900; /* Ensures the button stays above other content */
+}
+
+.content-wrapper {
+  padding-top: 270px;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 12px; /* Add some padding for easier clicking */
+}
+
+.card-content {
+  padding: 5px; /* Add padding around the card content */
+  padding-left: 40px;
+  color: white;
+  font-size: medium;
 }
