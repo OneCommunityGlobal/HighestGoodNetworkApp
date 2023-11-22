@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { deleteTimeEntry } from '../../actions/timeEntries';
 import { updateUserProfile } from '../../actions/userProfile';
+import { getTimeEntryFormData } from './TimeEntryForm/selectors';
 
-const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassification }) => {
+const DeleteModal = ({ timeEntry, projectCategory, taskClassification }) => {
   const [isOpen, setOpen] = useState(false);
+  const {userProfile} = useSelector(getTimeEntryFormData);
   const dispatch = useDispatch();
 
   const toggle = () => setOpen(isOpen => !isOpen);
@@ -16,31 +18,23 @@ const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassificati
     if (event) {
       event.preventDefault();
     }
-
+  
     dispatch(deleteTimeEntry(timeEntry));
     //update hours
     const formattedHours = parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
     if (!timeEntry.isTangible) {
-      userProfile.totalIntangibleHrs -= formattedHours;
+      const totalIntangibleHours = Number((userProfile.totalIntangibleHrs- formattedHours).toFixed(2));
+      userProfile.totalIntangibleHrs = totalIntangibleHours;
     } else {
       const category = projectCategory ? projectCategory : taskClassification;
       const { hoursByCategory } = userProfile;
       hoursByCategory[category] -= formattedHours;
     }
+  
+    dispatch(updateUserProfile(userProfile._id, userProfile));
 
-    const newHour = (
-      userProfile.totalcommittedHours -
-      timeEntry.hours -
-      timeEntry.minutes / 60
-    ).toFixed(2);
-
-    const updatedUserProfile = {
-      ...userProfile,
-      totalcommittedHours: parseInt(newHour, 10),
-    };
-
-    dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
-  };
+    toggle();
+};
   return (
     <span>
       <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary" onClick={toggle} />

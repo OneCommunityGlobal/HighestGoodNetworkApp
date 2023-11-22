@@ -308,7 +308,8 @@ const TimeEntryForm = props => {
 
     //log  hours to intangible time entry
     if (isTangible !== 'true') {
-      userProfile.totalIntangibleHrs += volunteerTime;
+      const totalIntangibleHrs = Number((userProfile.totalIntangibleHrs + volunteerTime).toFixed(2));
+      userProfile.totalIntangibleHrs = totalIntangibleHrs;
     } else {
       //This is get to know which project or task is selected
       const foundProject = projects.find(project => project._id === projectId);

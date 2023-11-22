@@ -205,9 +205,10 @@ const TotalIntangibleHours = props => {
       data-testid="totalIntangibleHours"
       value={props.userProfile.totalIntangibleHrs ?? 0}
       onChange={e => {
+        const newValue = Math.max(Number(e.target.value), 0).toFixed(2);
         props.setUserProfile({
           ...props.userProfile,
-          totalIntangibleHrs: Math.max(Number(e.target.value), 0),
+          totalIntangibleHrs: Number(newValue),
         });
       }}
       placeholder="Total Intangible Hours"
