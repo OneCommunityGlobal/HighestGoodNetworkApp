@@ -91,6 +91,15 @@ function DescriptionItem({ label, value, title }) {
   );
 }
 
+function RentalDurationItem({ label, from, to }) {
+  return (
+    <p className="ToolDetailPage__detail_item">
+      {label}: <span className="ToolDetailPage__span">{from}</span> to{' '}
+      <span className="ToolDetailPage__span">{to}</span>
+    </p>
+  );
+}
+
 function ToolDetailPage() {
   const history = useHistory();
 
@@ -102,6 +111,15 @@ function ToolDetailPage() {
 
   const renderLinkItem = detail => (
     <LinkItem key={generateKey()} label={detail.label} value={detail.value} />
+  );
+
+  const renderRentalDurationItem = detail => (
+    <RentalDurationItem
+      key={generateKey()}
+      label={detail.label}
+      from={dummyTool.addDate}
+      to={dummyTool.returnDate}
+    />
   );
 
   const renderDescriptionItem = detail => (
@@ -119,6 +137,8 @@ function ToolDetailPage() {
         return renderLinkItem(detail);
       case 'Description':
         return renderDescriptionItem(detail);
+      case 'Rental Duration':
+        return renderRentalDurationItem(detail);
       default:
         return renderDetailItem(detail);
     }
