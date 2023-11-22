@@ -13,7 +13,7 @@ export function MaterialsList(props) {
   const { materials, errors, dispatch } = props;
   const [filteredMaterials, setFilteredMaterials] = useState(materials);
   const [selectedProject, setSelectedProject] = useState('all');
-  const [selectedMaterial,setSelectedMaterial]= useState('all');
+  const [selectedMaterial, setSelectedMaterial] = useState('all');
   const [isError, setIsError] = useState(false);
 
   // dispatch materials fetch action
@@ -24,23 +24,21 @@ export function MaterialsList(props) {
 
   // filter materials data by project
   useEffect(() => {
-    
-    let  filterMaterials;
-    if (selectedProject === 'all' && selectedMaterial==='all')  {
+    let filterMaterials;
+    if (selectedProject === 'all' && selectedMaterial === 'all') {
       setFilteredMaterials(materials);
-    }
-    else if(selectedProject != 'all' && selectedMaterial==='all')
-    {
-      filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject)
+    } else if (selectedProject !== 'all' && selectedMaterial === 'all') {
+      filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject);
+      setFilteredMaterials(filterMaterials);
+    } else {
+      filterMaterials = materials.filter(
+        mat =>
+          mat.project.projectName === selectedProject &&
+          mat.inventoryItemType?.name === selectedMaterial,
+      );
       setFilteredMaterials(filterMaterials);
     }
-    else
-    {
-      filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject && mat.inventoryItemType?.name===selectedMaterial);
-      setFilteredMaterials(filterMaterials);
-    }   
-  }, [selectedProject,selectedMaterial]);
- 
+  }, [selectedProject, selectedMaterial]);
 
   // trigger error state if an error object is added to props
   useEffect(() => {
@@ -63,9 +61,18 @@ export function MaterialsList(props) {
     <main className="materials_list_container">
       <h3>Materials</h3>
       <section>
-        <span style={{display:'flex', margin:'5px'}}>
-        <SelectForm materials={materials} setSelectedProject={setSelectedProject} setSelectedMaterial={setSelectedMaterial}/>
-        <SelectMaterial materials={materials}  selectedProject={selectedProject} selectedMaterial={selectedMaterial} setSelectedMaterial={setSelectedMaterial}/>
+        <span style={{ display: 'flex', margin: '5px' }}>
+          <SelectForm
+            materials={materials}
+            setSelectedProject={setSelectedProject}
+            setSelectedMaterial={setSelectedMaterial}
+          />
+          <SelectMaterial
+            materials={materials}
+            selectedProject={selectedProject}
+            selectedMaterial={selectedMaterial}
+            setSelectedMaterial={setSelectedMaterial}
+          />
         </span>
         <MaterialsTable filteredMaterials={filteredMaterials} />
       </section>
