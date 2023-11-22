@@ -9,7 +9,10 @@ export default function MaterialsTable({ filteredMaterials }) {
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
-  const [order,setOrder]= useState("ASC");
+  //const [order,setOrder]= useState("ASC");
+  const [order,setOrder]= useState("▼");
+  //"▼"; ASC
+  //"▲"; DSC
 
 
   useEffect(() => {
@@ -44,7 +47,8 @@ export default function MaterialsTable({ filteredMaterials }) {
     }
     
     setData(sorted);
-    setOrder("DSC");
+    setOrder("▲");
+    //setOrder("DSC");
   };
 
   const sortingDesc = (columnName) => {
@@ -61,12 +65,15 @@ export default function MaterialsTable({ filteredMaterials }) {
     }
 
     setData(sorted);
-    setOrder("ASC"); 
+    // setOrder("ASC"); 
+    setOrder("▼"); 
   };
 
   const doSorting = (columnName) => {
-    if(order === 'ASC') {
-      sortingAsc(columnName);
+    // if(order === 'ASC') 
+    if(order === '▼')
+    {
+     sortingAsc(columnName);
     }
     else {
       sortingDesc(columnName);
