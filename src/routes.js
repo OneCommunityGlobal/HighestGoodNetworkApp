@@ -5,9 +5,7 @@ import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from 'components/BMDashboard';
 import BMLogin from 'components/BMDashboard/Login';
 import MaterialsList from 'components/BMDashboard/MaterialsList';
-
 import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
-
 import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import AutoUpdate from 'components/AutoUpdate';
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
@@ -19,6 +17,7 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoMo
 import Timelog from './components/Timelog';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
+import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
@@ -44,8 +43,6 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
-
-// BM Dashboard
 
 export default (
   <Switch>
@@ -168,9 +165,10 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
         <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+        <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
-
         {/* ----- END BM Dashboard Routing ----- */}
 
         <Route path="/login" component={Login} />
