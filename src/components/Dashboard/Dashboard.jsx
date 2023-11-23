@@ -46,7 +46,14 @@ export function Dashboard(props) {
 
   const getMostRecentThursday = date => {
     const mostRecentThursday = new Date(date);
-    mostRecentThursday.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+    if (date.getDay() === 4) {
+      // If today is Thursday, return today's date
+      mostRecentThursday.setHours(0, 0, 0, 0);
+      return mostRecentThursday;
+    }
+    // Otherwise, find the previous Thursday
+    mostRecentThursday.setDate(date.getDate() - ((date.getDay() + 3) % 7));
+    mostRecentThursday.setHours(0, 0, 0, 0);
     return mostRecentThursday;
   };
 
@@ -79,13 +86,9 @@ export function Dashboard(props) {
     const lastDismissedDate = lastDismissed ? new Date(lastDismissed) : null;
 
     // Check if today is Thursday or the stored date is before the most recent Thursday
-    if (
-      today.getDay() === 4 ||
-      !lastDismissed ||
-      lastDismissedDate < getMostRecentThursday(today)
-    ) {
+    if (!lastDismissed || lastDismissedDate < getMostRecentThursday(today)) {
       if (userDashboardProfile?.teams && userDashboardProfile.teams.length > 0) {
-        // console.log('On a team...Header never shown this week...');
+        // console.log('On a team...Header never shown this week...', getMostRecentThursday(today));
 
         if (auth.user.role === 'Assistant Manager' || auth.user.role === 'Volunteer') {
           setModalVisible(true);
