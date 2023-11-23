@@ -23,7 +23,7 @@ function TeamLocations() {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [searchText, setSearchText] = useState('');
-  const role = useSelector(state => state.userProfile.role);
+  const role = useSelector(state => state.auth.user.role);
   const apiKey = useSelector(state => state.timeZoneAPI.userAPIKey);
   const dispatch = useDispatch();
 
