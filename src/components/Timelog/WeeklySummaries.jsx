@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
 import './Timelog.css'
 import updateWeeklySummaries from 'actions/weeklySummaries';
-import { updateUserProfile } from 'actions/userProfile';
+import { getUserProfile, updateUserProfile } from 'actions/userProfile';
 import hasPermission from 'utils/permissions';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
+import { userProfileByIdReducer } from 'reducers/userProfileByIdReducer';
 
 const WeeklySummaries = ({ userProfile }) => {
   // Initialize state variables for editing and original summaries
@@ -53,7 +54,7 @@ const WeeklySummaries = ({ userProfile }) => {
     toggleEdit(index);
   };
 
-  const handleSave = (index) => {
+  const handleSave = async (index) => {
     // Save the edited summary content and toggle off editing mode
     const editedSummary = editedSummaries[index];
     // Check if the edited summary is not blank and contains at least 50 words
@@ -66,8 +67,8 @@ const WeeklySummaries = ({ userProfile }) => {
         )
       };
   
-    dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
-
+    await dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
+    await dispatch(getUserProfile(userProfile._id));
       // Toggle off editing mode
       toggleEdit(index);
     } else {
