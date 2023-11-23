@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Row, Col, Container, Button, Card } from 'reactstrap';
 import { connect } from 'react-redux';
-import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
+import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
@@ -58,7 +58,7 @@ export function Dashboard(props) {
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
-      console.log('User Profile not loaded.', err);
+      // console.log('User Profile not loaded.', err);
     }
   };
 
