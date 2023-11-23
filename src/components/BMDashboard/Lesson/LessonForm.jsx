@@ -142,9 +142,9 @@ function LessonForm() {
                   className="form-control"
                 />
                 <div className="input-group-append">
-                  <Button size="sm" type="button" onClick={addTag} className="btn">
+                  {/* <Button size="sm" type="button" onClick={addTag} className="btn">
                     Add
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
               <div className="TagsDiv">
