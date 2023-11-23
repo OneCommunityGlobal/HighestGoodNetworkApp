@@ -25,9 +25,10 @@ function LessonForm() {
 
   const addTag = e => {
     e.preventDefault();
-    if (tagInput) {
-      if (!LessonFormtags.includes(tagInput)) {
-        setLessonFormTags([...LessonFormtags, tagInput]);
+    const trimmedTagInput = tagInput.trim().replace(/\s+/g, ' '); // Replace consecutive spaces with a single space
+    if (trimmedTagInput !== '') {
+      if (!LessonFormtags.includes(trimmedTagInput)) {
+        setLessonFormTags([...LessonFormtags, trimmedTagInput]);
         setTagInput('');
       }
     }
