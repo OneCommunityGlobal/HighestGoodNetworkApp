@@ -12,17 +12,25 @@ const style = {
 };
 function LessonForm() {
   const dispatch = useDispatch();
-  const roles = useSelector(state => state.role.roles);
-  const projects = useSelector(state => state.allProjects.projects);
-  const [LessonFormtags, setLessonFormTags] = useState([]);
-  const [tagInput, setTagInput] = useState('');
-  const { projectId } = useParams();
+  const roles = useSelector(state => state.role.roles); // grab all roles from store
+  const projects = useSelector(state => state.allProjects.projects); // grab all projects from store
+  const [LessonFormtags, setLessonFormTags] = useState([]); // save all tags user inputs
+  const [tagInput, setTagInput] = useState(''); // track user input in tag input
+  const [selectedFile, setSelectedFile] = useState(null); // track file that was selected or droped in upload appendix
+  const [prevselectedProject, setprevSelectedProject] = useState(null); // used to track the previously project selected for deletion in tags when changed
+  const [selectedProject, setSelectedProject] = useState(null); // Track selected project in Belongs to dropdown
+  // eslint-disable-next-line no-unused-vars
+  const [selectedRole, setSelectedRole] = useState(null); // track selected role in View by dropdown
+  // eslint-disable-next-line no-unused-vars
+  const [LessonText, setLessonText] = useState(null); // track lesson text
+  const { projectId } = useParams(); // passed project id in parameters
 
+  // track user input in the tag input feild
   const handleTagInput = e => {
     e.preventDefault();
     setTagInput(e.target.value);
   };
-
+  // when user hits enter add the tag to LessonFromtags
   const addTag = e => {
     e.preventDefault();
     const trimmedTagInput = tagInput.trim().replace(/\s+/g, ' '); // Replace consecutive spaces with a single space
@@ -33,35 +41,29 @@ function LessonForm() {
       }
     }
   };
-
+  // removes tag when 'x' is clicked from LessonFormtags variable
   const removeTag = tagIndex => {
     const newTags = LessonFormtags.filter((_, index) => index !== tagIndex);
     setLessonFormTags(newTags);
   };
+  // removes the previously added project from tags if a new one is selected from belongs to dropdown
   const removePreviousProject = prevproject => {
     const newTags = LessonFormtags.filter(project => project !== prevproject);
     setLessonFormTags(newTags);
   };
+  // Dispatch the action to fetch roles and projects when the component mounts
   useEffect(() => {
-    // Dispatch the action to fetch roles when the component mounts
+    dispatch(fetchAllProjects());
     dispatch(getAllRoles());
   }, [dispatch]);
-
-  useEffect(() => {
-    // Dispatch the action to fetch projects when the component mounts
-    dispatch(fetchAllProjects());
-  }, [dispatch]);
-
+  // logic if there is a projectId passed in params(on project specific from) to add the project tag automatically
   useEffect(() => {
     if (projectId) {
       const projectname = `Project ${projectId}`;
       setLessonFormTags([projectname]);
     }
   }, []);
-
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [prevselectedProject, setprevSelectedProject] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(null); // Track selected project
+  // when user selects a file updates selectedFile variable
   const handleFileSelection = e => {
     const file = e.target.files[0]; // Get the selected file
     setSelectedFile(file); // Update the state with the selected file
@@ -94,8 +96,16 @@ function LessonForm() {
     }
   };
   const handleProjectChange = e => {
-    const selectedProjectId = e.target.value;
-    setSelectedProject(selectedProjectId);
+    const selectedProjectInput = e.target.value;
+    setSelectedProject(selectedProjectInput);
+  };
+  const handleRoleChange = e => {
+    const selectedRoleInput = e.target.value;
+    setSelectedRole(selectedRoleInput);
+  };
+  const handleLessonInput = e => {
+    const lessonforminput = e.target.value;
+    setLessonText(lessonforminput);
   };
   useEffect(() => {
     if (selectedProject && prevselectedProject !== selectedProject) {
@@ -112,10 +122,20 @@ function LessonForm() {
       }
     }
   }, [selectedProject, prevselectedProject]);
+
+  // Lesson submit where all the data from user input is in here
+  const LessonFormSubmit = e => {
+    e.preventDefault();
+    // console.log(LessonFormtags, "Tags")
+    // console.log(selectedProject, "selected project")
+    // console.log(selectedRole, "selecedRole")
+    // console.log(selectedFile, "selected file")
+    // console.log(LessonText, "lesson text")
+  };
   return (
     <div className="MasterContainer">
       <div className="FormContainer">
-        <Form>
+        <Form onSubmit={LessonFormSubmit}>
           <div className="WriteLessonAndTagDiv">
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
               <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
@@ -124,6 +144,7 @@ function LessonForm() {
                 as="textarea"
                 placeholder="Enter the lesson you learn..."
                 rows={10}
+                onChange={handleLessonInput}
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
@@ -141,11 +162,6 @@ function LessonForm() {
                   }}
                   className="form-control"
                 />
-                <div className="input-group-append">
-                  {/* <Button size="sm" type="button" onClick={addTag} className="btn">
-                    Add
-                  </Button> */}
-                </div>
               </div>
               <div className="TagsDiv">
                 {LessonFormtags.map((tag, index) => {
@@ -188,9 +204,12 @@ function LessonForm() {
             </div>
             <div className="SingleFormSelect">
               <Form.Group controlId="Form.ControlSelect2">
-                {/* By default the lesson can be read by anyone. The author can change the permission to only public to certain roles. */}
                 <Form.Label>View by</Form.Label>
-                <FormControl as="select" aria-label="Default select example">
+                <FormControl
+                  as="select"
+                  aria-label="Default select example"
+                  onChange={handleRoleChange}
+                >
                   <option>All</option>
                   {roles.map(role => (
                     <option key={role._id} value={role.roleName}>
