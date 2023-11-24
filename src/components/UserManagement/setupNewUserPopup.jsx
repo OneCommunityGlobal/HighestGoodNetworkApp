@@ -32,12 +32,15 @@ const SetupNewUserPopup = React.memo(props => {
           if (res.status === 200) {
             setAlert({
               visibility: 'visible',
-              message: 'The setup link has been successfully generated',
+              message: 'The setup link has been successfully sent',
               state: 'success',
             });
+            console.log(res.data)
+
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
+
         })
         .catch(err => {
           if (err.response.data === 'email already in use') {
@@ -49,8 +52,15 @@ const SetupNewUserPopup = React.memo(props => {
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
-        });
-    }
+        })
+        .finally(()=>{
+          setTimeout(()=>{
+            setAlert({ visibility: 'hidden', message: '', state: 'success' });
+            setEmail('')
+            setWeeklyCommittedHours(0)
+          },2000)
+        })
+    }   
   };
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={'modal-dialog modal-lg'}>
