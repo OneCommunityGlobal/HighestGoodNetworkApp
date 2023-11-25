@@ -71,7 +71,7 @@ const ReviewButton = ({
           </UncontrolledDropdown>
         );
       } else if (user.personId == myUserId) {
-        return <Button className='reviewBtn bg-awesome' onClick={() => {updReviewStat("Unsubmitted");}}>
+        return <Button className='reviewBtn' color='info' onClick={() => {updReviewStat("Unsubmitted");}}>
           Work Submitted and Awaiting Review
         </Button>;
       } else {
