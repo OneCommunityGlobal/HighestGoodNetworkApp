@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import TinyMCEEditor from './TinyMCEEditor';
 
 describe('TinyMCEEditor Component', () => {
@@ -10,30 +10,36 @@ describe('TinyMCEEditor Component', () => {
     value: '',
   };
 
-  it('renders without crashing', () => {
+  it('renders without crashing', async () => {
     render(<TinyMCEEditor {...mockProps} />);
-    expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();
+    });
   });
 
-  it('displays the correct label', () => {
+  it('displays the correct label', async () => {
     render(<TinyMCEEditor {...mockProps} />);
-    expect(screen.getByText(mockProps.label)).toBeInTheDocument();
+    expect(await screen.findByText(mockProps.label)).toBeInTheDocument();
   });
 
-  it('renders the TinyMCE editor', () => {
+  it('renders the TinyMCE editor', async () => {
     render(<TinyMCEEditor {...mockProps} />);
-    const editorTextarea = document.getElementById(mockProps.name);
-    expect(editorTextarea).toBeInTheDocument();
+    await waitFor(() => {
+      const editorTextarea = document.getElementById(mockProps.name);
+      expect(editorTextarea).toBeInTheDocument();
+    });
   });
 
-  it('displays an error message when error prop is provided', () => {
+  it('displays an error message when error prop is provided', async () => {
     render(<TinyMCEEditor {...mockProps} error="Error message" />);
-    expect(screen.getByText("Error message")).toBeInTheDocument();
+    expect(await screen.findByText("Error message")).toBeInTheDocument();
   });
 
-  it('applies custom class name to the wrapper', () => {
+  it('applies custom class name to the wrapper', async () => {
     render(<TinyMCEEditor {...mockProps} />);
-    const wrapper = document.querySelector(`.${mockProps.className}`);
-    expect(wrapper).toBeInTheDocument();
+    await waitFor(() => {
+      const wrapper = document.querySelector(`.${mockProps.className}`);
+      expect(wrapper).toBeInTheDocument();
+    });
   });
 });
