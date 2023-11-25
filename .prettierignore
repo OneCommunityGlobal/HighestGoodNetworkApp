@@ -9,7 +9,6 @@ src/languages/**
 src/reducers/**
 src/registerServiceWorker.js
 src/routes.js
-src/services/**
 src/setupTests.js
 src/store.js
 src/styles.js
@@ -23,22 +22,20 @@ src/components/Badge/**
 src/components/common/**
 src/components/Header/**
 src/components/Inventory/**
-src/components/Login/**
-src/components/ManageMemberships/**
 src/components/Memberships/**
 src/components/MonthlyEffort/**
 src/components/NewProfileLink/**
 src/components/OwnerMessage/**
 src/components/PermissionsManagement/**
-src/components/PopUpBar/**
+# src/components/PopUpBar/**
 src/components/ProfileLinks/**
 src/components/Projects/**
-src/components/RenderInfringement/**
 src/components/Reports/**
 src/components/SetupProfile/**
 src/components/SummaryBar/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
+src/components/TeamLocations/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/Timelog/**
@@ -47,4 +44,3 @@ src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/WeeklySummary/**
 src/components/WeeklySummariesReport/**
-src/components/MouseoverText/**

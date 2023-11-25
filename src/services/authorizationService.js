@@ -1,5 +1,7 @@
 import httpService from './httpService';
 import { ApiEndpoint } from '../utils/URL';
 
-export const forgotPassword = forgotpassworddata =>
+const forgotPassword = forgotpassworddata =>
   httpService.post(`${ApiEndpoint}/forgotpassword`, forgotpassworddata);
+
+export default forgotPassword;

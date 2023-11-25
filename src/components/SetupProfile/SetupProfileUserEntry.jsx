@@ -21,7 +21,7 @@ import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { getUserTimeZone } from '../../services/timezoneApiService';
+import  getUserTimeZone from '../../services/timezoneApiService';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
@@ -50,7 +50,12 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     collaborationPreference: 'Zoom',
     jobTitle: '',
     timeZone: '',
-    location: '',
+    location: {
+      userProvided: '',
+      coords: { lat: '', lng: '' },
+      country: '',
+      city: '',
+    },
     timeZoneFilter: '',
     token,
   });
@@ -90,6 +95,24 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       [id]: value,
     }));
   };
+  const handleLocation = event => {
+    const { id, value } = event.target;
+    setUserProfile(prevProfile => ({
+      ...prevProfile,
+      [id]: {
+        ...prevProfile.location,
+        userProvided: value
+      },
+    }));
+  }
+  const handleToggle = event => {
+    const { id } = event.target;
+    const key = id === 'emailPubliclyAccessible' ? 'email' : 'phoneNumber';
+    setUserProfile(prevProfile => ({
+      ...prevProfile,
+      privacySettings: { ...prevProfile.privacySettings, [key]: !prevProfile.privacySettings[key] },
+    }));
+  };
 
   const phoneChange = phone => {
     setUserProfile(prevProfile => ({
@@ -103,8 +126,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       ...prevErrors,
       timeZoneFilterClicked: '',
     }));
-
-    if (!userProfile.location) {
+    const location = userProfile.location.userProvided;
+    if (!location) {
       alert('Please enter valid location');
       return;
     }
@@ -112,8 +135,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       console.log('Geocoding API key missing');
       return;
     }
-
-    getUserTimeZone(userProfile.location, APIkey)
+    getUserTimeZone(location, APIkey)
       .then(response => {
         if (
           response.data.status.code === 200 &&
@@ -121,11 +143,20 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
           response.data.results.length
         ) {
           let timezone = response.data.results[0].annotations.timezone.name;
-
+          let currentLocation = {
+            userProvided: location,
+            coords: {
+              lat: response.data.results[0].geometry.lat,
+              lng: response.data.results[0].geometry.lng,
+            },
+            country: response.data.results[0].components.country,
+            city: response.data.results[0].components.city,
+          };
           setUserProfile(prevProfile => ({
             ...prevProfile,
             timeZoneFilter: timezone,
             timeZone: timezone,
+            location: currentLocation
           }));
         } else {
           alert('Invalid location or ' + response.data.status.message);
@@ -271,7 +302,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
 
     // Validate Location
 
-    if (userProfile.location.trim() === '') {
+    if (userProfile.location.userProvided.trim() === '') {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         location: 'Location is required',
@@ -322,7 +353,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         },
         jobTitle: userProfile.jobTitle.trim(),
         timeZone: userProfile.timeZone.trim(),
-        location: userProfile.location.trim(),
+        location: userProfile.location,
         token,
       };
 
@@ -558,9 +589,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                           name="location"
                           id="location"
                           placeholder="Location"
-                          value={userProfile.location}
+                          value={userProfile.location.userProvided}
                           onChange={e => {
-                            handleChange(e);
+                            handleLocation(e);
                           }}
                           invalid={formErrors.location !== ''}
                         />

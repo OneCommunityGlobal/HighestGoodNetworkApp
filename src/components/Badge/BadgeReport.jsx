@@ -194,9 +194,7 @@ const BadgeReport = props => {
     let value = newValue.length === 0 ? 0 : parseInt(newValue);
     const oldBadge = JSON.parse(JSON.stringify(badge));
     newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
-    if (
-      (value === 0  || newValue.length === 0)
-    ) {
+    if (value === 0 || newValue.length === 0) {
       // upon reaching 0, show delete modal
       handleDeleteBadge(oldBadge);
     }
@@ -209,7 +207,7 @@ const BadgeReport = props => {
     mm < 10 ? (mm = '0' + mm) : mm;
     dd < 10 ? (dd = '0' + dd) : dd;
     const formatedDate = `${yyyy}-${mm}-${dd}`;
-    
+
     newBadges.map((bdg, i) => {
       if (newValue > bdg.count && i === index) {
         bdg.earnedDate.push(formatedDate);
@@ -248,7 +246,7 @@ const BadgeReport = props => {
   const handleCancel = () => {
     setShowModal(false);
     if (badgeToDelete) {
-      const index = sortBadges.findIndex((badge) => badge.badge._id === badgeToDelete.badge._id);
+      const index = sortBadges.findIndex(badge => badge.badge._id === badgeToDelete.badge._id);
       countChange(badgeToDelete, index, badgeToDelete.count);
     }
     setBadgeToDelete([]);
@@ -301,7 +299,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges && sortBadges.length ?
+              {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -366,6 +364,7 @@ const BadgeReport = props => {
                           type="button"
                           className="btn btn-outline-danger"
                           onClick={e => handleDeleteBadge(sortBadges[index])}
+                          style={boxStyle}
                         >
                           Delete
                         </button>
@@ -389,13 +388,14 @@ const BadgeReport = props => {
                       </FormGroup>
                     </td>
                   </tr>
-                )) : 
-                  <tr>
-                    <td colSpan={7} style={{ textAlign: "center" }}>
-                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
-                    </td>
-                  </tr>
-              }
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center' }}>
+                    {`${props.isUserSelf ? 'You have' : 'This person has'} no badges.`}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </Table>
         </div>
@@ -453,7 +453,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges && sortBadges.length ?
+              {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -578,13 +578,14 @@ const BadgeReport = props => {
                       </ButtonGroup>
                     </td>
                   </tr>
-                )) : 
-                  <tr>
-                    <td colSpan={7} style={{ textAlign: "center" }}>
-                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
-                    </td>
-                  </tr>
-              }
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center' }}>
+                    {`${props.isUserSelf ? 'You have' : 'This person has'} no badges.`}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </Table>
         </div>

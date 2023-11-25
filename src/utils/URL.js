@@ -8,7 +8,7 @@ export const ENDPOINTS = {
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
-  INFO_COLLECTION: infoId =>`${APIEndpoint}/informations/${infoId}`,
+  INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
@@ -32,7 +32,6 @@ export const ENDPOINTS = {
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
-  TIMER: userId => `${APIEndpoint}/timer/${userId}`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
   TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,
@@ -100,6 +99,7 @@ export const ENDPOINTS = {
   SETUP_NEW_USER_PROFILE: () =>
     `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+  ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
 
 
