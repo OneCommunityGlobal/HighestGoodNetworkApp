@@ -35,10 +35,10 @@ import { formatDate } from 'utils/formatDate';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
-  let [sortBadges, setSortBadges] = useState(props.badges.slice() || []);
+  let [sortBadges, setSortBadges] = useState(JSON.parse(JSON.stringify(props.badges)) || []);
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
-  let [badgesToDelete, setBadgesToDelete] = useState([]);
+  let [badgeToDelete, setBadgeToDelete] = useState([]);
 
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
@@ -165,7 +165,7 @@ const BadgeReport = props => {
   };
 
   useEffect(() => {
-    setSortBadges(props.badges.slice() || []);
+    setSortBadges(JSON.parse(JSON.stringify(props.badges)) || []);
     let newBadges = sortBadges.slice();
     newBadges.sort((a, b) => {
       if (a.badge.ranking === 0) return 1;
@@ -192,15 +192,11 @@ const BadgeReport = props => {
   const countChange = (badge, index, newValue) => {
     let newBadges = sortBadges.slice();
     let value = newValue.length === 0 ? 0 : parseInt(newValue);
+    const oldBadge = JSON.parse(JSON.stringify(badge));
     newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
-    if (
-      (value === 0 && badgesToDelete.indexOf(index) === -1) ||
-      (newValue.length === 0 && badgesToDelete.indexOf(index) === -1)
-    ) {
-      setBadgesToDelete(prevBadges => [...prevBadges, index]);
-    }
-    if (value > 0) {
-      setBadgesToDelete(prevBadges => prevBadges.filter(badge => badge !== index));
+    if (value === 0 || newValue.length === 0) {
+      // upon reaching 0, show delete modal
+      handleDeleteBadge(oldBadge);
     }
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -211,7 +207,7 @@ const BadgeReport = props => {
     mm < 10 ? (mm = '0' + mm) : mm;
     dd < 10 ? (dd = '0' + dd) : dd;
     const formatedDate = `${yyyy}-${mm}-${dd}`;
-    
+
     newBadges.map((bdg, i) => {
       if (newValue > bdg.count && i === index) {
         bdg.earnedDate.push(formatedDate);
@@ -242,41 +238,31 @@ const BadgeReport = props => {
     setSortBadges(newBadges);
   };
 
-  const handleDeleteBadge = index => {
+  const handleDeleteBadge = oldBadge => {
     setShowModal(true);
-    setBadgesToDelete(index);
+    setBadgeToDelete(oldBadge);
   };
 
   const handleCancel = () => {
     setShowModal(false);
-    setBadgesToDelete([]);
-  };
-
-  const handleDeleteAfterSave = () => {
-    let newBadges = sortBadges;
-    let indexToDelete = badgesToDelete;
-    badgesToDelete.forEach(index => {
-      indexToDelete = indexToDelete.filter(index => index !== null);
-      newBadges.splice(indexToDelete[0], 1);
-      indexToDelete = indexToDelete.map(index => (index === 0 ? null : index - 1));
-      indexToDelete.shift();
-    });
-    setSortBadges(newBadges);
+    if (badgeToDelete) {
+      const index = sortBadges.findIndex(badge => badge.badge._id === badgeToDelete.badge._id);
+      countChange(badgeToDelete, index, badgeToDelete.count);
+    }
+    setBadgeToDelete([]);
   };
 
   const deleteBadge = () => {
-    let newBadges = sortBadges.slice();
-    const [deletedBadge] = newBadges.splice(badgesToDelete, 1);
-    if (deletedBadge.featured) {
+    let newBadges = sortBadges.filter(badge => badge.badge._id !== badgeToDelete.badge._id);
+    if (badgeToDelete.featured) {
       setNumFeatured(--numFeatured);
     }
     setSortBadges(newBadges);
     setShowModal(false);
-    setBadgesToDelete([]);
+    setBadgeToDelete([]);
   };
 
   const saveChanges = async () => {
-    badgesToDelete.length > 0 && handleDeleteAfterSave();
     let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
@@ -313,7 +299,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges && sortBadges.length ?
+              {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -377,8 +363,7 @@ const BadgeReport = props => {
                         <button
                           type="button"
                           className="btn btn-outline-danger"
-                          onClick={e => handleDeleteBadge(index)
-                          }
+                          onClick={e => handleDeleteBadge(sortBadges[index])}
                           style={boxStyle}
                         >
                           Delete
@@ -403,13 +388,14 @@ const BadgeReport = props => {
                       </FormGroup>
                     </td>
                   </tr>
-                )) : 
-                  <tr>
-                    <td colSpan={7} style={{ textAlign: "center" }}>
-                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
-                    </td>
-                  </tr>
-              }
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center' }}>
+                    {`${props.isUserSelf ? 'You have' : 'This person has'} no badges.`}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </Table>
         </div>
@@ -467,7 +453,7 @@ const BadgeReport = props => {
               </tr>
             </thead>
             <tbody>
-              {sortBadges && sortBadges.length ?
+              {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={index}>
                     <td className="badge_image_sm">
@@ -579,7 +565,7 @@ const BadgeReport = props => {
                               {canDeleteBadges ? (
                                 <div
                                   className="btn btn-danger"
-                                  onClick={e => handleDeleteBadge(index)}
+                                  onClick={e => handleDeleteBadge(sortBadges[index])}
                                 >
                                   Delete
                                 </div>
@@ -592,13 +578,14 @@ const BadgeReport = props => {
                       </ButtonGroup>
                     </td>
                   </tr>
-                )) : 
-                  <tr>
-                    <td colSpan={7} style={{ textAlign: "center" }}>
-                      {`${props.isUserSelf ? "You have" : "This person has"} no badges.`}
-                    </td>
-                  </tr>
-              }
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center' }}>
+                    {`${props.isUserSelf ? 'You have' : 'This person has'} no badges.`}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </Table>
         </div>
