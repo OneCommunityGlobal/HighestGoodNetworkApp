@@ -1067,7 +1067,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1124,7 +1124,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1192,7 +1192,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1253,7 +1253,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1302,7 +1302,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1369,7 +1369,7 @@ function UserProfile(props) {
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
-                    handleSubmit={handleSubmit}
+                    handleSubmit={async () => await handleSubmit()}
                     disabled={
                       !formValid.firstName ||
                       !formValid.lastName ||
