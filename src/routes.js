@@ -32,6 +32,7 @@ import Teams from './components/Teams/Teams';
 import UserManagement from './components/UserManagement';
 import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
+import Issue from './components/Projects/Issue';
 import WBSDetail from './components/Projects/WBS/WBSDetail';
 import SingleTask from './components/Projects/WBS/SingleTask';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
@@ -168,6 +169,7 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
         <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+        <BMProtectedRoute path="/bmdashboard/issue" component={Issue} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
