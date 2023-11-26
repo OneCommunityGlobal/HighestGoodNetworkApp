@@ -75,7 +75,12 @@ class AddUserProfile extends Component {
         googleDoc: '',
         dropboxDoc: '',
         timeZone: '',
-        location: '',
+        location: {
+          userProvided: '',
+          coords: { lat: '', lng: '' },
+          country: '',
+          city: '',
+        },
         showphone: true,
         weeklySummaryOption: 'Required',
         createdDate: nextDay,
@@ -87,14 +92,13 @@ class AddUserProfile extends Component {
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
       },
-      location: '',
       timeZoneFilter: '',
       formSubmitted: false,
       teamCode: '',
       codeValid: false,
     };
-
     
+
     const { user } = this.props.auth;
     this.canAddDeleteEditOwners = user && user.role === 'Owner'
   }
@@ -385,16 +389,16 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                    <div className="date-picker-item">                        
-                      <DatePicker
-                        selected={this.state.userProfile.createdDate}
-                        minDate={new Date(DATE_PICKER_MIN_DATE)}
-                        onChange={date => this.setState({ userProfile: {
-                          ...this.state.userProfile,
-                          createdDate: date,
-                        }})}
-                        className="form-control"
-                      />
+                      <div className="date-picker-item">
+                        <DatePicker
+                          selected={this.state.userProfile.createdDate}
+                          minDate={new Date(DATE_PICKER_MIN_DATE)}
+                          onChange={date => this.setState({ userProfile: {
+                            ...this.state.userProfile,
+                            createdDate: date,
+                          }})}
+                          className="form-control"
+                        />
                       </div>
                     </FormGroup>
                   </Col>
@@ -509,7 +513,7 @@ class AddUserProfile extends Component {
 
   // Function to call TimeZoneService with location and key
   onClickGetTimeZone = () => {
-    const location = this.state.location;
+    const location = this.state.userProfile.location.userProvided;
     const key = this.props.timeZoneKey;
     if (!location) {
       alert('Please enter valid location');
@@ -524,6 +528,16 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+            
+            let currentLocation = {
+              userProvided: location,
+              coords: {
+                lat: response.data.results[0].geometry.lat,
+                lng: response.data.results[0].geometry.lng,
+              },
+              country: response.data.results[0].components.country,
+              city: response.data.results[0].components.city,
+            };
             if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
             
             this.setState({
@@ -531,6 +545,7 @@ class AddUserProfile extends Component {
               timeZoneFilter: timezone,
               userProfile: {
                 ...this.state.userProfile,
+                location: currentLocation,
                 timeZone: timezone,
               },
             });
@@ -803,7 +818,13 @@ class AddUserProfile extends Component {
   };
 
   handleLocation = e => {
-    this.setState({ ...this.state, location: e.target.value });
+    this.setState({
+      ...this.state,
+      userProfile: {
+        ...this.state.userProfile,
+        location: { ...this.state.location, userProvided: e.target.value },
+      },
+    });
     this.handleUserProfile(e);
   };
 
@@ -864,7 +885,7 @@ class AddUserProfile extends Component {
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim(),
+            [event.target.id]: { ...userProfile.location, userProvided: event.target.value.trim() },
           },
           formValid: {
             ...formValid,

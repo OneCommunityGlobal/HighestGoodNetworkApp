@@ -35,6 +35,7 @@ import WBS from './components/Projects/WBS';
 import WBSDetail from './components/Projects/WBS/WBSDetail';
 import SingleTask from './components/Projects/WBS/SingleTask';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
+import TeamLocations from './components/TeamLocations';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
@@ -82,86 +83,87 @@ export default (
             routePermissions={RoutePermissions.inventoryProjectWbs}
           />
 
-          <ProtectedRoute
-            path="/weeklysummariesreport"
-            exact
-            component={WeeklySummariesReport}
-            allowedRoles={[
-              UserRole.Administrator,
-              UserRole.Manager,
-              UserRole.CoreTeam,
-              UserRole.Owner,
-              UserRole.Mentor,
-            ]}
-            routePermissions={[RoutePermissions.weeklySummariesReport, RoutePermissions.reports]}
-          />
-          <ProtectedRoute
-            path="/reports"
-            exact
-            component={Reports}
-            routePermissions={RoutePermissions.reports}
-          />
-          <ProtectedRoute
-            path="/projects"
-            exact
-            component={Projects}
-            allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-            routePermissions={[
-              RoutePermissions.projects,
-              RoutePermissions.projectManagement_fullFunctionality,
-              RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
-            ]}
-          />
-          <ProtectedRoute
-            path="/projects"
-            exact
-            component={Projects}
-            routePermissions={RoutePermissions.projects}
-          />
-          <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
-          <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
-          <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} />
-          <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} />
-          <ProtectedRoute
-            path="/usermanagement"
-            exact
-            component={UserManagement}
-            routePermissions={RoutePermissions.userManagement}
-          />
-          <ProtectedRoute
-            path="/badgemanagement"
-            exact
-            component={BadgeManagement}
-            routePermissions={RoutePermissions.badgeManagement}
-          />
-          <ProtectedRoute
-            path="/permissionsmanagement"
-            exact
-            component={PermissionsManagement}
-            routePermissions={[
-              RoutePermissions.permissionsManagement,
-              RoutePermissions.userPermissionsManagement,
-            ]}
-          />
-          <ProtectedRoute
-            path="/permissionsmanagement/:userRole"
-            exact
-            component={UserRoleTab}
-            routePermissions={RoutePermissions.permissionsManagementRole}
-          />
-          <ProtectedRoute
-            path="/teams"
-            exact
-            component={Teams}
-            allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-          />
-          <ProtectedRoute
-            path="/teams"
-            exact
-            component={Teams}
-            routePermissions={RoutePermissions.teams}
-          />
-          <ProtectedRoute path="/project/members/:projectId" component={Members} />
+        <ProtectedRoute
+          path="/weeklysummariesreport"
+          exact
+          component={WeeklySummariesReport}
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          routePermissions={[RoutePermissions.weeklySummariesReport, RoutePermissions.reports]}
+        />
+        <ProtectedRoute
+          path="/reports"
+          exact
+          component={Reports}
+          routePermissions={RoutePermissions.reports}
+        />
+        <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
+        <ProtectedRoute
+          path="/projects"
+          exact
+          component={Projects}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={[
+            RoutePermissions.projects,
+            RoutePermissions.projectManagement_fullFunctionality,
+            RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
+          ]}
+        />
+        <ProtectedRoute
+          path="/projects"
+          exact
+          component={Projects}
+          routePermissions={RoutePermissions.projects}
+        />
+        <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
+        <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} />
+        <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} />
+        <ProtectedRoute
+          path="/usermanagement"
+          exact
+          component={UserManagement}
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <ProtectedRoute
+          path="/badgemanagement"
+          exact
+          component={BadgeManagement}
+          routePermissions={RoutePermissions.badgeManagement}
+        />
+        <ProtectedRoute
+          path="/permissionsmanagement"
+          exact
+          component={PermissionsManagement}
+          routePermissions={[
+            RoutePermissions.permissionsManagement,
+            RoutePermissions.userPermissionsManagement,
+          ]}
+        />
+        <ProtectedRoute
+          path="/permissionsmanagement/:userRole"
+          exact
+          component={UserRoleTab}
+          routePermissions={RoutePermissions.permissionsManagementRole}
+        />
+        <ProtectedRoute
+          path="/teams"
+          exact
+          component={Teams}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+        />
+        <ProtectedRoute
+          path="/teams"
+          exact
+          component={Teams}
+          routePermissions={RoutePermissions.teams}
+        />
+        <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
           {/* ----- BEGIN BM Dashboard Routing ----- */}
 
