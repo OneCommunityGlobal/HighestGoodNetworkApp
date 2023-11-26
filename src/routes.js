@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
@@ -7,6 +8,7 @@ import BMLogin from 'components/BMDashboard/Login';
 import MaterialsList from 'components/BMDashboard/MaterialsList';
 
 import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+import PurchaseTool from 'components/BMDashboard/ToolPurchaseRequest/PurchaseTool';
 
 import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import AutoUpdate from 'components/AutoUpdate';
@@ -167,9 +169,11 @@ export default (
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
+        <BMProtectedRoute path="/bmdashboard/toolpurchaserequest" component={PurchaseTool} />
         <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+        
 
         {/* ----- END BM Dashboard Routing ----- */}
 
