@@ -1,32 +1,40 @@
 import { useState, useEffect } from 'react';
+
 import { toast } from 'react-toastify';
+
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { connect } from 'react-redux';
 import { boxStyle } from '../../styles';
-
 import './OwnerMessage.css';
+
 import editIcon from './assets/edit.png';
 import deleteIcon from './assets/delete.png';
 
 import {
-  getOwnerMessage,
-  createOwnerMessage,
-  updateOwnerMessage,
-  deleteOwnerMessage,
+  getOwnerMessage as getOwnerMessages,
+  createOwnerMessage as createOwnerMessages,
+  updateOwnerMessage as updateOwnerMessages,
+  deleteOwnerMessage as deleteOwnerMessages,
 } from '../../actions/ownerMessageAction';
 import {
-  getOwnerStandardMessage,
-  createOwnerStandardMessage,
-  updateOwnerStandardMessage,
-  deleteOwnerStandardMessage,
+  getOwnerStandardMessage as getOwnerStandardMessages,
+  createOwnerStandardMessage as createOwnerStandardMessages,
+  updateOwnerStandardMessage as updateOwnerStandardMessages,
+  deleteOwnerStandardMessage as deleteOwnerStandardMessages,
 } from '../../actions/ownerStandardMessageAction';
 
 function OwnerMessage({
   auth,
   ownerMessage,
   ownerMessageId,
+  createOwnerMessage,
+  updateOwnerMessage,
+  deleteOwnerMessage,
+  getOwnerStandardMessage,
   ownerStandardMessage,
   ownerStandardMessageId,
+  createOwnerStandardMessage,
+  updateOwnerStandardMessage,
 }) {
   const { user } = auth;
 
@@ -57,7 +65,7 @@ function OwnerMessage({
   }
 
   useEffect(() => {
-    getOwnerMessage();
+    getOwnerMessages();
     if (ownerMessage) {
       setMessage(ownerMessage);
     }
@@ -254,18 +262,18 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getOwnerMessage: () => dispatch(getOwnerMessage()),
-  createOwnerMessage: ownerMessage => dispatch(createOwnerMessage(ownerMessage)),
+  getOwnerMessage: () => dispatch(getOwnerMessages()),
+  createOwnerMessage: ownerMessage => dispatch(createOwnerMessages(ownerMessage)),
   updateOwnerMessage: (ownerMessageId, ownerMessage) =>
-    dispatch(updateOwnerMessage(ownerMessageId, ownerMessage)),
-  deleteOwnerMessage: () => dispatch(deleteOwnerMessage()),
+    dispatch(updateOwnerMessages(ownerMessageId, ownerMessage)),
+  deleteOwnerMessage: () => dispatch(deleteOwnerMessages()),
 
-  getOwnerStandardMessage: () => dispatch(getOwnerStandardMessage()),
+  getOwnerStandardMessage: () => dispatch(getOwnerStandardMessages()),
   createOwnerStandardMessage: ownerStandardMessage =>
-    dispatch(createOwnerStandardMessage(ownerStandardMessage)),
+    dispatch(createOwnerStandardMessages(ownerStandardMessage)),
   updateOwnerStandardMessage: (ownerStandardMessageId, ownerStandardMessage) =>
-    dispatch(updateOwnerStandardMessage(ownerStandardMessageId, ownerStandardMessage)),
-  deleteOwnerStandardMessage: () => dispatch(deleteOwnerStandardMessage()),
+    dispatch(updateOwnerStandardMessages(ownerStandardMessageId, ownerStandardMessage)),
+  deleteOwnerStandardMessage: () => dispatch(deleteOwnerStandardMessages()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OwnerMessage);
