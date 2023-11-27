@@ -134,7 +134,7 @@ class AddUserProfile extends Component {
           onClose={this.props.closePopup}
           createUserProfile={this.createUserProfile}
         />
-        <Container className="emp-profile">
+        <Container className="emp-profile add-new-user">
           <Row>
             <Col md="12">
               <Form>
