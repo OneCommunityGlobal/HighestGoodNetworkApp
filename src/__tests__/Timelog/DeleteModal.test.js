@@ -3,7 +3,7 @@ import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import { timeEntryMock, userProfileMock } from '../mockStates';
+import { authMock, timeEntryMock, userProfileMock} from '../mockStates';
 import { renderWithProvider } from '../utils';
 import DeleteModal from '../../components/Timelog/DeleteModal';
 import * as actions from '../../actions/timeEntries';
@@ -11,11 +11,18 @@ import * as actions from '../../actions/timeEntries';
 const mockStore = configureStore([thunk]);
 describe('<DeleteModal />', () => {
   let store;
+  let userProfile;
   beforeEach(() => {
-    store = mockStore();
+    store = mockStore({
+      auth: authMock,
+      timeEntries: timeEntryMock,
+      userProfile: userProfileMock,
+    });
+
+    userProfile = jest.fn();
     store.dispatch = jest.fn();
     renderWithProvider(
-      <DeleteModal timeEntry={timeEntryMock.weeks[0][0]} userProfile={userProfileMock} />,
+      <DeleteModal timeEntry={timeEntryMock.weeks[0][0]}/>,
       { store },
     );
   });
