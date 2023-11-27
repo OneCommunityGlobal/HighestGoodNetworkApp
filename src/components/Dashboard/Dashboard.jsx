@@ -9,6 +9,7 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
+import Warning from 'components/Warnings/Warnings';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -55,6 +56,10 @@ export function Dashboard(props) {
 
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
+        <Col lg={{ size: 5 }}>
+          <Warning />
+        </Col>
+
         <Col lg={{ size: 5 }}>
           <div className="row justify-content-center">
             <div

@@ -1,0 +1,33 @@
+.warnings-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.warning-item-container {
+  display: flex;
+  flex-direction: column;
+}
+.warning-wrapper {
+  /* overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 200px;
+  max-width: 250px; */
+  /* width: 200px; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.icons-wrapper {
+  display: flex;
+}
+.warning-icons {
+  display: flex;
+}
+.warning-text {
+  text-align: center;
+  font-size: 0.9em;
+  font-weight: 600;
+  margin: 0;
+  margin-bottom: 0.3em;
+}
