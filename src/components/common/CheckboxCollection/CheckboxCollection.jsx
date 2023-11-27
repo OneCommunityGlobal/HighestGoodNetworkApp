@@ -14,7 +14,7 @@ const CheckboxCollection = ({ items, error, pathName, isChecked, onChange, ...re
         {...rest}
         onChange={e => onChange(e)}
       />
-      <label className="form-check-label" htmlFor={element[pathName]}>
+      <label className="form-check-label" htmlFor={element._id}>
         {element[pathName]}
       </label>
     </div>

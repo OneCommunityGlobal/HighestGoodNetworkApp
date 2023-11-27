@@ -92,9 +92,13 @@ const AssignBadge = props => {
     props.getFirstName(suggestion.firstName);
   };
 
-  const toggle = () => {
+  const submit = () => {
+    toggle(true);
+  }
+
+  const toggle = (didSubmit = false) => {
     const { firstName, lastName, selectedBadges } = props;
-    if (isOpen) {
+    if (isOpen && didSubmit === true) {
       props.assignBadges(firstName, lastName, selectedBadges);
       setOpen(isOpen => !isOpen);
       props.clearNameAndSelected();
@@ -198,7 +202,7 @@ const AssignBadge = props => {
         <Modal isOpen={isOpen} toggle={toggle} backdrop="static">
           <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
           <ModalBody>
-            <AssignBadgePopup allBadgeData={props.allBadgeData} toggle={toggle} />
+            <AssignBadgePopup allBadgeData={props.allBadgeData} submit={submit} selectedBadges={props.selectedBadges}/>
           </ModalBody>
         </Modal>
         <FormText color="muted">Please select a badge from the badge list.</FormText>
