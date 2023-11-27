@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import './reports.css';
+// These styles were not being used
+// import './reports.css';
 import { Link } from 'react-router-dom';
 
 function ProjectTable({ projects }) {
