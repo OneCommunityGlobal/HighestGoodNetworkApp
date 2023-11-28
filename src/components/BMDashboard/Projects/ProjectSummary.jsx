@@ -1,6 +1,7 @@
 import { Row, Col, Label } from 'reactstrap';
 
 function ProjectSummary({ project }) {
+
   return (
     <div className="project-summary_content">
       <Row className="project-summary_header mx-auto">
@@ -35,7 +36,7 @@ function ProjectSummary({ project }) {
           <Label className="project-summary_label">Wastage:</Label>
         </Col>
         <Col xs="6">
-          <span className="project-summary_span">25 USD</span>
+          <span className="project-summary_span">TBD</span>
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
