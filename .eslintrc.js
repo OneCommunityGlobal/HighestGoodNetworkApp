@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ['**/*.css'],
   env: {
     browser: true,
     es6: true,

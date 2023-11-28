@@ -2,13 +2,16 @@ thead {
   background: aliceblue;
 }
 
+
 body.dark thead {
   background: #333;
 }
 
-.btn:hover {
+
+/* This background color on hover property below is taking precedence over reactstrap and affecting multiple components. */
+/* .btn:hover {
   background-color: #0f8292;
-}
+} */
 
 #new_usermanagement {
   margin-bottom: 10px;
