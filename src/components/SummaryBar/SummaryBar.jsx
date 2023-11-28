@@ -221,6 +221,9 @@ const SummaryBar = props => {
   const sendUserSuggestion = async event => {
     event.preventDefault();
     const data = readFormData('suggestionForm');
+    data['firstName'] = userProfile.firstName;
+    data['lastName'] = userProfile.lastName;
+    data['email'] = userProfile.email;
 
     if (data) {
       setShowSuggestionModal(prev => !prev);
