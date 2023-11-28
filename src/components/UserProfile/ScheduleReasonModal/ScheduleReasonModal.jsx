@@ -7,6 +7,7 @@ import Alert from 'react-bootstrap/Alert';
 import { useEffect } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
 import { boxStyle } from 'styles';
+import   './ScheduleReasonModal.css';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -21,6 +22,8 @@ const ScheduleReasonModal = ({
   fetchMessage,
   fetchDispatch,
   userId,
+  IsReasonUpdated,
+  setIsReasonUpdated,
 }) => {
   useEffect(() => {
     const initialFetching = async () => {
@@ -43,20 +46,26 @@ const ScheduleReasonModal = ({
   return (
     <>
       <Modal.Header closeButton={true}>
-        <Modal.Title>Schedule a reason for the weekly blue square</Modal.Title>
+        <Modal.Title className="centered-container">
+        <div className="centered-text">Choose to Use a Blue Square</div>
+        <div className="centered-text">(function under development)</div> 
+        </Modal.Title>
+        
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
             <Form.Label>
-              Schedule a reason to be used on this weekend's blue square for {user.firstName}
+              {/* Schedule a reason to be used on this weekend's blue square for {user.firstName} */}
+              Need to take a week off for an emergency or vacation? That's no problem. The system will still issue you a blue square but scheduling here will note this reason on it so it's clear you chose to use one (vs receiving one for missing something) and let us know in advance. Blue squares are meant for situations like this and we allow 5 a year.
             </Form.Label>
             <Form.Label>
               <p>
-                <em>(If a reason has already been submitted, you can edit it)</em>
+                To schedule your time off, you need to CHOOSE THE SUNDAY OF THE WEEK YOU’LL RETURN. This is the date needed so your reason ends up on the blue square that will be auto-issued AT THE END OF THE WEEK YOU'LL BE GONE.
               </p>
             </Form.Label>
-            <Form.Label>Pick a date to schedule your reason!</Form.Label>
+            <Form.Label>Choose the Sunday of the week you'll return: 
+              </Form.Label>
             <Form.Control
               name="datePicker"
               type="date"
@@ -66,15 +75,17 @@ const ScheduleReasonModal = ({
                 setDate(e.target.value);
               }}
             />
-            <Form.Label className="mt-4">Write the blue square's reason</Form.Label>
+            <Form.Label className="mt-4">What is your reason for requesting this time off?</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
               name="BlueSquareReason"
               className="w-100"
+              placeholder="Please be detailed in describing your reason and, if it is different than your scheduled Sunday, include the expected date you’ll return to work."
               value={reason}
-              onChange={e => {
+               onChange={e => {
                 setReason(e.target.value);
+                setIsReasonUpdated(true);
               }}
               disabled={fetchState.isFetching}
             />
@@ -86,10 +97,14 @@ const ScheduleReasonModal = ({
           ) : null}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
+        <Button variant="success" title="Function coming" onClick={handleClose} style={boxStyle}>
+           FAQ
+          </Button>
+         <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
-          <Button variant="primary" type="submit" disabled={fetchState.isFetching} style={boxStyle}>
+          <Button variant="primary" type="submit" disabled={fetchState.isFetching || !IsReasonUpdated} title="To Save - add a new reason or edit an existing reason. 
+          Clicking 'Save' will generate an email to you and One Community as a record of this request." style={boxStyle}>
             {fetchState.isFetching ? <Spinner animation="border" size="sm" /> : 'Save'}
           </Button>
         </Modal.Footer>

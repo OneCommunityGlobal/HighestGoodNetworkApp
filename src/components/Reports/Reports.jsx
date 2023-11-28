@@ -488,7 +488,11 @@ class ReportsPage extends Component {
         <div className="table-data-container mt-5">
           {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
           {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
-          {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
+          {this.state.showTeams && 
+            <TeamTable 
+              allTeams={this.state.teamSearchData}
+            />
+          }
           {this.state.showTotalProject && (
             <TotalProjectReport
               startDate={this.state.startDate}
