@@ -117,30 +117,42 @@ export const showTrophyIcon = (summaryDate, createdDate) => {
 
   if (createdDate < summaryDate) {
     switch (true) {
-      case calculateAnniversaryDateResults.tenYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter10Y >= summaryDate:
+      case calculateAnniversaryDateResults.tenYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter10Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.nineYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter9Y >= summaryDate:
+      case calculateAnniversaryDateResults.nineYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter9Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.eightYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter8Y >= summaryDate:
+      case calculateAnniversaryDateResults.eightYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter8Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.sevenYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter7Y >= summaryDate:
+      case calculateAnniversaryDateResults.sevenYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter7Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.sixYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter6Y >= summaryDate:
+      case calculateAnniversaryDateResults.sixYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter6Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.fiveYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter5Y >= summaryDate:
+      case calculateAnniversaryDateResults.fiveYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter5Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.fourYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter4Y >= summaryDate:
+      case calculateAnniversaryDateResults.fourYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter4Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.threeYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter3Y >= summaryDate:
+      case calculateAnniversaryDateResults.threeYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter3Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.twoYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter2Y >= summaryDate:
+      case calculateAnniversaryDateResults.twoYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter2Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.oneYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter1Y >= summaryDate:
+      case calculateAnniversaryDateResults.oneYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter1Y > summaryDate:
         return true;
-      case calculateAnniversaryDateResults.sixMonthAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter6M >= summaryDate:
+      case calculateAnniversaryDateResults.sixMonthAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter6M > summaryDate:
         return true;
       default:
         false
     }
   }
+  return false;
 }
+
+export const checkIfIconResets = (item, weeklyEndDate, createdDate) => {
+  const showIcon = showTrophyIcon(weeklyEndDate, createdDate);
+  if (item.name === 'Yihan Admin') {
+    console.log(item.name, 'show??', showIcon, 'followed Up??', item.trophyFollowedUp);
+  }
+  if (!showIcon && item.trophyFollowedUp) {
+    return false;
+  }
+  return true;
+};

@@ -607,8 +607,8 @@ function Index({ summary, weekIndex, allRoleInfo }) {
       {showTrophyIcon(summarySubmissionDate, summary?.createdDate.split('T')[0]) &&
         <i className="fa fa-trophy" style={{ marginLeft: '10px', fontSize: '25px' }}>
           <p style={{ fontSize: '10px', marginLeft: '5px' }}>
-            {durationSinceStarted.months >= 5.8 && durationSinceStarted.months <= 7
-            ? '6M' : (durationSinceStarted.years >= 0.8 ? Math.round(durationSinceStarted.years) + 'Y' : null)}
+            {durationSinceStarted.months >= 5.8 && durationSinceStarted.months <= 6.2
+            ? '6M' : (durationSinceStarted.years >= 0.9 ? Math.round(durationSinceStarted.years) + 'Y' : null)}
           </p>
         </i>
       }
