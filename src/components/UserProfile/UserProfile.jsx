@@ -800,6 +800,7 @@ function UserProfile(props) {
                   color="primary"
                   size="sm"
                   title="Generates the summary intro for your team and copies it to your clipboard for easy use."
+                  style={boxStyle}
                 >
                   Generate Summary Intro
                 </Button>
@@ -1018,6 +1019,7 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Basic Information')}
                 color="primary"
+                style={boxStyle}
               >
                 Basic Information
               </Button>
@@ -1104,6 +1106,7 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Volunteering Times')}
                 color="secondary"
+                style={boxStyle}
               >
                 Volunteering Times
               </Button>
@@ -1156,7 +1159,7 @@ function UserProfile(props) {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary">
+              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary" style={boxStyle}>
                 Teams
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle}>
@@ -1224,7 +1227,7 @@ function UserProfile(props) {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary">
+              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary" style={boxStyle}>
                 Projects
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle}>
@@ -1289,6 +1292,7 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Edit History')}
                 color="secondary"
+                style={boxStyle}
               >
                 Edit History
               </Button>
