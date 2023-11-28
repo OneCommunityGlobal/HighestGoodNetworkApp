@@ -13,6 +13,7 @@ import axios from 'axios';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import {
@@ -157,7 +158,7 @@ function ReportDetails({
     <li className="list-group-item px-0" ref={ref}>
       <ListGroup className="px-0" flush>
         <ListGroupItem>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
+          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo}/>
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
@@ -578,6 +579,15 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   const googleDocIcon =
     googleDocLink && googleDocLink.Link.trim() !== '' ? googleDocIconPng : googleDocIconGray;
 
+  
+  const summarySubmissionDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+
+  const durationSinceStarted = calculateDurationBetweenDates(summarySubmissionDate, summary?.createdDate.split('T')[0]);
+
   return (
     <>
       <b>Name: </b>
@@ -594,6 +604,14 @@ function Index({ summary, weekIndex, allRoleInfo }) {
       {summary.role !== 'Volunteer' && (
         <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)} />
       )}
+      {showTrophyIcon(summarySubmissionDate, summary?.createdDate.split('T')[0]) &&
+        <i className="fa fa-trophy" style={{ marginLeft: '10px', fontSize: '25px' }}>
+          <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+            {durationSinceStarted.months >= 5.8 && durationSinceStarted.months <= 7
+            ? '6M' : (durationSinceStarted.years >= 0.8 ? Math.round(durationSinceStarted.years) + 'Y' : null)}
+          </p>
+        </i>
+      }
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"

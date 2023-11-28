@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { get, round, maxBy } from 'lodash';
-import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
+import { getLeaderboardData, postLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
 import Leaderboard from './Leaderboard';
 import { getcolor, getprogress, getProgressValue } from '../../utils/effortColors';
 import { getMouseoverText } from '../../actions/mouseoverTextAction';
@@ -67,6 +67,9 @@ const mapStateToProps = state => {
     totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
   };
 };
-export default connect(mapStateToProps, { getLeaderboardData, getOrgData, getMouseoverText })(
-  Leaderboard,
-);
+export default connect(mapStateToProps, {
+  getLeaderboardData,
+  postLeaderboardData,
+  getOrgData,
+  getMouseoverText,
+})(Leaderboard);

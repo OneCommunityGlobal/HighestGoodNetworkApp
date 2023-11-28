@@ -122,6 +122,8 @@ export const ENDPOINTS = {
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
 
+  TROPHY_ICON: (userId) => `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}`,
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`

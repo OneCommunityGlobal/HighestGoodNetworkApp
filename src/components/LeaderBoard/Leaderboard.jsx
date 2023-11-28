@@ -9,6 +9,8 @@ import {
   assignStarDotColors,
   showStar,
 } from 'utils/leaderboardPermissions';
+import moment from 'moment';
+import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
@@ -42,11 +44,15 @@ function LeaderBoard({
   isVisible,
   asUser,
   totalTimeMouseoverText,
+  postLeaderboardData,
 }) {
   const userId = asUser || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
+  const todaysDate = moment()
+    .tz('America/Los_Angeles')
+    .format('YYYY-MM-DD');
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
 
@@ -101,6 +107,19 @@ function LeaderBoard({
     await getLeaderboardData(userId);
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
+  };
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // opening the modal
+  const trophyIconToggle = item => {
+    setModalOpen(item.personId);
+  };
+
+  // deleting the icon fron that and only that user
+  const handleRemovingTrophyIcon = item => {
+    setModalOpen(false);
+    postLeaderboardData(item.personId);
   };
 
   return (
@@ -200,121 +219,192 @@ function LeaderBoard({
                 </span>
               </td>
             </tr>
-            {leaderBoardData.map(item => (
-              <tr key={item.personId}>
-                <td className="align-middle">
-                  <div>
-                    <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
-                      <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
-                      <ModalBody>
-                        <p>Are you sure you wish to view this {item.name} dashboard?</p>
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button variant="primary" onClick={() => showDashboard(item)}>
-                          Ok
-                        </Button>{' '}
-                        <Button variant="secondary" onClick={dashboardToggle}>
-                          Cancel
-                        </Button>
-                      </ModalFooter>
-                    </Modal>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center',
-                    }}
-                  >
-                    {/* <Link to={`/dashboard/${item.personId}`}> */}
+            {leaderBoardData.map(item => {
+              const durationSinceStarted = calculateDurationBetweenDates(
+                todaysDate,
+                item?.createdDate?.split('T')[0],
+              );
+              return (
+                <tr key={item.personId}>
+                  <td className="align-middle">
+                    <div>
+                      <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
+                        <ModalHeader toggle={dashboardToggle}>
+                          Jump to personal Dashboard
+                        </ModalHeader>
+                        <ModalBody>
+                          <p>Are you sure you wish to view this {item.name} dashboard?</p>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button variant="primary" onClick={() => showDashboard(item)}>
+                            Ok
+                          </Button>{' '}
+                          <Button variant="secondary" onClick={dashboardToggle}>
+                            Cancel
+                          </Button>
+                        </ModalFooter>
+                      </Modal>
+                    </div>
                     <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => {
-                        dashboardToggle(item);
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          dashboardToggle(item);
-                        }
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center',
                       }}
                     >
-                      {hasLeaderboardPermissions(loggedInUser.role) &&
-                      showStar(item.tangibletime, item.weeklycommittedHours) ? (
-                        <i
-                          className="fa fa-star"
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                          style={{
-                            color: assignStarDotColors(
-                              item.tangibletime,
-                              item.weeklycommittedHours,
-                            ),
-                            fontSize: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        />
-                      ) : (
-                        <div
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
-                          style={{
-                            backgroundColor:
-                              item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',
-                            width: 15,
-                            height: 15,
-                            borderRadius: 7.5,
-                            margin: 'auto',
-                            verticalAlign: 'middle',
-                          }}
-                        />
-                      )}
-                    </div>
-                    {hasSummaryIndicatorPermission && item.hasSummary && (
+                      {/* <Link to={`/dashboard/${item.personId}`}> */}
                       <div
-                        title="Weekly Summary Submitted"
-                        style={{
-                          color: '#32a518',
-                          cursor: 'default',
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          dashboardToggle(item);
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            dashboardToggle(item);
+                          }
                         }}
                       >
-                        <strong>✓</strong>
+                        {hasLeaderboardPermissions(loggedInUser.role) &&
+                        showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                          <i
+                            className="fa fa-star"
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                            style={{
+                              color: assignStarDotColors(
+                                item.tangibletime,
+                                item.weeklycommittedHours,
+                              ),
+                              fontSize: '20px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          />
+                        ) : (
+                          <div
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                            style={{
+                              backgroundColor:
+                                item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',
+                              width: 15,
+                              height: 15,
+                              borderRadius: 7.5,
+                              margin: 'auto',
+                              verticalAlign: 'middle',
+                            }}
+                          />
+                        )}
                       </div>
+                      {hasSummaryIndicatorPermission && item.hasSummary && (
+                        <div
+                          title="Weekly Summary Submitted"
+                          style={{
+                            color: '#32a518',
+                            cursor: 'default',
+                          }}
+                        >
+                          <strong>✓</strong>
+                        </div>
+                      )}
+                    </div>
+                    {/* </Link> */}
+                  </td>
+                  <th scope="row">
+                    <Link to={`/userprofile/${item.personId}`} title="View Profile">
+                      {item.name}
+                    </Link>
+                    &nbsp;&nbsp;&nbsp;
+                    <div>
+                      <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
+                        <ModalHeader toggle={trophyIconToggle}>Followed Up??</ModalHeader>
+                        <ModalBody>
+                          <p>Are you sure you want to delete this icon?</p>
+                        </ModalBody>
+                        <ModalFooter>
+                          <Button
+                            color="danger"
+                            onClick={() => {
+                              handleRemovingTrophyIcon(item);
+                            }}
+                          >
+                            Delete
+                          </Button>{' '}
+                          <Button variant="secondary" onClick={trophyIconToggle}>
+                            Cancel
+                          </Button>
+                        </ModalFooter>
+                      </Modal>
+                    </div>
+                    <div>
+                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                        item?.trophyIconPresent === true && (
+                          <div>
+                            <i
+                              className="fa fa-trophy"
+                              style={{ marginLeft: '10px', fontSize: '18px' }}
+                              onClick={() => {
+                                trophyIconToggle(item);
+                              }}
+                              onKeyDown={() => {
+                                trophyIconToggle(item);
+                              }}
+                            >
+                              <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                                {durationSinceStarted.months >= 5.8 &&
+                                durationSinceStarted.months <= 7
+                                  ? '6M'
+                                  : durationSinceStarted.years >= 0.8
+                                  ? `${Math.round(durationSinceStarted.years)}Y`
+                                  : null}
+                              </p>
+                            </i>
+                          </div>
+                        )}
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    {hasVisibilityIconPermission && !item.isVisible && (
+                      <i className="fa fa-eye-slash" title="User is invisible" />
                     )}
-                  </div>
-                  {/* </Link> */}
-                </td>
-                <th scope="row">
-                  <Link to={`/userprofile/${item.personId}`} title="View Profile">
-                    {item.name}
-                  </Link>
-                  &nbsp;&nbsp;&nbsp;
-                  {hasVisibilityIconPermission && !item.isVisible && (
-                    <i className="fa fa-eye-slash" title="User is invisible" />
-                  )}
-                </th>
-                <td className="align-middle" id={`id${item.personId}`}>
-                  <span title="Tangible time">{item.tangibletime}</span>
-                </td>
-                <td className="align-middle">
-                  <Link
-                    to={`/timelog/${item.personId}`}
-                    title={`TangibleEffort: ${item.tangibletime} hours`}
-                  >
-                    <Progress value={item.barprogress} color={item.barcolor} />
-                  </Link>
-                </td>
-                <td className="align-middle">
-                  <span
-                    title={mouseoverTextValue}
-                    id="Total time"
-                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
-                  >
-                    {item.totaltime}
-                  </span>
-                </td>
-              </tr>
-            ))}
+                  </th>
+                  <td className="align-middle" id={`id${item.personId}`}>
+                    <span title="Tangible time">{item.tangibletime}</span>
+                  </td>
+                  <td className="align-middle">
+                    <Link
+                      to={`/timelog/${item.personId}`}
+                      title={`TangibleEffort: ${item.tangibletime} hours`}
+                    >
+                      <Progress value={item.barprogress} color={item.barcolor} />
+                    </Link>
+                  </td>
+                  <td className="align-middle">
+                    <span
+                      title={mouseoverTextValue}
+                      id="Total time"
+                      className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                    >
+                      {item.totaltime}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+            {/* <Modal isOpen={modalOpen} toggle={toggle}>
+              <ModalHeader toggle={toggle}>Followed Up?</ModalHeader>
+              <ModalBody>
+                <p>{iconModalContent}</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" onClick={() => {
+                }}>
+                  Delete
+                </Button>{' '}
+                <Button variant="primary" onClick={() => setModalOpen(false)}>
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </Modal> */}
           </tbody>
         </Table>
       </div>
