@@ -10,7 +10,7 @@ function LessonList() {
 
   const handleInputChange = event => {
     setInputValue(event.target.value);
-  }
+  };
 
   const addTag = tag => {
     // Check if the tag already exists

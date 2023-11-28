@@ -59,9 +59,7 @@ const DummyData = [
 
 function Lessons() {
   return (
-    <LessonCard
-      dummyData={DummyData}
-    />
+    <LessonCard dummyData={DummyData} />
   );
 }
 

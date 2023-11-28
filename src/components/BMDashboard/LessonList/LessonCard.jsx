@@ -1,11 +1,13 @@
-import React from 'react';
-import {Card, Nav} from 'react-bootstrap';
+import Card from 'react-bootstrap/Card';
+import Nav from 'react-bootstrap/Nav';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import './LessonCard.css';
 
+
 function LessonCard({dummyData}) {
   const maxSummaryLength = 1500;
+
   const lessonCards = dummyData.map(lesson => (
     <Card key={lesson.id}>
       <Card.Header>
@@ -58,7 +60,12 @@ function LessonCard({dummyData}) {
               >
                 Edit
               </button>
-              <span>Delete</span>
+              <button
+                className="text-muted"
+                type="button"
+              >
+                Delete
+              </button>
             </div>
           <div>
             <span>
