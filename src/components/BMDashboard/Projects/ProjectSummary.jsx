@@ -1,7 +1,6 @@
 import { Row, Col, Label } from 'reactstrap';
 
 function ProjectSummary({ project }) {
-
   return (
     <div className="project-summary_content">
       <Row className="project-summary_header mx-auto">

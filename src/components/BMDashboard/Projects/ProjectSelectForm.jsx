@@ -20,7 +20,7 @@ function ProjectSelectForm() {
 
   const handleOptionChange = event => {
     setError(false);
-    setSelectedProjectId(event.target.value);   
+    setSelectedProjectId(event.target.value);
   };
 
   const handleButtonClick = () => {
@@ -28,7 +28,7 @@ function ProjectSelectForm() {
       // navigate to a new page with information about the selected project
       history.push(`/bmdashboard/projects/${selectedProjectId}`);
     } else {
-      setError(true)
+      setError(true);
     }
   };
 
@@ -59,7 +59,7 @@ function ProjectSelectForm() {
             Go to Project Dashboard
           </Button>
         </Col>
-        <ErrorAlert error={error} message={'Please select a project'} />
+        <ErrorAlert error={error} message="Please select a project" />
       </Row>
     </Form>
   );
