@@ -20,7 +20,6 @@ import TeamMembersPopup from './TeamMembersPopup';
 import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
-import hasPermission from 'utils/permissions';
 
 class Teams extends React.PureComponent {
   constructor(props) {
