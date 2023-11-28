@@ -11,6 +11,7 @@ import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import Timelog from './components/Timelog';
+import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -173,6 +174,7 @@ export default (
       <BMProtectedRoute path="/bmdashboard/materials/purchase" component={PurchaseMaterials} />
       <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
       <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+       <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
       {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
       <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
       

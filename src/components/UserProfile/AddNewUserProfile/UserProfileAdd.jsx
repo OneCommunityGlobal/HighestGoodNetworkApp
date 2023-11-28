@@ -550,7 +550,8 @@ class AddUserProfile extends Component {
               },
             });
           } else {
-            alert('Invalid location or ' + response.data.status.message);
+            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
+            `);
           }
         })
         .catch(err => console.log(err));
