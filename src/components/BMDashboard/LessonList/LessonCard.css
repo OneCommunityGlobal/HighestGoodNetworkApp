@@ -22,6 +22,15 @@
   display: inline-block;
   margin-right: 5px; 
 }
+.card-tag .tag-item {
+  margin-right: 5px; 
+  border: 1px solid #78BDDA;
+  padding: 1px 3px;
+  border-radius: 3px;
+  background-color: #E8F4F9;
+  color: #78BDDA;
+  font-size: smaller;
+}
 .card-header:first-child {
   border-radius: 0 !important;
 }
@@ -39,15 +48,39 @@
 .card-footer:last-child {
   border-radius: 0 !important;
 }
-.footer-items span{
-padding: 0 5px;
+.card-tag {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  max-height: 25px;
+  max-width:1200px;
+  overflow-x: auto;
 }
+.scrollable-card-body {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+
+
 .footer-items-author-and-from{
-  margin-right: 10px;
+  margin-right: 5px;
 }
+
+.footer-items {
+  display: flex;
+  align-items: center; 
+}
+
+.footer-items span {
+  padding: 5px;
+}
+
 .nav{
-  justify-content: space-between;
+  display: unset !important;
   color:white;
+  height: 50px;
+  flex-direction: column;
 }
 .nav-item{
   font-size: small;
@@ -57,6 +90,10 @@ padding: 0 5px;
   font-size:small;
 }
 
+.nav-title-and-date {
+  display: flex;
+  justify-content: space-between;
+}
 .card-tag-and-file{
   color:#78BDDA;
 
@@ -64,11 +101,25 @@ padding: 0 5px;
 .card-text {
   font-size: medium;
 }
+.card-scrollable {
+  max-height: 300px; 
+  overflow-y: auto; 
+}
 .tag-item{
   font-size: small;
+  white-space: nowrap;
 }
 .lesson-file{
   font-size: small;
+}
+
+
+.scrollable-card-body::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollable-card-body::-webkit-scrollbar-thumb {
+  background-color: #ccc; 
+  border-radius: 5px;
 }
 
   @media (max-width: 570px) {
@@ -83,5 +134,24 @@ padding: 0 5px;
   .card-text {
     padding: 10px;
     font-size: small;
+  }
+}
+
+@media (max-width: 859px) {
+  .nav-title-and-date {
+    flex-direction: column; 
+    align-items: flex-start; 
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .nav {
+    height: auto; 
+  }
+
+
+  .tag-item {
+    display: block;
+    margin-top: 5px; 
   }
 }
