@@ -4,11 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import './LessonCard.css';
 
-
-function LessonCard({dummyData}) {
+function LessonCard({ dummyData }) {
   const maxSummaryLength = 1500;
 
-  const lessonCards = dummyData.map(lesson => (
+  const lessonCards = dummyData.map((lesson) => (
     <Card key={lesson.id}>
       <Card.Header>
         <Nav className="nav">
@@ -18,7 +17,7 @@ function LessonCard({dummyData}) {
           </div>
           <div>
             <Nav.Item className="card-tag">
-              {lesson.tags.map(tag => (
+              {lesson.tags.map((tag) => (
                 <span key={`${lesson.id} + ${tag}`} className="text-muted tag-item">
                   {`#${tag}`}
                 </span>
@@ -30,17 +29,17 @@ function LessonCard({dummyData}) {
       <Card.Body className="scrollable-card-body">
         <Card.Text className="card-tag-and-file">
           Tags:{' '}
-          {lesson.tags.map(tag => (
+          {lesson.tags.map((tag) => (
             <span key={`${lesson.id} + ${tag}`} className="tag-item">
               {`#${tag}`}
             </span>
           ))}
         </Card.Text>
         <Card.Text className="lesson-summary">
-              {lesson.lessonSummary.length > maxSummaryLength
-                ? `${lesson.lessonSummary.slice(0, maxSummaryLength)}...`
-                : lesson.lessonSummary}
-            </Card.Text>
+          {lesson.lessonSummary.length > maxSummaryLength
+            ? `${lesson.lessonSummary.slice(0, maxSummaryLength)}...`
+            : lesson.lessonSummary}
+        </Card.Text>
         <Card.Text className="card-tag-and-file">
           File: <span className="lesson-file">{lesson.file}</span>
         </Card.Text>
@@ -53,20 +52,14 @@ function LessonCard({dummyData}) {
           <span className="footer-items-author-and-from">From: {lesson.project}</span>
         </div>
         <div className="footer-items">
-            <div>
-              <button
-                className="text-muted"
-                type="button"
-              >
-                Edit
-              </button>
-              <button
-                className="text-muted"
-                type="button"
-              >
-                Delete
-              </button>
-            </div>
+          <div>
+            <button className="text-muted" type="button">
+              Edit
+            </button>
+            <button className="text-muted" type="button">
+              Delete
+            </button>
+          </div>
           <div>
             <span>
               <FontAwesomeIcon
@@ -82,13 +75,8 @@ function LessonCard({dummyData}) {
       </Card.Footer>
     </Card>
   ));
-  return (
-  <div>
-      <ul>{lessonCards}</ul>;
-  </div>
-  
-)}
+
+  return <div><ul>{lessonCards}</ul></div>;
+}
 
 export default LessonCard;
-
-
