@@ -7,7 +7,7 @@ import './LessonCard.css';
 function LessonCard({ dummyData }) {
   const maxSummaryLength = 1500;
 
-  const lessonCards = dummyData.map((lesson) => (
+  const lessonCards = dummyData.map(lesson => (
     <Card key={lesson.id}>
       <Card.Header>
         <Nav className="nav">
@@ -17,7 +17,7 @@ function LessonCard({ dummyData }) {
           </div>
           <div>
             <Nav.Item className="card-tag">
-              {lesson.tags.map((tag) => (
+              {lesson.tags.map(tag => (
                 <span key={`${lesson.id} + ${tag}`} className="text-muted tag-item">
                   {`#${tag}`}
                 </span>
@@ -29,7 +29,7 @@ function LessonCard({ dummyData }) {
       <Card.Body className="scrollable-card-body">
         <Card.Text className="card-tag-and-file">
           Tags:{' '}
-          {lesson.tags.map((tag) => (
+          {lesson.tags.map(tag => (
             <span key={`${lesson.id} + ${tag}`} className="tag-item">
               {`#${tag}`}
             </span>
@@ -76,7 +76,10 @@ function LessonCard({ dummyData }) {
     </Card>
   ));
 
-  return <div><ul>{lessonCards}</ul></div>;
-}
+  return (
+  <div>
+    <ul>{lessonCards}</ul>
+    </div>
+)}
 
 export default LessonCard;
