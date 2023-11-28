@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 
 const Team = props => {
 
+  const canDeleteTeam = props.hasPermission('deleteTeam');
+
   useEffect(() => {
     const mode = localStorage.getItem('mode');
     document.body.className = mode;

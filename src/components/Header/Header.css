@@ -55,7 +55,7 @@
 @media (max-width: 1400px) {
   .timer-message-section {
     display: flex;
-    width: 0;
+    width: auto;
     margin-right: 0;
   }
 

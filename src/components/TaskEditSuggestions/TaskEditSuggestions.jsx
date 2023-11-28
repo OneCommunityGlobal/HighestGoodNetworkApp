@@ -22,7 +22,7 @@ export const TaskEditSuggestions = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchTaskEditSuggestions());
+    dispatch(fetchtaskEditSuggestions());
     const mode = localStorage.getItem('mode');
     document.body.className = mode;
   }, []);

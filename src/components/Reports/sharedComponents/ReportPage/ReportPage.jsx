@@ -8,7 +8,6 @@ export function ReportPage({ children, renderProfile, contentClassName }) {
   useEffect(() => {
     const mode = localStorage.getItem('mode');
     document.body.className = mode;
-
   }, []);
   return (
     <section className="report-page-wrapper">
