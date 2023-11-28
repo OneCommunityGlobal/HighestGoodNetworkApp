@@ -77,9 +77,10 @@ function LessonCard({ dummyData }) {
   ));
 
   return (
-  <div>
-    <ul>{lessonCards}</ul>
+    <div>
+      <ul>{lessonCards}</ul>
     </div>
-)}
+  );
+}
 
 export default LessonCard;
