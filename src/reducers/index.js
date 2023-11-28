@@ -28,10 +28,11 @@ import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+
+// bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
-import { toolsReducer } from './bmdashboard/toolsReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
-//import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
+import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -65,8 +66,9 @@ export default combineReducers({
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
+
+  // bmdashboard
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
- // bmInvTypes: bmInvTypeReducer,
-  tools: toolsReducer
+  bmInvTypes: bmInvTypeReducer,
 });

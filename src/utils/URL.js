@@ -8,7 +8,7 @@ export const ENDPOINTS = {
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
-  INFO_COLLECTION: infoId =>`${APIEndpoint}/informations/${infoId}`,
+  INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
@@ -96,6 +96,7 @@ export const ENDPOINTS = {
   VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+  ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
   // reasons endpoints
   CREATEREASON: () => {
@@ -119,10 +120,9 @@ export const ENDPOINTS = {
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
-  BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`,
-  BM_PROJECTS: `${APIEndpoint}/bm/projects`,
-  //BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
-  BM_TOOLS: `${APIEndpoint}/bm/toolpurchaserequest`,
+  BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
+  BM_MATERIALS: `${APIEndpoint}/bm/materials`,
+  BM_PROJECTS: `${APIEndpoint}/bm/projects`
 };
 
 export const ApiEndpoint = APIEndpoint;
