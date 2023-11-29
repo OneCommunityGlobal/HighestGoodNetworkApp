@@ -17,12 +17,9 @@ export const getLeaderboardData = userId => {
 };
 
 export const postLeaderboardData = (userId, trophyFollowedUp, userProfile) => {
-  console.log("Entered post call")
   return async dispatch => {
     const url = ENDPOINTS.TROPHY_ICON(userId, trophyFollowedUp);
-    console.log("ULR", url)
     const res = await httpService.post(url, userProfile);
-    console.log("RESSS", res)
 
     await dispatch(postLeaderboardDataAcrionCreator(userProfile));
   };
