@@ -15,10 +15,9 @@ function LessonCard({ dummyData }) {
       if (prevExpandedCards.includes(lessonId)) {
         // Collapse the clicked card
         return prevExpandedCards.filter(id => id !== lessonId);
-      } else {
-        // Expand the clicked card
-        return [...prevExpandedCards, lessonId];
       }
+      // Expand the clicked card
+      return [...prevExpandedCards, lessonId];
     });
   };
   const expandAll = () => {
@@ -105,10 +104,10 @@ function LessonCard({ dummyData }) {
   return (
     <div>
       <div style={{ textAlign: 'right' }}>
-        <button onClick={() => expandAll()} className="expand-lessons">
+        <button type="submit" onClick={() => expandAll()} className="expand-lessons">
           Expand All
         </button>
-        <button onClick={() => collapseAll()} className="expand-lessons">
+        <button type="submit" onClick={() => collapseAll()} className="expand-lessons">
           Collapse All
         </button>
       </div>
