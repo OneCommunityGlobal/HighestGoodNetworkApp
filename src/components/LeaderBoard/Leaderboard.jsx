@@ -50,15 +50,14 @@ function LeaderBoard({
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
-  const weeklyEndDate = moment()
+  const todaysDate = moment()
     .tz('America/Los_Angeles')
-    .endOf('week')
     .format('YYYY-MM-DD');
 
   useEffect(() => {
     for (let i = 0; i < leaderBoardData.length; i += 1) {
       const createDate = leaderBoardData[i].createdDate?.split('T')[0];
-      const showTrophy = showTrophyIcon(weeklyEndDate, createDate);
+      const showTrophy = showTrophyIcon(todaysDate, createDate);
       if (!showTrophy && leaderBoardData[i].trophyFollowedUp) {
         postLeaderboardData(leaderBoardData[i].personId, false);
       }
@@ -247,9 +246,9 @@ function LeaderBoard({
             </tr>
             {leaderBoardData.map(item => {
               const createDate = item?.createdDate?.split('T')[0];
-              const durationSinceStarted = calculateDurationBetweenDates(weeklyEndDate, createDate);
+              const durationSinceStarted = calculateDurationBetweenDates(todaysDate, createDate);
               const iconContent = handleIconContent(durationSinceStarted, item);
-              const showTrophy = showTrophyIcon(weeklyEndDate, createDate);
+              const showTrophy = showTrophyIcon(todaysDate, createDate);
               return (
                 <tr key={item.personId}>
                   <td className="align-middle">

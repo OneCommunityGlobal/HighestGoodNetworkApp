@@ -82,16 +82,16 @@ export const calculateAnniversaryDate = (createdDate) => {
   return anniversaryDates;
 }
 
-export const calculateDurationBetweenDates = (summaryDate, createdDate) => {
+export const calculateDurationBetweenDates = (endDate, createdDate) => {
 
-  let summaryDateObject = new Date(summaryDate)
+  let endDateObject = new Date(endDate)
   let createdDateObject = new Date(createdDate)
   let durationSinceStarted = {
     months: 0,
     years: 0
   }
-  if (summaryDate > createdDate) {
-    var diff = Math.floor(summaryDateObject.getTime() - createdDateObject.getTime());
+  if (endDate > createdDate) {
+    var diff = Math.floor(endDateObject.getTime() - createdDateObject.getTime());
     var day = 1000 * 60 * 60 * 24;
 
     var days = (diff / day);
@@ -111,33 +111,33 @@ export const calculateDurationBetweenDates = (summaryDate, createdDate) => {
   return durationSinceStarted
 }
 
-export const showTrophyIcon = (summaryDate, createdDate) => {
+export const showTrophyIcon = (endDate, createdDate) => {
 
   const calculateAnniversaryDateResults = calculateAnniversaryDate(createdDate)
 
-  if (createdDate < summaryDate) {
+  if (createdDate < endDate) {
     switch (true) {
-      case calculateAnniversaryDateResults.tenYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter10Y > summaryDate:
+      case calculateAnniversaryDateResults.tenYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter10Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.nineYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter9Y > summaryDate:
+      case calculateAnniversaryDateResults.nineYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter9Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.eightYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter8Y > summaryDate:
+      case calculateAnniversaryDateResults.eightYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter8Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.sevenYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter7Y > summaryDate:
+      case calculateAnniversaryDateResults.sevenYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter7Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.sixYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter6Y > summaryDate:
+      case calculateAnniversaryDateResults.sixYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter6Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.fiveYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter5Y > summaryDate:
+      case calculateAnniversaryDateResults.fiveYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter5Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.fourYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter4Y > summaryDate:
+      case calculateAnniversaryDateResults.fourYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter4Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.threeYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter3Y > summaryDate:
+      case calculateAnniversaryDateResults.threeYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter3Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.twoYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter2Y > summaryDate:
+      case calculateAnniversaryDateResults.twoYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter2Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.oneYearAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter1Y > summaryDate:
+      case calculateAnniversaryDateResults.oneYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter1Y > endDate:
         return true;
-      case calculateAnniversaryDateResults.sixMonthAnniversary <= summaryDate && calculateAnniversaryDateResults.oneWeekAfter6M > summaryDate:
+      case calculateAnniversaryDateResults.sixMonthAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter6M > endDate:
         return true;
       default:
         false
@@ -145,14 +145,3 @@ export const showTrophyIcon = (summaryDate, createdDate) => {
   }
   return false;
 }
-
-export const checkIfIconResets = (item, weeklyEndDate, createdDate) => {
-  const showIcon = showTrophyIcon(weeklyEndDate, createdDate);
-  if (item.name === 'Yihan Admin') {
-    console.log(item.name, 'show??', showIcon, 'followed Up??', item.trophyFollowedUp);
-  }
-  if (!showIcon && item.trophyFollowedUp) {
-    return false;
-  }
-  return true;
-};
