@@ -57,7 +57,6 @@ function LessonList() {
             </div>
             <div>
               <Form.Group className="single-form" controlId="Form.ControlSelect2">
-                {/* By default the lesson can be read by anyone. The author can change the permission to only public to certain roles. */}
                 <Form.Label>Sort:</Form.Label>
                 <FormControl
                   className="single-form-select"

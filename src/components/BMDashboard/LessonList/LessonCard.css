@@ -1,5 +1,5 @@
 .card {
-  height: 400px;
+  /* height: 400px; */
   border: 2px solid #78BDDA !important;
   background-color: #FBFBFB !important;
   margin-bottom: 2rem;
@@ -120,6 +120,17 @@
 .scrollable-card-body::-webkit-scrollbar-thumb {
   background-color: #ccc; 
   border-radius: 5px;
+}
+
+.expand-lessons{
+  background-color: #F2F2F266 !important;
+  padding: 5px;
+  font-size: small;
+  margin-bottom: 5px;
+  color: #495057;
+  margin-right: 5px;
+  border-radius: 5px;
+  
 }
 
   @media (max-width: 570px) {
