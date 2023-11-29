@@ -28,6 +28,9 @@ margin-left: 1em;
 
 button.descriptionItem_button{
  padding: 0em;
- margin-bottom: 1em;
- 
+ margin-bottom: 1em; 
+}
+
+button.descriptionItem_button:hover{
+  background-color: transparent;
 }
