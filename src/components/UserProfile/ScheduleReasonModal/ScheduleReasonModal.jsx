@@ -36,7 +36,12 @@ const ScheduleReasonModal = ({
           payload: { message: response.message, errorCode: response.errorCode },
         });
       } else {
-        setReason(response.data.reason);
+        console.log('reason: ', reason);
+        if (reason === response.data.reason || response.data.reason === '') {
+          console.log('reason is the same or empty..');
+        }else {
+          setReason(response.data.reason);
+        }
         fetchDispatch({ type: 'FETCHING_FINISHED', payload: { isSet: response.data.isSet } });
       }
     };
