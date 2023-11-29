@@ -20,11 +20,10 @@ const WeeklySummaries = ({ userProfile }) => {
 
   const dispatch = useDispatch();
   const canEdit = dispatch(hasPermission('putUserProfile'));
-  // const currentUserID = useState(userProfile._id);
+
   const currentUserID = userProfile._id;
   const { user } = useSelector(state => state.auth);
   const loggedInUserId = user.userid;
-  // const loggedInUserId = useSelector(state => state.userProfile._id);
 
   if (!userProfile.weeklySummaries || userProfile.weeklySummaries.length < 3) {
     return <div>No weekly summaries available</div>;
