@@ -45,38 +45,38 @@ export const calculateAnniversaryDate = (createdDate) => {
   const oneWeekAfter10Y = new Date(tenYearAnniversary).getTime() + 7 * 24 * 60 * 60 * 1000 + 1
 
   let anniversaryDates = {
-    sixMonthAnniversary: new Date(sixMonthAnniversary).toISOString().split('T')[0],
-    oneWeekAfter6M: new Date(oneWeekAfter6M).toISOString().split('T')[0],
+    sixMonthAnniversary: new Date(sixMonthAnniversary),
+    oneWeekAfter6M: new Date(oneWeekAfter6M),
 
-    oneYearAnniversary: new Date(oneYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter1Y: new Date(oneWeekAfter1Y).toISOString().split('T')[0],
+    oneYearAnniversary: new Date(oneYearAnniversary),
+    oneWeekAfter1Y: new Date(oneWeekAfter1Y),
 
-    twoYearAnniversary: new Date(twoYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter2Y: new Date(oneWeekAfter2Y).toISOString().split('T')[0],
+    twoYearAnniversary: new Date(twoYearAnniversary),
+    oneWeekAfter2Y: new Date(oneWeekAfter2Y),
 
-    threeYearAnniversary: new Date(threeYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter3Y: new Date(oneWeekAfter3Y).toISOString().split('T')[0],
+    threeYearAnniversary: new Date(threeYearAnniversary),
+    oneWeekAfter3Y: new Date(oneWeekAfter3Y),
 
-    fourYearAnniversary: new Date(fourYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter4Y: new Date(oneWeekAfter4Y).toISOString().split('T')[0],
+    fourYearAnniversary: new Date(fourYearAnniversary),
+    oneWeekAfter4Y: new Date(oneWeekAfter4Y),
 
-    fiveYearAnniversary: new Date(fiveYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter5Y: new Date(oneWeekAfter5Y).toISOString().split('T')[0],
+    fiveYearAnniversary: new Date(fiveYearAnniversary),
+    oneWeekAfter5Y: new Date(oneWeekAfter5Y),
 
-    sixYearAnniversary: new Date(sixYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter6Y: new Date(oneWeekAfter6Y).toISOString().split('T')[0],
+    sixYearAnniversary: new Date(sixYearAnniversary),
+    oneWeekAfter6Y: new Date(oneWeekAfter6Y),
 
-    sevenYearAnniversary: new Date(sevenYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter7Y: new Date(oneWeekAfter7Y).toISOString().split('T')[0],
+    sevenYearAnniversary: new Date(sevenYearAnniversary),
+    oneWeekAfter7Y: new Date(oneWeekAfter7Y),
 
-    eightYearAnniversary: new Date(eightYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter8Y: new Date(oneWeekAfter8Y).toISOString().split('T')[0],
+    eightYearAnniversary: new Date(eightYearAnniversary),
+    oneWeekAfter8Y: new Date(oneWeekAfter8Y),
 
-    nineYearAnniversary: new Date(nineYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter9Y: new Date(oneWeekAfter9Y).toISOString().split('T')[0],
+    nineYearAnniversary: new Date(nineYearAnniversary),
+    oneWeekAfter9Y: new Date(oneWeekAfter9Y),
 
-    tenYearAnniversary: new Date(tenYearAnniversary).toISOString().split('T')[0],
-    oneWeekAfter10Y: new Date(oneWeekAfter10Y).toISOString().split('T')[0],
+    tenYearAnniversary: new Date(tenYearAnniversary),
+    oneWeekAfter10Y: new Date(oneWeekAfter10Y),
   };
 
   return anniversaryDates;
@@ -117,27 +117,27 @@ export const showTrophyIcon = (endDate, createdDate) => {
 
   if (createdDate < endDate) {
     switch (true) {
-      case calculateAnniversaryDateResults.tenYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter10Y > endDate:
+      case calculateAnniversaryDateResults.tenYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter10Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.nineYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter9Y > endDate:
+      case calculateAnniversaryDateResults.nineYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter9Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.eightYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter8Y > endDate:
+      case calculateAnniversaryDateResults.eightYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter8Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.sevenYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter7Y > endDate:
+      case calculateAnniversaryDateResults.sevenYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter7Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.sixYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter6Y > endDate:
+      case calculateAnniversaryDateResults.sixYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter6Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.fiveYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter5Y > endDate:
+      case calculateAnniversaryDateResults.fiveYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter5Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.fourYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter4Y > endDate:
+      case calculateAnniversaryDateResults.fourYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter4Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.threeYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter3Y > endDate:
+      case calculateAnniversaryDateResults.threeYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter3Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.twoYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter2Y > endDate:
+      case calculateAnniversaryDateResults.twoYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter2Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.oneYearAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter1Y > endDate:
+      case calculateAnniversaryDateResults.oneYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter1Y.toISOString().split('T')[0] > endDate:
         return true;
-      case calculateAnniversaryDateResults.sixMonthAnniversary <= endDate && calculateAnniversaryDateResults.oneWeekAfter6M > endDate:
+      case calculateAnniversaryDateResults.sixMonthAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter6M.toISOString().split('T')[0] > endDate:
         return true;
       default:
         false

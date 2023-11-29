@@ -10,6 +10,7 @@ import {
   showStar,
 } from 'utils/leaderboardPermissions';
 import moment from 'moment';
+import 'moment-timezone';
 import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
