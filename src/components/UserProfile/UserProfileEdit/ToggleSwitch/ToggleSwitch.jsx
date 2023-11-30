@@ -174,11 +174,51 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
     case 'bio':
       return (
         <div className="blueSqare">
-          <div className={style.switchSection} style={{ fontSize: fontSize }}>
+          <div className={style.switchSection} style={{fontSize:fontSize}}>
+            <div style={{ wordBreak: 'keep-all'}} className={style.switchContainer}>
+            posted
+            <TriStateToggleSwitch  
+            pos={state || 'default'} 
+            onChange={handleUserProfile}/>
+            requested
+            </div>
+          </div>
+        </div>
+      );
+      case 'active_members':
+      if (state) {
+        return (
+          <div className="blueSqare">
+            <div className={style.switchSection}>
+              <div className={style.switchContainer}>
+                Active
+                <input
+                  data-testid="active-switch"
+                  id="showActiveMembersOnly"
+                  type="checkbox"
+                  className={style.toggle}
+                  onChange={handleUserProfile}
+                />
+                All
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className="blueSqare">
+          <div className={style.switchSection}>
             <div className={style.switchContainer}>
-              posted
-              <TriStateToggleSwitch pos={state || 'default'} onChange={handleUserProfile} />
-              requested
+              Active
+              <input
+                data-testid="active-switch"
+                id="showActiveMembersOnly"
+                type="checkbox"
+                className={style.toggle}
+                defaultChecked
+                onChange={handleUserProfile}
+              />
+              All
             </div>
           </div>
         </div>

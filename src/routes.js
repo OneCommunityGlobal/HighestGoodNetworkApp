@@ -1,12 +1,22 @@
-import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
+
+import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
+import AutoUpdate from 'components/AutoUpdate';
+import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
+import { RoutePermissions } from 'utils/routePermissions';
+import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
+import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import Timelog from './components/Timelog';
+import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import Dashboard from './components/Dashboard';
-import { Logout } from './components/Logout/Logout';
+import Logout from './components/Logout/Logout';
 import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -19,8 +29,8 @@ import Members from './components/Projects/Members';
 import WBS from './components/Projects/WBS';
 import WBSDetail from './components/Projects/WBS/WBSDetail';
 import SingleTask from './components/Projects/WBS/SingleTask';
-import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import WeeklySummariesReport from './components/WeeklySummariesReport';
+import TeamLocations from './components/TeamLocations';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
@@ -30,123 +40,167 @@ import { ProjectReport } from './components/Reports/ProjectReport';
 import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
-import AutoUpdate from 'components/AutoUpdate';
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
-import { RoutePermissions } from 'utils/routePermissions';
-import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
-import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+
+// BM Dashboard
+import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
+import BMDashboard from './components/BMDashboard';
+import BMLogin from './components/BMDashboard/Login';
+import MaterialsList from './components/BMDashboard/MaterialsList';
+import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
+import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+
+
 
 export default (
-  <React.Fragment>
-    <Header />
-    <AutoUpdate />
-    <ToastContainer />
-    <Switch>
-      <ProtectedRoute path="/dashboard" exact component={Dashboard} />
-      <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
-      <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} />
-      <ProtectedRoute path="/project/members/:projectId" component={Members} />
-      <ProtectedRoute path="/admin" component={Admin} />
-      <ProtectedRoute path="/timelog/" exact component={Timelog} />
-      <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-      <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
-      <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
-      <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
-      <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
+  <Switch>
+    <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+    <>
+      {/* Comment out the Header component and its import during phase 2 development. */}
+      <Header />
+      {/* Uncomment BMHeader and its import during phase 2 development. */}
+      {/* <BMHeader /> */}
+      <AutoUpdate />
+      <ToastContainer />
+      <Switch>
+        <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+        <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} />
+        <ProtectedRoute path="/project/members/:projectId" component={Members} />
+        <ProtectedRoute path="/popupmanagement" component={Admin} />
+        <ProtectedRoute path="/timelog/" exact component={Timelog} />
+        <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
+        <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} />
+        <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} />
+        <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
+        <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
 
-      <ProtectedRoute
-        path="/inventory/:projectId"
-        component={Inventory}
-        routePermissions={RoutePermissions.inventoryProject}
-      />
-      <ProtectedRoute
-        path="/inventory/:projectId/wbs/:wbsId"
-        component={Inventory}
-        routePermissions={RoutePermissions.inventoryProjectWbs}
-      />
+        <ProtectedRoute
+          path="/inventory/:projectId"
+          component={Inventory}
+          routePermissions={RoutePermissions.inventoryProject}
+        />
+        <ProtectedRoute
+          path="/inventory/:projectId/wbs/:wbsId"
+          component={Inventory}
+          routePermissions={RoutePermissions.inventoryProjectWbs}
+        />
 
-      <ProtectedRoute
-        path="/weeklysummariesreport"
-        exact
-        component={WeeklySummariesReport}
-        allowedRoles={[
-          UserRole.Administrator,
-          UserRole.Manager,
-          UserRole.CoreTeam,
-          UserRole.Owner,
-          UserRole.Mentor,
-        ]}
-        routePermissions={[RoutePermissions.weeklySummariesReport, RoutePermissions.reports]}
-      />
-      <ProtectedRoute
-        path="/reports"
-        exact
-        component={Reports}
-        routePermissions={RoutePermissions.reports}
-      />
-      <ProtectedRoute
-        path="/projects"
-        exact
-        component={Projects}
-        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-        routePermissions={RoutePermissions.weeklySummariesReport}
-      />
-      <ProtectedRoute
-        path="/projects"
-        exact
-        component={Projects}
-        routePermissions={RoutePermissions.projects}
-      />
-      <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
-      <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
-      <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} />
-      <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} />
-      <ProtectedRoute
-        path="/usermanagement"
-        exact
-        component={UserManagement}
-        routePermissions={RoutePermissions.userManagement}
-      />
-      <ProtectedRoute
-        path="/badgemanagement"
-        exact
-        component={BadgeManagement}
-        routePermissions={RoutePermissions.badgeManagement}
-      />
-      <ProtectedRoute
-        path="/permissionsmanagement"
-        exact
-        component={PermissionsManagement}
-        routePermissions={RoutePermissions.permissionsManagement}
-      />
-      <ProtectedRoute
-        path="/permissionsmanagement/:userRole"
-        exact
-        component={UserRoleTab}
-        routePermissions={RoutePermissions.permissionsManagementRole}
-      />
-      <ProtectedRoute
-        path="/teams"
-        exact
-        component={Teams}
-        allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-      />
-      <ProtectedRoute
-        path="/teams"
-        exact
-        component={Teams}
-        routePermissions={RoutePermissions.teams}
-      />
-      <ProtectedRoute path="/project/members/:projectId" component={Members} />
+        <ProtectedRoute
+          path="/weeklysummariesreport"
+          exact
+          component={WeeklySummariesReport}
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          routePermissions={[RoutePermissions.weeklySummariesReport, RoutePermissions.reports]}
+        />
+        <ProtectedRoute
+          path="/reports"
+          exact
+          component={Reports}
+          routePermissions={RoutePermissions.reports}
+        />
+        <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
+        <ProtectedRoute
+          path="/projects"
+          exact
+          component={Projects}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={[
+            RoutePermissions.projects,
+            RoutePermissions.projectManagement_fullFunctionality,
+            RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
+          ]}
+        />
+        <ProtectedRoute
+          path="/projects"
+          exact
+          component={Projects}
+          routePermissions={RoutePermissions.projects}
+        />
+        <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
+        <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} />
+        <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} />
+        <ProtectedRoute
+          path="/usermanagement"
+          exact
+          component={UserManagement}
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <ProtectedRoute
+          path="/badgemanagement"
+          exact
+          component={BadgeManagement}
+          routePermissions={RoutePermissions.badgeManagement}
+        />
+        <ProtectedRoute
+          path="/permissionsmanagement"
+          exact
+          component={PermissionsManagement}
+          routePermissions={[
+            RoutePermissions.permissionsManagement,
+            RoutePermissions.userPermissionsManagement,
+          ]}
+        />
+        <ProtectedRoute
+          path="/permissionsmanagement/:userRole"
+          exact
+          component={UserRoleTab}
+          routePermissions={RoutePermissions.permissionsManagementRole}
+        />
+        <ProtectedRoute
+          path="/teams"
+          exact
+          component={Teams}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+        />
+        <ProtectedRoute
+          path="/teams"
+          exact
+          component={Teams}
+          routePermissions={RoutePermissions.teams}
+        />
+        <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
-      <Route path="/login" component={Login} />
-      <Route path="/forgotpassword" component={ForgotPassword} />
-      <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
-      <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
-      <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-      <Route path="/Logout" component={Logout} />
-      <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-      <ProtectedRoute path="/" exact component={Dashboard} />
-    </Switch>
-  </React.Fragment>
+        {/* ----- BEGIN BM Dashboard Routing ----- */}
+
+      <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
+      <Route path="/bmdashboard/login" component={BMLogin} />
+      <BMProtectedRoute path="/bmdashboard/materials/purchase" component={PurchaseMaterials} />
+      <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
+      <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+       <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+      {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
+      <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+      
+      {/* ----- END BM Dashboard Routing ----- */}
+
+        <Route path="/login" component={Login} />
+        <Route path="/forgotpassword" component={ForgotPassword} />
+        <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
+        <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
+        <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
+        <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
+        <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <Route path="/Logout" component={Logout} />
+        <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        <ProtectedRoute path="/" exact component={Dashboard} />
+        <Route path="/login" component={Login} />
+        <Route path="/forgotpassword" component={ForgotPassword} />
+        <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
+        <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
+        <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
+        <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
+        <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <Route path="/Logout" component={Logout} />
+        <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        <ProtectedRoute path="/" exact component={Dashboard} />
+      </Switch>
+    </>
+  </Switch>
 );

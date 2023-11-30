@@ -7,7 +7,7 @@ export const createOrUpdateTaskNotificationHTTP = async (taskId, oldTask, userId
     const payload = { oldTask, userIds };
     await axios.post(ENDPOINTS.CREATE_OR_UPDATE_TASK_NOTIFICATION(taskId), payload);
   } catch (error) {
-    console.log('Error on create or update task notification with error: ' + error);
+    console.log(`Error on create or update task notification with error: ${  error}`);
   }
 };
 

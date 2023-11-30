@@ -23,8 +23,8 @@ const DeleteBadgePopup = props => {
           </p>
           <p style={{ color: '#285739', fontWeight: 'bold' }}>Badge Name: {props.badgeName}</p>
           <p>
-            Consider your next move carefully. If you click &quot;delete&quot;, the badge above will be wiped
-            from existence and removed from all who have earned it.
+            Consider your next move carefully. If you click &quot;delete&quot;, the badge above will
+            be wiped from existence and removed from all who have earned it.
           </p>
         </div>
       </ModalBody>

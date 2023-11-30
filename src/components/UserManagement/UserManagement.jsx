@@ -13,6 +13,7 @@ import {
 } from '../../actions/userManagement';
 import { connect } from 'react-redux';
 import Loading from '../common/Loading';
+import SkeletonLoading from '../common/SkeletonLoading';
 import UserTableHeader from './UserTableHeader';
 import UserTableData from './UserTableData';
 import UserTableSearchHeader from './UserTableSearchHeader';
@@ -22,12 +23,13 @@ import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
-import hasPermission, { deactivateOwnerPermission } from '../../utils/permissions';
+import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { Table } from 'react-bootstrap';
+import SetupNewUserPopup from './setupNewUserPopup';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -49,6 +51,7 @@ class UserManagement extends React.PureComponent {
       deletePopupOpen: false,
       isPaused: false,
       finalDayDateOpen: false,
+      setupNewUserPopupOpen: false,
     };
   }
 
@@ -61,11 +64,12 @@ class UserManagement extends React.PureComponent {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
     let userTable = this.userTableElements(userProfiles, rolesPermissions);
+
     let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
       <Container fluid>
         {fetching ? (
-          <Loading />
+          <SkeletonLoading template="UserManagement" />
         ) : (
           <React.Fragment>
             {this.popupElements()}
@@ -74,8 +78,9 @@ class UserManagement extends React.PureComponent {
               searchText={this.state.wildCardSearchText}
               onActiveFiter={this.onActiveFiter}
               onNewUserClick={this.onNewUserClick}
+              handleNewUserSetupPopup={this.handleNewUserSetupPopup}
             />
-            <div className="table-responsive">
+            <div className="table-responsive" id="user-management-table">
               <Table className="table table-bordered noWrap">
                 <thead>
                   <UserTableHeader
@@ -118,6 +123,7 @@ class UserManagement extends React.PureComponent {
    * 5. Popup to show the last day selection
    */
   popupElements = () => {
+    let user_name = this.state?.selectedUser?.firstName + '_' + this.state?.selectedUser?.lastName
     return (
       <React.Fragment>
         <ActivationDatePopup
@@ -132,6 +138,7 @@ class UserManagement extends React.PureComponent {
           userCreated={this.userCreated}
         />
         <DeleteUserPopup
+          username={user_name}
           open={this.state.deletePopupOpen}
           onClose={this.deletePopupClose}
           onDelete={this.onDeleteUser}
@@ -152,6 +159,10 @@ class UserManagement extends React.PureComponent {
           onClose={this.setUpFinalDayPopupClose}
           onSave={this.deactiveUser}
         />
+        <SetupNewUserPopup
+          open={this.state.setupNewUserPopupOpen}
+          onClose={this.handleNewUserSetupPopup}
+        />
       </React.Fragment>
     );
   };
@@ -170,7 +181,7 @@ class UserManagement extends React.PureComponent {
        */
       return usersSearchData
         .sort((a, b) => {
-          if (a.createdDate > b.createdDate) return -1;
+          if (a.createdDate >= b.createdDate) return -1;
           if (a.createdDate < b.createdDate) return 1;
           return 0;
         })
@@ -196,9 +207,9 @@ class UserManagement extends React.PureComponent {
               onDeleteClick={that.onDeleteButtonClick}
               onActiveInactiveClick={that.onActiveInactiveClick}
               onResetClick={that.onResetClick}
+              authEmail={this.props.state.userProfile.email}
               user={user}
               role={this.props.state.auth.user.role}
-              userPermissions={this.props.state.auth.user?.permissions?.frontPermisssion}
               roles={rolesPermissions}
             />
           );
@@ -266,7 +277,6 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
-    console.log(status);
     if (status === FinalDay.NotSetFinalDay) {
       this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
     } else {
@@ -326,17 +336,15 @@ class UserManagement extends React.PureComponent {
    * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
    */
   onActiveInactiveClick = user => {
-    const authRole = this.props.state.auth.user.role;
-    const userPermissions = this.props.state.auth.user?.permissions?.frontPermisssion;
-    const { roles } = this.props.state.role;
-    const canChangeUserStatus = hasPermission(authRole, 'changeUserStatus', roles, userPermissions);
+    const authRole = this?.props?.state?.auth?.user.role||user.role
+    const canChangeUserStatus = hasPermission('changeUserStatus');
     if (!canChangeUserStatus) {
       //permission to change the status of any user on the user profile page or User Management Page.
       //By default only Admin and Owner can access the user management page and they have this permission.
       alert('You are not authorized to change the active status.');
       return;
     }
-    if (deactivateOwnerPermission(user, authRole)) {
+    if (cantDeactivateOwner(user, authRole)) {
       //Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');
       return;
@@ -518,6 +526,15 @@ class UserManagement extends React.PureComponent {
       newUserPopupOpen: true,
     });
   };
+  /**
+   *  set up new user button click handler
+   */
+
+  handleNewUserSetupPopup = () => {
+    this.setState(prevState => ({
+      setupNewUserPopupOpen: !prevState.setupNewUserPopupOpen,
+    }));
+  };
 
   /**
    * New user popup close button click
@@ -537,4 +554,5 @@ export default connect(mapStateToProps, {
   updateUserStatus,
   updateUserFinalDayStatusIsSet,
   deleteUser,
+  hasPermission,
 })(UserManagement);

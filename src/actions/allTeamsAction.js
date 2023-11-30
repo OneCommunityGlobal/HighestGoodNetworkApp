@@ -53,11 +53,12 @@ export const teamsDeleteAction = (team) => ({
 /**
  * Action for updating the status of a team
  */
-export const updateTeamAction = (teamId, isActive, teamName) => ({
+export const updateTeamAction = (teamId, isActive, teamName, teamCode) => ({
   type: UPDATE_TEAM,
   teamId,
   isActive,
   teamName,
+  teamCode,
 });
 
 /**
@@ -121,7 +122,7 @@ export const getAllUserTeams = () => {
 
 /**
  * posting new team
- */
+*/
 export const postNewTeam = (name, status) => {
   const data = { teamName: name, isActive: status };
   const teamCreationPromise = axios.post(ENDPOINTS.TEAM, data);
@@ -145,7 +146,6 @@ export const postNewTeam = (name, status) => {
           // Something happened in setting up the request that triggered an Error
           return { status: 500, message: error.message };
         }
-      });
   };
 };
 
@@ -154,24 +154,32 @@ export const postNewTeam = (name, status) => {
  * @param {*} teamId  - the team to be deleted
  */
 export const deleteTeam = (teamId) => {
-  const deleteTeamPromise = axios.delete(ENDPOINTS.TEAM_DATA(teamId));
+  const url = ENDPOINTS.TEAM_DATA(teamId)
   return async (dispatch) => {
-    deleteTeamPromise.then(() => {
+    try {
+      const deleteTeamResponse = await axios.delete(url);
       dispatch(teamsDeleteAction(teamId));
-    });
+      return deleteTeamResponse;
+    } catch (error) {
+      return error.response.data.error;
+    }
   };
 };
 
 /**
  * updating the team status
  */
-export const updateTeam = (teamName, teamId, isActive) => {
-  const requestData = { teamName, isActive };
-  const deleteTeamPromise = axios.put(ENDPOINTS.TEAM_DATA(teamId), requestData);
+export const updateTeam = (teamName, teamId, isActive, teamCode) => {
+  const requestData = { teamName, isActive, teamCode };
+  const url = ENDPOINTS.TEAM_DATA(teamId);
   return async (dispatch) => {
-    deleteTeamPromise.then(() => {
-      dispatch(updateTeamAction(teamId, isActive, teamName));
-    });
+    try {
+      const updateTeamResponse = await axios.put(url, requestData);
+      dispatch(updateTeamAction(teamId, isActive, teamName, teamCode));
+      return updateTeamResponse;
+    } catch (error) {
+      return error.response.data.error;
+    }
   };
 };
 
@@ -210,12 +218,12 @@ export const deleteTeamMember = (teamId, userId) => {
 /**
  * Adding an existing user to team
  */
-export const addTeamMember = (teamId, userId, firstName, lastName) => {
+export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime) => {
   const requestData = { users: [{ userId, operation: 'Assign' }] };
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async (dispatch) => {
     teamMemberAddPromise.then(() => {
-      dispatch(teamMemberAddAction({ _id: userId, firstName, lastName }));
+      dispatch(teamMemberAddAction({ _id: userId, firstName, lastName, role, addDateTime }));
     });
   };
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import ResetPasswordPopup from './ResetPasswordPopup';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { resetPassword } from '../../services/userProfileService';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -35,9 +36,20 @@ class ResetPasswordButton extends React.PureComponent {
   }
 
   onResetClick = () => {
-    this.setState({
-      resetPopupOpen: true,
-    });
+    if (cantUpdateDevAdminDetails(this.props.user.email, this.props.authEmail)) {
+      alert(
+        'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
+          'You shouldn’t even be using this account except to create your own accounts to use. ' +
+          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+      );
+      this.setState({
+        resetPopupOpen: false,
+      });
+    } else {
+      this.setState({
+        resetPopupOpen: true,
+      });
+    }
   };
 
   resetPopupClose = () => {

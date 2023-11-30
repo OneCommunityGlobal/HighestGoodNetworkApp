@@ -21,7 +21,6 @@ const AddTeamPopup = React.memo(props => {
   const [newTeamName, setNewTeamName] = useState('');
   const [newTeamIsActive, setNewTeamIsActive] = useState(true);
   const [isDuplicateTeam, setDuplicateTeam] = useState(false);
-
   const onAssignTeam = () => {
     if (!searchText) {
       // when the user typed nothing
@@ -30,11 +29,14 @@ const AddTeamPopup = React.memo(props => {
     }
     if (selectedTeam && !props.userTeamsById.some(x => x._id === selectedTeam._id)) {
       props.onSelectAssignTeam(selectedTeam);
-      toast.success('Team assigned successfully'); // toast notification
       onSelectTeam(undefined);
     } else {
       // when the user typed something but didn't select a team
       onValidation(false);
+    }
+    if (props.handleSubmit !== undefined) {
+      props.handleSubmit();
+      props.onClose();
     }
   };
 

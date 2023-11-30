@@ -11,15 +11,24 @@ import {
   CLOSE_ALERT,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
+import moment from 'moment';
 
 const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
   allBadges,
 });
 
-export const fetchAllBadges = () => async dispatch => {
-  const { data } = await axios.get(ENDPOINTS.BADGE());
-  dispatch(getAllBadges(data));
+export const fetchAllBadges = () => {
+  const url = ENDPOINTS.BADGE();
+  return async (dispatch) => {
+    try {
+      const response = await axios.get(ENDPOINTS.BADGE());
+      dispatch(getAllBadges(response.data));
+      return response.status;
+    } catch(err) {
+      return err.response.status;
+    }
+  }
 };
 
 export const closeAlert = () => {
@@ -76,7 +85,7 @@ export const validateBadges = (firstName, lastName) => {
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
-      return;
+      
     }
   };
 };
@@ -96,7 +105,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       return;
     }
 
-    const userAssigned = firstName + ' ' + lastName;
+    const userAssigned = `${firstName  } ${  lastName}`;
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
     if (res.data.length === 0) {
@@ -111,10 +120,12 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       }, 6000);
       return;
     }
-    const badgeCollection = res.data[0].badgeCollection;
+    const {badgeCollection} = res.data[0];
     const UserToBeAssigned = res.data[0]._id;
     selectedBadges.forEach(badgeId => {
       let included = false;
+
+      if(badgeId.includes("assign-badge-")) badgeId = badgeId.replace("assign-badge-", "");
 
       badgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
@@ -177,40 +188,34 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       }, 6000);
       return;
     }
-    const badgeCollection = res.data.badgeCollection;
-    const earnedDate = res.data.badgeCollection.earnedDate;
+    const {badgeCollection} = res.data;
+    const {earnedDate} = res.data.badgeCollection;
     for (let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
     }
 
     selectedBadges.forEach(badgeId => {
       let included = false;
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      // Add 1 beacuse the month start at zero
-      let mm = today.getMonth() + 1;
-      let dd = today.getDate();
-
-      mm < 10 ? (mm = '0' + mm) : mm;
-      dd < 10 ? (dd = '0' + dd) : dd;
-      const formatedDate = yyyy + '-' + mm + '-' + dd;
+      const formatedDate = moment().format('YYYY-MM-DD')
+    
+      if(badgeId.includes("assign-badge-")) badgeId = badgeId.replace("assign-badge-", "");
 
       badgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
           badgeObj.count++;
-          badgeObj.lastModified = Date.now();
-          badgeObj.earnedDate = [...earnedDate, formatedDate];
+          badgeObj.lastModified = moment().format('YYYY-MM-DD');
+          badgeObj.earnedDate = [...badgeObj.earnedDate, formatedDate];
           included = true;
         }
       });
       if (!included) {
-        let dates = [];
+        const dates = [];
         dates.push(formatedDate);
         badgeCollection.push({
           badge: badgeId,
           count: 1,
           earnedDate: dates,
-          lastModified: Date.now(),
+          lastModified: Date(),
         });
       }
     });

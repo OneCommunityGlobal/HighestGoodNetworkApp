@@ -1,6 +1,6 @@
 import jwtDecode from 'jwt-decode';
-import httpService from '../services/httpService';
 import axios from 'axios';
+import httpService from '../services/httpService';
 import config from '../config.json';
 import { ENDPOINTS } from '../utils/URL';
 import { GET_ERRORS } from '../constants/errors';
@@ -31,6 +31,19 @@ export const loginUser = credentials => dispatch => {
       }
     });
 };
+
+export const loginBMUser = (credentials) => async dispatch => {
+  return httpService
+    .post (ENDPOINTS.BM_LOGIN, credentials)
+    .then((res) => {
+      localStorage.setItem(tokenKey, res.data.token);
+      httpService.setjwt(res.data.token);
+      const decoded = jwtDecode(res.data.token)
+      dispatch(setCurrentUser(decoded));
+      return res
+    })
+    .catch(err => err.response)
+}
 
 export const getHeaderData = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);

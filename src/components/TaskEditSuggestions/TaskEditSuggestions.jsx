@@ -5,9 +5,7 @@ import { Container, Table } from 'reactstrap';
 import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
 import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
 import { getTaskEditSuggestionsData } from './selectors';
-import { fetchTaskEditSuggestions } from './thunks';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
-import hasPermission from 'utils/permissions';
 
 export const TaskEditSuggestions = () => {
   const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
@@ -22,9 +20,6 @@ export const TaskEditSuggestions = () => {
   } = useSelector(getTaskEditSuggestionsData);
 
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchTaskEditSuggestions());
-  }, []);
 
   const handleToggleTaskEditSuggestionModal = currentTaskEditSuggestion => {
     setCurrentTaskEditSuggestion(currentTaskEditSuggestion);
@@ -47,28 +42,31 @@ export const TaskEditSuggestions = () => {
       {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
       {isLoading && <Loading />}
       {!isLoading && taskEditSuggestions && (
-        <Table>
-          <thead>
-            <tr>
-              <th onClick={() => dispatch(toggleDateSuggestedSortDirection())}>
-                Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection} />
-              </th>
-              <th onClick={() => dispatch(toggleUserSortDirection())}>
-                User <SortArrow sortDirection={userSortDirection} />
-              </th>
-              <th>Task</th>
-            </tr>
-          </thead>
-          <tbody>
-            {taskEditSuggestions.map(taskEditSuggestion => (
-              <TaskEditSuggestionRow
-                key={taskEditSuggestion._id}
-                taskEditSuggestion={taskEditSuggestion}
-                handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
-              />
-            ))}
-          </tbody>
-        </Table>
+        <div style={{ overflowX: 'auto' }}>
+          <Table>
+            <thead>
+              <tr>
+                <th onClick={() => dispatch(toggleDateSuggestedSortDirection())}>
+                  Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection} />
+                </th>
+                <th onClick={() => dispatch(toggleUserSortDirection())}>
+                  User <SortArrow sortDirection={userSortDirection} />
+                </th>
+                <th>Task</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {taskEditSuggestions.map(taskEditSuggestion => (
+                <TaskEditSuggestionRow
+                  key={taskEditSuggestion._id}
+                  taskEditSuggestion={taskEditSuggestion}
+                  handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
+                />
+              ))}
+            </tbody>
+          </Table>
+        </div>
       )}
       <TaskEditSuggestionsModal
         isTaskEditSuggestionModalOpen={isTaskEditSuggestionModalOpen}
