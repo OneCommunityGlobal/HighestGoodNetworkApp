@@ -146,7 +146,7 @@ function UpdateMaterial({ record, bulk, idx, sendUpdatedRecord, cancel, setModal
         bulk == true ?
           <>
             <tr key={record._id}>
-              <td scope="row">   {idx}  </td>
+              <td >   {record.project.name}  </td>
               <td>  {record.itemType.name}  </td>
               <td>  {record.stockAvailable} </td>
               <td>

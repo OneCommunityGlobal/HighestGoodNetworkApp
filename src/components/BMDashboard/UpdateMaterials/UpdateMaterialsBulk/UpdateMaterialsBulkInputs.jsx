@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import Select from 'react-select';
-import { fetchUserActiveBMProjects } from 'actions/bmdashboard/materialsActions';
+import { fetchUserActiveBMProjects } from 'actions/bmdashboard/projectsActions';
 
 function UpdateMaterialsBulkInputs({ date, setDate, project, setProject }) {
 

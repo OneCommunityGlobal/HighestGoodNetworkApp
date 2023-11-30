@@ -20,17 +20,7 @@ export const fetchAllMaterials = () => {
   }
 }
 
-export const fetchUserActiveBMProjects = () => {
-  return async dispatch => {
-    axios.get(ENDPOINTS.BM_USER_PROJECTS)
-      .then(res => {
-        dispatch(setUserProjects(res.data))
-      })
-      .catch(err => {
-        dispatch(setErrors(err))
-      })
-  }
-}
+
 
 export const postMaterialUpdate = (payload) => {
   return async dispatch => {
@@ -81,13 +71,6 @@ export const setMaterials = payload => {
 export const setErrors = payload => {
   return {
     type: GET_ERRORS,
-    payload
-  }
-}
-
-export const setUserProjects = payload => {
-  return {
-    type: SET_USER_PROJECTS,
     payload
   }
 }

@@ -165,9 +165,9 @@ export default (
           <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
           <Route path="/bmdashboard/login" component={BMLogin} />
           <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
+          <BMProtectedRoute path="/bmdashboard/materials/update" component={UpdateMaterialsBulk} />
           <BMProtectedRoute path="/bmdashboard/materials" component={MaterialsList} />
           {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-          <BMProtectedRoute path="/bmdashboard/updateMaterials" component={UpdateMaterialsBulk} />
           <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
 

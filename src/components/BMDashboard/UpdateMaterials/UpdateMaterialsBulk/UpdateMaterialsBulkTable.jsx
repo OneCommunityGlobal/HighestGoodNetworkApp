@@ -13,8 +13,8 @@ function UpdateMaterialsBulkTable({ date, project }) {
   const [materialsState, setMaterialsState] = useState([...materials])
   const postMaterialUpdateBulkResult = useSelector(state => state.updateMaterialsBulk)
   const [cancel, setCancel] = useState(1);
-  const updatedRecordsList = {};
-  const validationsList = {};
+  const [updatedRecordsList, setUpdatedRecordsList] = useState({});
+  const [validationsList, setValidationsList] = useState({});
   const [bulkValidationError, setbulkValidationError] = useState(false);
 
 
@@ -60,9 +60,8 @@ function UpdateMaterialsBulkTable({ date, project }) {
   const submitHandler = (e) => {
     e.preventDefault();
     if (bulkValidationError) return;
-
     let tempPostMaterialUpdateData = Object.values(updatedRecordsList).filter(d => d.newAvailable != "") //In case , user enters and removes data
-    dispatch(postMaterialUpdateBulk(tempPostMaterialUpdateData))
+    dispatch(postMaterialUpdateBulk({ upadateMaterials: tempPostMaterialUpdateData, date }))
   }
 
   const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
@@ -89,7 +88,7 @@ function UpdateMaterialsBulkTable({ date, project }) {
         </thead>
         <thead className='logMTableHeaderLine'>
           <tr className="table-light">
-            <th> ID </th>
+            <th> Project </th>
             <th>Name</th>
             <th>Available</th>
             <th className='logMTableHead'>Used</th>
