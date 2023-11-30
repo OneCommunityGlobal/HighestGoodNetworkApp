@@ -16,8 +16,13 @@ const CustomDatePickerInput = forwardRef(({ value, onClick }, ref) => (
         placeholder="Select a Sunday"
       />
       <div className="input-group-append">
-        <Button onClick={onClick} variant="outline-secondary" className="btn-icon" style={{ borderColor: 'lightgrey'}}>
-          <FaCalendarAlt style={{ transform: 'translateY(-1px)' }}/>
+        <Button
+          onClick={onClick}
+          variant="outline-secondary"
+          className="btn-icon"
+          style={{ borderColor: 'lightgrey' }}
+        >
+          <FaCalendarAlt style={{ transform: 'translateY(-1px)' }} />
         </Button>
       </div>
     </div>
