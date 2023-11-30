@@ -46,6 +46,7 @@ import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -91,6 +92,9 @@ const Timelog = props => {
   const userTask = useSelector(state => state.userTask);
   const userIdByState = useSelector(state => state.auth.user.userid);
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
+
+  const LoggedInuserId = auth.user.userid;
+  const curruserId = props?.match?.params?.userId || props.asUser;
 
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
@@ -204,7 +208,8 @@ const Timelog = props => {
     props.getTimeEntriesForPeriod(userId, state.fromDate, state.toDate);
   };
 
-
+  // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
+  // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
   const startOfWeek = offset => {
     return moment()
       .tz('America/Los_Angeles')
@@ -234,7 +239,14 @@ const Timelog = props => {
       data = data.filter(entry => state.projectsSelected.includes(entry.projectId));
     }
     return data.map(entry => (
-      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={userProfile} />
+      <TimeEntry
+        data={entry}
+        displayYear={false}
+        key={entry._id}
+        userProfile={userProfile}
+        LoggedInuserId={LoggedInuserId}
+        curruserId={curruserId}
+      />
     ));
   };
 
@@ -244,7 +256,8 @@ const Timelog = props => {
     } else if (state.activeTab === 4) {
       return (
         <p className="ml-1">
-          Viewing time Entries from <b>{formatDate(state.fromDate)}</b> to <b>{formatDate(state.toDate)}</b>
+          Viewing time Entries from <b>{formatDate(state.fromDate)}</b> to{' '}
+          <b>{formatDate(state.toDate)}</b>
         </p>
       );
     } else {
@@ -276,7 +289,6 @@ const Timelog = props => {
     }
   };
 
-
   const buildOptions = async () => {
     //build options for the project and task
     let projects = [];
@@ -284,7 +296,6 @@ const Timelog = props => {
       projects = userProjects.projects;
     }
     const options = projects.map(project => (
-      (project?.projectId != undefined) &&
       <option value={project.projectId} key={project.projectId}>
         {' '}
         {project.projectName}{' '}
@@ -409,7 +420,6 @@ const Timelog = props => {
 
   const isOwner = auth.user.userid === userId;
   const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
-
   return (
     <div>
       {!props.isDashboard ? (
@@ -421,10 +431,21 @@ const Timelog = props => {
             summaryBarData={summaryBarData}
           />
           <br />
+        
         </Container>
+        
       ) : (
-        ''
+        <div className="text-center">
+        <EditableInfoModal
+          areaName="DashboardTimelog"
+          areaTitle="Timelog"
+          fontSize={30}
+          isPermissionPage={true}
+          role={auth.user.role}
+        />
+        </div>
       )}
+      
       {state.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
@@ -436,6 +457,7 @@ const Timelog = props => {
               </div>
             </div>
           ) : null}
+          
           <Row>
             <Col md={12}>
               <Card>
@@ -443,14 +465,16 @@ const Timelog = props => {
                   <Row>
                     <Col md={11}>
                       <CardTitle tag="h4">
-                        Tasks and Timelogs &nbsp;
-                        <i
-                          className="fa fa-info-circle"
-                          data-tip
-                          data-for="registerTip"
-                          aria-hidden="true"
-                          onClick={openInfo}
+                      <div className="d-flex align-items-center">
+                        <span className="mb-1 mr-2">Tasks and Timelogs</span>
+                        <EditableInfoModal
+                          areaName="TasksAndTimelogInfoPoint"
+                          areaTitle="Tasks and Timelogs"
+                          fontSize={22}
+                          isPermissionPage={true}
+                          role={auth.user.role} // Pass the 'role' prop to EditableInfoModal
                         />
+                      </div>
                         <span style={{ padding: '0 5px' }}>
                           <ActiveCell
                             isActive={userProfile.isActive}
@@ -568,6 +592,8 @@ const Timelog = props => {
                         userProfile={userProfile}
                         roles={role.roles}
                         isTaskUpdated={isTaskUpdated}
+                        LoggedInuserId={LoggedInuserId}
+                        curruserId={curruserId}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
@@ -729,10 +755,7 @@ const Timelog = props => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks
-                        asUser={props.asUser}
-                        handleUpdateTask={handleUpdateTask}
-                      />
+                      <TeamMemberTasks asUser={props.asUser} handleUpdateTask={handleUpdateTask} />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>
