@@ -134,19 +134,16 @@ export const postNewTeam = (name, status) => {
       })
       .catch((error) => {
         if (error.response) {
-          // If the request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           return error.response; // return the server response
         } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in Node.js
           return { status: 500, message: 'No response received from the server' };
         } else {
-          // Something happened in setting up the request that triggered an Error
           return { status: 500, message: error.message };
         }
+      });
+  }; 
 };
+
 
 /**
  * delete an existing team
