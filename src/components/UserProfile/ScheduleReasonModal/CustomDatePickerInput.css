@@ -1,8 +1,8 @@
 .input-group .form-control {
-  width: 100%; /* Full width */
+  width: 100%;
 }
 
 .input-group .btn-icon {
-  border-top-left-radius: 0; /* Aligns the button to the right end of the input */
+  border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }

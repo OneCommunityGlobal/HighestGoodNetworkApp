@@ -7,7 +7,7 @@ import Alert from 'react-bootstrap/Alert';
 import { useEffect } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
 import { boxStyle } from 'styles';
-import   './ScheduleReasonModal.css';
+import './ScheduleReasonModal.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomDatePickerInput from './CustomDatePickerInput.jsx';
@@ -32,18 +32,16 @@ const ScheduleReasonModal = ({
     const initialFetching = async () => {
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await getReasonByDate(userId, date);
-      console.log(response);
+      // console.log(response);
       if (response.status !== 200) {
         fetchDispatch({
           type: 'ERROR',
           payload: { message: response.message, errorCode: response.errorCode },
         });
       } else {
-        console.log('reason: ', reason);
-        console.log('date: ', date);
-        if (reason === response.data.reason || response.data.reason === '') {
-          console.log('reason is the same or empty..');
-        }else {
+        // console.log('reason: ', reason);
+        // console.log('date: ', date);
+        if (reason !== response.data.reason && response.data.reason !== '') {
           setReason(response.data.reason);
         }
         fetchDispatch({ type: 'FETCHING_FINISHED', payload: { isSet: response.data.isSet } });
@@ -53,54 +51,54 @@ const ScheduleReasonModal = ({
   }, [date]);
 
   function isSunday(date) {
-    return date.getDay() === 0; // 0 is Sunday in the JavaScript Date object
+    return date.getDay() === 0;
   }
 
   return (
     <>
       <Modal.Header closeButton={true}>
         <Modal.Title className="centered-container">
-        <div className="centered-text">Choose to Use a Blue Square</div>
-        <div className="centered-text">(function under development)</div> 
+          <div className="centered-text">Choose to Use a Blue Square</div>
+          <div className="centered-text">(function under development)</div>
         </Modal.Title>
-        
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
             <Form.Label>
               {/* Schedule a reason to be used on this weekend's blue square for {user.firstName} */}
-              Need to take a week off for an emergency or vacation? That's no problem. The system will still issue you a blue square but scheduling here will note this reason on it so it's clear you chose to use one (vs receiving one for missing something) and let us know in advance. Blue squares are meant for situations like this and we allow 5 a year.
+              Need to take a week off for an emergency or vacation? That's no problem. The system
+              will still issue you a blue square but scheduling here will note this reason on it so
+              it's clear you chose to use one (vs receiving one for missing something) and let us
+              know in advance. Blue squares are meant for situations like this and we allow 5 a
+              year.
             </Form.Label>
             <Form.Label>
               <p>
-                To schedule your time off, you need to CHOOSE THE SUNDAY OF THE WEEK YOU’LL RETURN. This is the date needed so your reason ends up on the blue square that will be auto-issued AT THE END OF THE WEEK YOU'LL BE GONE.
+                To schedule your time off, you need to CHOOSE THE SUNDAY OF THE WEEK YOU’LL RETURN.
+                This is the date needed so your reason ends up on the blue square that will be
+                auto-issued AT THE END OF THE WEEK YOU'LL BE GONE.
               </p>
             </Form.Label>
-            {/* <Form.Label>Choose the Sunday of the week you'll return: 
-              </Form.Label> */}
-            {/* <Form.Control
-              name="datePicker"
-              type="date"
-              className="w-100"
-              value={date}
-              onChange={e => {
-                setDate(e.target.value);
-              }}
-            /> */}
             <DatePicker
               selected={date ? moment(date).toDate() : null} // Convert the date string back to a Date object
-              onChange={(selectedDate) => {
+              onChange={selectedDate => {
                 // Set the time to noon to avoid timezone issues causing date to show as the previous day
-                const dateWithNoonTime = moment(selectedDate).hours(12).minutes(0).seconds(0).milliseconds(0);
-                setDate(dateWithNoonTime.format('YYYY-MM-DD')); // Set the date in local time at noon
+                const dateWithNoonTime = moment(selectedDate)
+                  .hours(12)
+                  .minutes(0)
+                  .seconds(0)
+                  .milliseconds(0);
+                setDate(dateWithNoonTime.format('YYYY-MM-DD'));
               }}
               filterDate={isSunday}
               placeholderText="Select a Sunday"
               dateFormat="yyyy-MM-dd" // Display format for the date in the input
               customInput={<CustomDatePickerInput />}
             />
-            <Form.Label className="mt-4">What is your reason for requesting this time off?</Form.Label>
+            <Form.Label className="mt-4">
+              What is your reason for requesting this time off?
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
@@ -108,7 +106,7 @@ const ScheduleReasonModal = ({
               className="w-100"
               placeholder="Please be detailed in describing your reason and, if it is different than your scheduled Sunday, include the expected date you’ll return to work."
               value={reason}
-               onChange={e => {
+              onChange={e => {
                 setReason(e.target.value);
                 setIsReasonUpdated(true);
               }}
@@ -122,14 +120,20 @@ const ScheduleReasonModal = ({
           ) : null}
         </Modal.Body>
         <Modal.Footer>
-        <Button variant="success" title="Function coming" onClick={handleClose} style={boxStyle}>
-           FAQ
+          <Button variant="success" title="Function coming" onClick={handleClose} style={boxStyle}>
+            FAQ
           </Button>
-         <Button variant="secondary" onClick={handleClose} style={boxStyle}>
+          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
-          <Button variant="primary" type="submit" disabled={fetchState.isFetching || !IsReasonUpdated} title="To Save - add a new reason or edit an existing reason. 
-          Clicking 'Save' will generate an email to you and One Community as a record of this request." style={boxStyle}>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={fetchState.isFetching || !IsReasonUpdated}
+            title="To Save - add a new reason or edit an existing reason. 
+          Clicking 'Save' will generate an email to you and One Community as a record of this request."
+            style={boxStyle}
+          >
             {fetchState.isFetching ? <Spinner animation="border" size="sm" /> : 'Save'}
           </Button>
         </Modal.Footer>
