@@ -18,6 +18,7 @@ const Project = props => {
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
   const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
+  const canEditCategoryAndStatus = props.hasPermission('editProject');
 
   const updateActive = () => {
     props.onClickActive(props.projectId, name, category, active);
@@ -46,7 +47,7 @@ const Project = props => {
         <div>{props.index + 1}</div>
       </th>
       <td className="projects__name--input">
-        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+        {canPutProject || canSeeProjectManagementFullFunctionality ? (
           <input
             type="text"
             className="form-control"
@@ -59,14 +60,16 @@ const Project = props => {
         )}
       </td>
       <td className="projects__category--input">
-        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+        {canEditCategoryAndStatus || canPutProject || canSeeProjectManagementFullFunctionality ? (
           <select
             value={props.category}
             onChange={e => {
               setCategory(e.target.value);
             }}
           >
-            <option default value="Unspecified">Unspecified</option>
+            <option default value="Unspecified">
+              Unspecified
+            </option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>
             <option value="Housing">Housing</option>
@@ -80,7 +83,10 @@ const Project = props => {
           category
         )}
       </td>
-      <td className="projects__active--input" onClick={canPutProject ? updateActive : null}>
+      <td
+        className="projects__active--input"
+        onClick={canEditCategoryAndStatus || canPutProject ? updateActive : null}
+      >
         {props.active ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -116,7 +122,7 @@ const Project = props => {
         </NavItem>
       </td>
 
-      {(canDeleteProject || canSeeProjectManagementFullFunctionality) ? (
+      {canDeleteProject || canSeeProjectManagementFullFunctionality ? (
         <td>
           <button
             type="button"
