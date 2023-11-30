@@ -1,9 +1,13 @@
-import React from 'react'
+import AddToolForm from './AddToolForm';
+import './AddTool.css';
 
-const AddTool = () => {
+export default function AddTool() {
   return (
-    <div>AddTool</div>
-  )
+    <main className="add-tool-container">
+      <header className="add-tool-header">
+        <h2>Add Tool or Equipment</h2>
+      </header>
+      <AddToolForm />
+    </main>
+  );
 }
-
-export default AddTool
