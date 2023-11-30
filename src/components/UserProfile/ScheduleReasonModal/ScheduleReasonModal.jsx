@@ -8,6 +8,9 @@ import { useEffect } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
 import { boxStyle } from 'styles';
 import   './ScheduleReasonModal.css';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import CustomDatePickerInput from './CustomDatePickerInput.jsx';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -37,6 +40,7 @@ const ScheduleReasonModal = ({
         });
       } else {
         console.log('reason: ', reason);
+        console.log('date: ', date);
         if (reason === response.data.reason || response.data.reason === '') {
           console.log('reason is the same or empty..');
         }else {
@@ -47,6 +51,10 @@ const ScheduleReasonModal = ({
     };
     initialFetching();
   }, [date]);
+
+  function isSunday(date) {
+    return date.getDay() === 0; // 0 is Sunday in the JavaScript Date object
+  }
 
   return (
     <>
@@ -69,9 +77,9 @@ const ScheduleReasonModal = ({
                 To schedule your time off, you need to CHOOSE THE SUNDAY OF THE WEEK YOU’LL RETURN. This is the date needed so your reason ends up on the blue square that will be auto-issued AT THE END OF THE WEEK YOU'LL BE GONE.
               </p>
             </Form.Label>
-            <Form.Label>Choose the Sunday of the week you'll return: 
-              </Form.Label>
-            <Form.Control
+            {/* <Form.Label>Choose the Sunday of the week you'll return: 
+              </Form.Label> */}
+            {/* <Form.Control
               name="datePicker"
               type="date"
               className="w-100"
@@ -79,6 +87,18 @@ const ScheduleReasonModal = ({
               onChange={e => {
                 setDate(e.target.value);
               }}
+            /> */}
+            <DatePicker
+              selected={date ? moment(date).toDate() : null} // Convert the date string back to a Date object
+              onChange={(selectedDate) => {
+                // Set the time to noon to avoid timezone issues causing date to show as the previous day
+                const dateWithNoonTime = moment(selectedDate).hours(12).minutes(0).seconds(0).milliseconds(0);
+                setDate(dateWithNoonTime.format('YYYY-MM-DD')); // Set the date in local time at noon
+              }}
+              filterDate={isSunday}
+              placeholderText="Select a Sunday"
+              dateFormat="yyyy-MM-dd" // Display format for the date in the input
+              customInput={<CustomDatePickerInput />}
             />
             <Form.Label className="mt-4">What is your reason for requesting this time off?</Form.Label>
             <Form.Control
