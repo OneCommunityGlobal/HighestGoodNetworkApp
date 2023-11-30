@@ -61,6 +61,7 @@ const Project = props => {
       <td className="projects__category--input">
         {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
           <select
+            data-testid="projects__category--input" //added for unit test
             value={props.category}
             onChange={e => {
               setCategory(e.target.value);
@@ -80,7 +81,7 @@ const Project = props => {
           category
         )}
       </td>
-      <td className="projects__active--input" onClick={canPutProject ? updateActive : null}>
+      <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -119,6 +120,7 @@ const Project = props => {
       {(canDeleteProject || canSeeProjectManagementFullFunctionality) ? (
         <td>
           <button
+            data-testid="delete-button"
             type="button"
             className="btn btn-outline-danger"
             onClick={e => props.onClickDelete(props.projectId, props.active, props.name)}
