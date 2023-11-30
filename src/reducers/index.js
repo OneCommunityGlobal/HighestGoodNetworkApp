@@ -29,7 +29,11 @@ import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+
+// bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
+import { bmProjectReducer } from './bmdashboard/projectReducer';
+import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -64,5 +68,9 @@ export default combineReducers({
   dashboardData: weeklySummariesAIPromptReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
-  materials: materialsReducer
+
+  // bmdashboard
+  materials: materialsReducer,
+  bmProjects: bmProjectReducer,
+  bmInvTypes: bmInvTypeReducer,
 });
