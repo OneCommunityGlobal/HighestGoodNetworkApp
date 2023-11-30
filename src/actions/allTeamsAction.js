@@ -146,7 +146,6 @@ export const postNewTeam = (name, status) => {
           // Something happened in setting up the request that triggered an Error
           return { status: 500, message: error.message };
         }
-  };
 };
 
 /**
