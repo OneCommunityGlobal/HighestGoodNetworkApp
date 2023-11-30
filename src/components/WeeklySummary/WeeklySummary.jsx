@@ -651,6 +651,8 @@ export class WeeklySummary extends Component {
       return <DueDateTime isShow={isPopup} dueDate={moment(dueDate)} />;
     }
 
+    const { userRole, asUser } = this.props;
+
     return (
       <Container fluid={!!isModal} className="bg--white-smoke py-3 mb-5">
         <h3>Weekly Summaries</h3>
@@ -733,7 +735,7 @@ export class WeeklySummary extends Component {
                               </DropdownItem>
                             </DropdownMenu>
                           </UncontrolledDropdown>
-                          <CurrentPromptModal userRole={this.props.userRole} userId={this.props.asUser} />
+                          <CurrentPromptModal userRole={userRole} userId={asUser} />
                         </Label>
                         <Editor
                           init={{
