@@ -9,10 +9,11 @@ import { Button, Container } from 'reactstrap';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import { SEARCH } from 'languages/en/ui';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
 import ListUsersPopUp from './ListUsersPopUp';
 import AddOrEditPopup from './AddOrEditPopup';
+import { getTimeZoneAPIKey } from 'actions/timezoneAPIActions';
 
 function TeamLocations() {
   const [userProfiles, setUserProfiles] = useState([]);
@@ -22,7 +23,9 @@ function TeamLocations() {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [searchText, setSearchText] = useState('');
-  const role = useSelector(state => state.userProfile.role);
+  const role = useSelector(state => state.auth.user.role);
+  const apiKey = useSelector(state => state.timeZoneAPI.userAPIKey);
+  const dispatch = useDispatch();
 
   const isAbleToEdit = role === 'Owner';
 
@@ -40,6 +43,10 @@ function TeamLocations() {
       }
     }
     getUserProfiles();
+
+    if(!apiKey)
+      getTimeZoneAPIKey()(dispatch);
+
   }, []);
 
   // We don't need the back to top button on this page
@@ -84,11 +91,11 @@ function TeamLocations() {
     }
   };
   // Get an array of all users' non-null countries (some locations may not be associated with a country)
-  const countries = userProfiles.map(user => user.country);
   // Get the number of unique countries
-  const totalUniqueCountries = [...new Set(countries)].length;
-
+  
   let mapMarkers = [...userProfiles, ...manuallyAddedProfiles];
+  const countries = mapMarkers.map(user => user.location.country);
+  const totalUniqueCountries = [...new Set(countries)].length;
   if (searchText) {
     mapMarkers = mapMarkers.filter(
       item =>
@@ -118,6 +125,7 @@ function TeamLocations() {
             isAdd={!editIsOpen && addNewIsOpen}
             title={isEditing ? 'Edit User Profile' : 'Adding New User'}
             submitText={isEditing ? 'Save Changes' : 'Save To Map'}
+            apiKey={apiKey}
           />
           <ListUsersPopUp
             open={listIsOpen}

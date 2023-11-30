@@ -1,12 +1,6 @@
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
-import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
-import BMDashboard from 'components/BMDashboard';
-import BMLogin from 'components/BMDashboard/Login';
-import MaterialsList from 'components/BMDashboard/MaterialsList';
-
-import ProjectDetails from 'components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
 
 import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import AutoUpdate from 'components/AutoUpdate';
@@ -17,6 +11,7 @@ import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import Timelog from './components/Timelog';
+import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import Reports from './components/Reports';
 import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -47,6 +42,14 @@ import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 
 // BM Dashboard
+import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
+import BMDashboard from './components/BMDashboard';
+import BMLogin from './components/BMDashboard/Login';
+import MaterialsList from './components/BMDashboard/MaterialsList';
+import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
+import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+
+
 
 export default (
   <Switch>
@@ -166,14 +169,16 @@ export default (
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
 
-        <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
-        <Route path="/bmdashboard/login" component={BMLogin} />
-        <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
-        <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
-        {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-        <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
-
-        {/* ----- END BM Dashboard Routing ----- */}
+      <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
+      <Route path="/bmdashboard/login" component={BMLogin} />
+      <BMProtectedRoute path="/bmdashboard/materials/purchase" component={PurchaseMaterials} />
+      <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
+      <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
+       <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+      {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
+      <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+      
+      {/* ----- END BM Dashboard Routing ----- */}
 
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />

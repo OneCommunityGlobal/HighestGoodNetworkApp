@@ -134,7 +134,7 @@ class AddUserProfile extends Component {
           onClose={this.props.closePopup}
           createUserProfile={this.createUserProfile}
         />
-        <Container className="emp-profile">
+        <Container className="emp-profile add-new-user">
           <Row>
             <Col md="12">
               <Form>
@@ -528,6 +528,7 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+            
             let currentLocation = {
               userProvided: location,
               coords: {
@@ -537,6 +538,8 @@ class AddUserProfile extends Component {
               country: response.data.results[0].components.country,
               city: response.data.results[0].components.city,
             };
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+            
             this.setState({
               ...this.state,
               timeZoneFilter: timezone,
@@ -547,7 +550,8 @@ class AddUserProfile extends Component {
               },
             });
           } else {
-            alert('Invalid location or ' + response.data.status.message);
+            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
+            `);
           }
         })
         .catch(err => console.log(err));
