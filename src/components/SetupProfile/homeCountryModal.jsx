@@ -13,7 +13,7 @@ import {
   Button,
 } from 'reactstrap';
 import getUserTimeZone from '../../services/timezoneApiService';
-import { initial } from 'lodash';
+
 
 
 const HomeCountryModal = ({ isOpen, toggle, apiKey,setLocation }) => {
@@ -88,7 +88,7 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey,setLocation }) => {
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle}>Requirements</ModalHeader>
+      <ModalHeader toggle={toggle}>Set Home Country</ModalHeader>
       <ModalBody>
         <Row>
           <Col md="6">
