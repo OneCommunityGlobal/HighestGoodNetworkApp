@@ -13,7 +13,7 @@ function CurrentPromptModal(props) {
   const [prompt, setPrompt] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const { userRole } = props;
   const toggle = () => setModal(!modal);
 
   const fallbackPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.
@@ -34,7 +34,7 @@ function CurrentPromptModal(props) {
             setPrompt(fallbackPrompt); // Fallback to hardcoded prompt if fetched prompt is empty
           }
         })
-        .catch(error => {
+        .catch(() => {
           // console.error('Error fetching AI prompt:', error);
           setPrompt(fallbackPrompt); // Fallback to hardcoded prompt in case of error
         })
@@ -58,7 +58,7 @@ function CurrentPromptModal(props) {
         toast.success('Prompt Updated!');
         setIsEditing(false);
       })
-      .catch(error => {
+      .catch(() => {
         // console.error('Error updating AI prompt:', error);
         toast.error('Failed to update prompt.');
       })
@@ -69,6 +69,16 @@ function CurrentPromptModal(props) {
 
   const handleEditPrompt = event => {
     setPrompt(event.target.value);
+  };
+
+  const renderModalContent = () => {
+    if (loading) {
+      return <div>Loading...</div>;
+    }
+    if (isEditing) {
+      return <Input type="textarea" value={prompt} onChange={handleEditPrompt} />;
+    }
+    return <div>{prompt}</div>;
   };
 
   return (
@@ -96,17 +106,9 @@ function CurrentPromptModal(props) {
 
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Current AI Prompt</ModalHeader>
-        <ModalBody>
-          {loading ? (
-            <div>Loading...</div>
-          ) : isEditing ? (
-            <Input type="textarea" value={prompt} onChange={handleEditPrompt} />
-          ) : (
-            <div>{prompt}</div>
-          )}
-        </ModalBody>
+        <ModalBody>{renderModalContent()}</ModalBody>
         <ModalFooter>
-          {props.userRole === 'Owner' && (
+          {userRole === 'Owner' && (
             <Button color="secondary" onClick={() => setIsEditing(!isEditing)} disabled={loading}>
               {isEditing ? 'Cancel' : 'Edit'}
             </Button>
