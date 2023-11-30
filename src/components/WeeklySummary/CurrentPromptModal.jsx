@@ -28,14 +28,14 @@ function CurrentPromptModal(props) {
       dispatch(getDashboardDataAI())
         .then(response => {
           if (response) {
-            //console.log('response: ', response.aIPromptText);
+            // console.log('response: ', response.aIPromptText);
             setPrompt(response.aIPromptText);
           } else {
             setPrompt(fallbackPrompt); // Fallback to hardcoded prompt if fetched prompt is empty
           }
         })
         .catch(error => {
-          //console.error('Error fetching AI prompt:', error);
+          // console.error('Error fetching AI prompt:', error);
           setPrompt(fallbackPrompt); // Fallback to hardcoded prompt in case of error
         })
         .finally(() => {
@@ -44,7 +44,7 @@ function CurrentPromptModal(props) {
     }
   }, [modal]);
 
-  //console.log('props.userRole: ', props.userRole);
+  // console.log('props.userRole: ', props.userRole);
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(prompt);
@@ -59,7 +59,7 @@ function CurrentPromptModal(props) {
         setIsEditing(false);
       })
       .catch(error => {
-        //console.error('Error updating AI prompt:', error);
+        // console.error('Error updating AI prompt:', error);
         toast.error('Failed to update prompt.');
       })
       .finally(() => {
