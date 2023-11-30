@@ -100,6 +100,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
 
+  INTERACT_WITH_CHATGPT: `${APIEndpoint}/interactWithChatGPT`,
+
 
 
   //reasons endpoints

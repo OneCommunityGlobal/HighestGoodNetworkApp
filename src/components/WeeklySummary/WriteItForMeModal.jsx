@@ -11,6 +11,9 @@ import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth';
 import { boxStyle } from 'styles';
 import { refreshToken } from '../../actions/authActions';
 import httpService from 'services/httpService';
+import { ApiEndpoint } from '../../utils/URL';
+
+const APIEndpoint = ApiEndpoint;
 
 const WriteItForMeModal = () => {
   const [modal, setModal] = useState(false);
@@ -23,30 +26,26 @@ const WriteItForMeModal = () => {
     console.log('fetchSummary called');
     const token = localStorage.getItem(tokenKey);
 
-    fetch('http://localhost:4500/api/interactWithChatGPT', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+    httpService.post(`${APIEndpoint}/interactWithChatGPT`)
+    .then(response => {
+      console.log('Response received:', response);
+      if (response.ok) {
+        return response.json(); // Assuming the response needs to be parsed as JSON
+      } else {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
     })
-      .then(response => {
-        console.log('Response received');
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Data:', data); // Log the data
-        // Assuming the API returns the summary in the 'response' field of the JSON.
-        setSummary(data.response);
-        toggle(); // Show the modal after fetching the summary
-      })
-      .catch(error => {
-        console.error('Error fetching summary:', error);
-        toast.error('Failed to fetch summary');
-      });
+    .then(summaryData => {
+      console.log('Summary:', summaryData);
+      // setSummary(summaryData.response);
+      toggle(); // Call the toggle function after receiving the summary
+      // Perform additional actions with summaryData if necessary
+    })
+    .catch(error => {
+      console.error('Error during fetchSummary:', error);
+      // toast.error('Failed to fetch summary');
+    });
+
   };
 
   const handleCopyToClipboard = () => {
