@@ -240,20 +240,17 @@ export class WeeklySummariesReport extends Component {
       const foundSummary = summaries.find(obj => obj._id === userId);
       foundSummary.teamCode = newTeamCode;
 
-      // console.log(selectedCodes);
-      // console.log(teamCodes);
-      // console.log(foundSummary);
-
       // within teamCodes, decrease num on label for oldTeamCode 
       const foundOldTeam = teamCodes.find(obj => obj.value === oldTeamCode);
       let foundOldTeamLabelNum = Number(regExp.exec(foundOldTeam.label)[1]);
       // if that num of label is 1 (and will become 0), remove that teamCode entirely from teamCode
       if (foundOldTeamLabelNum === 1) {
+        console.log(`this is the oldTeamCode w/ 1 person and will be removed - ${oldTeamCode}`);
         const foundOldTeamIndex = teamCodes.findIndex(obj => obj.value === oldTeamCode);
         teamCodes.splice(foundOldTeamIndex, 1);
         // remove non-existent oldTeamCode from selection
-        const foundSelectedOldTeam = selectedCodes.find(obj => obj.value === oldTeamCode);
-        selectedCodes.splice(foundSelectedOldTeam, 1);
+        const foundSelectedOldTeamIndex = selectedCodes.findIndex(obj => obj.value === oldTeamCode);
+        selectedCodes.splice(foundSelectedOldTeamIndex, 1);
       }
       // otherwise, subtract 1 from the oldTeam label number
       else {
@@ -268,11 +265,12 @@ export class WeeklySummariesReport extends Component {
         foundNewTeamLabelNum += 1;
         foundNewTeam.label = `${newTeamCode} (${foundNewTeamLabelNum})`;
       }
-      // if newTeam code does not exist, create a team code with value of newTeamCode & label of newTeamCode (1)
+      // else newTeam code does not exist, create a team code with value of newTeamCode & label of newTeamCode (1)
       else {
         teamCodes.push({ label: `${newTeamCode} (1)`, value: newTeamCode });
       }
       teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+
       return {
         selectedCodes: [...selectedCodes],
         teamCodes: [...teamCodes],
