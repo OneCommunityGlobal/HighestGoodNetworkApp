@@ -99,6 +99,7 @@ export const ENDPOINTS = {
   SETUP_NEW_USER_PROFILE: () =>
     `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+  ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
 
 
@@ -124,11 +125,11 @@ export const ENDPOINTS = {
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
-  BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`,
-  BM_USER_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
+  BM_MATERIALS: `${APIEndpoint}/bm/materials`,
+  BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`
-
 };
 
 export const ApiEndpoint = APIEndpoint;

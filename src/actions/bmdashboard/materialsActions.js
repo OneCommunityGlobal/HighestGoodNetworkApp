@@ -10,7 +10,7 @@ import { GET_ERRORS } from "constants/errors";
 
 export const fetchAllMaterials = () => {
   return async dispatch => {
-    axios.get(ENDPOINTS.BM_MATERIALS_LIST)
+    axios.get(ENDPOINTS.BM_MATERIALS)
       .then(res => {
         dispatch(setMaterials(res.data))
       })
@@ -59,6 +59,16 @@ export const postMaterialUpdateBulk = (payload) => {
         }
       })
   }
+}
+
+export const purchaseMaterial = async (body) => {
+  return axios.post(ENDPOINTS.BM_MATERIALS, body)
+    .then(res => res)
+    .catch((err) => {
+      if (err.response) return err.response
+      else if (err.request) return err.request
+      else return err.message
+    })
 }
 
 export const setMaterials = payload => {

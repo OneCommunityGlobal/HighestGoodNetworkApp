@@ -6,16 +6,16 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import Select from 'react-select';
-import { fetchUserActiveBMProjects } from 'actions/bmdashboard/projectsActions';
+import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
 
 function UpdateMaterialsBulkInputs({ date, setDate, project, setProject }) {
 
   const dispatch = useDispatch()
-  const projects = useSelector(state => state.bmProjects.projects)
+  const projects = useSelector(state => state.bmProjects)
   const [formattedProjects, setFormattedProjects] = useState([]);
   const today = moment(new Date()).format('YYYY-MM-DD')
   useEffect(() => {
-    dispatch(fetchUserActiveBMProjects())
+    dispatch(fetchBMProjects())
   }, [])
 
   useEffect(() => {
