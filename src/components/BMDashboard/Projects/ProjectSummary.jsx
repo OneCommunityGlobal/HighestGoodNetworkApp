@@ -32,44 +32,45 @@ function ProjectSummary({ project }) {
       </Row>
       <Row className="project-summary_item mx-auto">
         <Col xs="6">
-          <Label className="project-summary_label">Wastage:</Label>
+          {/* TO DO: */}
+          <Label className="project-summary_label">Waste:</Label>
         </Col>
         <Col xs="6">
-          <span className="project-summary_span">TBD</span>
-        </Col>
-      </Row>
-      <Row className="project-summary_item mx-auto">
-        <Col xs="6">
-          <Label className="project-summary_label">No of teams:</Label>
-        </Col>
-        <Col xs="6">
-          <span className="project-summary_span">{project.teamCount}</span>
+          <span className="project-summary_span">___ of ____ has been wasted!</span>
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
         <Col xs="6">
-          <Label className="project-summary_label">Total number of tools or equipment: </Label>
+          <Label className="project-summary_label">Total members:</Label>
         </Col>
         <Col xs="6">
-          <span className="project-summary_span">5</span>
-        </Col>
-      </Row>
-      <Row className="project-summary_item mx-auto">
-        <Col xs="6">
-          <Label className="project-summary_label">Equipment return due in 72hrs:</Label>
-        </Col>
-        <Col xs="6">
-          <span className="project-summary_span">Yes</span>
+          <span className="project-summary_span">{project.members.length}</span>
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
         <Col xs="6">
-          <Label className="project-summary_label">
-            Number of materials with quantity less than 20% left:
-          </Label>
+          <Label className="project-summary_label">Rentals:</Label>
         </Col>
         <Col xs="6">
-          <span className="project-summary_span">None</span>
+          <span className="project-summary_span">Excavator 2 rental ends in 72 hours!</span>
+        </Col>
+      </Row>
+      <Row className="project-summary_item mx-auto">
+        <Col xs="6">
+          {/* TO DO: */}
+          <Label className="project-summary_label">Most material bought:</Label>
+        </Col>
+        <Col xs="6">
+          <span className="project-summary_span">___of ___ purchased for this project</span>
+        </Col>
+      </Row>
+      <Row className="project-summary_item mx-auto">
+        <Col xs="6">
+          {/* TO DO: */}
+          <Label className="project-summary_label">Stock:</Label>
+        </Col>
+        <Col xs="6">
+          <span className="project-summary_span">___ is nearly out of stock (___ remaining)</span>
         </Col>
       </Row>
     </div>
