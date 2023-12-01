@@ -96,17 +96,24 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       .put(url, newUserInfo)
       .then(res => {
         res.data;
-      })
-      .catch(err => console.log(err));
-    getAllUsers();
-
-    const SUCCESS_MESSAGE = `
+        const SUCCESS_MESSAGE = `
         Permission has been updated successfully. Be sure to tell them that you are changing these
         permissions and for that they need to log out and log back in for their new permissions to take
         place.`;
-    toast.success(SUCCESS_MESSAGE, {
-      autoClose: 10000,
-    });
+        toast.success(SUCCESS_MESSAGE, {
+          autoClose: 10000,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        const ERROR_MESSAGE = `
+        Permission updated failed. ${err}
+        `
+        toast.error(ERROR_MESSAGE, {
+          autoClose: 10000,
+        })
+      });
+    getAllUsers();
   };
   const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
   return (
