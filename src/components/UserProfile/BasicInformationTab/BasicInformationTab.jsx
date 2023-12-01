@@ -15,6 +15,7 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { formatDate } from 'utils/formatDate';
+import { isString } from 'lodash';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
@@ -321,12 +322,21 @@ const BasicInformationTab = props => {
             setTimeZoneFilter(timezone);
             setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
           } else {
-            alert('Invalid location or ' + response.data.status.message);
+            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
+            `);
           }
         })
         .catch(err => console.log(err));
     }
   };
+
+  function locationCheckValue(loc) {
+    if(loc.userProvided) return loc.userProvided
+    const str = isString(loc)
+    return str ? loc : ''
+  }
+
+
   return (
     <div>
       <div data-testid="basic-info-tab" className="basic-info-tab-desktop">
@@ -514,7 +524,7 @@ const BasicInformationTab = props => {
                 <Col className='p-0' style={{marginRight:"10px"}}>
                   <Input
                     onChange={handleLocation}
-                    value={userProfile.location.userProvided || ''}
+                    value={locationCheckValue(userProfile.location)}
                   />
                 </Col>
                 <Col className='p-0'>
