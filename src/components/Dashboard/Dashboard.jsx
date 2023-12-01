@@ -85,6 +85,13 @@ export function Dashboard(props) {
     const today = new Date();
     const lastDismissedDate = lastDismissed ? new Date(lastDismissed) : null;
 
+    // Check if lastDismissed date is ahead of today
+    if (lastDismissedDate > today) {
+      // Clear lastDismissed in both the state and localStorage
+      setLastDismissed(null);
+      localStorage.removeItem(dismissalKey);
+    }
+
     // Check if today is Thursday or the stored date is before the most recent Thursday
     if (!lastDismissed || lastDismissedDate < getMostRecentThursday(today)) {
       if (userDashboardProfile?.teams && userDashboardProfile.teams.length > 0) {
