@@ -15,6 +15,7 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { formatDate } from 'utils/formatDate';
+import { isString } from 'lodash';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
@@ -328,6 +329,14 @@ const BasicInformationTab = props => {
         .catch(err => console.log(err));
     }
   };
+
+  function locationCheckValue(loc) {
+    if(loc.userProvided) return loc.userProvided
+    const str = isString(loc)
+    return str ? loc : ''
+  }
+
+
   return (
     <div>
       <div data-testid="basic-info-tab" className="basic-info-tab-desktop">
@@ -515,7 +524,7 @@ const BasicInformationTab = props => {
                 <Col className='p-0' style={{marginRight:"10px"}}>
                   <Input
                     onChange={handleLocation}
-                    value={userProfile.location.userProvided || ''}
+                    value={locationCheckValue(userProfile.location)}
                   />
                 </Col>
                 <Col className='p-0'>
