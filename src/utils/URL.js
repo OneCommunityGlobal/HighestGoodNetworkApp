@@ -83,6 +83,11 @@ export const ENDPOINTS = {
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
 
+  //titles endpoints
+  TITLES:() => `${APIEndpoint}/title`,
+  TITLE_BY_ID: titleId => `${APIEndpoint}/title/titleId`,
+  CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
+
   PRESETS: () => `${APIEndpoint}/rolePreset`,
   PRESETS_BY_ID: (roleNameOrPresetId) => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
