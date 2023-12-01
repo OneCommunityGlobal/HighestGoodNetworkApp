@@ -144,10 +144,13 @@ textarea {
 .validation-error {
   color: red;
   font-size: small;
+  display: block;
+  margin-bottom: 10px;
 
 }
 .editable-lesson-summary.error {
   border: 1px solid red;
+
 }
 
   @media (max-width: 570px) {

@@ -5,6 +5,7 @@ import Nav from 'react-bootstrap/Nav';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import './LessonCard.css';
+import ReactHtmlParser from 'react-html-parser';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 
 function LessonCard({ dummyData, onEditLessonSummary, onDeliteLessonCard }) {
@@ -39,7 +40,7 @@ function LessonCard({ dummyData, onEditLessonSummary, onDeliteLessonCard }) {
       setValidationError('');
     } else {
       // Show validation error and prevent saving
-      setValidationError('Summary cannot be empty');
+      setValidationError('Summary cannot be empty.');
     }
   };
 
@@ -103,7 +104,7 @@ function LessonCard({ dummyData, onEditLessonSummary, onDeliteLessonCard }) {
                     value={editableLessonSummary}
                     onChange={e => setEditableLessonSummary(e.target.value)}
                   />
-                  {validationError && <div className="validation-error">{validationError}</div>}
+                  {validationError && <span className="validation-error">{validationError}</span>}
                   <button type="submit" onClick={() => handleSaveEdit(lesson.id)}>
                     Save
                   </button>
@@ -112,16 +113,16 @@ function LessonCard({ dummyData, onEditLessonSummary, onDeliteLessonCard }) {
                   </button>
                 </>
               ) : (
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      lesson.lessonSummary.length > maxSummaryLength
-                        ? `${lesson.lessonSummary.slice(0, maxSummaryLength)}...`
-                        : lesson.lessonSummary,
-                  }}
-                />
+                <span>
+                  {ReactHtmlParser(
+                    lesson.lessonSummary.length > maxSummaryLength
+                      ? `${lesson.lessonSummary.slice(0, maxSummaryLength)}...`
+                      : lesson.lessonSummary,
+                  )}
+                </span>
               )}
             </Card.Text>
+
             <Card.Text className="card-tag-and-file">
               File: <span className="lesson-file">{lesson.file}</span>
             </Card.Text>

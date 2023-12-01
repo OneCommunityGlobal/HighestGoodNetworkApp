@@ -1,8 +1,7 @@
-import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle } from 'styles';
 
-const DeleteLessonCardPopUp = ({ open, setDeletePopup, deleteLesson, lessonId }) => {
+function DeleteLessonCardPopUp({ open, setDeletePopup, deleteLesson, lessonId }) {
   const closePopup = () => {
     setDeletePopup(false);
   };
@@ -30,6 +29,6 @@ const DeleteLessonCardPopUp = ({ open, setDeletePopup, deleteLesson, lessonId })
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default DeleteLessonCardPopUp;
