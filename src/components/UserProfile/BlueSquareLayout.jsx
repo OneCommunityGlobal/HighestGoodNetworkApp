@@ -12,6 +12,8 @@ import { addReason, patchReason } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
 import { Modal } from 'react-bootstrap';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+
 
 const BlueSquareLayout = props => {
   const fetchingReducer = (state, action) => {
@@ -125,6 +127,14 @@ const BlueSquareLayout = props => {
 
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
         <div className="mt-4 w-100">
+          <div align = "right">
+            <EditableInfoModal
+                  areaName="blueSquares_info"
+                  areaTitle="Blue Squares"
+                  fontSize={24}
+                  isPermissionPage
+                />
+          </div>
           <Button
             variant="primary"
             onClick={handleOpen}
@@ -142,6 +152,7 @@ const BlueSquareLayout = props => {
             )}
           </Button>
         </div>
+
         {show && (
           <Modal show={show} onHide={handleClose}>
             <ScheduleReasonModal
