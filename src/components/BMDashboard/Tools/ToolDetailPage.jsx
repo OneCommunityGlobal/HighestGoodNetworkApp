@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchToolById } from 'actions/bmdashboard/toolActions';
 import { Container, Button } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 import ToolModal from './ToolModal';
 import './ToolDetailPage.css';
 
-// TO DO: connect to redux storage, fetch request to backend and fetch single tool data by toolID, remove dummy tool
+// TO DO: add fields to buildingtool model and extract them here, replace dummy tool
 
 const dummyTool = {
   toolId: 1,
@@ -102,6 +104,15 @@ function RentalDurationItem({ label, from, to }) {
 
 function ToolDetailPage() {
   const history = useHistory();
+  const singleTool = useSelector(state => state.tool);
+
+  console.log('Tool', singleTool);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchToolById('656a1799cbe9ebb0521ae8e3'));
+  }, []);
 
   const generateKey = () => uuidv4();
 
