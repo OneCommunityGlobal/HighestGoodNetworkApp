@@ -11,7 +11,7 @@ thead {
 }
 
 #projects__active {
-  width: 10px;
+  width: auto;
 }
 
 #projects__category {

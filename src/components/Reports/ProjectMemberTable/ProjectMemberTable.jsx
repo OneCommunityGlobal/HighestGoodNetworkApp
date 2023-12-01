@@ -8,6 +8,18 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
   const { fetched, foundUsers, members } = projectMembers;
+  const [copyMessage, setCopyMessage ] = useState("Copy id to clipboard")
+
+  const copyContent = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      console.log('Id copied to clipboard');
+      setCopyMessage("Copied!")
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  }
+
 
   useEffect(() => {
     if (fetched) {
@@ -34,10 +46,10 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
 
   const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
     <div className="project-member-table-row" id={'tr_' + member._id} key={'ac_' + member._id}>
-      <div>
+      <div className='projectId'>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile">
+      <Link className='projectProfile' to={`/userprofile/${member._id}`} title="View Profile">
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
         </div>
@@ -52,6 +64,9 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
             <i className="fa fa-circle-o" aria-hidden="true"></i>
           </div>
         )}
+      </div>
+      <div className='member_id' onClick={()=>copyContent(member._id)} onMouseEnter={()=>setCopyMessage("Copy id to clipboard")}>{member._id}
+      <div>{copyMessage}</div>
       </div>
       <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>      
     </div>
@@ -104,13 +119,14 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
             : handleMemberCount(activeMemberList.length)}
         </div>
       </div>
+      <div className='scroll_x'>
       <div className="reports-table-head-members">
         <div className="reports-table-head-cell">#</div>
         <div className="reports-table-head-cell">Name</div>
         <div className="reports-table-head-cell">Active</div>
         <div className="reports-table-head-cell">ID</div>
       </div>
-      <div>
+    
         {memberFilter == 'all-time' ? (
           allMemberTable.length > 0 ? (
             allMemberTable
