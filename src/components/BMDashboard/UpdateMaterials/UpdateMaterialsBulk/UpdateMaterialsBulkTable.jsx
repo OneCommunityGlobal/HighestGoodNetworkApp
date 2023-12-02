@@ -25,7 +25,7 @@ function UpdateMaterialsBulkTable({ date, project, setProject }) {
     setCancel(prev => (prev === 1 ? 2 : 1));
   };
 
-  //call fetch on load and update(after result)
+  // call fetch on load and update(after result)
   useEffect(() => {
     dispatch(fetchAllMaterials());
   }, [postMaterialUpdateBulkResult.result]);
