@@ -58,11 +58,11 @@ export const Badges = props => {
       <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
         <CardHeader>
           <div className="badge-header">
-            <div className="badge-header d-flex align-items-center">
-              <span className="badge-header-title">
+           
+              <span>
                 Featured Badges
               </span>
-              <span>
+              <span className="badge-header-title">
                 <EditableInfoModal
                   areaName="FeaturedBadgesInfoPoint"
                   areaTitle="Featured Badges"
@@ -71,8 +71,8 @@ export const Badges = props => {
                   role={props.role}
                 />
               </span>
-            </div>
-            <div>
+        
+            <div >
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
