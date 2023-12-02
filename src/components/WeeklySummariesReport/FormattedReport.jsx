@@ -32,11 +32,11 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 
 const textColors = {
   Default: '#000000',
@@ -127,22 +127,38 @@ function EmailsList({summaries, auth}){
       return(
         <>
         <div className="d-flex align-items-center">
-            <h4>Emails</h4>
-            <Tooltip placement="top" isOpen={tooltipOpen} target="emailIcon" toggle={toggleTooltip}>
-              Launch the email client, organizing the recipient email addresses into batches, each
-              containing a maximum of 90 addresses.
-            </Tooltip>
-            <FontAwesomeIcon
-              className="ml-2"
-              onClick={handleEmailButtonClick}
-              icon={faMailBulk}
-              size="lg"
-              style={{ color: '#0f8aa9', cursor: 'pointer' }}
-              id="emailIcon"
-            />
+          <h4>Emails</h4>
+          <Tooltip
+            placement="top"
+            isOpen={emailTooltipOpen}
+            target="emailIcon"
+            toggle={toggleEmailTooltip}
+          >
+            Launch the email client, organizing the recipient email addresses into batches, each
+            containing a maximum of 90 addresses.
+          </Tooltip>
+          <FontAwesomeIcon
+            className="mx-2"
+            onClick={handleEmailButtonClick}
+            icon={faMailBulk}
+            size="lg"
+            style={{ color: '#0f8aa9', cursor: 'pointer' }}
+            id="emailIcon"
+          />
+          <Tooltip
+            placement="top"
+            isOpen={copyTooltipOpen}
+            target="copytoclipboard"
+            toggle={toggleCopyTooltip}
+          >
+            Click to copy all emails.
+          </Tooltip>
+          <div id="copytoclipboard">
+            <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
           </div>
-          <p>{emails.join(', ')}</p>
-          </>
+        </div>
+        <p>{emails.join(', ')}</p>
+        </>
       )
     }else {
       return null;
@@ -165,9 +181,7 @@ function ReportDetails({
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-  if(summary.lastName === "lallouache"){
-    console.log(summary)
-  }
+
   return (
     <li className="list-group-item px-0" ref={ref}>
       <ListGroup className="px-0" flush>
@@ -196,13 +210,18 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem>
-              <b style={{color: textColors[summary?.weeklySummaryOption] || textColors.Default}}>
+              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
                 Hours logged:
               </b>
-              {(hoursLogged >= summary.promisedHoursByWeek[weekIndex])
-                ? <p>{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</p>
-                : <span className="ml-2">{hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}</span>
-              }
+              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
+                <p>
+                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                </p>
+              ) : (
+                <span className="ml-2">
+                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                </span>
+              )}
             </ListGroupItem>
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
