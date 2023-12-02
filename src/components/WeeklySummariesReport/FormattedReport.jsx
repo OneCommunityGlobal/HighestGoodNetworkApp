@@ -91,6 +91,8 @@ function FormattedReport({
 }
 
 function EmailsList({ summaries, auth }) {
+  const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
+  const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
   if (auth?.user?.role) {
     const { role } = auth.user;
     if (role === 'Administrator' || role === 'Owner') {
@@ -117,8 +119,6 @@ function EmailsList({ summaries, auth }) {
           }, index * 2000);
         });
       };
-      const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
-      const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
 
       const toggleEmailTooltip = () => {
         setEmailTooltipOpen(!emailTooltipOpen);
