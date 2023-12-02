@@ -61,7 +61,7 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: [],
       teamCodes: [],
       colorOptions: [],
-      auth:[],
+      auth: [],
     };
   }
 
@@ -423,7 +423,7 @@ export class WeeklySummariesReport extends Component {
                         badges={badges}
                         loadBadges={loadBadges}
                         canEditTeamCode={this.codeEditPermission}
-                        auth = {auth}
+                        auth={auth}
                       />
                     </Col>
                   </Row>
