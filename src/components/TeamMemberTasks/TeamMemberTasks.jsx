@@ -11,6 +11,7 @@ import { getTeamMemberTasksData } from './selectors';
 import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
 import { fetchAllManagingTeams } from '../../actions/team';
+import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
@@ -48,6 +49,9 @@ const TeamMemberTasks = React.memo(props => {
 
   //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
   const [userRole, setUserRole] = useState('');
+
+  //get weekly summary
+  const [summary, setSummary] = useState([]);
 
   //function to get user's role if the current user's id is different from the authenticated user
   function getUserRole(userId) {
@@ -98,6 +102,7 @@ const TeamMemberTasks = React.memo(props => {
     if (isLoading === false && shouldRun) {
       renderTeamsList();
       closeMarkAsDone();
+      getSummary();
     }
   }, [usersWithTasks, shouldRun]);
 
@@ -194,7 +199,7 @@ const TeamMemberTasks = React.memo(props => {
 
     const taskResponse = await userListTasksRequest(userIds);
     const usersListTasks = taskResponse.data;
-
+    
     //2. Generate array of past 24/48 hrs timelogs
     usersListTasks.map(entry => {
       const threeDaysAgo = moment()
@@ -314,6 +319,13 @@ const TeamMemberTasks = React.memo(props => {
   // useEffect(() => {
   //   loadFunc();
   // }, [teamList]);
+
+  const getSummary =  async() => {
+    const summar = await dispatch(getWeeklySummariesReport());
+    setSummary([...summar.data])
+    console.log(summary)
+  }
+  
 
   return (
     <div className="container team-member-tasks">
@@ -457,6 +469,7 @@ const TeamMemberTasks = React.memo(props => {
                       roles={props.roles}
                       userPermissions={props.userPermissions}
                       userId={userId}
+                      summary={summary}
                     />
                   );
                 } else {
@@ -509,4 +522,5 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   getUserProfile,
   fetchAllManagingTeams,
+  getWeeklySummariesReport,
 })(TeamMemberTasks);

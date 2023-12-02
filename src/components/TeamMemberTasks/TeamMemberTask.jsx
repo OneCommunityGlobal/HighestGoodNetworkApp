@@ -13,9 +13,9 @@ import ReviewButton from './ReviewButton';
 import { useDispatch } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
-import googleDocIconGray from './google_doc_icon_gray.png';
-import googleDocIconPng from './google_doc_icon.png';
-import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import googleDocIconGray from 'components/WeeklySummariesReport/google_doc_icon_gray.png';
+import googleDocIconPng from 'components/WeeklySummariesReport/google_doc_icon.png';
+import { toast } from 'react-toastify';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -29,6 +29,7 @@ const TeamMemberTask = React.memo(
     userRole,
     userId,
     updateTaskStatus,
+    summary,
   }) => {
     const ref = useRef(null);
 
@@ -61,6 +62,7 @@ const TeamMemberTask = React.memo(
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
+    
 
     const thisWeekHours = user.totaltangibletime_hrs;
 
@@ -69,21 +71,44 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
-    const isAllowedToSeeGoogleDoc = userRole !== 'Volunteer';
     //^^^
 
     const dispatch = useDispatch();
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
-    const googleDocIcon = isAllowedToSeeGoogleDoc ? googleDocIconPng : googleDocIconGray;
-    const res = getWeeklySummariesReport();
-    const summaries = res?.data?? '';
-    // 2. shallow copy and sort
-    let summariesCopy = [...summaries];
-    // summariesCopy = this.alphabetize(summariesCopy);
-    // console.log(summariesCopy)
+    const [googleDocLink,googleDocIcon] = useMemo(() => {
+      let Link = "";
+      for (let i = 0; i < summary.length; i++) {
+        let sumy = summary[i];
+        if (sumy._id !== undefined && sumy._id !== null && sumy._id == user.personId) {
+          Link = sumy.mediaUrl;
+          break;
+        }
+      }
+      let googleDocUrl = "https://docs.google.com/document/";
+      if(typeof(Link)!='string'||Link.search(googleDocUrl)==-1){
+        Link = "";
+      }
+      let googleDocIcon = Link == ''?googleDocIconGray:googleDocIconPng;
+      return [Link, googleDocIcon];
+    }, [summary]);
     
+    const handleGoogleDocClick = googleDocLink => {
+      const toastGoogleLinkDoesNotExist = 'toast-on-click';
+      if (googleDocLink !== "") {
+        window.open(googleDocLink);
+      } else {
+        toast.error(
+          'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
+          {
+            toastId: toastGoogleLinkDoesNotExist,
+            pauseOnFocusLoss: false,
+            autoClose: 3000,
+          },
+        );
+      }
+    };
 
     const handleTruncateTasksButtonClick = () => {
       if (!isTruncated) {
@@ -148,18 +173,13 @@ const TeamMemberTask = React.memo(
                             <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
                           </div>
                           <div className="team-member-google-doc-icon">
-                            <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
-                            {isAllowedToSeeGoogleDoc ? (
-                              <>
-                                &nbsp;&nbsp;
-                                <Link
-                                  to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
-                                  data-testid={`${task.taskName}`}
-                                >
-                                  <span>{`${task.num} ${task.taskName}`} </span>
-                                </Link>
-                              </>
-                            ) : null}
+                            <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+                              <img
+                                className="google-doc-icon"
+                                src={googleDocIcon}
+                                alt="google_doc"
+                              />
+                            </span>
                           </div>
                           <div className="team-member-tasks-icons">
                             {task.taskNotifications.length > 0 &&
