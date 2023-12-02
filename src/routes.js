@@ -48,7 +48,7 @@ import BMLogin from './components/BMDashboard/Login';
 import MaterialsList from './components/BMDashboard/MaterialsList';
 import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
-import UpdateMaterialsBulk from 'components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk';
+import UpdateMaterialsBulk from './components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk';
 
 
 
