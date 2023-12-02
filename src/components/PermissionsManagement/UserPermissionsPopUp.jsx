@@ -11,6 +11,7 @@ import { ENDPOINTS } from 'utils/URL';
 import { boxStyle } from 'styles';
 
 const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) => {
+
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -66,7 +67,9 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       autoClose: 10000,
     });
   };
-
+  useEffect(() => {
+    refInput.current.focus();
+  }, []);
   return (
     <>
     <Form
@@ -99,7 +102,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
         <Input
           type="text"
           value={searchText}
-          ref={refInput}
+          innerRef={refInput}
           onFocus={e => {
             setIsInputFocus(true);
             setIsOpen(true);
@@ -108,6 +111,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
             onInputChange(e.target.value);
             setIsOpen(true);
           }}
+          placeholder="Shows only ACTIVE users"
         />
         {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
           <div
@@ -126,7 +130,9 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                     .toLowerCase()
                     .includes(searchText.toLowerCase())
                 ) {
-                  return user;
+                  if (user.isActive) {
+                    return user;
+                  }
                 }
               })
               .map(user => (
