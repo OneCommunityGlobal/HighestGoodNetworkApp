@@ -28,7 +28,11 @@ import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+
+// bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
+import { bmProjectReducer } from './bmdashboard/projectReducer';
+import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer"
 
 export default combineReducers({
@@ -63,6 +67,10 @@ export default combineReducers({
   ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
-  materials: materialsReducer, 
+
+  // bmdashboard
+  materials: materialsReducer,
+  bmProjects: bmProjectReducer,
+  bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
 });

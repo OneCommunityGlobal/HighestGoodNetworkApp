@@ -123,14 +123,18 @@ export const getAllUserTeams = () => {
 /**
  * posting new team
  */
-export const postNewTeam = (name, status) => {
-  const data = { teamName: name, isActive: status };
-  // const url = ENDPOINTS.TEAM
-  const teamCreationPromise = axios.post(ENDPOINTS.TEAM, data);
-  return (dispatch) => {
-    teamCreationPromise.then((res) => {
-      dispatch(addNewTeam(res.data, true));
-    });
+export const postNewTeam = (name) => {
+  const data = { teamName: name };
+  const url = ENDPOINTS.TEAM;
+  return async (dispatch) => {
+    try {
+      const teamCreateResponse = await axios.post(url, data);
+      dispatch(addNewTeam(teamCreateResponse.data, true));
+      return teamCreateResponse;
+    } catch (error) {
+      return error.response.data.error;
+    }
+
   };
 };
 
@@ -139,11 +143,15 @@ export const postNewTeam = (name, status) => {
  * @param {*} teamId  - the team to be deleted
  */
 export const deleteTeam = (teamId) => {
-  const deleteTeamPromise = axios.delete(ENDPOINTS.TEAM_DATA(teamId));
+  const url = ENDPOINTS.TEAM_DATA(teamId)
   return async (dispatch) => {
-    deleteTeamPromise.then(() => {
+    try {
+      const deleteTeamResponse = await axios.delete(url);
       dispatch(teamsDeleteAction(teamId));
-    });
+      return deleteTeamResponse;
+    } catch (error) {
+      return error.response.data.error;
+    }
   };
 };
 
@@ -152,11 +160,15 @@ export const deleteTeam = (teamId) => {
  */
 export const updateTeam = (teamName, teamId, isActive, teamCode) => {
   const requestData = { teamName, isActive, teamCode };
-  const deleteTeamPromise = axios.put(ENDPOINTS.TEAM_DATA(teamId), requestData);
+  const url = ENDPOINTS.TEAM_DATA(teamId);
   return async (dispatch) => {
-    deleteTeamPromise.then(() => {
+    try {
+      const updateTeamResponse = await axios.put(url, requestData);
       dispatch(updateTeamAction(teamId, isActive, teamName, teamCode));
-    });
+      return updateTeamResponse;
+    } catch (error) {
+      return error.response.data.error;
+    }
   };
 };
 
