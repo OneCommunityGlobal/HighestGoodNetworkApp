@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 
-import RecordsModal from './RecordsModal';
-import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
 import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import { useDispatch } from 'react-redux';
+import RecordsModal from './RecordsModal';
+import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
 
 export default function MaterialsTable({ filteredMaterials }) {
   const dispatch = useDispatch();
@@ -13,15 +13,15 @@ export default function MaterialsTable({ filteredMaterials }) {
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
 
-  //Update Material Form
+  // Update Material Form
   const [updateModal, setUpdateModal] = useState(false);
-  const [updateRecord, setUpdateRecord] = useState(null)
+  const [updateRecord, setUpdateRecord] = useState(null);
 
   const handleEditRecordsClick = (selectedMaterial, type) => {
-    if (type == 'Update') {
-      dispatch(resetMaterialUpdate())
+    if (type === 'Update') {
+      dispatch(resetMaterialUpdate());
       setUpdateModal(true);
-      setUpdateRecord(selectedMaterial)
+      setUpdateRecord(selectedMaterial);
     }
   };
 
@@ -40,11 +40,7 @@ export default function MaterialsTable({ filteredMaterials }) {
         setRecord={setRecord}
         recordType={recordType}
       />
-      <UpdateMaterialModal
-        modal={updateModal}
-        setModal={setUpdateModal}
-        record={updateRecord}
-      />
+      <UpdateMaterialModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       <div className="materials_table_container">
         <Table>
           <thead>

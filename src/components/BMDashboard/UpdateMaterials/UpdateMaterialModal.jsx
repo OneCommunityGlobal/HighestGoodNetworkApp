@@ -1,22 +1,18 @@
-import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import UpdateMaterial from './UpdateMaterial';
-import './UpdateMaterial.css'
+import './UpdateMaterial.css';
 
 function UpdateMaterialModal({ modal, setModal, record }) {
   if (record) {
-
     const toggle = () => {
       setModal(false);
     };
 
     return (
       <Modal isOpen={modal} size="md">
-        <ModalHeader>
-          Update Material Form
-        </ModalHeader>
+        <ModalHeader>Update Material Form</ModalHeader>
         <ModalBody>
-          <div className='updateModalContainer' >
+          <div className="updateModalContainer">
             <UpdateMaterial setModal={setModal} record={record} />
           </div>
         </ModalBody>
@@ -26,8 +22,7 @@ function UpdateMaterialModal({ modal, setModal, record }) {
       </Modal>
     );
   }
-  else
-    return null;
+  return null;
 }
 
 export default UpdateMaterialModal;

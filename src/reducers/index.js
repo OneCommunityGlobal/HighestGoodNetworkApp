@@ -33,8 +33,6 @@ import { mouseoverTextReducer } from './mouseoverTextReducer';
 import { materialsReducer } from './bmdashboard/materialsReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
-import { bmUpdateMaterialsReducer } from './bmdashboard/updateMaterialReducer';
-import { bmUpdateMaterialsBulkReducer } from './bmdashboard/updateMaterialBulkReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -72,7 +70,5 @@ export default combineReducers({
   // bmdashboard
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
-  bmInvTypes: bmInvTypeReducer,
-  updateMaterials: bmUpdateMaterialsReducer,
-  updateMaterialsBulk: bmUpdateMaterialsBulkReducer
+  bmInvTypes: bmInvTypeReducer
 });

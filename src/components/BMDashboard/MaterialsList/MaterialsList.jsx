@@ -13,13 +13,13 @@ export function MaterialsList(props) {
   const [filteredMaterials, setFilteredMaterials] = useState(materials);
   const [selectedProject, setSelectedProject] = useState('all');
   const [isError, setIsError] = useState(false);
-  const postMaterialUpdateResult = useSelector(state => state.updateMaterials)
+  const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
 
-  // dispatch materials fetch action
-  // response is mapped to materials or errors in redux store
+  // dispatch materials fetch action : on load and update
+  // // response is mapped to materials or errors in redux store
   useEffect(() => {
     dispatch(fetchAllMaterials());
-  }, [postMaterialUpdateResult.result]); //To refresh with new materials after update
+  }, [postMaterialUpdateResult.result]); // To refresh with new materials after update
 
   // filter materials data by project
   useEffect(() => {
@@ -59,7 +59,7 @@ export function MaterialsList(props) {
 }
 
 const mapStateToProps = state => ({
-  materials: state.materials,
+  materials: state.materials.materialslist,
   errors: state.errors,
 });
 

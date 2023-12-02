@@ -71,12 +71,12 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.updateRecord.map((data, idx) => {
+          {record.updateRecord.map(data => {
             return (
-              <tr key={idx}>
+              <tr key={data.date.toString() + data.createdBy._id}>
                 <td>{moment.utc(data.date).format('LL')}</td>
-                <td>{data.quantityUsed + ' ' + record.itemType?.unit || '-'}</td>
-                <td>{data.quantityWasted + ' ' + record.itemType?.unit || '-'}</td>
+                <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
+                <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
                 <td>
                   <a href={`/userprofile/${data.createdBy._id}`}>
                     {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
