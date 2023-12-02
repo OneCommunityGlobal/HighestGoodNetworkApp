@@ -9,7 +9,7 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import { fetchAllProjects } from 'actions/projects';
+import { fetchAllProjects } from '../../../actions/projects';
 
 import AddUserProfile from './UserProfileAdd';
 
