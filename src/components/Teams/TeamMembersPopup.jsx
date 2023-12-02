@@ -45,31 +45,18 @@ export const TeamMembersPopup = React.memo(props => {
   */
   const sortList = (sort = 0) => {
     let sortedList = []
-    let newList = []
 
     if (sort === 0) {
-
-      let roleArr = [{ priority: 1, role: "owner" }, { priority: 2, role: "administrator" },
-      { priority: 3, role: "core team" }, { priority: 4, role: "manager" }, { priority: 5, role: 'mentor' },
-      { priority: 6, role: "assistant manager" }, { priority: 7, role: "volunteer" }]
- 
-      props.usersdata.userProfiles.map(elem => {
-        props.members.teamMembers.map(team => {
-          if (elem._id == team._id) {
-            sortedList.push(elem)
-          }
-        })
-      })
-      sortedList.map((elem, i) => {
-        roleArr.map(role => {
-          if (elem.role.toLowerCase() == role["role"]) {
-            let o = Object.assign({}, elem)
-            o.priority = role['priority']
-            newList.push(o)
-          }
-        })
-      })
-      sortedList = newList.sort((a, b) => a.priority - b.priority)
+      const groupByPermissionList = props.members?.teamMembers?.reduce((pre, cur) => {
+        const role = cur.role;
+        pre[role] ? pre[role].push(cur) : pre[role] = [cur]
+        return pre;
+      }, {}) ?? {}
+      sortedList = Object.keys(groupByPermissionList)
+        .sort(sortByPermission)
+        .map(key => groupByPermissionList[key])
+        .map(list => list.toSorted(sortByAlpha))
+        .flat()
     } else {
       const sortByDateList = props.members.teamMembers.toSorted((a, b) => {
         return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
@@ -85,7 +72,6 @@ export const TeamMembersPopup = React.memo(props => {
         sortedList.push(...item.toSorted(sortByAlpha));
       });
     }
-
     setMemberList(sortedList);
   }
 
@@ -98,7 +84,21 @@ export const TeamMembersPopup = React.memo(props => {
     const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
     const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
     return nameA.localeCompare(nameB);
-  })
+  }, [])
+
+  const sortByPermission = useCallback((a, b) => {
+    // Sort by index
+    const rolesPermission = [
+      "owner",
+      "administrator",
+      "core team",
+      "manager",
+      "mentor",
+      "assistant manager",
+      "volunteer"
+    ]
+    return rolesPermission.indexOf(a.toLowerCase()) - rolesPermission.indexOf(b.toLowerCase());
+  }, [])
 
   const icons = {
     '-1': { icon: faSortUp },
@@ -113,7 +113,7 @@ export const TeamMembersPopup = React.memo(props => {
       }
       return 1;
     })
-  })
+  }, [])
 
   useEffect(() => {
     sortList(sortOrder)
@@ -146,6 +146,7 @@ export const TeamMembersPopup = React.memo(props => {
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <tr>
+                <th>Active</th>
                 <th>#</th>
                 <th>User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>Date Added <FontAwesomeIcon {...icons[sortOrder]} /></th>
@@ -154,10 +155,16 @@ export const TeamMembersPopup = React.memo(props => {
             </thead>
             <tbody>
               {props.members.teamMembers.length > 0 &&
-                memberList.toSorted().map((user, index) => (
-                  <tr key={`team_member_${index}`}>
+                memberList.toSorted().map((user, index) => {
+                  return (<tr key={`team_member_${index}`}>
+                    <td>
+                      <span className={user.isActive ? "isActive" : "isNotActive"}>
+                        <i className="fa fa-circle" aria-hidden="true" />
+                      </span>
+                    </td>
                     <td>{index + 1}</td>
                     <td>{returnUserRole(user) ? <b>{user.firstName} {user.lastName} ({user.role})</b> : <span>{user.firstName} {user.lastName} ({user.role})</span>} </td>
+                    {/* <td>{user}</td> */}
                     <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
                     {canAssignTeamToUsers && (
                       <td>
@@ -170,8 +177,8 @@ export const TeamMembersPopup = React.memo(props => {
                         </Button>
                       </td>
                     )}
-                  </tr>
-                ))
+                  </tr>)
+                })
               }
             </tbody>
           </table>

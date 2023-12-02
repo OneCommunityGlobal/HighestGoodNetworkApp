@@ -7,7 +7,7 @@ import PhoneInput from 'react-phone-input-2';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
-import { getUserTimeZone } from 'services/timezoneApiService';
+import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
@@ -15,6 +15,7 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { formatDate } from 'utils/formatDate';
+import { isString } from 'lodash';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
@@ -274,22 +275,32 @@ const BasicInformationTab = props => {
     role,
     loadUserProfile,
   } = props;
-
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
-  const [location, setLocation] = useState('');
-  let topMargin = "6px";
-  if(isUserSelf){
-    topMargin = "0px";
+
+  let topMargin = '6px';
+  if (isUserSelf) {
+    topMargin = '0px';
   }
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const handleLocation = e => {
+    setUserProfile({
+      ...userProfile,
+      location: { 
+        userProvided: e.target.value, 
+        coords: { lat: '', lng: '' }, 
+        country: '', 
+        city: ''
+    },
+    });
+  };
   const onClickGetTimeZone = () => {
-    if (!location) {
+    if (!userProfile.location.userProvided) {
       alert('Please enter valid location');
       return;
     }
     if (key) {
-      getUserTimeZone(location, key)
+      getUserTimeZone(userProfile.location.userProvided, key)
         .then(response => {
           if (
             response.data.status.code === 200 &&
@@ -297,15 +308,35 @@ const BasicInformationTab = props => {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+            let currentLocation = {
+              userProvided: userProfile.location.userProvided,
+              coords: {
+                lat: response.data.results[0].geometry.lat,
+                lng: response.data.results[0].geometry.lng,
+              },
+              country: response.data.results[0].components.country,
+              city: response.data.results[0].components.city,
+            };
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+            
             setTimeZoneFilter(timezone);
-            setUserProfile({ ...userProfile, timeZone: timezone });
+            setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
           } else {
-            alert('Invalid location or ' + response.data.status.message);
+            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
+            `);
           }
         })
         .catch(err => console.log(err));
     }
   };
+
+  function locationCheckValue(loc) {
+    if(loc.userProvided) return loc.userProvided
+    const str = isString(loc)
+    return str ? loc : ''
+  }
+
+
   return (
     <div>
       <div data-testid="basic-info-tab" className="basic-info-tab-desktop">
@@ -460,21 +491,22 @@ const BasicInformationTab = props => {
                     );
                   })}
                   {canAddDeleteEditOwners && (
-                    <option value="Owner" style={{marginLeft:"5px"}}>Owner</option>
+                                        <option value="Owner" style={{marginLeft:"5px"}}>Owner</option>
                   )}
                 </select>
               </FormGroup>
             ) : (
               `${userProfile.role}`
             )}
-            </Col>  
-            {(
+          </Col>
+          {(
               
               <Col md="1">
                 <div style={{marginTop:topMargin}}>
                   <EditableInfoModal
                   role={role}
                   areaName={'roleInfo'}
+                  areaTitle="Roles"
                   fontSize={30}
                   />
                 </div>
@@ -488,14 +520,11 @@ const BasicInformationTab = props => {
               <Label>Location</Label>
             </Col>
             <Col>
-              <Row className='ml-0'>
+            <Row className='ml-0'>
                 <Col className='p-0' style={{marginRight:"10px"}}>
                   <Input
-                    onChange={e => {
-                      setLocation(e.target.value);
-                      setUserProfile({ ...userProfile, location: e.target.value });
-                    }}
-                    value={userProfile.location}
+                    onChange={handleLocation}
+                    value={locationCheckValue(userProfile.location)}
                   />
                 </Col>
                 <Col className='p-0'>
@@ -509,7 +538,7 @@ const BasicInformationTab = props => {
                     Get Time Zone
                   </Button>
                 </Col>
-                
+
               </Row>
             </Col>
             <Col md="1"></Col>
@@ -743,11 +772,8 @@ const BasicInformationTab = props => {
 
             <Col className="cols">
               <Input
-                onChange={e => {
-                  setLocation(e.target.value);
-                  setUserProfile({ ...userProfile, location: e.target.value });
-                }}
-                value={userProfile.location}
+                onChange={handleLocation}
+                value={userProfile.location.userProvided || ''}
               />
 
               <div>

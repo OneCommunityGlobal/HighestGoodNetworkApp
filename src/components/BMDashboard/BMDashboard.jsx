@@ -1,4 +1,4 @@
-import { Row, Col, Container, Form, Button } from 'reactstrap';
+import { Container } from 'reactstrap';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import './BMDashboard.css';
@@ -22,7 +22,7 @@ const dummyProjects = [
   },
 ];
 
-export const BMDashboard = () => {
+export function BMDashboard() {
   return (
     <Container className="justify-content-center align-items-center mw-80 px-4">
       <header className="bm-dashboard__header">
@@ -34,6 +34,6 @@ export const BMDashboard = () => {
       </main>
     </Container>
   );
-};
+}
 
 export default BMDashboard;

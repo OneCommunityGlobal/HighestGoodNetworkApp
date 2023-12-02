@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -124,6 +125,21 @@ const TeamMemberTasks = React.memo(props => {
       toast.error('Failed to update task');
     }
   };
+
+  const updateTaskStatus = useCallback(async (taskId, updatedTask) => {
+    const newTask = {
+      updatedTask,
+      taskId,
+    };
+    const url = ENDPOINTS.TASK_UPDATE_STATUS(newTask.taskId);
+    try {
+      await axios.put(url, newTask.updatedTask);
+    } catch (error) {
+      toast.error('Failed to update task');
+    }
+    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, true));
+    props.handleUpdateTask();
+  }, []);
 
   const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
@@ -437,14 +453,15 @@ const TeamMemberTasks = React.memo(props => {
                       handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                       handleTaskModalOption={handleTaskModalOption}
                       userRole={userRole}
-                      updateTask={onUpdateTask}
+                      updateTaskStatus={updateTaskStatus}
                       roles={props.roles}
                       userPermissions={props.userPermissions}
+                      userId={userId}
                     />
                   );
                 } else {
                   return (
-                    <>
+                    <Fragment key={user.personId}>
                       <TeamMemberTask
                         user={user}
                         key={user.personId}
@@ -453,7 +470,7 @@ const TeamMemberTasks = React.memo(props => {
                         handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                         handleTaskModalOption={handleTaskModalOption}
                         userRole={userRole}
-                        updateTask={onUpdateTask}
+                        updateTaskStatus={updateTaskStatus}
                         roles={props.roles}
                         userPermissions={props.userPermissions}
                         userId={userId}
@@ -462,13 +479,13 @@ const TeamMemberTasks = React.memo(props => {
                         timeEntriesList
                           .filter(timeEntry => timeEntry.personId === user.personId)
                           .map(timeEntry => (
-                            <tr className="table-row">
+                            <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={3} style={{ padding: 0 }}>
                                 <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
                               </td>
                             </tr>
                           ))}
-                    </>
+                    </ Fragment>
                   );
                 }
               })
