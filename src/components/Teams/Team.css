@@ -83,6 +83,13 @@ thead {
 
 .isActive i {
   color: lawngreen;
+  margin-top: 10px;
+}
+
+.isNotActive i {
+  color: #dee2e6;
+  margin-top: 10px;
+
 }
 
 .isNotActive {
