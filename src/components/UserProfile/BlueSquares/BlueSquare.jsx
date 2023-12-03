@@ -1,12 +1,17 @@
-import React from 'react';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/interactive-supports-focus */
+/* eslint-disable react/no-array-index-key */
 import './BlueSquare.css';
-import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
-import { formatDateFromDescriptionString } from 'utils/formatDateFromDescriptionString';
+import hasPermission from '../../../utils/permissions';
+import { formatDate } from '../../../utils/formatDate';
+import { formatDateFromDescriptionString } from '../../../utils/formatDateFromDescriptionString';
 
-const BlueSquare = (props) => {
+function BlueSquare(props) {
+  // eslint-disable-next-line react/destructuring-assignment
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
+  // eslint-disable-next-line react/destructuring-assignment
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const { blueSquares, handleBlueSquare } = props;
 
@@ -43,9 +48,11 @@ const BlueSquare = (props) => {
                 >
                   <div className="report" data-testid="report">
                     <div className="title">{formatDate(blueSquare.date)}</div>
-                    {blueSquare.description !== undefined && 
-                      <div className="summary">{formatDateFromDescriptionString(blueSquare.description)}</div>
-                    }
+                    {blueSquare.description !== undefined && (
+                      <div className="summary">
+                        {formatDateFromDescriptionString(blueSquare.description)}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
@@ -67,6 +74,7 @@ const BlueSquare = (props) => {
       <br />
     </div>
   );
-};
+}
 
 export default connect(null, { hasPermission })(BlueSquare);
+
