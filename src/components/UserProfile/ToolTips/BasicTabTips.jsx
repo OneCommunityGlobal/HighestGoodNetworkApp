@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Tooltip } from 'reactstrap';
 
-const BasicTabTips = () => {
+function BasicTabTips() {
   const [nameOpen, setNameOpen] = useState(false);
   const [emailOpen, setEmailOpen] = useState(false);
   const [phoneOpen, setPhoneOpen] = useState(false);
@@ -36,6 +36,6 @@ const BasicTabTips = () => {
       </Tooltip>
     </div>
   );
-};
+}
 
 export default BasicTabTips;
