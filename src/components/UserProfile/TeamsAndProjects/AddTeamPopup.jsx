@@ -21,6 +21,7 @@ const AddTeamPopup = React.memo(props => {
   const [newTeamName, setNewTeamName] = useState('');
   const [newTeamIsActive, setNewTeamIsActive] = useState(true);
   const [isDuplicateTeam, setDuplicateTeam] = useState(false);
+
   const onAssignTeam = () => {
     if (!searchText) {
       // when the user typed nothing
@@ -29,14 +30,11 @@ const AddTeamPopup = React.memo(props => {
     }
     if (selectedTeam && !props.userTeamsById.some(x => x._id === selectedTeam._id)) {
       props.onSelectAssignTeam(selectedTeam);
+      toast.success('Team assigned successfully'); // toast notification
       onSelectTeam(undefined);
     } else {
       // when the user typed something but didn't select a team
       onValidation(false);
-    }
-    if (props.handleSubmit !== undefined) {
-      props.handleSubmit();
-      props.onClose();
     }
   };
 
@@ -50,20 +48,27 @@ const AddTeamPopup = React.memo(props => {
       const response = await dispatch(postNewTeam(newTeamName, newTeamIsActive));
         
       if (response.status === 200) {
-        toast.success('Team created successfully'); // toast notification
+        toast.success('Team created successfully');
         setNewTeamName('');
         setNewTeamIsActive(true);
-        setDuplicateTeam(false); // Reset duplicate team state
+        setDuplicateTeam(false);
+  
+        // Get updated teams list and select the new team
         await dispatch(getAllUserTeams());
+        const newTeam = response.data; // Assuming response contains the new team data
+        onSelectTeam(newTeam);
+        setSearchText(newTeam.teamName); // Update search text to reflect new team name
+  
       } else if (response.status === 400) {
-        setDuplicateTeam(true); // set duplicate team state to true
+        setDuplicateTeam(true);
       } else {
-        toast.error('Error occurred while creating team'); // general error message
+        toast.error('Error occurred while creating team');
       }
     } else {
       onNewTeamValidation(false);
     }
   };
+  
 
   useEffect(() => {
     onValidation(true);
