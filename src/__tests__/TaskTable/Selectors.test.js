@@ -1,4 +1,4 @@
-import { get_task_by_wbsId, getTasksTableData } from '../../components/Reports/TasksTable/selectors';
+import { get_task_by_wbsId } from '../../components/Reports/TasksTable/selectors';
 
 describe('get_task_by_wbsId', () => {
   it('returns the correct tasks based on WbsTasksID', () => {
