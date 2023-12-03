@@ -1,4 +1,3 @@
-import React from 'react';
 import './TeamWeeklySummaries.css';
 import moment from 'moment';
 import parse from 'html-react-parser';
