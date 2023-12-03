@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FormCheck } from 'react-bootstrap';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { boxStyle } from 'styles';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { permissionLabel } from './UserRoleTab';
+import { permissionLabel } from './RolePermissions';
 
-function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
+function CreateNewRolePopup({ toggle, roleNames }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
@@ -33,6 +33,17 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     }
   };
 
+  const checkIfDuplicate = value => {
+    let duplicateFound = false;
+
+    roleNames.forEach(val => {
+      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
+        duplicateFound = true;
+      }
+    });
+    return duplicateFound;
+  };
+
   const handleRoleName = e => {
     const { value } = e.target;
     const regexTest = noSymbolsRegex.test(value);
@@ -55,18 +66,6 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     }
   };
 
-  const checkIfDuplicate = value => {
-    let duplicateFound = false;
-
-    roleNames.forEach(val => {
-      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
-        duplicateFound = true;
-        return true;
-      }
-    });
-    return duplicateFound;
-  };
-
   const handleChange = e => {
     const actualValue = e.target.value;
 
@@ -86,12 +85,10 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
           value={newRoleName}
           onChange={handleRoleName}
         />
-        {isValidRole === false || isNotDuplicateRole === false ? (
+        {(isValidRole === false || isNotDuplicateRole === false) && (
           <Alert className="createRole__alert" color="danger">
             {errorMessage}
           </Alert>
-        ) : (
-          <></>
         )}
       </FormGroup>
 

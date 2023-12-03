@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { addNewRole, getAllRoles } from '../../actions/role';
+import { boxStyle } from 'styles';
+import { ENDPOINTS } from 'utils/URL';
 import { getAllUserProfile } from 'actions/userManagement';
-import { permissionLabel } from './UserRoleTab';
+import axios from 'axios';
+import { addNewRole, getAllRoles } from '../../actions/role';
+import { permissionLabel } from './RolePermissions';
 import { modalInfo } from './RolePermissions';
 import './PermissionsManagement.css';
-import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
+
 
 const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) => {
-
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [isOpen, setIsOpen] = useState(false);
@@ -47,7 +47,6 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       const actualPermissionsFront = isAlreadyChecked
         ? unCheckPermission
         : [...permissionsUserFront, actualValue];
-
 
       const newPermissionsObject = {
         frontPermissions: actualPermissionsFront,
@@ -95,9 +94,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
    
     await axios
       .put(url, newUserInfo)
-      .then(res => {
-        res.data;
-      })
+      .then()
       .catch(err => console.log(err));
     getAllUsers();
 
@@ -157,7 +154,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
           }}
           placeholder="Shows only ACTIVE users"
         />
-        {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
+        {(isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0)) && (
           <div
             tabIndex="-1"
             role="menu"
@@ -167,7 +164,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
           >
             {allUserProfiles
               .filter(user => {
-                if (
+                return (
                   user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
                   user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
                   `${user.firstName} ${user.lastName}`
@@ -180,22 +177,24 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                 }
               })
               .map(user => (
-                <div
-                  className="user__auto-complete"
-                  key={user._id}
-                  onClick={() => {
-                    onInputChange(`${user.firstName} ${user.lastName}`);
-                    setIsOpen(false);
-                    setActualUserProfile(user);
-                    getUserData(user._id);
-                  }}
-                >
-                  {`${user.firstName} ${user.lastName}`}
+                <div>
+                  <button
+                    type="button"
+                    className="user__auto-complete"
+                    style={{ width: '100%', textAlign: 'left' }}
+                    key={user._id}
+                    onClick={() => {
+                      onInputChange(`${user.firstName} ${user.lastName}`);
+                      setIsOpen(false);
+                      setActualUserProfile(user);
+                      getUserData(user._id);
+                    }}
+                  >
+                    {`${user.firstName} ${user.lastName}`}
+                  </button>
                 </div>
               ))}
           </div>
-        ) : (
-          <></>
         )}
       </Dropdown>
       <div>
@@ -271,8 +270,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       </Modal>
     </>
   );
-  
-};
+}
 
 const mapStateToProps = state => ({
   roles: state.role.roles,

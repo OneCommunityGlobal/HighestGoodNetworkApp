@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Button, Modal, ModalBody, ModalHeader, Row, Col } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import './PermissionsManagement.css';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import { useHistory } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { getAllRoles } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
+
 
 function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile, hasPermission, getInfoCollections }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
@@ -27,9 +28,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
 
-  roles = roles.filter(role => {
-    if (role != null) return role;
-  });
+  const filteredRoles = roles.filter(role => role !== null);
 
   useEffect(() => {
     getAllRoles();
@@ -40,11 +39,11 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
   const togglePopUpUserPermissions = () => {
     setIsUserPermissionsOpen(previousState => !previousState);
   };
-  const role = userProfile?.role;
-  const roleNames = roles?.map(role => role.roleName);
+  const userRole = userProfile?.role;
+  const roleNames = filteredRoles?.map(role => role.roleName);
 
   return (
-    <div key={`${role}+permission`} className="permissions-management">
+    <div key={`${userRole}+permission`} className="permissions-management">
       <h1 className="permissions-management__title">User Roles</h1>
       <div key={`${role}_header`} className="permissions-management__header">
         {canPutRole &&
@@ -54,6 +53,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
             return (
               <div key={roleNameLC} className="role-name">
                 <button
+                  type="button"
                   onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                   key={roleName}
                   className="role-btn"
@@ -72,6 +72,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
               </div>
             );
           })}
+          ;
         </div>
         }
         {(canPostRole || canManageUserPermissions) && (
