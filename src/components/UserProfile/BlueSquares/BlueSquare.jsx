@@ -77,4 +77,3 @@ function BlueSquare(props) {
 }
 
 export default connect(null, { hasPermission })(BlueSquare);
-
