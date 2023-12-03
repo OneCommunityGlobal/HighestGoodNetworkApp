@@ -21,7 +21,7 @@ import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { getUserTimeZone } from '../../services/timezoneApiService';
+import  getUserTimeZone from '../../services/timezoneApiService';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
@@ -29,12 +29,13 @@ import jwtDecode from 'jwt-decode';
 import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
 
-const SetupProfileUserEntry = ({ token }) => {
+const SetupProfileUserEntry = ({ token, userEmail }) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
   const containSpecialCar = RegExp(/[!@#$%^&*(),.?":{}|<>]/);
   const containCap = RegExp(/[A-Z]/);
+  const containLow = RegExp(/[a-z]/);
+  const containNumb = RegExp(/\d/);
   const [APIkey, setAPIkey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -43,14 +44,18 @@ const SetupProfileUserEntry = ({ token }) => {
     lastName: '',
     password: '',
     confirmPassword: '',
-    email: '',
+    email: userEmail,
     phoneNumber: null,
     weeklyCommittedHours: '10',
     collaborationPreference: 'Zoom',
-    privacySettings: { email: true, phoneNumber: true },
     jobTitle: '',
     timeZone: '',
-    location: '',
+    location: {
+      userProvided: '',
+      coords: { lat: '', lng: '' },
+      country: '',
+      city: '',
+    },
     timeZoneFilter: '',
     token,
   });
@@ -61,7 +66,6 @@ const SetupProfileUserEntry = ({ token }) => {
     confirmPassword: '',
     email: '',
     phoneNumber: '',
-    weeklyCommittedHours: '',
     collaborationPreference: '',
     jobTitle: '',
     timeZone: '',
@@ -91,7 +95,16 @@ const SetupProfileUserEntry = ({ token }) => {
       [id]: value,
     }));
   };
-
+  const handleLocation = event => {
+    const { id, value } = event.target;
+    setUserProfile(prevProfile => ({
+      ...prevProfile,
+      [id]: {
+        ...prevProfile.location,
+        userProvided: value
+      },
+    }));
+  }
   const handleToggle = event => {
     const { id } = event.target;
     const key = id === 'emailPubliclyAccessible' ? 'email' : 'phoneNumber';
@@ -113,8 +126,8 @@ const SetupProfileUserEntry = ({ token }) => {
       ...prevErrors,
       timeZoneFilterClicked: '',
     }));
-
-    if (!userProfile.location) {
+    const location = userProfile.location.userProvided;
+    if (!location) {
       alert('Please enter valid location');
       return;
     }
@@ -122,8 +135,7 @@ const SetupProfileUserEntry = ({ token }) => {
       console.log('Geocoding API key missing');
       return;
     }
-
-    getUserTimeZone(userProfile.location, APIkey)
+    getUserTimeZone(location, APIkey)
       .then(response => {
         if (
           response.data.status.code === 200 &&
@@ -131,11 +143,20 @@ const SetupProfileUserEntry = ({ token }) => {
           response.data.results.length
         ) {
           let timezone = response.data.results[0].annotations.timezone.name;
-
+          let currentLocation = {
+            userProvided: location,
+            coords: {
+              lat: response.data.results[0].geometry.lat,
+              lng: response.data.results[0].geometry.lng,
+            },
+            country: response.data.results[0].components.country,
+            city: response.data.results[0].components.city,
+          };
           setUserProfile(prevProfile => ({
             ...prevProfile,
             timeZoneFilter: timezone,
             timeZone: timezone,
+            location: currentLocation
           }));
         } else {
           alert('Invalid location or ' + response.data.status.message);
@@ -171,27 +192,6 @@ const SetupProfileUserEntry = ({ token }) => {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         lastName: '',
-      }));
-    }
-
-    // Validate email
-
-    if (userProfile.email.trim() === '') {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        email: 'Email is required',
-      }));
-      isDataValid = false;
-    } else if (!patt.test(userProfile.email)) {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        email: 'Email is not valid',
-      }));
-      isDataValid = false;
-    } else {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        email: '',
       }));
     }
 
@@ -231,13 +231,15 @@ const SetupProfileUserEntry = ({ token }) => {
       }));
       isDataValid = false;
     } else if (
-      !containCap.test(userProfile.password.trim()) &&
-      !containSpecialCar.test(userProfile.password.trim())
+      !containCap.test(userProfile.password.trim()) ||
+      !containSpecialCar.test(userProfile.password.trim()) ||
+      !containLow.test(userProfile.password.trim()) ||
+      !containNumb.test(userProfile.password.trim())
     ) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         password:
-          'Password must contain special characters [!@#$%^&*(),.?":{}|<>] and capital letters.',
+          'Password must contain special characters [!@#$%^&*(),.?":{}|<>], Uppercase, Lowercase and Number.',
       }));
       isDataValid = false;
     } else {
@@ -283,21 +285,6 @@ const SetupProfileUserEntry = ({ token }) => {
       }));
     }
 
-    // Validate Weekly Committed Hours
-
-    if (Number(userProfile.weeklyCommittedHours) <= 0) {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        weeklyCommittedHours: 'Weekly Committed Hours can not be 0',
-      }));
-      isDataValid = false;
-    } else {
-      setFormErrors(prevErrors => ({
-        ...prevErrors,
-        weeklyCommittedHours: '',
-      }));
-    }
-
     // Validate Video Call Preference
 
     if (userProfile.collaborationPreference.trim() === '') {
@@ -315,7 +302,7 @@ const SetupProfileUserEntry = ({ token }) => {
 
     // Validate Location
 
-    if (userProfile.location.trim() === '') {
+    if (userProfile.location.userProvided.trim() === '') {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         location: 'Location is required',
@@ -361,12 +348,12 @@ const SetupProfileUserEntry = ({ token }) => {
         weeklycommittedHours: Number(userProfile.weeklyCommittedHours.trim()),
         collaborationPreference: userProfile.collaborationPreference.trim(),
         privacySettings: {
-          email: userProfile.privacySettings.email,
-          phoneNumber: userProfile.privacySettings.phoneNumber,
+          email: true,
+          phoneNumber: true,
         },
         jobTitle: userProfile.jobTitle.trim(),
         timeZone: userProfile.timeZone.trim(),
-        location: userProfile.location.trim(),
+        location: userProfile.location,
         token,
       };
 
@@ -383,7 +370,14 @@ const SetupProfileUserEntry = ({ token }) => {
           }
         })
         .catch(error => {
-          console.log(error);
+          if (error.response.data === 'email already in use') {
+            setFormErrors(prevErrors => ({
+              ...prevErrors,
+              email: 'This email is already in use, Please contact your manager',
+            }));
+            console.log('in akwkejkwer');
+          }
+          console.log(error.response);
         });
     }
   };
@@ -524,9 +518,9 @@ const SetupProfileUserEntry = ({ token }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Email</Label>
+                  <Label>Email/Phone</Label>
                 </Col>
-                <Col md="6">
+                <Col md="3">
                   <FormGroup>
                     <Input
                       type="email"
@@ -534,27 +528,13 @@ const SetupProfileUserEntry = ({ token }) => {
                       id="email"
                       placeholder="Email"
                       value={userProfile.email}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
+                      readOnly={true}
                       invalid={formErrors.email !== ''}
                     />
                     <FormFeedback>{formErrors.email}</FormFeedback>
-                    <ToggleSwitch
-                      switchType="email"
-                      state={userProfile.privacySettings.email}
-                      handleUserProfile={e => {
-                        handleToggle(e);
-                      }}
-                    />
                   </FormGroup>
                 </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>Phone</Label>
-                </Col>
-                <Col md="6">
+                <Col md="3">
                   <FormGroup>
                     <PhoneInput
                       country="US"
@@ -562,6 +542,7 @@ const SetupProfileUserEntry = ({ token }) => {
                       limitMaxLength="true"
                       value={userProfile.phoneNumber}
                       onChange={phone => phoneChange(phone)}
+                      inputStyle={{ width: '100%' }}
                     />
                     <Input
                       style={{
@@ -570,34 +551,6 @@ const SetupProfileUserEntry = ({ token }) => {
                       invalid={formErrors.phoneNumber !== ''}
                     />
                     <FormFeedback>{formErrors.phoneNumber}</FormFeedback>
-                  </FormGroup>
-                  <ToggleSwitch
-                    switchType="phone"
-                    state={userProfile.privacySettings.phoneNumber}
-                    handleUserProfile={e => {
-                      handleToggle(e);
-                    }}
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>Weekly Committed Hours</Label>
-                </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <Input
-                      type="number"
-                      name="weeklyCommittedHours"
-                      id="weeklyCommittedHours"
-                      placeholder="Weekly Committed Hours"
-                      value={userProfile.weeklyCommittedHours}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      invalid={formErrors.weeklyCommittedHours !== ''}
-                    />
-                    <FormFeedback>{formErrors.weeklyCommittedHours}</FormFeedback>
                   </FormGroup>
                 </Col>
               </Row>
@@ -636,9 +589,9 @@ const SetupProfileUserEntry = ({ token }) => {
                           name="location"
                           id="location"
                           placeholder="Location"
-                          value={userProfile.location}
+                          value={userProfile.location.userProvided}
                           onChange={e => {
-                            handleChange(e);
+                            handleLocation(e);
                           }}
                           invalid={formErrors.location !== ''}
                         />
@@ -682,7 +635,6 @@ const SetupProfileUserEntry = ({ token }) => {
                   </div>
                 </Col>
               </Row>
-
               <Row className="mt-1 mb-3">
                 <Col md="12">
                   <Row>

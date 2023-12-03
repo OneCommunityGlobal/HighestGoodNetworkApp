@@ -20,6 +20,8 @@ import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from '../../utils/URL';
 import { updateRole, getAllRoles } from '../../actions/role';
+import PermissionsPresetsModal from './PermissionsPresetsModal.jsx';
+import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
 
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
@@ -197,10 +199,16 @@ function RolePermissions(props) {
   const history = useHistory();
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
+  const [showPresetModal, setShowPresetModal] = useState(false);
 
   useEffect(() => {
-    setRoleName(role);
+    setRoleName(props.role);
+    props.getPresets(props.role);
   }, []);
+
+  useEffect(() => {
+    setPermissions(mapPermissionToLabel(props.permissions));
+  }, [props.roles]);
 
   const toggleDeleteRoleModal = () => {
     setDeleteRoleModal(!deleteRoleModal);
@@ -240,6 +248,21 @@ function RolePermissions(props) {
 
   const onAddPermission = permission => {
     setUserPermissions(previous => [...previous, permission]);
+  };
+
+  const saveNewPreset = async () => {
+    let count = 1;
+    while (props.presets.some(preset => preset.presetName === 'New Preset ' + count)) {
+      count += 1;
+    }
+    const newPreset = {
+      presetName: 'New Preset ' + count,
+      roleName: props.role,
+      permissions: permissions.map(perm => {
+        return getKeyByValue(permissionLabel, perm);
+      }),
+    };
+    props.createNewPreset(newPreset);
   };
 
   const updateInfo = async () => {
@@ -294,19 +317,75 @@ function RolePermissions(props) {
               />
             )}
           </div>
-          {userRole === 'Owner' && (
-            <div className="name-container__btns">
-              <Button
-                className="btn_save"
-                color="success"
-                onClick={() => updateInfo()}
-                style={boxStyle}
+          {props?.userRole === 'Owner' && (
+            <div style={{ flexDirection: 'row', display: 'flex' }}>
+              <div className="name-container__btn_columns">
+                <div className="name-container__btns">
+                  <Button
+                    className="btn_save"
+                    color="success"
+                    onClick={() => {
+                      saveNewPreset();
+                    }}
+                    style={boxStyle}
+                  >
+                    Create New Preset
+                  </Button>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      setShowPresetModal(!showPresetModal);
+                    }}
+                    style={boxStyle}
+                  >
+                    Load Presets
+                  </Button>
+                </div>
+                <div className="name-container__btns">
+                  <Button
+                    className="btn_save"
+                    color="success"
+                    onClick={() => updateInfo()}
+                    style={boxStyle}
+                  >
+                    Save
+                  </Button>
+                  <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
+                    Delete Role
+                  </Button>
+                </div>
+              </div>
+
+              <div
+                className="icon-button-container"
+                style={{ position: 'relative', width: '0', height: '0' }}
               >
-                Save
-              </Button>
-              <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
-                Delete Role
-              </Button>
+                <div
+                  className="name-container__btns"
+                  style={{ position: 'absolute', left: '10px', top: '20px' }}
+                >
+                  <i
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title="Click for more information"
+                    aria-hidden="true"
+                    className="fa fa-info-circle"
+                    onClick={() => {
+                      handleModalOpen('Create New Preset');
+                    }}
+                  />
+                  <i
+                    data-toggle="tooltip"
+                    data-placement="center"
+                    title="Click for more information"
+                    aria-hidden="true"
+                    className="fa fa-info-circle"
+                    onClick={() => {
+                      handleModalOpen('Load Presets');
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           )}
           <Modal isOpen={editRoleNameModal} toggle={toggleEditRoleNameModal}>
@@ -339,81 +418,47 @@ function RolePermissions(props) {
         <h2 className="user-role-tab__h2">Permission List</h2>
       </header>
       <ul className="user-role-tab__permissionList">
-        {permissionsList.map(permission =>
-          mainPermissions.includes(permission) ? (
-            <li className="user-role-tab__permissions" key={permission}>
-              <p
-                style={{
-                  color: userPermissions.includes(permission) ? 'green' : 'red',
-                  fontSize: '20px',
-                }}
-              >
-                {permission}
-              </p>
-              <div className="icon-button-container">
-                <div style={{ paddingRight: '1rem' }}>
-                  <EditableInfoModal
-                    role={userRole}
-                    areaName={`${permission} Info`}
-                    fontSize={24}
-                  />
-                </div>
-                <Button
-                  className="icon-button"
-                  color={userPermissions.includes(permission) ? 'danger' : 'success'}
+        {props.permissionsList.map(permission => (
+          <li className="user-role-tab__permissions" key={permission}>
+            <p
+              style={{
+                color: permissions.includes(permission) ? 'green' : 'red',
+                fontSize: mainPermissions.includes(permission) && '20px',
+                paddingLeft: !mainPermissions.includes(permission) && '50px',
+              }}
+            >
+              {permission}
+            </p>
+            <div className="icon-button-container">
+              <div className="infos">
+                <i
+                  data-toggle="tooltip"
+                  data-placement="center"
+                  title="Click for more information"
+                  aria-hidden="true"
+                  className="fa fa-info-circle"
                   onClick={() => {
-                    if (userPermissions.includes(permission)) {
-                      onRemovePermission(permission);
-                    } else {
-                      onAddPermission(permission);
-                    }
-                    setChanged(true);
+                    handleModalOpen(permission);
                   }}
-                  disabled={userRole !== 'Owner'}
-                  style={boxStyle}
-                >
-                  {userPermissions.includes(permission) ? 'Delete' : 'Add'}
-                </Button>
+                />
               </div>
-            </li>
-          ) : (
-            <li className="user-role-tab__permissions" key={permission}>
-              <p
-                style={{
-                  color: userPermissions.includes(permission) ? 'green' : 'red',
-                  paddingLeft: '50px',
+              <Button
+                className="icon-button"
+                color={permissions.includes(permission) ? 'danger' : 'success'}
+                onClick={() => {
+                  permissions.includes(permission)
+                    ? onRemovePermission(permission)
+                    : onAddPermission(permission);
+                  setChanged(true);
                 }}
+                disabled={props?.userRole !== 'Owner'}
+                style={boxStyle}
               >
-                {permission}
-              </p>
-              <div className="icon-button-container">
-                <div style={{ paddingRight: '1rem' }}>
-                  <EditableInfoModal
-                    role={userRole}
-                    areaName={`${permission} Info`}
-                    fontSize={24}
-                  />
-                </div>
-                <Button
-                  className="icon-button"
-                  color={userPermissions.includes(permission) ? 'danger' : 'success'}
-                  onClick={() => {
-                    if (userPermissions.includes(permission)) {
-                      onRemovePermission(permission);
-                    } else {
-                      onAddPermission(permission);
-                    }
-                    setChanged(true);
-                  }}
-                  disabled={userRole !== 'Owner'}
-                  style={boxStyle}
-                >
-                  {userPermissions.includes(permission) ? 'Delete' : 'Add'}
-                </Button>
-              </div>
-            </li>
-          ),
-        )}
+                {permissions.includes(permission) ? 'Delete' : 'Add'}
+              </Button>
+            </div>
+          </li>
+        ))}
       </ul>
       <Modal isOpen={deleteRoleModal} toggle={toggleDeleteRoleModal}>
         <ModalHeader>
@@ -436,7 +481,11 @@ function RolePermissions(props) {
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={infoRoleModal} toggle={toggleInfoRoleModal} id='#modal2-body_new-role--padding'>
+      <Modal
+        isOpen={infoRoleModal}
+        toggle={toggleInfoRoleModal}
+        id="#modal2-body_new-role--padding"
+      >
         <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
         <ModalBody>{modalContent}</ModalBody>
         <ModalFooter>
@@ -445,15 +494,40 @@ function RolePermissions(props) {
           </Button>
         </ModalFooter>
       </Modal>
+      <Modal
+        isOpen={showPresetModal}
+        toggle={() => {
+          setShowPresetModal(previous => !previous);
+        }}
+        id="modal-content__new-role"
+      >
+        <ModalHeader
+          toggle={() => {
+            setShowPresetModal(previous => !previous);
+          }}
+          cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+        >
+          Role Presets
+        </ModalHeader>
+        <ModalBody id="modal-body_new-role--padding">
+          <PermissionsPresetsModal
+            roleId={props.roleId}
+            roleName={props.role}
+            onApply={perms => setPermissions(mapPermissionToLabel(perms))}
+          />
+        </ModalBody>
+      </Modal>
     </>
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles });
+const mapStateToProps = state => ({ roles: state.role.roles, presets: state.rolePreset.presets });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
   updateRole: (roleId, updatedRole) => dispatch(updateRole(roleId, updatedRole)),
+  getPresets: role => dispatch(getPresetsByRole(role)),
+  createNewPreset: newPreset => dispatch(createNewPreset(newPreset)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RolePermissions);

@@ -11,12 +11,20 @@ import { permissionLabel } from './RolePermissions';
 import { modalInfo } from './RolePermissions';
 import './PermissionsManagement.css';
 
-function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
+
+const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) => {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
+
+  const setToDefault = () => {
+    setActualUserProfile(previous => {
+      return { ...previous, permissions: {frontPermissions: [],} };
+    });
+  }
+
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
   //no onchange, always change this state;
@@ -99,6 +107,9 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
     });
   };
   const mainPermissions = ['See All the Reports Tab', 'See User Management Tab (Full Functionality)', 'See Badge Management Tab (Full Functionality)', 'See Project Management Tab (Full Functionality)', 'Edit Project', 'See Teams Management Tab (Full Functionality)', 'Edit Timelog Information', 'Edit User Profile', 'See Permissions Management Tab' ]
+  useEffect(() => {
+    refInput.current.focus();
+  }, []);
   return (
     <>
     <Form
@@ -107,7 +118,21 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
         updateProfileOnSubmit(e);
       }}
     >
-      <h4 className="user-permissions-pop-up__title">User name:</h4>
+      <div style={{display: 'flex', justifyContent: 'space-between', paddingBottom: '5px'}}>
+        <h4 className="user-permissions-pop-up__title">User name:</h4>
+        <Button
+          type="button"
+          color="success"
+          onClick={e => {
+            setToDefault();
+            updateProfileOnSubmit(e);
+          }}
+          disabled={actualUserProfile ? false : true}
+          style={boxStyle}
+        >
+          Reset to Default
+        </Button>
+      </div>
       <Dropdown
         isOpen={isOpen}
         toggle={() => {
@@ -118,8 +143,8 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
         <Input
           type="text"
           value={searchText}
-          ref={refInput}
-          onFocus={() => {
+          innerRef={refInput}
+          onFocus={e => {
             setIsInputFocus(true);
             setIsOpen(true);
           }}
@@ -127,6 +152,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
             onInputChange(e.target.value);
             setIsOpen(true);
           }}
+          placeholder="Shows only ACTIVE users"
         />
         {(isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0)) && (
           <div
@@ -144,7 +170,11 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
                   `${user.firstName} ${user.lastName}`
                     .toLowerCase()
                     .includes(searchText.toLowerCase())
-                );
+                ) {
+                  if (user.isActive) {
+                    return user;
+                  }
+                }
               })
               .map(user => (
                 <div>
@@ -173,90 +203,48 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles }) {
           {Object.entries(permissionLabel).map(([key, value]) => { 
             const isValueInMainPermissions = mainPermissions.includes(value);
 
-            if (isValueInMainPermissions) {
             return (
-              <li key={key} className="user-role-tab__permission">
-                
-                <div
-                  style={{
-                    color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
-                    fontSize: '20px'
-                  }}
-                >
-                  {value}
-                </div>
-                {!isPermissionDefault(key) && (
-                  <Button
-                    className="info-button"
-                    type="button"
-                    onClick={() => onChangeCheck(key)}
-                    disabled={!actualUserProfile}
-                    style={boxStyle}
-                    color={isPermissionChecked(key) ? 'danger' : 'success'}
+              <>
+                <li key={key} className="user-role-tab__permission">
+                  <div
+                    style={{
+                      color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
+                      fontSize: isValueInMainPermissions && '20px',
+                      paddingLeft: !isValueInMainPermissions && '30px',
+                      paddingBottom: !isValueInMainPermissions && '10px',
+                    }}
                   >
-                    {isPermissionChecked(key) ? 'Remove' : 'Add'}
-                  </Button>
+                    {value}
                   </div>
-                )}
-              </li>
-            );
-          } else {
-            return (<li key={key} className="user-role-tab__permission">
-              
-            <div
-              style={{
-                color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
-                paddingLeft: '30px', paddingBottom: '10px'
-              }}
-            >
-              {value}
-            </div>
-
-            <div className='infos'>
-                <i
-                data-toggle="tooltip"
-                data-placement="center"
-                title="Click for more information"
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={() => {
-                  handleModalOpen(value);
-                }}
-              />
-              </div>
-             
-            {isPermissionChecked(key) ? (
-              <div style={{paddingLeft: '15px'}}>
-              <Button
-                className="info-button"
-                type="button"
-                color="danger"
-                onClick={e => onChangeCheck(key)}
-                disabled={actualUserProfile ? false : true}
-                style={boxStyle}
-              >
-                Remove
-              </Button>
-              </div>
-            ) : (
-              <div style={{paddingLeft: '15px'}}>
-              <Button
-                className="info-button"
-                type="button"
-                color="success"
-                onClick={e => onChangeCheck(key)}
-                disabled={actualUserProfile ? false : true}
-                style={boxStyle}
-              >
-                Add
-              </Button>
-              </div>
-            )}
-          </li>);
-          }
-            
-          })
-          }
+                  <div className='infos'>
+                    <i
+                      id= 'info-icon__permissions'
+                      data-toggle="tooltip"
+                      data-placement="center"
+                      title="Click for more information"
+                      aria-hidden="true"
+                      className="fa fa-info-circle"
+                      onClick={() => {
+                        handleModalOpen(value);
+                      }}
+                    />
+                  </div>
+                  <div style={{paddingLeft: '15px'}}>
+                    <Button
+                      className="info-button"
+                      type="button"
+                      color={isPermissionChecked(key) ? "danger" : "success"}
+                      onClick={e => onChangeCheck(key)}
+                      disabled={actualUserProfile ? false : true}
+                      style={boxStyle}
+                    >
+                      {isPermissionChecked(key) ? "Remove" : "Add"}
+                    </Button>
+                  </div>
+                </li>
+              </>
+            )
+          })}
         </ul>
       </div>
       <Button
