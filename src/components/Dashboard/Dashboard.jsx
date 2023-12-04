@@ -8,7 +8,6 @@ import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
 import '../../App.css';
-import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -26,11 +25,6 @@ export function Dashboard(props) {
       }
     }, 150);
   };
-
-  useEffect(() => {
-    // eslint-disable-next-line react/destructuring-assignment
-    props.getTimeZoneAPIKey();
-  }, []);
 
   useEffect(() => {
     const {
@@ -96,6 +90,4 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-export default connect(mapStateToProps, {
-  getTimeZoneAPIKey,
-})(Dashboard);
+export default connect(mapStateToProps)(Dashboard);

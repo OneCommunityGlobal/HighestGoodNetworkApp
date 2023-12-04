@@ -72,6 +72,12 @@ export const timeZones = [
     utcDstOffset: '+01:00',
   },
   {
+    countryCode: 'ZM',
+    name: 'Africa/Lusaka',
+    utcOffset: '+02:00',
+    utcDstOffset: '+02:00',
+  },
+  {
     countryCode: 'MZ',
     name: 'Africa/Maputo',
     utcOffset: '+02:00',
@@ -1807,7 +1813,7 @@ export const timeZones = [
   },
   {
     countryCode: 'UA',
-    name: 'Europe/Kiev',
+    name: 'Europe/Kyiv',
     utcOffset: '+02:00',
     utcDstOffset: '+03:00',
   },

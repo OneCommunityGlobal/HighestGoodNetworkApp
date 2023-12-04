@@ -6,19 +6,19 @@ import PhoneInput from 'react-phone-input-2';
 // import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { useSelector } from 'react-redux';
-import getUserTimeZone from 'services/timezoneApiService';
+import { useSelector, useDispatch, connect } from 'react-redux';
+import { getTimeZone } from 'actions/timezoneAPIActions';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
-import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { formatDate } from 'utils/formatDate';
-
+import { toast } from 'react-toastify';
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
   const { firstName, lastName } = userProfile;
+
   if (canEdit) {
     return (
       <>
@@ -276,11 +276,13 @@ const BasicInformationTab = props => {
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
 
+  const dispatch = useDispatch();
+
   let topMargin = '6px';
   if (isUserSelf) {
     topMargin = '0px';
   }
-  const key = useSelector(state => state.timeZoneAPI.userAPIKey);
+
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const handleLocation = e => {
     setUserProfile({
@@ -298,35 +300,17 @@ const BasicInformationTab = props => {
       alert('Please enter valid location');
       return;
     }
-    if (key) {
-      getUserTimeZone(userProfile.location.userProvided, key)
-        .then(response => {
-          if (
-            response.data.status.code === 200 &&
-            response.data.results &&
-            response.data.results.length
-          ) {
-            let timezone = response.data.results[0].annotations.timezone.name;
-            let currentLocation = {
-              userProvided: userProfile.location.userProvided,
-              coords: {
-                lat: response.data.results[0].geometry.lat,
-                lng: response.data.results[0].geometry.lng,
-              },
-              country: response.data.results[0].components.country,
-              city: response.data.results[0].components.city,
-            };
-            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
-            
-            setTimeZoneFilter(timezone);
-            setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
-          } else {
-            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
-            `);
-          }
-        })
-        .catch(err => console.log(err));
-    }
+
+    dispatch(getTimeZone(userProfile.location.userProvided)).then(res => {
+      if(!res.status) {
+          setTimeZoneFilter(res.timezone)
+          setUserProfile({ ...userProfile, timeZone: res.timezone, location: res.currentLocation });
+      } else { 
+        toast.error(`An error occurred : ${res.data}`);
+      }
+    }).catch(err => {
+      console.log(err);
+    })
   };
   return (
     <div>

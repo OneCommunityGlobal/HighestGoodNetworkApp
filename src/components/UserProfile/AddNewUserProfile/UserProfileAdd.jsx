@@ -39,7 +39,8 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import getUserTimeZone from 'services/timezoneApiService';
+// import getUserTimeZone from 'services/timezoneApiService';
+import { getTimeZone } from 'actions/timezoneAPIActions';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
@@ -514,48 +515,29 @@ class AddUserProfile extends Component {
   // Function to call TimeZoneService with location and key
   onClickGetTimeZone = () => {
     const location = this.state.userProfile.location.userProvided;
-    const key = this.props.timeZoneKey;
+
     if (!location) {
       alert('Please enter valid location');
       return;
     }
-    if (key) {
-      getUserTimeZone(location, key)
-        .then(response => {
-          if (
-            response.data.status.code === 200 &&
-            response.data.results &&
-            response.data.results.length
-          ) {
-            let timezone = response.data.results[0].annotations.timezone.name;
-            
-            let currentLocation = {
-              userProvided: location,
-              coords: {
-                lat: response.data.results[0].geometry.lat,
-                lng: response.data.results[0].geometry.lng,
-              },
-              country: response.data.results[0].components.country,
-              city: response.data.results[0].components.city,
-            };
-            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
-            
-            this.setState({
-              ...this.state,
-              timeZoneFilter: timezone,
-              userProfile: {
-                ...this.state.userProfile,
-                location: currentLocation,
-                timeZone: timezone,
-              },
-            });
-          } else {
-            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
-            `);
-          }
-        })
-        .catch(err => console.log(err));
-    }
+
+    this.props.getTimeZone(location).then(res => {
+      if(!res.status) {
+        this.setState({
+          ...this.state,
+          timeZoneFilter: res.timezone,
+          userProfile: {
+            ...this.state.userProfile,
+            location: res.currentLocation,
+            timeZone: res.timezone,
+          },
+        });
+      } else { 
+        toast.error(`An error occurred : ${res.data}`);
+      }
+    }).catch(err => {
+      console.log(err);
+    });
   };
 
   fieldsAreValid = () => {
@@ -1018,13 +1000,12 @@ const mapStateToProps = state => ({
   userProjects: state.userProjects,
   allProjects: get(state, 'allProjects'),
   allTeams: state,
-  timeZoneKey: state.timeZoneAPI.userAPIKey,
   role: state.role,
   state,
 });
 
-export default connect(mapStateToProps, {
-  getUserProfile,
+const mapDispatchToProps = dispatch => ({
+  getUserProfile, 
   clearUserProfile,
   updateUserProfile,
   getAllUserTeams,
@@ -1033,4 +1014,7 @@ export default connect(mapStateToProps, {
   addTeamMember,
   fetchAllProjects,
   hasPermission,
-})(AddUserProfile);
+  getTimeZone: async (location) => await dispatch(getTimeZone(location)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddUserProfile);

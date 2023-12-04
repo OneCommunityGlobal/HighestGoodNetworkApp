@@ -76,7 +76,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
   TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
-  TIMEZONE_KEY: `${APIEndpoint}/timezone`,
+  TIMEZONE_LOCATION: (location) => `${APIEndpoint}/timezone/${location}`,
   GEOCODE_URI: (location, key) =>
     `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
 
@@ -98,7 +98,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () =>
     `${APIEndpoint}/ProfileInitialSetup`,
-  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
 

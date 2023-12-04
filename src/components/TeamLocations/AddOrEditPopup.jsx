@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
-import getUserTimeZone from 'services/timezoneApiService';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import { createLocation, editLocation } from 'services/mapLocationsService';
+import { getTimeZone } from 'actions/timezoneAPIActions';
 import { useEffect } from 'react';
+
 
 const initialLocationData = {
   firstName: 'Prior to HGN Data Collection',
@@ -30,7 +31,6 @@ function AddOrEditPopup({
   isEdit,
   editProfile,
   submitText,
-  apiKey
 }) {
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
@@ -40,49 +40,33 @@ function AddOrEditPopup({
     jobTitle: null,
     location: null,
   });
+  
+  const dispatch = useDispatch();
 
-  const getCoordsHandler = async () => {
+  const getCoordsHandler = () => {
     const location = locationData.location.userProvided;
     if (!location) {
       toast.error('Please enter valid location');
       return;
     }
-    if (!apiKey) {
-      toast.error("Timezone key doesn't exist");
-      return;
-    }
+
     if (errors.location === 'Please get the coordinates of location') {
       setErrors(prev => ({ ...prev, location: null }));
     }
 
-    if (apiKey) {
-      try {
-        const res = await getUserTimeZone(location, apiKey);
-        if (res.data.status.code === 200 && res.data.results && res.data.results.length) {
-          const timezone = res.data.results[0].annotations.timezone.name;
-          const currentLocation = {
-            userProvided: location,
-            coords: {
-              lat: res.data.results[0].geometry.lat,
-              lng: res.data.results[0].geometry.lng,
-            },
-            country: res.data.results[0].components.country || '',
-            city: res.data.results[0].components.city || '',
-          };
+    dispatch(getTimeZone(location)).then(res => {
+      if(!res.status) {
           setLocationData(prev => ({
             ...prev,
-            location: currentLocation,
+            location: res.currentLocation,
           }));
-          setTimeZone(timezone);
-        } else if (res.data.status.code !== 200) {
-          throw new Error('Something went wrong with a request');
-        } else {
-          throw new Error('Invalid location');
-        }
-      } catch (err) {
-        toast.error(err.message);
+          setTimeZone(res.timezone);
+      } else { 
+        toast.error(`An error occurred : ${res.data}`);
       }
-    }
+    }).catch(err => {
+      console.log(err);
+    });
   };
   useEffect(() => {
     if (isEdit) {

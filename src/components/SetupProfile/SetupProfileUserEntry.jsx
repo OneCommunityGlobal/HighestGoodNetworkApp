@@ -19,15 +19,15 @@ import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import logo from '../../assets/images/logo.png';
 import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
-import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import  getUserTimeZone from '../../services/timezoneApiService';
+import { getTimeZoneProfileInitialSetup } from 'actions/timezoneAPIActions';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
+
 
 const SetupProfileUserEntry = ({ token, userEmail }) => {
   const dispatch = useDispatch();
@@ -36,7 +36,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
   const containCap = RegExp(/[A-Z]/);
   const containLow = RegExp(/[a-z]/);
   const containNumb = RegExp(/\d/);
-  const [APIkey, setAPIkey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userProfile, setUserProfile] = useState({
@@ -72,13 +71,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     location: '',
     timeZoneFilterClicked: 'false',
   });
-
-  //  get the timezone API key using the setup token
-  useEffect(() => {
-    httpService.post(ENDPOINTS.TIMEZONE_KEY_BY_TOKEN(), { token }).then(response => {
-      setAPIkey(response.data.userAPIKey);
-    });
-  }, []);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -121,7 +113,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     }));
   };
 
-  const getTimeZone = () => {
+  const getTimeZoneFunc = () => {
     setFormErrors(prevErrors => ({
       ...prevErrors,
       timeZoneFilterClicked: '',
@@ -131,38 +123,21 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       alert('Please enter valid location');
       return;
     }
-    if (!APIkey) {
-      console.log('Geocoding API key missing');
-      return;
-    }
-    getUserTimeZone(location, APIkey)
-      .then(response => {
-        if (
-          response.data.status.code === 200 &&
-          response.data.results &&
-          response.data.results.length
-        ) {
-          let timezone = response.data.results[0].annotations.timezone.name;
-          let currentLocation = {
-            userProvided: location,
-            coords: {
-              lat: response.data.results[0].geometry.lat,
-              lng: response.data.results[0].geometry.lng,
-            },
-            country: response.data.results[0].components.country,
-            city: response.data.results[0].components.city,
-          };
-          setUserProfile(prevProfile => ({
-            ...prevProfile,
-            timeZoneFilter: timezone,
-            timeZone: timezone,
-            location: currentLocation
-          }));
-        } else {
-          alert('Invalid location or ' + response.data.status.message);
-        }
-      })
-      .catch(err => console.log(err));
+
+    dispatch(getTimeZoneProfileInitialSetup( location, token )).then(response => {
+      if(!response.status) {
+        setUserProfile(prevProfile => ({
+          ...prevProfile,
+          timeZoneFilter: response.timezone,
+          timeZone: response.timezone,
+          location: response.currentLocation
+        }));
+      } else { 
+       alert(`An error occurred : ${response.data}`);
+      }
+    }).catch(err => {
+      alert(`An error occurred : ${err}`);
+     })
   };
 
   const validateFormData = () => {
@@ -375,7 +350,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               ...prevErrors,
               email: 'This email is already in use, Please contact your manager',
             }));
-            console.log('in akwkejkwer');
           }
           console.log(error.response);
         });
@@ -599,7 +573,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                       </FormGroup>
                     </Col>
                     <Col md="6 pr-0">
-                      <Button color="secondary " block size="md" onClick={getTimeZone}>
+                      <Button color="secondary " block size="md" onClick={getTimeZoneFunc}>
                         Get Time Zone
                       </Button>
                       <Input
