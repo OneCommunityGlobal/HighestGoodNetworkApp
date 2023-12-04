@@ -111,8 +111,8 @@ export const permissionLabels = [
         description: 'Gives the user permission to add/remove any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Find user input" ',
       },
       {
-        label: 'Work Balance Structures',
-        description: 'Category for all permissions related to work balance structures',
+        label: 'Work Breakdown Structures',
+        description: 'Category for all permissions related to work breakdown structures',
         subperms: [
           {
             label: 'Add WBS',
