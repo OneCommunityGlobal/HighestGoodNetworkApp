@@ -1,60 +1,69 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import configureStore from 'redux-mock-store';
-import ProjectTableHeader from './ProjectTableHeader';
-import { renderWithProvider } from '../../../__tests__/utils';
+import React from 'react'
+import { render } from '@testing-library/react'
+import { Provider } from 'react-redux'
+import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import { DELETE, PROJECT_NAME } from '../../../languages/en/ui'
-import { rolesMock } from '../../../__tests__/mockStates'
+import ProjectTableHeader from './ProjectTableHeader'
+import { authMock, rolesMock, userProfileMock } from '../../../__tests__/mockStates'
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk])
 
-describe('ProjectTableHeader Tests', () => {
-  let store;
-  let mockHasPermission;
+// Mock the EditableInfoModal component
+jest.mock('components/UserProfile/EditableModal/EditableInfoModal', () => () => (
+  <div>Mock EditableInfoModal</div>
+));
+const renderProjectTableHeader = (projectTableHeaderProps) => {
 
-  // beforeEach(() => {
-  //   store = mockStore({
-  //     userProfile: { role: 'admin' }
-  //   });
-  //   mockHasPermission = jest.fn();
-  // });
-  beforeEach(() => {
-    store = mockStore({
+  const initialState = {
+    auth: {
+      user: {
+        role: 'Owner',
+      }
+    },
+    userProfile: userProfileMock,
+    ...projectTableHeaderProps,
+  }
+  const store = mockStore(initialState);
+
+  return render(
+    <Provider store={store}>
+      <table>
+        <thead>
+        <ProjectTableHeader {...projectTableHeaderProps}/>
+        </thead>
+      </table>
+    </Provider>
+  );
+};
+
+describe('ProjectTableHeader Component', () => {
+  const sampleProps = {
+    role: 'Owner',
+  };
+
+  it('renders without crashing', () => {
+    renderProjectTableHeader(sampleProps);
+  });
+
+  it('shows delete column for users with delete permission', () => {
+    const stateWithDeletePermission = {
+      ...sampleProps,
+    };
+    const { getByText } = renderProjectTableHeader(stateWithDeletePermission);
+    expect(getByText('Delete')).toBeInTheDocument();
+  });
+
+  it('does not show delete column for users without delete permission', () => {
+    const stateWithoutDeletePermission = {
+      ...sampleProps,
       auth: {
         user: {
-          role: 'admin',
-          permissions: {
-            frontPermissions: ['deleteProject', 'seeProjectManagement']
-          }
+          role: 'Volunteer',
         }
-      },
-      role: rolesMock.role,
-
-    });
+      }
+    };
+    const { queryByText } = renderProjectTableHeader(stateWithoutDeletePermission);
+    expect(queryByText('Delete')).not.toBeInTheDocument();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('renders all headers for admin with delete permissions', () => {
-    mockHasPermission.mockReturnValue(true);
-    renderWithProvider(<ProjectTableHeader hasPermission={mockHasPermission} />, { store });
-
-    // Assertions for all headers including DELETE
-    expect(screen.getByText(PROJECT_NAME)).toBeInTheDocument();
-    // ... Other assertions
-  });
-
-  it('does not render delete header for user without delete permissions', () => {
-    mockHasPermission.mockReturnValue(false);
-    renderWithProvider(<ProjectTableHeader hasPermission={mockHasPermission} />, { store });
-
-    // Assertion for absence of DELETE header
-    expect(screen.queryByText(DELETE)).toBeNull();
-  });
-
-  // Additional test for edge cases
 });
