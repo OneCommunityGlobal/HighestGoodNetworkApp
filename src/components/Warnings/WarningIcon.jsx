@@ -1,54 +1,53 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-
+import { faCircle } from '@fortawesome/free-solid-svg-icons';
+import moment from 'moment';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import { v4 as uuidv4 } from 'uuid';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import Popover from 'react-bootstrap/Popover';
 
 function WarningIcon(props) {
   const [btnColor, setBtnColor] = useState('white');
-  const [dateAssigned, setDateAssigned] = useState(null);
-
+  const [dateAssigned, setDateAssigned] = useState({});
   const { id } = props;
 
   const clicked = id => {
+    const today = moment().format('MM/DD/YYYY HH:mm:ss a');
+    const [todaysDate, todaysTime, todaysTimeOfDay] = today.split(' ');
+
+    let colorAssigned = null;
+    // console.log('today formatted', formatDate(today));
+
     // console.log('id is', id);
     setBtnColor(prev => {
       if (prev === 'white') {
+        setDateAssigned({ todaysDate, todaysTime });
+        colorAssigned = 'blue';
         return 'blue';
-      }
-      if (prev === 'blue') {
+      } else if (prev === 'blue') {
+        setDateAssigned({ todaysDate, todaysTime });
+        colorAssigned = 'red';
         return 'red';
+      } else {
+        setDateAssigned({ todaysDate: null, todaysTime: null });
+        colorAssigned = 'white';
+        return 'white';
       }
-      return 'white';
     });
+    //color needs to be dynically added
+    props.handleWarningIconClicked(id, colorAssigned, todaysDate);
   };
 
-  // const handleHover = () => {
-  //   console.log('hover!!!');
-  // };
-
-  // const handleHoverOut = () => {
-  //   console.log('hover removerd!!!');
-  // };
-  const renderTooltip = props => (
-    <Tooltip id="button-tooltip" {...props}>
-      Simple tooltip
-    </Tooltip>
+  const popover = (
+    <Popover id="popover-basic">
+      <Popover.Title as="h4">Date Assigned</Popover.Title>
+      <Popover.Content>{dateAssigned.todaysDate}</Popover.Content>
+    </Popover>
   );
 
   return (
-    // <OverlayTrigger
-    //   placement="top"
-    //   delay={{ show: 0, hide: 100000000 }}
-    //   overlay={renderTooltip}
-    //   // {...props}
-    // >
     <div className="warning-icon">
-      <OverlayTrigger placement="top" delay={{ show: 250, hide: 250 }} overlay={renderTooltip}>
+      <OverlayTrigger placement="top" delay={{ show: 100, hide: 250 }} overlay={popover}>
         <FontAwesomeIcon
           style={{
             color: btnColor,
@@ -61,8 +60,6 @@ function WarningIcon(props) {
           onClick={() => clicked(id)}
           icon={faCircle}
           data-testid="icon"
-          // onMouseOver={handleHover}
-          // onMouseLeave={handleHoverOut}
         />
       </OverlayTrigger>
     </div>

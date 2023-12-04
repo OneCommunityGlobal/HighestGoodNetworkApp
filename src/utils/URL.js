@@ -8,7 +8,7 @@ export const ENDPOINTS = {
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
-  INFO_COLLECTION: infoId =>`${APIEndpoint}/informations/${infoId}`,
+  INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
@@ -56,6 +56,9 @@ export const ENDPOINTS = {
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: id => `${APIEndpoint}/backup/popupeditor/${id}`,
 
+  WARNINGS: () => `${APIEndpoint}/warnings`,
+  GET_WARNINGS: userId => `${APIEndpoint}/warnings/${userId}`,
+
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
@@ -84,7 +87,7 @@ export const ENDPOINTS = {
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
-  PRESETS_BY_ID: (roleNameOrPresetId) => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
+  PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
   OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
@@ -92,31 +95,26 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
-  SETUP_NEW_USER: () =>
-    `${APIEndpoint}/getInitialSetuptoken`,
-  VALIDATE_TOKEN: () =>
-    `${APIEndpoint}/validateToken`,
-  SETUP_NEW_USER_PROFILE: () =>
-    `${APIEndpoint}/ProfileInitialSetup`,
+  SETUP_NEW_USER: () => `${APIEndpoint}/getInitialSetuptoken`,
+  VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
+  SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
-
-
 
   //reasons endpoints
   CREATEREASON: () => {
-    return `${APIEndpoint}/reason/`
+    return `${APIEndpoint}/reason/`;
   },
-  GETALLUSERREASONS: (userId) => {
-    return `${APIEndpoint}/reason/${userId}`
+  GETALLUSERREASONS: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
   },
-  GETSINGLEREASONBYID: (userId) => {
-    return `${APIEndpoint}/reason/single/${userId}`
+  GETSINGLEREASONBYID: userId => {
+    return `${APIEndpoint}/reason/single/${userId}`;
   },
-  PATCHUSERREASONBYID: (userId) => {
-    return `${APIEndpoint}/reason/${userId}`
+  PATCHUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
   },
-  DELETEUSERREASONBYID: (userId) => {
-    return `${APIEndpoint}/reason/${userId}`
+  DELETEUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
   },
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
@@ -124,7 +122,7 @@ export const ENDPOINTS = {
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
-  BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`
+  BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`,
 };
 
 export const ApiEndpoint = APIEndpoint;

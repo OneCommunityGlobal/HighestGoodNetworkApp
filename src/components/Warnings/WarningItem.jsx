@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid';
 import WarningIcon from './WarningIcon';
+import { getWarningsByUserId } from '../../actions/warnings';
 
 import './Warnings.css';
 import WarningIcons from './WarningIcons';
@@ -27,11 +28,15 @@ function WarningItem({ warningText }) {
   //     } else return 'white';
   //   });
 
+  const handleWarningIconClicked = async (id, color, dateAssigned) => {
+    await getWarningsByUserId(id);
+    // console.log('handling warning icon clicked', id, color, dateAssigned);
+  };
   return (
     <div className="warning-item-container">
       {/* <OverlayExample /> */}
       <div className="warning-wrapper">
-        <WarningIcons />
+        <WarningIcons handleWarningIconClicked={handleWarningIconClicked} />
         <p className="warning-text"> {warningText}</p>
       </div>
       {/* <div className="icons-wrapper">

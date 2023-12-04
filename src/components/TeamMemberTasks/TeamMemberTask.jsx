@@ -29,6 +29,7 @@ const TeamMemberTask = React.memo(
   }) => {
     const ref = useRef(null);
 
+    // console.log('user user inside team memebr task', user);
     const [totalHoursRemaining, activeTasks] = useMemo(() => {
       let totalHoursRemaining = 0;
 
@@ -103,7 +104,7 @@ const TeamMemberTask = React.memo(
               <tr>
                 <td className="team-member-tasks-user-name">
                   <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
-                  <Warning userId={userId} />
+                  <Warning userId={userId} userRole={userRole} />
                 </td>
 
                 <td data-label="Time" className="team-clocks">
