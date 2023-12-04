@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-// import { Button } from 'reactstrap';
+import hasPermission from 'utils/permissions';
+
 import WarningItem from './WarningItem';
 import { Button } from 'react-bootstrap';
 import './Warnings.css';
@@ -11,15 +12,19 @@ import './Warnings.css';
 // Log Time to Action Items (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
 // Intangible Time Log w/o Reason (“i” = ,itlr = The timer should be used for all time logged, so any time logged as intangible must also include in the time log description an explanation for why you didn’t use the timer.
 
-export default function Warning({ userId }) {
+//admins and owners should see it by default using userRole
+// the wanring button is only visiable to owners and admins
+
+export default function Warning({ userId, userRole }) {
   const [toggle, setToggle] = useState(false);
 
+  const [curUserId, setCurUserId] = useState(userId);
   const [options, setOptions] = useState([
     'Better Descriptions',
     'Log Time to Tasks',
     'Log Time as You Go',
     'Log Time to Action Items',
-    'Intangible Time Log w/o Reason ',
+    'Intangible Time Log w/o Reason',
   ]);
 
   const handleToggle = () => {
@@ -30,12 +35,12 @@ export default function Warning({ userId }) {
   // store warnings in an array
   //looop through each wanring rendering 8 circles and the text below inside of warnings component
 
-  const warnings = options.map(warning => <WarningItem warningText={warning} userId={userId} />);
+  // const warnings = options.map(warning => <WarningItem warningText={warning} userId={userId} />);
 
   // console.log('warnings', warnings);
-  // const warnings = !toggle
-  //   ? null
-  //   : options.map(warning => <WarningItem warningText={warning} userId={userId} />);
+  const warnings = !toggle
+    ? null
+    : options.map(warning => <WarningItem warningText={warning} curUserId={curUserId} />);
   return (
     <div className="warnings-container">
       <Button className="btn btn-warning warning-btn" size="sm" onClick={handleToggle}>
