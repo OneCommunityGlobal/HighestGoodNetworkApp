@@ -46,10 +46,7 @@ const ScheduleReasonModal = ({
   return (
     <>
       <Modal.Header closeButton={true}>
-        <Modal.Title className="centered-container">
-        <div className="centered-text">Choose to Use a Blue Square</div>
-        </Modal.Title>
-        
+        <Modal.Title className="centered-container">Choose to Use a Blue Square</Modal.Title>
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
         <Modal.Body>
