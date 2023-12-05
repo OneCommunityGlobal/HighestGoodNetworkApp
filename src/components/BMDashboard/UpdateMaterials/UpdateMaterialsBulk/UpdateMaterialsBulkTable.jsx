@@ -5,8 +5,9 @@ import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { fetchAllMaterials, postMaterialUpdateBulk } from 'actions/bmdashboard/materialsActions';
 import UpdateMaterial from '../UpdateMaterial';
+import moment from 'moment';
 
-function UpdateMaterialsBulkTable({ date, project, setProject }) {
+function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials.materialslist);
   const [materialsState, setMaterialsState] = useState([...materials]);
@@ -15,10 +16,13 @@ function UpdateMaterialsBulkTable({ date, project, setProject }) {
   const [updatedRecordsList] = useState({});
   const [validationsList] = useState({});
   const [bulkValidationError, setbulkValidationError] = useState(false);
+  const today = moment(new Date()).format('YYYY-MM-DD');
+
 
   useEffect(() => {
     setMaterialsState([...materials]);
     setProject({ label: 'All Projects', value: '0' });
+    setDate(today)
   }, [materials]);
 
   const cancelHandler = () => {

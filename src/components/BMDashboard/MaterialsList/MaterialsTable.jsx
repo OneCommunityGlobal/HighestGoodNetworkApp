@@ -45,13 +45,11 @@ export default function MaterialsTable({ filteredMaterials }) {
   const sortingAsc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.project.projectName >= b.project.projectName ? 1 : -1));
+      sorted = [].concat(...sortedData).sort((a, b) => (a.project.name >= b.project.name ? 1 : -1));
     } else if (columnName === 'InventoryItemType') {
       sorted = []
         .concat(...sortedData)
-        .sort((a, b) => (a.inventoryItemType?.name >= b.inventoryItemType?.name ? 1 : -1));
+        .sort((a, b) => (a.itemType?.name >= b.itemType?.name ? 1 : -1));
     }
 
     setData(sorted);
@@ -62,13 +60,11 @@ export default function MaterialsTable({ filteredMaterials }) {
   const sortingDesc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.project.projectName <= b.project.projectName ? 1 : -1));
+      sorted = [].concat(...sortedData).sort((a, b) => (a.project.name <= b.project.name ? 1 : -1));
     } else if (columnName === 'InventoryItemType') {
       sorted = []
         .concat(...sortedData)
-        .sort((a, b) => (a.inventoryItemType?.name <= b.inventoryItemType?.name ? 1 : -1));
+        .sort((a, b) => (a.itemType?.name <= b.itemType?.name ? 1 : -1));
     }
 
     setData(sorted);

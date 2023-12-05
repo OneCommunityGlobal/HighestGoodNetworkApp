@@ -20,12 +20,15 @@ export function MaterialsList(props) {
   // dispatch materials fetch action : on load and update
   // // response is mapped to materials or errors in redux store
   useEffect(() => {
-    dispatch(fetchAllMaterials());
+    if (postMaterialUpdateResult.result == null) dispatch(fetchAllMaterials());
   }, [postMaterialUpdateResult.result]); // To refresh with new materials after update
+
+  useEffect(() => {
+    setFilteredMaterials([...materials]);
+  }, [materials]);
 
   // filter materials data by project
   useEffect(() => {
-
     let filterMaterials;
     if (selectedProject === 'all' && selectedMaterial === 'all') {
       setFilteredMaterials([...materials]);
@@ -37,13 +40,10 @@ export function MaterialsList(props) {
       setFilteredMaterials([...filterMaterials]);
     } else {
       filterMaterials = materials.filter(
-        mat =>
-          mat.project.name === selectedProject &&
-          mat.itemType?.name === selectedMaterial,
+        mat => mat.project.name === selectedProject && mat.itemType?.name === selectedMaterial,
       );
       setFilteredMaterials([...filterMaterials]);
     }
-
   }, [selectedProject, selectedMaterial]);
 
   // trigger error state if an error object is added to props
