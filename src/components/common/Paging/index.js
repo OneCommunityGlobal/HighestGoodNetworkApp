@@ -1,3 +1,2 @@
-import Paging from './Paging';
-
-export default Paging;
+// eslint-disable-next-line
+export { Paging } from './Paging';

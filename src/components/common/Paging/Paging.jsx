@@ -4,7 +4,8 @@ import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import classnames from 'classnames';
 import './Paging.css';
 
-export default function Paging({ maxElemPerPage = 6, totalElementsCount, children }) {
+// eslint-disable-next-line import/prefer-default-export
+export function Paging({ maxElemPerPage = 6, totalElementsCount, children }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const pagesCount = Math.ceil(totalElementsCount / maxElemPerPage);
