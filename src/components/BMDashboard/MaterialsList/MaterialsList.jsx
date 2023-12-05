@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import BMError from '../shared/BMError';
@@ -15,28 +15,34 @@ export function MaterialsList(props) {
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedMaterial, setSelectedMaterial] = useState('all');
   const [isError, setIsError] = useState(false);
+  const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
 
-  // dispatch materials fetch action
-  // response is mapped to materials or errors in redux store
+  // dispatch materials fetch action : on load and update
+  // // response is mapped to materials or errors in redux store
   useEffect(() => {
-    dispatch(fetchAllMaterials());
-  }, []);
+    if (postMaterialUpdateResult.result == null) dispatch(fetchAllMaterials());
+  }, [postMaterialUpdateResult.result]); // To refresh with new materials after update
+
+  useEffect(() => {
+    setFilteredMaterials([...materials]);
+  }, [materials]);
 
   // filter materials data by project
   useEffect(() => {
     let filterMaterials;
     if (selectedProject === 'all' && selectedMaterial === 'all') {
-      setFilteredMaterials(materials);
+      setFilteredMaterials([...materials]);
     } else if (selectedProject !== 'all' && selectedMaterial === 'all') {
-      filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject);
-      setFilteredMaterials(filterMaterials);
+      filterMaterials = materials.filter(mat => mat.project.name === selectedProject);
+      setFilteredMaterials([...filterMaterials]);
+    } else if (selectedProject === 'all' && selectedMaterial !== 'all') {
+      filterMaterials = materials.filter(mat => mat.itemType?.name === selectedMaterial);
+      setFilteredMaterials([...filterMaterials]);
     } else {
       filterMaterials = materials.filter(
-        mat =>
-          mat.project.projectName === selectedProject &&
-          mat.inventoryItemType?.name === selectedMaterial,
+        mat => mat.project.name === selectedProject && mat.itemType?.name === selectedMaterial,
       );
-      setFilteredMaterials(filterMaterials);
+      setFilteredMaterials([...filterMaterials]);
     }
   }, [selectedProject, selectedMaterial]);
 
@@ -81,7 +87,7 @@ export function MaterialsList(props) {
 }
 
 const mapStateToProps = state => ({
-  materials: state.materials,
+  materials: state.materials.materialslist,
   errors: state.errors,
 });
 

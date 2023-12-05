@@ -4,9 +4,13 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 
+import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
+import { useDispatch } from 'react-redux';
 import RecordsModal from './RecordsModal';
+import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
 
 export default function MaterialsTable({ filteredMaterials }) {
+  const dispatch = useDispatch();
   const [sortedData, setData] = useState(null);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
@@ -18,11 +22,18 @@ export default function MaterialsTable({ filteredMaterials }) {
     if (filteredMaterials && filteredMaterials.length > 0) {
       setData(filteredMaterials);
     }
-  }, filteredMaterials);
+  }, [filteredMaterials]);
 
-  const handleEditRecordsClick = () => {
-    // open records editor
-    return null;
+  // Update Material Form
+  const [updateModal, setUpdateModal] = useState(false);
+  const [updateRecord, setUpdateRecord] = useState(null);
+
+  const handleEditRecordsClick = (selectedMaterial, type) => {
+    if (type === 'Update') {
+      dispatch(resetMaterialUpdate());
+      setUpdateModal(true);
+      setUpdateRecord(selectedMaterial);
+    }
   };
 
   const handleViewRecordsClick = (data, type) => {
@@ -34,13 +45,11 @@ export default function MaterialsTable({ filteredMaterials }) {
   const sortingAsc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.project.projectName >= b.project.projectName ? 1 : -1));
+      sorted = [].concat(...sortedData).sort((a, b) => (a.project.name >= b.project.name ? 1 : -1));
     } else if (columnName === 'InventoryItemType') {
       sorted = []
         .concat(...sortedData)
-        .sort((a, b) => (a.inventoryItemType?.name >= b.inventoryItemType?.name ? 1 : -1));
+        .sort((a, b) => (a.itemType?.name >= b.itemType?.name ? 1 : -1));
     }
 
     setData(sorted);
@@ -51,13 +60,11 @@ export default function MaterialsTable({ filteredMaterials }) {
   const sortingDesc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.project.projectName <= b.project.projectName ? 1 : -1));
+      sorted = [].concat(...sortedData).sort((a, b) => (a.project.name <= b.project.name ? 1 : -1));
     } else if (columnName === 'InventoryItemType') {
       sorted = []
         .concat(...sortedData)
-        .sort((a, b) => (a.inventoryItemType?.name <= b.inventoryItemType?.name ? 1 : -1));
+        .sort((a, b) => (a.itemType?.name <= b.itemType?.name ? 1 : -1));
     }
 
     setData(sorted);
@@ -98,6 +105,7 @@ export default function MaterialsTable({ filteredMaterials }) {
         setRecord={setRecord}
         recordType={recordType}
       />
+      <UpdateMaterialModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       <div className="materials_table_container">
         <Table>
           <thead>
@@ -112,9 +120,7 @@ export default function MaterialsTable({ filteredMaterials }) {
               <th>Bought</th>
               <th>Used</th>
               <th>Available</th>
-              <th>Hold</th>
               <th>Waste</th>
-              <th>Usage</th>
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
@@ -124,37 +130,24 @@ export default function MaterialsTable({ filteredMaterials }) {
               sortedData.map(mat => {
                 return (
                   <tr key={mat._id}>
-                    <td>{mat.project.projectName}</td>
+                    <td>{mat.project.name}</td>
                     {/* Note: optional chaining to prevent crashes while db work ongoing */}
-                    <td>{mat.inventoryItemType?.name}</td>
-                    <td>{mat.inventoryItemType?.uom}</td>
+                    <td>{mat.itemType?.name}</td>
+                    <td>{mat.itemType?.unit}</td>
                     <td>{mat.stockBought}</td>
                     <td>{mat.stockUsed}</td>
                     <td>{mat.stockAvailable}</td>
-                    <td>{mat.stockHeld}</td>
                     <td>{mat.stockWasted}</td>
+
                     <td className="materials_cell">
-                      <button type="button" onClick={handleEditRecordsClick}>
+                      <button type="button" onClick={() => handleEditRecordsClick(mat, 'Update')}>
                         <BiPencil />
                       </button>
                       <Button
                         color="primary"
                         outline
                         size="sm"
-                        onClick={() => handleViewRecordsClick(mat.usageRecord, 'Usage')}
-                      >
-                        View
-                      </Button>
-                    </td>
-                    <td className="materials_cell">
-                      <button type="button" onClick={handleEditRecordsClick}>
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(mat.updateRecord, 'Update')}
+                        onClick={() => handleViewRecordsClick(mat, 'Update')}
                       >
                         View
                       </Button>
