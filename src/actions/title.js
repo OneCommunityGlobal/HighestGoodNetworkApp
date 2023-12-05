@@ -34,3 +34,13 @@ export async function getTitleById(titleId) {
     return {message: error.response.data.message, errorCode: error.response.data.message, status: error.response.status}
   }
 }
+
+export async function deleteTitleById(titleId) {
+  try {
+    const url = ENDPOINTS.DELETE_TITLE_BY_ID(titleId);
+    const response = await axios.put(url)
+    return Promise.resolve(response);
+  } catch {
+    return {message: error.response.data.message, errorCode: error.response.data.message, status: error.response.status}
+  }
+}
