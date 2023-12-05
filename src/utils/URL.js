@@ -85,8 +85,9 @@ export const ENDPOINTS = {
 
   //titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
-  TITLE_BY_ID: titleId => `${APIEndpoint}/title/titleId`,
+  TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
   CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
+  DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
   PRESETS_BY_ID: (roleNameOrPresetId) => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,

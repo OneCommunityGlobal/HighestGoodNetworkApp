@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { deleteTitleById } from '../../../actions/title';
 import {
   Button,
   Modal,
@@ -33,6 +34,7 @@ const AssignPopUp = props => {
       <div className="col text-center">
         <Button className="bg-success m-3" onClick={() => setIsOpen(false)}>Yes</Button>
         <Button className="bg-danger m-3" onClick={() => setIsOpen(false)}>No</Button>
+        <Button className="bg-warning m-3" onClick={() => deleteTitleById(title._id)}>Delete</Button>
       </div>
       </ModalFooter>
     </Modal>

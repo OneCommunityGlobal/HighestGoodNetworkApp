@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {addTitle} from '../../../actions/title';
+import { addTitle } from '../../../actions/title';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -14,19 +14,13 @@ import {
 } from 'reactstrap';
 
 
-
 const AddNewTitle = props => {
-const { isOpen, toggle, setIsOpen } = props;
-const [titleData, setTitleData] = useState({titleName: '', mediaFolder: '', teamCode: '', projectAssigned: '', teamAssiged: '', shortName:''})
+const { isOpen, toggle, setIsOpen, onAddTitle, setSubmit, submittoggler } = props;
+const [titleData, setTitleData] = useState({titleName: '', mediaFolder: '', teamCode: '', projectAssigned: '', teamAssiged: ''})
 const confirmOnClick = () => {
-  let { titleName } = titleData;
-  let names = titleName.split(' ');
-  let shortname = (names[0][0] + names[1][0]).toUpperCase();
-  setTitleData(prev => ({...prev, shortName: shortname}));
-  console.log(shortname);
-  console.log(titleData)
-  // addTitle(titleData);
+  addTitle(titleData);
   setIsOpen(false);
+  submittoggler ? setSubmit(false) : setSubmit(true);
 }
 return (
 <React.Fragment>
