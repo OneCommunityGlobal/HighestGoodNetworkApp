@@ -20,14 +20,13 @@ import logo from '../../assets/images/logo.png';
 import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
 import { useHistory } from 'react-router-dom';
-import { getTimeZoneProfileInitialSetup } from 'actions/timezoneAPIActions';
+
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
-
 
 const SetupProfileUserEntry = ({ token, userEmail }) => {
   const dispatch = useDispatch();
@@ -123,20 +122,18 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       alert('Please enter valid location');
       return;
     }
-
-    dispatch(getTimeZoneProfileInitialSetup( location, token )).then(response => {
-      if(!response.status) {
+    httpService.post(ENDPOINTS.TIMEZONE_LOCATION(location),{token}).then(response => {
+      if(response.status === 200) {
+        const { timezone, currentLocation } = response.data;
         setUserProfile(prevProfile => ({
           ...prevProfile,
-          timeZoneFilter: response.timezone,
-          timeZone: response.timezone,
-          location: response.currentLocation
+          timeZoneFilter: timezone,
+          timeZone: timezone,
+          location: currentLocation
         }));
-      } else { 
-       alert(`An error occurred : ${response.data}`);
       }
     }).catch(err => {
-      alert(`An error occurred : ${err}`);
+      alert(`An error occurred : ${err.response.data}`);
      })
   };
 

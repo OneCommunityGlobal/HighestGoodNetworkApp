@@ -39,8 +39,6 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-// import getUserTimeZone from 'services/timezoneApiService';
-import { getTimeZone } from 'actions/timezoneAPIActions';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
@@ -48,6 +46,8 @@ import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
@@ -521,22 +521,21 @@ class AddUserProfile extends Component {
       return;
     }
 
-    this.props.getTimeZone(location).then(res => {
-      if(!res.status) {
+    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
+      if(res.status === 200) {
+        const { timezone, currentLocation } = res.data;
         this.setState({
           ...this.state,
-          timeZoneFilter: res.timezone,
+          timeZoneFilter: timezone,
           userProfile: {
             ...this.state.userProfile,
-            location: res.currentLocation,
-            timeZone: res.timezone,
+            location: currentLocation,
+            timeZone: timezone,
           },
         });
-      } else { 
-        toast.error(`An error occurred : ${res.data}`);
       }
     }).catch(err => {
-      console.log(err);
+      toast.error(`An error occurred : ${err.response.data}`);
     });
   };
 
@@ -1004,8 +1003,9 @@ const mapStateToProps = state => ({
   state,
 });
 
-const mapDispatchToProps = dispatch => ({
-  getUserProfile, 
+
+export default connect(mapStateToProps, {
+  getUserProfile,
   clearUserProfile,
   updateUserProfile,
   getAllUserTeams,
@@ -1014,7 +1014,4 @@ const mapDispatchToProps = dispatch => ({
   addTeamMember,
   fetchAllProjects,
   hasPermission,
-  getTimeZone: async (location) => await dispatch(getTimeZone(location)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddUserProfile);
+})(AddUserProfile);

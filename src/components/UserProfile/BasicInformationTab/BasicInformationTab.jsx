@@ -6,8 +6,7 @@ import PhoneInput from 'react-phone-input-2';
 // import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { useSelector, useDispatch, connect } from 'react-redux';
-import { getTimeZone } from 'actions/timezoneAPIActions';
+import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
@@ -15,6 +14,9 @@ import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { formatDate } from 'utils/formatDate';
 import { toast } from 'react-toastify';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
+
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
   const { firstName, lastName } = userProfile;
@@ -276,8 +278,6 @@ const BasicInformationTab = props => {
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
 
-  const dispatch = useDispatch();
-
   let topMargin = '6px';
   if (isUserSelf) {
     topMargin = '0px';
@@ -301,16 +301,15 @@ const BasicInformationTab = props => {
       return;
     }
 
-    dispatch(getTimeZone(userProfile.location.userProvided)).then(res => {
-      if(!res.status) {
-          setTimeZoneFilter(res.timezone)
-          setUserProfile({ ...userProfile, timeZone: res.timezone, location: res.currentLocation });
-      } else { 
-        toast.error(`An error occurred : ${res.data}`);
-      }
+    axios.get(ENDPOINTS.TIMEZONE_LOCATION(userProfile.location.userProvided)).then(res => {
+      if (res.status === 200) {
+        const {timezone, currentLocation }  = res.data;
+        setTimeZoneFilter(timezone);
+        setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
+      } 
     }).catch(err => {
-      console.log(err);
-    })
+      toast.error(`An error occurred : ${err.response.data}`);
+    });
   };
   return (
     <div>

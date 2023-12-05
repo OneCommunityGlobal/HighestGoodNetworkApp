@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
-import { useSelector, useDispatch } from 'react-redux';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import { createLocation, editLocation } from 'services/mapLocationsService';
-import { getTimeZone } from 'actions/timezoneAPIActions';
 import { useEffect } from 'react';
-
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 
 const initialLocationData = {
   firstName: 'Prior to HGN Data Collection',
@@ -40,8 +39,6 @@ function AddOrEditPopup({
     jobTitle: null,
     location: null,
   });
-  
-  const dispatch = useDispatch();
 
   const getCoordsHandler = () => {
     const location = locationData.location.userProvided;
@@ -54,18 +51,17 @@ function AddOrEditPopup({
       setErrors(prev => ({ ...prev, location: null }));
     }
 
-    dispatch(getTimeZone(location)).then(res => {
-      if(!res.status) {
-          setLocationData(prev => ({
-            ...prev,
-            location: res.currentLocation,
-          }));
-          setTimeZone(res.timezone);
-      } else { 
-        toast.error(`An error occurred : ${res.data}`);
+    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
+      if (res.status === 200) {
+        const { timezone, currentLocation } = res.data;
+        setLocationData(prev => ({
+          ...prev,
+          location: currentLocation,
+        }));
+        setTimeZone(timezone);
       }
     }).catch(err => {
-      console.log(err);
+      toast.error(`An error occurred : ${err.response.data}`);
     });
   };
   useEffect(() => {
