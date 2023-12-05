@@ -37,7 +37,7 @@ export function PieChart({ data, dataLegend, pieChartId, dataLegendHeader }) {
       .map(obj => obj.value)
       .reduce((a, c) => {
         return a + c;
-      });
+      }, 0);
     setTotalHours(totalValue);
 
     getCreateSvgPie(totalValue)

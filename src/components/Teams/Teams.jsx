@@ -20,6 +20,8 @@ import TeamMembersPopup from './TeamMembersPopup';
 import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
+import { toast } from 'react-toastify';
+import { searchWithAccent } from 'utils/search';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -123,11 +125,11 @@ class Teams extends React.PureComponent {
       // Applying the search filters before creating each team table data element
       if (
         (team.teamName &&
-          team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1 &&
+           searchWithAccent(team.teamName,this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1)
+        searchWithAccent(team.teamName,this.state.wildCardSearchText))
       ) {
         return team;
       }
@@ -248,6 +250,7 @@ class Teams extends React.PureComponent {
   onCreateNewTeamShow = () => {
     this.setState({
       createNewTeamPopupOpen: true,
+      selectedTeam: '',
     });
   };
 
@@ -311,13 +314,21 @@ class Teams extends React.PureComponent {
   /**
    * callback for adding new team
    */
-  addNewTeam = (name, isEdit) => {
+  addNewTeam = async (name, isEdit) => {
     if (isEdit) {
-      this.props.updateTeam(name, this.state.selectedTeamId, this.state.isActive, this.state.selectedTeamCode);
-      alert('Team updated successfully');
+      const updateTeamResponse = await this.props.updateTeam(name, this.state.selectedTeamId, this.state.isActive, this.state.selectedTeamCode);
+      if (updateTeamResponse.status === 200) {
+        toast.success('Team updated successfully')
+      } else {
+        toast.error(updateTeamResponse)
+      }
     } else {
-      this.props.postNewTeam(name, true);
-      alert('Team added successfully');
+      const postResponse = await this.props.postNewTeam(name);
+      if (postResponse.status === 200) {
+        toast.success('Team added successfully');
+      } else {
+        toast.error(postResponse);
+      }
     }
     this.setState({
       selectedTeamId: undefined,
@@ -330,9 +341,13 @@ class Teams extends React.PureComponent {
    * callback for deleting a team
    */
 
-  onDeleteUser = deletedId => {
-    this.props.deleteTeam(deletedId, 'delete');
-    alert('Team deleted successfully');
+  onDeleteUser = async deletedId => {
+    const deleteResponse = await this.props.deleteTeam(deletedId, 'delete');
+    if (deleteResponse.status === 200) {
+      toast.success('Team successfully deleted and user profiles updated');
+    } else {
+      toast.error(deleteResponse);
+    }
     this.setState({
       deleteTeamPopupOpen: false,
     });
@@ -341,13 +356,17 @@ class Teams extends React.PureComponent {
   /**
    * callback for changing the status of a team
    */
-  onConfirmClick = (teamName, teamId, isActive, teamCode) => {
-    this.props.updateTeam(teamName, teamId, isActive, teamCode);
+  onConfirmClick = async (teamName, teamId, isActive, teamCode) => {
+    const updateTeamResponse = await this.props.updateTeam(teamName, teamId, isActive, teamCode);
+    if (updateTeamResponse.status === 200) {
+      toast.success('Status Updated Successfully')
+    } else {
+      toast.error(updateTeamResponse)
+    }
     this.setState({
       teamStatusPopupOpen: false,
       deleteTeamPopupOpen: false,
     });
-    alert('Status Updated Successfully');
   };
 
   /**

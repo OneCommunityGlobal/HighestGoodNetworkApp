@@ -146,6 +146,7 @@ export const TeamMembersPopup = React.memo(props => {
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <tr>
+                <th>Active</th>
                 <th>#</th>
                 <th>User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>Date Added <FontAwesomeIcon {...icons[sortOrder]} /></th>
@@ -154,8 +155,13 @@ export const TeamMembersPopup = React.memo(props => {
             </thead>
             <tbody>
               {props.members.teamMembers.length > 0 &&
-                memberList.toSorted().map((user, index) => (
-                  <tr key={`team_member_${index}`}>
+                memberList.toSorted().map((user, index) => {
+                  return (<tr key={`team_member_${index}`}>
+                    <td>
+                      <span className={user.isActive ? "isActive" : "isNotActive"}>
+                        <i className="fa fa-circle" aria-hidden="true" />
+                      </span>
+                    </td>
                     <td>{index + 1}</td>
                     <td>{returnUserRole(user) ? <b>{user.firstName} {user.lastName} ({user.role})</b> : <span>{user.firstName} {user.lastName} ({user.role})</span>} </td>
                     {/* <td>{user}</td> */}
@@ -171,8 +177,8 @@ export const TeamMembersPopup = React.memo(props => {
                         </Button>
                       </td>
                     )}
-                  </tr>
-                ))
+                  </tr>)
+                })
               }
             </tbody>
           </table>
