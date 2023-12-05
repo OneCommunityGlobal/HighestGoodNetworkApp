@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
+import SelectMaterial from './SelectMaterial';
 import MaterialsTable from './MaterialsTable';
 import './MaterialsList.css';
 
@@ -12,6 +13,7 @@ export function MaterialsList(props) {
   const { materials, errors, dispatch } = props;
   const [filteredMaterials, setFilteredMaterials] = useState(materials);
   const [selectedProject, setSelectedProject] = useState('all');
+  const [selectedMaterial, setSelectedMaterial] = useState('all');
   const [isError, setIsError] = useState(false);
 
   // dispatch materials fetch action
@@ -22,12 +24,21 @@ export function MaterialsList(props) {
 
   // filter materials data by project
   useEffect(() => {
-    if (selectedProject === 'all') {
-      return setFilteredMaterials(materials);
+    let filterMaterials;
+    if (selectedProject === 'all' && selectedMaterial === 'all') {
+      setFilteredMaterials(materials);
+    } else if (selectedProject !== 'all' && selectedMaterial === 'all') {
+      filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject);
+      setFilteredMaterials(filterMaterials);
+    } else {
+      filterMaterials = materials.filter(
+        mat =>
+          mat.project.projectName === selectedProject &&
+          mat.inventoryItemType?.name === selectedMaterial,
+      );
+      setFilteredMaterials(filterMaterials);
     }
-    const filterMaterials = materials.filter(mat => mat.project.projectName === selectedProject);
-    return setFilteredMaterials(filterMaterials);
-  }, [selectedProject]);
+  }, [selectedProject, selectedMaterial]);
 
   // trigger error state if an error object is added to props
   useEffect(() => {
@@ -50,7 +61,19 @@ export function MaterialsList(props) {
     <main className="materials_list_container">
       <h3>Materials</h3>
       <section>
-        <SelectForm materials={materials} setSelectedProject={setSelectedProject} />
+        <span style={{ display: 'flex', margin: '5px' }}>
+          <SelectForm
+            materials={materials}
+            setSelectedProject={setSelectedProject}
+            setSelectedMaterial={setSelectedMaterial}
+          />
+          <SelectMaterial
+            materials={materials}
+            selectedProject={selectedProject}
+            selectedMaterial={selectedMaterial}
+            setSelectedMaterial={setSelectedMaterial}
+          />
+        </span>
         <MaterialsTable filteredMaterials={filteredMaterials} />
       </section>
     </main>

@@ -16,6 +16,7 @@ import { formatDate } from 'utils/formatDate';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { isString } from 'lodash';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
@@ -311,6 +312,14 @@ const BasicInformationTab = props => {
       toast.error(`An error occurred : ${err.response.data}`);
     });
   };
+
+  function locationCheckValue(loc) {
+    if(loc.userProvided) return loc.userProvided
+    const str = isString(loc)
+    return str ? loc : ''
+  }
+
+
   return (
     <div>
       <div data-testid="basic-info-tab" className="basic-info-tab-desktop">
@@ -498,7 +507,7 @@ const BasicInformationTab = props => {
                 <Col className='p-0' style={{marginRight:"10px"}}>
                   <Input
                     onChange={handleLocation}
-                    value={userProfile.location.userProvided || ''}
+                    value={locationCheckValue(userProfile.location)}
                   />
                 </Col>
                 <Col className='p-0'>
