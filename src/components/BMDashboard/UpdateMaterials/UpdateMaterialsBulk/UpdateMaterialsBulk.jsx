@@ -19,7 +19,12 @@ function UpdateMaterialsBulk() {
             date={date}
             setDate={setDate}
           />
-          <UpdateMaterialsBulkTable project={project} setDate={setDate} setProject={setProject} date={date} />
+          <UpdateMaterialsBulkTable
+            project={project}
+            setDate={setDate}
+            setProject={setProject}
+            date={date}
+          />
         </div>
       </div>
     </Container>

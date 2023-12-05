@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
+import moment from 'moment';
 import { fetchAllMaterials, postMaterialUpdateBulk } from 'actions/bmdashboard/materialsActions';
 import UpdateMaterial from '../UpdateMaterial';
-import moment from 'moment';
 
 function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
@@ -18,11 +18,10 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
   const [bulkValidationError, setbulkValidationError] = useState(false);
   const today = moment(new Date()).format('YYYY-MM-DD');
 
-
   useEffect(() => {
     setMaterialsState([...materials]);
     setProject({ label: 'All Projects', value: '0' });
-    setDate(today)
+    setDate(today);
   }, [materials]);
 
   const cancelHandler = () => {
