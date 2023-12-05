@@ -49,8 +49,7 @@
 }
 
 .project-summary_item{  
-  padding: 10px;
-  flex: 50%;
+  padding: 10px;  
   align-items: center;
 }
 
@@ -59,21 +58,12 @@
 }
 
 .project-summary_span {
-  color: white;
-  background-color: #3ea0cb;
-  border-radius: 5px;
-  padding: 0.1em 0.5em;
+  color: #3ea0cb;
+  font-weight: bold;
   margin-left: 1em;
+  display: inline-block;
+  white-space: no-wrap;
 }
 
-@media (max-width: 800px) {
-  .project-summary_item {
-    flex: 100%;
-    margin: 5px;
-  }
 
-  .project-summary_span {
-    display: inline-block;
-    white-space: no-wrap;
-  }
-}
+

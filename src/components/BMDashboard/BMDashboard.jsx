@@ -11,11 +11,7 @@ export function BMDashboard() {
   const [isError, setIsError] = useState(false);
 
   const dispatch = useDispatch();
-  const projects = useSelector(state => state.bmProjects);
   const errors = useSelector(state => state.errors);
-
-  console.log('PROJECTS', projects);
-  console.log('ERRORS', errors);
 
   // fetch projects data on pageload
   useEffect(() => {
@@ -28,9 +24,6 @@ export function BMDashboard() {
       setIsError(true);
     }
   }, [errors]);
-
-  console.log(Object.entries(errors).length);
-  console.log(isError);
 
   return (
     <Container className="justify-content-center align-items-center mw-80 px-4">

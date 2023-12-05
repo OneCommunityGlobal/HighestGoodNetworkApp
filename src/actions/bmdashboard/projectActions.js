@@ -8,7 +8,6 @@ export const fetchAllProjects = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_PROJECTS_LIST)
       .then(res => {
-      console.log(res.data)
       dispatch(setProjects(res.data))
     })
     .catch(err => {
