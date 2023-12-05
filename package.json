@@ -79,8 +79,8 @@
   },
   "scripts": {
     "prestart": "npm run test",
-    "start": "react-scripts --max_old_space_size=4096 start",
-    "build": "react-scripts --max_old_space_size=4096 build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:watch": " react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:coverage": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen --coverage",
