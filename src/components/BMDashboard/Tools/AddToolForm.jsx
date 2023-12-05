@@ -1,6 +1,8 @@
-import { Form, FormGroup, Label, Input, Row, Col, Button } from 'reactstrap';
+import { Form, FormGroup, Label, Input, Row, Col, ListGroup, ListGroupItem , Button } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
+
+import DropZone  from 'components/common/DragAndDrop/DragAndDrop';
 import { boxStyle } from 'styles';
 import './AddToolForm.css';
 
@@ -119,8 +121,32 @@ export default function AddToolForm() {
       </Row>
       <FormGroup>
         <Label for="phone-number">Supplier Phone Number</Label>
-        <PhoneInput  id="phone-number" name="phone-number"/>
+        <PhoneInput id="phone-number" name="phone-number" />
       </FormGroup>
+      <DropZone />
+      <FormGroup>
+        <Label for="link">Link to Buy/Rent</Label>
+        <Input id="link" type="text" name="link" placeholder="https://" />
+      </FormGroup>
+      <FormGroup>
+        <Label for="description">Tool/Equipment Description</Label>
+        <Input type="textarea" name="description" id="description" />
+      </FormGroup>
+      {/* <FormGroup row>
+        <Label for="totalPrice" sm="2">
+          Total Price
+        </Label>
+        <Col sm={10}>
+          <Input plaintext id="totalPrice" name="totalPrice">
+            {' '}
+            30.00 USD
+          </Input>
+        </Col>
+      </FormGroup> */}
+      <div>
+        <Button outline>Cancel</Button>
+        <Button>Submit</Button>
+      </div>
     </Form>
   );
 }
