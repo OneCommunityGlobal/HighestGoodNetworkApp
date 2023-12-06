@@ -115,6 +115,7 @@ export default (
             RoutePermissions.projects,
             RoutePermissions.projectManagement_fullFunctionality,
             RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
+            RoutePermissions.updateTask
           ]}
         />
         <ProtectedRoute
