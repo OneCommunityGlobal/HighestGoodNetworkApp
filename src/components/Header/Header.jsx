@@ -204,13 +204,18 @@ export const Header = props => {
                         {TEAMS}
                       </DropdownItem>
                     )}
-                    {(canPutRole || canManageUser) && (
+                    {canCreatePopup || canUpdatePopup ? (
                       <>
-                      <DropdownItem divider />
+                        <DropdownItem divider />
+                        <DropdownItem tag={Link} to={`/popupmanagement`}>
+                          {POPUP_MANAGEMENT}
+                        </DropdownItem>
+                      </>
+                    ) : null}
+                    {(canPutRole || canManageUser) && (
                       <DropdownItem tag={Link} to="/permissionsmanagement">
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>
-                      </>
                     )}
                   </DropdownMenu>
                 </UncontrolledDropdown>

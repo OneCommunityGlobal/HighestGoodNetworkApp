@@ -1,20 +1,18 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import './TotalReportBarGraph.css';
 
-function TotalReportBarGraph({ barData, range }) {
-  const svgId = `svg-container-${range}`;
+const TotalReportBarGraph = props => {
+  const svg_id = 'svg-container-' + props.range;
 
   const drawChart = data => {
     data.sort((a, b) => (a.label > b.label ? 1 : -1));
-    const maxValue = Number(
-      data.reduce((prev, curr) => (prev.value - curr.value > 0 ? prev : curr)).value,
-    );
+    const maxValue = Number(data.reduce((p, c) => (p.value - c.value > 0 ? p : c)).value);
     const margin = { top: 10, right: 8, bottom: 15, left: 20 };
     const width = 500 - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
-    const svg = d3.select(`#${svgId}`);
+    const svg = d3.select('#' + svg_id);
     svg.selectAll('*').remove();
     const chart = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
 
@@ -29,7 +27,7 @@ function TotalReportBarGraph({ barData, range }) {
       .range([height, 10])
       .domain([0, maxValue]);
 
-    const colorScale = d3
+    var colorScale = d3
       .scaleLinear()
       .domain([0, maxValue])
       .range(['darksalmon', 'darkslateblue']);
@@ -48,41 +46,39 @@ function TotalReportBarGraph({ barData, range }) {
     barGroups
       .append('rect')
       .attr('class', 'bar')
-      .attr('x', d => xScale(d.label))
-      .attr('y', d => yScale(d.value))
-      .attr('height', d => height - yScale(d.value))
+      .attr('x', g => xScale(g.label))
+      .attr('y', g => yScale(g.value))
+      .attr('height', g => height - yScale(g.value))
       .attr('width', xScale.bandwidth())
-      .attr('fill', d => colorScale(d.value))
-      // eslint-disable-next-line no-unused-vars
-      .on('mouseenter', (_, i) => {
+      .attr('fill', g => colorScale(g.value))
+      .on('mouseenter', function(actual, i) {
         d3.selectAll('.value').attr('opacity', 0);
-        d3.select(d3.event.currentTarget)
+        d3.select(this)
           .transition()
           .duration(300)
           .attr('opacity', 0.6);
         barGroups
           .append('text')
           .attr('class', 'value')
-          .attr('x', d => xScale(d.label) + xScale.bandwidth() / 2)
-          .attr('y', d => yScale(d.value))
+          .attr('x', a => xScale(a.label) + xScale.bandwidth() / 2)
+          .attr('y', a => yScale(a.value))
           .attr('text-anchor', 'middle')
-          .text(d => `${d.value}`)
+          .text(a => `${a.value}`)
           .style('fill', 'black');
-
         if (data[0].months) {
           barGroups
             .append('text')
             .attr('class', 'value')
-            .attr('x', d => xScale(d.label) + xScale.bandwidth() / 2)
-            .attr('y', yScale(0) + 30)
+            .attr('x', a => xScale(a.label) + xScale.bandwidth() / 2)
+            .attr('y', a => yScale(0)+30)
             .attr('text-anchor', 'middle')
-            .text(d => `${d.months} mos.`)
+            .text(a => `${a.months} mos.`)
             .style('fill', 'black');
         }
       })
-      .on('mouseleave', () => {
+      .on('mouseleave', function() {
         d3.selectAll('.value').attr('opacity', 1);
-        d3.select(d3.event.currentTarget)
+        d3.select(this)
           .transition()
           .duration(300)
           .attr('opacity', 1);
@@ -91,16 +87,16 @@ function TotalReportBarGraph({ barData, range }) {
   };
 
   useEffect(() => {
-    if (barData.length > 0) {
-      drawChart(barData);
+    if (props.barData.length > 0) {
+      drawChart(props.barData);
     }
-  }, [barData]);
+  }, [props.barData]);
 
   return (
     <div className="svg-container">
-      <svg id={svgId} className="svg-chart" />
+      <svg id={svg_id} className="svg-chart"></svg>
     </div>
   );
-}
+};
 
 export default TotalReportBarGraph;

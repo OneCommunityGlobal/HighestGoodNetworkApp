@@ -57,6 +57,7 @@ import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 
+
 function UserProfile(props) {
   /* Constant values */
   const initialFormValid = {
@@ -242,38 +243,6 @@ function UserProfile(props) {
       })
       .catch(err => console.log(err));
   };
-
-  // const loadSummaryIntroDetails = async teamId => {
-  //   const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
-  //   const { data } = res;
-
-  //   const memberSubmitted = [];
-  //   const memberNotSubmitted = [];
-  //   let manager = '';
-
-  //   data.forEach(member => {
-  //     if (member.role === 'Manager') {
-  //       manager = `${member.firstName} ${member.lastName}`;
-  //     }
-  //     member.weeklySummaries[0].summary !== ''
-  //       ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
-  //       : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
-  //   });
-
-  //   manager = manager === '' ? '<Your Name>' : manager;
-  //   const memberSubmittedString =
-  //     memberSubmitted.length !== 0
-  //       ? memberSubmitted.join(', ')
-  //       : '<list all team members names included in the summary>.';
-  //   const memberDidntSubmitString =
-  //     memberNotSubmitted.length !== 0
-  //       ? memberSubmitted.join(', ')
-  //       : '<list all team members names NOT included in the summary>';
-
-  //   const summaryIntroString = `This week’s summary was managed by ${manager} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
-
-  //   setSummaryIntro(summaryIntroString);
-  // };
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;

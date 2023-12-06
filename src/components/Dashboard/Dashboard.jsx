@@ -28,8 +28,7 @@ export function Dashboard(props) {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react/destructuring-assignment
-    props.getTimeZoneAPIKey();
+    getTimeZoneAPIKey();
   }, []);
 
   useEffect(() => {

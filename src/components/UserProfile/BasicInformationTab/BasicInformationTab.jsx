@@ -297,8 +297,6 @@ const BasicInformationTab = props => {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
-            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
-            
             setTimeZoneFilter(timezone);
             setUserProfile({ ...userProfile, timeZone: timezone });
           } else {
