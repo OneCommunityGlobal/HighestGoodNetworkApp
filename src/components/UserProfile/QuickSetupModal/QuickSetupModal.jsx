@@ -44,16 +44,6 @@ jobTitle  } = props;
     <div className="container pt-3">
       <div className="blueSquares">
         {qsc}
-      {/* <div role="button" id="wrapper"  className="role-button bg-warning" onClick={()=> setAssignPopup(true)} value="Software Engineer">SE
-      <div className="title">
-        <div className="summary">Software Engineer</div>
-      </div>
-
-      </div>
-      <div role="button" className="role-button bg-warning" onClick={()=> setAssignPopup(true)} value="Software Engineer">ME</div>
-      <div role="button" className="role-button bg-warning" onClick={()=> setAssignPopup(true)} value="Software Engineer">SE</div>
-      <div role="button" className="role-button bg-warning" onClick={()=> setAssignPopup(true)} value="Software Engineer">SE</div> */}
-
     </div>
 
       <div className="col text-center">
