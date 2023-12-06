@@ -3,7 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 
-import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
+//import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import AutoUpdate from 'components/AutoUpdate';
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import { RoutePermissions } from 'utils/routePermissions';
@@ -26,10 +26,10 @@ import Header from './components/Header';
 //import Projects from './components/Projects';
 import Teams from './components/Teams/Teams';
 import UserManagement from './components/UserManagement';
-import Members from './components/Projects/Members';
-import WBS from './components/Projects/WBS';
-import WBSDetail from './components/Projects/WBS/WBSDetail';
-import SingleTask from './components/Projects/WBS/SingleTask';
+//import Members from './components/Projects/Members';
+//import WBS from './components/Projects/WBS';
+//import WBSDetail from './components/Projects/WBS/WBSDetail';
+//import SingleTask from './components/Projects/WBS/SingleTask';
 //import WeeklySummariesReport from './components/WeeklySummariesReport';
 import TeamLocations from './components/TeamLocations';
 import Admin from './components/Admin';
@@ -38,7 +38,7 @@ import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
 //import { PeopleReport } from './components/Reports/PeopleReport';
 //import { ProjectReport } from './components/Reports/ProjectReport';
-import { TeamReport } from './components/Reports/TeamReport';
+//import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 import BadgeManagement from './components/Badge/BadgeManagement';
 
@@ -56,6 +56,12 @@ const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesRep
 const Reports = lazy(() => import('./components/Reports'));
 const PeopleReport = lazy(() => import('./components/Reports/PeopleReport'));
 const ProjectReport = lazy(() => import('./components/Reports/ProjectReport'));
+const TeamReport = lazy(() => import('./components/Reports/TeamReport'));
+const Members = lazy(() => import('./components/Projects/Members'));
+const WBS = lazy(() => import('./components/Projects/WBS'));
+const WBSDetail = lazy(() => import('./components/Projects/WBS/WBSDetail'));
+const SingleTask = lazy(() => import('./components/Projects/WBS/SingleTask'));
+const SameFolderTasks = lazy(() => import('./components/Projects/WBS/SameFolderTasks'));
 
 export default (
   <Switch>
@@ -70,14 +76,13 @@ export default (
       <Switch>
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
-        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} />
-        <ProtectedRoute path="/project/members/:projectId" component={Members} />
+        <ProtectedRoute path="/project/members/:projectId" fallback={true} component={Members} />
         <ProtectedRoute path="/popupmanagement" component={Admin} />
         <ProtectedRoute path="/timelog/" exact component={Timelog} />
         <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback={true} />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback={true} />
-        <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} />
+        <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback={true} />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
 
         <ProtectedRoute
@@ -131,10 +136,11 @@ export default (
           component={Projects}
           routePermissions={RoutePermissions.projects}
         />
-        <ProtectedRoute path="/project/wbs/:projectId" component={WBS} />
-        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} />
-        <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} />
-        <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} fallback={true} />
+        <ProtectedRoute path="/project/wbs/:projectId" component={WBS} fallback={true} />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} fallback={true} />
+        <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} fallback={true} />
+        <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} fallback={true} />
         <ProtectedRoute
           path="/usermanagement"
           exact
@@ -174,7 +180,6 @@ export default (
           component={Teams}
           routePermissions={RoutePermissions.teams}
         />
-        <ProtectedRoute path="/project/members/:projectId" component={Members} />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
 
