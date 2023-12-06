@@ -685,7 +685,7 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-            <QuickSetupModal />
+            {requestorRole == 'Owner' || requestorRole=='Administrator' ? <QuickSetupModal /> : ''}
           </Col>
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
