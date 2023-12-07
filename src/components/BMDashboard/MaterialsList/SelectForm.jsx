@@ -4,7 +4,7 @@ export default function SelectForm({ materials, setSelectedProject, setSelectedM
   // create selectable projects
   let projectsSet = [];
   if (materials.length) {
-    projectsSet = [...new Set(materials.map(mat => mat.project.name))];
+    projectsSet = [...new Set(materials.map(mat => mat.project?.name))];
   }
 
   const handleChange = event => {

@@ -33,14 +33,14 @@ export function MaterialsList(props) {
     if (selectedProject === 'all' && selectedMaterial === 'all') {
       setFilteredMaterials([...materials]);
     } else if (selectedProject !== 'all' && selectedMaterial === 'all') {
-      filterMaterials = materials.filter(mat => mat.project.name === selectedProject);
+      filterMaterials = materials.filter(mat => mat.project?.name === selectedProject);
       setFilteredMaterials([...filterMaterials]);
     } else if (selectedProject === 'all' && selectedMaterial !== 'all') {
       filterMaterials = materials.filter(mat => mat.itemType?.name === selectedMaterial);
       setFilteredMaterials([...filterMaterials]);
     } else {
       filterMaterials = materials.filter(
-        mat => mat.project.name === selectedProject && mat.itemType?.name === selectedMaterial,
+        mat => mat.project?.name === selectedProject && mat.itemType?.name === selectedMaterial,
       );
       setFilteredMaterials([...filterMaterials]);
     }
