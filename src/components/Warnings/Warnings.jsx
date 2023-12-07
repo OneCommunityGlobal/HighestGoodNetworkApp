@@ -26,7 +26,7 @@ export default function Warning({}) {
   // });
   const { userid } = useSelector(state => state.auth.user);
 
-  console.log('user inside of warning', userid);
+  // console.log('user inside of warning', userid);
   // console.log('userId inside of warnings', userId);
   const [toggle, setToggle] = useState(false);
 
@@ -39,11 +39,11 @@ export default function Warning({}) {
   ]);
 
   useEffect(() => {
-    const getUsersWarnings = async () => {
-      const res = await getWarningsByUserId(userid);
-      console.log('res', res);
-    };
-    getUsersWarnings();
+    // const getUsersWarnings = async () => {
+    //   const res = await dispatch(getWarningsByUserId(userid));
+    //   console.log('res', res);
+    // };
+    // getUsersWarnings();
   }, []);
 
   // useEffect(() => {
@@ -66,9 +66,18 @@ export default function Warning({}) {
     setToggle(prev => !prev);
   };
 
-  const handlePostWarningDetails = (id, color, dateAssigned) => {
-    console.log('props.userid', userid, id, color, dateAssigned);
-    dispatch(postWarningByUserId(userid, id, color, dateAssigned));
+  const handlePostWarningDetails = async (id, color, dateAssigned) => {
+    const data = {
+      userId: userid,
+      iconId: id,
+      color: color,
+      date: dateAssigned,
+      description: 'Better Descriptions',
+    };
+    console.log('props.userid', data);
+    const res = await dispatch(postWarningByUserId(data));
+
+    console.log('res', res);
     // console.log('data', data);
     // console.log('id', id, 'color', color, dateAssigned);
   };
