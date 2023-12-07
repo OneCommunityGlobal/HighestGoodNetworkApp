@@ -36,7 +36,6 @@
   position: relative;
   z-index: -50;
   opacity: 0.1;
-
 }
 .load {
   position: relative;
@@ -49,11 +48,10 @@
   border-radius: 50%;
   display: inline-block;
   font-size: 10px;
-  line-height: 220%;
   font-weight: 700;
   text-align: center;
   text-transform: uppercase;
-  line-height: 20px;
+  padding: 4px 0;
   margin-top: 3px;
 }
 
@@ -69,13 +67,11 @@
 }
 
 .task-resouces-input {
-  width: 80%;
-  float: left;
+  width: 90%;
 }
 
 .task-resouces-btn {
-  width: 20%;
-  float: right;
+  width: 10%;
 }
 
 .task-reousces-list {
@@ -94,8 +90,7 @@
 
 .controlBtn {
   float: left;
-  margin-bottom: 10px;
-  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .controlTd {
@@ -115,7 +110,6 @@
 }
 
 .taskNum {
-  cursor: context-menu;
   width: 80px;
 }
 
@@ -157,20 +151,28 @@
   width: 100% !important;
 }
 
-.task-link {
-  font-size: 10px;
-  float: left;
-}
-
 .action-edit-btn {
   padding-right: 5px;
 }
 
 @media only screen and (max-width: 600px) {
   .desktop-view {
-      display: none;
+    display: none;
   }
+
   .table td {
-      padding: 5px !important;
+    padding: 5px !important;
+  }
+}
+
+@media (min-width: 200px) and (max-width: 1496px) {
+  table.responsive {
+    table-layout: fixed;
+  }
+
+  .flex-responsive {
+    display: flex;
+    flex-direction: row;
+    column-gap: 2vw;
   }
 }

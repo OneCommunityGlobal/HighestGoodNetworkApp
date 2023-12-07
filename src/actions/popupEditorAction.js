@@ -1,4 +1,4 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Action: PROJECTS
  * Author: Henry Ng - 12 / 19 / 20
  ****************************************************************************** */
@@ -8,23 +8,23 @@ import { ENDPOINTS } from '../utils/URL';
 
 export const fetchAllPopupEditor = () => {
   const request = axios.get(ENDPOINTS.POPUP_EDITORS);
-  return async (dispatch) => {
+  return async dispatch => {
     request
-      .then((res) => {
+      .then(res => {
         dispatch(setPopup(res.data));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(setPopupError());
       });
   };
 };
 
 export const updatePopupEditor = (popupId, popupContent, popupName) => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       await axios.post(ENDPOINTS.POPUP_EDITOR_BY_ID(popupId), {
-        popupContent: popupContent,
-        popupName: popupName,
+        popupContent,
+        popupName,
       });
       const request = await axios.get(ENDPOINTS.POPUP_EDITORS);
       dispatch(setPopup(request.data));
@@ -34,8 +34,8 @@ export const updatePopupEditor = (popupId, popupContent, popupName) => {
   };
 };
 
-export const getPopupById = (popupId) => {
-  return async (dispatch) => {
+export const getPopupById = popupId => {
+  return async dispatch => {
     try {
       const request = await axios.get(ENDPOINTS.POPUP_EDITOR_BY_ID(popupId));
       dispatch(setCurrentPopup(request.data));
@@ -46,11 +46,11 @@ export const getPopupById = (popupId) => {
 };
 
 export const backupPopupEditor = (popupId, popupContent, popupName) => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       await axios.post(ENDPOINTS.POPUP_EDITOR_BACKUP_BY_ID(popupId), {
-        popupContent: popupContent,
-        popupName: popupName,
+        popupContent,
+        popupName,
       });
       const request = await axios.get(ENDPOINTS.POPUP_EDITORS);
       dispatch(setCurrentPopup(request.data));
@@ -60,25 +60,25 @@ export const backupPopupEditor = (popupId, popupContent, popupName) => {
   };
 };
 
-/*******************************************
+/** *****************************************
  * ACTION CREATORS
- *******************************************/
+ ****************************************** */
 
-export const setPopup = (popupItems) => {
+export const setPopup = popupItems => {
   return {
     type: types.RECEIVE_POPUP,
     popupItems,
   };
 };
 
-export const setCurrentPopup = (currPopup) => {
+export const setCurrentPopup = currPopup => {
   return {
     type: types.CURRENT_POPUP,
     currPopup,
   };
 };
 
-export const setPopupError = (err) => {
+export const setPopupError = err => {
   return {
     type: types.FETCH_POPUP_ERROR,
     err,

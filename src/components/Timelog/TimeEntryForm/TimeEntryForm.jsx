@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -18,12 +18,11 @@ import moment from 'moment-timezone';
 import { isEmpty } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactTooltip from 'react-tooltip';
-import { postTimeEntry, editTimeEntry } from '../../../actions/timeEntries';
+import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import { getUserProjects } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
-import { getAllRoles } from 'actions/role';
+import { updateUserProfile } from 'actions/userProfile';
 
-import { stopTimer } from '../../../actions/timer';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
@@ -33,6 +32,8 @@ import hasPermission from 'utils/permissions';
 import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
 import { assignBadgesByUserID } from '../../../actions/badgeManagement';
+import fixDiscrepancy from 'utils/fixDiscrepancy';
+import { boxStyle } from 'styles';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -42,14 +43,17 @@ import { assignBadgesByUserID } from '../../../actions/badgeManagement';
  * @param {function} props.toggle Toggles the visability of this modal
  * @param {boolean} props.isOpen Whether or not this modal is visible
  * @param {*} props.timer
- * @param {boolean} props.data.disabled
  * @param {boolean} props.data.isTangible
  * @param {*} props.userProfile
- * @param {function} props.resetTimer
+ * @param {string} props.LoggedInuserId
+ * @param {string} props.curruserId
  * @returns
  */
 const TimeEntryForm = props => {
-  const { userId, edit, data, isOpen, toggle, timer, resetTimer } = props;
+
+  const { userId, edit, data, isOpen, toggle, timer, LoggedInuserId, curruserId, sendStop } = props;
+  const canEditTimeEntry = props.hasPermission('editTimeEntry');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   const initialFormValues = {
     dateOfWork: moment()
@@ -70,7 +74,6 @@ const TimeEntryForm = props => {
     editNotice: true,
   };
 
-  const [isSubmitting, setSubmitting] = useState(false);
   const [inputs, setInputs] = useState(edit ? data : initialFormValues);
   const [errors, setErrors] = useState({});
   const [close, setClose] = useState(false);
@@ -80,11 +83,10 @@ const TimeEntryForm = props => {
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   const fromTimer = !isEmpty(timer);
   const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
-  const roles = useSelector(state => state.role.roles);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
 
   const dispatch = useDispatch();
 
@@ -138,7 +140,7 @@ const TimeEntryForm = props => {
         setTasks(activeTasks || []);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [props.isTaskUpdated]);
 
   //grab form data before editing
   useEffect(() => {
@@ -275,7 +277,7 @@ const TimeEntryForm = props => {
     }
 
     if (
-      !hasPermission(currentUserRole, 'addTimeEntryOthers', roles, userPermissions) &&
+      !canPutUserProfileImportantInfo &&
       data.isTangible &&
       isTimeModified &&
       reminder.editNotice
@@ -292,10 +294,16 @@ const TimeEntryForm = props => {
     setErrors(result);
     return isEmpty(result);
   };
+
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
     const { projectId, isTangible, personId } = timeEntry;
+
+    //fix discrepancy in hours in userProfile if any
+
+    fixDiscrepancy(userProfile);
+
     //Format hours && minutes
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
@@ -310,10 +318,12 @@ const TimeEntryForm = props => {
       //Get category
       const category = foundProject
         ? foundProject.category.toLowerCase()
-        : foundTask.classification.toLowerCase();
+        : foundTask.category.toLowerCase();
 
       //update hours
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+      const isFindCategory = Object.keys(hoursByCategory).find(
+        key => key === category && key !== 'unassigned',
+      );
       if (isFindCategory) {
         hoursByCategory[category] += volunteerTime;
       } else {
@@ -385,8 +395,10 @@ const TimeEntryForm = props => {
 
     category = foundProject
       ? foundProject.category.toLowerCase()
-      : foundTask?.classification.toLowerCase();
-    const isFindCategory = Object.keys(hoursByCategory).find(key => key === category);
+      : foundTask?.category.toLowerCase();
+    const isFindCategory = Object.keys(hoursByCategory).find(
+      key => key === category && key !== 'unassigned',
+    );
 
     //if change timeEntry from intangible to tangible, we need add hours on categories
     if (oldIsTangible === 'false' && currIsTangible === 'true') {
@@ -440,14 +452,18 @@ const TimeEntryForm = props => {
   };
 
   const handleSubmit = async event => {
+    setSubmitting(true);
     //Validation and variable initialization
     if (event) event.preventDefault();
-    if (isSubmitting) return;
+
     const hours = inputs.hours || 0;
     const minutes = inputs.minutes || 0;
     const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
 
-    if (!validateForm(isTimeModified)) return;
+    if (!validateForm(isTimeModified)) {
+      setSubmitting(false);
+      return;
+    }
 
     //Construct the timeEntry object
     const timeEntry = {
@@ -456,6 +472,7 @@ const TimeEntryForm = props => {
       projectId: inputs.projectId,
       notes: inputs.notes,
       isTangible: inputs.isTangible.toString(),
+      curruserId: curruserId,
     };
 
     if (edit) {
@@ -465,22 +482,27 @@ const TimeEntryForm = props => {
       timeEntry.timeSpent = `${hours}:${minutes}:00`;
     }
 
+    // Problem: fix timelog entry for other user page
+    // To fix the problem of both wrong details getting updated in mongoDB and frontend, the response from the payload is stored in curruserProfile as userProfile contains the user whose timelog page we are viewing.
+    // This can lead to the details being mixed up in mongoDB and in turn updating mongoDB with wrong user details
     //Update userprofile hoursByCategory
+    const curruserProfile = await dispatch(getUserProfile(userId));
 
-    //Send the time entry to the server
-    setSubmitting(true);
 
     let timeEntryStatus;
     if (edit) {
       if (!reminder.notice) {
-        editHoursByCategory(userProfile, timeEntry, hours, minutes);
+        if (curruserProfile) {
+          editHoursByCategory(curruserProfile, timeEntry, hours, minutes);
+        }
         timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry, data.dateOfWork));
       }
     } else {
-      updateHoursByCategory(userProfile, timeEntry, hours, minutes);
+      if (curruserProfile) {
+        updateHoursByCategory(curruserProfile, timeEntry, hours, minutes);
+      }
       timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
     }
-    setSubmitting(false);
 
     if (timeEntryStatus !== 200) {
       toggle();
@@ -490,16 +512,34 @@ const TimeEntryForm = props => {
       return;
     }
 
+    // see if this is the first time the user is logging time
+    if (!edit) {
+      if (curruserProfile.isFirstTimelog && curruserProfile.isFirstTimelog === true) {
+        const updatedUserProfile = {
+          ...curruserProfile,
+          createdDate: new Date(),
+          isFirstTimelog: false,
+        };
+
+        dispatch(updateUserProfile(curruserProfile._id, updatedUserProfile));
+      }
+    }
+
+    if (!props.edit) setInputs(initialFormValues);
+
+    await getUserProfile(userId)(dispatch);
+
+    // Problem: fix timelog entry for other user page
+    // To fix the problem of both wrong details getting updated in mongoDB and frontend, the state variable needs to be updated for user profile in order to get the right details
+    // In addition to updating state, an update to time entries for 0th week is necessary as updateTimeEntries() under action is updating 0th week particularly with the logged in user's time entry
+
+    await dispatch(getUserProfile(curruserId));
+    await dispatch(getTimeEntriesForWeek(curruserId, 0));
+
     //Clear the form and clean up.
     if (fromTimer) {
-      const timerStatus = await dispatch(stopTimer(userId));
-      if (timerStatus === 200 || timerStatus === 201) {
-        resetTimer();
-      } else {
-        alert(
-          'Your time entry was successfully recorded, but an error occurred while asking the server to reset your timer. There is no need to submit your hours a second time, and doing so will result in a duplicate time entry.',
-        );
-      }
+      sendStop();
+      clearForm();
     } else if (!reminder.notice) {
       setReminder(reminder => ({
         ...reminder,
@@ -507,13 +547,9 @@ const TimeEntryForm = props => {
       }));
     }
 
-    if (isOpen) toggle();
-    if (fromTimer) clearForm();
     setReminder(initialReminder);
-
-    if (!props.edit) setInputs(initialFormValues);
-
-    await getUserProfile(userId)(dispatch);
+    if (isOpen) toggle();
+    setSubmitting(false);
   };
 
   const handleInputChange = event => {
@@ -631,12 +667,7 @@ const TimeEntryForm = props => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {hasPermission(
-                currentUserRole,
-                'changeIntangibleTimeEntryDate',
-                roles,
-                userPermissions,
-              ) && !fromTimer ? (
+              {canEditTimeEntry && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -728,6 +759,7 @@ const TimeEntryForm = props => {
                   min_height: 180,
                   max_height: 300,
                   autoresize_bottom_margin: 1,
+                  content_style: 'body { cursor: text !important; }',
                 }}
                 id="notes"
                 name="notes"
@@ -749,10 +781,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={handleCheckboxChange}
-                  disabled={
-                    !hasPermission(currentUserRole, 'toggleTangibleTime', roles, userPermissions) &&
-                    !data.isTangible
-                  }
+                  disabled={!canEditTimeEntry && !data.isTangible}
                 />
                 Tangible&nbsp;
                 <i
@@ -772,12 +801,12 @@ const TimeEntryForm = props => {
         </ModalBody>
         <ModalFooter>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger">
+          <Button onClick={clearForm} color="danger" style={boxStyle}>
             Clear Form
           </Button>
           {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
-          <Button color="primary" onClick={handleSubmit}>
-            {edit ? 'Save' : 'Submit'}
+          <Button color="primary" onClick={handleSubmit} style={boxStyle} disabled={submitting}>
+            {edit ? 'Save' : (submitting ? 'Submitting...' : 'Submit')}
           </Button>
         </ModalFooter>
       </Modal>
@@ -790,10 +819,11 @@ TimeEntryForm.propTypes = {
   userId: PropTypes.string.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
-  timer: PropTypes.any.isRequired,
+  timer: PropTypes.any,
   data: PropTypes.any.isRequired,
-  userProfile: PropTypes.any.isRequired,
-  resetTimer: PropTypes.func.isRequired,
+  LoggedInuserId: PropTypes.string,
+  curruserId: PropTypes.string,
+  handleStop: PropTypes.func,
 };
 
-export default TimeEntryForm;
+export default connect(null, { hasPermission })(TimeEntryForm);

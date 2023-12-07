@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
+import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
 import { allUserProfilesReducer } from './allUserProfilesReducer';
@@ -9,23 +11,28 @@ import { allProjectsReducer } from './allProjectsReducer';
 import { projectReportReducer } from './projectReportReducer';
 import { userProjectsReducer } from './userProjectsReducer';
 import { projectMembershipReducer } from './projectMembershipReducer';
-import { allTeamsReducer, allUserTeamsReducer } from './allTeamsReducer';
+import { allUserTeamsReducer } from './allTeamsReducer';
 import { teamByIdReducer } from './teamByIdReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
 import { wbsReducer } from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
-import { timerReducer } from './timerReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { timeZoneAPIReducer } from './timezoneApiReducer';
-import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
-import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { roleReducer } from './roleReducer';
+import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
 import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
+import { infoCollectionsReducer } from './informationReducer';
+import { mouseoverTextReducer } from './mouseoverTextReducer';
+
+// bm dashboard
+import { materialsReducer } from './bmdashboard/materialsReducer';
+import { bmProjectReducer } from './bmdashboard/projectReducer';
+import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -48,13 +55,20 @@ export default combineReducers({
   tasks: taskReducer,
   errors: errorsReducer,
   timeEntries: timeEntriesReducer,
-  timer: timerReducer,
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,
   teamMemberTasks: teamMemberTasksReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
+  rolePreset: rolePresetReducer,
   ownerMessage: ownerMessageReducer,
-  ownerStandardMessage: ownerStandardMessageReducer
+  ownerStandardMessage: ownerStandardMessageReducer,
+  infoCollections: infoCollectionsReducer,
+  mouseoverText: mouseoverTextReducer,
+
+  // bmdashboard
+  materials: materialsReducer,
+  bmProjects: bmProjectReducer,
+  bmInvTypes: bmInvTypeReducer
 });

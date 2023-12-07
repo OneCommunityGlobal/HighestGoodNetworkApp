@@ -6,17 +6,33 @@ export const TaskEditSuggestionRow = ({
   taskEditSuggestion,
   handleToggleTaskEditSuggestionModal,
 }) => {
+  const handleButtonClick = (event) => {
+    event.stopPropagation(); // This stops the click event from bubbling up to the parent <tr>
+    handleToggleTaskEditSuggestionModal(taskEditSuggestion);
+  };
+
   return (
-    <tr onClick={() => handleToggleTaskEditSuggestionModal(taskEditSuggestion)}>
-      <td>{datetimeToDate(taskEditSuggestion.dateSuggested)}</td>
-      <td>{taskEditSuggestion.user}</td>
-      <td>
-        {
-          <Link to={`/wbs/tasks/${taskEditSuggestion.oldTask._id}`}>
-            {taskEditSuggestion.oldTask.taskName}
-          </Link>
-        }
-      </td>
-    </tr>
+    <table>
+      <tbody>
+        <tr onClick={() => handleToggleTaskEditSuggestionModal(taskEditSuggestion)}>
+          <td>{datetimeToDate(taskEditSuggestion.dateSuggested)}</td>
+          <td>{taskEditSuggestion.user}</td>
+          <td>{taskEditSuggestion.oldTask.taskName}</td>
+          <td>
+            <button
+              onClick={handleButtonClick}
+              style={{
+                backgroundColor: '#007bff',
+                borderRadius: '5px',
+                padding: '5px 10px',
+                color: 'white',
+              }}
+            >
+              View Suggestion
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 };

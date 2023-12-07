@@ -3,18 +3,18 @@
   font-weight: bold;
 }
 
+.task-link {
+  word-break: break-all;
+}
+
 .remove-link {
-  padding: 2px !important;
+  margin-right: 5px;
   color: red;
   cursor: pointer;
 }
 
 .disable-div {
   pointer-events: none;
-}
-
-.margin-left {
-  margin-left: 5px;
 }
 
 @media only screen and (max-width: 600px) {

@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
+import { useState, useEffect } from 'react';
+
 import { toast } from 'react-toastify';
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
-import styles from './OwnerMessage.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { connect } from 'react-redux';
+import { boxStyle } from '../../styles';
+import './OwnerMessage.css';
+
 import editIcon from './assets/edit.png';
 import deleteIcon from './assets/delete.png';
 
-import { connect } from 'react-redux';
 import {
-  getOwnerMessage,
-  createOwnerMessage,
-  updateOwnerMessage,
-  deleteOwnerMessage,
+  getOwnerMessage as getOwnerMessages,
+  createOwnerMessage as createOwnerMessages,
+  updateOwnerMessage as updateOwnerMessages,
+  deleteOwnerMessage as deleteOwnerMessages,
 } from '../../actions/ownerMessageAction';
 import {
-  getOwnerStandardMessage,
-  createOwnerStandardMessage,
-  updateOwnerStandardMessage,
-  deleteOwnerStandardMessage,
+  getOwnerStandardMessage as getOwnerStandardMessages,
+  createOwnerStandardMessage as createOwnerStandardMessages,
+  updateOwnerStandardMessage as updateOwnerStandardMessages,
+  deleteOwnerStandardMessage as deleteOwnerStandardMessages,
 } from '../../actions/ownerStandardMessageAction';
 
 function OwnerMessage({
   auth,
-  getOwnerMessage,
   ownerMessage,
   ownerMessageId,
   createOwnerMessage,
@@ -36,7 +35,6 @@ function OwnerMessage({
   ownerStandardMessageId,
   createOwnerStandardMessage,
   updateOwnerStandardMessage,
-  deleteOwnerStandardMessage,
 }) {
   const { user } = auth;
 
@@ -67,7 +65,7 @@ function OwnerMessage({
   }
 
   useEffect(() => {
-    getOwnerMessage();
+    getOwnerMessages();
     if (ownerMessage) {
       setMessage(ownerMessage);
     }
@@ -75,19 +73,22 @@ function OwnerMessage({
     if (ownerStandardMessage) {
       setStandardMessage(ownerStandardMessage);
     }
-    newMessage 
-    ? setDisableButtons(false)
-    : setDisableButtons(true)
+    // newMessage ? setDisableButtons(false) : setDisableButtons(true);
+    if (newMessage) {
+      setDisableButtons(false);
+    } else {
+      setDisableButtons(true);
+    }
   }, [newMessage]);
 
   async function handleImageUpload(event) {
     if (event) event.preventDefault();
     const file = event.target.files[0];
-    if (typeof file != 'undefined') {
+    if (typeof file !== 'undefined') {
       const imageType = /jpg|jpeg|png/g;
       const validFormats = imageType.test(file.name);
 
-      //Input validation: file type
+      // Input validation: file type
       if (!validFormats) {
         toggle();
         toggleWrongPictureFormatWarning();
@@ -104,17 +105,17 @@ function OwnerMessage({
   }
 
   async function handleMessage() {
-    const ownerMessage = {
-      newMessage: newMessage,
+    const ownerMessages = {
+      newMessage,
     };
 
     if (message) {
-      updateOwnerMessage(ownerMessageId, ownerMessage);
+      updateOwnerMessage(ownerMessageId, ownerMessages);
       toggle();
       toast.success('Message updated!');
       setMessage(newMessage);
     } else {
-      createOwnerMessage(ownerMessage);
+      createOwnerMessage(ownerMessages);
       toggle();
       toast.success('Message created!');
       setMessage(newMessage);
@@ -129,53 +130,50 @@ function OwnerMessage({
   }
 
   async function handleStandardMessage() {
-    const ownerStandardMessage = {
+    const ownerStandardMessages = {
       newStandardMessage: newMessage,
     };
 
     if (standardMessage) {
-      updateOwnerStandardMessage(ownerStandardMessageId, ownerStandardMessage);
+      updateOwnerStandardMessage(ownerStandardMessageId, ownerStandardMessages);
       toggle();
       toast.success('Standard Message updated!');
       setStandardMessage(newMessage);
     } else {
-      createOwnerStandardMessage(ownerStandardMessage);
+      createOwnerStandardMessage(ownerStandardMessages);
       toggle();
       toast.success('Standard Message created!');
       setStandardMessage(newMessage);
     }
   }
 
+  function getContent(messages) {
+    if (isImage.test(messages)) {
+      return <img src={messages} alt="" />;
+    }
+    return <span className="message">{messages}</span>;
+  }
+
   return (
     <div className="message-container">
-      {message !== ''
-        ? (isImage.test(message) 
-            ? <img src={message} alt="" />
-            : <span className="message">{message}</span>
-          )
-        : (isImage.test(standardMessage) 
-            ? <img src={standardMessage} alt="" />
-            : <span className="message">{standardMessage}</span>
-          )
-      }
+      {message !== '' ? getContent(message) : getContent(standardMessage)}
 
-      {user.role == 'Owner' && (
+      {user.role === 'Owner' && (
         <div className="icon-wrapper">
-          <button onClick={toggle}>
+          <button type="submit" onClick={toggle}>
             <img src={editIcon} alt="edit icon" />
           </button>
-          
-          {
-            message 
-            && <button onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem'}} >
-                <img src={deleteIcon} alt="edit icon" />
-               </button>
-          }
+
+          {message && (
+            <button type="submit" onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem' }}>
+              <img src={deleteIcon} alt="edit icon" />
+            </button>
+          )}
         </div>
       )}
 
-      <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Create message</ModalHeader>
+      <Modal isOpen={modal} toggle={() => toggle()}>
+        <ModalHeader toggle={() => toggle()}>Create message</ModalHeader>
         <ModalBody className="modal-body">
           <p>Write a message:</p>
           <Input
@@ -186,46 +184,67 @@ function OwnerMessage({
             disabled={disableTextInput}
             className="inputs"
           />
-          <p className="paragraph" style={{marginTop: '1rem'}}>Or upload a picture:</p>
-          <span style={{marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem'}}>(max size 1000 x 400 pixels and 100 KB)</span>
+          <p className="paragraph" style={{ marginTop: '1rem' }}>
+            Or upload a picture:
+          </p>
+          <span style={{ marginTop: '-1.25rem', marginBottom: '1rem', fontSize: '.8rem' }}>
+            (max size 1000 x 400 pixels and 100 KB)
+          </span>
           <Input
             id="image"
             name="file"
             type="file"
             label="Choose Image"
-            onChange={handleImageUpload}
+            onChange={event => handleImageUpload(event)}
             className="inputs"
           />
         </ModalBody>
         <ModalFooter style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Button color="info" onClick={handleStandardMessage} disabled={disableButtons}>
-            {standardMessage ? <span style={{color: 'white'}}>Update as Standard Message</span> : <span style={{color: 'white'}}>Create as Standard Message</span>}
+          <Button
+            color="info"
+            onClick={() => handleStandardMessage()}
+            disabled={disableButtons}
+            style={boxStyle}
+          >
+            {standardMessage ? (
+              <span style={{ color: 'white' }}>Update as Standard Message</span>
+            ) : (
+              <span style={{ color: 'white' }}>Create as Standard Message</span>
+            )}
           </Button>
-          <Button color="primary" onClick={handleMessage} disabled={disableButtons}>
+          <Button
+            color="primary"
+            onClick={() => handleMessage()}
+            disabled={disableButtons}
+            style={boxStyle}
+          >
             {message ? 'Update' : 'Create'}
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={modalDeleteWarning} toggle={toggleDeleteWarning}>
+      <Modal isOpen={modalDeleteWarning} toggle={() => toggleDeleteWarning()}>
         <ModalBody>
           <h4>Do you really want to delete the message?</h4>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggleDeleteWarning}>
+          <Button color="secondary" onClick={() => toggleDeleteWarning()} style={boxStyle}>
             Cancel
           </Button>
-          <Button color="danger" onClick={handleDeleteMessage}>
+          <Button color="danger" onClick={() => handleDeleteMessage()} style={boxStyle}>
             Delete
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={modalWrongPictureFormatWarning} toggle={toggleWrongPictureFormatWarning}>
+      <Modal
+        isOpen={modalWrongPictureFormatWarning}
+        toggle={() => toggleWrongPictureFormatWarning()}
+      >
         <ModalBody>
           <strong>Please insert a valid image!</strong>
           <span>Only .jpg, .jpeg and .png formats are accepted.</span>
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" onClick={toggleWrongPictureFormatWarning}>
+          <Button color="danger" onClick={() => toggleWrongPictureFormatWarning()} style={boxStyle}>
             Close
           </Button>
         </ModalFooter>
@@ -243,17 +262,18 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getOwnerMessage: () => dispatch(getOwnerMessage()),
-  createOwnerMessage: ownerMessage => dispatch(createOwnerMessage(ownerMessage)),
+  getOwnerMessage: () => dispatch(getOwnerMessages()),
+  createOwnerMessage: ownerMessage => dispatch(createOwnerMessages(ownerMessage)),
   updateOwnerMessage: (ownerMessageId, ownerMessage) =>
-    dispatch(updateOwnerMessage(ownerMessageId, ownerMessage)),
-  deleteOwnerMessage: () => dispatch(deleteOwnerMessage()),
+    dispatch(updateOwnerMessages(ownerMessageId, ownerMessage)),
+  deleteOwnerMessage: () => dispatch(deleteOwnerMessages()),
 
-  getOwnerStandardMessage: () => dispatch(getOwnerStandardMessage()),
-  createOwnerStandardMessage: ownerStandardMessage => dispatch(createOwnerStandardMessage(ownerStandardMessage)),
+  getOwnerStandardMessage: () => dispatch(getOwnerStandardMessages()),
+  createOwnerStandardMessage: ownerStandardMessage =>
+    dispatch(createOwnerStandardMessages(ownerStandardMessage)),
   updateOwnerStandardMessage: (ownerStandardMessageId, ownerStandardMessage) =>
-    dispatch(updateOwnerStandardMessage(ownerStandardMessageId, ownerStandardMessage)),
-  deleteOwnerStandardMessage: () => dispatch(deleteOwnerStandardMessage()),
+    dispatch(updateOwnerStandardMessages(ownerStandardMessageId, ownerStandardMessage)),
+  deleteOwnerStandardMessage: () => dispatch(deleteOwnerStandardMessages()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OwnerMessage);

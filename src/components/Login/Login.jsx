@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useRef } from 'react';
 import Joi from 'joi';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
@@ -34,8 +33,7 @@ export class Login extends Form {
         const url = `/forcePasswordUpdate/${this.props.auth.user.userId}`;
         this.props.history.push(url);
       } else if (this.props.auth.isAuthenticated) {
-        const { state } = this.props.location;
-        this.props.history.push(state ? state.from.pathname : '/dashboard');
+        this.props.history.push('/dashboard');
       }
     }
 
@@ -49,9 +47,10 @@ export class Login extends Form {
   }
 
   doSubmit = async () => {
-    const email = this.state.data.email;
-    const password = this.state.data.password;
+    const { email } = this.state.data;
+    const { password } = this.state.data;
     this.props.loginUser({ email, password });
+    this.setState({ errors: this.props.errors });
   };
 
   render() {

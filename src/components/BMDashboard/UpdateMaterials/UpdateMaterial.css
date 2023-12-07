@@ -1,0 +1,98 @@
+.updateMaterialContainer {
+  padding: 0% !important;
+
+}
+
+.updateMaterialPage {
+  background-color: #E8F4F9;
+  width: 100%;
+  height: auto;
+  margin: 0px;
+  padding: 1rem 2rem;
+  font-size: 15px;
+}
+
+.updateMaterial {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: auto;
+}
+
+.materialImage {
+  height: 10rem;
+  width: 10rem;
+  margin-bottom: 1rem;
+}
+
+.materialFormField {
+  margin-bottom: .5rem;
+}
+
+.materialFormLabel {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1C8BCC;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.materialFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.materialFormTableError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+}
+
+.materialFormErrorClr {
+  color: red;
+}
+
+.materialFormValue {
+  font-weight: 400;
+  font-size: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.materialButtonOutline {
+  color: #2E5061 !important;
+}
+
+.materialButtonOutline:hover {
+  background-color: #2E5061 !important;
+  color: white !important
+}
+
+.materialButtonBg {
+  background-color: #2E5061 !important
+}
+
+.materialButtonBg:hover {
+  background-color: white !important;
+  color: #2E5061 !important;
+}
+
+.modal-open {
+  padding-right: 0 !important;
+}
+
+.modal-open .modal {
+  overflow-y: hidden !important;
+}
+
+.modal-body {
+  padding: 0 !important;
+}
+
+.updateModalContainer {
+  overflow-y: scroll;
+  height: 75vh;
+}

@@ -17,22 +17,48 @@ import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';
 import hasPermission from '../../../utils/permissions';
+import { boxStyle } from 'styles';
+import ToggleSwitch from 'components/UserProfile/UserProfileEdit/ToggleSwitch';
 
 const Members = props => {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
   const projectId = props.match.params.projectId;
-  const { roles } = props.state.role;
+  const [showFindUserList, setShowFindUserList] = useState(false);
+  const [membersList, setMembersList] = useState(props.state.projectMembers.members);
+
+  const canGetProjectMembers = props.hasPermission('getProjectMembers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canUnassignUserInProject = props.hasPermission('unassignUserInProject') || props.hasPermission('seeProjectManagement');
 
   useEffect(() => {
     props.fetchAllMembers(projectId);
   }, [projectId]);
 
-  const assignAll = () => {
+  const assignAll = async () => {
     const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
-    allUsers.forEach(user => {
-      props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName);
-    });
+    
+    // Wait for all members to be assigned
+    await Promise.all(allUsers.map(user => 
+      props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName)
+    ));
+  
+    props.fetchAllMembers(projectId);
+  };
+
+  useEffect(() => {
+    setMembersList(props.state.projectMembers.members);
+  }, [props.state.projectMembers.members]);
+
+  // ADDED: State for toggling display of active members only
+  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
+
+  const displayedMembers = showActiveMembersOnly 
+  ? membersList.filter(member => member.isActive)
+  : membersList;
+
+  const handleToggle = async () => {
+    setShowActiveMembersOnly(prevState => !prevState);
+    await props.fetchAllMembers(projectId);
+    setMembersList(props.state.projectMembers.members);
   };
 
   return (
@@ -41,7 +67,7 @@ const Members = props => {
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
             <NavItem tag={Link} to={`/projects/`}>
-              <button type="button" className="btn btn-secondary">
+              <button type="button" className="btn btn-secondary" style={boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
               </button>
             </NavItem>
@@ -49,34 +75,47 @@ const Members = props => {
             <div id="member_project__name">PROJECTS {props.projectId}</div>
           </ol>
         </nav>
-        {hasPermission(role, 'findUserInProject', roles, userPermissions) ? (
+        {canGetProjectMembers ? (
           <div className="input-group" id="new_project">
             <div className="input-group-prepend">
               <span className="input-group-text">Find user</span>
             </div>
 
             <input
+              autoFocus
               type="text"
               className="form-control"
               aria-label="Search user"
               placeholder="Name"
               onChange={e => {
                 props.findUserProfiles(e.target.value);
+                setShowFindUserList(true);
               }}
+              disabled={showActiveMembersOnly}
             />
             <div className="input-group-append">
               <button
                 className="btn btn-outline-primary"
                 type="button"
-                onClick={e => props.getAllUserProfiles()}
+                onClick={e => {props.getAllUserProfiles();
+                  setShowFindUserList(true);
+                }}
+                disabled={showActiveMembersOnly}
               >
                 All
+              </button>
+              <button
+                className="btn btn-outline-danger"
+                type="button"
+                onClick={() => setShowFindUserList(false)} // Hide the find user list
+              >
+                Cancel
               </button>
             </div>
           </div>
         ) : null}
 
-        {props.state.projectMembers.foundUsers.length === 0 ? null : (
+        {showFindUserList && props.state.projectMembers.foundUsers.length > 0 ? (
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <tr>
@@ -85,13 +124,14 @@ const Members = props => {
                 </th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
-                {hasPermission(role, 'assignUserInProject', roles, userPermissions) ? (
+                {canAssignProjectToUsers ? (
                   <th scope="col">
                     Assign
                     <button
                       className="btn btn-outline-primary"
                       type="button"
                       onClick={() => assignAll()}
+                      style={boxStyle}
                     >
                       +All
                     </button>
@@ -114,7 +154,13 @@ const Members = props => {
               ))}
             </tbody>
           </table>
-        )}
+        ) : null}
+
+          <ToggleSwitch 
+            switchType="active_members"
+            state={showActiveMembersOnly}
+            handleUserProfile={handleToggle}
+          />
 
         <table className="table table-bordered table-responsive-sm">
           <thead>
@@ -123,13 +169,11 @@ const Members = props => {
                 #
               </th>
               <th scope="col" id="members__name"></th>
-              {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
-                <th scope="col" id="members__name"></th>
-              ) : null}
+              {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
             </tr>
           </thead>
           <tbody>
-            {props.state.projectMembers.members.map((member, i) => (
+            {displayedMembers.map((member, i) => (
               <Member
                 index={i}
                 key={member._id}
@@ -153,4 +197,5 @@ export default connect(mapStateToProps, {
   findUserProfiles,
   getAllUserProfiles,
   assignProject,
+  hasPermission,
 })(Members);

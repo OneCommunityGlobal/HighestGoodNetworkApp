@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
+import { boxStyle } from 'styles';
 
 /**
  *
@@ -17,6 +18,9 @@ const getRandomMessage = () => {
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
+const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab';
+const validTeamCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+
 /**
  *
  * @param {func} props.handleSubmit
@@ -25,12 +29,13 @@ const getRandomMessage = () => {
  * @returns
  */
 const SaveButton = props => {
-  const { handleSubmit, disabled, userProfile } = props;
+  const { handleSubmit, disabled, userProfile, setSaved } = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
 
   const handleSave = () => {
     handleSubmit();
+    setSaved();
     setModal(true);
   };
 
@@ -40,7 +45,13 @@ const SaveButton = props => {
 
   useEffect(() => {
     if (modal === true) {
-      setRandomMessage(getRandomMessage());
+      const regexTest = validTeamCodeRegex.test(userProfile.teamCode);
+      if (!regexTest) {
+        setRandomMessage(invalidCodemessage);
+      }
+      else {
+        setRandomMessage(getRandomMessage());
+      }
     }
   }, [modal]);
 
@@ -60,6 +71,7 @@ const SaveButton = props => {
         className="btn btn-outline-primary mr-1"
         onClick={handleSave}
         disabled={disabled}
+        style={boxStyle}
       >
         Save Changes
       </Button>

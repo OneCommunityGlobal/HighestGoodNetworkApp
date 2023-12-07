@@ -2261,7 +2261,7 @@ const timeZoneMap = {};
 
 timeZones.forEach(timeZone => {
   const newTimeZone = { ...timeZone };
-  delete newTimeZone['name'];
+  delete newTimeZone.name;
   timeZoneMap[timeZone.name] = newTimeZone;
 });
 

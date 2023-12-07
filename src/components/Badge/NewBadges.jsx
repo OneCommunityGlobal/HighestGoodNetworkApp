@@ -49,6 +49,7 @@ const NewBadges = props => {
             )}
             {filteredBadges.map((value, index) => (
               <BadgeImage
+                personalBestMaxHrs={props.personalBestMaxHrs}
                 time="new"
                 count={value.count}
                 badgeData={value.badge}
@@ -65,9 +66,10 @@ const NewBadges = props => {
         style={{ backgroundColor: '#666', color: '#fff' }}
       >
         <p className="badge_info_icon_text">
-          Right on Superstar, if you've got badges in this section, they are the ones you've earned
-          in JUST THE LAST WEEK! If you already earned a badge before, that badge will pop up here
-          from the section below and you will see the count increased. How cool is that?!?
+          Right on Superstar, if you&apos;ve got badges in this section, they are the ones
+          you&apos;ve earned in JUST THE LAST WEEK! If you already earned a badge before, that badge
+          will pop up here from the section below and you will see the count increased. How cool is
+          that?!?
         </p>
       </UncontrolledTooltip>
     </>

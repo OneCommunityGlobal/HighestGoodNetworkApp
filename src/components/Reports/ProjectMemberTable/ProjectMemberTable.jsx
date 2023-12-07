@@ -1,4 +1,4 @@
-import { Stub } from 'components/common/Stub';
+import { Stub } from '../../common/Stub';
 import React, { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
@@ -39,7 +39,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       </div>
       <Link to={`/userprofile/${member._id}`} title="View Profile">
         <div>
-          {member.firstName} {member.lastName}
+        {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
         </div>
       </Link>
       <div className="projects__active--input">
@@ -53,7 +53,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           </div>
         )}
       </div>
-      <div>{member._id}</div>
+      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>      
     </div>
   ));
 
@@ -64,7 +64,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       </div>
       <Link to={`/userprofile/${member._id}`} title="View Profile">
         <div>
-          {member.firstName} {member.lastName}
+        {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
         </div>
       </Link>
       <div className="projects__active--input">
@@ -78,16 +78,15 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           </div>
         )}
       </div>
-
-      <div>{member._id}</div>
+      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>    
     </div>
   ));
 
   return (
-    <div className="project-member-table">
+    <div className="project-member-table test">
       <h5 className="project-member-table-title">Members</h5>
       <div className="project-member-count-head">
-        <div
+        <div className="filter-members-mobile"
           onChange={e => {
             setMemberFilter(e.target.value);
           }}
@@ -105,11 +104,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
             : handleMemberCount(activeMemberList.length)}
         </div>
       </div>
-      <div className="project-member-table-row reports-table-head">
-        <div id="projects__order">#</div>
-        <div>Name</div>
-        <div>Active</div>
-        <div>ID</div>
+      <div className="reports-table-head-members">
+        <div className="reports-table-head-cell">#</div>
+        <div className="reports-table-head-cell">Name</div>
+        <div className="reports-table-head-cell">Active</div>
+        <div className="reports-table-head-cell">ID</div>
       </div>
       <div>
         {memberFilter == 'all-time' ? (

@@ -1,13 +1,14 @@
-/*********************************************************************************
+/** *******************************************************************************
  * Action: MEMBER MEMBERSHIP
  * Author: Henry Ng - 02/03/20
- ********************************************************************************/
+ ******************************************************************************* */
 import axios from 'axios';
-import * as types from './../constants/projectMembership';
+import * as types from "../constants/projectMembership";
+import { searchWithAccent } from 'utils/search';
 import { ENDPOINTS } from '../utils/URL';
-/*******************************************
+/** *****************************************
  * ACTION CREATORS
- *******************************************/
+ ****************************************** */
 
 export const getAllUserProfiles = () => {
   const request = axios.get(ENDPOINTS.USER_PROFILES);
@@ -15,13 +16,13 @@ export const getAllUserProfiles = () => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        let members = getState().projectMembers.members;
+        const {members} = getState().projectMembers;
         const users = res.data.map(user => {
           if (!members.find(member => member._id === user._id)) {
             return (user = { ...user, assigned: false });
-          } else {
+          } 
             return (user = { ...user, assigned: true });
-          }
+          
         });
         // console.log(users);
         dispatch(foundUsers(users));
@@ -45,15 +46,15 @@ export const findUserProfiles = keyword => {
       .then(res => {
         if (keyword.trim() !== '') {
           let users = res.data.filter(user =>
-            (user.firstName + ' ' + user.lastName).toLowerCase().includes(keyword.toLowerCase()),
+            searchWithAccent(user.firstName, keyword) || searchWithAccent(user.lastName, keyword)
           );
-          let members = getState().projectMembers.members;
+          const {members} = getState().projectMembers;
           users = users.map(user => {
             if (!members.find(member => member._id === user._id)) {
               return (user = { ...user, assigned: false });
-            } else {
+            } 
               return (user = { ...user, assigned: true });
-            }
+            
           });
           dispatch(foundUsers(users));
         } else {
@@ -94,7 +95,7 @@ export const getProjectActiveUser = () => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        let members = getState().projectMembers.members;
+        const {members} = getState().projectMembers;
         const users = res.data.filter(user => {
           return (members.find(member => member._id === user._id) && user.isActive === true) 
         });
@@ -111,7 +112,7 @@ export const getProjectActiveUser = () => {
  */
 export const assignProject = (projectId, userId, operation, firstName, lastName) => {
   const request = axios.post(ENDPOINTS.PROJECT_MEMBER(projectId), {
-    projectId: projectId,
+    projectId,
     users: [
       {
         userId,
@@ -123,7 +124,7 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
   return async dispatch => {
     request
       .then(res => {
-        //console.log("RES", res);
+        // console.log("RES", res);
         if (operation === 'Assign') {
           dispatch(
             assignNewMember({
@@ -138,15 +139,15 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
         }
       })
       .catch(err => {
-        //console.log("Error", err);
+        // console.log("Error", err);
         dispatch(addNewMemberError(err));
       });
   };
 };
 
-/*******************************************
+/** *****************************************
  * PLAIN OBJ ACTIONS
- *******************************************/
+ ****************************************** */
 
 /**
  * Set a flag that fetching Members

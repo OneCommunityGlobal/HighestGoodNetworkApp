@@ -1,12 +1,11 @@
-import { yearsToMonths } from 'date-fns/fp';
 import { useState } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
 import './PeopleTableDetails.css';
-import { NewModal } from 'components/common/NewModal';
+import { NewModal } from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 
-const PeopleTableDetails = props => {
+function PeopleTableDetails(props) {
   const [name, setName] = useState('');
   const [priority, setPriority] = useState('');
   const [status, setStatus] = useState('');
@@ -15,12 +14,8 @@ const PeopleTableDetails = props => {
   const [assign, setAssign] = useState('');
   const [estimatedHours, setEstimatedHours] = useState('');
   const [order, setOrder] = useState('');
-  const [deleteId, setDeleteId] = useState('');
-  const [deleteName, setDeleteName] = useState('');
-  const [deletePopup, setDeletePopup] = useState(false);
-  const [editPopup, setEditPopup] = useState(false);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate] = useState('');
+  const [endDate] = useState('');
 
   const onTaskNameSearch = text => {
     setName(text);
@@ -62,7 +57,9 @@ const PeopleTableDetails = props => {
   };
 
   const filterTasks = tasks => {
-    let simple = [];
+    // eslint-disable-next-line no-unused-vars
+    const simple = [];
+    // eslint-disable-next-line array-callback-return,consistent-return
     let filteredList = tasks.filter(task => {
       if (
         task.taskName.toLowerCase().includes(name.toLowerCase()) &&
@@ -77,7 +74,7 @@ const PeopleTableDetails = props => {
     });
     filteredList = filteredList.filter(task => {
       let flag = false;
-      for (let i = 0; i < task.resources[0].length; i++) {
+      for (let i = 0; i < task.resources[0].length; i += 1) {
         if (task.resources[0][i].name.toLowerCase().includes(resources.toLowerCase())) {
           flag = true;
           break;
@@ -89,7 +86,7 @@ const PeopleTableDetails = props => {
   };
   let toggleMoreResourcesStatus = true;
   const toggleMoreResources = id => {
-    let x = document.getElementById(id);
+    const x = document.getElementById(id);
     if (toggleMoreResourcesStatus) {
       x.style.display = 'table-cell';
     } else {
@@ -97,7 +94,8 @@ const PeopleTableDetails = props => {
     }
     toggleMoreResourcesStatus = !toggleMoreResourcesStatus;
   };
-  let filteredTasks = filterTasks(props.taskData);
+  const { taskData } = props;
+  const filteredTasks = filterTasks(taskData);
 
   const renderFilteredTask = value => (
     <div key={value._id} className="people-table-row people-table-body-row">
@@ -114,23 +112,28 @@ const PeopleTableDetails = props => {
                   alt={resource.name}
                   src={resource.profilePic || '/pfp-default.png'}
                   className="img-circle"
-                  auto="format"
                   title={resource.name}
                 />
               );
             }
+            return null;
           }),
         )}
         {value.resources?.map(res =>
           res.length > 2 ? (
-            <a className="name resourceMoreToggle" onClick={() => toggleMoreResources(value._id)}>
+            <button
+              type="button"
+              className="name resourceMoreToggle"
+              onClick={() => toggleMoreResources(value._id)}
+            >
               <span className="dot">{res.length - 2}+</span>
-            </a>
+            </button>
           ) : null,
         )}
-        <div id={value._id} class="extra">
-          <div class="extra1">
+        <div id={value._id} className="extra">
+          <div className="extra1">
             {value.resources?.map(res =>
+              // eslint-disable-next-line array-callback-return,consistent-return
               res.map((resource, index) => {
                 if (index >= 2) {
                   return (
@@ -139,7 +142,6 @@ const PeopleTableDetails = props => {
                       alt={resource.name}
                       src={resource.profilePic || '/pfp-default.png'}
                       className="img-circle"
-                      auto="format"
                       title={resource.name}
                     />
                   );
@@ -196,26 +198,18 @@ const PeopleTableDetails = props => {
       </div>
       <div className="people-table">
         {filteredTasks.map(value => (
-          <NewModal header={'Task info'} trigger={() => renderFilteredTask(value)}>
+          <NewModal header="Task info" trigger={() => renderFilteredTask(value)}>
             <div>Why This Task is important</div>
             <textarea className="rectangle" type="text" value={value.whyInfo} />
             <div>Design Intent</div>
-            <textarea
-              className="rectangle"
-              type="text"
-              value={value.intentInfo}
-            />
+            <textarea className="rectangle" type="text" value={value.intentInfo} />
             <div>End State</div>
-            <textarea
-              className="rectangle"
-              type="text"
-              value={value.endstateInfo}
-            />
+            <textarea className="rectangle" type="text" value={value.endstateInfo} />
           </NewModal>
         ))}
       </div>
     </Container>
   );
-};
+}
 
 export default PeopleTableDetails;
