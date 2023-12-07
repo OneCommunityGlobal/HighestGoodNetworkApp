@@ -7,14 +7,14 @@ import { ToastContainer } from 'react-toastify';
 import AutoUpdate from 'components/AutoUpdate';
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import { RoutePermissions } from 'utils/routePermissions';
-import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
-import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+//import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
+//import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 //import Reports from './components/Reports';
-import UserProfile from './components/UserProfile';
+//import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
@@ -24,8 +24,8 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
 import Header from './components/Header';
 //import Projects from './components/Projects';
-import Teams from './components/Teams/Teams';
-import UserManagement from './components/UserManagement';
+// Teams from './components/Teams/Teams';
+//import UserManagement from './components/UserManagement';
 //import Members from './components/Projects/Members';
 //import WBS from './components/Projects/WBS';
 //import WBSDetail from './components/Projects/WBS/WBSDetail';
@@ -40,7 +40,7 @@ import ForgotPassword from './components/Login/ForgotPassword';
 //import { ProjectReport } from './components/Reports/ProjectReport';
 //import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
-import BadgeManagement from './components/Badge/BadgeManagement';
+//import BadgeManagement from './components/Badge/BadgeManagement';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -62,6 +62,12 @@ const WBS = lazy(() => import('./components/Projects/WBS'));
 const WBSDetail = lazy(() => import('./components/Projects/WBS/WBSDetail'));
 const SingleTask = lazy(() => import('./components/Projects/WBS/SingleTask'));
 const SameFolderTasks = lazy(() => import('./components/Projects/WBS/SameFolderTasks'));
+const UserManagement = lazy(() => import('./components/UserManagement'));
+const UserProfile = lazy(() => import('./components/UserProfile'));
+const BadgeManagement = lazy(() => import('./components/Badge/BadgeManagement'));
+const PermissionsManagement = lazy(() => import('./components/PermissionsManagement/PermissionsManagement'));
+const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
+const Teams = lazy(() => import('./components/Teams/Teams'));
 
 export default (
   <Switch>
@@ -117,7 +123,11 @@ export default (
           fallback={true}
           routePermissions={RoutePermissions.reports}
         />
-        <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
+        <ProtectedRoute
+          path="/teamlocations"
+          exact
+          component={TeamLocations}
+        />
         <ProtectedRoute
           path="/projects"
           exact
@@ -134,6 +144,7 @@ export default (
           path="/projects"
           exact
           component={Projects}
+          fallback={true}
           routePermissions={RoutePermissions.projects}
         />
         <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} fallback={true} />
@@ -145,18 +156,21 @@ export default (
           path="/usermanagement"
           exact
           component={UserManagement}
+          fallback={true}
           routePermissions={RoutePermissions.userManagement}
         />
         <ProtectedRoute
           path="/badgemanagement"
           exact
           component={BadgeManagement}
+          fallback={true}
           routePermissions={RoutePermissions.badgeManagement}
         />
         <ProtectedRoute
           path="/permissionsmanagement"
           exact
           component={PermissionsManagement}
+          fallback={true}
           routePermissions={[
             RoutePermissions.permissionsManagement,
             RoutePermissions.userPermissionsManagement,
@@ -166,12 +180,14 @@ export default (
           path="/permissionsmanagement/:userRole"
           exact
           component={UserRoleTab}
+          fallback={true}
           routePermissions={RoutePermissions.permissionsManagementRole}
         />
         <ProtectedRoute
           path="/teams"
           exact
           component={Teams}
+          fallback={true}
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         <ProtectedRoute
@@ -198,22 +214,14 @@ export default (
         <Route path="/forgotpassword" component={ForgotPassword} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
-        <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
+        <ProtectedRoute path="/userprofile/:userId" fallback={true} component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
-        <Route path="/login" component={Login} />
-        <Route path="/forgotpassword" component={ForgotPassword} />
-        <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
-        <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
-        <ProtectedRoute path="/userprofile/:userId" component={UserProfile} />
-        <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
-        <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-        <Route path="/Logout" component={Logout} />
-        <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-        <ProtectedRoute path="/" exact component={Dashboard} />
+
+
       </Switch>
     </>
   </Switch>
