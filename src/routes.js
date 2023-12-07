@@ -45,10 +45,15 @@ import Inventory from './components/Inventory';
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
-import BMLogin from './components/BMDashboard/Login';
-import MaterialsList from './components/BMDashboard/MaterialsList';
-import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
-import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+//import BMLogin from './components/BMDashboard/Login';
+// import MaterialsList from './components/BMDashboard/MaterialsList';
+// import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
+// import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+const BMLogin = lazy(() => import('./components/BMDashboard/Login'));
+const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
+const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
+const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
+
 
 //Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
@@ -201,10 +206,10 @@ export default (
 
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-        <BMProtectedRoute path="/bmdashboard/materials/purchase" component={PurchaseMaterials} />
-        <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
-        <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
-        <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback={true} component={PurchaseMaterials} />
+        <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback={true} component={ProjectDetails} />
+        <BMProtectedRoute path="/bmdashboard/materials-list" fallback={true} component={MaterialsList} />
+        <BMProtectedRoute path="/bmdashboard/lessonform/" fallback={true} component={LessonForm} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 

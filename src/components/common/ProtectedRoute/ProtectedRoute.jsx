@@ -40,7 +40,7 @@ const ProtectedRoute = ({
         else if (routePermissions && !hasPermissionToAccess) {
           return <Redirect to={{ pathname: '/dashboard', state: { from: props.location } }} />;
         }
-        return (Component && fallback) ? <Suspense fallback={<div>Loading...</div>}> <Component {...props} />  </Suspense> : Component ? <Component {...props} /> : render(props);
+        return (Component && fallback) ? <Suspense fallback={<div className="d-flex justify-content-center"><i className="fa fa-spinner fa-pulse"></i></div>}> <Component {...props} />  </Suspense> : Component ? <Component {...props} /> : render(props);
       }}
     />
   );
