@@ -5,7 +5,7 @@ export default function AddTool() {
   return (
     <main className="add-tool-container">
       <header className="add-tool-header">
-        <h2>Add Tool or Equipment</h2>
+        <h2>ADD TOOL OR EQUIPMENT</h2>
       </header>
       <AddToolForm />
     </main>

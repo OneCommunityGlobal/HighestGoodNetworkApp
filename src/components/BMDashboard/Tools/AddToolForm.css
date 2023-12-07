@@ -39,4 +39,9 @@ font-size: .8em;
   padding-right: 1em;
 }
 
+@media screen and (max-width: 640px) {
+  .add-tool-flex-group {
+    display: block;
+  }
+}
 

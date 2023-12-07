@@ -1,4 +1,19 @@
 .add-tool-container{
-  border: 1px solid red;
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem auto;
   padding: 1rem 2rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+}
+
+.add-tool-header h2{
+ font-size: clamp(1.5rem, 2.5vw, 2.5rem)
+}
+
+
+@media screen and (max-width: 800px) {
+  .add-tool-container {
+    width: 95%;
+  }
 }
