@@ -12,6 +12,8 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 import Warning from 'components/Warnings/Warnings';
 
 export function Dashboard(props) {
+  // console.log('props inside of dashboard', props);
+
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [userProfile, setUserProfile] = useState(undefined);

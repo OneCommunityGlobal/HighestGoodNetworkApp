@@ -1,8 +1,15 @@
-import { GET_WARNINGS_BY_ID } from '../constants/warning';
+import { GET_WARNINGS_BY_USER_ID, POST_WARNINGS_BY_USER_ID } from '../constants/warning';
 
 export const warningsByUserIdReducer = (userProfile = {}, action) => {
-  if (action.type === GET_WARNINGS_BY_ID) {
-    return action.payload;
+  switch (action.type) {
+    case GET_WARNINGS_BY_USER_ID:
+      return action.payload;
+
+    case POST_WARNINGS_BY_USER_ID:
+      console.log('post user id called');
+      return action.payload;
+
+    default:
+      return userProfile;
   }
-  return userProfile;
 };

@@ -3,8 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid';
 import WarningIcon from './WarningIcon';
-import { getWarningsByUserId } from '../../actions/warnings';
-
 import './Warnings.css';
 import WarningIcons from './WarningIcons';
 import OverlayExample from './OverlayExample';
@@ -16,7 +14,7 @@ import OverlayExample from './OverlayExample';
 
 //figure out why placement of tooltip displays at the top of the page
 //next add a date when clicking and turning the icon to blue
-function WarningItem({ warningText }) {
+function WarningItem({ warningText, handlePostWarningDetails }) {
   // const [btnColor, setBtnColor] = useState('white');
   // const clicked = e => {
   //   console.log('clicked id is', e.target);
@@ -27,19 +25,29 @@ function WarningItem({ warningText }) {
   //       return 'red';
   //     } else return 'white';
   //   });
+  // console.log('cur user', userId, userRole);
 
   const handleWarningIconClicked = async (id, color, dateAssigned) => {
-    await getWarningsByUserId(id);
+    // console.log('color inside warning item', id, color, dateAssigned);
+    handlePostWarningDetails(id, color, dateAssigned);
+
     // console.log('handling warning icon clicked', id, color, dateAssigned);
   };
   return (
     <div className="warning-item-container">
       {/* <OverlayExample /> */}
       <div className="warning-wrapper">
-        <WarningIcons handleWarningIconClicked={handleWarningIconClicked} />
+        <WarningIcons handleWarningIconClicked={handlePostWarningDetails} />
         <p className="warning-text"> {warningText}</p>
       </div>
-      {/* <div className="icons-wrapper">
+    </div>
+  );
+}
+
+export default WarningItem;
+
+// {
+/* <div className="icons-wrapper">
         <div className="warning-icon" id={uuidv4()} onClick={id => clicked(id)}>
           <FontAwesomeIcon
             style={{
@@ -159,9 +167,4 @@ function WarningItem({ warningText }) {
           />
         </div>
       </div>
-      <p className="warning-text"> {warningText}</p> */}
-    </div>
-  );
-}
-
-export default WarningItem;
+      <p className="warning-text"> {warningText}</p> */

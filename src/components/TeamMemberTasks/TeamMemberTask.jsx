@@ -104,7 +104,7 @@ const TeamMemberTask = React.memo(
               <tr>
                 <td className="team-member-tasks-user-name">
                   <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
-                  <Warning userId={userId} userRole={userRole} />
+                  <Warning userId={userId} user={user} userRole={userRole} />
                 </td>
 
                 <td data-label="Time" className="team-clocks">

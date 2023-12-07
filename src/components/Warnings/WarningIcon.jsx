@@ -15,28 +15,18 @@ function WarningIcon(props) {
     const today = moment().format('MM/DD/YYYY HH:mm:ss a');
     const [todaysDate, todaysTime, todaysTimeOfDay] = today.split(' ');
 
-    let colorAssigned = null;
+    const colorAssigned = btnColor === 'white' ? 'blue' : btnColor === 'blue' ? 'red' : 'white';
     // console.log('today formatted', formatDate(today));
 
     // console.log('id is', id);
-    setBtnColor(prev => {
-      if (prev === 'white') {
-        setDateAssigned({ todaysDate, todaysTime });
-        colorAssigned = 'blue';
-        return 'blue';
-      } else if (prev === 'blue') {
-        setDateAssigned({ todaysDate, todaysTime });
-        colorAssigned = 'red';
-        return 'red';
-      } else {
-        setDateAssigned({ todaysDate: null, todaysTime: null });
-        colorAssigned = 'white';
-        return 'white';
-      }
-    });
+    setBtnColor(colorAssigned);
+    setDateAssigned({ todaysDate: null, todaysTime: null });
+
     //color needs to be dynically added
     props.handleWarningIconClicked(id, colorAssigned, todaysDate);
   };
+
+  // console.log('button color', btnColor);
 
   const popover = (
     <Popover id="popover-basic">
