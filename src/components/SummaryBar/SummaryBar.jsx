@@ -41,6 +41,7 @@ const SummaryBar = props => {
   const [totalEffort, setTotalEffort] = useState(0);
 
   const [weeklySummary, setWeeklySummary] = useState(null);
+  const [WeeklySummaryNotReq, setWeeklySummaryNotReq] = useState(false);
 
   const [tasks, setTasks] = useState(undefined);
   const authenticateUser = useSelector(state => state.auth.user);
@@ -100,6 +101,7 @@ const SummaryBar = props => {
       setBadges(getBadges());
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(userProfile));
+      updateWeeklySummaryReq();
     }
   }, [userProfile, summaryBarData]);
 
@@ -244,7 +246,7 @@ const SummaryBar = props => {
     if (!showSuggestionModal) {
       try {
         let res = await httpService.get(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`);
-        
+
         if (res && res.status === 200) {
           setSuggestionCategory(res.data.suggestion);
           setInputField(res.data.field);
@@ -274,6 +276,10 @@ const SummaryBar = props => {
       ? latestSummary.summary
       : '';
   };
+
+  const updateWeeklySummaryReq = () => {
+    setWeeklySummaryNotReq(userProfile.role === "Mentor" || userProfile.weeklySummaryOption === "Not Required")
+  }
 
   if (userProfile !== undefined && summaryBarData !== undefined) {
     const weeklyCommittedHours = userProfile.weeklycommittedHours + (userProfile.missedHours ?? 0);
@@ -345,7 +351,14 @@ const SummaryBar = props => {
 
           <Col className="d-flex col-lg-3 col-12 no-gutters">
             <Row className="no-gutters w-100">
-              {!weeklySummary ? (
+              {!weeklySummary ? WeeklySummaryNotReq ? (
+                <div className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
+                  align="center">
+                  <font className="text-center text--black" size="3">
+                    SUMMARY
+                  </font>
+                </div>
+              ) : (
                 <div className="border-red col-4 bg--white-smoke no-gutters">
                   <div className="py-1"> </div>
                   {matchUser || canPutUserProfileImportantInfo ? (
@@ -393,9 +406,11 @@ const SummaryBar = props => {
                   <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
                     {weeklySummary || props.submittedSummary ? (
                       'You have submitted your weekly summary.'
-                    ) : matchUser ? (
-                      <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                        You still need to complete the weekly summary. Click here to submit it.
+                      ) : matchUser ? (
+                        <span className="summary-toggle" onClick={props.toggleSubmitForm}>
+                        {WeeklySummaryNotReq
+                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
+                        : "You still need to complete the weekly summary. Click here to submit it."}
                       </span>
                     ) : (
                       <span className="summary-toggle">
