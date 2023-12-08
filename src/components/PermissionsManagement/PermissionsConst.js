@@ -49,6 +49,11 @@ export const permissionLabels = [
         key: 'putUserProfileImportantInfo',
         description: 'WIP',
       },
+      {
+        label: 'Manage Time Off Requests',
+        key: 'manageTimeOffRequests',
+        description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
+      },
     ]
   },
   {

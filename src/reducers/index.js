@@ -71,6 +71,6 @@ export default combineReducers({
   // bmdashboard
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
-  bmInvTypes: bmInvTypeReducer
+  bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
 });
