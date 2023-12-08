@@ -173,6 +173,7 @@ const LogTimeOffPopUp = React.memo(props => {
   };
   // checks reason for leave is not empty
   const validateReasonForLeave = (data, nestedModal) => {
+    
     if (nestedModal) {
       if (!data.reasonForLeave) {
         setUpdateRequestDataErrors(prev => ({
@@ -181,11 +182,27 @@ const LogTimeOffPopUp = React.memo(props => {
         }));
         return false;
       }
+      const words = data.reasonForLeave?.split(' ');
+      if (words.length < 10 ) {
+        setUpdateRequestDataErrors(prev => ({
+          ...prev,
+          reasonForLeaveError: 'Reason for leave can not be less than 10 words',
+        }));
+        return false;
+      }
     } else {
       if (!data.reasonForLeave) {
         setRequestDataErrors(prev => ({
           ...prev,
           reasonForLeaveError: 'Reason for leave can not be empty',
+        }));
+        return false;
+      }
+      const words = data.reasonForLeave?.split(' ');
+      if (words.length < 10) {
+        setRequestDataErrors(prev => ({
+          ...prev,
+          reasonForLeaveError: 'Reason for leave can not be less than 10 words',
         }));
         return false;
       }
