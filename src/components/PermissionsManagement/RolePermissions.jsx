@@ -28,8 +28,9 @@ function RolePermissions(props) {
   const history = useHistory();
   const [showPresetModal, setShowPresetModal] = useState(false);
 
-  const canEditRole = props.hasPermission('putRole');
-  const canDeleteRole = props.hasPermission('deleteRole');
+  const isEditableRole = props.role === 'Owner' ? props.hasPermission('addDeleteEditOwners') : props.auth.user.role !== props.role;
+  const canEditRole = isEditableRole && props.hasPermission('putRole');
+  const canDeleteRole = isEditableRole && props.hasPermission('deleteRole');
 
   useEffect(() => {
     setRoleName(props.role);
@@ -280,7 +281,7 @@ function RolePermissions(props) {
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles, presets: state.rolePreset.presets });
+const mapStateToProps = state => ({ roles: state.role.roles, presets: state.rolePreset.presets, auth: state.auth });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
