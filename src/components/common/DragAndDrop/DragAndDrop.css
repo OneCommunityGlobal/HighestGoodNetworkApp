@@ -22,6 +22,10 @@
   background-color: #f8fafc;
 }
 
+#file-upload-label.drag-active{
+  background-color: #ffffff;
+}
+
 .upload-button {
   cursor: pointer;
   padding: 0.25rem;
