@@ -46,11 +46,7 @@ import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks'
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { isAuthenticated } = props.auth;
-
-  const user = props.userProfile;
-  const firstName = user.firstName;
-  const profilePic = '/pfp-default-header.png';
+  const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
@@ -132,12 +128,12 @@ export const Header = props => {
                 </NavItem>
               )}
               <NavItem>
-                <NavLink tag={Link} to={`/dashboard/${user._id}`}>
+                <NavLink tag={Link} to="/dashboard">
                   <span className="dashboard-text-link">{DASHBOARD}</span>
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user._id}`}>
+                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
@@ -166,7 +162,7 @@ export const Header = props => {
               </NavItem>
             }
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user._id}`}>
+                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">
                     <i className="badge badge-pill badge-danger badge-notify">
                       {/* Pull number of unread messages */}
@@ -229,7 +225,7 @@ export const Header = props => {
                 </UncontrolledDropdown>
               )}
               <NavItem>
-                <NavLink tag={Link} to={`/userprofile/${user._id}`}>
+                <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
@@ -247,11 +243,11 @@ export const Header = props => {
                 <DropdownMenu>
                   <DropdownItem header>Hello {firstName}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user._id}`}>
+                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                    <DropdownItem tag={Link} to={`/updatepassword/${user._id}`}>
+                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
                       {UPDATE_PASSWORD}
                     </DropdownItem>
                   )}
