@@ -61,7 +61,6 @@ export class Projects extends Component {
   };
 
   onUpdateProjectName = (projectId, projectName, category, isActive) => {
-    console.log('updateName', projectId, projectName, category, isActive);
     this.props.modifyProject('updateName', projectId, projectName, category, isActive);
   };
 
