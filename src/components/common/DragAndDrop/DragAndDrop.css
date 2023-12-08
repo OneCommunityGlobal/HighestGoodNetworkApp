@@ -10,7 +10,7 @@
 }
 
 #file-upload-label{
-   height: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,12 +19,24 @@
   border-radius: 1rem;
   border-style: dashed;
   border-color: #cbd5e1;
-  background-color: #f8fafc;
+  background-color: #ffffff;
 }
 
 #file-upload-label.drag-active{
-  background-color: #ffffff;
+  background-color: #f8fafc;
 }
+
+#drag-file-element {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+}
+
 
 .upload-button {
   cursor: pointer;
