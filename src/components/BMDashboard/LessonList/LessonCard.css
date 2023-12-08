@@ -1,43 +1,43 @@
 .card {
-  border: 2px solid #78BDDA !important;
-  background-color: #FBFBFB !important;
+  border: 2px solid #78bdda !important;
+  background-color: #fbfbfb !important;
   margin-bottom: 2rem;
   overflow: hidden;
 }
 .card-header {
-  background-color: #78BDDA !important;
+  background-color: #78bdda !important;
   padding: 0.3rem 1.25rem !important;
 }
-.card-body{
+.card-body {
   min-height: 20vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
-.card-tag-and-file{
+.card-tag-and-file {
   font-size: small;
 }
 .card-tag-and-file .tag-item {
   display: inline-block;
-  margin-right: 5px; 
+  margin-right: 5px;
 }
 .card-tag .tag-item {
-  margin-right: 5px; 
-  border: 1px solid #78BDDA;
+  margin-right: 5px;
+  border: 1px solid #78bdda;
   padding: 1px 3px;
   border-radius: 3px;
-  background-color: #E8F4F9;
-  color: #78BDDA;
+  background-color: #e8f4f9;
+  color: #78bdda;
   font-size: smaller;
 }
 .card-header:first-child {
   border-radius: 0 !important;
 }
-.card-header-tabs{
+.card-header-tabs {
   margin-bottom: 0 !important;
 }
 .card-footer {
-  background-color: #E8F4F9 !important;
+  background-color: #e8f4f9 !important;
   display: flex;
   justify-content: space-between;
   font-size: small;
@@ -52,69 +52,67 @@
   flex-direction: row;
   margin-top: 10px;
   max-height: 25px;
-  max-width:1200px;
+  max-width: 1200px;
   overflow-x: auto;
 }
+
 .scrollable-card-body {
   max-height: 400px;
   overflow-y: auto;
 }
 
-
-
-.footer-items-author-and-from{
+.footer-items-author-and-from {
   margin-right: 5px;
 }
 
 .footer-items {
   display: flex;
-  align-items: center; 
+  align-items: center;
 }
 
 .footer-items button {
   padding: 5px;
 }
 
-.nav{
+.nav {
   display: unset !important;
-  color:white;
+  color: white;
   height: 50px;
   flex-direction: column;
 }
-.nav-item{
+.nav-item {
   font-size: small;
 }
-.nav-item-title{
-  font-weight:bold;
-  font-size:small;
+.nav-item-title {
+  font-weight: bold;
+  font-size: small;
 }
 
 .nav-title-and-date {
   display: flex;
   justify-content: space-between;
 }
-.card-tag-and-file{
-  color:#78BDDA;
-
+.card-tag-and-file {
+  color: #78bdda;
 }
 .card-text {
   font-size: medium;
 }
 .card-scrollable {
-  max-height: 300px; 
-  overflow-y: auto; 
+  max-height: 300px;
+  overflow-y: auto;
 }
-.tag-item{
+.tag-item {
   font-size: small;
   white-space: nowrap;
 }
-.lesson-file{
+.lesson-file {
   font-size: small;
 }
-.lesson-summary button{
+.lesson-summary button {
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #E8F4F9  ;
+  background-color: #e8f4f9;
   width: 80px;
   margin-right: 5px;
   font-size: 14px;
@@ -122,46 +120,56 @@
 textarea {
   height: 10rem;
 }
+::-webkit-scrollbar {
+  height: 4px;
+  width: 0;
+  background: #ffff;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:horizontal {
+  background: #ccc;
+  border-radius: 10px;
+}
 
 .scrollable-card-body::-webkit-scrollbar {
   width: 4px;
 }
 .scrollable-card-body::-webkit-scrollbar-thumb {
-  background-color: #ccc; 
+  background-color: #ccc;
   border-radius: 5px;
 }
+.card-tag::-webkit-scrollbar-horizontal {
+  width: 4px;
+}
 
-.expand-lessons{
-  background-color: #F2F2F266 !important;
+.expand-lessons {
+  background-color: #f2f2f266 !important;
   padding: 5px;
   font-size: small;
   margin-bottom: 5px;
   color: #495057;
   margin-right: 5px;
   border-radius: 5px;
-  
 }
 .validation-error {
   color: red;
   font-size: small;
   display: block;
   margin-bottom: 10px;
-
 }
 .editable-lesson-summary.error {
   border: 1px solid red;
-
 }
 
-  @media (max-width: 570px) {
-   .form-select-container {
-     flex-direction: column;
-   }
- .card-footer{
-  font-size: small;
- }
- }
- @media (max-width: 767px) {
+@media (max-width: 570px) {
+  .form-select-container {
+    flex-direction: column;
+  }
+  .card-footer {
+    font-size: small;
+  }
+}
+@media (max-width: 767px) {
   .card-text {
     padding: 10px;
     font-size: small;
@@ -170,20 +178,19 @@ textarea {
 
 @media (max-width: 859px) {
   .nav-title-and-date {
-    flex-direction: column; 
-    align-items: flex-start; 
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
 @media only screen and (max-width: 600px) {
   .nav {
-    height: auto; 
+    height: auto;
   }
-
 
   .tag-item {
     display: block;
-    margin-top: 5px; 
+    margin-top: 5px;
   }
 }
 
