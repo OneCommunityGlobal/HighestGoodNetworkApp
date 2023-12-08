@@ -1,22 +1,72 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-}
-
-.bold-text {
-  font-weight: bold;
+.issue-form-container {
+  margin: 0 auto;
+  max-width: 625px;
 }
 
 .red-text {
-    color: #980101;
+  color: #980101;
 }
 
-.consequences {
-    align-items: left;
+.issue-title-text {
+  text-align: center;
+  padding-top: 3.5vh;
+  padding-bottom: 3.5vh;
+  font-weight: bold;
+}
+
+.consequences-text {
+  text-align: left;
 }
 
 .sub-title-text {
-    color: #2E5061
+  color: #2e5061;
+  font-weight: bold;
+}
+
+.character-counter-text {
+  position: absolute;
+  bottom: 0;
+  right: 1vw;
+  font-size: 12px;
+  color: #999;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.issue-form-override-css {
+  max-width: inherit !important;
+}
+
+.issue-radio-buttons {
+  padding-left: 4vw;
+  padding-right: 35vw;
+}
+
+/* @media (max-width: 600px) {
+  .issue-radio-buttons {
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
+} */
+
+.IssueFormButtonCancel {
+  height: 50px;
+  width: 50%;
+  background-color: #ffffff !important;
+  color: #2e5061 !important;
+  border-color: #2e5061 !important;
+}
+
+.row-margin-bottom {
+  margin-bottom: 2vh;
+}
+
+.IssueFormButtonSubmit {
+  height: 50px;
+  width: 50%;
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #2e5061 !important;
 }
