@@ -48,6 +48,7 @@ import BMLogin from './components/BMDashboard/Login';
 import MaterialsList from './components/BMDashboard/MaterialsList';
 import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+import UpdateMaterialsBulk from './components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk';
 
 
 
@@ -169,16 +170,17 @@ export default (
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
 
-      <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
-      <Route path="/bmdashboard/login" component={BMLogin} />
-      <BMProtectedRoute path="/bmdashboard/materials/purchase" component={PurchaseMaterials} />
-      <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
-      <BMProtectedRoute path="/bmdashboard/materials-list" component={MaterialsList} />
-       <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
-      {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-      <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
-      
-      {/* ----- END BM Dashboard Routing ----- */}
+        <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
+        <Route path="/bmdashboard/login" component={BMLogin} />
+        <BMProtectedRoute path="/bmdashboard/materials/purchase" component={PurchaseMaterials} />
+        <BMProtectedRoute path="/bmdashboard/projects/:projectId" component={ProjectDetails} />
+        <BMProtectedRoute path="/bmdashboard/materials/update" component={UpdateMaterialsBulk} />
+        <BMProtectedRoute path="/bmdashboard/materials" component={MaterialsList} />
+        <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+        {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
+        <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+
+        {/* ----- END BM Dashboard Routing ----- */}
 
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />

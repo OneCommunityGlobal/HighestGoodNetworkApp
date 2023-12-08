@@ -206,7 +206,8 @@ function UserProfile(props) {
   };
 
   const loadSummaryIntroDetails = async (teamId, user) => {
-    const { firstName, lastName } = user;
+    const currentManager = user;
+
     const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
     const { data } = res;
 
@@ -214,20 +215,25 @@ function UserProfile(props) {
     const memberNotSubmitted = [];
 
     data.forEach(member => {
-      member.weeklySummaries[0].summary !== ''
-        ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
-        : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+      if (member._id !== currentManager._id) {
+        if (member.weeklySummaries[0].summary !== '') {
+          memberSubmitted.push(`${member.firstName} ${member.lastName}`);
+        } else {
+          memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+        }
+      }
     });
+
     const memberSubmittedString =
       memberSubmitted.length !== 0
         ? memberSubmitted.join(', ')
-        : '<list all team members names included in the summary>.';
+        : '<list all team members names included in the summary>';
     const memberDidntSubmitString =
       memberNotSubmitted.length !== 0
-        ? memberSubmitted.join(', ')
+        ? memberNotSubmitted.join(', ')
         : '<list all team members names NOT included in the summary>';
 
-    const summaryIntroString = `This week’s summary was managed by ${firstName} ${lastName} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+    const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
 
     setSummaryIntro(summaryIntroString);
   };
