@@ -14,7 +14,7 @@ export const permissionLabels = [
         description: 'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible.',
       },
       {
-        label: 'See Highlight for Bios Eligble to be Posted',
+        label: 'See Highlight for Bios Eligible to be Posted',
         key: 'highlightEligibleBios',
         description: 'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
       },
