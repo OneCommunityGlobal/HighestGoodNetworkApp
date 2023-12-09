@@ -1009,6 +1009,7 @@ function UserProfile(props) {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   role={requestorRole}
+                  isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} // 
                 />
               </TabPane>
             </TabContent>

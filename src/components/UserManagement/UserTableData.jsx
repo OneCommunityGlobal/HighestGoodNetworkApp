@@ -40,9 +40,6 @@ const UserTableData = React.memo(props => {
       || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
 
-    
-
-
   return (
     <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
