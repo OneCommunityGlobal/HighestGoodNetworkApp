@@ -3,7 +3,7 @@ import { Button, Label, Input, Form, FormGroup, Row, Col } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import './Issue.css';
 import { check } from 'prettier';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 const Issue = (props) => {
   const ISSUE_FORM_HEADER = 'ISSUE LOG';
@@ -40,7 +40,7 @@ const Issue = (props) => {
   const [formData, setFormData] = useState({
     dateOfWork: '',
     dropdown: '',
-    checkboxes: [],
+    checkboxes: new Set(),
     other: '',
     resolved: '',
     description: '',
@@ -48,10 +48,24 @@ const Issue = (props) => {
 
   const [checkboxOptions, setCheckboxOption] = useState([]);
   const [characterCount, setCharacterCount] = useState(0);
-
-  const handleCheckboxChange = (index) => {
-    console.log('index: ' + index);
-  };
+  const handleCheckboxChange = useCallback(
+    (index, option) => () => {
+      setFormData((prevFormData) => {
+        const newCheckboxes = new Set(prevFormData.checkboxes);
+  
+        // Toggle the presence of the option in the set
+        if (newCheckboxes.has(option)) {
+          newCheckboxes.delete(option);
+        } else {
+          newCheckboxes.add(option);
+        }
+  
+        // Return the updated form data
+        return { ...prevFormData, checkboxes: newCheckboxes };
+      });
+    },
+    [] // Empty dependency array
+  );
 
   const handleDescriptionChange = (e) => {
     let currentDescription = e.target.value;
@@ -74,6 +88,7 @@ const Issue = (props) => {
     console.log('Submit');
 
     const isDataValid = validateData(formData);
+    console.log('isDataValid: ' + isDataValid);
   };
 
   const validateData = (currentFormData) => {
@@ -114,7 +129,7 @@ const Issue = (props) => {
   const handleDropdownChange = (event) => {
     const currentDropdownOption = event.target.value;
     console.log('event.target.value: ', currentDropdownOption);
-    setFormData({ ...formData, dropdown: currentDropdownOption });
+    setFormData({ ...formData, dropdown: currentDropdownOption, checkboxes: new Set()});
     changeCheckboxOption(currentDropdownOption);
   };
 
@@ -162,7 +177,7 @@ const Issue = (props) => {
       <h4 className="issue-title-text">{ISSUE_FORM_HEADER}</h4>
       <Form>
         <FormGroup>
-          <Row className="row-margin-bottom ">
+          <Row>
             <Col>
               <Label className="sub-title-text">{ISSUE_DATE}</Label>
             </Col>
@@ -176,8 +191,8 @@ const Issue = (props) => {
               />
             </Col>
           </Row>
-          <Row className="red-text">{NOTE}</Row>
         </FormGroup>
+        <Row className="red-text">{NOTE}</Row>
         <FormGroup>
           <Row style={{ justifyContent: 'left' }}>
             <Label for="dropdownExample" className="sub-title-text">
@@ -206,7 +221,7 @@ const Issue = (props) => {
               <Label className="sub-title-text text-start">{CONSEQUENCES_TITLE}</Label>
             </Col>
           </Row>
-          <Row style={{ marginBottom: '2vh' }}>
+          <Row>
             {checkboxOptions.map((pair, rowIndex) => (
               <Row key={rowIndex}>
                 {pair.map((option, colIndex) => (
@@ -214,7 +229,8 @@ const Issue = (props) => {
                     <Label check>
                       <Input
                         type="checkbox"
-                        onChange={handleCheckboxChange(rowIndex * 2 + colIndex)}
+                        checked={formData.checkboxes.has(option) || false}
+                        onChange={handleCheckboxChange(rowIndex * 2 + colIndex, option)}
                       />
                       {option}
                     </Label>
@@ -240,7 +256,7 @@ const Issue = (props) => {
             </Col>
           </Row>
           <Row className='issue-radio-buttons'>
-            <Col>
+            <Col className='issue-radio-buttons'>
               <Label check>
                 <Input
                   type="radio"
@@ -250,7 +266,7 @@ const Issue = (props) => {
                 Yes
               </Label>
             </Col>
-            <Col>
+            <Col className='issue-radio-buttons'>
               <Label check>
                 <Input
                   type="radio"
@@ -274,7 +290,7 @@ const Issue = (props) => {
             <Col>
               <Input
                 className="issue-form-override-css"
-                style={{ marginBottom: '2vh' }}
+                style={{ marginBottom: '1em' }}
                 type="textarea"
                 placeholder={DESCRIPTION_PLACEHOLDER}
                 value={formData.description}

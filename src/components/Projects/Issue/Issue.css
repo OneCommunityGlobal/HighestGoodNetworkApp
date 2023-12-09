@@ -40,16 +40,12 @@
 }
 
 .issue-radio-buttons {
-  padding-left: 4vw;
-  padding-right: 35vw;
+  display: flex;
+  justify-content: left;
+  margin-top: auto;
+  padding-left: 3em;
+  padding-right: 27em;
 }
-
-/* @media (max-width: 600px) {
-  .issue-radio-buttons {
-    padding-left: 2vw;
-    padding-right: 2vw;
-  }
-} */
 
 .IssueFormButtonCancel {
   height: 50px;
@@ -60,7 +56,7 @@
 }
 
 .row-margin-bottom {
-  margin-bottom: 2vh;
+  margin-bottom: 1em;
 }
 
 .IssueFormButtonSubmit {
