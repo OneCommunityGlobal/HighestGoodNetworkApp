@@ -3,18 +3,18 @@ import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 
-//import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
+// import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import AutoUpdate from 'components/AutoUpdate';
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import { RoutePermissions } from 'utils/routePermissions';
-//import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
-//import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
+// import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
+// import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
-//import Reports from './components/Reports';
-//import UserProfile from './components/UserProfile';
+// import Reports from './components/Reports';
+// import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
@@ -23,24 +23,24 @@ import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
 import Header from './components/Header';
-//import Projects from './components/Projects';
+// import Projects from './components/Projects';
 // Teams from './components/Teams/Teams';
-//import UserManagement from './components/UserManagement';
-//import Members from './components/Projects/Members';
-//import WBS from './components/Projects/WBS';
-//import WBSDetail from './components/Projects/WBS/WBSDetail';
-//import SingleTask from './components/Projects/WBS/SingleTask';
-//import WeeklySummariesReport from './components/WeeklySummariesReport';
+// import UserManagement from './components/UserManagement';
+// import Members from './components/Projects/Members';
+// import WBS from './components/Projects/WBS';
+// import WBSDetail from './components/Projects/WBS/WBSDetail';
+// import SingleTask from './components/Projects/WBS/SingleTask';
+// import WeeklySummariesReport from './components/WeeklySummariesReport';
 import TeamLocations from './components/TeamLocations';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
-//import { PeopleReport } from './components/Reports/PeopleReport';
-//import { ProjectReport } from './components/Reports/ProjectReport';
-//import { TeamReport } from './components/Reports/TeamReport';
+// import { PeopleReport } from './components/Reports/PeopleReport';
+// import { ProjectReport } from './components/Reports/ProjectReport';
+// import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
-//import BadgeManagement from './components/Badge/BadgeManagement';
+// import BadgeManagement from './components/Badge/BadgeManagement';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -57,7 +57,7 @@ const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/Proj
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
 
 
-//Code-Splitting
+// Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
 const Reports = lazy(() => import('./components/Reports'));
@@ -89,13 +89,13 @@ export default (
       <Switch>
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
-        <ProtectedRoute path="/project/members/:projectId" fallback={true} component={Members} />
+        <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/popupmanagement" component={Admin} />
         <ProtectedRoute path="/timelog/" exact component={Timelog} />
         <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-        <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback={true} />
-        <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback={true} />
-        <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback={true} />
+        <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
+        <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
+        <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
 
         <ProtectedRoute
@@ -113,7 +113,7 @@ export default (
           path="/weeklysummariesreport"
           exact
           component={WeeklySummariesReport}
-          fallback={true}
+          fallback
           allowedRoles={[
             UserRole.Administrator,
             UserRole.Manager,
@@ -127,7 +127,7 @@ export default (
           path="/reports"
           exact
           component={Reports}
-          fallback={true}
+          fallback
           routePermissions={RoutePermissions.reports}
         />
         <ProtectedRoute
@@ -139,7 +139,7 @@ export default (
           path="/projects"
           exact
           component={Projects}
-          fallback={true}
+          fallback
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={[
             RoutePermissions.projects,
@@ -151,33 +151,33 @@ export default (
           path="/projects"
           exact
           component={Projects}
-          fallback={true}
+          fallback
           routePermissions={RoutePermissions.projects}
         />
-        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} fallback={true} />
-        <ProtectedRoute path="/project/wbs/:projectId" component={WBS} fallback={true} />
-        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} fallback={true} />
-        <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} fallback={true} />
-        <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} fallback={true} />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} fallback />
+        <ProtectedRoute path="/project/wbs/:projectId" component={WBS} fallback />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} fallback />
+        <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} fallback />
+        <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} fallback />
         <ProtectedRoute
           path="/usermanagement"
           exact
           component={UserManagement}
-          fallback={true}
+          fallback
           routePermissions={RoutePermissions.userManagement}
         />
         <ProtectedRoute
           path="/badgemanagement"
           exact
           component={BadgeManagement}
-          fallback={true}
+          fallback
           routePermissions={RoutePermissions.badgeManagement}
         />
         <ProtectedRoute
           path="/permissionsmanagement"
           exact
           component={PermissionsManagement}
-          fallback={true}
+          fallback
           routePermissions={[
             RoutePermissions.permissionsManagement,
             RoutePermissions.userPermissionsManagement,
@@ -187,14 +187,14 @@ export default (
           path="/permissionsmanagement/:userRole"
           exact
           component={UserRoleTab}
-          fallback={true}
+          fallback
           routePermissions={RoutePermissions.permissionsManagementRole}
         />
         <ProtectedRoute
           path="/teams"
           exact
           component={Teams}
-          fallback={true}
+          fallback
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         <ProtectedRoute
@@ -208,11 +208,11 @@ export default (
 
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-        <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback={true} component={PurchaseMaterials} />
-        <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback={true} component={ProjectDetails} />
-        <BMProtectedRoute path="/bmdashboard/materials" fallback={true} component={MaterialsList} />
-        <BMProtectedRoute path="/bmdashboard/lessonform/" fallback={true} component={LessonForm} />
-        <BMProtectedRoute path="/bmdashboard/materials/update" fallback={true} component={UpdateMaterialsBulk} />
+        <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
+        <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
+        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
+        <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
@@ -222,7 +222,7 @@ export default (
         <Route path="/forgotpassword" component={ForgotPassword} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
-        <ProtectedRoute path="/userprofile/:userId" fallback={true} component={UserProfile} />
+        <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
