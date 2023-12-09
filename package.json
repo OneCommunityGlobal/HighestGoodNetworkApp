@@ -105,6 +105,7 @@
     "eslint-plugin-testing-library": "^3.6.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "msw": "^0.19.5",
+    "node-sass": "^8.0.0",
     "prettier": "^1.19.1",
     "redux-mock-store": "^1.5.4",
     "husky": "^8.0.0"
