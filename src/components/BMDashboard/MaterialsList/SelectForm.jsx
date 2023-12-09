@@ -1,11 +1,17 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
-export default function SelectForm({ materials, setSelectedProject }) {
+export default function SelectForm({ materials, setSelectedProject, setSelectedMaterial }) {
   // create selectable projects
   let projectsSet = [];
   if (materials.length) {
-    projectsSet = [...new Set(materials.map(mat => mat.project.projectName))];
+    projectsSet = [...new Set(materials.map(mat => mat.project?.name))];
   }
+
+  const handleChange = event => {
+    setSelectedMaterial('all');
+    setSelectedProject(event.target.value);
+  };
+
   return (
     <Form>
       <FormGroup className="select_input">
@@ -14,7 +20,7 @@ export default function SelectForm({ materials, setSelectedProject }) {
           id="select-project"
           name="select-project"
           type="select"
-          onChange={e => setSelectedProject(e.target.value)}
+          onChange={handleChange}
           disabled={!materials.length}
         >
           {materials.length ? (
