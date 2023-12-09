@@ -80,10 +80,9 @@ const AssignPopUp = props => {
       </ModalBody>
       <ModalFooter>
       <div className="col text-center">
-
         <Button className="bg-success m-3" onClick={() => setAssignedOnClick()}>Yes</Button>
         <Button className="bg-danger m-3" onClick={() => setNoOnClick()}>No</Button>
-
+        {/* <Button className="bg-danger m-3" onClick={() => deleteTitleById(title._id)}></Button> */}
       </div>
       </ModalFooter>
     </Modal>
