@@ -14,6 +14,12 @@ thead {
   width: 10px;
 }
 
+.centered-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
+
 #teams__members {
   width: 15px;
 }
@@ -68,12 +74,30 @@ thead {
   border: 1px solid #dee2e6;
 }
 
+.isActive {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 .isActive i {
   color: lawngreen;
+  margin-top: 10px;
+}
+
+.isNotActive i {
+  color: #dee2e6;
+  margin-top: 10px;
+
 }
 
 .isNotActive {
   color: #dee2e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .isDisabled {

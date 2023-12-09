@@ -7,6 +7,7 @@ import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle } from 'styles';
+import { formatDate } from 'utils/formatDate';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
@@ -19,7 +20,7 @@ const startEndDateValidation = props => {
 
 const StartDate = props => {
   if (!props.canEdit) {
-    return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
+    return <p>{formatDate(props.userProfile.createdDate)}</p>;
   }
   return (
     <Input
@@ -44,7 +45,7 @@ const EndDate = props => {
     return (
       <p>
         {props.userProfile.endDate
-          ? props.userProfile.endDate.toLocaleString().split('T')[0]
+          ? formatDate(props.userProfile.endDate)
           : 'N/A'}
       </p>
     );

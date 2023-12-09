@@ -20,10 +20,12 @@ import ReactTooltip from 'react-tooltip';
 import TotalPeopleReport from './TotalReport/TotalPeopleReport';
 import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
-
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { searchWithAccent } from 'utils/search';
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -91,12 +93,12 @@ class ReportsPage extends Component {
   async componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
-    this.state = {
+    this.setState({
       showProjects: false,
       showPeople: false,
       showTeams: false,
       checkActive: '',
-    };
+    });
     this.props.getAllUserProfile();
   }
 
@@ -114,13 +116,11 @@ class ReportsPage extends Component {
       // Applying the search filters before creating each team table data element
       if (
         (project.projectName &&
-          project.projectName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
+          searchWithAccent(project.projectName,this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          project.projectName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
+        searchWithAccent(project.projectName,this.state.wildCardSearchText))
       ) {
         return project;
       }
@@ -135,11 +135,11 @@ class ReportsPage extends Component {
       // Applying the search filters before creating each team table data element
       if (
         (team.teamName &&
-          team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1 &&
+          searchWithAccent(team.teamName, this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1)
+        searchWithAccent(team.teamName, this.state.wildCardSearchText))
       ) {
         return team;
       }
@@ -154,17 +154,14 @@ class ReportsPage extends Component {
       // Applying the search filters before creating each team table data element
       if (
         (userProfile.firstName &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
+          searchWithAccent(userProfile.firstName, this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1) ||
+           searchWithAccent(userProfile.firstName, this.state.wildCardSearchText)) ||
         (this.state.wildCardSearchText !== '' &&
           userProfile.lastName &&
-          userProfile.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
+          searchWithAccent(userProfile.lastName, this.state.wildCardSearchText))
       ) {
         return (
           new Date(Date.parse(userProfile.createdDate)) >= this.state.startDate &&
@@ -267,6 +264,7 @@ class ReportsPage extends Component {
   }
 
   render() {
+    const userRole = this.props.state.userProfile.role;
     const { projects } = this.props.state.allProjects;
     const { allTeams } = this.props.state.allTeamsData;
     const { userProfiles } = this.props.state.allUserProfiles;
@@ -294,7 +292,19 @@ class ReportsPage extends Component {
     return (
       <Container fluid className="mb-5 container-component-wrapper">
         <div className="container-component-category">
-          <h2 className="mt-3 mb-5">Reports Page</h2>
+        <h2 className="mt-3 mb-5">
+          <div className="d-flex align-items-center">
+            <span className="mr-2">Reports Page</span>
+            <EditableInfoModal
+              areaName="ReportsPage"
+              areaTitle="Reports Page"
+              role={userRole}
+              fontSize={26}
+              isPermissionPage={true}
+              className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+            />
+          </div>
+        </h2>
           <div>
             <p>Select a Category</p>
           </div>
@@ -427,26 +437,15 @@ class ReportsPage extends Component {
                     ? 'Hide Total Project Report'
                     : 'Show Total Project Report'}
                 </Button>
-                <i
-                  className="fa fa-info-circle"
-                  data-tip
-                  data-for="totalProjectTip"
-                  data-delay-hide="0"
-                  aria-hidden="true"
-                  title=""
-                  style={{ paddingLeft: '.32rem' }}
+                <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                <EditableInfoModal
+                  areaName="totalProjectReportInfoPoint"
+                  areaTitle="Total Project Report"
+                  role={userRole}
+                  fontSize={15}
+                  isPermissionPage={true}
                 />
-                <ReactTooltip id="totalProjectTip" place="bottom" effect="solid">
-                  Click this button to see exactly how many new projects have been worked on for a
-                  designated time period.
-                  <br />
-                  Projects must have had at least 1 hour logged to them to be included.
-                  <br />
-                  A 'Total Hours' section will show the total tangible time logged to all projects
-                  during the selected period.
-                  <br />A detail report will list all the projects and hours contributed by each
-                  during that time period.
-                </ReactTooltip>
+                </div>
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalPeople}>
@@ -454,50 +453,29 @@ class ReportsPage extends Component {
                     ? 'Hide Total People Report'
                     : 'Show Total People Report'}
                 </Button>
-                <i
-                  className="fa fa-info-circle"
-                  data-tip
-                  data-for="totalPeopleTip"
-                  data-delay-hide="0"
-                  aria-hidden="true"
-                  style={{ paddingLeft: '.32rem' }}
+                <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                <EditableInfoModal
+                  areaName="totalPeopleReportInfoPoint"
+                  areaTitle="Total People Report"
+                  role={userRole}
+                  fontSize={15}
+                  isPermissionPage={true}
                 />
-                <ReactTooltip id="totalPeopleTip" place="bottom" effect="solid">
-                  Click this button to see exactly how many total people have contributed time to
-                  the projects for a designated time period.
-                  <br />
-                  Peole must have had at least 10 hours logged for them to be included.
-                  <br />
-                  A 'Total Hours' section will show the total tangible time logged by all people
-                  during the selected period.
-                  <br />A detail report will list all the people and hours contributed by each
-                  during that time period.
-                </ReactTooltip>
+                </div>
               </div>
               <div className="total-report-item">
                 <Button color="info" onClick={this.showTotalTeam}>
                   {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
                 </Button>
-                <i
-                  className="fa fa-info-circle"
-                  data-tip
-                  data-for="totalTeamTip"
-                  data-delay-hide="0"
-                  aria-hidden="true"
-                  title=""
-                  style={{ paddingLeft: '.32rem' }}
+                <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                <EditableInfoModal
+                  areaName="totalTeamReportInfoPoint"
+                  areaTitle="Total Team Report"
+                  role={userRole}
+                  fontSize={15}
+                  isPermissionPage={true}
                 />
-                <ReactTooltip id="totalTeamTip" place="bottom" effect="solid">
-                  Click this button to see exactly how many total teams have contributed time to the
-                  projects for a designated time period.
-                  <br />
-                  The team must have had at least 10 hours logged for them to be included.
-                  <br />
-                  A 'Total Hours' section will show the total tangible time logged by all the teams
-                  during the selected period.
-                  <br />A detail report will list all the teams and hours contributed by each during
-                  that time period.
-                </ReactTooltip>
+                </div>
               </div>
             </div>
           </div>
@@ -505,7 +483,11 @@ class ReportsPage extends Component {
         <div className="table-data-container mt-5">
           {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
           {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
-          {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
+          {this.state.showTeams && 
+            <TeamTable 
+              allTeams={this.state.teamSearchData}
+            />
+          }
           {this.state.showTotalProject && (
             <TotalProjectReport
               startDate={this.state.startDate}

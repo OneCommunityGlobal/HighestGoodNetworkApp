@@ -10,7 +10,8 @@ import { useReducer } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import { addReason, patchReason } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
-import {Modal} from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { boxStyle } from 'styles';
 
 const BlueSquareLayout = props => {
   const fetchingReducer = (state, action) => {
@@ -47,12 +48,7 @@ const BlueSquareLayout = props => {
     }
   };
 
-  const {
-    userProfile,
-    handleUserProfile,
-    handleBlueSquare,
-    canEdit,
-  } = props;
+  const { userProfile, handleUserProfile, handleBlueSquare, canEdit } = props;
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [reason, setReason] = useState('');
@@ -63,6 +59,7 @@ const BlueSquareLayout = props => {
       .toISOString()
       .split('T')[0],
   );
+  const [IsReasonUpdated,setIsReasonUpdated] = useState(false);
   const [fetchState, fetchDispatch] = useReducer(fetchingReducer, {
     isFetching: false,
     error: false,
@@ -74,16 +71,16 @@ const BlueSquareLayout = props => {
 
   const handleOpen = useCallback(() => {
     setShow(true);
-  }, [])
+  }, []);
 
   const handleClose = useCallback(() => {
-    setShow(false)
-  }, [])
+    setShow(false);
+  }, []);
 
-
+  
   const handleSubmit = async event => {
     event.preventDefault();
-    if (fetchState.isSet) {
+    if (fetchState.isSet && IsReasonUpdated) { //if reason already exists and if it is changed by the user
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await patchReason(userProfile._id, { date: date, message: reason });
       if (response.status !== 200) {
@@ -93,9 +90,9 @@ const BlueSquareLayout = props => {
         });
       } else {
         fetchDispatch({ type: 'SUCCESS' });
-      }
+        }
       setShow(true);
-    } else {
+    } else { //add/create reason
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await addReason(userProfile._id, { date: date, message: reason });
       console.log(response);
@@ -108,6 +105,7 @@ const BlueSquareLayout = props => {
         fetchDispatch({ type: 'SUCCESS' });
       }
     }
+    setIsReasonUpdated(false);
   };
 
   if (canEdit) {
@@ -127,7 +125,16 @@ const BlueSquareLayout = props => {
 
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
         <div className="mt-4 w-100">
-          <Button variant="primary" onClick={handleOpen} className="w-100" size="md">
+          <Button
+            variant="primary"
+            onClick={handleOpen}
+            className="w-100"
+            size="md"
+            style={boxStyle}
+            //disable the scheduler button if no blue square is assigned to the user
+            //length<2 because already one dummy blue square is present on every profile
+            //disabled={userProfile?.infringements.length<2}
+            >
             {fetchState.isFetching ? (
               <Spinner size="sm" animation="border" />
             ) : (
@@ -149,6 +156,8 @@ const BlueSquareLayout = props => {
               fetchMessage={fetchState.fetchMessage}
               fetchDispatch={fetchDispatch}
               userId={userProfile._id}
+              IsReasonUpdated={IsReasonUpdated}
+              setIsReasonUpdated={setIsReasonUpdated}
             />
           </Modal>
         )}

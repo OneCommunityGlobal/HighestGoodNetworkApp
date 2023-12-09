@@ -33,9 +33,7 @@ describe('WeeklySummariesReport page', () => {
         badges: [],
         getInfoCollections: jest.fn(),
       };
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
-
-      await waitFor(() => screen.getByTestId('loading'));
+      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });
 
       expect(screen.getByTestId('error')).toBeInTheDocument();
     });
@@ -78,28 +76,29 @@ describe('WeeklySummariesReport page', () => {
     });
 
     it('should have second tab set to "active" by default', () => {
-      expect(screen.getByTestId('tab-2').classList.contains('active')).toBe(true);
+      expect(screen.getByTestId('Last Week').classList.contains('active')).toBe(true);
+      expect(screen.getBy)
     });
 
     it('should make 1st tab active when clicked', () => {
       // First tab click.
-      fireEvent.click(screen.getByTestId('tab-1'));
-      expect(screen.getByTestId('tab-1').classList.contains('active')).toBe(true);
+      fireEvent.click(screen.getByTestId('This Week'));
+      expect(screen.getByTestId('This Week').classList.contains('active')).toBe(true);
     });
     it('should make 2nd tab active when clicked', () => {
       // Second tab click.
-      fireEvent.click(screen.getByTestId('tab-2'));
-      expect(screen.getByTestId('tab-2').classList.contains('active')).toBe(true);
+      fireEvent.click(screen.getByTestId('Last Week'));
+      expect(screen.getByTestId('Last Week').classList.contains('active')).toBe(true);
     });
     it('should make 3rd tab active when clicked', () => {
       // Third tab click.
-      fireEvent.click(screen.getByTestId('tab-3'));
-      expect(screen.getByTestId('tab-3').classList.contains('active')).toBe(true);
+      fireEvent.click(screen.getByTestId('Week Before Last'));
+      expect(screen.getByTestId('Week Before Last').classList.contains('active')).toBe(true);
     });
     it('should make 4th tab active when clicked', () => {
       // Fourth tab click.
-      fireEvent.click(screen.getByTestId('tab-4'));
-      expect(screen.getByTestId('tab-4').classList.contains('active')).toBe(true);
+      fireEvent.click(screen.getByTestId('Three Weeks Ago'));
+      expect(screen.getByTestId('Three Weeks Ago').classList.contains('active')).toBe(true);
     });
   });
 });

@@ -26,6 +26,7 @@ import {
 import { getAllUserProfile } from '../../actions/userManagement';
 import Autosuggest from 'react-autosuggest';
 import { boxStyle } from 'styles';
+import { searchWithAccent } from 'utils/search';
 
 const AssignBadge = props => {
   const [isOpen, setOpen] = useState(false);
@@ -40,12 +41,12 @@ const AssignBadge = props => {
 
   const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
 
-  const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  //const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
   const getSuggestions = value => {
-    const escapedValue = escapeRegexCharacters(value.trim());
-    const regex = new RegExp('^' + escapedValue, 'i');
-    return activeUsers.filter(user => regex.test(user.firstName) || regex.test(user.lastName));
+    //const escapedValue = escapeRegexCharacters(value.trim());
+    //const regex = new RegExp('^' + escapedValue, 'i');
+    return activeUsers.filter(user => searchWithAccent(user.firstName, value.trim()) || searchWithAccent(user.lastName, value.trim()));
   };
 
   const getSuggestionFirst = suggestion => suggestion.firstName;
@@ -92,9 +93,13 @@ const AssignBadge = props => {
     props.getFirstName(suggestion.firstName);
   };
 
-  const toggle = () => {
+  const submit = () => {
+    toggle(true);
+  }
+
+  const toggle = (didSubmit = false) => {
     const { firstName, lastName, selectedBadges } = props;
-    if (isOpen) {
+    if (isOpen && didSubmit === true) {
       props.assignBadges(firstName, lastName, selectedBadges);
       setOpen(isOpen => !isOpen);
       props.clearNameAndSelected();
@@ -198,7 +203,7 @@ const AssignBadge = props => {
         <Modal isOpen={isOpen} toggle={toggle} backdrop="static">
           <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
           <ModalBody>
-            <AssignBadgePopup allBadgeData={props.allBadgeData} toggle={toggle} />
+            <AssignBadgePopup allBadgeData={props.allBadgeData} submit={submit} selectedBadges={props.selectedBadges}/>
           </ModalBody>
         </Modal>
         <FormText color="muted">Please select a badge from the badge list.</FormText>

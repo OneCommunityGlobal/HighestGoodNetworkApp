@@ -6,7 +6,7 @@ import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 
-const Team = props => {
+export const Team = props => {
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
@@ -20,10 +20,11 @@ const Team = props => {
         className="teams__active--input"
         onClick={e => {
           canDeleteTeam || canPutTeam
-            ? props.onStatusClick(props.name, props.teamId, props.active)
+            ? props.onStatusClick(props.name, props.teamId, props.active, props.teamCode)
             : null;
         }}
-        style={boxStyle}
+        // style={boxStyle}
+        data-testid='active-marker'
       >
         {props.active ? (
           <div className="isActive">
@@ -35,13 +36,14 @@ const Team = props => {
           </div>
         )}
       </td>
-      <td>
-        <button
+      <td className="centered-cell">
+        <button style={boxStyle}
           type="button"
           className="btn btn-outline-info"
           onClick={e => {
-            props.onMembersClick(props.teamId, props.name);
+            props.onMembersClick(props.teamId, props.name, props.teamCode);
           }}
+          data-testid='members-btn'
         >
           <i className="fa fa-users" aria-hidden="true" />
         </button>
@@ -53,7 +55,7 @@ const Team = props => {
               type="button"
               className="btn btn-outline-success"
               onClick={() => {
-                props.onEditTeam(props.name, props.teamId, props.active);
+                props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={boxStyle}
             >
@@ -65,7 +67,7 @@ const Team = props => {
               type="button"
               className="btn btn-outline-danger"
               onClick={() => {
-                props.onDeleteClick(props.name, props.teamId, props.active);
+                props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={boxStyle}
             >

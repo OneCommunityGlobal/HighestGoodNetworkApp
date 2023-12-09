@@ -1,0 +1,74 @@
+.invalid-token-container {
+  width: 100vw;
+  height: 100vh;
+  margin: 0px;
+  padding: 0px;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+.invalid-token-card {
+  max-width: 600px;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-columns: 1fr;
+}
+.invalid-token-card-header {
+  display: grid;
+  justify-items: center;
+}
+
+.tringle-icon {
+  color: #f8d7da;
+  font-size: 15vh;
+}
+
+.invalid-token-card-title {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 2.4rem;
+  display: grid;
+  padding: 1rem;
+  padding-bottom: 0px;
+  justify-items: center;
+  align-items: center;
+}
+
+.invalid-token-card-message {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 1.1rem;
+  display: grid;
+  padding: 0.6rem;
+  justify-items: center;
+  text-align: center;
+}
+.invalid-token-card-company-name {
+  font-weight: 500;
+}
+.profile-setup-user-entry-container {
+  display: grid;
+  grid-template-rows: 10vh 1fr;
+}
+.profile-setup-user-entry-header {
+  height: 100%;
+  width: 100%;
+  background-color: #343a40;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+.profile-setup-user-entry-logo {
+  height: 7vh;
+  width: auto;
+}
+.profile-setup-user-entry-form-container {
+  margin-top: 5vh;
+  width: 100vh;
+  padding: 0px;
+}
+
+#setup-profile-phone-input {
+  width: 100%;
+  background-color: red;
+}
