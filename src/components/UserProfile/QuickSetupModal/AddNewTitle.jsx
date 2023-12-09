@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { addTitle } from '../../../actions/title';
 import PropTypes from 'prop-types';
+import AddTeamsAutoComplete from '../TeamsAndProjects/AddTeamsAutoComplete';
+import AddProjectsAutoComplete from '../TeamsAndProjects/AddProjectsAutoComplete';
 import {
   Button,
   Modal,
@@ -15,8 +17,26 @@ import {
 
 
 const AddNewTitle = props => {
-const { isOpen, toggle, setIsOpen, onAddTitle, setSubmit, submittoggler } = props;
+const { isOpen, toggle, setIsOpen, onAddTitle, setSubmit, submittoggler, teamsData, projectsData } = props;
 const [titleData, setTitleData] = useState({titleName: '', mediaFolder: '', teamCode: '', projectAssigned: '', teamAssiged: ''})
+const [selectedTeam, onSelectTeam] = useState(undefined);
+
+const [selectedProject, onSelectProject] = useState(undefined);
+const [isValidProject, onValidation] = useState(false);
+
+const selectProject = project => {
+  onSelectProject(project);
+  setTitleData(prev => ({...prev, projectAssigned: { projectName: project.projectName, _id: project._id, category: project.category }}))
+  onValidation(true);
+};
+
+const selectTeam = team => {
+  onSelectTeam(team);
+  setTitleData(prev => ({...prev, teamAssiged: {
+    teamName: team.teamName, _id: team._id}}))
+  onValidation(true);
+};
+
 const confirmOnClick = () => {
   addTitle(titleData);
   setIsOpen(false);
@@ -38,8 +58,6 @@ return (
             setTitleData(prev => ({...prev, titleName: e.target.value}))}
 
           }
-          // onChange={handleSelectionChange}
-          // value={newTeam}
         >
         </Input>
 
@@ -51,8 +69,6 @@ return (
           onChange= {(e) => {e.persist();
             setTitleData(prev => ({...prev, mediaFolder: e.target.value}))}}
 
-          // onChange={handleSelectionChange}
-          // value={newTeam}
         >
         </Input>
         <Label>Team Code:</Label>
@@ -66,28 +82,25 @@ return (
         <Label>
           Project Assignment:
         </Label>
-        <Input
-          type="text"
-          onChange= {(e) => {e.persist();setTitleData(prev => ({...prev, projectAssigned: e.target.value}))}}
-
-        >
-        </Input>
+        <AddProjectsAutoComplete
+            projectsData={projectsData}
+            onDropDownSelect={selectProject}
+            selectedProject={selectedProject}
+          />
         <Label>
           Team Assignment:
         </Label>
-        <Input
-          type="text"
-          onChange= {e => {e.persist();setTitleData(prev => ({...prev, teamAssiged: e.target.value}))}}
+        <AddTeamsAutoComplete
+            teamsData={teamsData}
+            onDropDownSelect={selectTeam}
+            selectedTeam={selectedTeam}
+          />
 
-        >
-        </Input>
       </FormGroup>
     </Form>
     </ModalBody>
     <ModalFooter>
-      {/* <Button color="primary" onClick={handleSubmit}>
-        Add Team
-      </Button> */}
+
       <Button color="primary" onClick={() => confirmOnClick()}>
         Confirm
       </Button>

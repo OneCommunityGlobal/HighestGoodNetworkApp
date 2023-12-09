@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AddNewTitle from './AddNewTitle';
 import AssignPopUp from './AssignPopUp';
 import QuickSetupCodes from './QuickSetUpCodes';
+import SaveButton from '../UserProfileEdit/SaveButton';
 import { getAllTitle } from '../../../actions/title';
 
 
@@ -17,29 +18,56 @@ import styles from './QuickSetupModal.css';
 
 const QuickSetupModal = (props) => {
   const {
-jobTitle  } = props;
+jobTitle, teamsData, projectsData, userProfile, setUserProfile,  handleSubmit, setSaved
+} = props;
   const [onAddTitle, setAddTitle] = useState(false);
   const [assignPopUp, setAssignPopup] = useState(false);
   const [titles, setTitles] = useState([]);
   const [curtitle, setTitleOnClick] = useState('');
   const [submittoggler, setSubmit] = useState(false);
+  const [titleOnSet, setTitleOnSet] = useState(true);
 
   useEffect(() => {
     getAllTitle()
-      .then(res => {console.log(res.data); setTitles(res.data)})
+      .then(res => {setTitles(res.data)})
       .catch(err => console.log(err))
   },[submittoggler])
 
   return (
     <div className="container pt-3">
-        <QuickSetupCodes titles={titles} setAssignPopup={setAssignPopup}
-        setTitleOnClick={setTitleOnClick}/>
+        <QuickSetupCodes
+          setSaved={setSaved}
+          userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          titles={titles}
+          setAssignPopup={setAssignPopup}
+          setTitleOnClick={setTitleOnClick}
+        />
 
       <div className="col text-center">
-        <Button className="mt-5" onClick={(e) => setAddTitle(true)}>Add A New Title</Button>
+        <Button className="mt-5 mb-2" onClick={(e) => setAddTitle(true)}>Add A New Title</Button>
       </div>
-      <AddNewTitle isOpen={onAddTitle} setIsOpen={setAddTitle} toggle={setAddTitle} setSubmit={setSubmit} submittoggler={submittoggler}/>
-      <AssignPopUp isOpen={assignPopUp} setIsOpen={setAssignPopup} toggle={setAssignPopup} title={curtitle}/>
+      <div className="col text-center">
+
+        <SaveButton
+          handleSubmit={handleSubmit}
+          userProfile={userProfile}
+          disabled={titleOnSet}
+          setSaved={() => setSaved(true)}
+        />
+      </div>
+      <AddNewTitle teamsData={teamsData} projectsData={projectsData} isOpen={onAddTitle} setIsOpen={setAddTitle} toggle={setAddTitle} setSubmit={setSubmit} submittoggler={submittoggler}/>
+      <AssignPopUp
+      setSaved={() => setSaved(true)}
+      handleSubmit={handleSubmit}
+      userProfile={userProfile}
+      setUserProfile={setUserProfile}
+      isOpen={assignPopUp}
+      setIsOpen={setAssignPopup}
+      toggle={setAssignPopup}
+      title={curtitle}
+      setTitleOnSet={setTitleOnSet}
+      />
     </div>
   )
 };
