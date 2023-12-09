@@ -127,7 +127,9 @@ export const ENDPOINTS = {
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
-  BM_PROJECTS: `${APIEndpoint}/bm/projects`
+  BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
+  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`
 };
 
 export const ApiEndpoint = APIEndpoint;
