@@ -3,7 +3,7 @@ import { Row, Col, Container } from 'reactstrap';
 import { connect } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import Badge from '../Badge';
+import BadgeDashboard from '../Badge/BadgeDashboard';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
@@ -82,10 +82,11 @@ export function Dashboard(props) {
               </div>
             </div>
           ) : null}
+          <BadgeDashboard userId={userId} role={auth.user.role} />
           <div className="my-2" id="wsummary">
             <Timelog isDashboard asUser={userId} passSummaryBarData={setSummaryBarData} />
           </div>
-          <Badge userId={userId} role={auth.user.role} />
+          {/* <Badge userId={userId} role={auth.user.role} /> */}
         </Col>
       </Row>
     </Container>
