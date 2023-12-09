@@ -87,6 +87,7 @@ export class WeeklySummariesReport extends Component {
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
     this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner';
+    this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -424,6 +425,7 @@ export class WeeklySummariesReport extends Component {
                         loadBadges={loadBadges}
                         canEditTeamCode={this.codeEditPermission}
                         auth={auth}
+                        canSeeBioHighlight={this.canSeeBioHighlight}
                       />
                     </Col>
                   </Row>
