@@ -685,7 +685,16 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-            {requestorRole == 'Owner' || requestorRole=='Administrator' ? <QuickSetupModal /> : ''}
+            {requestorRole == 'Owner' || requestorRole=='Administrator' ? <QuickSetupModal
+              setSaved={setSaved}
+              handleSubmit={handleSubmit}
+              setUserProfile={setUserProfile}
+              userProfile={userProfile}
+              userTeams={teams || []}
+              teamsData={props?.allTeams?.allTeamsData || []}
+              projectsData={props?.allProjects?.projects || []}
+              /> : ''
+              }
           </Col>
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
