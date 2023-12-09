@@ -146,15 +146,15 @@ describe('TaskEditSuggestions loading', () => {
   it('should render Loading when isLoading is true', async () => {
     const testStore = mockStore({ ...initialState, taskEditSuggestions: { ...initialState.taskEditSuggestions, isLoading: true}  });
     testStore.dispatch({ type: 'FETCH_TASK_EDIT_SUGGESTIONS_BEGIN' });
-    console.log(testStore.getState());
+    
     const state = testStore.getState()
-    console.log('Is Loading:', state.taskEditSuggestions.isLoading);
+    
     render(
       <Provider store={testStore}>
         <TaskEditSuggestions />
       </Provider>
     );
-    console.log('Is Loading:', state.taskEditSuggestions.isLoading);
+    
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toBeInTheDocument();
     }, { timeout: 1000 });
