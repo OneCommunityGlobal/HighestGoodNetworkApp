@@ -91,7 +91,6 @@ export const ENDPOINTS = {
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
   PRESETS_BY_ID: (roleNameOrPresetId) => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
-
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
   OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
 
