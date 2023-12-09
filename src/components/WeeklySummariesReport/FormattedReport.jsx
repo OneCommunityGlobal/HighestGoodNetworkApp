@@ -65,6 +65,7 @@ function FormattedReport({
   loadBadges,
   canEditTeamCode,
   auth,
+  canSeeBioHighlight,
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
 
@@ -82,6 +83,7 @@ function FormattedReport({
             canEditTeamCode={canEditTeamCode}
             badges={badges}
             loadBadges={loadBadges}
+            canSeeBioHighlight={canSeeBioHighlight}
           />
         ))}
       </ListGroup>
@@ -179,10 +181,16 @@ function ReportDetails({
   badges,
   loadBadges,
   canEditTeamCode,
+  canSeeBioHighlight,
 }) {
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const isMeetCriteria =
+    canSeeBioHighlight &&
+    summary.totalTangibleHrs > 80 &&
+    summary.daysInTeam > 60 &&
+    summary.bioPosted !== 'posted';
 
   return (
     <li className="list-group-item px-0" ref={ref}>
@@ -196,14 +204,14 @@ function ReportDetails({
               <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
             </ListGroupItem>
             <ListGroupItem>
-              <Bio
-                bioCanEdit={bioCanEdit}
-                userId={summary._id}
-                bioPosted={summary.bioPosted}
-                summary={summary}
-                totalTangibleHrs={summary.totalTangibleHrs}
-                daysInTeam={summary.daysInTeam}
-              />
+              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+                <Bio
+                  bioCanEdit={bioCanEdit}
+                  userId={summary._id}
+                  bioPosted={summary.bioPosted}
+                  summary={summary}
+                />
+              </div>
             </ListGroupItem>
             <ListGroupItem>
               <TotalValidWeeklySummaries
@@ -460,10 +468,9 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam }) {
+function BioSwitch({ userId, bioPosted, summary }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
-  const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
   // eslint-disable-next-line no-shadow
@@ -475,7 +482,7 @@ function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
   };
 
   return (
-    <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+    <div>
       <div className="bio-toggle">
         <b style={style}>Bio announcement:</b>
       </div>
