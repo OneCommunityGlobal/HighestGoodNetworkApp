@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { deleteTitleById, assignTitleToUser } from '../../../actions/title';
+import { deleteTitleById } from '../../../actions/title';
 import {
   Button,
   Modal,
