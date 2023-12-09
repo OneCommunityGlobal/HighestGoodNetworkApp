@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './Announcements.css';
 import { useDispatch } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
-import { sendEmail } from '../../actions/sendEmails';
+import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
 function Announcements() {
   const dispatch = useDispatch();
@@ -28,8 +28,16 @@ function Announcements() {
 
   const handleSendEmails = () => {
     const htmlContent = emailContent;
-    // console.log(htmlContent);
+    console.log(htmlContent);
+    console.log(emailList);
+    // Send the HTML content using your sendEmail function
+    dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
+  };
 
+    const handleBroadcastEmails = () => {
+    const htmlContent = emailContent;
+    console.log(htmlContent);
+    console.log(emailList);
     // Send the HTML content using your sendEmail function
     dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
   };
@@ -70,8 +78,11 @@ function Announcements() {
         <hr />
         Test Email:
         <input type="text" onChange={handleTestEmailChange} />
-        <button type="button" className="send-button" onClick={handleSendTestEmail}>
-          Send Test Email
+        <button type="button" className="send-button" onClick={handleSendEmails}>
+          Send Email
+        </button>
+        <button type="button" className="send-button" onClick={handleSendEmails}>
+          Broadcast Email
         </button>
       </div>
     </div>

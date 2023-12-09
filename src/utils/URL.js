@@ -91,6 +91,7 @@ export const ENDPOINTS = {
 
   // emails endpoint
   POST_EMAILS: `${APIEndpoint}/send-emails`,
+  BROADCAST_EMAILS: `${APIEndpoint}/broadcast-emails`,
 
   //reasons endpoints
   CREATEREASON: () => {
