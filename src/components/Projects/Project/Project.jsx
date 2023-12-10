@@ -42,100 +42,103 @@ const Project = props => {
 
   return (
     <table>
-      <tbody>
-        <tr className="projects__tr" id={'tr_' + props.projectId}>
-          <th className="projects__order--input" scope="row">
-            <div>{props.index + 1}</div>
-          </th>
-          <td className="projects__name--input">
-            {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
-              <input
-                type="text"
-                className="form-control"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                onBlur={updateProject}
-              />
-            ) : (
-              name
-            )}
-          </td>
-          <td className="projects__category--input">
-            {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
-              <select
-                data-testid="projects__category--input" //added for unit test
-                value={props.category}
-                onChange={e => {
-                  setCategory(e.target.value);
-                }}
-              >
-                <option default value="Unspecified">Unspecified</option>
-                <option value="Food">Food</option>
-                <option value="Energy">Energy</option>
-                <option value="Housing">Housing</option>
-                <option value="Education">Education</option>
-                <option value="Society">Society</option>
-                <option value="Economics">Economics</option>
-                <option value="Stewardship">Stewardship</option>
-                <option value="Other">Other</option>
-              </select>
-            ) : (
-              category
-            )}
-          </td>
-          <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
-            {props.active ? (
-              <div className="isActive">
-                <i className="fa fa-circle" aria-hidden="true"></i>
-              </div>
-            ) : (
-              <div className="isNotActive">
-                <i className="fa fa-circle-o" aria-hidden="true"></i>
-              </div>
-            )}
-          </td>
-          <td>
-            <NavItem tag={Link} to={`/inventory/${props.projectId}`}>
-              <button type="button" className="btn btn-outline-info" style={boxStyle}>
-                {' '}
-                <i className="fa fa-archive" aria-hidden="true"></i>
-              </button>
-            </NavItem>
-          </td>
-          <td>
-            <NavItem tag={Link} to={`/project/members/${props.projectId}`}>
-              <button type="button" className="btn btn-outline-info" style={boxStyle}>
-                {' '}
-                <i className="fa fa-users" aria-hidden="true"></i>
-              </button>
-            </NavItem>
-          </td>
-    
-          <td>
-            <NavItem tag={Link} to={`/project/wbs/${props.projectId}`}>
-              <button type="button" className="btn btn-outline-info" style={boxStyle}>
-                <i className="fa fa-tasks" aria-hidden="true"></i>
-              </button>
-            </NavItem>
-          </td>
-    
-          {(canDeleteProject || canSeeProjectManagementFullFunctionality) ? (
-            <td>
-              <button
-                data-testid="delete-button"
-                type="button"
-                className="btn btn-outline-danger"
-                onClick={e => props.onClickDelete(props.projectId, props.active, props.name)}
-                style={boxStyle}
-              >
-                {DELETE}
-              </button>
-            </td>
-          ) : null}
-        </tr>
-      </tbody>
+    <tbody>
+    <tr className="projects__tr" id={'tr_' + props.projectId}>
+      <th className="projects__order--input" scope="row">
+        <div>{props.index + 1}</div>
+      </th>
+      <td className="projects__name--input">
+        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+          <input
+            type="text"
+            className="form-control"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            onBlur={updateProject}
+          />
+        ) : (
+          name
+        )}
+      </td>
+      <td className="projects__category--input">
+        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+          <select
+            data-testid="projects__category--input" //added for unit test
+            value={props.category}
+            onChange={e => {
+              setCategory(e.target.value);
+            }}
+          >
+            <option default value="Unspecified">Unspecified</option>
+            <option value="Food">Food</option>
+            <option value="Energy">Energy</option>
+            <option value="Housing">Housing</option>
+            <option value="Education">Education</option>
+            <option value="Society">Society</option>
+            <option value="Economics">Economics</option>
+            <option value="Stewardship">Stewardship</option>
+            <option value="Other">Other</option>
+          </select>
+        ) : (
+          category
+        )}
+      </td>
+      <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
+        {props.active ? (
+          <div className="isActive">
+            <i className="fa fa-circle" aria-hidden="true"></i>
+          </div>
+        ) : (
+          <div className="isNotActive">
+            <i className="fa fa-circle-o" aria-hidden="true"></i>
+          </div>
+        )}
+      </td>
+      <td>
+        <NavItem tag={Link} to={`/inventory/${props.projectId}`}>
+          <button type="button" className="btn btn-outline-info" style={boxStyle}>
+            {' '}
+            <i className="fa fa-archive" aria-hidden="true"></i>
+          </button>
+        </NavItem>
+      </td>
+      <td>
+        <NavItem tag={Link} to={`/project/members/${props.projectId}`}>
+          <button type="button" className="btn btn-outline-info" style={boxStyle}>
+            {' '}
+            <i className="fa fa-users" aria-hidden="true"></i>
+          </button>
+        </NavItem>
+      </td>
+
+      <td>
+        <NavItem tag={Link} to={`/project/wbs/${props.projectId}`}>
+          <button type="button" className="btn btn-outline-info" style={boxStyle}>
+            <i className="fa fa-tasks" aria-hidden="true"></i>
+          </button>
+        </NavItem>
+      </td>
+
+      {(canDeleteProject || canSeeProjectManagementFullFunctionality) ? (
+        <td>
+          <button
+            data-testid="delete-button"
+            type="button"
+            className="btn btn-outline-danger"
+            onClick={e => props.onClickDelete(props.projectId, props.active, props.name)}
+            style={boxStyle}
+          >
+            {DELETE}
+          </button>
+        </td>
+      ) : null}
+    </tr>
+    </tbody>
     </table>
   );
 };
+const mapStateToProps = state => state;
+export default connect(mapStateToProps, { hasPermission })(Project);
+
 const mapStateToProps = state => state;
 export default connect(mapStateToProps, { hasPermission })(Project);
