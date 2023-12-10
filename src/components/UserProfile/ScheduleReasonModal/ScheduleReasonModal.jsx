@@ -6,8 +6,17 @@ import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import { useEffect } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
-import { boxStyle } from 'styles';
+import { boxStyle } from 'styles'
 import   './ScheduleReasonModal.css';
+import FAQ_Modal  from '../BlueSquares/BlueSquaresFAQ_Modal/BlueSquaresFAQ_Modal';
+//import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+
+
+import './UserProfile.scss';
+import './UserProfileEdit/UserProfileEdit.scss';
+import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
+
+
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -93,9 +102,17 @@ const ScheduleReasonModal = ({
           ) : null}
         </Modal.Body>
         <Modal.Footer>
-        <Button variant="success" title="Function coming" onClick={handleClose} style={boxStyle}>
+        <Button variant="success" title="FAQ" onClick={handleClose} style={boxStyle}>
            FAQ
           </Button>
+          <div align = "right">
+            <FAQ_Modal
+                  areaName="blueSquares_info"
+                  areaTitle="Blue Squares"
+                  fontSize={24}
+                  isPermissionPage
+                />
+          </div>
          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
