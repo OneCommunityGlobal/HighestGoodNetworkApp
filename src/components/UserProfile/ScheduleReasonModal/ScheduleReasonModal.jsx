@@ -12,9 +12,6 @@ import FAQ_Modal  from '../BlueSquares/BlueSquaresFAQ_Modal/BlueSquaresFAQ_Modal
 //import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 
-import './UserProfile.scss';
-import './UserProfileEdit/UserProfileEdit.scss';
-import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 
 
 
@@ -106,12 +103,12 @@ const ScheduleReasonModal = ({
            FAQ
           </Button>
           <div align = "right">
-            <FAQ_Modal
+            {/* <FAQ_Modal
                   areaName="blueSquares_info"
                   areaTitle="Blue Squares"
                   fontSize={24}
                   isPermissionPage
-                />
+                /> */}
           </div>
          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
