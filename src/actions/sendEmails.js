@@ -53,3 +53,28 @@ export const broadcastEmailsToAll = (subject, html) => {
     }
   };
 };
+
+export const updateEmailSubscription = (subscription=true) => {
+  const url = ENDPOINTS.UPDATE_EMAIL_SUBSCRIPTION;
+
+  return async () => {
+    try {
+      const response = await axios.post(url, { subscription});
+      console.log('Email sent successfully:', response);
+
+      // Display a success toast
+      toast.success('Successfully changed email subcription', {
+        position: 'top-center', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    } catch (error) {
+      console.error('Error sending email:', error);
+
+      // Display an error toast
+      toast.error('Error sending request', {
+        position: 'top-center', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    }
+  };
+};
