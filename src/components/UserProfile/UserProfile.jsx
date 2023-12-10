@@ -845,6 +845,7 @@ function UserProfile(props) {
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleSubmit}
+              isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} //
             />
           </Col>
         </Row>

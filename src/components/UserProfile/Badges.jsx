@@ -25,6 +25,7 @@ export const Badges = props => {
   const [isAssignOpen, setAssignOpen] = useState(false);
   const canAssignBadges = props.hasPermission('assignBadges');
 
+  const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable;
   const toggle = () => setOpen(!isOpen);
 
   const assignToggle = () => {
@@ -73,7 +74,7 @@ export const Badges = props => {
               </span>
         
             <div >
-              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
+              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator' ) && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
                     Select Featured
@@ -92,12 +93,13 @@ export const Badges = props => {
                         setOriginalUserProfile={props.setOriginalUserProfile}
                         handleSubmit={props.handleSubmit}
                         isUserSelf={props.isUserSelf}
+                        isRecordBelongsToJaeAndUneditable = {isRecordBelongsToJaeAndUneditable}
                       />
                     </ModalBody>
                   </Modal>
                 </>
               )}
-              {canAssignBadges && (
+              {canAssignBadges && !isRecordBelongsToJaeAndUneditable && (
                 <>
                   <Button
                     className="btn--dark-sea-green mr-2"
