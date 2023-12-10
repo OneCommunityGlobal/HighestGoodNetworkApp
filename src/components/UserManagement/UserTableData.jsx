@@ -91,6 +91,10 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
+            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
+              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+              return;
+            }
             onReset(true);
             props.onPauseResumeClick(
               props.user,
@@ -107,6 +111,10 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
+            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
+              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+              return;
+            }
             props.onFinalDayClick(
               props.user,
               props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,

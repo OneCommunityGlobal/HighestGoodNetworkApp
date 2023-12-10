@@ -32,7 +32,7 @@ const AssignBadge = props => {
   const [isOpen, setOpen] = useState(false);
   const [firstSuggestions, setFirstSuggestions] = useState([]);
   const [lastSuggestions, setLastSuggestions] = useState([]);
-
+  console.log(props);
   useEffect(() => {
     props.getAllUserProfile();
     props.clearNameAndSelected();
@@ -98,6 +98,9 @@ const AssignBadge = props => {
   }
 
   const toggle = (didSubmit = false) => {
+    // Check if records belongs to Jae
+
+
     const { firstName, lastName, selectedBadges } = props;
     if (isOpen && didSubmit === true) {
       props.assignBadges(firstName, lastName, selectedBadges);

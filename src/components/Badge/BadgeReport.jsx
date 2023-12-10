@@ -269,7 +269,8 @@ const BadgeReport = props => {
 
   const saveChanges = async () => {
     if(isRecordBelongsToJaeAndUneditable){
-      setModalShow(true);
+      // setModalShow(true);
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
     let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
