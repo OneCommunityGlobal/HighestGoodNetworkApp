@@ -5,11 +5,9 @@ export async function addTitle(titleData) {
   try {
     const url = ENDPOINTS.CREATE_NEW_TITLE();
     const response = await axios.post(url, titleData);
-    console.log(response)
     return Promise.resolve(response);
 
   } catch (error) {
-      console.log(error)
       return {message: error.response.data.message, errorCode: error.response.data.message, status: error.response.status}
   }
 }
@@ -20,7 +18,6 @@ export async function getAllTitle() {
     const response = await axios.get(url);
     return Promise.resolve(response)
   } catch (error) {
-    console.log(error)
     return {message: error.response.data.message, errorCode: error.response.data.message, status: error.response.status}
   }
 }
