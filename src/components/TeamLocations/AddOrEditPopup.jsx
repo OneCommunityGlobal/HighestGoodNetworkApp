@@ -9,9 +9,9 @@ import { createLocation, editLocation } from 'services/mapLocationsService';
 import { useEffect } from 'react';
 
 const initialLocationData = {
-  firstName: 'Prior to HGN Data Collection',
-  lastName: 'Prior to HGN Data Collection',
-  jobTitle: 'Prior to HGN Data Collection',
+  firstName: '',
+  lastName: '',
+  jobTitle: '',
   location: {
     userProvided: '',
     coords: {
