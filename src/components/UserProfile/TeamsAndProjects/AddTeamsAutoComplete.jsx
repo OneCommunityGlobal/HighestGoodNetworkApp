@@ -38,6 +38,7 @@ const AddTeamsAutoComplete = React.memo(props => {
         >
           {props.teamsData.allTeams
             .filter(team => {
+              console.log('props.searchText', props.searchText);
               if (team.teamName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1) {
                 return team;
               }
@@ -57,7 +58,7 @@ const AddTeamsAutoComplete = React.memo(props => {
               </div>
             ))}
             
-            {props.teamsData.allTeams.every(team => team.teamName.toLowerCase() !== props.searchText.toLowerCase()) && (
+            {!props.addLostHour && props.teamsData.allTeams.every(team => team.teamName.toLowerCase() !== props.searchText.toLowerCase()) && (
               <div
                 className="team-auto-complete"
                 onClick={() => {

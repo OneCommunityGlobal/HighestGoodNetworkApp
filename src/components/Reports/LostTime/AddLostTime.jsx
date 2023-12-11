@@ -36,6 +36,8 @@ const AddLostTime = props => {
   const [selectedTeam, setSelectTeam] = useState(undefined);
   const [selectedProject, setSelectProject] = useState(undefined);
   const [searchText, setSearchText] = useState('');
+  const [searchTeamText, setSearchTeamText] = useState('');
+  const [newTeamName, setNewTeamName] = useState('');
 
   const [errors, setErrors] = useState({});
 
@@ -125,7 +127,12 @@ const AddLostTime = props => {
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
+            setNewTeamName={setNewTeamName} 
+            newTeamName={newTeamName}
             selectedTeam={selectedTeam}
+            searchText={searchTeamText}
+            setSearchText={setSearchTeamText}
+            addLostHour={true}
           />
           {'teamId' in errors && (
             <div className="text-danger">
@@ -155,6 +162,9 @@ const AddLostTime = props => {
     if (searchText != '') {
       setSearchText('');
     }
+    if (searchTeamText != '') {
+      setSearchTeamText('');
+    }
     if (!isEqual(errors, {})) {
       setErrors({});
     }
@@ -164,6 +174,7 @@ const AddLostTime = props => {
     setInputs(initialForm);
     setEntryType('');
     setSearchText('');
+    setSearchTeamText('');
     setErrors({});
   }
   const handleCancel = closed => {

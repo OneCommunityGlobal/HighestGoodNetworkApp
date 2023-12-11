@@ -88,16 +88,10 @@ const EditHistoryModal = props => {
       return (
         <FormGroup>
           <Label>Project Name</Label>
-          <AddProjectsAutoComplete
-            projectsData={props.allData}
-            onDropDownSelect={selectData}
-            selectedProject={selectedData}
+          <Input
+            defaultValue={selectedData.projectName}
+            disabled
           />
-          {'projectId' in errors && (
-            <div className="text-danger">
-              <small>{errors.projectId}</small>
-            </div>
-          )}
         </FormGroup>
       )
     } else if (props.entryType == 'person') {
@@ -105,17 +99,10 @@ const EditHistoryModal = props => {
         <>
           <FormGroup>
             <Label>Name</Label>
-            <MemberAutoComplete
-              userProfileData={{userProfiles: props.allData}}
-              onAddUser={selectData}
-              searchText={searchText}
-              setSearchText={setSearchText}
+            <Input
+              defaultValue={searchText}
+              disabled
             />
-            {'personId' in errors && (
-              <div className="text-danger">
-                <small>{errors.personId}</small>
-              </div>
-            )}
           </FormGroup>
         </>
       )
@@ -123,16 +110,10 @@ const EditHistoryModal = props => {
       return (
         <FormGroup>
           <Label>Team Name</Label>
-          <AddTeamsAutoComplete
-            teamsData={{allTeams: props.allData}}
-            onDropDownSelect={selectData}
-            selectedTeam={selectedData}
+          <Input
+            defaultValue={selectedData.teamName}
+            disabled
           />
-          {'teamId' in errors && (
-            <div className="text-danger">
-              <small>{errors.teamId}</small>
-            </div>
-          )}
         </FormGroup>
       )
     } else {
