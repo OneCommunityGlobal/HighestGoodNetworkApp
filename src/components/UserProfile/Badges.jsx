@@ -99,7 +99,7 @@ export const Badges = props => {
                   </Modal>
                 </>
               )}
-              {canAssignBadges && !isRecordBelongsToJaeAndUneditable && (
+              {canAssignBadges && (
                 <>
                   <Button
                     className="btn--dark-sea-green mr-2"

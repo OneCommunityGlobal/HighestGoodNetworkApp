@@ -32,8 +32,6 @@ import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { Table } from 'react-bootstrap';
 import SetupNewUserPopup from './setupNewUserPopup';
-import { MODAL_TITLE_WARNING, MODAL_CONTENT_WARNING_ONLY_JAE_EDITABLE } from '../../constants/popupModal';
-import InfoModal from '../../components/shared/InfoModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 
 class UserManagement extends React.PureComponent {
@@ -57,7 +55,6 @@ class UserManagement extends React.PureComponent {
       isPaused: false,
       finalDayDateOpen: false,
       setupNewUserPopupOpen: false,
-      modalShow: false,
     };
   }
 
@@ -65,12 +62,6 @@ class UserManagement extends React.PureComponent {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
   }
-
-  // toggleModal = (show) => {
-  //   this.setState(() => ({
-  //     modalShow: show,
-  //   }));
-  // };
 
   render() {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
@@ -84,7 +75,6 @@ class UserManagement extends React.PureComponent {
           <SkeletonLoading template="UserManagement" />
         ) : (
           <React.Fragment>
-            <InfoModal title={MODAL_TITLE_WARNING} bodyContent={MODAL_CONTENT_WARNING_ONLY_JAE_EDITABLE} show={this.props.state.modalShow} onHide={() => toggleModal(false)} />
             {this.popupElements()}
             <UserSearchPanel
               onSearch={this.onWildCardSearch}
@@ -181,12 +171,6 @@ class UserManagement extends React.PureComponent {
   };
 
 
-  toggleModal = (show) => {
-    this.setState(() => ({
-      modalShow: show,
-    }));
-  };
-
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
@@ -231,7 +215,6 @@ class UserManagement extends React.PureComponent {
               user={user}
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
-              toggleModal={that.toggleModal}
             />
           );
         });
@@ -299,7 +282,7 @@ class UserManagement extends React.PureComponent {
 
   onFinalDayClick = (user, status) => {
     if(cantUpdateDevAdminDetails(user.email , this.props.state.userProfile.email)) {
-      this.toggleModal(true);
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
     if (status === FinalDay.NotSetFinalDay) {
@@ -363,12 +346,6 @@ class UserManagement extends React.PureComponent {
   onActiveInactiveClick = user => {
     const authRole = this?.props?.state?.auth?.user.role||user.role
     const canChangeUserStatus = hasPermission('changeUserStatus');
-    if (!canChangeUserStatus) {
-      //permission to change the status of any user on the user profile page or User Management Page.
-      //By default only Admin and Owner can access the user management page and they have this permission.
-      alert('You are not authorized to change the active status.');
-      return;
-    }
     if (cantDeactivateOwner(user, authRole)) {
       //Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');
@@ -408,10 +385,6 @@ class UserManagement extends React.PureComponent {
    * Call back on delete button clic and triggering the delete action.
    */
   onDeleteButtonClick = user => {
-    if(cantUpdateDevAdminDetails(user.email , this.props.state.userProfile.email)) {
-      this.toggleModal(true);
-      return;
-    }
     this.setState({
       deletePopupOpen: true,
       selectedUser: user,

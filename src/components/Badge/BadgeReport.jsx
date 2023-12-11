@@ -42,9 +42,6 @@ const BadgeReport = props => {
 
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
-  const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable;
-  // Show warning info modal if user is not allowed to edit badges
-  const [modalShow, setModalShow] = useState(false);
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
@@ -266,11 +263,6 @@ const BadgeReport = props => {
   };
 
   const saveChanges = async () => {
-    // if(isRecordBelongsToJaeAndUneditable){
-    //   // setModalShow(true);
-    //   alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
-    //   return;
-    // }
     let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
@@ -292,7 +284,6 @@ const BadgeReport = props => {
 
   return (
     <div>
-      <InfoModal title={MODAL_TITLE_WARNING} bodyContent={MODAL_CONTENT_WARNING_ONLY_JAE_EDITABLE} show={modalShow} onHide={() => setModalShow(false)} />
       <div className="desktop">
         <div style={{ overflowY: 'scroll', height: '75vh' }}>
           <Table>

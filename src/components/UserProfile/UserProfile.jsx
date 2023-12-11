@@ -56,6 +56,7 @@ import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
+import { setCurrentUser } from '../../actions/authActions';
 
 function UserProfile(props) {
   /* Constant values */
@@ -109,9 +110,12 @@ function UserProfile(props) {
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
 
+  const [loginUserEmail, setLoginUserEmail] = useState('');
+
   /* useEffect functions */
   useEffect(() => {
     loadUserProfile();
+    getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
   }, []);
@@ -280,6 +284,17 @@ function UserProfile(props) {
 
   //   setSummaryIntro(summaryIntroString);
   // };
+
+  const getCurretLoggedinUserEmail = async () => {
+    const userId = props?.auth?.user?.userid;
+    try{
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const currentUserEmail = response.data.email;
+      dispatch(setCurrentUser({...props.auth.user, email: currentUserEmail}));
+    }catch (err) {
+      toast.error('Error while getting current logged in user email');
+    }
+  };
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
@@ -551,7 +566,7 @@ function UserProfile(props) {
 
   /* useEffect functions */
   useEffect(() => {
-    getTeamMembersWeeklySummary();
+    getTeamMembersWeeklySummary(); 
     loadUserProfile();
   }, []);
 
@@ -623,7 +638,8 @@ function UserProfile(props) {
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
-  const authEmail = props.userProfile?.email;
+  /**  Login User's email */
+  const authEmail = props.auth?.user?.email;
   const isUserSelf = targetUserId === requestorId;
 
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
@@ -633,7 +649,6 @@ function UserProfile(props) {
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
-  const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
@@ -1053,9 +1068,9 @@ function UserProfile(props) {
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
                         <Link
-                          to={selfIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
+                          to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
                           onClick={() => {
-                            if (selfIsDevAdminUneditable) {
+                            if (targetIsDevAdminUneditable) {
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                                   'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -1355,9 +1370,9 @@ function UserProfile(props) {
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
                 <Link
-                  to={selfIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
+                  to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
                   onClick={() => {
-                    if (selfIsDevAdminUneditable) {
+                    if (targetIsDevAdminUneditable) {
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                           'You shouldn’t even be using this account except to create your own accounts to use. ' +
