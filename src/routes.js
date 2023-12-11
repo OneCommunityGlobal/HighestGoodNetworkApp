@@ -196,11 +196,6 @@ export default (
           component={Teams}
           fallback
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-        />
-        <ProtectedRoute
-          path="/teams"
-          exact
-          component={Teams}
           routePermissions={RoutePermissions.teams}
         />
 
