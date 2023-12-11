@@ -527,6 +527,17 @@ function UserProfile(props) {
       alert('An error occurred while attempting to save this profile.');
     }
   };
+ 
+  // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit. 
+  // AssignBadgePopup already has onSubmit action to call an API to update the user badges. 
+  // Using handleSubmit will trigger actopms to call the assignBadge API and updateUserProfile API, which is redundant.
+  const handleBadgeSubmit = async () => {
+    try {
+      setSaved(false);
+    } catch (err) {
+      alert('An error occurred while reload user profile after badge udpate.');
+    }
+  };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
 
@@ -859,7 +870,7 @@ function UserProfile(props) {
               setOriginalUserProfile={setOriginalUserProfile}
               role={requestorRole}
               canEdit={canEdit}
-              handleSubmit={handleSubmit}
+              handleSubmit={handleBadgeSubmit}
               isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} //
             />
           </Col>

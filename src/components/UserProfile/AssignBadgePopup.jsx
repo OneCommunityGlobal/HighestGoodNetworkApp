@@ -10,29 +10,43 @@ import {
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { boxStyle } from 'styles';
+import { toast } from 'react-toastify';
+import { updateLocale } from 'moment';
 
 const AssignBadgePopup = props => {
   const [searchedName, setSearchedName] = useState('');
   const [badgeList, setBadgeList] = useState([]);
+  // Added state to disable confirm button while updating.
+  const [shouldConfirmButtonDisable, setConfirmButtonDisable] = useState(false);
 
   const onSearch = text => {
     setSearchedName(text);
   };
 
+  // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
+    if(props.isRecordBelongsToJaeAndUneditable){
+      alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.");
+      return;
+    }
     try {
+      setConfirmButtonDisable(true);
       await props.assignBadgesByUserID(props.userProfile._id, props.selectedBadges);
       const response = await axios.get(ENDPOINTS.USER_PROFILE(props.userProfile._id));
       props.setUserProfile({
         ...props.userProfile,
         badgeCollection: response.data.badgeCollection,
       });
+      toast.success('Badge update successfully');
     } catch (e) {
       //TODO: Proper error handling.
+      toast.error('Badge uodate failed');
     }
+    setConfirmButtonDisable(false);
     props.handleSubmit();
     props.close();
   };
+
   useEffect(() => {
     loadAllBadges();
   }, []);
@@ -102,8 +116,9 @@ const AssignBadgePopup = props => {
         className="btn--dark-sea-green float-right"
         style={{ ...boxStyle, margin: 5 }}
         onClick={assignBadges}
+        disabled={shouldConfirmButtonDisable}
       >
-        Confirm
+        {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'} 
       </Button>
     </div>
   );

@@ -594,6 +594,9 @@ const BadgeReport = props => {
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
             onClick={e => {
+              if(props.isRecordBelongsToJaeAndUneditable){
+                alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.");
+              }
               saveChanges();
             }}
           >

@@ -25,7 +25,8 @@ export const Badges = props => {
   const [isAssignOpen, setAssignOpen] = useState(false);
   const canAssignBadges = props.hasPermission('assignBadges');
 
-  const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable;
+  // Added restriction: Jae's badges only editable by Jae or Owner
+  const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable || props.role == 'Owner';
   const toggle = () => setOpen(!isOpen);
 
   const assignToggle = () => {
@@ -117,6 +118,7 @@ export const Badges = props => {
                         setUserProfile={props.setUserProfile}
                         close={assignToggle}
                         handleSubmit={props.handleSubmit}
+                        isRecordBelongsToJaeAndUneditable = {isRecordBelongsToJaeAndUneditable}
                       />
                     </ModalBody>
                   </Modal>
