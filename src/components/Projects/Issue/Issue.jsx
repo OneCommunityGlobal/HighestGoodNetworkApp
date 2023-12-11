@@ -15,7 +15,7 @@ const Issue = (props) => {
     "Description the issue as detailed as possible.\n (minimum 100 characters)\n • What happened?\n • Who's involved\n • How did it happen?\n • What was the immediate action taken?\n • If there were any witnesses, who are they?\n";
   const RESOLVED = 'Resolved?';
   const DESCRIPTION = 'Description:';
-  const defaultOption = 'Safety';
+  const defaultOption = 'Labor';
   const maxDescriptionCharacterLimit = 500;
   const history = useHistory();
 
@@ -39,7 +39,7 @@ const Issue = (props) => {
 
   const [formData, setFormData] = useState({
     dateOfWork: '',
-    dropdown: '',
+    dropdown: defaultOption,
     checkboxes: new Set(),
     other: '',
     resolved: '',
@@ -52,19 +52,17 @@ const Issue = (props) => {
     (index, option) => () => {
       setFormData((prevFormData) => {
         const newCheckboxes = new Set(prevFormData.checkboxes);
-  
-        // Toggle the presence of the option in the set
+
         if (newCheckboxes.has(option)) {
           newCheckboxes.delete(option);
         } else {
           newCheckboxes.add(option);
         }
-  
-        // Return the updated form data
+
         return { ...prevFormData, checkboxes: newCheckboxes };
       });
     },
-    [] // Empty dependency array
+    [],
   );
 
   const handleDescriptionChange = (e) => {
@@ -92,45 +90,44 @@ const Issue = (props) => {
   };
 
   const validateData = (currentFormData) => {
-    let isValid = true;
-
     if (!formData.dateOfWork) {
       console.log('Date of Work is required');
-      return;
+      return false;
     }
 
     if (!formData.dropdown) {
       console.log('Issue Type is required');
-      return;
+      return false;
     }
 
-    if (!formData.checkboxes) {
+    if (formData.checkboxes.size == 0) {
       console.log('Consequence(s) is required');
-      return;
+      return false;
     }
 
-    // figure out other text option
+    if (formData.checkboxes && formData.checkboxes.has('Other') && formData.other.length == 0) {
+      console.log('Other is required');
+      return false;
+    }
 
     if (!formData.resolved) {
       console.log('Resolved is required');
-      return;
+      return false;
     }
 
-    if (!formData.description) {
+    if (formData.description.length == 0) {
       console.log('Description is required');
-      return;
+      return false;
     }
 
-    console.log('Form submitted with data: ', currentFormData);
+    console.log('Form submitted with data: ', JSON.stringify(currentFormData));
 
-    return isValid;
+    return true;
   };
 
-  const handleDropdownChange = (event) => {
-    const currentDropdownOption = event.target.value;
-    console.log('event.target.value: ', currentDropdownOption);
-    setFormData({ ...formData, dropdown: currentDropdownOption, checkboxes: new Set()});
-    changeCheckboxOption(currentDropdownOption);
+  const handleDropdownChange = (option) => {
+    setFormData({ ...formData, dropdown: option, checkboxes: new Set(), other: '' });
+    changeCheckboxOption(option);
   };
 
   const changeCheckboxOption = (selectedOption) => {
@@ -168,8 +165,9 @@ const Issue = (props) => {
   };
 
   useEffect(() => {
-    // Run this once during initialization to set default checkbox options.
+    // Run this once during initialization to set default dropdown/checkbox options.
     createAndSetCheckboxOptionPairArray(safetyCheckboxOptions);
+    handleDropdownChange(defaultOption);
   }, []);
 
   return (
@@ -177,7 +175,7 @@ const Issue = (props) => {
       <h4 className="issue-title-text">{ISSUE_FORM_HEADER}</h4>
       <Form>
         <FormGroup>
-          <Row>
+          <Row className="issue-date">
             <Col>
               <Label className="sub-title-text">{ISSUE_DATE}</Label>
             </Col>
@@ -192,38 +190,42 @@ const Issue = (props) => {
             </Col>
           </Row>
         </FormGroup>
-        <Row className="red-text">{NOTE}</Row>
+        <Row>
+          <Label className="red-text">{NOTE}</Label>
+        </Row>
         <FormGroup>
-          <Row style={{ justifyContent: 'left' }}>
-            <Label for="dropdownExample" className="sub-title-text">
-              {ISSUE_TYPE}
-            </Label>
-          </Row>
-          <Row>
-            <Input
-              className="issue-form-override-css"
-              type="select"
-              name="dropdown"
-              id="dropdownExample"
-              onChange={handleDropdownChange}
-            >
-              {dropdownOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </Input>
-          </Row>
-        </FormGroup>
-        <FormGroup check>
           <Row>
             <Col>
-              <Label className="sub-title-text text-start">{CONSEQUENCES_TITLE}</Label>
+              <Label className="sub-title-text">{ISSUE_TYPE}</Label>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Input
+                className="issue-form-override-css"
+                type="select"
+                name="dropdown"
+                value={formData.dropdown}
+                onChange={(e) => handleDropdownChange(e.target.value)}
+              >
+                {dropdownOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </Input>
+            </Col>
+          </Row>
+        </FormGroup>
+        <FormGroup>
+          <Row>
+            <Col>
+              <Label className="sub-title-text">{CONSEQUENCES_TITLE}</Label>
             </Col>
           </Row>
           <Row>
             {checkboxOptions.map((pair, rowIndex) => (
-              <Row key={rowIndex}>
+              <Row key={rowIndex} className="consequences-checkboxes">
                 {pair.map((option, colIndex) => (
                   <Col key={colIndex}>
                     <Label check>
@@ -255,8 +257,8 @@ const Issue = (props) => {
               <Label className="sub-title-text">{RESOLVED}</Label>
             </Col>
           </Row>
-          <Row className='issue-radio-buttons'>
-            <Col className='issue-radio-buttons'>
+          <Row className="issue-radio-buttons">
+            <Col className="issue-radio-buttons">
               <Label check>
                 <Input
                   type="radio"
@@ -266,7 +268,7 @@ const Issue = (props) => {
                 Yes
               </Label>
             </Col>
-            <Col className='issue-radio-buttons'>
+            <Col className="issue-radio-buttons">
               <Label check>
                 <Input
                   type="radio"
@@ -289,8 +291,7 @@ const Issue = (props) => {
           <Row className="position-relative">
             <Col>
               <Input
-                className="issue-form-override-css"
-                style={{ marginBottom: '1em' }}
+                className="issue-form-override-css row-margin-bottom"
                 type="textarea"
                 placeholder={DESCRIPTION_PLACEHOLDER}
                 value={formData.description}
@@ -302,8 +303,6 @@ const Issue = (props) => {
               {characterCount}/{maxDescriptionCharacterLimit}
             </div>
           </Row>
-          {/* <Row className='character-counter-text position-absolute bottom-0 right-0'>
-          </Row> */}
         </FormGroup>
         <FormGroup>
           <Row className="text-center">
