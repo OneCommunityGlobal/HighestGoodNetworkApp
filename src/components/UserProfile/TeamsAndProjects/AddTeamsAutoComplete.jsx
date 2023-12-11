@@ -38,7 +38,6 @@ const AddTeamsAutoComplete = React.memo(props => {
         >
           {props.teamsData.allTeams
             .filter(team => {
-              console.log('props.searchText', props.searchText);
               if (team.teamName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1) {
                 return team;
               }
