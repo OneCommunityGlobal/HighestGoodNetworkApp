@@ -19,7 +19,7 @@ const mockallBadgeData = [
   { _id: '6', badgeName: 'Most Hours in A Week' },
 ];
 
-const mockToggle = jest.fn();
+const mockSubmit = jest.fn();
 
 const renderComponent = () => {
   const store = mockStore({
@@ -28,7 +28,7 @@ const renderComponent = () => {
 
   return render(
     <Provider store={store}>
-      <AssignBadgePopup allBadgeData={mockallBadgeData} toggle={mockToggle} />
+      <AssignBadgePopup allBadgeData={mockallBadgeData} submit={mockSubmit} />
     </Provider>,
   );
 };
@@ -97,6 +97,6 @@ describe('AssignBadgePopup component', () => {
     renderComponent();
     const buttonElement = screen.getByRole('button');
     fireEvent.click(buttonElement);
-    expect(mockToggle).toHaveBeenCalled();
+    expect(mockSubmit).toHaveBeenCalled();
   });
 });
