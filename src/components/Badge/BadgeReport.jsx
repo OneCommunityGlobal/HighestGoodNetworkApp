@@ -32,8 +32,6 @@ import hasPermission from '../../utils/permissions';
 import './BadgeReport.css';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
-import InfoModal from '../shared/InfoModal';
-import { MODAL_TITLE_WARNING, MODAL_CONTENT_WARNING_ONLY_JAE_EDITABLE } from '../../constants/popupModal';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -268,11 +266,11 @@ const BadgeReport = props => {
   };
 
   const saveChanges = async () => {
-    if(isRecordBelongsToJaeAndUneditable){
-      // setModalShow(true);
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
-      return;
-    }
+    // if(isRecordBelongsToJaeAndUneditable){
+    //   // setModalShow(true);
+    //   alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+    //   return;
+    // }
     let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
