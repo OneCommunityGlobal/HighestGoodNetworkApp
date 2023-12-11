@@ -80,7 +80,7 @@
   color: #2E5061 !important;
 }
 
-.modal-open {
+/* .modal-open {
   padding-right: 0 !important;
 }
 
@@ -90,7 +90,7 @@
 
 .modal-body {
   padding: 0 !important;
-}
+} */
 
 .updateModalContainer {
   overflow-y: scroll;

@@ -35,7 +35,7 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
 
   useEffect(() => {
     if (project.value !== '0') {
-      const _materials = materials.filter(mat => mat.project.name === project.label);
+      const _materials = materials.filter(mat => mat.project?.name === project.label);
       setMaterialsState(_materials);
     } else {
       setMaterialsState([...materials]);
