@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import config from '../../config.json';
-import ReactTooltip from 'react-tooltip';
-import axios from 'axios';
-import jwtDecode from 'jwt-decode';
+//import ReactTooltip from 'react-tooltip';
 import { ENDPOINTS } from '../../utils/URL'; // Update the path accordingly
 import { connect, useSelector, useDispatch } from 'react-redux';
 import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth';
 import { boxStyle } from 'styles';
-import { refreshToken } from '../../actions/authActions';
 import httpService from 'services/httpService';
 import{ getUserInfo } from '../../utils/permissions';
 
