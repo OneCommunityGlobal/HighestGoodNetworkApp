@@ -108,7 +108,7 @@
   padding-bottom: 0.5rem;
   font-size: 1.2rem;
   font-weight: 500;
-  cursor: pointer;
+  cursor: pointer; 
   display: flex;
   align-items: center;
 }
