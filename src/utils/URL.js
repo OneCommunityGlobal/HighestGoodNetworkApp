@@ -81,7 +81,7 @@ export const ENDPOINTS = {
     `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
 
   ROLES: () => `${APIEndpoint}/roles`,
-  ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
+  ROLES_BY_IgD: roleId => `${APIEndpoint}/roles/${roleId}`,
 
   //titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
