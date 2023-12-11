@@ -34,7 +34,6 @@ import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
-// import InfoModal from './InfoModal';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
 import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 import SaveButton from './UserProfileEdit/SaveButton';
@@ -83,7 +82,6 @@ function UserProfile(props) {
   const [originalProjects, setOriginalProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
-  // const [infoModal, setInfoModal] = useState(false);
   const [formValid, setFormValid] = useState(initialFormValid);
   const [blueSquareChanged, setBlueSquareChanged] = useState(false);
   const [type, setType] = useState('');
@@ -541,10 +539,6 @@ function UserProfile(props) {
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
 
-  // const toggleInfoModal = () => {
-  //   setInfoModal(!infoModal);
-  // };
-
   const toggleTab = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
@@ -660,7 +654,7 @@ function UserProfile(props) {
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
-
+ 
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner'
@@ -722,7 +716,6 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      {/* <InfoModal isOpen={infoModal} toggle={toggleInfoModal} /> */}
       <Container className="emp-profile">
         <Row>
           <Col md="4" id="profileContainer">

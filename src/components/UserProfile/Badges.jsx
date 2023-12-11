@@ -26,7 +26,7 @@ export const Badges = props => {
   const canAssignBadges = props.hasPermission('assignBadges');
 
   // Added restriction: Jae's badges only editable by Jae or Owner
-  const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable || props.role == 'Owner';
+  const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
   const toggle = () => setOpen(!isOpen);
 
   const assignToggle = () => {
