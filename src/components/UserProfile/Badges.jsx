@@ -44,7 +44,7 @@ export const Badges = props => {
     }
     return acc + Math.round(Number(badge.count));
   }, 0);
-  
+
   const subject = props.isUserSelf ? 'You have' : 'This person has';
   const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
