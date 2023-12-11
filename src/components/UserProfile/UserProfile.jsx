@@ -108,7 +108,6 @@ function UserProfile(props) {
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
 
-  const [loginUserEmail, setLoginUserEmail] = useState('');
 
   /* useEffect functions */
   useEffect(() => {
@@ -984,11 +983,11 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
-                  edit={canEdit}
+                  edit={canEdit || targetIsDevAdminUneditable}
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                  canEditVisibility={canEdit && userProfile.role != 'Volunteer' && targetIsDevAdminUneditable}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
@@ -996,7 +995,7 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
-                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner' || targetIsDevAdminUneditable}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
