@@ -23,7 +23,7 @@ import TotalProjectReport from './TotalReport/TotalProjectReport';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-
+import { searchWithAccent } from 'utils/search';
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
@@ -128,13 +128,11 @@ class ReportsPage extends Component {
       // Applying the search filters before creating each team table data element
       if (
         (project.projectName &&
-          project.projectName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
+          searchWithAccent(project.projectName,this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          project.projectName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
+        searchWithAccent(project.projectName,this.state.wildCardSearchText))
       ) {
         return project;
       }
@@ -149,11 +147,11 @@ class ReportsPage extends Component {
       // Applying the search filters before creating each team table data element
       if (
         (team.teamName &&
-          team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1 &&
+          searchWithAccent(team.teamName, this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1)
+        searchWithAccent(team.teamName, this.state.wildCardSearchText))
       ) {
         return team;
       }
@@ -168,17 +166,14 @@ class ReportsPage extends Component {
       // Applying the search filters before creating each team table data element
       if (
         (userProfile.firstName &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
+          searchWithAccent(userProfile.firstName, this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1) ||
+           searchWithAccent(userProfile.firstName, this.state.wildCardSearchText)) ||
         (this.state.wildCardSearchText !== '' &&
           userProfile.lastName &&
-          userProfile.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
+          searchWithAccent(userProfile.lastName, this.state.wildCardSearchText))
       ) {
         return (
           new Date(Date.parse(userProfile.createdDate)) >= this.state.startDate &&
