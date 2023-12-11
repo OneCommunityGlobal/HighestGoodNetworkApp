@@ -6,16 +6,14 @@ import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { ENDPOINTS } from '../../utils/URL'; // Update the path accordingly
-import { useSelector, useDispatch } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth';
 import { boxStyle } from 'styles';
 import { refreshToken } from '../../actions/authActions';
 import httpService from 'services/httpService';
-import { ApiEndpoint } from '../../utils/URL';
+import{ getUserInfo } from '../../utils/permissions';
 
-const APIEndpoint = ApiEndpoint;
-
-const WriteItForMeModal = () => {
+const WriteItForMeModal = (props) => {
   const [modal, setModal] = useState(false);
   const [summary, setSummary] = useState('');
 
@@ -23,25 +21,21 @@ const WriteItForMeModal = () => {
   const { tokenKey } = config;
 
   const fetchSummary = async () => {
-    console.log('fetchSummary called');
+    const {userid} = props.getUserInfo()
+    
+    console.log('fetchSummary called',);
     const token = localStorage.getItem(tokenKey);
-
-    httpService.post(`${APIEndpoint}/interactWithChatGPT`)
+  httpService.post(ENDPOINTS.INTERACT_WITH_CHATGPT,{userid})
     .then(response => {
       console.log('Response received:', response);
-      if (response.ok) {
-        return response.json(); // Assuming the response needs to be parsed as JSON
+      if (response.status===200) {
+        const {data } = response; 
+        setSummary(data.response)
+        toggle();  // Assuming the response needs to be parsed as JSON
       } else {
         throw new Error(`HTTP error: ${response.status}`);
       }
-    })
-    .then(summaryData => {
-      console.log('Summary:', summaryData);
-      // setSummary(summaryData.response);
-      toggle(); // Call the toggle function after receiving the summary
-      // Perform additional actions with summaryData if necessary
-    })
-    .catch(error => {
+    }).catch(error => {
       console.error('Error during fetchSummary:', error);
       // toast.error('Failed to fetch summary');
     });
@@ -56,7 +50,7 @@ const WriteItForMeModal = () => {
   return (
     <div>
       <Button color="info" onClick={fetchSummary} style={boxStyle}>
-        Write it for me
+        Write It For Me
       </Button>
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Generated Summary</ModalHeader>
@@ -71,7 +65,8 @@ const WriteItForMeModal = () => {
   );
 };
 
-export default WriteItForMeModal;
+// export default WriteItForMeModal;
+export default connect(null, { getUserInfo })(WriteItForMeModal);
 
 export const setCurrentUser = decoded => ({
   type: SET_CURRENT_USER,
