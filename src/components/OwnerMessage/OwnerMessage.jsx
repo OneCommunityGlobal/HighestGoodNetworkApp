@@ -74,7 +74,7 @@ function OwnerMessage({
   }
 
   async function handleMessage(isStandard) {
-    const newOwnerMessages = isStandard ? { standardMessage: message } : { message };
+    const newOwnerMessages = { newMessage: message, isStandard };
     const response = await updateMessage(newOwnerMessages);
     if ([200, 201].includes(response?.status)) {
       toast.success(
@@ -188,7 +188,7 @@ function OwnerMessage({
           </Button>
           <Button
             color="primary"
-            onClick={() => handleMessage()}
+            onClick={() => handleMessage(false)}
             disabled={disableButtons}
             style={boxStyle}
           >
