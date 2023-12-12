@@ -1,2 +1,1 @@
-import PeopleReport from './PeopleReport';
-export default PeopleReport;
+export { default as PeopleReport } from './PeopleReport';

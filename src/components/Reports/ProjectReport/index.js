@@ -1,3 +1,1 @@
-import { ProjectReport } from './ProjectReport';
-
-export default ProjectReport;
+export { ProjectReport } from './ProjectReport';
