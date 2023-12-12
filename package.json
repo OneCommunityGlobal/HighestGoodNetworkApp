@@ -12,7 +12,7 @@
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@sentry/browser": "^4.6.6",
     "@tinymce/tinymce-react": "^3.6.0",
-    "axios": "^0.21.2",
+    "axios": "^1.6.0",
     "bootstrap": "^4.5.3",
     "classnames": "^2.2.6",
     "d3": "^7.3.0",
