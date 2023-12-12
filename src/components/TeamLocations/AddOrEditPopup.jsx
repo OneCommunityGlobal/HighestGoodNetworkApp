@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
+import CustomInput from './CustomInput.jsx';
 import getUserTimeZone from 'services/timezoneApiService';
 import { useSelector } from 'react-redux';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import { createLocation, editLocation } from 'services/mapLocationsService';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const initialLocationData = {
   firstName: '',
@@ -215,6 +216,18 @@ function AddOrEditPopup({
     }
   }
 
+  const firstNameRef = useRef(null);
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        if (firstNameRef.current) {
+          firstNameRef.current.focus();
+        }
+      }, 100); // Adjust the delay time if necessary
+    }
+  }, [open]);
+
   return (
     <Modal isOpen={open} toggle={onClose} className="modal-dialog modal-lg">
       <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
@@ -222,7 +235,7 @@ function AddOrEditPopup({
       </ModalHeader>
       <ModalBody>
         <Form onSubmit={onSubmitHandler}>
-          <Input
+          <CustomInput
             type="text"
             name="firstName"
             value={locationData.firstName}
@@ -231,6 +244,7 @@ function AddOrEditPopup({
             onChange={locationDataHandler}
             required
             error={errors.firstName}
+            ref={firstNameRef}
           />
           <Input
             type="text"
