@@ -2,36 +2,37 @@ import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
-import { ENDPOINTS } from '../../utils/URL';
-import { connect } from 'react-redux';
-import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth';
 import httpService from 'services/httpService';
-import{ getUserInfo } from '../../utils/permissions';
+import { connect } from 'react-redux';
+import { ENDPOINTS } from '../../utils/URL';
+import { SET_CURRENT_USER } from '../../constants/auth';
+import { getUserInfo } from '../../utils/permissions';
 
-const WriteItForMeModal = props => {
+function WriteItForMeModal(props) {
   const [modal, setModal] = useState(false);
   const [summary, setSummary] = useState('');
 
   const toggle = () => setModal(!modal);
 
   const fetchSummary = async () => {
-    const {userid} = props.getUserInfo()
-    
-  httpService.post(ENDPOINTS.INTERACT_WITH_CHATGPT,{userid})
-    .then(response => {
-      console.log('Response received:', response);
-      if (response.status===200) {
-        const {data } = response; 
-        setSummary(data.response)
-        toggle();
-      } else {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
-    }).catch(error => {
-      console.error('Error during fetchSummary:', error);
-      // toast.error('Failed to fetch summary');
-    });
+    const { userid } = props.getUserInfo();
 
+    httpService
+      .post(ENDPOINTS.INTERACT_WITH_CHATGPT, { userid })
+      .then(response => {
+        console.log('Response received:', response);
+        if (response.status === 200) {
+          const { data } = response;
+          setSummary(data.response);
+          toggle();
+        } else {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+      })
+      .catch(error => {
+        console.error('Error during fetchSummary:', error);
+        // toast.error('Failed to fetch summary');
+      });
   };
 
   const handleCopyToClipboard = () => {
@@ -55,7 +56,7 @@ const WriteItForMeModal = props => {
       </Modal>
     </div>
   );
-};
+}
 
 // export default WriteItForMeModal;
 export default connect(null, { getUserInfo })(WriteItForMeModal);

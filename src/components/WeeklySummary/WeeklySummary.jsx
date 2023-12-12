@@ -799,27 +799,25 @@ export class WeeklySummary extends Component {
                             onChange={this.handleInputChange}
                           />
                         </FormGroup>
-                        {
-                          <Modal isOpen={editPopup}>
-                            <ModalHeader> Warning!</ModalHeader>
-                            <ModalBody>
-                              Whoa Tiger! Are you sure you want to do that? This link needs to be
-                              added by an Admin when you were set up as a member of the team. Only
-                              Update this if you are SURE your new link is correct.
-                            </ModalBody>
-                            <ModalFooter>
-                              <Button onClick={this.handleMediaChange} style={boxStyle}>
-                                Confirm
-                              </Button>
-                              <Button
-                                onClick={() => this.toggleShowPopup(editPopup)}
-                                style={boxStyle}
-                              >
-                                Close
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
-                        }
+                        <Modal isOpen={editPopup}>
+                          <ModalHeader> Warning!</ModalHeader>
+                          <ModalBody>
+                            Whoa Tiger! Are you sure you want to do that? This link needs to be
+                            added by an Admin when you were set up as a member of the team. Only
+                            Update this if you are SURE your new link is correct.
+                          </ModalBody>
+                          <ModalFooter>
+                            <Button onClick={this.handleMediaChange} style={boxStyle}>
+                              Confirm
+                            </Button>
+                            <Button
+                              onClick={() => this.toggleShowPopup(editPopup)}
+                              style={boxStyle}
+                            >
+                              Close
+                            </Button>
+                          </ModalFooter>
+                        </Modal>
                         {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
                       </Col>
                       {formElements.mediaUrl && !errors.mediaUrl && (
