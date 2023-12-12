@@ -63,7 +63,7 @@ export const TaskEditSuggestionsModal = ({
                   <td scope="col" data-tip="WBS ID">
                     WBS #
                   </td>
-                  <td scope="col">{taskEditSuggestion.oldTask.num}</td>
+                  {taskEditSuggestion && taskEditSuggestion.oldTask && <td scope="col">{taskEditSuggestion.oldTask.num}</td>}
                 </tr>
                 <tr>
                   <td scope="col">Task Name</td>
