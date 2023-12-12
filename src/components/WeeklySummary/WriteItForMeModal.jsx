@@ -1,34 +1,29 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
-import config from '../../config.json';
-//import ReactTooltip from 'react-tooltip';
-import { ENDPOINTS } from '../../utils/URL'; // Update the path accordingly
-import { connect, useSelector, useDispatch } from 'react-redux';
-import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth';
 import { boxStyle } from 'styles';
+import { ENDPOINTS } from '../../utils/URL';
+import { connect } from 'react-redux';
+import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth';
 import httpService from 'services/httpService';
 import{ getUserInfo } from '../../utils/permissions';
 
-const WriteItForMeModal = (props) => {
+const WriteItForMeModal = props => {
   const [modal, setModal] = useState(false);
   const [summary, setSummary] = useState('');
 
   const toggle = () => setModal(!modal);
-  const { tokenKey } = config;
 
   const fetchSummary = async () => {
     const {userid} = props.getUserInfo()
     
-    console.log('fetchSummary called',);
-    const token = localStorage.getItem(tokenKey);
   httpService.post(ENDPOINTS.INTERACT_WITH_CHATGPT,{userid})
     .then(response => {
       console.log('Response received:', response);
       if (response.status===200) {
         const {data } = response; 
         setSummary(data.response)
-        toggle();  // Assuming the response needs to be parsed as JSON
+        toggle();
       } else {
         throw new Error(`HTTP error: ${response.status}`);
       }
