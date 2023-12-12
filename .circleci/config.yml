@@ -3,7 +3,6 @@ jobs:
   build_PROD:
     docker:
       - image: cimg/node:14.17.0
-    resource_class: large
     steps:
       - checkout
       - run:
@@ -19,9 +18,11 @@ jobs:
   build_development:
     docker:
       - image: ubuntu:20.04
-    resource_class: large
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Install ubuntu updates
           command: apt-get update && apt-get upgrade -y
@@ -61,6 +62,10 @@ jobs:
       - run:
           name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV --project ./build
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
 
   build_beta:
     docker:
