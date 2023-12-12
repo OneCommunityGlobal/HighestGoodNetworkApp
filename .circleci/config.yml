@@ -3,6 +3,7 @@ jobs:
   build_PROD:
     docker:
       - image: cimg/node:14.17.0
+    resource_class: large
     steps:
       - checkout
       - run:
@@ -18,6 +19,7 @@ jobs:
   build_development:
     docker:
       - image: ubuntu:20.04
+    resource_class: large
     steps:
       - checkout
       - restore_cache:
