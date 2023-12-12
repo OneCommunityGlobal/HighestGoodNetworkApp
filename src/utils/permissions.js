@@ -6,11 +6,6 @@ const hasPermission = (action) => {
     const userRole = state.auth.user.role;
     const userPermissions = state.auth.user.permissions?.frontPermissions;
 
-    //Check user role
-    if (userRole === 'Owner') {
-      return true;
-    }
-
     if (userRole && rolePermissions && rolePermissions.length != 0) {
       const roleIndex = rolePermissions?.findIndex(({ roleName }) => roleName === userRole);
       let permissions = [];
