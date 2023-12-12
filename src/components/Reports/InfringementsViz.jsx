@@ -274,7 +274,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       </Button>
       <div id="infplot" />
 
-      <Modal size="lg" show={modalShow} onHide={handleModalClose}>
+      <Modal size="lg" show={show} onHide={handleModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
         </Modal.Header>
