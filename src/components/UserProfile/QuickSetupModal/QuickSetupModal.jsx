@@ -18,7 +18,7 @@ import styles from './QuickSetupModal.css';
 
 const QuickSetupModal = (props) => {
   const {
-jobTitle, teamsData, projectsData, userProfile, setUserProfile,  handleSubmit, setSaved
+canAddTitle, canAssignTitle, jobTitle, teamsData, projectsData, userProfile, setUserProfile,  handleSubmit, setSaved
 } = props;
   const [onAddTitle, setAddTitle] = useState(false);
   const [assignPopUp, setAssignPopup] = useState(false);
@@ -45,19 +45,19 @@ jobTitle, teamsData, projectsData, userProfile, setUserProfile,  handleSubmit, s
         />
 
       <div className="col text-center">
-        <Button className="mt-5 mb-2" onClick={(e) => setAddTitle(true)}>Add A New Title</Button>
+        {canAddTitle ? <Button className="mt-5 mb-2" onClick={(e) => setAddTitle(true)}>Add A New Title</Button> : ''}
       </div>
       <div className="col text-center">
 
-        <SaveButton
+        {canAddTitle ? <SaveButton
           handleSubmit={handleSubmit}
           userProfile={userProfile}
           disabled={titleOnSet}
           setSaved={() => setSaved(true)}
-        />
+        /> : ''}
       </div>
-      <AddNewTitle teamsData={teamsData} projectsData={projectsData} isOpen={onAddTitle} setIsOpen={setAddTitle} toggle={setAddTitle} setSubmit={setSubmit} submittoggler={submittoggler}/>
-      <AssignPopUp
+      {canAddTitle ? <AddNewTitle teamsData={teamsData} projectsData={projectsData} isOpen={onAddTitle} setIsOpen={setAddTitle} toggle={setAddTitle} setSubmit={setSubmit} submittoggler={submittoggler}/> : '' }
+      {canAssignTitle ? <AssignPopUp
       setSaved={() => setSaved(true)}
       handleSubmit={handleSubmit}
       userProfile={userProfile}
@@ -67,7 +67,7 @@ jobTitle, teamsData, projectsData, userProfile, setUserProfile,  handleSubmit, s
       toggle={setAssignPopup}
       title={curtitle}
       setTitleOnSet={setTitleOnSet}
-      />
+      /> : '' }
     </div>
   )
 };

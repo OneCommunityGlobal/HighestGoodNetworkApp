@@ -72,6 +72,10 @@ export const permissionLabel = {
   toggleSubmitForm: 'Toggle Summary Submit Form (Others)',
   handleBlueSquare: 'Handle Blue Squares',
   assignOnlyBlueSquares: 'Only Assign Blue Squares',
+  //Quick-setup Code for titles
+  seeQSC: 'See Quick-set Codes for titles',
+  addNewTitle: 'Add a new Title with Quick-setup Modal',
+  assignTitle: 'Assign Title with Quick-setup Code',
   seePermissionsManagement: 'See Permissions Management Tab',
   submitWeeklySummaryForOthers: 'Submit Weekly Summary For Others',
   changeBioAnnouncement: 'Change the Bio Announcement Status',

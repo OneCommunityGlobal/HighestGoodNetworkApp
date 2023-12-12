@@ -123,6 +123,9 @@ export const modalInfo = {
     'Gives the user permission to change the requirement to the user to submit a summary.',
   'Handle Blue Squares': 'Gives the user permission to Update/Delete/Edit any blue square.',
   'Only Assign Blue Squares': 'Gives the user permission to add blue squares to any user.',
+  'See Quick-set Codes for titles': 'Give the user permission to see the quick-setup code for the titles',
+  'Add a new Title with Quick-setup Modal': 'Gives the user permission to add a new title through Quick-setup Modal',
+  'Assign Title with Quick-setup Code': 'Gives the user permission to assign title with quick-setup code',
   'See Permissions Management Tab and Edit Permission':
     'Gives the user permission to access the Permissions Management tab.',
   'Submit Weekly Summary For Others':

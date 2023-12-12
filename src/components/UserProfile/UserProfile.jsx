@@ -595,6 +595,7 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canSeeQSC = props.hasPermission('seeQSC');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
@@ -685,7 +686,9 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-            {requestorRole == 'Owner' || requestorRole=='Administrator' ? <QuickSetupModal
+            { canSeeQSC ? <QuickSetupModal
+              canAddTitle={props.hasPermission('addNewTitle')}
+              canAssignTitle={props.hasPermission('assignTitle')}
               setSaved={setSaved}
               handleSubmit={handleSubmit}
               setUserProfile={setUserProfile}

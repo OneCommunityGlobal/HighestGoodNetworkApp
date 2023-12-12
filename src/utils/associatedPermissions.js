@@ -46,6 +46,7 @@ const associatedPermissions = {
   seeUserProfileInProjects: ['getUserProfiles', 'getProjectMembers'],
   handleBlueSquare: ['putUserProfileImportantInfo', 'putUserProfile'],
   resetPasswordOthers: ['updatePassword', 'putUserProfileImportantInfo'],
+  seeQSC: ['seeQSC', 'addNewTitle', 'assignTitle'],
   dataIsTangibleTimelog: [''],
   addDeleteEditOwners: [''],
   toggleSubmitForm: [''],

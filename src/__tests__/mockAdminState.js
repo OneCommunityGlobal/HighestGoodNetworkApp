@@ -1630,6 +1630,10 @@ export default {
             'updatePassword',
             'deleteUserProfile',
             'infringementAuthorizer',
+            //Title
+            'seeQSC',
+            'addNewTitle',
+            'assignTitle',
             // WBS
             'postWbs',
             'deleteWbs',
@@ -1775,6 +1779,9 @@ export default {
             'putUserProfileImportantInfo',
             'deleteUserProfile',
             'infringementAuthorizer',
+            'seeQSC',
+            'addNewTitle',
+            'assignTitle',
             'postWbs',
             'deleteWbs',
             'getAllInvInProjectWBS',
