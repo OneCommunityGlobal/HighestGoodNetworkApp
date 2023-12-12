@@ -1,6 +1,6 @@
 import React from 'react';
-import UserLinks from './UserLinks';
-import LinkModButton from './UserProfileEdit/LinkModButton';
+import UserLinks from '../UserLinks';
+import LinkModButton from '../UserProfileEdit/LinkModButton';
 
 const UserLinkLayout = props => {
   const { userProfile, updateLink, handleLinkModel, handleSubmit } = props;

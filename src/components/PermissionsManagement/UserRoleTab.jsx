@@ -115,11 +115,6 @@ const UserRoleTab = props => {
   const roleName = actualRole.roleName;
   const roleId = actualRole._id;
 
-  const permissionsList = [];
-
-  for (const key in permissionLabel) {
-    permissionsList.push(permissionLabel[key]);
-  }
   return (
     <div className="userRoleTab__container">
       <button
@@ -134,7 +129,6 @@ const UserRoleTab = props => {
         role={roleName}
         roleId={roleId}
         header={`${roleName} Permissions:`}
-        permissionsList={permissionsList}
         permissions={permissions}
       />
     </div>

@@ -4,6 +4,7 @@
  ******************************************************************************* */
 import axios from 'axios';
 import * as types from "../constants/projectMembership";
+import { searchWithAccent } from 'utils/search';
 import { ENDPOINTS } from '../utils/URL';
 /** *****************************************
  * ACTION CREATORS
@@ -45,7 +46,7 @@ export const findUserProfiles = keyword => {
       .then(res => {
         if (keyword.trim() !== '') {
           let users = res.data.filter(user =>
-            (`${user.firstName  } ${  user.lastName}`).toLowerCase().includes(keyword.toLowerCase()),
+            searchWithAccent(user.firstName, keyword) || searchWithAccent(user.lastName, keyword)
           );
           const {members} = getState().projectMembers;
           users = users.map(user => {

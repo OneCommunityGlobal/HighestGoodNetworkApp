@@ -155,13 +155,13 @@ describe('Update Password Page', () => {
     });
 
     it('should show error if new and confirm passwords are not same', async () => {
-      await userEvent.type(screen.getByLabelText(/current password:/i), 'abced', {
+      await userEvent.type(screen.getByLabelText(/current password:/i), 'Abced@12', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123', {
+      await userEvent.type(screen.getByLabelText(/new password:/i), 'Abcdef@123', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc1234', {
+      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'Abcdef@124', {
         allAtOnce: false,
       });
       expect(screen.getByText(errorMessages.confirmpasswordMismatch)).toBeInTheDocument();
