@@ -12,6 +12,7 @@ import {
   TIMELOG,
   REPORTS,
   WEEKLY_SUMMARIES_REPORT,
+  TEAM_LOCATIONS,
   OTHER_LINKS,
   USER_MANAGEMENT,
   BADGE_MANAGEMENT,
@@ -45,7 +46,11 @@ import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks'
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const { isAuthenticated } = props.auth;
+
+  const user = props.userProfile;
+  const firstName = user.firstName;
+  const profilePic = '/pfp-default-header.png';
 
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
@@ -127,12 +132,12 @@ export const Header = props => {
                 </NavItem>
               )}
               <NavItem>
-                <NavLink tag={Link} to="/dashboard">
+                <NavLink tag={Link} to={`/dashboard/${user._id}`}>
                   <span className="dashboard-text-link">{DASHBOARD}</span>
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                <NavLink tag={Link} to={`/timelog/${user._id}`}>
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
@@ -148,11 +153,20 @@ export const Header = props => {
                         <DropdownItem tag={Link} to="/weeklysummariesreport">
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
+                        <DropdownItem tag={Link} to="/teamlocations">
+                          {TEAM_LOCATIONS}
+                        </DropdownItem>
                   </DropdownMenu>
-                </UncontrolledDropdown>
-              ) : null}
+              </UncontrolledDropdown>
+              ) : 
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                <NavLink tag={Link} to="/teamlocations">
+                  {TEAM_LOCATIONS}
+                </NavLink>
+              </NavItem>
+            }
+              <NavItem>
+                <NavLink tag={Link} to={`/timelog/${user._id}`}>
                   <i className="fa fa-bell i-large">
                     <i className="badge badge-pill badge-danger badge-notify">
                       {/* Pull number of unread messages */}
@@ -203,24 +217,19 @@ export const Header = props => {
                         {TEAMS}
                       </DropdownItem>
                     )}
-                    {canCreatePopup || canUpdatePopup ? (
-                      <>
-                        <DropdownItem divider />
-                        <DropdownItem tag={Link} to={`/popupmanagement`}>
-                          {POPUP_MANAGEMENT}
-                        </DropdownItem>
-                      </>
-                    ) : null}
                     {(canPutRole || canManageUser) && (
+                      <>
+                      <DropdownItem divider />
                       <DropdownItem tag={Link} to="/permissionsmanagement">
                         {PERMISSIONS_MANAGEMENT}
                       </DropdownItem>
+                      </>
                     )}
                   </DropdownMenu>
                 </UncontrolledDropdown>
               )}
               <NavItem>
-                <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
+                <NavLink tag={Link} to={`/userprofile/${user._id}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
@@ -238,11 +247,11 @@ export const Header = props => {
                 <DropdownMenu>
                   <DropdownItem header>Hello {firstName}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
+                  <DropdownItem tag={Link} to={`/userprofile/${user._id}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                    <DropdownItem tag={Link} to={`/updatepassword/${user._id}`}>
                       {UPDATE_PASSWORD}
                     </DropdownItem>
                   )}

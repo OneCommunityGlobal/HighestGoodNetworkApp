@@ -1,1 +1,2 @@
-export const SET_BM_PROJECTS = 'SET_BM_PROJECTS';
+const GET_BM_PROJECTS = 'GET_BM_PROJECTS';
+export default GET_BM_PROJECTS;

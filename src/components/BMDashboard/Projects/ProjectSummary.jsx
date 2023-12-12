@@ -46,8 +46,8 @@ function ProjectSummary({ project }) {
         </Col>
         <Col xs="7">
           <span className="project-summary_span">
-            {mostMaterialWaste.stockWasted} {mostMaterialWaste.itemType.unit} of{' '}
-            {mostMaterialWaste.itemType.name} has been wasted!
+            {mostMaterialWaste?.stockWasted} {mostMaterialWaste?.itemType.unit} of{' '}
+            {mostMaterialWaste?.itemType.name} has been wasted!
           </span>
         </Col>
       </Row>
@@ -73,8 +73,8 @@ function ProjectSummary({ project }) {
         </Col>
         <Col xs="7">
           <span className="project-summary_span">
-            {mostMaterialBought.stockBought} {mostMaterialBought.itemType.unit} of{' '}
-            {mostMaterialBought.itemType.name} purchased for this project
+            {mostMaterialBought?.stockBought} {mostMaterialBought?.itemType.unit} of{' '}
+            {mostMaterialBought?.itemType.name} purchased for this project
           </span>
         </Col>
       </Row>
@@ -84,8 +84,8 @@ function ProjectSummary({ project }) {
         </Col>
         <Col xs="7">
           <span className="project-summary_span">
-            {leastMaterialAvailable.itemType.name} is nearly out of stock (
-            {leastMaterialAvailable.stockAvailable} {leastMaterialAvailable.itemType.unit}{' '}
+            {leastMaterialAvailable?.itemType.name} is nearly out of stock (
+            {leastMaterialAvailable?.stockAvailable} {leastMaterialAvailable?.itemType.unit}{' '}
             remaining)
           </span>
         </Col>

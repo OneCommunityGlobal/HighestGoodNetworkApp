@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container } from 'reactstrap';
-import { fetchAllProjects } from '../../actions/bmdashboard/projectActions';
+import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import BMError from './shared/BMError';
@@ -15,7 +15,7 @@ export function BMDashboard() {
 
   // fetch projects data on pageload
   useEffect(() => {
-    dispatch(fetchAllProjects());
+    dispatch(fetchBMProjects());
   }, []);
 
   // trigger an error state if there is an errors object

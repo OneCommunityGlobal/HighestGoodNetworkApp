@@ -1,13 +1,13 @@
 import axios from "axios";
 
 import { ENDPOINTS } from "utils/URL";
-import { SET_BM_PROJECTS } from "constants/bmdashboard/projectConstants";
+import GET_BM_PROJECTS from "constants/bmdashboard/projectConstants";
 import { GET_ERRORS } from "constants/errors";
 
-export const fetchAllProjects = () => {
+export const fetchBMProjects = () => {
   return async dispatch => {
-    axios.get(ENDPOINTS.BM_PROJECTS_LIST)
-      .then(res => {
+    axios.get(ENDPOINTS.BM_PROJECTS)
+    .then(res => {
       dispatch(setProjects(res.data))
     })
     .catch(err => {
@@ -18,7 +18,7 @@ export const fetchAllProjects = () => {
 
 export const setProjects = payload => {
   return {
-    type: SET_BM_PROJECTS,
+    type: GET_BM_PROJECTS,
     payload
   }
 }
