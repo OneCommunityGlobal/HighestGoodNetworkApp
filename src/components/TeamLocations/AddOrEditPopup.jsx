@@ -170,10 +170,11 @@ function AddOrEditPopup({
         if (!res) {
           throw new Error();
         }
-        onClose();
         toast.success('A person successfully added to a map!');
         setManuallyUserProfiles(prev => [...prev, { ...res.data, type: 'm_user' }]);
         setLocationData(newLocationObject);
+        setLocationData(initialLocationData);
+        setFormSubmitted(true);
       } else if (isEdit) {
         const res = await editLocation(newLocationObject);
         if (!res || res.status !== 200) {
@@ -217,6 +218,7 @@ function AddOrEditPopup({
   }
 
   const firstNameRef = useRef(null);
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -225,8 +227,9 @@ function AddOrEditPopup({
           firstNameRef.current.focus();
         }
       }, 100); // Adjust the delay time if necessary
+      setFormSubmitted(false);
     }
-  }, [open]);
+  }, [open, formSubmitted]);
 
   return (
     <Modal isOpen={open} toggle={onClose} className="modal-dialog modal-lg">
