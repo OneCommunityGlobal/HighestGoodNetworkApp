@@ -62,7 +62,7 @@
     "redux-actions": "^2.6.5",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
-    "tinymce": "^5.10.8",
+    "tinymce": "^5.10.9",
     "uuid": "^9.0.1"
   },
   "scripts": {
