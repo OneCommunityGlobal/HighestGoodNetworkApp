@@ -5,10 +5,10 @@ import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectMaterial from './SelectMaterial';
-import MaterialsTable from './MaterialsTable';
-import './MaterialsList.css';
+import MaterialTable from './MaterialTable';
+import './MaterialList.css';
 
-export function MaterialsList(props) {
+export function MaterialList(props) {
   // props & state
   const { materials, errors, dispatch } = props;
   const [filteredMaterials, setFilteredMaterials] = useState(materials);
@@ -80,7 +80,7 @@ export function MaterialsList(props) {
             setSelectedMaterial={setSelectedMaterial}
           />
         </span>
-        <MaterialsTable filteredMaterials={filteredMaterials} />
+        <MaterialTable filteredMaterials={filteredMaterials} />
       </section>
     </main>
   );
@@ -91,4 +91,4 @@ const mapStateToProps = state => ({
   errors: state.errors,
 });
 
-export default connect(mapStateToProps)(MaterialsList);
+export default connect(mapStateToProps)(MaterialList);

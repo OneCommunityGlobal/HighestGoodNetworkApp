@@ -6,10 +6,10 @@ import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons'
 
 import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import { useDispatch } from 'react-redux';
-import RecordsModal from './RecordsModal';
+import RecordModal from './RecordModal';
 import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
 
-export default function MaterialsTable({ filteredMaterials }) {
+export default function MaterialTable({ filteredMaterials }) {
   const dispatch = useDispatch();
   const [sortedData, setData] = useState(null);
   const [modal, setModal] = useState(false);
@@ -102,7 +102,7 @@ export default function MaterialsTable({ filteredMaterials }) {
 
   return (
     <>
-      <RecordsModal
+      <RecordModal
         modal={modal}
         setModal={setModal}
         record={record}

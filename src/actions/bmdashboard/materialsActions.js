@@ -75,6 +75,7 @@ export const fetchAllMaterials = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_MATERIALS)
       .then(res => {
+        console.log('fetchAllMaterials: ', res);
         dispatch(setMaterials(res.data))
       })
       .catch(err => {

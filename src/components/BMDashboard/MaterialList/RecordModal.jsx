@@ -1,9 +1,9 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
 
-import './RecordsModal.css';
+import './RecordModal.css';
 
-export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
+export default function RecordModal({ modal, setModal, record, setRecord, recordType }) {
   if (record) {
     const toggle = () => {
       setModal(false);
