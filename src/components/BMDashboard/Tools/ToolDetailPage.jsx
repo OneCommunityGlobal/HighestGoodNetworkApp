@@ -37,30 +37,6 @@ const dummyTool = {
   askedForReplacement: false,
 };
 
-const details = [
-  { label: 'Belongs to project', value: dummyTool.projectId },
-  { label: 'Class', value: dummyTool.class },
-  { label: 'Name', value: dummyTool.title },
-  { label: 'Number', value: `#${dummyTool.number}` },
-  { label: 'Ownership', value: dummyTool.ownership },
-  { label: 'Add Date', value: dummyTool.addDate },
-  { label: 'Rental Duration', value: dummyTool.returnDate },
-  { label: 'Current Usage', value: dummyTool.currentUsage },
-  { label: 'Input Invoice No or ID', value: dummyTool.invoiceNo },
-  { label: 'Price', value: dummyTool.price },
-  { label: 'Add Condition', value: dummyTool.condition },
-  { label: 'Shipping Fee', value: dummyTool.shippingFee },
-  { label: 'Taxes', value: dummyTool.taxes },
-  { label: 'Supplier Phone Number', value: dummyTool.supplierPhoneNo },
-  { label: 'Link To Buy/Rent', value: dummyTool.linkToBuy },
-  { label: 'Description', value: dummyTool.description },
-  { label: 'Current Status', value: dummyTool.currentStatus },
-  { label: 'Last Update Date', value: dummyTool.lastUpdated },
-  { label: 'Last Used Person', value: dummyTool.lastUsedBy },
-  { label: 'Last Used Task', value: dummyTool.lastUsedTask },
-  { label: 'Asked for a replacement?', value: dummyTool.askedForReplacement ? 'Yes' : 'No' },
-];
-
 function DetailItem({ label, value }) {
   return (
     <p className="ToolDetailPage__detail_item">
@@ -104,15 +80,56 @@ function RentalDurationItem({ label, from, to }) {
 
 function ToolDetailPage() {
   const history = useHistory();
-  const singleTool = useSelector(state => state.tool);
+  const tool = useSelector(state => state.tool);
 
-  console.log('Tool', singleTool);
+  console.log('Tool', tool);
+  
+  const toolStatus = tool.logRecord.find(record => record.type === 'Check In');
+  
+  let toolLogRecord;
+  
+  if (toolStatus) {
+    toolLogRecord = 'Checked In';
+  } else {
+    toolLogRecord = 'Checked out';
+  };
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchToolById('656a1799cbe9ebb0521ae8e3'));
   }, []);
+
+  const details = [
+    { label: 'Belongs to project', value: 'Building 1' },
+    { label: 'Class', value: tool.itemType?.category },
+    { label: 'Name', value: tool.itemType?.name },
+    { label: 'Number', value: tool.code },
+    { label: 'Ownership', value: tool.purchaseStatus },
+    { label: 'Add Date', value: tool.rentedOnDate },
+    { label: 'Rental Duration' },
+    { label: 'Current Usage', value: toolLogRecord },
+    { label: 'Input Invoice No or ID', value: 'No123ABC' },
+    { label: 'Price', value: '150USD' },
+    //TO DO
+    { label: 'Add Condition', value: '' },
+    { label: 'Shipping Fee', value: '25USD' },
+    { label: 'Taxes', value: '15USD' },
+    { label: 'Supplier Phone Number', value: '555-33-3333' },
+    {
+      label: 'Link To Buy/Rent',
+      value:
+        'https://www.homedepot.com/b/Outdoors-Outdoor-Power-Equipment-Leaf-Blowers/N-5yc1vZbxav',
+    },
+    { label: 'Description', value: tool.itemType?.description },
+    //TO DO
+    { label: 'Current Status', value: '' },
+    //TO DO
+    { label: 'Last Update Date', value: '' },
+    { label: 'Last Used Person', value: '' },
+    { label: 'Last Used Task', value: 'garden clean up' },
+    { label: 'Asked for a replacement?', value: 'No' },
+  ];
 
   const generateKey = () => uuidv4();
 
@@ -128,8 +145,8 @@ function ToolDetailPage() {
     <RentalDurationItem
       key={generateKey()}
       label={detail.label}
-      from={dummyTool.addDate}
-      to={dummyTool.returnDate}
+      from={tool.rentedOnDate}
+      to={tool.rentalDue}
     />
   );
 
@@ -158,7 +175,7 @@ function ToolDetailPage() {
   return (
     <Container className="ToolDetailPage justify-content-center align-items-center mw-80 px-4">
       <header className="ToolDetailPage__header">
-        <h1>Tool or Equipment Detail Page</h1>
+        <h1>Tool Detail Page</h1>
       </header>
       <main className="ToolDetailPage__content">
         <p>
