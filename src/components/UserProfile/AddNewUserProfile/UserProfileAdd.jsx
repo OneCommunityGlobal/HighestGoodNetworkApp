@@ -870,7 +870,7 @@ class AddUserProfile extends Component {
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim(),
+            [event.target.id]: event.target.value.trim().replace(/[A-Z]/g, (char) => char.toLowerCase()),
           },
           formValid: {
             ...formValid,
