@@ -31,7 +31,7 @@ function AddOrEditPopup({
   isEdit,
   editProfile,
   submitText,
-  apiKey
+  apiKey,
 }) {
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
@@ -172,7 +172,6 @@ function AddOrEditPopup({
         }
         toast.success('A person successfully added to a map!');
         setManuallyUserProfiles(prev => [...prev, { ...res.data, type: 'm_user' }]);
-        setLocationData(newLocationObject);
         setLocationData(initialLocationData);
         setFormSubmitted(true);
       } else if (isEdit) {
@@ -226,7 +225,7 @@ function AddOrEditPopup({
         if (firstNameRef.current) {
           firstNameRef.current.focus();
         }
-      }, 100); // Adjust the delay time if necessary
+      }, 100);
       setFormSubmitted(false);
     }
   }, [open, formSubmitted]);
