@@ -24,16 +24,9 @@ export const materialsReducer = (materials = defaultState, action) => {
       return {
          list: action.payload,
          updateMaterials: defaultState.updateMaterials,
-         updateMaterialBulk: defaultState.updateMaterialsBulk,
+         updateMaterialsBulk: defaultState.updateMaterialsBulk,
       }
     }
-      // {
-      //   materials.list = action.payload;
-      //   return {
-      //     ...materials, updateMaterials: { ...defaultState.updateMaterials },
-      //     updateMaterialsBulk: { ...defaultState.updateMaterialsBulk }
-      //   }
-      // }
     case POST_UPDATE_MATERIAL_START:
       {
         const obj = { loading: true };

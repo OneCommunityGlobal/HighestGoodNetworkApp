@@ -9,7 +9,7 @@ import UpdateMaterial from '../UpdateMaterial';
 
 function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials.materialslist);
+  const materials = useSelector(state => state.materials.list);
   const [materialsState, setMaterialsState] = useState([...materials]);
   const postMaterialUpdateBulkResult = useSelector(state => state.materials.updateMaterialsBulk);
   const [cancel, setCancel] = useState(1);
