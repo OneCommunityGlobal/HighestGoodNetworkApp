@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// Wrap the component with React.forwardRef
 const CustomInput = React.forwardRef(({ label, name, error, className, ...rest }, ref) => {
   return (
     <div className={`form-group ${className ? className : ''}`}>
