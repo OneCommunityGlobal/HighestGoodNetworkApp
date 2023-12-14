@@ -30,35 +30,6 @@ export default function RecordModal({ modal, setModal, record, setRecord, record
 }
 
 export function Record({ record, recordType }) {
-  // if (recordType === 'Usage') {
-  //   return (
-  //     <>
-  //       <thead>
-  //         <tr>
-  //           <th>Date</th>
-  //           <th>Qty</th>
-  //           <th>Creator</th>
-  //         </tr>
-  //       </thead>
-  //       <tbody>
-  //         {record.map(({ date, quantityUsed, createdBy }) => {
-  //           return (
-  //             <tr key={date + createdBy._id}>
-  //               <td>{moment(date).format('MM/DD/YY')}</td>
-  //               <td>{quantityUsed}</td>
-  //               <td>
-  //                 <a href={`/userprofile/${createdBy._id}`}>
-  //                   {`${createdBy.firstName} ${createdBy.lastName}`}
-  //                 </a>
-  //               </td>
-  //             </tr>
-  //           );
-  //         })}
-  //       </tbody>
-  //     </>
-  //   );
-  // }
-
   if (recordType === 'Update') {
     return (
       <>
@@ -73,7 +44,7 @@ export function Record({ record, recordType }) {
         <tbody>
           {record.updateRecord.map(data => {
             return (
-              <tr key={data.date.toString() + data.createdBy._id}>
+              <tr key={data._id}>
                 <td>{moment.utc(data.date).format('LL')}</td>
                 <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
                 <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
@@ -97,16 +68,18 @@ export function Record({ record, recordType }) {
             <th>Date</th>
             <th>Status</th>
             <th>Quantity</th>
-            <th>Creator</th>
+            <th>Priority</th>
+            <th>Requester</th>
           </tr>
         </thead>
         <tbody>
-          {record.map(({ date, status, quantity, requestedBy }) => {
+          {record.map(({ _id, date, status, quantity, priority, requestedBy }) => {
             return (
-              <tr key={date + requestedBy._id}>
+              <tr key={_id}>
                 <td>{moment(date).format('MM/DD/YY')}</td>
                 <td>{status}</td>
                 <td>{quantity || '-'}</td>
+                <td>{priority}</td>
                 <td>
                   <a href={`/userprofile/${requestedBy._id}`}>
                     {`${requestedBy.firstName} ${requestedBy.lastName}`}

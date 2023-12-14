@@ -76,18 +76,6 @@ export default function MaterialTable({ filteredMaterials }) {
     setIconToDisplay(faSortDown);
   };
 
-  // const doSorting = columnName => {
-  //   if (order === '▼') {
-  //     sortingAsc(columnName);
-  //   }
-  //   else if(order === '▲'){
-  //     sortingDesc(columnName);
-  //   }
-  //  else {
-  //     setData(filteredMaterials);
-  //   }
-  // };
-
   const doSorting = columnName => {
     if (order === 'desc') {
       setData(filteredMaterials);
@@ -134,10 +122,9 @@ export default function MaterialTable({ filteredMaterials }) {
               sortedData.map(mat => {
                 return (
                   <tr key={mat._id}>
-                    <td>{mat.project?.name}</td>
-                    {/* Note: optional chaining to prevent crashes while db work ongoing */}
-                    <td>{mat.itemType?.name}</td>
-                    <td>{mat.itemType?.unit}</td>
+                    <td>{mat.project.name}</td>
+                    <td>{mat.itemType.name}</td>
+                    <td>{mat.itemType.unit}</td>
                     <td>{mat.stockBought}</td>
                     <td>{mat.stockUsed}</td>
                     <td>{mat.stockAvailable}</td>

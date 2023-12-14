@@ -4,32 +4,27 @@ import { connect, useSelector } from 'react-redux';
 import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
-// import SelectMaterial from './SelectMaterial';
 import MaterialTable from './MaterialTable';
 import './MaterialList.css';
 
 export function MaterialList(props) {
   // props & state
   const { materials, errors, dispatch } = props;
-  // console.log('🚀 ~ file: MaterialList.jsx:14 ~ MaterialList ~ materials:', materials);
   const [filteredMaterials, setFilteredMaterials] = useState(materials);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedMaterial, setSelectedMaterial] = useState('all');
   const [isError, setIsError] = useState(false);
-  // const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
+  const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
 
   // dispatch materials fetch action : on load and update
+  // response is mapped to materials or errors in redux store
   useEffect(() => {
-    dispatch(fetchAllMaterials());
-  }, []);
-  // // response is mapped to materials or errors in redux store
-  // useEffect(() => {
-  //   if (postMaterialUpdateResult.result == null) dispatch(fetchAllMaterials());
-  // }, [postMaterialUpdateResult?.result]); // To refresh with new materials after update
+    if (postMaterialUpdateResult.result == null) dispatch(fetchAllMaterials());
+  }, [postMaterialUpdateResult.result]); // To refresh with new materials after update
 
-  // useEffect(() => {
-  //   setFilteredMaterials([...materials]);
-  // }, [materials]);
+  useEffect(() => {
+    setFilteredMaterials([...materials]);
+  }, [materials]);
 
   // filter materials data by project
   useEffect(() => {
@@ -77,12 +72,6 @@ export function MaterialList(props) {
             setSelectedProject={setSelectedProject}
             setSelectedMaterial={setSelectedMaterial}
           />
-          {/* <SelectMaterial
-            materials={materials}
-            selectedProject={selectedProject}
-            selectedMaterial={selectedMaterial}
-            setSelectedMaterial={setSelectedMaterial}
-          /> */}
         </span>
         <MaterialTable filteredMaterials={filteredMaterials} />
       </section>
