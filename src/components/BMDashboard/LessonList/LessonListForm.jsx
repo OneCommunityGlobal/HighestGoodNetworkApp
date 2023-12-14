@@ -1,12 +1,71 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './LessonListForm.css';
 import Lessons from './Lessons';
+import { DummyData } from './Lessons';
 
 function LessonList() {
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [filteredLessons, setFilteredLessons] = useState(DummyData);
+  const [filterOption, setFilterOption] = useState('1');
+  const [dummyData, setDummyData] = useState(DummyData);
+
+  const getWeekNumber = date => {
+    const target = new Date(date.valueOf());
+    const dayNumber = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNumber + 3);
+    const firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() !== 4) {
+      target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7));
+    }
+    return 1 + Math.ceil((firstThursday - target) / 604800000); // 604800000 = 7 * 24 * 60 * 60 * 1000
+  };
+  const isInThisWeek = date => {
+    const currentDate = new Date();
+    const lessonDate = new Date(date);
+
+    // Get the current date's week and the lesson date's week
+    const currentWeek = getWeekNumber(currentDate);
+    const lessonWeek = getWeekNumber(lessonDate);
+
+    return currentDate.getFullYear() === lessonDate.getFullYear() && currentWeek === lessonWeek;
+  };
+  const isInThisYear = date => {
+    const currentDate = new Date();
+    const lessonDate = new Date(date);
+    return currentDate.getFullYear() === lessonDate.getFullYear();
+  };
+
+  const isInThisMonth = date => {
+    const currentDate = new Date();
+    const lessonDate = new Date(date);
+    return (
+      currentDate.getFullYear() === lessonDate.getFullYear() &&
+      currentDate.getMonth() === lessonDate.getMonth()
+    );
+  };
+  const filterLessons = () => {
+    switch (filterOption) {
+      case '2':
+        setFilteredLessons(dummyData.filter(item => isInThisYear(item.date)));
+        break;
+      case '3':
+        setFilteredLessons(dummyData.filter(item => isInThisMonth(item.date)));
+        break;
+      case '4':
+        setFilteredLessons(dummyData.filter(item => isInThisWeek(item.date)));
+        break;
+      default:
+        setFilteredLessons(dummyData);
+        break;
+    }
+  };
+  useEffect(() => {
+    filterLessons();
+  }, [dummyData, filterOption]); // Update when dummyData or filterOption changes
 
   const handleInputChange = event => {
     setInputValue(event.target.value);
@@ -48,10 +107,13 @@ function LessonList() {
                   className="single-form-select"
                   as="select"
                   aria-label="Default select example"
+                  value={filterOption}
+                  onChange={event => setFilterOption(event.target.value)}
                 >
-                  <option value="1">This Year</option>
-                  <option value="2">This Month</option>
-                  <option value="3">This Week</option>
+                  <option value="1">Select a Filter</option>
+                  <option value="2">This Year</option>
+                  <option value="3">This Month</option>
+                  <option value="4">This Week</option>
                 </FormControl>
               </Form.Group>
             </div>
@@ -90,7 +152,7 @@ function LessonList() {
             </InputGroup>
           </Form.Group>
         </Form>
-        <Lessons />
+        <Lessons filteredLessons={filteredLessons} />
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import './LessonCard.css';
 import ReactHtmlParser from 'react-html-parser';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 
-function LessonCard({ dummyData, onEditLessonSummary, onDeliteLessonCard }) {
+function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard }) {
   const maxSummaryLength = 1500;
   // State to manage the expansion/collapse of each card
   const [expandedCards, setExpandedCards] = useState([]);
@@ -20,7 +20,6 @@ function LessonCard({ dummyData, onEditLessonSummary, onDeliteLessonCard }) {
   const [validationError, setValidationError] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [lessonToDeleteId, setLessonToDeleteId] = useState(null);
-
   const handleEdit = (lessonId, lessonSummary) => {
     setEditableLessonId(lessonId);
     setEditableLessonSummary(lessonSummary);
@@ -55,7 +54,7 @@ function LessonCard({ dummyData, onEditLessonSummary, onDeliteLessonCard }) {
     });
   };
   const expandAll = () => {
-    setExpandedCards(dummyData.map(lesson => lesson.id));
+    setExpandedCards(filteredLessons.map(lesson => lesson.id));
   };
 
   const collapseAll = () => {
@@ -66,7 +65,7 @@ function LessonCard({ dummyData, onEditLessonSummary, onDeliteLessonCard }) {
     setLessonToDeleteId(lessonId);
   };
 
-  const lessonCards = dummyData.map(lesson => (
+  const lessonCards = filteredLessons.map(lesson => (
     <Card key={lesson.id}>
       <Card.Header onClick={() => toggleCardExpansion(lesson.id)} style={{ cursor: 'pointer' }}>
         <Nav className="nav">

@@ -1,10 +1,15 @@
+import { useEffect } from "react";
 
 const hasPermission = (action) => {
   return (dispatch, getState) => {
     const state = getState();
     const rolePermissions = state.role.roles;
-    const userRole = state.auth.user.role;
-    const userPermissions = state.auth.user.permissions?.frontPermissions;
+
+    // Check if viewing another user's account
+    const viewing = state.auth.user.userid !== state.userProfile._id;
+
+    const userRole = viewing ? state.userProfile.role : state.auth.user.role;
+    const userPermissions = viewing ? state.userProfile.permissions?.frontPermissions : state.auth.user.permissions?.frontPermissions;
 
     //Check user role
     if (userRole === 'Owner') {

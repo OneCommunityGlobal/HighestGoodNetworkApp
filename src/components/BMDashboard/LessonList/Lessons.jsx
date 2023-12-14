@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { formatDateAndTime } from 'utils/formatDate';
 import LessonCard from './LessonCard';
 
-const DummyData = [
+export const DummyData = [
   {
     id: '12',
     firstName: 'Olena',
@@ -10,7 +10,7 @@ const DummyData = [
     userid: '651483422cdd3e63f9a745d1',
     project: 'Project 1',
     lessonTitle:
-      'Stud Wall Installation: Robust framework, easy customization, and efficient insulation for durable and versatile construction.',
+      'Stud Wall Installation: Robust framework, easy customization, and efficient insulation.',
     lessonSummary:
       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
     tags: [
@@ -31,7 +31,7 @@ const DummyData = [
       'DesignIdeas',
     ],
     file: 'xxx.xls',
-    date: formatDateAndTime('11/25/2020 11:35:12'),
+    date: formatDateAndTime('12/08/2023 11:00'),
   },
   {
     id: '13',
@@ -43,7 +43,7 @@ const DummyData = [
     lessonSummary: 'Foundation concreting',
     tags: ['Project 2'],
     file: 'xyz.xls',
-    date: formatDateAndTime('08/31/2022 2:25:01'),
+    date: formatDateAndTime('08/31/2022 13:25'),
   },
   {
     id: '14',
@@ -55,11 +55,11 @@ const DummyData = [
     lessonSummary: 'Summary.....',
     tags: ['Weather'],
     file: 'abc.xls',
-    date: formatDateAndTime('01/12/2023 4:05:00'),
+    date: formatDateAndTime('01/12/2023 16:05'),
   },
 ];
 
-function Lessons() {
+function Lessons({ filteredLessons }) {
   const [dummyData, setDummyData] = useState(DummyData);
 
   const onEditLessonSummary = (lessonId, updatedSummary) => {
@@ -89,6 +89,7 @@ function Lessons() {
       dummyData={dummyData}
       onEditLessonSummary={onEditLessonSummary}
       onDeliteLessonCard={onDeliteLessonCard}
+      filteredLessons={filteredLessons}
     />
   );
 }
