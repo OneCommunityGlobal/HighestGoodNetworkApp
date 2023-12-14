@@ -7,16 +7,16 @@ export default function SelectForm({
   setSelectedMaterial,
 }) {
   // create selectable projects
-  let materialSet = [];
-  if (materials.length) {
-    if (selectedProject === 'all') materialSet = [...new Set(materials.map(m => m.itemType?.name))];
-    else
-      materialSet = [
-        ...new Set(
-          materials.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
-        ),
-      ];
-  }
+  const materialSet = [];
+  // if (materials.length) {
+  //   if (selectedProject === 'all') materialSet = [...new Set(materials.map(m => m.itemType?.name))];
+  //   else
+  //     materialSet = [
+  //       ...new Set(
+  //         materials.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
+  //       ),
+  //     ];
+  // }
 
   return (
     <Form>
@@ -24,7 +24,7 @@ export default function SelectForm({
         <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
           Material:
         </Label>
-        <Input
+        {/* <Input
           id="select-material"
           name="select-material"
           type="select"
@@ -46,7 +46,7 @@ export default function SelectForm({
           ) : (
             <option>No data</option>
           )}
-        </Input>
+        </Input> */}
       </FormGroup>
     </Form>
   );

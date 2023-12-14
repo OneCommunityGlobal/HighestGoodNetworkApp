@@ -5,7 +5,7 @@ import {
 } from "constants/bmdashboard/materialsConstants"
 
 const defaultState = {
-  materialslist: [],
+  list: [],
   updateMaterials: {
     loading: false,
     result: null,
@@ -20,14 +20,20 @@ const defaultState = {
 
 export const materialsReducer = (materials = defaultState, action) => {
   switch (action.type) {
-    case SET_MATERIALS:
-      {
-        materials.materialslist = action.payload;
-        return {
-          ...materials, updateMaterials: { ...defaultState.updateMaterials },
-          updateMaterialsBulk: { ...defaultState.updateMaterialsBulk }
-        }
+    case SET_MATERIALS: {
+      return {
+         list: action.payload,
+         updateMaterials: defaultState.updateMaterials,
+         updateMaterialBulk: defaultState.updateMaterialsBulk,
       }
+    }
+      // {
+      //   materials.list = action.payload;
+      //   return {
+      //     ...materials, updateMaterials: { ...defaultState.updateMaterials },
+      //     updateMaterialsBulk: { ...defaultState.updateMaterialsBulk }
+      //   }
+      // }
     case POST_UPDATE_MATERIAL_START:
       {
         const obj = { loading: true };

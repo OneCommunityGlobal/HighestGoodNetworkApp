@@ -1,16 +1,8 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
 export default function SelectForm({ materials, setSelectedProject, setSelectedMaterial }) {
-  // create selectable projects
-  let projectsSet = [];
-  if (materials.length) {
-    projectsSet = [...new Set(materials.map(mat => mat.project?.name))];
-  }
-
-  const handleChange = event => {
-    setSelectedMaterial('all');
-    setSelectedProject(event.target.value);
-  };
+  const projectSet = [...new Set(materials.map(mat => mat.project.name))];
+  const materialSet = [...new Set(materials.map(mat => mat.itemType.name))];
 
   return (
     <Form>
@@ -20,13 +12,39 @@ export default function SelectForm({ materials, setSelectedProject, setSelectedM
           id="select-project"
           name="select-project"
           type="select"
-          onChange={handleChange}
+          onChange={({ target }) => setSelectedProject(target.value)}
           disabled={!materials.length}
         >
           {materials.length ? (
             <>
               <option value="all">All</option>
-              {projectsSet.map(name => {
+              {projectSet.map(name => {
+                return (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                );
+              })}
+            </>
+          ) : (
+            <option>No data</option>
+          )}
+        </Input>
+        <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
+          Material:
+        </Label>
+        <Input
+          id="select-material"
+          name="select-material"
+          type="select"
+          // value={selectedMaterial}
+          onChange={({ target }) => setSelectedMaterial(target.value)}
+          disabled={!materials.length}
+        >
+          {materials.length ? (
+            <>
+              <option value="all">All</option>
+              {materialSet.map(name => {
                 return (
                   <option key={name} value={name}>
                     {name}
