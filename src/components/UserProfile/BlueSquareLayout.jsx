@@ -6,6 +6,7 @@ import './UserProfileEdit/UserProfileEdit.scss';
 import { Button } from 'react-bootstrap';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 import StopSelfSchedulerModal from './StopSelfSchedulerModal/StopSelfSchedulerModal.jsx';
+import SchedulerExplanationModal from './SchedulerExplanationModal/SchedulerExplanationModal';
 import { useState, useEffect } from 'react';
 import { useReducer } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
@@ -57,6 +58,7 @@ const BlueSquareLayout = props => {
   const [isInfringementMoreThanFive, setIsInfringementMoreThanFive] = useState(false);
   const [show, setShow] = useState(false);
   const [showInfoModal, setShowInfoModal]= useState(false);
+  const [showExplanation, setShowExplanation]= useState(false);
   const [reason, setReason] = useState('');
   const [date, setDate] = useState(
     moment
@@ -74,7 +76,7 @@ const BlueSquareLayout = props => {
     errorCode: null,
     isSet: false,
   });
-
+  
   const handleOpen = useCallback(() => {
     setShow(true);
   }, []);
@@ -83,13 +85,24 @@ const BlueSquareLayout = props => {
     setShow(false);
   }, []);
 
-  const openInfoModal = useCallback(() => {
+  // This handler is used for Info Modal, that open when button "Can't Schedule Time Off" is clicked 
+  const openInfoModal = useCallback(() => { 
     setShowInfoModal(true);
   }, []);
-
+// This handler is used to close Info Modal, 
   const closeInfoModal = useCallback(() => {
     setShowInfoModal(false);
   }, []);
+  // This handler is used for Explanation Modal, that open when <a>Click to learn why </a> is clicked 
+  const openExplanationModal = useCallback(() => { 
+    setShowExplanation(true);
+  }, []);
+// This handler is used to close Info Modal, 
+  const closeExplanationModal  = useCallback(() => {
+    setShowExplanation(false);
+  }, []);
+
+
 //  This useEffect will check for any changes in the number of infringements
   useEffect(()=>{
     const checkInfringementCount = ()=>{
@@ -97,7 +110,7 @@ const BlueSquareLayout = props => {
         setIsInfringementMoreThanFive(false);
         return
       }else{
-        if(userProfile.infringements.length > 5){
+        if(userProfile.infringements.length >= 5){
           setIsInfringementMoreThanFive(true)
         }
         else{
@@ -172,7 +185,7 @@ const BlueSquareLayout = props => {
               'Can\'t Schedule Time Off'
             )}
           </Button> 
-            <p id='self-scheduler-off-info'><a href=''>Click to learn why</a></p>
+            <p style={{cursor:"pointer"}} id='self-scheduler-off-info' onClick={openExplanationModal}>Click to learn why</p>
           </>
           : <Button
             variant="primary"
@@ -191,10 +204,19 @@ const BlueSquareLayout = props => {
             )}
           </Button> }
         </div>
+        {isInfringementMoreThanFive && showExplanation && (
+          <Modal show={showExplanation} onHide={closeExplanationModal}>
+            <SchedulerExplanationModal
+              onHide={closeExplanationModal}
+              handleClose = {closeExplanationModal}
+              infringementsNum = {infringementsNum}
+              infringements = {userProfile.infringements}
+            />
+          </Modal>
+        )}
         {isInfringementMoreThanFive && showInfoModal && 
         (<Modal show={showInfoModal} onHide={closeInfoModal}>
           <StopSelfSchedulerModal
-            show = {showInfoModal}
             onHide={closeInfoModal}
             handleClose = {closeInfoModal}
             infringementsNum = {infringementsNum}

@@ -2,7 +2,8 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { boxStyle } from 'styles';
 
-function SchedulerExplanationModal({infringementsNum,handleClose}) {
+function SchedulerExplanationModal({infringementsNum,handleClose, infringements}) {
+  
   return (
     <div
       className="modal show"
@@ -13,9 +14,17 @@ function SchedulerExplanationModal({infringementsNum,handleClose}) {
           <Modal.Title>Please Refer To The Explanation </Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
-          <p>You currently possess <span style={{color:"red",fontWeight:500}}>{infringementsNum}</span> blue squares, with an annual limit of <span style={{fontWeight:500, color:"green"}}>5</span>. If you require time off, kindly reach out to your Administrator. </p>
-          <p><em>Note</em>: Blue squares expire after 1 calendar year from their issuance date.</p>
+        <Modal.Body scrollable>
+         <p> Including your time already requested off, you have used the equivalent of <span style={{color:"red",fontWeight:500}}>{infringementsNum}</span> blue squares. <span style={{fontWeight:500, color:"green"}}>5</span> is the maximum allowed per year.</p>
+          <p>
+          Please remove a time-off request below or contact your Administrator if you need to request time off in addition to what is listed here:</p>
+          <ol>{infringements.map((el,index)=>{
+            return <li key={el._id}>{el.description}</li>
+          })}</ol>
+          
+
+          <p><em>Note</em>: Blue squares expire after 1 calendar year from their issuance date.</p> 
+
         </Modal.Body>
 
         <Modal.Footer>
