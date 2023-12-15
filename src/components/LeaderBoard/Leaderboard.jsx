@@ -129,7 +129,9 @@ function LeaderBoard({
 
   // opening the modal
   const trophyIconToggle = item => {
-    setModalOpen(item.personId);
+    if (loggedInUser.role === 'Owner' || loggedInUser.role === 'Administrator') {
+      setModalOpen(item.personId);
+    }
   };
 
   // deleting the icon fron that and only that user
@@ -368,7 +370,7 @@ function LeaderBoard({
                           role="button"
                           tabIndex={0}
                           className="fa fa-trophy"
-                          style={{ marginLeft: '10px', fontSize: '18px', color: '#808080' }}
+                          style={{ marginLeft: '10px', fontSize: '18px', color: '#FF0800' }}
                           onClick={() => {
                             trophyIconToggle(item);
                           }}
