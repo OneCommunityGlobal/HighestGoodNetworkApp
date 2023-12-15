@@ -547,8 +547,6 @@ class UserManagement extends React.PureComponent {
 }
 
 const mapStateToProps = state => {
-
-  console.log("is user data in here?", state)
   return { state };
 };
 export default connect(mapStateToProps, {
