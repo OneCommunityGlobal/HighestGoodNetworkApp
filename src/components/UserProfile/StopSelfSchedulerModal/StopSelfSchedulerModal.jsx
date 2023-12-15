@@ -14,8 +14,8 @@ function StopSelfSchedulerModal({infringementsNum,handleClose}) {
         </Modal.Header>
 
         <Modal.Body>
-          <p>You currently possess <span style={{color:"red"}}>{infringementsNum}</span> blue squares, with an annual limit of 5. If you require time off, kindly reach out to your Administrator. </p>
-          <p>Note: Blue squares expire after 1 calendar year from their issuance date.</p>
+          <p>You currently possess <span style={{color:"red",fontWeight:500}}>{infringementsNum}</span> blue squares, with an annual limit of <span style={{fontWeight:500, color:"green"}}>5</span>. If you require time off, kindly reach out to your Administrator. </p>
+          <p><em>Note</em>: Blue squares expire after 1 calendar year from their issuance date.</p>
         </Modal.Body>
 
         <Modal.Footer>

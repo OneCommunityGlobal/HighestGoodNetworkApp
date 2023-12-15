@@ -13,6 +13,7 @@ import { addReason, patchReason } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
 import { Modal } from 'react-bootstrap';
 import { boxStyle } from 'styles';
+import { color } from 'd3';
 
 const BlueSquareLayout = props => {
   const fetchingReducer = (state, action) => {
@@ -155,7 +156,7 @@ const BlueSquareLayout = props => {
           <Button
            variant='warning'
            onClick={openInfoModal}
-           className="w-100"
+           className="w-100 text-success-emphasis"
             size="md"
             style={boxStyle}
           >
@@ -164,7 +165,8 @@ const BlueSquareLayout = props => {
             ) : (
               'Can\'t Schedule Time Off'
             )}
-          </Button> <p id='self-scheduler-off-info'>click to learn why</p>
+          </Button> 
+            <p id='self-scheduler-off-info'>(click to learn why)</p>
           </>
           : <Button
             variant="primary"
