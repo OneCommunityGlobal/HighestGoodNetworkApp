@@ -5,7 +5,8 @@ import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 import { Button } from 'react-bootstrap';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
-import { useState } from 'react';
+import StopSelfSchedulerModal from './StopSelfSchedulerModal/StopSelfSchedulerModal.jsx';
+import { useState, useEffect } from 'react';
 import { useReducer } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
 import { addReason, patchReason } from 'actions/reasonsActions';
@@ -49,8 +50,12 @@ const BlueSquareLayout = props => {
   };
 
   const { userProfile, handleUserProfile, handleBlueSquare, canEdit } = props;
+
   const { privacySettings } = userProfile;
+  const [infringementsNum, setInfringementsNum] = useState(userProfile.infringements.length)
+  const [isInfringementMoreThanFive, setIsInfringementMoreThanFive] = useState(false);
   const [show, setShow] = useState(false);
+  const [showInfoModal, setShowInfoModal]= useState(false);
   const [reason, setReason] = useState('');
   const [date, setDate] = useState(
     moment
@@ -77,6 +82,25 @@ const BlueSquareLayout = props => {
     setShow(false);
   }, []);
 
+  const openInfoModal = useCallback(() => {
+    setShowInfoModal(true);
+  }, []);
+
+  const closeInfoModal = useCallback(() => {
+    setShowInfoModal(false);
+  }, []);
+//  This useEffect will check for any changes in the number of infringements
+  useEffect(()=>{
+    const checkInfringementCount = ()=>{
+      if(userProfile.infringements.length > 5){
+        setIsInfringementMoreThanFive(true)
+      }
+      else{
+        setIsInfringementMoreThanFive(false)
+      }
+    }
+    checkInfringementCount();
+  },[]);
   
   const handleSubmit = async event => {
     event.preventDefault();
@@ -124,20 +148,23 @@ const BlueSquareLayout = props => {
         </div>
 
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
-         {/* This is just a test - by Sucheta */}
+         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares -  by Sucheta */}
         <div className="mt-4 w-100">
-          {userProfile?.infringements.length > 5 ? 
+          {isInfringementMoreThanFive ? 
           <>
           <Button
            variant='warning'
+           onClick={openInfoModal}
+           className="w-100"
+            size="md"
+            style={boxStyle}
           >
             {fetchState.isFetching ? (
               <Spinner size="sm" animation="border" />
             ) : (
-              'Can’t Schedule Time Off'
+              'Can\'t Schedule Time Off'
             )}
           </Button> <p id='self-scheduler-off-info'>click to learn why</p>
-          {/* <i data-toggle="tooltip" data-placement="right" data-testid="info-name" id="info-name" aria-hidden="true" class="fa fa-info-circle" style="font-size: 15px; cursor: pointer; margin-left: 10px;"></i></> */}
           </>
           : <Button
             variant="primary"
@@ -155,9 +182,17 @@ const BlueSquareLayout = props => {
               'Schedule Blue Square Reason'
             )}
           </Button> }
-
-          
         </div>
+        {isInfringementMoreThanFive && showInfoModal && 
+        (<Modal show={showInfoModal} onHide={closeInfoModal}>
+          <StopSelfSchedulerModal
+            show = {showInfoModal}
+            onHide={closeInfoModal}
+            handleClose = {closeInfoModal}
+            infringementsNum = {infringementsNum}
+            user = {userProfile}
+          />
+        </Modal>)}
         {show && (
           <Modal show={show} onHide={handleClose}>
             <ScheduleReasonModal
