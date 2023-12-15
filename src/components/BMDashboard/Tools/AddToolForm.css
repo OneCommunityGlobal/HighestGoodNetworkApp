@@ -40,6 +40,13 @@ font-size: .8em;
   padding-right: 1em;
 }
 
+
+/* @media (max-width: 1199px) {
+  .phone-input-style {
+    width: 265px !important;
+  }
+} */
+
 @media screen and (max-width: 640px) {
   .add-tool-flex-group {
     display: block;

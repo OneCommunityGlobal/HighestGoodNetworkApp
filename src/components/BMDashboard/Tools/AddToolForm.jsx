@@ -98,7 +98,11 @@ export default function AddToolForm() {
       </div>
       <FormGroup>
         <Label for="phone-number">Supplier Phone Number</Label>
-        <PhoneInput id="phone-number" name="phone-number" />
+        <PhoneInput
+          id="phone-number"
+          name="phone-number"
+          inputClass="phone-input-style"
+        />
       </FormGroup>
       <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
@@ -118,9 +122,9 @@ export default function AddToolForm() {
         <div className="total-price-calculated">30.00USD</div>
       </div>
       <div className="add-tool-buttons">
-          <Button outline>Cancel</Button>
-          <Button>Submit</Button>
-    </div>
+        <Button outline>Cancel</Button>
+        <Button>Submit</Button>
+      </div>
     </Form>
   );
 }
