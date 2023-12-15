@@ -9,7 +9,6 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
-// import { useHistory } from "react-router-dom";
 import { formatDate } from 'utils/formatDate';
 
 /**
