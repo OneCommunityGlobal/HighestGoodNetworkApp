@@ -124,8 +124,22 @@ const BlueSquareLayout = props => {
         </div>
 
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
+         {/* This is just a test - by Sucheta */}
         <div className="mt-4 w-100">
+          {userProfile?.infringements.length > 5 ? 
+          <>
           <Button
+           variant='warning'
+          >
+            {fetchState.isFetching ? (
+              <Spinner size="sm" animation="border" />
+            ) : (
+              'Can’t Schedule Time Off'
+            )}
+          </Button> <p id='self-scheduler-off-info'>click to learn why</p>
+          {/* <i data-toggle="tooltip" data-placement="right" data-testid="info-name" id="info-name" aria-hidden="true" class="fa fa-info-circle" style="font-size: 15px; cursor: pointer; margin-left: 10px;"></i></> */}
+          </>
+          : <Button
             variant="primary"
             onClick={handleOpen}
             className="w-100"
@@ -140,7 +154,9 @@ const BlueSquareLayout = props => {
             ) : (
               'Schedule Blue Square Reason'
             )}
-          </Button>
+          </Button> }
+
+          
         </div>
         {show && (
           <Modal show={show} onHide={handleClose}>
