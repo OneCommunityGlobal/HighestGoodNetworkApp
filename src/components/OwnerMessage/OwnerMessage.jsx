@@ -11,38 +11,24 @@ import editIcon from './assets/edit.png';
 import deleteIcon from './assets/delete.png';
 
 import {
-  getOwnerMessage as getOwnerMessages,
-  createOwnerMessage as createOwnerMessages,
-  updateOwnerMessage as updateOwnerMessages,
-  deleteOwnerMessage as deleteOwnerMessages,
+  getOwnerMessage,
+  updateOwnerMessage,
+  deleteOwnerMessage,
 } from '../../actions/ownerMessageAction';
-import {
-  getOwnerStandardMessage as getOwnerStandardMessages,
-  createOwnerStandardMessage as createOwnerStandardMessages,
-  updateOwnerStandardMessage as updateOwnerStandardMessages,
-  deleteOwnerStandardMessage as deleteOwnerStandardMessages,
-} from '../../actions/ownerStandardMessageAction';
 
 function OwnerMessage({
   auth,
   ownerMessage,
-  ownerMessageId,
-  createOwnerMessage,
-  updateOwnerMessage,
-  deleteOwnerMessage,
-  getOwnerStandardMessage,
   ownerStandardMessage,
-  ownerStandardMessageId,
-  createOwnerStandardMessage,
-  updateOwnerStandardMessage,
+  getMessage,
+  updateMessage,
+  deleteMessage,
 }) {
   const { user } = auth;
 
   const [disableTextInput, setDisableTextInput] = useState(false);
   const [disableButtons, setDisableButtons] = useState(true);
-  const [standardMessage, setStandardMessage] = useState('');
   const [message, setMessage] = useState('');
-  const [newMessage, setNewMessage] = useState('');
   const [modal, setModal] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
@@ -64,23 +50,6 @@ function OwnerMessage({
     setDisableTextInput(false);
   }
 
-  useEffect(() => {
-    getOwnerMessages();
-    if (ownerMessage) {
-      setMessage(ownerMessage);
-    }
-    getOwnerStandardMessage();
-    if (ownerStandardMessage) {
-      setStandardMessage(ownerStandardMessage);
-    }
-    // newMessage ? setDisableButtons(false) : setDisableButtons(true);
-    if (newMessage) {
-      setDisableButtons(false);
-    } else {
-      setDisableButtons(true);
-    }
-  }, [newMessage]);
-
   async function handleImageUpload(event) {
     if (event) event.preventDefault();
     const file = event.target.files[0];
@@ -98,53 +67,34 @@ function OwnerMessage({
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
       fileReader.onloadend = () => {
-        setNewMessage(fileReader.result);
+        setMessage(fileReader.result);
         setDisableTextInput(true);
       };
     }
   }
 
-  async function handleMessage() {
-    const ownerMessages = {
-      newMessage,
-    };
-
-    if (message) {
-      updateOwnerMessage(ownerMessageId, ownerMessages);
-      toggle();
-      toast.success('Message updated!');
-      setMessage(newMessage);
+  async function handleMessage(isStandard) {
+    const newOwnerMessages = { newMessage: message, isStandard };
+    const response = await updateMessage(newOwnerMessages);
+    if ([200, 201].includes(response?.status)) {
+      toast.success(
+        isStandard ? 'Standard message update successfully!' : 'Message update successfully!',
+      );
     } else {
-      createOwnerMessage(ownerMessages);
-      toggle();
-      toast.success('Message created!');
-      setMessage(newMessage);
+      toast.error(`Standard message save failed! Error: ${response}`);
     }
+    setDisableButtons(true);
+    toggle();
   }
 
   async function handleDeleteMessage() {
-    deleteOwnerMessage();
-    toggleDeleteWarning();
-    toast.error('Message deleted!');
-    setMessage('');
-  }
-
-  async function handleStandardMessage() {
-    const ownerStandardMessages = {
-      newStandardMessage: newMessage,
-    };
-
-    if (standardMessage) {
-      updateOwnerStandardMessage(ownerStandardMessageId, ownerStandardMessages);
-      toggle();
-      toast.success('Standard Message updated!');
-      setStandardMessage(newMessage);
+    const response = await deleteMessage();
+    if (response.status === 200) {
+      toast.success('Message deleted successfully!');
     } else {
-      createOwnerStandardMessage(ownerStandardMessages);
-      toggle();
-      toast.success('Standard Message created!');
-      setStandardMessage(newMessage);
+      toast.error(`Message deletion failed! Error: ${response}`);
     }
+    toggleDeleteWarning();
   }
 
   function getContent(messages) {
@@ -154,19 +104,42 @@ function OwnerMessage({
     return <span className="message">{messages}</span>;
   }
 
+  useEffect(() => {
+    async function fetchMessages() {
+      await getMessage();
+    }
+    fetchMessages();
+  }, []);
+
+  useEffect(() => {
+    if (message !== ownerMessage) {
+      setDisableButtons(false);
+    } else {
+      setDisableButtons(true);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    setMessage(ownerMessage);
+  }, [ownerMessage]);
+
   return (
     <div className="message-container">
-      {message !== '' ? getContent(message) : getContent(standardMessage)}
+      {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
       {user.role === 'Owner' && (
         <div className="icon-wrapper">
           <button type="submit" onClick={toggle}>
-            <img src={editIcon} alt="edit icon" />
+            <img src={editIcon} alt="edit icon" title="Edit this header" />
           </button>
 
-          {message && (
+          {ownerMessage && (
             <button type="submit" onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem' }}>
-              <img src={deleteIcon} alt="edit icon" />
+              <img
+                src={deleteIcon}
+                alt="edit icon"
+                title="Click to restore header to standard message"
+              />
             </button>
           )}
         </div>
@@ -179,7 +152,8 @@ function OwnerMessage({
           <Input
             type="textarea"
             placeholder="Write your message here... (Max 100 characters)"
-            onChange={event => setNewMessage(event.target.value)}
+            value={message}
+            onChange={event => setMessage(event.target.value)}
             maxLength="100"
             disabled={disableTextInput}
             className="inputs"
@@ -202,11 +176,11 @@ function OwnerMessage({
         <ModalFooter style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Button
             color="info"
-            onClick={() => handleStandardMessage()}
+            onClick={() => handleMessage(true)}
             disabled={disableButtons}
             style={boxStyle}
           >
-            {standardMessage ? (
+            {ownerStandardMessage ? (
               <span style={{ color: 'white' }}>Update as Standard Message</span>
             ) : (
               <span style={{ color: 'white' }}>Create as Standard Message</span>
@@ -214,11 +188,11 @@ function OwnerMessage({
           </Button>
           <Button
             color="primary"
-            onClick={() => handleMessage()}
+            onClick={() => handleMessage(false)}
             disabled={disableButtons}
             style={boxStyle}
           >
-            {message ? 'Update' : 'Create'}
+            {ownerMessage ? 'Update' : 'Create'}
           </Button>
         </ModalFooter>
       </Modal>
@@ -254,26 +228,15 @@ function OwnerMessage({
 }
 
 const mapStateToProps = state => ({
-  auth: state?.auth,
-  ownerMessage: state?.ownerMessage?.[0]?.message,
-  ownerMessageId: state?.ownerMessage?.[0]?._id,
-  ownerStandardMessage: state?.ownerStandardMessage?.[0]?.message,
-  ownerStandardMessageId: state?.ownerStandardMessage?.[0]?._id,
+  auth: state.auth,
+  ownerMessage: state.ownerMessage.message,
+  ownerStandardMessage: state.ownerMessage.standardMessage,
 });
 
 const mapDispatchToProps = dispatch => ({
-  getOwnerMessage: () => dispatch(getOwnerMessages()),
-  createOwnerMessage: ownerMessage => dispatch(createOwnerMessages(ownerMessage)),
-  updateOwnerMessage: (ownerMessageId, ownerMessage) =>
-    dispatch(updateOwnerMessages(ownerMessageId, ownerMessage)),
-  deleteOwnerMessage: () => dispatch(deleteOwnerMessages()),
-
-  getOwnerStandardMessage: () => dispatch(getOwnerStandardMessages()),
-  createOwnerStandardMessage: ownerStandardMessage =>
-    dispatch(createOwnerStandardMessages(ownerStandardMessage)),
-  updateOwnerStandardMessage: (ownerStandardMessageId, ownerStandardMessage) =>
-    dispatch(updateOwnerStandardMessages(ownerStandardMessageId, ownerStandardMessage)),
-  deleteOwnerStandardMessage: () => dispatch(deleteOwnerStandardMessages()),
+  getMessage: () => dispatch(getOwnerMessage()),
+  updateMessage: ownerMessage => dispatch(updateOwnerMessage(ownerMessage)),
+  deleteMessage: () => dispatch(deleteOwnerMessage()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OwnerMessage);
