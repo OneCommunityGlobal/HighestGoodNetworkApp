@@ -1,11 +1,21 @@
-import { Form, FormGroup, Label, Input, Row, Col, Button } from 'reactstrap';
-
+import { useState } from 'react';
+import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import DragAndDrop from 'components/common/DragAndDrop/DragAndDrop';
 import PhoneInput from 'react-phone-input-2';
+
+import { boxStyle } from 'styles';
 import 'react-phone-input-2/lib/style.css';
 import './AddToolForm.css';
 
 export default function AddToolForm() {
+  const [selectedCategory, setSelectedCategory] = useState('Tool');
+  const [selectedName, setSelectedName] = useState('');
+
+  const handleCategoryChange = event => {
+    const category = event.target.value;
+    setSelectedCategory(category);
+    setSelectedName('');
+  };
 
   return (
     <Form className="add-tool-form container">
@@ -19,17 +29,38 @@ export default function AddToolForm() {
       <div className="add-tool-flex-group">
         <FormGroup>
           <Label for="select-category">Tool or Equipment</Label>
-          <Input id="select-category" name="category" type="select">
-            <option>Tool</option>
-            <option>Equipment</option>
+          <Input
+            id="select-category"
+            name="category"
+            type="select"
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+          >
+            <option value="Tool">Tool</option>
+            <option value="Equipment">Equipment</option>
           </Input>
         </FormGroup>
 
         <FormGroup>
           <Label for="select-name">Name</Label>
-          <Input id="select-name" name="name" type="select">
-            <option>Tool 1</option>
-            <option>Tool 2</option>
+          <Input
+            id="select-name"
+            name="name"
+            type="select"
+            value={selectedName}
+            onChange={e => setSelectedName(e.target.value)}
+          >
+            {selectedCategory === 'Tool' ? (
+              <>
+                <option value="Tool 1">Tool 1</option>
+                <option value="Tool 2">Tool 2</option>
+              </>
+            ) : (
+              <>
+                <option value="Equipment 1">Equipment 1</option>
+                <option value="Equipment 2">Equipment 2</option>
+              </>
+            )}
           </Input>
         </FormGroup>
       </div>
@@ -37,7 +68,7 @@ export default function AddToolForm() {
         <Label for="invoice-number">Invoice Number or ID</Label>
         <Input
           id="invoice-number"
-          type="number"
+          type="text"
           name="invoice"
           placeholder="Input Invoice No or  ID for the tool or equipment"
         />
@@ -96,13 +127,15 @@ export default function AddToolForm() {
           <Input id="taxes" type="number" name="taxes" placeholder="%" />
         </FormGroup>
       </div>
+      {/* <div className="add-tool-supplier-phone">
+        <FormGroup>
+          <Label for="phone-number">Supplier phone number</Label>
+          <Input id="phone-number" type="tel" name="phone-number" placeholder="XXX-XX-XX" />
+        </FormGroup>
+      </div> */}
       <FormGroup>
         <Label for="phone-number">Supplier Phone Number</Label>
-        <PhoneInput
-          id="phone-number"
-          name="phone-number"
-          inputClass="phone-input-style"
-        />
+        <PhoneInput id="phone-number" name="phone-number" inputClass="phone-input-style" />
       </FormGroup>
       <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
@@ -122,8 +155,10 @@ export default function AddToolForm() {
         <div className="total-price-calculated">30.00USD</div>
       </div>
       <div className="add-tool-buttons">
-        <Button outline>Cancel</Button>
-        <Button>Submit</Button>
+        <Button outline style={boxStyle}>
+          Cancel
+        </Button>
+        <Button style={boxStyle}>Submit</Button>
       </div>
     </Form>
   );
