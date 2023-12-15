@@ -15,7 +15,7 @@ const Issue = (props) => {
     "Description the issue as detailed as possible.\n (minimum 100 characters)\n • What happened?\n • Who's involved\n • How did it happen?\n • What was the immediate action taken?\n • If there were any witnesses, who are they?\n";
   const RESOLVED = 'Resolved?';
   const DESCRIPTION = 'Description:';
-  const defaultOption = 'Labor';
+  const defaultOption = 'Safety';
   const maxDescriptionCharacterLimit = 500;
   const history = useHistory();
 
@@ -176,12 +176,12 @@ const Issue = (props) => {
       <Form>
         <FormGroup>
           <Row className="issue-date">
-            <Col>
+            <Col className="d-flex justify-content-center">
               <Label className="sub-title-text">{ISSUE_DATE}</Label>
             </Col>
             <Col>
               <Input
-                className="issue-form-override-css"
+                className="issue-form-override-css issue-date-input"
                 type="date"
                 name="dateOfWork"
                 id="dateOfWork"
@@ -191,7 +191,9 @@ const Issue = (props) => {
           </Row>
         </FormGroup>
         <Row>
-          <Label className="red-text">{NOTE}</Label>
+          <Col>
+            <Label className="red-text">{NOTE}</Label>
+          </Col>
         </Row>
         <FormGroup>
           <Row>
@@ -239,7 +241,8 @@ const Issue = (props) => {
                     {option === 'Other' && (
                       <Input
                         className="issue-form-override-css"
-                        type="text"
+                        type="textarea"
+                        rows="1"
                         placeholder="If other is selected, please specify."
                         value={formData.other}
                         onChange={(e) => setFormData({ ...formData, other: e.target.value })}

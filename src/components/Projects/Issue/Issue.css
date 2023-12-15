@@ -5,6 +5,8 @@
 
 .red-text {
   color: #980101;
+  display: flex;
+  justify-content: center;
 }
 
 .issue-title-text {
@@ -12,6 +14,7 @@
   padding-top: 3.5vh;
   padding-bottom: 3.5vh;
   font-weight: bold;
+  font-size: 20px;
 }
 
 .consequences-text {
@@ -53,9 +56,15 @@
 
 .issue-date {
   align-items: center;
+  padding: 0 3em;
 }
 
-.IssueFormButtonCancel {
+input.issue-date-input {
+  width: 160px;
+}
+
+button.IssueFormButtonCancel {
+  font-size: 20px;
   height: 50px;
   width: 50%;
   background-color: #ffffff !important;
@@ -67,10 +76,11 @@
   margin-bottom: 1em;
 }
 
-.IssueFormButtonSubmit {
+button.IssueFormButtonSubmit {
   height: 50px;
   width: 50%;
   background-color: #2e5061 !important;
   color: #ffffff !important;
   border-color: #2e5061 !important;
+  font-size: 20px;
 }
