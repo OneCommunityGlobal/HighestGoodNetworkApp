@@ -93,12 +93,18 @@ const BlueSquareLayout = props => {
 //  This useEffect will check for any changes in the number of infringements
   useEffect(()=>{
     const checkInfringementCount = ()=>{
-      if(userProfile.infringements.length > 5){
-        setIsInfringementMoreThanFive(true)
+      if(userProfile.role === "Administrator" || userProfile.role === "Owner"){
+        setIsInfringementMoreThanFive(false);
+        return
+      }else{
+        if(userProfile.infringements.length > 5){
+          setIsInfringementMoreThanFive(true)
+        }
+        else{
+          setIsInfringementMoreThanFive(false)
+        }
       }
-      else{
-        setIsInfringementMoreThanFive(false)
-      }
+      
     }
     checkInfringementCount();
   },[]);
@@ -166,7 +172,7 @@ const BlueSquareLayout = props => {
               'Can\'t Schedule Time Off'
             )}
           </Button> 
-            <p id='self-scheduler-off-info'>(click to learn why)</p>
+            <p id='self-scheduler-off-info'><a href=''>Click to learn why</a></p>
           </>
           : <Button
             variant="primary"
