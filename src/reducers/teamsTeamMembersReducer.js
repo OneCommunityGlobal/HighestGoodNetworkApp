@@ -12,6 +12,7 @@ export const updateObject = (oldObject, updatedProperties) => ({
   ...updatedProperties,
 });
 
+// eslint-disable-next-line default-param-last
 export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
   switch (action.type) {
     case types.RECEIVE_TEAM_USERS:
