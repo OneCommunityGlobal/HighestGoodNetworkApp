@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import BadgeImage from './BadgeImage';
+import BadgeImage from '../BadgeImage';
 
 const FeaturedBadges = props => {
   let [filteredBadges, setFilteredBadges] = useState([]);
@@ -23,7 +23,7 @@ const FeaturedBadges = props => {
   }, [props.badges]);
 
   return (
-    <div className="badge_featured_container">
+    <div data-testid="badge_featured_container" className="badge_featured_container">
       {filteredBadges.map((value, index) => (
         <BadgeImage personalBestMaxHrs={props.personalBestMaxHrs} count={value.count} badgeData={value.badge} index={index} key={index} />
       ))}
