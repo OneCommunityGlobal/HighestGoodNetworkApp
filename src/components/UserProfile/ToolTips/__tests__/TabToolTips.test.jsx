@@ -88,7 +88,13 @@ describe('TabToolTip Component Tests', () => {
 
   it('Test case 4 : Assert that the tooltip is not initially visible or present', () => {
     mockComponentWithNavLink();
-    const contactTooltip = screen.queryByText(TOOLTIP_1);
+    let contactTooltip = screen.queryByText(TOOLTIP_1);
+    expect(contactTooltip).toBeNull();
+    contactTooltip = screen.queryByText(TOOLTIP_2);
+    expect(contactTooltip).toBeNull();
+    contactTooltip = screen.queryByText(TOOLTIP_3);
+    expect(contactTooltip).toBeNull();
+    contactTooltip = screen.queryByText(TOOLTIP_4);
     expect(contactTooltip).toBeNull();
   });
 
