@@ -1,9 +1,8 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import Form from '../common/Form';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
+import Form from '../common/Form';
 import { updatePassword } from '../../actions/updatePassword';
 import { logoutUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
@@ -15,7 +14,7 @@ class UpdatePassword extends Form {
     errors: {},
     showPassword: { currentpassword: false, newpassword: false, confirmnewpassword: false }
   };
-  
+
   togglePasswordVisibility = (field) => {
     this.setState(prevState => ({
       showPassword: {
@@ -24,7 +23,7 @@ class UpdatePassword extends Form {
       }
     }));
   }
-  
+
 
   componentDidMount() {}
 
@@ -71,8 +70,8 @@ class UpdatePassword extends Form {
     const { currentpassword, newpassword, confirmnewpassword } = {
       ...this.state.data,
     };
-    let userId = this.props.match.params.userId;
-    let data = { currentpassword, newpassword, confirmnewpassword };
+    const {userId} = this.props.match.params;
+    const data = { currentpassword, newpassword, confirmnewpassword };
 
     const status = await this.props.updatePassword(userId, data);
     if (status === 200) {
@@ -86,8 +85,8 @@ class UpdatePassword extends Form {
         },
       );
     } else if (status === 400) {
-      let { errors } = this.state;
-      errors['currentpassword'] = this.props.errors.error;
+      const { errors } = this.state;
+      errors.currentpassword = this.props.errors.error;
       this.setState({ errors });
     } else {
       toast.error('Something went wrong. Please contact your administrator.');
@@ -102,7 +101,7 @@ class UpdatePassword extends Form {
                 <div className="mb-4">
                     <div className="flex justify-between items-center">
                         <label htmlFor="currentpassword" className="text-sm font-medium text-gray-700 mr-2">Current Password:</label>
-                        <i className={`fa ${this.state.showPassword.currentpassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} onClick={() => this.togglePasswordVisibility('currentpassword')}></i>
+                        <i className={`fa ${this.state.showPassword.currentpassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} onClick={() => this.togglePasswordVisibility('currentpassword')} />
                     </div>
                     {this.renderInput({ name: 'currentpassword', type: this.state.showPassword.currentpassword ? 'text' : 'password' })}
                 </div>
@@ -110,7 +109,7 @@ class UpdatePassword extends Form {
                 <div className="mb-4">
                     <div className="flex justify-between items-center">
                         <label htmlFor="newpassword" className="text-sm font-medium text-gray-700 mr-2">New Password:</label>
-                        <i className={`fa ${this.state.showPassword.newpassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} onClick={() => this.togglePasswordVisibility('newpassword')}></i>
+                        <i className={`fa ${this.state.showPassword.newpassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} onClick={() => this.togglePasswordVisibility('newpassword')} />
                     </div>
                     {this.renderInput({ name: 'newpassword', type: this.state.showPassword.newpassword ? 'text' : 'password' })}
                 </div>
@@ -118,7 +117,7 @@ class UpdatePassword extends Form {
                 <div className="mb-4">
                     <div className="flex justify-between items-center">
                         <label htmlFor="confirmnewpassword" className="text-sm font-medium text-gray-700 mr-2">Confirm Password:</label>
-                        <i className={`fa ${this.state.showPassword.confirmnewpassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} onClick={() => this.togglePasswordVisibility('confirmnewpassword')}></i>
+                        <i className={`fa ${this.state.showPassword.confirmnewpassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} onClick={() => this.togglePasswordVisibility('confirmnewpassword')} />
                     </div>
                     {this.renderInput({ name: 'confirmnewpassword', type: this.state.showPassword.confirmnewpassword ? 'text' : 'password' })}
                 </div>
