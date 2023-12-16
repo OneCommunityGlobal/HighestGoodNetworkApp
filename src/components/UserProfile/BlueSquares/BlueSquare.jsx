@@ -8,7 +8,7 @@ import { formatDateFromDescriptionString } from 'utils/formatDateFromDescription
 const BlueSquare = (props) => {
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare } = props;
+  const { blueSquares, handleBlueSquare, isInfringementMoreThanFive } = props;
 
   return (
     <div className="blueSquareContainer">
@@ -52,7 +52,7 @@ const BlueSquare = (props) => {
           : null}
       </div>
 
-      {isInfringementAuthorizer && (
+      {isInfringementAuthorizer && !isInfringementMoreThanFive &&(
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');

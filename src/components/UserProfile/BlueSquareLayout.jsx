@@ -167,7 +167,7 @@ const BlueSquareLayout = props => {
           ) : null}
         </div>
 
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
+        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} isInfringementMoreThanFive={isInfringementMoreThanFive} userRole={userProfile.role}/>
          {/* Replaces Schedule Blue Square button when there are more than 5 blue squares -  by Sucheta */}
         <div className="mt-4 w-100">
           {isInfringementMoreThanFive ? 
