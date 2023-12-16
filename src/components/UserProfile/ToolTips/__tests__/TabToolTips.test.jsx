@@ -1,8 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
 import { shallow } from 'enzyme';
-import MockNavLink from './MockNavLink';
+import MockNavLink from './MockNavLink'; // mock component
 import TabToolTips from '../TabToolTips';
 
 /** ****************************TESTS PRE-REQUISITE************************************ */
@@ -51,18 +50,18 @@ describe('TabToolTip Component Tests', () => {
     mountedComponent = mockComponentWithoutNavLink();
   });
 
-  it('Test case 1: renders without crashing', () => {
+  it('Test case 1: Renders without crashing', () => {
     expect(mountedComponent.find('[data-testid="tabtooltiptest"]')).toHaveLength(1);
   });
 
-  it('Test case 2 : renders with  4 tool tips wrapped within a div', () => {
+  it('Test case 2 : Renders with  4 tool tips wrapped within a div', () => {
     const tooltipcount = mountedComponent.find('Tooltip');
     expect(tooltipcount.length).toBe(4);
 
     const divCount = mountedComponent.find('div');
     expect(divCount.length).toBe(1);
   });
-  it('Test case 3 : displays correct content in tooltips', () => {
+  it('Test case 3 : Displays correct content in tooltips', () => {
     const tooltips = mountedComponent.find('Tooltip');
 
     tooltips.forEach((tooltip, index) => {
@@ -98,7 +97,7 @@ describe('TabToolTip Component Tests', () => {
     expect(contactTooltip).toBeNull();
   });
 
-  it('Test case 5 : Assert that the tooltip is visible or present after ', () => {
+  it('Test case 5 : Assert that the tooltip is visible after clicking the Basic Information Link ', () => {
     mockComponentWithNavLink();
     const nabLinkBasic = screen.getByText('Basic Information');
     userEvent.click(nabLinkBasic); // Simulate a click using userEvent
@@ -110,7 +109,7 @@ describe('TabToolTip Component Tests', () => {
     const contactTooltip = screen.getByTestId('tabtooltiptest-1');
     expect(contactTooltip).toBeInTheDocument();
   });
-  it('Test case 6 : Assert that the tooltip is visible or present after ', () => {
+  it('Test case 6 : Assert that the tooltip is visible after clicking the Volunteering Times Link ', () => {
     mockComponentWithNavLink();
     const nabLinkBasic = screen.getByText('Volunteering Times');
     userEvent.click(nabLinkBasic); // Simulate a click using userEvent
@@ -122,7 +121,7 @@ describe('TabToolTip Component Tests', () => {
     const contactTooltip = screen.getByTestId('tabtooltiptest-2');
     expect(contactTooltip).toBeInTheDocument();
   });
-  it('Test case 7 : Assert that the tooltip is visible or present after ', () => {
+  it('Test case 7 : Assert that the tooltip is visible after clicking the Basic Teams Link ', () => {
     mockComponentWithNavLink();
     const nabLinkBasic = screen.getByText('Teams');
     userEvent.click(nabLinkBasic); // Simulate a click using userEvent
@@ -134,7 +133,7 @@ describe('TabToolTip Component Tests', () => {
     const contactTooltip = screen.getByTestId('tabtooltiptest-3');
     expect(contactTooltip).toBeInTheDocument();
   });
-  it('Test case 8 : Assert that the tooltip is visible or present after ', () => {
+  it('Test case 8 : Assert that the tooltip is visible after clicking the Projects Link ', () => {
     mockComponentWithNavLink();
     const nabLinkBasic = screen.getByText('Projects');
     userEvent.click(nabLinkBasic); // Simulate a click using userEvent
