@@ -225,7 +225,6 @@ const Issue = (props) => {
               <Label className="sub-title-text">{CONSEQUENCES_TITLE}</Label>
             </Col>
           </Row>
-          <Row>
             {checkboxOptions.map((pair, rowIndex) => (
               <Row key={rowIndex} className="consequences-checkboxes">
                 {pair.map((option, colIndex) => (
@@ -252,7 +251,6 @@ const Issue = (props) => {
                 ))}
               </Row>
             ))}
-          </Row>
         </FormGroup>
         <FormGroup>
           <Row>
