@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Label, Input, Form, FormGroup, Row, Col } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import './Issue.css';
-import { check } from 'prettier';
 import { useEffect, useCallback } from 'react';
 
-const Issue = (props) => {
+function Issue() {
   const ISSUE_FORM_HEADER = 'ISSUE LOG';
   const ISSUE_DATE = 'Issue Date:';
   const ISSUE_TYPE = 'Issue Type:';
@@ -49,8 +48,8 @@ const Issue = (props) => {
   const [checkboxOptions, setCheckboxOption] = useState([]);
   const [characterCount, setCharacterCount] = useState(0);
   const handleCheckboxChange = useCallback(
-    (index, option) => () => {
-      setFormData((prevFormData) => {
+    option => () => {
+      setFormData(prevFormData => {
         const newCheckboxes = new Set(prevFormData.checkboxes);
 
         if (newCheckboxes.has(option)) {
@@ -65,7 +64,7 @@ const Issue = (props) => {
     [],
   );
 
-  const handleDescriptionChange = (e) => {
+  const handleDescriptionChange = e => {
     let currentDescription = e.target.value;
 
     if (currentDescription.length > maxDescriptionCharacterLimit) {
@@ -76,61 +75,79 @@ const Issue = (props) => {
     setCharacterCount(currentDescription.length);
   };
 
-  const handleCancel = (e) => {
+  const handleCancel = e => {
     e.preventDefault();
     history.push('/bmdashboard/');
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Submit');
-
-    const isDataValid = validateData(formData);
-    console.log('isDataValid: ' + isDataValid);
-  };
-
-  const validateData = (currentFormData) => {
-    if (!formData.dateOfWork) {
-      console.log('Date of Work is required');
+  const validateData = currentFormData => {
+    if (!currentFormData.dateOfWork) {
+      // console.log('Date of Work is required');
       return false;
     }
 
-    if (!formData.dropdown) {
-      console.log('Issue Type is required');
+    if (!currentFormData.dropdown) {
+      // console.log('Issue Type is required');
       return false;
     }
 
-    if (formData.checkboxes.size == 0) {
-      console.log('Consequence(s) is required');
+    if (currentFormData.checkboxes.size === 0) {
+      // console.log('Consequence(s) is required');
       return false;
     }
 
-    if (formData.checkboxes && formData.checkboxes.has('Other') && formData.other.length == 0) {
-      console.log('Other is required');
+    if (
+      currentFormData.checkboxes &&
+      currentFormData.checkboxes.has('Other') &&
+      currentFormData.other.length === 0
+    ) {
+      // console.log('Other is required');
       return false;
     }
 
-    if (!formData.resolved) {
-      console.log('Resolved is required');
+    if (!currentFormData.resolved) {
+      // console.log('Resolved is required');
       return false;
     }
 
-    if (formData.description.length == 0) {
-      console.log('Description is required');
+    if (currentFormData.description.length === 0) {
+      // console.log('Description is required');
       return false;
     }
 
-    console.log('Form submitted with data: ', JSON.stringify(currentFormData));
+    // console.log('Form submitted with data: ', JSON.stringify(currentFormData));
 
     return true;
   };
 
-  const handleDropdownChange = (option) => {
-    setFormData({ ...formData, dropdown: option, checkboxes: new Set(), other: '' });
-    changeCheckboxOption(option);
+  const handleSubmit = e => {
+    e.preventDefault();
+    // console.log('Submit');
+    // console.log(`isDataValid: ${isDataValid}`);
+
+    const isDataValid = validateData(formData);
+    return isDataValid;
   };
 
-  const changeCheckboxOption = (selectedOption) => {
+  const createAndSetCheckboxOptionPairArray = currentCheckboxOption => {
+    // Need this logic to dynamically create rows and cols.
+    const currentCheckBoxOptionPairArray = [];
+
+    for (let i = 0; i < currentCheckboxOption.length; i += 2) {
+      let pair = [];
+      if (i + 1 >= currentCheckboxOption.length) {
+        pair = [currentCheckboxOption[i]];
+      } else {
+        pair = [currentCheckboxOption[i], currentCheckboxOption[i + 1]];
+      }
+
+      currentCheckBoxOptionPairArray.push(pair);
+    }
+
+    setCheckboxOption(currentCheckBoxOptionPairArray);
+  };
+
+  const changeCheckboxOption = selectedOption => {
     let currentCheckboxOption = otherOption;
 
     if (selectedOption === 'Safety') {
@@ -146,22 +163,9 @@ const Issue = (props) => {
     createAndSetCheckboxOptionPairArray(currentCheckboxOption);
   };
 
-  const createAndSetCheckboxOptionPairArray = (currentCheckboxOption) => {
-    // Need this logic to dynamically create rows and cols.
-    let currentCheckBoxOptionPairArray = [];
-
-    for (let i = 0; i < currentCheckboxOption.length; i += 2) {
-      let pair = [];
-      if (i + 1 >= currentCheckboxOption.length) {
-        pair = [currentCheckboxOption[i]];
-      } else {
-        pair = [currentCheckboxOption[i], currentCheckboxOption[i + 1]];
-      }
-
-      currentCheckBoxOptionPairArray.push(pair);
-    }
-
-    setCheckboxOption(currentCheckBoxOptionPairArray);
+  const handleDropdownChange = option => {
+    setFormData({ ...formData, dropdown: option, checkboxes: new Set(), other: '' });
+    changeCheckboxOption(option);
   };
 
   useEffect(() => {
@@ -185,7 +189,7 @@ const Issue = (props) => {
                 type="date"
                 name="dateOfWork"
                 id="dateOfWork"
-                onChange={(e) => setFormData({ ...formData, dateOfWork: e.target.value })}
+                onChange={e => setFormData({ ...formData, dateOfWork: e.target.value })}
               />
             </Col>
           </Row>
@@ -208,9 +212,9 @@ const Issue = (props) => {
                 type="select"
                 name="dropdown"
                 value={formData.dropdown}
-                onChange={(e) => handleDropdownChange(e.target.value)}
+                onChange={e => handleDropdownChange(e.target.value)}
               >
-                {dropdownOptions.map((option) => (
+                {dropdownOptions.map(option => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -225,32 +229,32 @@ const Issue = (props) => {
               <Label className="sub-title-text">{CONSEQUENCES_TITLE}</Label>
             </Col>
           </Row>
-            {checkboxOptions.map((pair, rowIndex) => (
-              <Row key={rowIndex} className="consequences-checkboxes">
-                {pair.map((option, colIndex) => (
-                  <Col key={colIndex}>
-                    <Label check>
-                      <Input
-                        type="checkbox"
-                        checked={formData.checkboxes.has(option) || false}
-                        onChange={handleCheckboxChange(rowIndex * 2 + colIndex, option)}
-                      />
-                      {option}
-                    </Label>
-                    {option === 'Other' && (
-                      <Input
-                        className="issue-form-override-css"
-                        type="textarea"
-                        rows="1"
-                        placeholder="If other is selected, please specify."
-                        value={formData.other}
-                        onChange={(e) => setFormData({ ...formData, other: e.target.value })}
-                      />
-                    )}
-                  </Col>
-                ))}
-              </Row>
-            ))}
+          {checkboxOptions.map(pair => (
+            <Row key={pair} className="consequences-checkboxes">
+              {pair.map(option => (
+                <Col key={option}>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      checked={formData.checkboxes.has(option) || false}
+                      onChange={handleCheckboxChange(option)}
+                    />
+                    {option}
+                  </Label>
+                  {option === 'Other' && (
+                    <Input
+                      className="issue-form-override-css"
+                      type="textarea"
+                      rows="1"
+                      placeholder="If other is selected, please specify."
+                      value={formData.other}
+                      onChange={e => setFormData({ ...formData, other: e.target.value })}
+                    />
+                  )}
+                </Col>
+              ))}
+            </Row>
+          ))}
         </FormGroup>
         <FormGroup>
           <Row>
@@ -264,7 +268,7 @@ const Issue = (props) => {
                 <Input
                   type="radio"
                   name="radioOption"
-                  onChange={(e) => setFormData({ ...formData, resolved: 'Yes' })}
+                  onChange={() => setFormData({ ...formData, resolved: 'Yes' })}
                 />
                 Yes
               </Label>
@@ -274,7 +278,7 @@ const Issue = (props) => {
                 <Input
                   type="radio"
                   name="radioOption"
-                  onChange={(e) => setFormData({ ...formData, resolved: 'No' })}
+                  onChange={() => setFormData({ ...formData, resolved: 'No' })}
                 />
                 No
               </Label>
@@ -297,7 +301,7 @@ const Issue = (props) => {
                 placeholder={DESCRIPTION_PLACEHOLDER}
                 value={formData.description}
                 rows="8"
-                onChange={(e) => handleDescriptionChange(e)}
+                onChange={e => handleDescriptionChange(e)}
               />
             </Col>
             <div className="character-counter-text">
@@ -308,12 +312,12 @@ const Issue = (props) => {
         <FormGroup>
           <Row className="text-center">
             <Col>
-              <Button className="IssueFormButtonCancel" onClick={(e) => handleCancel(e)}>
+              <Button className="IssueFormButtonCancel" onClick={e => handleCancel(e)}>
                 Cancel
               </Button>
             </Col>
             <Col>
-              <Button className="IssueFormButtonSubmit" onClick={(e) => handleSubmit(e)}>
+              <Button className="IssueFormButtonSubmit" onClick={e => handleSubmit(e)}>
                 Submit
               </Button>
             </Col>
@@ -322,6 +326,6 @@ const Issue = (props) => {
       </Form>
     </div>
   );
-};
+}
 
 export default Issue;
