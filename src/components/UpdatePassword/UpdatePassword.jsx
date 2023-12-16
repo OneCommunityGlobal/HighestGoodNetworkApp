@@ -115,9 +115,5 @@ const mapStateToProps = state => ({
 });
 
 export default withRouter(
-  connect(mapStateToProps, {
-    logoutUser,
-    updatePassword,
-    clearErrors,
-  })(UpdatePassword),
+  connect(mapStateToProps, { logoutUser, updatePassword, clearErrors })(UpdatePassword),
 );
