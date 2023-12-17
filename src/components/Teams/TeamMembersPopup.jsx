@@ -41,7 +41,6 @@ const TeamMembersPopup = React.memo(props => {
   const selectUser = user => {
     onSelectUser(user);
     onValidation(true);
-    setDuplicateUserAlert(false);
   };
 
   /**
@@ -104,7 +103,6 @@ const TeamMembersPopup = React.memo(props => {
 
   useEffect(() => {
     onValidation(true);
-    setDuplicateUserAlert(false);
   }, [props.open]);
 
   return (
@@ -125,9 +123,7 @@ const TeamMembersPopup = React.memo(props => {
               </Button>
             </div>
           )}
-          {duplicateUserAlert ? (
-            <Alert color="danger">Member is already a part of this team.</Alert>
-          ) : isValidUser === false ? (
+          {isValidUser === false ? (
             <Alert color="danger">Please choose a valid user.</Alert>
           ) : (
             <></>
