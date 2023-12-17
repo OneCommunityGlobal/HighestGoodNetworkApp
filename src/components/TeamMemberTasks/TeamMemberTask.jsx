@@ -109,9 +109,9 @@ const TeamMemberTask = React.memo(
                       style={{
                         color:
                           currentDate.isSameOrAfter(
-                            moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                            moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                           ) &&
-                          currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                          currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                             ? 'rgba(128, 128, 128, 0.5)'
                             : undefined,
                       }}
