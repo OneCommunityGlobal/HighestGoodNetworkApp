@@ -13,6 +13,7 @@ import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import moment from 'moment-timezone';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -47,6 +48,10 @@ function LeaderBoard({
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
+  const currentDateInLosAngeles = moment
+    .tz('America/Los_Angeles')
+    .startOf('day')
+    .toISOString();
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
 
@@ -285,7 +290,17 @@ function LeaderBoard({
                   {/* </Link> */}
                 </td>
                 <th scope="row">
-                  <Link to={`/userprofile/${item.personId}`} title="View Profile">
+                  <Link
+                    to={`/userprofile/${item.personId}`}
+                    title="View Profile"
+                    style={{
+                      color:
+                        currentDateInLosAngeles >= item.timeOffFrom &&
+                        currentDateInLosAngeles < item.timeOffTill
+                          ? 'rgba(128, 128, 128, 0.5)'
+                          : undefined,
+                    }}
+                  >
                     {item.name}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
