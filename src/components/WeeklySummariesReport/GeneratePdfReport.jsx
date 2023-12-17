@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
@@ -7,12 +6,12 @@ import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 import { boxStyle } from 'styles';
 
-const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
+function GeneratePdfReport({ summaries, weekIndex, weekDates }) {
   const generateFormattedReport = () => {
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
-    //Replace any style copied into the weekly summary message.
-    let styleRegex = /<style([\S\s]*?)>([\S\s]*?)<\/style>/gim;
-    let styleInlineRegex = /style="([\S\s]*?)"/gim;
+    // Replace any style copied into the weekly summary message.
+    const styleRegex = /<style([\S\s]*?)>([\S\s]*?)<\/style>/gim;
+    const styleInlineRegex = /style="([\S\s]*?)"/gim;
     const emails = [];
 
     let wsReport = `<h1>Weekly Summaries Report</h1>
@@ -23,24 +22,21 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
     const weeklySummaryNotRequiredMessage =
       '<div><b>Weekly Summary:</b> <span style="color: green;">Not required for this user</span></div>';
 
-    summaries.sort((a, b) =>
-      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
-    );
-
     summaries.forEach(eachSummary => {
+      // 1. get vars that we need
       const {
         firstName,
         lastName,
         weeklySummaries,
         mediaUrl,
         weeklySummariesCount,
-        weeklycommittedHours,
+
         totalSeconds,
         weeklySummaryOption,
       } = eachSummary;
 
       const hoursLogged = (totalSeconds[weekIndex] || 0) / 3600;
-
+      // 2. email
       if (eachSummary.email !== undefined && eachSummary.email !== null) {
         emails.push(eachSummary.email);
       }
@@ -50,6 +46,8 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         : '<span style="color: red;">Not provided!</span>';
 
       const totalValidWeeklySummaries = weeklySummariesCount || 'No valid submissions yet!';
+
+      // 2. edit style
       const colorStyle = (() => {
         switch (weeklySummaryOption) {
           case 'Team':
@@ -62,6 +60,8 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
             return eachSummary.weeklySummaryNotReq ? 'style="color: green"' : '';
         }
       })();
+
+      // 3. get message
       let weeklySummaryMessage = weeklySummaryNotProvidedMessage;
       if (Array.isArray(weeklySummaries) && weeklySummaries[weekIndex]) {
         const { dueDate, summary } = weeklySummaries[weekIndex];
@@ -82,6 +82,7 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         }
       }
 
+      // 4. styling
       wsReport += `\n
       <div><b>Name:</b> <span class="name">${firstName} ${lastName}</span></div>
       <div><b>Media URL:</b> ${mediaUrlLink}</div>
@@ -89,9 +90,9 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
         totalValidWeeklySummaries === 8 ? 'text-decoration: underline; color: red;' : ''
       }"><b>Total valid weekly summaries:</b> ${totalValidWeeklySummaries}</div>
       ${
-        hoursLogged >= weeklycommittedHours
-          ? `<div><b>Hours logged:</b> ${hoursLogged} / ${weeklycommittedHours} </div>`
-          : `<div style="color: red;"><b>Hours logged:</b> ${hoursLogged} / ${weeklycommittedHours}</div>`
+        hoursLogged >= eachSummary.promisedHoursByWeek[weekIndex]
+          ? `<div><b>Hours logged:</b> ${hoursLogged} / ${eachSummary.promisedHoursByWeek[weekIndex]} </div>`
+          : `<div style="color: red;"><b>Hours logged:</b> ${hoursLogged} / ${eachSummary.promisedHoursByWeek[weekIndex]}</div>`
       }
       ${weeklySummaryMessage}
       <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
@@ -99,9 +100,8 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
 
     wsReport += '<h2>Emails</h2>';
 
-    wsReport += [...new Set(emails)] //elimiates duplicate entries if they're somehow present
-      .toString()
-      .replaceAll(',', ', ');
+    // 5. elimiates duplicate entries if they're somehow present
+    wsReport += [...new Set(emails)].toString().replaceAll(',', ', ');
 
     return wsReport;
   };
@@ -125,17 +125,14 @@ const GeneratePdfReport = ({ summaries, weekIndex, weekDates }) => {
   };
 
   return (
-    <Button
-      className="px-5 btn--dark-sea-green float-right"
-      onClick={generateAndDownloadPdf}
-      style={boxStyle}
-    >
+    <Button className="btn--dark-sea-green" onClick={generateAndDownloadPdf} style={boxStyle}>
       Open PDF
     </Button>
   );
-};
+}
 
 GeneratePdfReport.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekDates: PropTypes.shape({
     fromDate: PropTypes.string,

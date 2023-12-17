@@ -1,6 +1,5 @@
 .team-member-tasks {
   background-color: white;
-  
 }
 
 .team-member-tasks h1 {
@@ -8,26 +7,36 @@
   font-size: 20px;
 }
 
-.table-container{
+.table-container {
   overflow-x: auto;
 }
 
 .team-member-tasks-bell {
-  margin-left: 20px;
+  margin-right: 10px;
   color: red;
   cursor: pointer;
 }
 
 .team-member-tasks-done {
-  margin-left: 10px;
+  /* margin-left: 10px; */
   color: green;
   cursor: pointer;
 }
 
-.team-member-task-remove{
+.team-member-task-remove {
   margin-left: 10px;
+  margin-right: 10px;
   color: red;
   cursor: pointer;
+}
+
+.team-member-task-info {
+  cursor: pointer;
+}
+
+.task-info-modal-backdrop {
+  background-color: grey;
+  opacity: 0.5;
 }
 
 .committed-hours-circle {
@@ -45,7 +54,16 @@
 
 .team-task-progress {
   position: relative;
-  width: 35%;
+  width:120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+@media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
+  .team-task-progress {
+    width: 100%; /* or any other value that fits your design */
+    min-width: auto;
+    max-width: none;
+  }
 }
 
 .task-break {
@@ -58,6 +76,9 @@
 
 .task-align {
   text-align: left;
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  gap: 8px; /* Space bet*/
 }
 
 .team-member-tasks-user-name {
@@ -69,13 +90,13 @@
   text-align: center;
   vertical-align: middle;
   background: #ff4d4f;
-  border-radius: 40px;
+  border-radius: 50%;
   color: #fff;
   height: 25px;
   font-size: 15px;
   width: 25px;
   top: 3px;
-  right: 0;
+  right: -10px;
 }
 
 .team-clocks {
@@ -198,4 +219,15 @@
   .team-member-tasks h1 {
     font-size: 28px;
   }
+}
+
+.team-member-tasks-icons {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px; /* Adjust the gap as needed */
+}
+
+.team-member-tasks-content {
+  align-items: center; /* Vertically center-align children */
+  gap: 8px; /* Space between children */
 }

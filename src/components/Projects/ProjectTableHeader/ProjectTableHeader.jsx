@@ -1,8 +1,3 @@
-/*********************************************************************************
- * Component: Project Table Header
- * Author: Henry Ng - 01/17/20
- * This component is the top of the table. It displays titles.
- ********************************************************************************/
 import React from 'react';
 import './../projects.css';
 import {
@@ -15,8 +10,13 @@ import {
   DELETE,
 } from './../../../languages/en/ui';
 import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const ProjectTableHeader = props => {
+  const { role } = props; // Access the 'role' prop
+  const canDeleteProject = props.hasPermission('deleteProject') || props.hasPermission('seeProjectManagement');
+
   return (
     <tr>
       <th scope="col" id="projects__order">
@@ -36,9 +36,19 @@ const ProjectTableHeader = props => {
         {MEMBERS}
       </th>
       <th scope="col" id="projects__wbs">
-        {WBS}
+        <div className="d-flex align-items-center">
+          <span className="mr-2">{WBS}</span>
+          <EditableInfoModal
+            areaName="ProjectTableHeaderWBS"
+            areaTitle="WBS"
+            fontSize={24}
+            isPermissionPage={true}
+            role={role}
+            className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+          />
+        </div>
       </th>
-      {hasPermission(props.role, 'deleteProject', props.roles, props.userPermissions) ? (
+      {canDeleteProject ? (
         <th scope="col" id="projects__delete">
           {DELETE}
         </th>
@@ -47,4 +57,9 @@ const ProjectTableHeader = props => {
   );
 };
 
-export default ProjectTableHeader;
+const mapStateToProps = state => ({
+  role: state.userProfile.role, // Map 'role' from Redux state to 'role' prop
+});
+
+export default connect(mapStateToProps, { hasPermission })(ProjectTableHeader);
+

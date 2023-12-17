@@ -7,25 +7,27 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
+import { boxStyle } from 'styles';
+import PropTypes from 'prop-types'; 
 
 const Member = props => {
-  const [role] = useState(props.state ? props.state.auth.user.role : null);
-  const userPermissions = props.state.auth.user?.permissions?.frontPermissions;
-  const { roles } = props.state.role;
+  const canGetUserProfiles = props.hasPermission('getUserProfiles');
+  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canUnassignUserInProject = props.hasPermission('unassignUserInProject') || props.hasPermission('seeProjectManagement');
   return (
     <React.Fragment>
       <tr className="members__tr">
         <th scope="row">
-          <div>{props.index + 1}</div>
+          <div>{typeof props.index === 'number' ? props.index + 1 : null}</div>
         </th>
         <td className="members__name">
-          {hasPermission(role, 'seeUserProfileInProjects', roles, userPermissions) ? (
+          {canGetUserProfiles ? (
             <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
           ) : (
             props.fullName
           )}
         </td>
-        {hasPermission(role, 'unassignUserInProject', roles, userPermissions) ? (
+        {canUnassignUserInProject ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"
@@ -39,6 +41,7 @@ const Member = props => {
                   props.lastName,
                 )
               }
+              style={boxStyle}
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>
@@ -48,7 +51,18 @@ const Member = props => {
     </React.Fragment>
   );
 };
+
+// Define default props
+Member.defaultProps = {
+  index: 0
+};
+
+// Define prop types
+Member.propTypes = {
+  index: PropTypes.number.isRequired
+};
+
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { assignProject })(Member);
+export default connect(mapStateToProps, { assignProject, hasPermission })(Member);

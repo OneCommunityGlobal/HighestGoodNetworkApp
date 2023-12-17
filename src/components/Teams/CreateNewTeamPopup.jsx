@@ -1,31 +1,31 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { boxStyle } from 'styles';
 
-const CreateNewTeamPopup = React.memo(props => {
-  const [newTeam, onNewName] = useState('');
+export const CreateNewTeamPopup = React.memo(props => {
+  const [newTeam, setNewName] = useState('');
   const closePopup = () => {
     props.onClose();
   };
   const [isValidTeam, onValidation] = useState(true);
   useEffect(() => {
-    onNewName(props.teamName);
+    setNewName(props.teamName);
   }, [props.open, props.teamName]);
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
+    <Modal autoFocus={false} isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>
         {props.isEdit ? 'Update Team Name' : 'Create New Team'}
       </ModalHeader>
       <ModalBody style={{ textAlign: 'start' }}>
         <label>Name of the Team</label>
         <Input
+          autoFocus
           id="teamName"
           placeholder="Please enter a new team name"
           value={newTeam}
           onChange={e => {
             onValidation(true);
-            onNewName(e.target.value);
+            setNewName(e.target.value);
           }}
           required
         />
@@ -37,9 +37,9 @@ const CreateNewTeamPopup = React.memo(props => {
         </Button>
         <Button
           color="primary"
-          onClick={() => {
+          onClick={async () => {
             if (newTeam !== '') {
-              props.onOkClick(newTeam, props.isEdit);
+              await props.onOkClick(newTeam, props.isEdit);
             } else {
               onValidation(false);
             }

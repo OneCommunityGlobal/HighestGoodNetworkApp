@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-case-declarations */
 import * as types from '../constants/allTeamsConstants';
 
 const userTeamsInitial = {
@@ -64,6 +62,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
       const updatedTeam = teams.find(team => team._id === action.teamId);
       updatedTeam.isActive = action.isActive;
       updatedTeam.teamName = action.teamName;
+      updatedTeam.teamCode = action.teamCode;
       return updateObject(allTeams, {
         allTeams: teams,
         fetching: false,

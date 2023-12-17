@@ -1,12 +1,11 @@
 import * as actions from '../constants/weeklySummaries';
 
 const initialState = {
-  summaries: [],
+  summaries: {},
   loading: false,
   fetchError: null,
 };
 
-// eslint-disable-next-line import/prefer-default-export
 export const weeklySummariesReducer = (state = initialState, action) => {
   switch (action.type) {
     case actions.FETCH_WEEKLY_SUMMARIES_BEGIN:

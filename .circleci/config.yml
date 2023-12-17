@@ -3,6 +3,7 @@ jobs:
   build_PROD:
     docker:
       - image: cimg/node:14.17.0
+    resource_class: large
     steps:
       - checkout
       - run:
@@ -10,7 +11,7 @@ jobs:
           command: 'sudo npm install'
       - run:
           name: Run react build
-          command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true npm run build && sudo mv build/index.html build/200.html'
+          command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS npm run build && sudo mv build/index.html build/200.html'
       - run:
           name: Deploy app
           command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_PROD
@@ -18,6 +19,7 @@ jobs:
   build_development:
     docker:
       - image: ubuntu:20.04
+    resource_class: large
     steps:
       - checkout
       - run:
@@ -46,7 +48,7 @@ jobs:
           command: npm install
       - run:
           name: Build the React client
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true && npm run build
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS && npm run build
       - run:
           name: Create ZIP archive of build directory
           command: zip -r build.zip build
@@ -63,6 +65,7 @@ jobs:
   build_beta:
     docker:
       - image: ubuntu:20.04
+    resource_class: large
     steps:
       - checkout
       - run:
@@ -91,7 +94,7 @@ jobs:
           command: npm install
       - run:
           name: Build the React client
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true && npm run build
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS && npm run build
       - run:
           name: Create ZIP archive of build directory
           command: zip -r build.zip build

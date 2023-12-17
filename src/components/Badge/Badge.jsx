@@ -8,7 +8,6 @@ import {
   CardText,
   CardBody,
   CardHeader,
-  Button,
   Modal,
   ModalBody,
   UncontrolledTooltip,
@@ -17,7 +16,7 @@ import {
 import './Badge.css';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
-import BadgeReport from './BadgeReport';
+import BadgeSummaryViz from 'components/Reports/BadgeSummaryViz';
 import { getUserProfile } from '../../actions/userProfile';
 import { boxStyle } from 'styles';
 
@@ -35,7 +34,7 @@ const Badge = props => {
           if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
             count += 1;
           } else {
-            count += badge.count;
+            count += Number(badge.count);
           }
         });
         setTotalBadge(Math.round(count));
@@ -48,6 +47,19 @@ const Badge = props => {
     setOpenTypes(isOpenTypes => !isOpenTypes);
   };
 
+  const generateBadgeText = (totalBadge, badgeCollection, personalBestMaxHrs) => {
+    if (!totalBadge) return 'You have no badges. ';
+
+    const roundedHours = Math.floor(personalBestMaxHrs);
+    const personalMaxText = badgeCollection.find(badgeObj => badgeObj.badge.type === 'Personal Max')
+      ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
+      : '';
+
+    return `Bravo! You have earned ${totalBadge} ${
+      totalBadge === 1 ? 'badge' : 'badges'
+    }${personalMaxText}! `;
+  };
+
   useEffect(() => {
     const userId = props.userId;
     let count = 0;
@@ -56,14 +68,13 @@ const Badge = props => {
         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
           count += 1;
         } else {
-          count += badge.count;
+          count += Number(badge.count);
         }
       });
       setTotalBadge(Math.round(count));
     }
   }, [props.userProfile.badgeCollection, totalBadge]);
 
-  const permissionsUser = props.userProfile?.permissions?.frontPermissions;
   return (
     <>
       <Container className="right-padding-temp-fix">
@@ -74,8 +85,14 @@ const Badge = props => {
                 Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
               </CardHeader>
               <CardBody>
-                <NewBadges badges={props.userProfile.badgeCollection || []} />
-                <OldBadges badges={props.userProfile.badgeCollection || []} />
+                <NewBadges
+                  personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
+                  badges={props.userProfile.badgeCollection || []}
+                />
+                <OldBadges
+                  personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
+                  badges={props.userProfile.badgeCollection || []}
+                />
                 <CardText
                   style={{
                     fontWeight: 'bold',
@@ -83,34 +100,14 @@ const Badge = props => {
                     color: '#285739',
                   }}
                 >
-                  {totalBadge
-                    ? `Bravo! You have earned ${totalBadge} ${
-                        totalBadge == 1 ? 'badge' : 'badges'
-                      }! `
-                    : 'You have no badges. '}
+                  {generateBadgeText(
+                    totalBadge,
+                    props.userProfile.badgeCollection,
+                    props.userProfile.personalBestMaxHrs,
+                  )}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
-                <Button
-                  className="btn--dark-sea-green float-right"
-                  onClick={toggle}
-                  style={boxStyle}
-                >
-                  Badge Report
-                </Button>
-                <Modal size={'lg'} isOpen={isOpen} toggle={toggle}>
-                  <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-                  <ModalBody>
-                    <BadgeReport
-                      badges={props.userProfile.badgeCollection || []}
-                      userId={props.userId}
-                      firstName={props.userProfile.firstName}
-                      lastName={props.userProfile.lastName}
-                      role={props.role}
-                      close={toggle}
-                      permissionsUser={permissionsUser}
-                    />
-                  </ModalBody>
-                </Modal>
+                <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard={true} />
               </CardBody>
             </Card>
           </Col>
@@ -149,8 +146,8 @@ const Badge = props => {
           </p>
           <p className="badge_info_icon_text">
             Hours in Category: As you submit hours to a project of a certain category such as
-            'Food', 'Energy', etc you can earn badges for hitting certain levels of hours worked in
-            each category.
+            &apos;Food&apos;, &apos;Energy&apos;, etc you can earn badges for hitting certain levels
+            of hours worked in each category.
           </p>
           <p className="badge_info_icon_text">
             Hour Multiple: If you earn a multiple of your weekly committed hours you can earn a

@@ -3,8 +3,12 @@
   font-weight: bold;
 }
 
+.task-link {
+  word-break: break-all;
+}
+
 .remove-link {
-  padding: 2px !important;
+  margin-right: 5px;
   color: red;
   cursor: pointer;
 }

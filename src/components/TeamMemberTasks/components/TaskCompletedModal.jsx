@@ -1,10 +1,9 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import React from 'react';
+import React, { useState } from 'react';
 import { boxStyle } from 'styles';
-import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 const TaskCompletedModal = React.memo(props => {
-  const [isLoadingTask, setIsLoadingTask] = useState(false);
 
   const closeFunction = e => {
     props.setClickedToShowModal(false);
@@ -33,7 +32,14 @@ const TaskCompletedModal = React.memo(props => {
     const newResources = task.resources.filter(item => item.userID !== props.userId);
     const updatedTask = { ...task, resources: newResources };
     props.updateTask(task._id, updatedTask);
+    props.setUpdatedTasks([]);
+    toast.success("User has been removed from the task successfully. ");
   };
+
+  const handleClick = ()=>{
+    props.taskModalOption === 'Checkmark' ? removeTaskFromUser(props.task) : removeUserFromTask(props.task);
+    closeFunction();
+  }
 
   let isCheckmark = props.taskModalOption === 'Checkmark';
   let modalHeader = isCheckmark ? 'Mark as Done' : 'Remove User from Task';
@@ -44,25 +50,13 @@ const TaskCompletedModal = React.memo(props => {
   return (
     <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
       <ModalHeader toggle={() => props.popupClose()}>{modalHeader}</ModalHeader>
-      {isLoadingTask ? (
-        <ModalBody>
-          <p>Loading...</p>
-        </ModalBody>
-      ) : (
+
         <ModalBody>
           <p>{modalBody}</p>
           <ModalFooter>
             <Button
               color="primary"
-              onClick={() => {
-                setIsLoadingTask(true);
-                {
-                  props.taskModalOption === 'Checkmark'
-                    ? removeTaskFromUser(props.task)
-                    : removeUserFromTask(props.task);
-                }
-              }}
-              disabled={isLoadingTask}
+              onClick={handleClick}
               style={boxStyle}
             >
               {modalHeader}
@@ -77,7 +71,7 @@ const TaskCompletedModal = React.memo(props => {
             </Button>
           </ModalFooter>
         </ModalBody>
-      )}
+      
     </Modal>
   );
 });

@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 
 // Use named export in order for automated tests to work properly.
-// eslint-disable-next-line import/prefer-default-export
-export function CountdownTimer({ date }) {
+export default function CountdownTimer({ date }) {
   const calcTimeLeft = () => {
     const difference = +date - +new Date();
 
@@ -66,9 +65,11 @@ export function CountdownTimer({ date }) {
     <div className="countdown">
       {!isEmpty(timeLeft)
         ? Object.keys(timeLeft).map(interval => (
+            // eslint-disable-next-line react/jsx-indent
             <span key={interval} className="countdown__col">
               <span className="countdown__col__element">
-                <strong>{addLeadingZeros(interval)}</strong> <span>{pluralOrSingle(interval)}</span>
+                <strong>{addLeadingZeros(interval)}</strong>
+                <span>{pluralOrSingle(interval)}</span>
               </span>
             </span>
           ))

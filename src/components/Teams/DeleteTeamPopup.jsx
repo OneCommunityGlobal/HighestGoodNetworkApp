@@ -1,9 +1,8 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle } from 'styles';
 
-const DeleteTeamPopup = React.memo(props => {
+export const DeleteTeamPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };
@@ -20,8 +19,8 @@ const DeleteTeamPopup = React.memo(props => {
       <ModalFooter>
         <Button
           color="danger"
-          onClick={() => {
-            props.onDeleteClick(props.selectedTeamId);
+          onClick={async () => {
+            await props.onDeleteClick(props.selectedTeamId);
           }}
           style={boxStyle}
         >
@@ -29,8 +28,8 @@ const DeleteTeamPopup = React.memo(props => {
         </Button>
         <Button
           color="warning"
-          onClick={() => {
-            props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false);
+          onClick={async () => {
+            await props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false, props.selectedTeamCode);
           }}
           style={boxStyle}
         >

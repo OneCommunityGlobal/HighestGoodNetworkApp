@@ -1,11 +1,14 @@
 import React from 'react';
 import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 
 /**
  * The header row of the team table.
  */
-const TeamTableHeader = React.memo(props => {
+export const TeamTableHeader = React.memo(props => {
+  const canDeleteTeam = props.hasPermission('deleteTeam');
+  const canPutTeam = props.hasPermission('putTeam');
   return (
     <tr>
       <th scope="col" id="teams__order">
@@ -18,11 +21,9 @@ const TeamTableHeader = React.memo(props => {
       <th scope="col" id="teams__members">
         {MEMBERS}
       </th>
-      {hasPermission(props.requestorRole, 'editDeleteTeam', props.roles, props.userPermissions) && (
-        <th scope="col" id="teams__delete"></th>
-      )}
+      {(canDeleteTeam || canPutTeam) && <th scope="col" id="teams__delete"></th>}
     </tr>
   );
 });
 
-export default TeamTableHeader;
+export default connect(null, { hasPermission })(TeamTableHeader);
