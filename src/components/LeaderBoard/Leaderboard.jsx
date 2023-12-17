@@ -48,7 +48,7 @@ function LeaderBoard({
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
-  const currentDateInLosAngeles = moment.tz('America/Los_Angeles').startOf('day');
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
 
@@ -292,12 +292,10 @@ function LeaderBoard({
                     title="View Profile"
                     style={{
                       color:
-                        currentDateInLosAngeles.isSameOrAfter(
+                        currentDate.isSameOrAfter(
                           moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                         ) &&
-                        currentDateInLosAngeles.isBefore(
-                          moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-                        )
+                        currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                           ? 'rgba(128, 128, 128, 0.5)'
                           : undefined,
                     }}

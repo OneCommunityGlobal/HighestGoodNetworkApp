@@ -12,6 +12,7 @@ import { boxStyle } from 'styles';
 import ReviewButton from './ReviewButton';
 import { useDispatch } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
+import moment from 'moment-timezone';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -27,6 +28,7 @@ const TeamMemberTask = React.memo(
     updateTaskStatus,
   }) => {
     const ref = useRef(null);
+    const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
     const [totalHoursRemaining, activeTasks] = useMemo(() => {
       let totalHoursRemaining = 0;
@@ -102,7 +104,18 @@ const TeamMemberTask = React.memo(
               <tbody>
                 <tr>
                   <td className="team-member-tasks-user-name">
-                    <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
+                    <Link
+                      to={`/userprofile/${user.personId}`}
+                      style={{
+                        color:
+                          currentDate.isSameOrAfter(
+                            moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                          ) &&
+                          currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                            ? 'rgba(128, 128, 128, 0.5)'
+                            : undefined,
+                      }}
+                    >{`${user.name}`}</Link>
                   </td>
                   <td data-label="Time" className="team-clocks">
                     <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
