@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
@@ -15,12 +15,13 @@ function WriteItForMeModal(props) {
   const toggle = () => setModal(!modal);
 
   const fetchSummary = async () => {
+    // eslint-disable-next-line react/destructuring-assignment
     const { userid } = props.getUserInfo();
 
     httpService
       .post(ENDPOINTS.INTERACT_WITH_CHATGPT, { userid })
       .then(response => {
-        console.log('Response received:', response);
+        // console.log('Response received:', response);
         if (response.status === 200) {
           const { data } = response;
           setSummary(data.response);
@@ -30,7 +31,8 @@ function WriteItForMeModal(props) {
         }
       })
       .catch(error => {
-        console.error('Error during fetchSummary:', error);
+        throw new Error(`HTTP error: ${error}`);
+        // console.error('Error during fetchSummary:', error);
         // toast.error('Failed to fetch summary');
       });
   };

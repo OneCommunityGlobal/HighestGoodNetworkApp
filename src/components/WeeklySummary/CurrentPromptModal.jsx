@@ -21,7 +21,7 @@ function CurrentPromptModal() {
 
   return (
     <div>
-      <Button color="info" onClick={toggle} style={boxStyle}>
+      <Button color="info" onClick={toggle} style={{ ...boxStyle, margin: '0 10px' }}>
         View and Copy Current AI Prompt
         <i
           className="fa fa-info-circle"
