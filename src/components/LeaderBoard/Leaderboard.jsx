@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -12,13 +12,14 @@ import {
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
   const prevDeps = useRef(deps);
   useEffect(() => {
     const isSame = prevDeps.current.every((obj, index) => {
-      let isItEqual = isEqual(obj, deps[index]);
+      const isItEqual = isEqual(obj, deps[index]);
       return isItEqual;
     });
     if (isFirst.current || !isSame) {
@@ -30,7 +31,7 @@ function useDeepEffect(effectFunc, deps) {
   }, deps);
 }
 
-const LeaderBoard = ({
+function LeaderBoard({
   getLeaderboardData,
   getOrgData,
   getMouseoverText,
@@ -41,10 +42,10 @@ const LeaderBoard = ({
   isVisible,
   asUser,
   totalTimeMouseoverText,
-}) => {
-  const userId = asUser ? asUser : loggedInUser.userId;
-  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); //??? this permission doesn't exist?
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); //??? this permission doesn't exist?
+}) {
+  const userId = asUser || loggedInUser.userId;
+  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
@@ -75,72 +76,13 @@ const LeaderBoard = ({
           }
         }
       }
-    } catch {}
+    } catch (error) {
+      throw new Error(error);
+    }
   }, [leaderBoardData]);
 
-  const [isOpen, setOpen] = useState(false);
-  const [modalContent, setContent] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const toggle = () => setOpen(isOpen => !isOpen);
-
-  const modalInfos = [
-    <>
-      <p>
-        This is the One Community Leaderboard! It is used to show how much tangible and total time
-        you’ve contributed, whether or not you’ve achieved your total committed hours for the week,
-        and (in the case of teams) where your completed hours for the week rank you compared to
-        other team members. It can also be used to access key areas of this application.
-      </p>
-      <ul>
-        <li>
-          The HGN Totals at the top shows how many volunteers are currently active in the system,
-          how many volunteer hours they are collectively committed to, and how many tangible and
-          total hours they have completed.
-          {/*The color and length of that bar
-          changes based on what percentage of the total committed hours for the week have been
-          completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo,
-          and Equal or More than 100%: Purple.*/}
-        </li>
-        <li>
-          The red/green dot shows whether or not a person has completed their “tangible” hours
-          commitment for the week. Green = yes (Great job!), Red = no. Clicking this dot will take
-          you to a person’s tasks section on their/your dashboard.{' '}
-        </li>
-        <li>
-          The time bar shows how much tangible and total (tangible + intangible) time you’ve
-          completed so far this week. In the case of teams, it also shows you where your completed
-          hours for the week rank you compared to other people on your team. Clicking a person’s
-          time bar will take you to the time log section on their/your dashboard. This bar also
-          changes color based on how many tangible hours you have completed: 0-5 hrs: Red, 5-10 hrs:
-          Orange, 10-20 hrs: Green, 20-30 hrs: Blue, 30-40 hrs: Indigo, 40-50 hrs: Violet, and 50+
-          hrs: Purple
-        </li>
-        <li>Clicking a person’s name will lead to their/your profile page.</li>
-      </ul>
-      <p>Hovering over any of these areas will tell you how they function too. </p>
-    </>,
-    <>
-      <p>
-        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you
-        keep this setting as it is.
-      </p>
-      <p>
-        If you want to change this setting so your team/everyone can see and access your time log
-        though, you can do so by going to&nbsp;
-        <Link to={`/userprofile/${userId}`} title="View Profile">
-          Your Profile&nbsp;
-        </Link>
-        --&gt; Teams Tab --&gt; toggle the “Visibility” switch to “Visible”.
-      </p>
-      <p>Note: Admins and Core Team can always see all team members. This cannot be changed.</p>
-    </>,
-  ];
-
-  const handleModalOpen = idx => {
-    setContent(modalInfos[idx]);
-    setOpen(true);
-  };
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
@@ -164,63 +106,59 @@ const LeaderBoard = ({
   return (
     <div>
       <h3>
-        Leaderboard&nbsp;&nbsp;
-        <i
-          data-toggle="tooltip"
-          data-placement="right"
-          title="Click to refresh the leaderboard"
-          style={{ fontSize: 24, cursor: 'pointer' }}
-          aria-hidden="true"
-          className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
-          onClick={updateLeaderboardHandler}
-        />
-        &nbsp;&nbsp;
-        <i
-          data-toggle="tooltip"
-          data-placement="right"
-          title="Click for more information"
-          style={{ fontSize: 24, cursor: 'pointer' }}
-          aria-hidden="true"
-          className="fa fa-info-circle"
-          onClick={() => {
-            handleModalOpen(0);
-          }}
-        />
-      </h3>
-      {!isVisible && (
-        <Alert color="warning">
-          Note: You are currently invisible to the team(s) you are on.&nbsp;&nbsp;
+        <div className="d-flex align-items-center">
+          <span className="mr-2">Leaderboard</span>
           <i
             data-toggle="tooltip"
             data-placement="right"
-            title="Click for more information"
-            style={{ fontSize: 20, cursor: 'pointer' }}
+            title="Click to refresh the leaderboard"
+            style={{ fontSize: 24, cursor: 'pointer' }}
             aria-hidden="true"
-            className="fa fa-info-circle"
-            onClick={() => {
-              handleModalOpen(1);
-            }}
+            className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
+            onClick={updateLeaderboardHandler}
           />
+          &nbsp;
+          <EditableInfoModal
+            areaName="LeaderboardOrigin"
+            areaTitle="Leaderboard"
+            role={loggedInUser.role}
+            fontSize={24}
+            isPermissionPage
+          />
+        </div>
+      </h3>
+      {!isVisible && (
+        <Alert color="warning">
+          <div className="d-flex align-items-center">
+            Note: You are currently invisible to the team(s) you are on.{' '}
+            <EditableInfoModal
+              areaName="LeaderboardInvisibleInfoPoint"
+              areaTitle="Leaderboard settings"
+              role={loggedInUser.role}
+              fontSize={24}
+              isPermissionPage
+            />
+          </div>
         </Alert>
       )}
-      <span className="leaderboard">
-        <Modal isOpen={isOpen} toggle={toggle}>
-          <ModalHeader toggle={toggle}>Leaderboard Info</ModalHeader>
-          <ModalBody>{modalContent}</ModalBody>
-          <ModalFooter>
-            <Button onClick={toggle} color="secondary" className="float-left">
-              {' '}
-              Ok{' '}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      </span>
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <Table className="leaderboard table-fixed">
           <thead>
             <tr>
               <th>Status</th>
-              <th>Name</th>
+              <th>
+                <div className="d-flex align-items-center">
+                  <span className="mr-2">Name</span>
+                  <EditableInfoModal
+                    areaName="Leaderboard"
+                    areaTitle="Team Members Navigation"
+                    role={loggedInUser.role}
+                    fontSize={18}
+                    isPermissionPage
+                    className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  />
+                </div>
+              </th>
               <th>
                 <span className="d-sm-none">Tan. Time</span>
                 <span className="d-none d-sm-block">Tangible Time</span>
@@ -262,8 +200,8 @@ const LeaderBoard = ({
                 </span>
               </td>
             </tr>
-            {leaderBoardData.map((item, key) => (
-              <tr key={key}>
+            {leaderBoardData.map(item => (
+              <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
@@ -289,7 +227,18 @@ const LeaderBoard = ({
                     }}
                   >
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div onClick={() => dashboardToggle(item)}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        dashboardToggle(item);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          dashboardToggle(item);
+                        }
+                      }}
+                    >
                       {hasLeaderboardPermissions(loggedInUser.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
@@ -323,7 +272,7 @@ const LeaderBoard = ({
                     </div>
                     {hasSummaryIndicatorPermission && item.hasSummary && (
                       <div
-                        title={`Weekly Summary Submitted`}
+                        title="Weekly Summary Submitted"
                         style={{
                           color: '#32a518',
                           cursor: 'default',
@@ -341,7 +290,7 @@ const LeaderBoard = ({
                   </Link>
                   &nbsp;&nbsp;&nbsp;
                   {hasVisibilityIconPermission && !item.isVisible && (
-                    <i className="fa fa-eye-slash" title="User is invisible"></i>
+                    <i className="fa fa-eye-slash" title="User is invisible" />
                   )}
                 </th>
                 <td className="align-middle" id={`id${item.personId}`}>
@@ -371,6 +320,6 @@ const LeaderBoard = ({
       </div>
     </div>
   );
-};
+}
 
 export default LeaderBoard;

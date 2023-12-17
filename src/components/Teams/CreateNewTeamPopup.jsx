@@ -1,16 +1,15 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { boxStyle } from 'styles';
 
-const CreateNewTeamPopup = React.memo(props => {
-  const [newTeam, onNewName] = useState('');
-  
+export const CreateNewTeamPopup = React.memo(props => {
+  const [newTeam, setNewName] = useState('');
   const closePopup = () => {
     props.onClose();
   };
   const [isValidTeam, onValidation] = useState(true);
   useEffect(() => {
-    onNewName(props.teamName);
+    setNewName(props.teamName);
   }, [props.open, props.teamName]);
   return (
     <Modal autoFocus={false} isOpen={props.open} toggle={closePopup}>
@@ -26,25 +25,26 @@ const CreateNewTeamPopup = React.memo(props => {
           value={newTeam}
           onChange={e => {
             onValidation(true);
-            onNewName(e.target.value);
+            setNewName(e.target.value);
           }}
           required
         />
         {isValidTeam === false ? <Alert color="danger">Please enter a team name.</Alert> : <></>}
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={closePopup}>
+        <Button color="secondary" onClick={closePopup} style={boxStyle}>
           Close
         </Button>
         <Button
           color="primary"
-          onClick={() => {
+          onClick={async () => {
             if (newTeam !== '') {
-              props.onOkClick(newTeam, props.isEdit);
+              await props.onOkClick(newTeam, props.isEdit);
             } else {
               onValidation(false);
             }
           }}
+          style={boxStyle}
         >
           OK
         </Button>

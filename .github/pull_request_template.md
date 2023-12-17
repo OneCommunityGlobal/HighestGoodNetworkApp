@@ -17,9 +17,10 @@ To test this backend PR you need to checkout the #XXX frontend PR.
 ## How to test:
 1. check into current branch
 2. do `npm install` and `...` to run this PR locally
-3. log as admin user
-4. go to dashboard→ Tasks→ task→…
-5. verify function “A” (feel free to include screenshot here)
+3. Clear site data/cache
+4. log as admin user
+5. go to dashboard→ Tasks→ task→…
+6. verify function “A” (feel free to include screenshot here)
 
 ## Screenshots or videos of changes:
 

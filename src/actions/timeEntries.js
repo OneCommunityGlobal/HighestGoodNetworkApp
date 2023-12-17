@@ -44,7 +44,9 @@ export const getTimeEntriesForWeek = (userId, offset) => {
 };
 
 export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
-  toDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DDTHH:mm:ss');
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;

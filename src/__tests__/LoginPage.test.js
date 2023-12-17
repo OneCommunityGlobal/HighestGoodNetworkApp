@@ -14,7 +14,6 @@ import { clearErrors } from '../actions/errorsActions';
 import { loginUser } from '../actions/authActions';
 
 const url = ENDPOINTS.LOGIN;
-const timerUrl = ENDPOINTS.TIMER(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 
 const server = setupServer(
@@ -66,7 +65,6 @@ const server = setupServer(
     ),
   ),
   rest.get(userProjectsUrl, (req, res, ctx) => res(ctx.status(200), ctx.json([]))),
-  rest.get(timerUrl, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
   rest.get('*', (req, res, ctx) => {
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,

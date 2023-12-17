@@ -5,6 +5,8 @@ import './reviewButton.css';
 import { boxStyle } from 'styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import httpService from '../../services/httpService';
+import { ApiEndpoint } from 'utils/URL';
 
 const ReviewButton = ({
   user,
@@ -34,8 +36,7 @@ const ReviewButton = ({
   const updReviewStat = (newStatus) => {
     const resources = [...task.resources];
     const newResources = resources.map(resource => {
-      const newResource = { ...resource };
-      newResource.reviewStatus = newStatus;
+      const newResource = { ...resource, reviewStatus: newStatus };
       newResource.completedTask = newStatus === "Reviewed";
       return newResource;
     });
@@ -81,6 +82,16 @@ const ReviewButton = ({
      } else {
       return <></>;
      }
+    };
+  
+  const sendReviewReq = event => {
+    event.preventDefault();
+    var data = {};
+    data['myUserId'] = myUserId;
+    data['name'] = user.name;
+    data['taskName'] = task.taskName;
+
+    httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
   return (
@@ -96,9 +107,10 @@ const ReviewButton = ({
         </ModalBody>
         <ModalFooter>
           <Button
-            onClick={() => {
+            onClick={(e) => {
               reviewStatus == "Unsubmitted"
-              ? updReviewStat("Submitted")
+              ? (updReviewStat("Submitted"),
+                sendReviewReq(e))
               : updReviewStat("Reviewed");
             }}
             color="primary"

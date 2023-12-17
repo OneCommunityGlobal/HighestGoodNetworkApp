@@ -1,51 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
+import { useState, useEffect } from 'react';
+
 import { toast } from 'react-toastify';
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
-import styles from './OwnerMessage.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { connect } from 'react-redux';
+import { boxStyle } from '../../styles';
+import './OwnerMessage.css';
+
 import editIcon from './assets/edit.png';
 import deleteIcon from './assets/delete.png';
 
-import { connect } from 'react-redux';
 import {
   getOwnerMessage,
-  createOwnerMessage,
   updateOwnerMessage,
   deleteOwnerMessage,
 } from '../../actions/ownerMessageAction';
-import {
-  getOwnerStandardMessage,
-  createOwnerStandardMessage,
-  updateOwnerStandardMessage,
-  deleteOwnerStandardMessage,
-} from '../../actions/ownerStandardMessageAction';
-import { boxStyle } from 'styles';
 
 function OwnerMessage({
   auth,
-  getOwnerMessage,
   ownerMessage,
-  ownerMessageId,
-  createOwnerMessage,
-  updateOwnerMessage,
-  deleteOwnerMessage,
-  getOwnerStandardMessage,
   ownerStandardMessage,
-  ownerStandardMessageId,
-  createOwnerStandardMessage,
-  updateOwnerStandardMessage,
-  deleteOwnerStandardMessage,
+  getMessage,
+  updateMessage,
+  deleteMessage,
 }) {
   const { user } = auth;
 
   const [disableTextInput, setDisableTextInput] = useState(false);
   const [disableButtons, setDisableButtons] = useState(true);
-  const [standardMessage, setStandardMessage] = useState('');
   const [message, setMessage] = useState('');
-  const [newMessage, setNewMessage] = useState('');
   const [modal, setModal] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
@@ -67,26 +50,14 @@ function OwnerMessage({
     setDisableTextInput(false);
   }
 
-  useEffect(() => {
-    getOwnerMessage();
-    if (ownerMessage) {
-      setMessage(ownerMessage);
-    }
-    getOwnerStandardMessage();
-    if (ownerStandardMessage) {
-      setStandardMessage(ownerStandardMessage);
-    }
-    newMessage ? setDisableButtons(false) : setDisableButtons(true);
-  }, [newMessage]);
-
   async function handleImageUpload(event) {
     if (event) event.preventDefault();
     const file = event.target.files[0];
-    if (typeof file != 'undefined') {
+    if (typeof file !== 'undefined') {
       const imageType = /jpg|jpeg|png/g;
       const validFormats = imageType.test(file.name);
 
-      //Input validation: file type
+      // Input validation: file type
       if (!validFormats) {
         toggle();
         toggleWrongPictureFormatWarning();
@@ -96,91 +67,93 @@ function OwnerMessage({
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
       fileReader.onloadend = () => {
-        setNewMessage(fileReader.result);
+        setMessage(fileReader.result);
         setDisableTextInput(true);
       };
     }
   }
 
-  async function handleMessage() {
-    const ownerMessage = {
-      newMessage: newMessage,
-    };
-
-    if (message) {
-      updateOwnerMessage(ownerMessageId, ownerMessage);
-      toggle();
-      toast.success('Message updated!');
-      setMessage(newMessage);
+  async function handleMessage(isStandard) {
+    const newOwnerMessages = { newMessage: message, isStandard };
+    const response = await updateMessage(newOwnerMessages);
+    if ([200, 201].includes(response?.status)) {
+      toast.success(
+        isStandard ? 'Standard message update successfully!' : 'Message update successfully!',
+      );
     } else {
-      createOwnerMessage(ownerMessage);
-      toggle();
-      toast.success('Message created!');
-      setMessage(newMessage);
+      toast.error(`Standard message save failed! Error: ${response}`);
     }
+    setDisableButtons(true);
+    toggle();
   }
 
   async function handleDeleteMessage() {
-    deleteOwnerMessage();
-    toggleDeleteWarning();
-    toast.error('Message deleted!');
-    setMessage('');
-  }
-
-  async function handleStandardMessage() {
-    const ownerStandardMessage = {
-      newStandardMessage: newMessage,
-    };
-
-    if (standardMessage) {
-      updateOwnerStandardMessage(ownerStandardMessageId, ownerStandardMessage);
-      toggle();
-      toast.success('Standard Message updated!');
-      setStandardMessage(newMessage);
+    const response = await deleteMessage();
+    if (response.status === 200) {
+      toast.success('Message deleted successfully!');
     } else {
-      createOwnerStandardMessage(ownerStandardMessage);
-      toggle();
-      toast.success('Standard Message created!');
-      setStandardMessage(newMessage);
+      toast.error(`Message deletion failed! Error: ${response}`);
     }
+    toggleDeleteWarning();
   }
+
+  function getContent(messages) {
+    if (isImage.test(messages)) {
+      return <img src={messages} alt="" />;
+    }
+    return <span className="message">{messages}</span>;
+  }
+
+  useEffect(() => {
+    async function fetchMessages() {
+      await getMessage();
+    }
+    fetchMessages();
+  }, []);
+
+  useEffect(() => {
+    if (message !== ownerMessage) {
+      setDisableButtons(false);
+    } else {
+      setDisableButtons(true);
+    }
+  }, [message]);
+
+  useEffect(() => {
+    setMessage(ownerMessage);
+  }, [ownerMessage]);
 
   return (
     <div className="message-container">
-      {message !== '' ? (
-        isImage.test(message) ? (
-          <img src={message} alt="" />
-        ) : (
-          <span className="message">{message}</span>
-        )
-      ) : isImage.test(standardMessage) ? (
-        <img src={standardMessage} alt="" />
-      ) : (
-        <span className="message">{standardMessage}</span>
-      )}
+      {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
-      {user.role == 'Owner' && (
+      {user.role === 'Owner' && (
         <div className="icon-wrapper">
-          <button onClick={toggle}>
-            <img src={editIcon} alt="edit icon" />
+          <button type="submit" onClick={toggle}>
+            <img src={editIcon} alt="edit icon" title="Edit this header" />
           </button>
 
-          {message && (
-            <button onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem' }}>
-              <img src={deleteIcon} alt="edit icon" />
+          {ownerMessage && (
+            <button type="submit" onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem' }}>
+              <img
+                src={deleteIcon}
+                alt="edit icon"
+                title="Click to restore header to standard message"
+              />
             </button>
           )}
         </div>
       )}
 
-      <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Create message</ModalHeader>
+      <Modal isOpen={modal} toggle={() => toggle()}>
+        <ModalHeader toggle={() => toggle()}>Create message</ModalHeader>
         <ModalBody className="modal-body">
           <p>Write a message:</p>
           <Input
             type="textarea"
             placeholder="Write your message here... (Max 100 characters)"
-            onChange={event => setNewMessage(event.target.value)}
+            value={message}
+            onChange={event => setMessage(event.target.value)}
             maxLength="100"
             disabled={disableTextInput}
             className="inputs"
@@ -196,18 +169,18 @@ function OwnerMessage({
             name="file"
             type="file"
             label="Choose Image"
-            onChange={handleImageUpload}
+            onChange={event => handleImageUpload(event)}
             className="inputs"
           />
         </ModalBody>
         <ModalFooter style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Button
             color="info"
-            onClick={handleStandardMessage}
+            onClick={() => handleMessage(true)}
             disabled={disableButtons}
             style={boxStyle}
           >
-            {standardMessage ? (
+            {ownerStandardMessage ? (
               <span style={{ color: 'white' }}>Update as Standard Message</span>
             ) : (
               <span style={{ color: 'white' }}>Create as Standard Message</span>
@@ -215,34 +188,37 @@ function OwnerMessage({
           </Button>
           <Button
             color="primary"
-            onClick={handleMessage}
+            onClick={() => handleMessage(false)}
             disabled={disableButtons}
             style={boxStyle}
           >
-            {message ? 'Update' : 'Create'}
+            {ownerMessage ? 'Update' : 'Create'}
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={modalDeleteWarning} toggle={toggleDeleteWarning}>
+      <Modal isOpen={modalDeleteWarning} toggle={() => toggleDeleteWarning()}>
         <ModalBody>
           <h4>Do you really want to delete the message?</h4>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggleDeleteWarning} style={boxStyle}>
+          <Button color="secondary" onClick={() => toggleDeleteWarning()} style={boxStyle}>
             Cancel
           </Button>
-          <Button color="danger" onClick={handleDeleteMessage} style={boxStyle}>
+          <Button color="danger" onClick={() => handleDeleteMessage()} style={boxStyle}>
             Delete
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={modalWrongPictureFormatWarning} toggle={toggleWrongPictureFormatWarning}>
+      <Modal
+        isOpen={modalWrongPictureFormatWarning}
+        toggle={() => toggleWrongPictureFormatWarning()}
+      >
         <ModalBody>
           <strong>Please insert a valid image!</strong>
           <span>Only .jpg, .jpeg and .png formats are accepted.</span>
         </ModalBody>
         <ModalFooter>
-          <Button color="danger" onClick={toggleWrongPictureFormatWarning} style={boxStyle}>
+          <Button color="danger" onClick={() => toggleWrongPictureFormatWarning()} style={boxStyle}>
             Close
           </Button>
         </ModalFooter>
@@ -252,26 +228,15 @@ function OwnerMessage({
 }
 
 const mapStateToProps = state => ({
-  auth: state?.auth,
-  ownerMessage: state?.ownerMessage?.[0]?.message,
-  ownerMessageId: state?.ownerMessage?.[0]?._id,
-  ownerStandardMessage: state?.ownerStandardMessage?.[0]?.message,
-  ownerStandardMessageId: state?.ownerStandardMessage?.[0]?._id,
+  auth: state.auth,
+  ownerMessage: state.ownerMessage.message,
+  ownerStandardMessage: state.ownerMessage.standardMessage,
 });
 
 const mapDispatchToProps = dispatch => ({
-  getOwnerMessage: () => dispatch(getOwnerMessage()),
-  createOwnerMessage: ownerMessage => dispatch(createOwnerMessage(ownerMessage)),
-  updateOwnerMessage: (ownerMessageId, ownerMessage) =>
-    dispatch(updateOwnerMessage(ownerMessageId, ownerMessage)),
-  deleteOwnerMessage: () => dispatch(deleteOwnerMessage()),
-
-  getOwnerStandardMessage: () => dispatch(getOwnerStandardMessage()),
-  createOwnerStandardMessage: ownerStandardMessage =>
-    dispatch(createOwnerStandardMessage(ownerStandardMessage)),
-  updateOwnerStandardMessage: (ownerStandardMessageId, ownerStandardMessage) =>
-    dispatch(updateOwnerStandardMessage(ownerStandardMessageId, ownerStandardMessage)),
-  deleteOwnerStandardMessage: () => dispatch(deleteOwnerStandardMessage()),
+  getMessage: () => dispatch(getOwnerMessage()),
+  updateMessage: ownerMessage => dispatch(updateOwnerMessage(ownerMessage)),
+  deleteMessage: () => dispatch(deleteOwnerMessage()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OwnerMessage);

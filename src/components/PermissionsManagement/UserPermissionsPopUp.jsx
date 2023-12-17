@@ -1,51 +1,31 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Dropdown, Form, Input } from 'reactstrap';
+import { Button, Dropdown, Form, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { getAllUserProfile } from 'actions/userManagement';
-import { permissionLabel } from './UserRoleTab';
-
+import PermissionList from './PermissionList';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle } from 'styles';
 
 const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) => {
+
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
+  const [userPermissions, setUserPermissions] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
 
-  //no onchange, always change this state;
-  const onChangeCheck = data => {
-    const actualValue = data;
+  const setToDefault = () => {
+    setUserPermissions([]);
+  }
 
-    setActualUserProfile(previous => {
-      const permissionsUser = previous.permissions;
-      const permissionsUserFront = permissionsUser?.frontPermissions;
-
-      let isAlreadyChecked = previous.permissions?.frontPermissions?.some(
-        perm => perm === actualValue,
-      );
-      if (isAlreadyChecked === undefined) isAlreadyChecked = false;
-
-      const unCheckPermission = previous.permissions?.frontPermissions?.filter(
-        perm => perm !== actualValue,
-      );
-
-      const actualPermissionsFront = isAlreadyChecked
-        ? unCheckPermission
-        : [...permissionsUserFront, actualValue];
-
-
-      const newPermissionsObject = {
-        frontPermissions: actualPermissionsFront,
-      };
-      return { ...previous, permissions: newPermissionsObject };
-    });
-  };
+  useEffect(()=>{
+    setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
+  }, [actualUserProfile]);
 
   const refInput = useRef();
   const getUserData = async userId => {
@@ -63,46 +43,61 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
     }
   }, [actualUserProfile]);
 
-  const isPermissionChecked = permission =>
-    actualUserProfile?.permissions?.frontPermissions.some(perm => perm === permission);
-
-  const isPermissionDefault = permission => {
-    return actualUserRolePermission?.includes(permission);
-  };
-
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
     const userId = actualUserProfile?._id;
 
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = { ...allUserInfo, ...actualUserProfile };
+    const newUserInfo = { ...allUserInfo, permissions: {frontPermissions: userPermissions} };
 
     await axios
       .put(url, newUserInfo)
       .then(res => {
-        res.data;
-      })
-      .catch(err => console.log(err));
-    getAllUsers();
-
-    const SUCCESS_MESSAGE = `
+        const SUCCESS_MESSAGE = `
         Permission has been updated successfully. Be sure to tell them that you are changing these
         permissions and for that they need to log out and log back in for their new permissions to take
         place.`;
-    toast.success(SUCCESS_MESSAGE, {
-      autoClose: 10000,
-    });
+        toast.success(SUCCESS_MESSAGE, {
+          autoClose: 10000,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        const ERROR_MESSAGE = `
+        Permission updated failed. ${err}
+        `
+        toast.error(ERROR_MESSAGE, {
+          autoClose: 10000,
+        })
+      });
+    getAllUsers();
   };
-
+  useEffect(() => {
+    refInput.current.focus();
+  }, []);
   return (
+    <>
     <Form
       id="manage__user-permissions"
       onSubmit={e => {
         updateProfileOnSubmit(e);
       }}
     >
-      <h4 className="user-permissions-pop-up__title">User name:</h4>
+      <div style={{display: 'flex', justifyContent: 'space-between', paddingBottom: '5px'}}>
+        <h4 className="user-permissions-pop-up__title">User name:</h4>
+        <Button
+          type="button"
+          color="success"
+          onClick={e => {
+            setToDefault();
+          }}
+          disabled={actualUserProfile ? false : true}
+          style={boxStyle}
+        >
+          Reset to Default
+        </Button>
+      </div>
       <Dropdown
         isOpen={isOpen}
         toggle={() => {
@@ -113,7 +108,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
         <Input
           type="text"
           value={searchText}
-          ref={refInput}
+          innerRef={refInput}
           onFocus={e => {
             setIsInputFocus(true);
             setIsOpen(true);
@@ -122,6 +117,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
             onInputChange(e.target.value);
             setIsOpen(true);
           }}
+          placeholder="Shows only ACTIVE users"
         />
         {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
           <div
@@ -140,7 +136,9 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
                     .toLowerCase()
                     .includes(searchText.toLowerCase())
                 ) {
-                  return user;
+                  if (user.isActive) {
+                    return user;
+                  }
                 }
               })
               .map(user => (
@@ -165,41 +163,12 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       <div>
         <h4 className="user-permissions-pop-up__title">Permissions:</h4>
         <ul className="user-role-tab__permission-list">
-          {Object.entries(permissionLabel).map(([key, value]) => {
-            return (
-              <li key={key} className="user-role-tab__permission">
-                <div
-                  style={{
-                    color: isPermissionChecked(key) || isPermissionDefault(key) ? 'green' : 'red',
-                    padding: '14px',
-                  }}
-                >
-                  {value}
-                </div>
-                {isPermissionDefault(key) ? null : isPermissionChecked(key) ? (
-                  <Button
-                    type="button"
-                    color="danger"
-                    onClick={e => onChangeCheck(key)}
-                    disabled={actualUserProfile ? false : true}
-                    style={boxStyle}
-                  >
-                    Remove
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    color="success"
-                    onClick={e => onChangeCheck(key)}
-                    disabled={actualUserProfile ? false : true}
-                    style={boxStyle}
-                  >
-                    Add
-                  </Button>
-                )}
-              </li>
-            );
-          })}
+          <PermissionList
+            rolePermissions={userPermissions}
+            immutablePermissions={actualUserRolePermission}
+            editable={!!actualUserProfile}
+            setPermissions={setUserPermissions}
+          />
         </ul>
       </div>
       <Button
@@ -213,6 +182,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
         Submit
       </Button>
     </Form>
+    </>
   );
 };
 

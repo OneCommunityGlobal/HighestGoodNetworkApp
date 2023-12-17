@@ -24,6 +24,8 @@ import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
+import { searchWithAccent } from '../../utils/search'
+
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
@@ -64,6 +66,7 @@ class UserManagement extends React.PureComponent {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
     let userTable = this.userTableElements(userProfiles, rolesPermissions);
+
     let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
       <Container fluid>
@@ -122,6 +125,7 @@ class UserManagement extends React.PureComponent {
    * 5. Popup to show the last day selection
    */
   popupElements = () => {
+    let user_name = this.state?.selectedUser?.firstName + '_' + this.state?.selectedUser?.lastName
     return (
       <React.Fragment>
         <ActivationDatePopup
@@ -136,6 +140,7 @@ class UserManagement extends React.PureComponent {
           userCreated={this.userCreated}
         />
         <DeleteUserPopup
+          username={user_name}
           open={this.state.deletePopupOpen}
           onClose={this.deletePopupClose}
           onDelete={this.onDeleteUser}
@@ -178,7 +183,7 @@ class UserManagement extends React.PureComponent {
        */
       return usersSearchData
         .sort((a, b) => {
-          if (a.createdDate > b.createdDate) return -1;
+          if (a.createdDate >= b.createdDate) return -1;
           if (a.createdDate < b.createdDate) return 1;
           return 0;
         })
@@ -229,8 +234,8 @@ class UserManagement extends React.PureComponent {
           this.state.wildCardSearchText === '') ||
         //the wild card serach, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          (user.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+          (searchWithAccent(user.firstName,this.state.wildCardSearchText) ||
+          searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
             user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
             user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
             user.weeklycommittedHours === Number(this.state.wildCardSearchText)))
