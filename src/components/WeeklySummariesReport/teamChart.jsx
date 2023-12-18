@@ -1,8 +1,8 @@
 import React, { useEffect }  from 'react';
 import './teamChart.css'; 
 
-const TeamRow = ({ rowData }) => {
-  const { type, data } = rowData;
+const TeamRow = ({ rowData, size }) => {
+  const { type, data} = rowData;
   if (type === 'team') {
     return (
       <tr>
@@ -14,7 +14,7 @@ const TeamRow = ({ rowData }) => {
       <tr>
         <td><a href={`/userprofile/${data.id}`}>{data.name}</a></td>
         <td><a href={`/userprofile/${data.id}`}>{data.role}</a></td>
-        <td></td> {/* Leave an empty cell for the total members */}
+        <td>{data.length}</td> {/* Leave an empty cell for the total members */}
        
       </tr>
     );
