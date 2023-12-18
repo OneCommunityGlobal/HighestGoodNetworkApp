@@ -121,7 +121,7 @@ const Project = props => {
           <button
             type="button"
             className="btn btn-outline-danger"
-            onClick={e => props.onClickDelete(props.projectId, props.active, props.name)}
+            onClick={e => props.onClickDelete(props.projectId, props.active, props.name, props.category)}
             style={boxStyle}
           >
             {DELETE}
