@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Badge from './Badge';
+import { boxStyle } from 'styles';
+import {Button} from 'reactstrap';
 
 const BadgeDashboard = (userId, role) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -10,9 +12,9 @@ const BadgeDashboard = (userId, role) => {
 
   return (
     <div>
-      <button onClick={toggleVisibility}>
+      <Button onClick={toggleVisibility} style={{ ...boxStyle, marginRight: '10px', marginBottom: '10px', marginLeft: '15px' }} color="primary">
         {isVisible ? 'Hide Badge' : 'Show Badge'}
-      </button>
+      </Button>
       {isVisible && <Badge userId={userId} role={role} />}
     </div>
   );

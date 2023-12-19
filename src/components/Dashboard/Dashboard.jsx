@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import BadgeDashboard from '../Badge/BadgeDashboard';
+import BadgeDashboardPopUp from '../Badge/BadgeDashboardPopUp';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
@@ -82,6 +83,7 @@ export function Dashboard(props) {
               </div>
             </div>
           ) : null}
+          <BadgeDashboardPopUp userId={userId} role={auth.user.role} />
           <BadgeDashboard userId={userId} role={auth.user.role} />
           <div className="my-2" id="wsummary">
             <Timelog isDashboard asUser={userId} passSummaryBarData={setSummaryBarData} />
