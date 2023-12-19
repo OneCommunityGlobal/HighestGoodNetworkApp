@@ -102,30 +102,30 @@
     }
     .mobile-chart {
         display: flex;
-        flex-direction: column;
+        flex-direction: column;    
         margin: auto;
     }
 }
-@media screen and (min-width: 768px) and (max-width: 769px) {
-    .table-mobile {
+@media screen and (min-width: 768px) and (max-width: 769px) {    
+    .table-mobile {        
         max-width: 100%;
         margin-left: 27.5rem;
     }
 }
-@media screen and (min-width: 319px) and (max-width: 374px) {
-    .table-mobile {
+@media screen and (min-width: 319px) and (max-width: 374px) {    
+    .table-mobile {        
         max-width: 100%;
         margin-left: 32rem;
     }
 }
-@media screen and (min-width: 375px) and (max-width: 424px) {
-  .table-mobile {
+@media screen and (min-width: 375px) and (max-width: 424px) {    
+  .table-mobile {        
       max-width: 100%;
       margin-left: 30rem;
   }
 }
-@media screen and (min-width: 425px) and (max-width: 767px) {
-  .table-mobile {
+@media screen and (min-width: 425px) and (max-width: 767px) {    
+  .table-mobile {        
       max-width: 100%;
       margin-left: 28rem;
   }

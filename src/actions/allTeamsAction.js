@@ -53,11 +53,12 @@ export const teamsDeleteAction = (team) => ({
 /**
  * Action for updating the status of a team
  */
-export const updateTeamAction = (teamId, isActive, teamName) => ({
+export const updateTeamAction = (teamId, isActive, teamName, teamCode) => ({
   type: UPDATE_TEAM,
   teamId,
   isActive,
   teamName,
+  teamCode,
 });
 
 /**
@@ -121,41 +122,60 @@ export const getAllUserTeams = () => {
 
 /**
  * posting new team
- */
+*/
 export const postNewTeam = (name, status) => {
   const data = { teamName: name, isActive: status };
-  // const url = ENDPOINTS.TEAM
   const teamCreationPromise = axios.post(ENDPOINTS.TEAM, data);
   return (dispatch) => {
-    teamCreationPromise.then((res) => {
-      dispatch(addNewTeam(res.data, true));
-    });
-  };
+    return teamCreationPromise
+      .then((res) => {
+        dispatch(addNewTeam(res.data, true));
+        return res; // return the server response
+      })
+      .catch((error) => {
+        if (error.response) {
+          return error.response; // return the server response
+        } else if (error.request) {
+          return { status: 500, message: 'No response received from the server' };
+        } else {
+          return { status: 500, message: error.message };
+        }
+      });
+  }; 
 };
+
 
 /**
  * delete an existing team
  * @param {*} teamId  - the team to be deleted
  */
 export const deleteTeam = (teamId) => {
-  const deleteTeamPromise = axios.delete(ENDPOINTS.TEAM_DATA(teamId));
+  const url = ENDPOINTS.TEAM_DATA(teamId)
   return async (dispatch) => {
-    deleteTeamPromise.then(() => {
+    try {
+      const deleteTeamResponse = await axios.delete(url);
       dispatch(teamsDeleteAction(teamId));
-    });
+      return deleteTeamResponse;
+    } catch (error) {
+      return error.response.data.error;
+    }
   };
 };
 
 /**
  * updating the team status
  */
-export const updateTeam = (teamName, teamId, isActive) => {
-  const requestData = { teamName, isActive };
-  const deleteTeamPromise = axios.put(ENDPOINTS.TEAM_DATA(teamId), requestData);
+export const updateTeam = (teamName, teamId, isActive, teamCode) => {
+  const requestData = { teamName, isActive, teamCode };
+  const url = ENDPOINTS.TEAM_DATA(teamId);
   return async (dispatch) => {
-    deleteTeamPromise.then(() => {
-      dispatch(updateTeamAction(teamId, isActive, teamName));
-    });
+    try {
+      const updateTeamResponse = await axios.put(url, requestData);
+      dispatch(updateTeamAction(teamId, isActive, teamName, teamCode));
+      return updateTeamResponse;
+    } catch (error) {
+      return error.response.data.error;
+    }
   };
 };
 
