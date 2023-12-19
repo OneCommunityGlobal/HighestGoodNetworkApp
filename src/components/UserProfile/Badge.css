@@ -135,11 +135,11 @@
 }
 
 /*Aligns the title and the buttons*/
-.badge-header {
+/* .badge-header {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-}
+} */
 
 /*Title to occupy more width than buttons*/
 .badge-header-title {
@@ -157,8 +157,23 @@
   }
 }
 
+/* @media (max-width: 1024px) {
+  .badge-header {
+    flex-direction: column;
+  }
+} */
+
+.badge-header {
+  display: flex;
+  justify-content: space-between; /* This will push the buttons to the right */
+  align-items: center; /* This will ensure vertical centering */
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
 @media (max-width: 1024px) {
   .badge-header {
     flex-direction: column;
+    align-items: center; /* This will center the buttons below the title */
   }
 }

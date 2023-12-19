@@ -17,6 +17,7 @@ const Project = props => {
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
+  const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
 
   const updateActive = () => {
     props.onClickActive(props.projectId, name, category, active);
@@ -45,7 +46,7 @@ const Project = props => {
         <div>{props.index + 1}</div>
       </th>
       <td className="projects__name--input">
-        {canPutProject ? (
+        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
           <input
             type="text"
             className="form-control"
@@ -58,7 +59,7 @@ const Project = props => {
         )}
       </td>
       <td className="projects__category--input">
-        {canPutProject ? (
+        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
           <select
             value={props.category}
             onChange={e => {
@@ -86,7 +87,7 @@ const Project = props => {
           </div>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'></i>
           </div>
         )}
       </td>
@@ -115,12 +116,12 @@ const Project = props => {
         </NavItem>
       </td>
 
-      {canDeleteProject ? (
+      {(canDeleteProject || canSeeProjectManagementFullFunctionality) ? (
         <td>
           <button
             type="button"
             className="btn btn-outline-danger"
-            onClick={e => props.onClickDelete(props.projectId, props.active, props.name)}
+            onClick={e => props.onClickDelete(props.projectId, props.active, props.name, props.category)}
             style={boxStyle}
           >
             {DELETE}

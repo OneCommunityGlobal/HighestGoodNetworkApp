@@ -71,7 +71,9 @@
 }
 .profile-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  flex-wrap: wrap;
   gap: 4px;
 }
 .profile-edit-btn {

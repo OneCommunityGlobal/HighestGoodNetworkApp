@@ -1,2 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
-export { TeamReport } from './TeamReport';
+import { TeamReport } from './TeamReport';
+
+export default TeamReport;

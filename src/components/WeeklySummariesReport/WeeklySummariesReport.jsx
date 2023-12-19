@@ -21,6 +21,7 @@ import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -32,11 +33,23 @@ import { fetchAllBadges } from '../../actions/badgeManagement';
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
 export class WeeklySummariesReport extends Component {
+  weekDates = Array.from({ length: 4 }).map((_, index) => ({
+    fromDate: moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(index, 'week')
+      .format('MMM-DD-YY'),
+    toDate: moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(index, 'week')
+      .format('MMM-DD-YY'),
+  }));
+
   constructor(props) {
     super(props);
 
     this.state = {
-      error: null,
       loading: true,
       summaries: [],
       activeTab: navItems[1],
@@ -46,16 +59,14 @@ export class WeeklySummariesReport extends Component {
       selectedCodes: [],
       selectedColors: [],
       filteredSummaries: [],
+      teamCodes: [],
+      colorOptions: [],
+      auth: [],
     };
-
-    this.weekDates = Array(4)
-      .fill(null)
-      .map((_, index) => this.getWeekDates(index));
   }
 
   async componentDidMount() {
     const {
-      error,
       loading,
       allBadgeData,
       authUser,
@@ -64,17 +75,18 @@ export class WeeklySummariesReport extends Component {
       fetchAllBadges,
       getInfoCollections,
       hasPermission,
+      auth,
     } = this.props;
-
     // 1. fetch report
     const res = await getWeeklySummariesReport();
-    const summaries = res?.data ?? this.props.summaries
+    // eslint-disable-next-line react/destructuring-assignment
+    const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
 
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission = this.canPutUserProfileImportantInfo;
+    this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner';
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -89,35 +101,48 @@ export class WeeklySummariesReport extends Component {
       return { ...summary, promisedHoursByWeek };
     });
 
-    const teamCodeSet = [...new Set(summariesCopy.filter(
-      function(summary) {
-      if(summary.teamCode == ''){
-        return false;
+    /*
+     * refactor logic of commentted codes above
+     */
+    const teamCodeGroup = {};
+    const teamCodes = [];
+    const colorOptionGroup = new Set();
+    const colorOptions = [];
+
+    summariesCopy.forEach(summary => {
+      const code = summary.teamCode || 'noCodeLabel';
+      if (teamCodeGroup[code]) {
+        teamCodeGroup[code].push(summary);
+      } else {
+        teamCodeGroup[code] = [summary];
       }
-      return true;
-    }).map(s => s.teamCode))];
-    this.teamCodes = [];
 
-    const colorOptionSet = [...new Set(summariesCopy.filter(
-      function(summary) {
-      if(summary.weeklySummaryOption == undefined){
-        return false;
+      if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
+    });
+
+    Object.keys(teamCodeGroup).forEach(code => {
+      if (code !== 'noCodeLabel') {
+        teamCodes.push({
+          value: code,
+          label: `${code} (${teamCodeGroup[code].length})`,
+        });
       }
-      return true;
-    }).map(s => s.weeklySummaryOption))];
-    this.colorOptions = [];
-
-    if(teamCodeSet.length != 0) {
-      teamCodeSet.forEach((code, index) => {
-        this.teamCodes[index] = {value: code, label: code};
+    });
+    colorOptionGroup.forEach(option => {
+      colorOptions.push({
+        value: option,
+        label: option,
       });
-      colorOptionSet.forEach((option, index) => {
-        this.colorOptions[index] = {value: option, label: option};
-      });
-    }
+    });
 
+    colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+    teamCodes
+      .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+      .push({
+        value: '',
+        label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+      });
     this.setState({
-      error,
       loading,
       allRoleInfo: [],
       summaries: summariesCopy,
@@ -128,7 +153,11 @@ export class WeeklySummariesReport extends Component {
       badges: allBadgeData,
       hasSeeBadgePermission: badgeStatusCode === 200,
       filteredSummaries: summariesCopy,
+      colorOptions,
+      teamCodes,
+      auth,
     });
+
     await getInfoCollections();
     const role = authUser?.role;
     const roleInfoNames = this.getAllRoles(summariesCopy);
@@ -149,25 +178,12 @@ export class WeeklySummariesReport extends Component {
     this.setState({ allRoleInfo });
   }
 
-  // componentDidUpdate(preProps) {
-  //   const {summaries} = preProps
-
-  //   if (this.props.summaries !== summaries) {
-  //     let summariesCopy = [...summaries];
-  //     summariesCopy = this.alphabetize(summariesCopy);
-
-  //     // 3. add new key of promised hours by week
-  //     summariesCopy = summariesCopy.map(summary => {
-  //       // append the promised hours starting from the latest week (this week)
-  //       const promisedHoursByWeek = this.weekDates.map(weekDate =>
-  //         this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-  //       );
-  //       return { ...summary, promisedHoursByWeek };
-  //     });
-
-  //     this.setState({filteredSummaries: summariesCopy, summaries: summariesCopy})
-  //   }
-  // }
+  componentDidUpdate(preProps, preState) {
+    const { loading } = this.props;
+    if (loading !== preState.loading) {
+      this.setState({ loading });
+    }
+  }
 
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
@@ -195,19 +211,6 @@ export class WeeklySummariesReport extends Component {
     const uniqueRoleNames = [...new Set(roleNames)];
     return uniqueRoleNames;
   };
-
-  getWeekDates = weekIndex => ({
-    fromDate: moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(weekIndex, 'week')
-      .format('MMM-DD-YY'),
-    toDate: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(weekIndex, 'week')
-      .format('MMM-DD-YY'),
-  });
 
   /**
    * This function calculates the hours promised by a user by a given end date of the week.
@@ -257,25 +260,31 @@ export class WeeklySummariesReport extends Component {
   };
 
   filterWeeklySummaries = () => {
-    const selectedCodesArray = this.state.selectedCodes.map(e => e.value);
-    const selectedColorsArray = this.state.selectedColors.map(e => e.value);
-    const temp = this.state.summaries.filter(summary => (selectedCodesArray.length == 0 || selectedCodesArray.includes(summary.teamCode)) && (selectedColorsArray.length == 0 || selectedColorsArray.includes(summary.weeklySummaryOption)));
-    this.setState({filteredSummaries: temp});
+    const { selectedCodes, selectedColors, summaries } = this.state;
+
+    const selectedCodesArray = selectedCodes.map(e => e.value);
+    const selectedColorsArray = selectedColors.map(e => e.value);
+    const temp = summaries.filter(
+      summary =>
+        (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
+        (selectedColorsArray.length === 0 ||
+          selectedColorsArray.includes(summary.weeklySummaryOption)),
+    );
+    this.setState({ filteredSummaries: temp });
   };
 
   handleSelectCodeChange = event => {
-    this.setState({selectedCodes: event}, () => this.filterWeeklySummaries());
+    this.setState({ selectedCodes: event }, () => this.filterWeeklySummaries());
   };
 
   handleSelectColorChange = event => {
-    this.setState({selectedColors: event}, () => this.filterWeeklySummaries());
+    this.setState({ selectedColors: event }, () => this.filterWeeklySummaries());
   };
 
   render() {
+    const { role } = this.props;
     const {
-      error,
       loading,
-      summaries,
       activeTab,
       allRoleInfo,
       badges,
@@ -284,7 +293,11 @@ export class WeeklySummariesReport extends Component {
       selectedCodes,
       selectedColors,
       filteredSummaries,
+      colorOptions,
+      teamCodes,
+      auth,
     } = this.state;
+    const { error } = this.props;
 
     if (error) {
       return (
@@ -307,28 +320,47 @@ export class WeeklySummariesReport extends Component {
         </Container>
       );
     }
-
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
-            <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
+            <h3 className="mt-3 mb-5">
+              <div className="d-flex align-items-center">
+                <span className="mr-2">Weekly Summaries Reports page</span>
+                <EditableInfoModal
+                  areaName="WeeklySummariesReport"
+                  areaTitle="Weekly Summaries Report"
+                  role={role}
+                  fontSize={24}
+                  isPermissionPage
+                  className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                />
+              </div>
+            </h3>
           </Col>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset:1 }} xs={{size: 5, offset: 1}}>
+          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
             <MultiSelect
-              options={this.teamCodes}
+              className="multi-select-filter"
+              options={teamCodes}
               value={selectedCodes}
-              onChange={(e) => {this.handleSelectCodeChange(e)}}/>
+              onChange={e => {
+                this.handleSelectCodeChange(e);
+              }}
+            />
           </Col>
-          <Col lg={{ size: 5 }} xs={{size: 5}}>
+          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
             Select Color
             <MultiSelect
-              options={this.colorOptions}
+              className="multi-select-filter"
+              options={colorOptions}
               value={selectedColors}
-              onChange={(e) => {this.handleSelectColorChange(e)}}/>
+              onChange={e => {
+                this.handleSelectColorChange(e);
+              }}
+            />
           </Col>
         </Row>
         <Row>
@@ -379,7 +411,7 @@ export class WeeklySummariesReport extends Component {
                     <Col>
                       <b>Total Team Members:</b> {filteredSummaries.length}
                     </Col>
-                </Row>
+                  </Row>
                   <Row>
                     <Col>
                       <FormattedReport
@@ -391,6 +423,7 @@ export class WeeklySummariesReport extends Component {
                         badges={badges}
                         loadBadges={loadBadges}
                         canEditTeamCode={this.codeEditPermission}
+                        auth={auth}
                       />
                     </Col>
                   </Row>
@@ -417,12 +450,14 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
+  role: state.userProfile.role,
+  auth: state.auth,
 });
 
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
-  hasPermission: () => hasPermission(),
+  hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
 });
 

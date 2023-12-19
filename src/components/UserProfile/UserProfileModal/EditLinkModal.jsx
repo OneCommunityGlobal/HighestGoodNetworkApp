@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Button,
   Modal,
@@ -50,9 +50,12 @@ const EditLinkModal = props => {
   const [personalLinks, setPersonalLinks] = useState(
     userProfile.personalLinks ? userProfile.personalLinks : [],
   );
+  const originalMediaFolderLink = useRef(mediaFolderLink.Link);
 
   const [isChanged, setIsChanged] = useState(false);
   const [mediaFolderDiffWarning, setMediaFolderDiffWarning] = useState(false);
+  const [isWarningPopupOpen, setIsWarningPopupOpen] = useState(false);
+  const [isMediaFolderLinkChanged, setIsMediaFolderLinkChanged] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
 
   const handleNameChanges = (e, links, index, setLinks) => {
@@ -67,6 +70,23 @@ const EditLinkModal = props => {
     setLinks(updateLinks);
     setIsChanged(true);
   };
+
+  const handleMediaFolderLinkChanges = (e) => {
+    if (!mediaFolderLink.Link){
+      // Prevent warning popup appear if empty media folder link
+      setIsMediaFolderLinkChanged(true);
+      setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+      setIsChanged(true);
+    } 
+    else {
+      setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+      setIsChanged(true);
+      if (!isMediaFolderLinkChanged && !isWarningPopupOpen){ // Fisrt time media folder link is changed
+          setIsMediaFolderLinkChanged(true);
+          setIsWarningPopupOpen(true);
+      }
+    }
+  }
 
   const addNewLink = (links, setLinks, newLink, clearInput) => {
     if (
@@ -146,13 +166,16 @@ const EditLinkModal = props => {
           [googleLink, mediaFolderLink, ...adminLinks],
           mediaFolderLink.Link,
         );
+        // Update ref to reflect updated original Media Folder Link
+          originalMediaFolderLink.current = mediaFolderLink.Link;
       } else {
         await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
       }
       handleSubmit();
       setIsValidLink(true);
-      setIsChanged(true);
+      setIsChanged(false);
       closeModal();
+      setIsMediaFolderLinkChanged(false);
     } else {
       setIsValidLink(false);
     }
@@ -201,10 +224,7 @@ const EditLinkModal = props => {
                         id="linkURL2"
                         placeholder="Enter Dropbox link"
                         value={mediaFolderLink.Link}
-                        onChange={e => {
-                          setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
-                          setIsChanged(true);
-                        }}
+                        onChange={e => {handleMediaFolderLinkChanges(e)}}
                       />
                     </div>
                     {adminLinks?.map((link, index) => {
@@ -378,10 +398,38 @@ const EditLinkModal = props => {
           >
             Update
           </Button>
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
-            Cancel
+          <Button 
+            color="primary" 
+            onClick={()=>{
+              setIsMediaFolderLinkChanged(false); 
+              setMediaFolderLink({ ...mediaFolderLink, Link:originalMediaFolderLink.current });
+              closeModal();
+              }
+            } 
+            style={boxStyle}>
+              Cancel
           </Button>
         </ModalFooter>
+
+        <Modal isOpen={isWarningPopupOpen} toggle={()=> setIsWarningPopupOpen(!isWarningPopupOpen)}  >
+          <ModalHeader>Warning!</ModalHeader>
+          <ModalBody>
+            Whoa Tiger, don’t do this! This link was added by an Admin when you were set up in the system. It is used by the Admin Team and your Manager(s) for reviewing your work. You should only change it if you are ABSOLUTELY SURE the one you are changing it to is more correct than the one here already.
+          </ModalBody>
+          <ModalFooter>
+            <Button color='primary'  onClick={() =>{setIsWarningPopupOpen(!isWarningPopupOpen)}}>Confirm</Button>
+            {/* Cancel button put original Media Folder link into the input */}
+            <Button onClick={() => {
+                setIsWarningPopupOpen(!isWarningPopupOpen); 
+                setIsMediaFolderLinkChanged(false); 
+                setMediaFolderLink({ ...mediaFolderLink, Link:originalMediaFolderLink.current });
+              }}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal> 
+
       </Modal>
     </React.Fragment>
   );

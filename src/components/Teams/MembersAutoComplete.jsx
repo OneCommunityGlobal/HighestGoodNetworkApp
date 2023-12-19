@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
-
+import { searchWithAccent } from 'utils/search'
 export const MemberAutoComplete = props => {
   const [isOpen, toggle] = useState(false);
+
+  const dropdownStyle = {
+    marginTop: '0px',
+    width: '100%',
+    maxHeight: '350px',  // Adjust this value as needed
+    overflowY: 'auto'
+  };
 
   return (
     <Dropdown
@@ -32,19 +39,20 @@ export const MemberAutoComplete = props => {
           role="menu"
           aria-hidden="false"
           className={`dropdown-menu${isOpen ? ' show' : ''}`}
-          style={{ marginTop: '0px', width: '100%' }}
+          style={ dropdownStyle}
         >
           {props.userProfileData.userProfiles
             .filter(user => {
               if (
                 user.isActive &&
-                (user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
-                user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1)
+                (searchWithAccent(user.firstName,props.searchText) ||
+                searchWithAccent(user.lastName,props.searchText)) &&
+                !props.existingMembers.some(member => member._id === user._id)
               ) {
-                return user;
+                return true;
               }
+              return false;
             })
-            .slice(0, 10)
             .map(item => (
               <div
                 className="user-auto-cpmplete"
