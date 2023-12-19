@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { shallow } from 'enzyme';
-import MockNavLink from './MockNavLink'; // mock component
+import MockNavLink from '../MockData/MockNavLink'; // mock component
 import TabToolTips from '../TabToolTips';
 
 /** ****************************TESTS PRE-REQUISITE************************************ */
