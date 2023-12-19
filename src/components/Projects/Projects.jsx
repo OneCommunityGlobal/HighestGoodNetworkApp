@@ -43,6 +43,7 @@ export class Projects extends Component {
         projectName: '',
         projectId: -1,
         active: false,
+        category: '',
       },
       projectInfoModal: false,
     };
@@ -69,13 +70,14 @@ export class Projects extends Component {
    * Changes the number of projects
    * Also update the number of active project
    */
-  onClickDelete = (projectId, active, projectName) => {
+  onClickDelete = (projectId, active, projectName, category) => {
     this.setState({
       showModalDelete: true,
       projectTarget: {
         projectId,
         projectName,
         active,
+        category,
       },
     });
   };
@@ -90,8 +92,8 @@ export class Projects extends Component {
   };
 
   setInactiveProject = () => {
-    let { projectId, projectName } = this.state.projectTarget;
-    this.props.modifyProject('setActive', projectId, projectName, true);
+    let { projectId, projectName, category } = this.state.projectTarget;
+    this.props.modifyProject('setActive', projectId, projectName, category, true);
     // disable modal
     this.setState({ showModalDelete: false });
   };
