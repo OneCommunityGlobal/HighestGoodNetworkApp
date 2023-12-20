@@ -6,7 +6,7 @@ const initialState = {
   fetchError: null,
 };
 
-// eslint-disable-next-line import/prefer-default-export
+// eslint-disable-next-line import/prefer-default-export,default-param-last
 export const infoCollectionsReducer = (state = initialState, action) => {
   switch (action.type) {
     case actions.FETCH_INFOS_BEGIN:
@@ -30,11 +30,11 @@ export const infoCollectionsReducer = (state = initialState, action) => {
         fetchError: action.payload.error,
       };
     case actions.ADD_INFO_SUCCESS:
-        return {
-          ...state,
-          infoCollections: [...state.infoCollections, action.payload.newInfo],
-        };
-  
+      return {
+        ...state,
+        infoCollections: [...state.infoCollections, action.payload.newInfo],
+      };
+
     default:
       return state;
   }

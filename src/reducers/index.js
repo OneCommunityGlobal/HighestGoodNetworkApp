@@ -25,6 +25,10 @@ import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
+<<<<<<< HEAD
+=======
+import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
+>>>>>>> origin/Zijie_LintFix_reducer_phase2
 import { infoCollectionsReducer } from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 

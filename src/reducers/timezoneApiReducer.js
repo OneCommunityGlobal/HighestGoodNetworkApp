@@ -7,6 +7,7 @@ const timeZoneAPIInitial = {
   status: 404,
 };
 
+// eslint-disable-next-line import/prefer-default-export,default-param-last
 export const timeZoneAPIReducer = (timeZoneAPI = timeZoneAPIInitial, action) => {
   switch (action.type) {
     case types.FETCH_TIMEZONE_KEY:

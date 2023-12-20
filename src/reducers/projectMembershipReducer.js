@@ -1,4 +1,4 @@
-import * as types from "../constants/projectMembership";
+import * as types from '../constants/projectMembership';
 
 const allMembershipInital = {
   projectName: '',
@@ -9,6 +9,7 @@ const allMembershipInital = {
   error: '',
 };
 
+// eslint-disable-next-line import/prefer-default-export,default-param-last
 export const projectMembershipReducer = (allMembership = allMembershipInital, action) => {
   switch (action.type) {
     case types.FETCH_MEMBERS_START:
@@ -39,7 +40,7 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
       return { ...allMembership, members: [action.member, ...allMembership.members] };
     case types.ADD_NEW_MEMBER_ERROR:
       return { ...allMembership, fetched: true, fetching: false, error: action.err };
-    case types.DELETE_MEMBER:
+    case types.DELETE_MEMBER: {
       const indexMember = allMembership.members.findIndex(member => member._id === action.userId);
       return {
         ...allMembership,
@@ -48,7 +49,8 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
           ...allMembership.members.slice(indexMember + 1),
         ],
       };
-    case types.REMOVE_FOUND_USER:
+    }
+    case types.REMOVE_FOUND_USER: {
       const indexUser = allMembership.foundUsers.findIndex(user => user._id === action.userId);
       return {
         ...allMembership,
@@ -57,6 +59,7 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
           ...allMembership.foundUsers.slice(indexUser + 1),
         ],
       };
+    }
     default:
       return allMembership;
   }

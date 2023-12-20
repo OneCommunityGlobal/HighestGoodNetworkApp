@@ -1,4 +1,4 @@
-import * as types from "../constants/projects";
+import * as types from '../constants/projects';
 
 const allProjectsInital = {
   fetching: false,
@@ -14,6 +14,7 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
+// eslint-disable-next-line default-param-last
 export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
   switch (action.type) {
     case types.FETCH_PROJECTS_START:
@@ -30,9 +31,9 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
     case types.ADD_NEW_PROJECT:
       if (action.status === 201) {
         return { ...allProjects, projects: [action.payload, ...allProjects.projects] };
-      } 
-        return { ...allProjects, status: action.status };
-      
+      }
+      return { ...allProjects, status: action.status };
+
     case types.DELETE_PROJECT:
       if (action.status === 200) {
         const index = allProjects.projects.findIndex(project => project._id === action.projectId);
@@ -43,7 +44,8 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
           ]),
         });
       }
-    case types.UPDATE_PROJECT:
+    // eslint-disable-next-line no-fallthrough
+    case types.UPDATE_PROJECT: {
       const index = allProjects.projects.findIndex(project => project._id === action.projectId);
       return updateObject(allProjects, {
         projects: Object.assign([
@@ -57,6 +59,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
           ...allProjects.projects.slice(index + 1),
         ]),
       });
+    }
     default:
       return allProjects;
   }

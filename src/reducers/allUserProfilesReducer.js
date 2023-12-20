@@ -14,6 +14,7 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
+// eslint-disable-next-line default-param-last
 export const allUserProfilesReducer = (userProfiles = userProfilesInitial, action) => {
   switch (action.type) {
     case types.FETCH_USER_PROFILES_START:
@@ -30,7 +31,7 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
         status: '200',
       });
 
-    case types.USER_PROFILE_UPDATE:
+    case types.USER_PROFILE_UPDATE: {
       const index = userProfiles.userProfiles.findIndex(user => user._id === action.user._id);
       return updateObject(userProfiles, {
         userProfiles: Object.assign([
@@ -42,9 +43,12 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
         fetched: true,
         status: '200',
       });
+    }
 
-    case types.USER_PROFILE_DELETE:
-      const deletedIndex = userProfiles.userProfiles.findIndex(user => user._id === action.user._id);
+    case types.USER_PROFILE_DELETE: {
+      const deletedIndex = userProfiles.userProfiles.findIndex(
+        user => user._id === action.user._id,
+      );
       return updateObject(userProfiles, {
         userProfiles: Object.assign([
           ...userProfiles.userProfiles.slice(0, deletedIndex),
@@ -54,6 +58,7 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
         fetched: true,
         status: '200',
       });
+    }
     default:
       return userProfiles;
   }
