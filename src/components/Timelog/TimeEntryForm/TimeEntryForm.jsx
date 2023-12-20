@@ -455,6 +455,7 @@ const TimeEntryForm = props => {
       notes: inputs.notes,
       isTangible: inputs.isTangible.toString(),
       curruserId: curruserId,
+      entryType: 'default',
     };
 
     if (edit) {
