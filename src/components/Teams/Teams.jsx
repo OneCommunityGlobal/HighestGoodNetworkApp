@@ -37,6 +37,9 @@ class Teams extends React.PureComponent {
       selectedTeam: '',
       isActive: '',
       selectedTeamCode: '',
+      teams: [],
+      teamTable: [],
+      sortedTeams: [],
     };
   }
 
@@ -45,15 +48,17 @@ class Teams extends React.PureComponent {
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();
     // console.log('teams: props', this.props)
+    this.state.teamTable = this.state.teams;
   }
 
   render() {
     // debugger;
     const { allTeams, fetching } = this.props.state.allTeamsData;
 
-    const teamTable = this.teamTableElements(allTeams);
+    this.state.teams = this.teamTableElements(allTeams);
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
+    console.log(this.state.teams[0].props.team.modifiedDatetime);
 
     return (
       <Container fluid>
@@ -75,7 +80,7 @@ class Teams extends React.PureComponent {
                 <thead>
                   <TeamTableHeader />
                 </thead>
-                <tbody>{teamTable}</tbody>
+                <tbody>{this.state.teamTable}</tbody>
               </table>
             </div>
           </React.Fragment>
