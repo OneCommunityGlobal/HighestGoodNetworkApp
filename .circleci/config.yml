@@ -18,37 +18,34 @@ jobs:
 
   build_development:
     docker:
-      # Change from Ubnutu to cimg/node:14.21.3.
-      # cimg convient image comes with node, yarn, and other pre-installed software.
-      # This will remove the steps of install node, yarn, and other software.
-      - image: cimg/node:14.21.3
+      - image: ubuntu:20.04
     resource_class: medium+
     steps:
       - checkout
-      #   - run:
-      #       name: Install ubuntu updates
-      #       command: apt-get update && apt-get upgrade -y
-      #   - run:
-      #       name: Install curl and zip
-      #       command: apt-get install curl zip -y
-      #   - run:
-      #       name: Download and execute Node.js 14.x install script from node source
-      #       command: curl -sL https://deb.nodesource.com/setup_14.x | bash -
-      #   - run:
-      #       name: Install Node.js and NPM
-      #       command: apt-get install nodejs -y
-      #   - run:
-      #       name: Download and execute Yarn istallation script
-      #       command: curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr/share/keyrings/yarnkey.gpg >/dev/null
-      #   - run:
-      #       name: Add yarn to sources.list
-      #       command: echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | tee /etc/apt/sources.list.d/yarn.list
-      #   - run:
-      #       name: Install yarn
-      #       command: apt-get install yarn -y
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
+      - run:
+          name: Install ubuntu updates
+          command: apt-get update && apt-get upgrade -y
+      - run:
+          name: Install curl and zip
+          command: apt-get install curl zip -y
+      - run:
+          name: Download and execute Node.js 14.x install script from node source
+          command: curl -sL https://deb.nodesource.com/setup_14.x | bash -
+      - run:
+          name: Install Node.js and NPM
+          command: apt-get install nodejs -y
+      - run:
+          name: Download and execute Yarn istallation script
+          command: curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr/share/keyrings/yarnkey.gpg >/dev/null
+      - run:
+          name: Add yarn to sources.list
+          command: echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | tee /etc/apt/sources.list.d/yarn.list
+      - run:
+          name: Install yarn
+          command: apt-get install yarn -y
       - run:
           name: Install HighestGoodNetworkApp's NodeJS dependencies
           command: npm install
