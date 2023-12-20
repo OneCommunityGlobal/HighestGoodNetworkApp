@@ -46,7 +46,7 @@ import Inventory from './components/Inventory';
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
-import EquipmentList from './components/BMDashboard/EquipmentList';
+import EquipmentList from './components/BMDashboard/Equipment/List';
 // import MaterialsList from './components/BMDashboard/MaterialsList';
 // import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 // import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
