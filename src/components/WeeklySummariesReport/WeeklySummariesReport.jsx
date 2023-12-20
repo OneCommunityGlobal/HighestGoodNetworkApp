@@ -285,6 +285,7 @@ export class WeeklySummariesReport extends Component {
     const { selectedCodes, selectedColors, summaries, tableData, COLORS} = this.state;
     const data = [];
     let temptotal = 0;
+    console.log('selected_code', selectedCodes)
     const structuredTeamTableData = [];
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
@@ -294,6 +295,32 @@ export class WeeklySummariesReport extends Component {
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)),
     );
+    if (selectedCodes[0]?.value === '' || selectedCodes.length === 52) {
+      if (selectedCodes.length === 52) {
+        selectedCodes.forEach(code => {
+          if (code.value === '') return;
+          data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
+          const team = tableData[code.value];
+          const index = selectedCodesArray.indexOf(code.value);
+          const color = COLORS[index % COLORS.length]
+          const members = [];
+          team.forEach(member => {
+             members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
+           })
+          structuredTeamTableData.push({team: code.value, color, members,})
+        })
+      }else{
+        data.push({name: 'Select All With NO Code', value: temp.filter(summary => summary.teamCode === '').length})
+        const team = tableData['noCodeLabel'];
+        const index = selectedCodesArray.indexOf('noCodeLabel');
+        const color = COLORS[index % COLORS.length]
+        const members = [];
+        team.forEach(member => {
+           members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
+         })
+        structuredTeamTableData.push({team: 'noCodeLabel', color, members,})
+      }
+    }else{
     selectedCodes.forEach(code => {
       
       data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
@@ -308,6 +335,7 @@ export class WeeklySummariesReport extends Component {
     
 
      })
+    }
 
      data.sort()
      temptotal = data.reduce((acc, entry) => acc + entry.value, 0);
@@ -403,7 +431,7 @@ export class WeeklySummariesReport extends Component {
         </Row>
         <Row>
           <Col>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={500}>
             <PieChart>
               <Pie
                 data={data}
@@ -411,7 +439,7 @@ export class WeeklySummariesReport extends Component {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={80}
+                outerRadius={150}
                 fill="#8884d8"
                 label={({ name, value }) => `${name}:(${Math.round((value / total) * 100)}%)`}
               >
