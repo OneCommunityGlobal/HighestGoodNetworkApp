@@ -110,6 +110,7 @@
     "husky": "^8.0.0",
     "sinon": "^7.3.2",
     "surge": "^0.21.6",
-    "jest-environment-jsdom-sixteen": "^1.0.3"
+    "jest-environment-jsdom-sixteen": "^1.0.3",
+    "node-fetch": "^3.1.1"
   }
 }
