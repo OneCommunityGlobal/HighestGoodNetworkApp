@@ -1,1 +1,3 @@
-export { default } from './ForcePasswordUpdate';
+import ForcePasswordUpdate from './ForcePasswordUpdate';
+
+export default ForcePasswordUpdate;

@@ -20,7 +20,7 @@ export const Team = props => {
         className="teams__active--input"
         onClick={e => {
           canDeleteTeam || canPutTeam
-            ? props.onStatusClick(props.name, props.teamId, props.active)
+            ? props.onStatusClick(props.name, props.teamId, props.active, props.teamCode)
             : null;
         }}
         // style={boxStyle}
@@ -32,7 +32,7 @@ export const Team = props => {
           </div>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true" />
+            <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'/>
           </div>
         )}
       </td>
@@ -41,7 +41,7 @@ export const Team = props => {
           type="button"
           className="btn btn-outline-info"
           onClick={e => {
-            props.onMembersClick(props.teamId, props.name);
+            props.onMembersClick(props.teamId, props.name, props.teamCode);
           }}
           data-testid='members-btn'
         >
@@ -55,7 +55,7 @@ export const Team = props => {
               type="button"
               className="btn btn-outline-success"
               onClick={() => {
-                props.onEditTeam(props.name, props.teamId, props.active);
+                props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={boxStyle}
             >
@@ -67,7 +67,7 @@ export const Team = props => {
               type="button"
               className="btn btn-outline-danger"
               onClick={() => {
-                props.onDeleteClick(props.name, props.teamId, props.active);
+                props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={boxStyle}
             >
