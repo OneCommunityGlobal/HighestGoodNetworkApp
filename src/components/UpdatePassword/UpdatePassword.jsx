@@ -1,11 +1,12 @@
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import Form from '../common/Form';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { updatePassword } from '../../actions/updatePassword';
 import { logoutUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
-import Form from '../common/Form';
 
 
 class UpdatePassword extends Form {
@@ -70,8 +71,8 @@ class UpdatePassword extends Form {
     const { currentpassword, newpassword, confirmnewpassword } = {
       ...this.state.data,
     };
-    const { userId } = this.props.match.params;
-    const data = { currentpassword, newpassword, confirmnewpassword };
+    let userId = this.props.match.params.userId;
+    let data = { currentpassword, newpassword, confirmnewpassword };
 
     const status = await this.props.updatePassword(userId, data);
     if (status === 200) {
@@ -85,8 +86,8 @@ class UpdatePassword extends Form {
         },
       );
     } else if (status === 400) {
-      const { errors } = this.state;
-      errors.currentpassword = this.props.errors.error;
+      let { errors } = this.state;
+      errors['currentpassword'] = this.props.errors.error;
       this.setState({ errors });
     } else {
       toast.error('Something went wrong. Please contact your administrator.');
