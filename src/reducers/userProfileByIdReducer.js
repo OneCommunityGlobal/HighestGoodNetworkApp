@@ -30,7 +30,7 @@ export const userProfileByIdReducer = (userProfile = initialUserProfileState, ac
   return userProfile;
 };
 
-export const userTaskByIdReducer = (userTask = null, action) => {
+export const userTaskByIdReducer = (userTask = [], action) => {
   if (action.type === GET_USER_TASKS) {
     return action.payload;
   }

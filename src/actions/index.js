@@ -231,20 +231,20 @@ export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
   };
 };
 
-export function getTimeEntryForSpecifiedProject(projectId, fromDate, toDate) {
-  const request = httpService.get(
-    `${APIEndpoint}/TimeEntry/projects/${projectId}/${fromDate}/${toDate}`,
-  );
+// export function getTimeEntryForSpecifiedProject(projectId, fromDate, toDate) {
+//   const request = httpService.get(
+//     `${APIEndpoint}/TimeEntry/projects/${projectId}/${fromDate}/${toDate}`,
+//   );
 
-  return dispatch => {
-    request.then(({ data }) => {
-      dispatch({
-        type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PROJECT',
-        payload: data,
-      });
-    });
-  };
-};
+//   return dispatch => {
+//     request.then(({ data }) => {
+//       dispatch({
+//         type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PROJECT',
+//         payload: data,
+//       });
+//     });
+//   };
+// };
 
 export function postTimeEntry(timeEntryObj) {
   const request = httpService.post(`${APIEndpoint}/TimeEntry`, timeEntryObj);

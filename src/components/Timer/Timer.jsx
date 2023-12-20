@@ -74,8 +74,7 @@ export default function Timer() {
   const MAX_HOURS = 5;
   const MIN_MINS = 1;
 
-  const userId = useSelector(state => state.auth.user.userid);
-  const curruserProfile = useSelector(state => state.userProfile);
+  const authId = useSelector(state => state.auth.user.userid);
 
   const [message, setMessage] = useState(defaultMessage);
   const { time, paused, started, goal, startAt } = message;
@@ -87,12 +86,8 @@ export default function Timer() {
   const [showTimer, setShowTimer] = useState(false);
   const [timerIsOverModalOpen, setTimerIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
-  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
+  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0, isTangible: true });
   const audioRef = useRef(null);
-
-  const data = {
-    isTangible: true,
-  };
 
   const timeToLog = moment.duration(goal - remaining);
   const logHours = timeToLog.hours();
@@ -252,7 +247,7 @@ export default function Timer() {
 
   useEffect(() => {
     checkRemainingTime();
-    setLogTimer({ hours: logHours, minutes: logMinutes });
+    setLogTimer({ hours: logHours, minutes: logMinutes, isTangible: true });
   }, [remaining]);
 
   useEffect(() => {
@@ -366,15 +361,13 @@ export default function Timer() {
       )}
       {logTimeEntryModal && (
         <TimeEntryForm
+          fromTimer
           edit={false}
-          userId={userId}
+          displayUserId={authId}
           toggle={toggleLogTimeModal}
           isOpen={logTimeEntryModal}
-          timer={logTimer}
-          data={data}
+          data={logTimer}
           sendStop={sendStop}
-          LoggedInuserId={userId}
-          curruserId={curruserProfile._id}
         />
       )}
       <audio ref={audioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />

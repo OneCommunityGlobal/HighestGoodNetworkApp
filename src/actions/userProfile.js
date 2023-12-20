@@ -19,7 +19,7 @@ export const getUserProfile = userId => {
       }
     });
     if (!loggedOut) {
-      const resp = await dispatch(getUserProfileActionCreator(res.data));
+      const resp = dispatch(getUserProfileActionCreator(res.data));
       return resp.payload;
     }
   };
@@ -30,7 +30,7 @@ export const getUserTasks = userId => {
   return async dispatch => {
     const res = await axios.get(url);
     if (res.status === 200) {
-      await dispatch(getUserTaskActionCreator(res.data));
+      dispatch(getUserTaskActionCreator(res.data));
     }
   };
 };
