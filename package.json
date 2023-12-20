@@ -109,6 +109,7 @@
     "redux-mock-store": "^1.5.4",
     "husky": "^8.0.0",
     "sinon": "^7.3.2",
-    "surge": "^0.21.6"
+    "surge": "^0.21.6",
+    "jest-environment-jsdom-sixteen": "^1.0.3"
   }
 }
