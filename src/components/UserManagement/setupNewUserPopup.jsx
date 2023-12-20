@@ -80,7 +80,7 @@ const SetupNewUserPopup = React.memo(props => {
             name="email"
             value={email}
             onChange={e => {
-              setEmail(e.target.value);
+              setEmail(e.target.value.toLocaleLowerCase());
             }}
             className="form-control setup-new-user-popup-input"
             placeholder="Please enter the email address for the new user"
