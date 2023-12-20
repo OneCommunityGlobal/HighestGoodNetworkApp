@@ -47,7 +47,7 @@ export const MemberAutoComplete = props => {
                 user.isActive &&
                 (searchWithAccent(user.firstName,props.searchText) ||
                 searchWithAccent(user.lastName,props.searchText)) &&
-                !props.existingMembers.some(member => member._id === user._id)
+                !props.existingMembers?.some(member => member._id === user._id)
               ) {
                 return true;
               }
@@ -56,6 +56,7 @@ export const MemberAutoComplete = props => {
             .map(item => (
               <div
                 className="user-auto-cpmplete"
+                key={item._id}
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);
