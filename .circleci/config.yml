@@ -37,6 +37,14 @@ jobs:
           name: Build the React client
           command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS && npm run build
       - run:
+          name: Export error log if 'Build the React client' failed
+          command: |
+            mkdir -p /tmp/err_logs
+            cp -r /home/circleci/.npm/_logs/* /tmp/err_logs
+          when: on_fail
+      - store_artifacts:
+          path: /tmp/err_logs
+      - run:
           name: Create ZIP archive of build directory
           command: zip -r build.zip build
       - run:
