@@ -14,8 +14,7 @@ import { addReason, patchReason } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
 import { Modal } from 'react-bootstrap';
 import { boxStyle } from 'styles';
-import { color } from 'd3';
-import { fonts } from 'pdfmake/build/pdfmake';
+
 
 
 const BlueSquareLayout = props => {
