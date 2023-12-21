@@ -18,9 +18,7 @@ const ReviewButton = ({
 
   const [modal, setModal] = useState(false);
 
-  const toggleModal = () => {
-    setModal(!modal);
-  };
+  const toggleModal = () => setModal(!modal);
   
   const reviewStatus = function() {
     let status = "Unsubmitted";
@@ -34,63 +32,70 @@ const ReviewButton = ({
   }();
 
   const updReviewStat = (newStatus) => {
-    const resources = [...task.resources];
-    const newResources = resources.map(resource => {
-      const newResource = { ...resource, reviewStatus: newStatus };
-      newResource.completedTask = newStatus === "Reviewed";
-      return newResource;
-    });
-    const updatedTask = { ...task, resources: newResources };
+    const updatedTask = {
+      ...task,
+      resources: task.resources.map(resource => ({
+        ...resource,
+        reviewStatus: newStatus,
+        completedTask: newStatus === "Reviewed"
+      }))
+    };
     updateTask(task._id, updatedTask);
     setModal(false);
   };
 
   const buttonFormat = () => {
-    if (user.personId == myUserId && reviewStatus == "Unsubmitted") {
-      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={boxStyle}>
-        Submit for Review
-      </Button>;
-     } else if (reviewStatus == "Submitted")  {
-      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") {
+    if (reviewStatus === "Unsubmitted") {
+      if (user.personId === myUserId) {
+        return (
+          <Button className="reviewBtn" color="primary" onClick={toggleModal} style={boxStyle}>
+            Submit for Review
+          </Button>
+        );
+      }
+    } else if (reviewStatus === "Submitted") {
+      if (myRole === "Owner" || myRole === "Administrator" || myRole === "Mentor" || myRole === "Manager") {
         return (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={boxStyle}>
               Ready for Review
             </DropdownToggle>
             <DropdownMenu>
-            <DropdownItem onClick={toggleModal}>
-              <FontAwesomeIcon
-                className="team-member-tasks-done"
-                icon={faCheck}
-              /> as complete and remove task
-            </DropdownItem>
-            <DropdownItem onClick={() => {updReviewStat("Unsubmitted");}}>
-              More work needed, reset this button
-            </DropdownItem>
+              <DropdownItem onClick={toggleModal}>
+                <FontAwesomeIcon className="team-member-tasks-done" icon={faCheck} /> as complete and remove task
+              </DropdownItem>
+              <DropdownItem onClick={() => updReviewStat("Unsubmitted")}>
+                More work needed, reset this button
+              </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
         );
-      } else if (user.personId == myUserId) {
-        return <Button className='reviewBtn' color='success' onClick={() => {updReviewStat("Unsubmitted");}}>
-          More work needed, reset this button
-        </Button>;
+      } else if (user.personId === myUserId) {
+        return (
+          <Button className="reviewBtn" color="success" onClick={() => updReviewStat("Unsubmitted")}>
+            More work needed, reset this button
+          </Button>
+        );
       } else {
-        return <Button className='reviewBtn' color='success' disabled>
-          Ready for Review
-        </Button>;
+        return <Button className="reviewBtn" color="success" disabled>Ready for Review</Button>;
       }
-     } else {
-      return <></>;
-     }
-    };
+    }
+    return <></>;
+  };
   
+  const sendReviewBtn = event => { 
+    event.preventDefault(); 
+    const newStatus = reviewStatus === "Unsubmitted" ? "Submitted" : "Reviewed";
+    updReviewStat(newStatus);
+    sendReviewReq(event);
+  }
+
   const sendReviewReq = event => {
     event.preventDefault();
     var data = {};
     data['myUserId'] = myUserId;
     data['name'] = user.name;
     data['taskName'] = task.taskName;
-
     httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
@@ -108,23 +113,15 @@ const ReviewButton = ({
         <ModalFooter>
           <Button
             onClick={(e) => {
-              reviewStatus == "Unsubmitted"
-              ? (updReviewStat("Submitted"),
-                sendReviewReq(e))
-              : updReviewStat("Reviewed");
+              sendReviewBtn(e);
             }}
             color="primary"
             className="float-left"
             style={boxStyle}
           >
-            {reviewStatus == "Unsubmitted"
-              ? `Submit`
-              : `Complete`}
+            {reviewStatus === "Unsubmitted" ? "Submit" : "Complete"}
           </Button>
-          <Button
-            onClick={toggleModal}
-            style={boxStyle}
-          >
+          <Button onClick={toggleModal} style={boxStyle}>
             Cancel
           </Button>
         </ModalFooter>
