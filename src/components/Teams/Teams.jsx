@@ -49,6 +49,21 @@ class Teams extends React.PureComponent {
     this.props.getAllUserProfile();
     // console.log('teams: props', this.props)
     this.state.teamTable = this.state.teams;
+    this.sortTeamsByModifiedDate();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.sortedTeams !== this.state.sortedTeams) {
+      // This will run whenever sortedTeams changes
+      // Here you can transform sortedTeams into the format needed for teamTable
+      const teamTable = this.state.sortedTeams.map(team => {
+        // Transform team into the format needed for teamTable
+        return team;
+      });
+
+      // Now update teamTable in your state
+      this.setState({ teamTable });
+    }
   }
 
   render() {
@@ -59,6 +74,7 @@ class Teams extends React.PureComponent {
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
     console.log(this.state.teams[0].props.team.modifiedDatetime);
+    console.log(this.state.sortedTeams);
 
     return (
       <Container fluid>
@@ -383,6 +399,33 @@ class Teams extends React.PureComponent {
       'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
     );
   };
+
+  sortTeamsByModifiedDate = () => {
+    const { teams } = this.state;
+
+    console.log('UNsortedTeams: ', teams);
+    
+    const sortedTeams = [...teams].sort((a, b) => {
+      let dateA = new Date(a.props.team.modifiedDatetime);
+      let dateB = new Date(b.props.team.modifiedDatetime);
+
+      //console.log('dateA: ', dateA);
+      //console.log('dateB: ', dateB);
+
+      if (dateA < dateB) {
+        console.log('dateA < dateB', dateA);
+        console.log(dateB);
+        return 1;
+      } else if (dateA > dateB) {
+        return -1;
+      }
+      return 0; // Sort in descending order
+    });
+
+    console.log('sortedTeams: ', sortedTeams);
+
+    this.setState({ sortedTeams: sortedTeams });
+  }
 }
 const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
