@@ -43,14 +43,23 @@ export default function AddEquipmentModal({ modal, toggle }) {
       return setErrInput(validate.error.details[0].path[0]);
     }
     const response = await addEquipmentType({ name, desc });
-    console.log('res: ', response);
     if (response.status === 201) {
       toast.success('Success: new equipment type added.');
-    }
+    } else if (response.status >= 400) {
+      toast.error(`Error: ${response.status} ${response.statusText}.`);
+    } else toast.warning(`Warning: unexpected status ${response.status}.`);
     setName('');
     setDesc('');
+    return toggle();
+  };
+
+  const handleCancel = () => {
+    setName('');
+    setDesc('');
+    setErrInput('');
     toggle();
   };
+
   return (
     <Modal isOpen={modal}>
       <ModalHeader>Add Equipment Type</ModalHeader>
@@ -62,6 +71,7 @@ export default function AddEquipmentModal({ modal, toggle }) {
               id="new-equipment-name"
               name="name"
               type="text"
+              value={name}
               invalid={errInput === 'name'}
               onChange={handleChange}
             />
@@ -73,18 +83,19 @@ export default function AddEquipmentModal({ modal, toggle }) {
               id="new-equipment-description"
               name="desc"
               type="text"
+              value={desc}
               invalid={errInput === 'desc'}
               onChange={handleChange}
             />
             <FormFeedback>Please enter a description.</FormFeedback>
           </FormGroup>
-          <Button color="primary" size="lg" disabled={!name || !desc}>
+          <Button color="primary" size="lg">
             Submit
           </Button>
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" size="lg" onClick={toggle}>
+        <Button color="secondary" size="lg" onClick={handleCancel}>
           Cancel
         </Button>
       </ModalFooter>
