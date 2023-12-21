@@ -30,7 +30,7 @@ const initialFormState = {
 };
 
 export default function AddToolForm() {
-  const [selectedCategory, setSelectedCategory] = useState('Tool');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedName, setSelectedName] = useState('');
   const [formData, setFormData] = useState(initialFormState);
 
@@ -69,8 +69,8 @@ export default function AddToolForm() {
           value={formData.project}
           onChange={event => handleInputChange('project', event.target.value)}
         >
-          <option>Project 1</option>
-          <option>Project 2</option>
+          <option value="Project1">Project 1</option>
+          <option value="Project2">Project 2</option>
         </Input>
       </FormGroup>
       <div className="add-tool-flex-group">
@@ -268,6 +268,7 @@ export default function AddToolForm() {
         <Label for="description">Tool/Equipment Description</Label>
         <Input
           type="textarea"
+          rows="4"
           name="description"
           id="description"
           value={formData.description}
