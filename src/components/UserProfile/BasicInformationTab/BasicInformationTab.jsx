@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
-// import 'react-phone-input-2/lib/style.css';
 import { useSelector } from 'react-redux';
 import { connect } from 'react-redux';
 import { isString } from 'lodash';
@@ -268,6 +267,7 @@ function BasicInformationTab(props) {
     topMargin = '0px';
   }
   const key = useSelector(state => state.timeZoneAPI.userAPIKey);
+  // eslint-disable-next-line react/destructuring-assignment
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const handleLocation = e => {
     setUserProfile({
@@ -309,6 +309,7 @@ function BasicInformationTab(props) {
             setTimeZoneFilter(timezone);
             setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
           } else {
+            // eslint-disable-next-line no-alert
             alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
             `);
           }
