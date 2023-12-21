@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, Label, Input, Form, FormGroup, Row, Col } from 'reactstrap';
+import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import './Issue.css';
 import { useEffect, useCallback } from 'react';
@@ -37,7 +38,7 @@ function Issue() {
   const otherOption = ['Other'];
 
   const [formData, setFormData] = useState({
-    dateOfWork: '',
+    issueDate: '',
     dropdown: defaultOption,
     checkboxes: new Set(),
     other: '',
@@ -81,49 +82,45 @@ function Issue() {
   };
 
   const validateData = currentFormData => {
-    if (!currentFormData.dateOfWork) {
-      // console.log('Date of Work is required');
+    if (!currentFormData.issueDate) {
+      toast.error('Issue Date is required.');
       return false;
     }
 
     if (!currentFormData.dropdown) {
-      // console.log('Issue Type is required');
+      toast.error('Issue Type is required.');
       return false;
     }
 
     if (currentFormData.checkboxes.size === 0) {
-      // console.log('Consequence(s) is required');
+      toast.error('Consequence(s) is required.');
       return false;
     }
 
     if (
       currentFormData.checkboxes &&
       currentFormData.checkboxes.has('Other') &&
-      currentFormData.other.length === 0
+      currentFormData.other.trim().length === 0
     ) {
-      // console.log('Other is required');
+      toast.error('Other is required.');
       return false;
     }
 
     if (!currentFormData.resolved) {
-      // console.log('Resolved is required');
+      toast.error('Resolved is required.');
       return false;
     }
 
-    if (currentFormData.description.length === 0) {
-      // console.log('Description is required');
+    if (currentFormData.description.trim().length <= 100) {
+      toast.error('Please add a mininum of 100 characters to Description.');
       return false;
     }
-
-    // console.log('Form submitted with data: ', JSON.stringify(currentFormData));
 
     return true;
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    // console.log('Submit');
-    // console.log(`isDataValid: ${isDataValid}`);
 
     const isDataValid = validateData(formData);
     return isDataValid;
@@ -187,9 +184,9 @@ function Issue() {
               <Input
                 className="issue-form-override-css issue-date-input"
                 type="date"
-                name="dateOfWork"
-                id="dateOfWork"
-                onChange={e => setFormData({ ...formData, dateOfWork: e.target.value })}
+                name="issueDate"
+                id="issueDate"
+                onChange={e => setFormData({ ...formData, issueDate: e.target.value })}
               />
             </Col>
           </Row>
