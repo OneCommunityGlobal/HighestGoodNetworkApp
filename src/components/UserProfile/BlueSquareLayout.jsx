@@ -5,7 +5,7 @@ import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 import { Button } from 'react-bootstrap';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
-import StopSelfSchedulerModal from './StopSelfSchedulerModal/StopSelfSchedulerModal.jsx';
+// import StopSelfSchedulerModal from './StopSelfSchedulerModal/StopSelfSchedulerModal.jsx';
 import SchedulerExplanationModal from './SchedulerExplanationModal/SchedulerExplanationModal';
 import { useState, useEffect } from 'react';
 import { useReducer } from 'react';
@@ -58,7 +58,7 @@ const BlueSquareLayout = props => {
   const [infringementsNum, setInfringementsNum] = useState(userProfile.infringements.length)
   const [isInfringementMoreThanFive, setIsInfringementMoreThanFive] = useState(false);
   const [show, setShow] = useState(false);
-  const [showInfoModal, setShowInfoModal]= useState(false);
+  // const [showInfoModal, setShowInfoModal]= useState(false);
   const [showExplanation, setShowExplanation]= useState(false);
   const [reason, setReason] = useState('');
   const [date, setDate] = useState(
@@ -175,7 +175,7 @@ const BlueSquareLayout = props => {
           <>
           <Button
           //  variant='warning'
-           onClick={openInfoModal}
+           onClick={openExplanationModal}
            className="w-100 text-success-emphasis"
             size="md"
             style={boxStyle}
@@ -187,7 +187,9 @@ const BlueSquareLayout = props => {
               <>
               <span>Can't Schedule Time Off</span>
               <br/>
-              <span style={{fontSize: ".8em", marginTop: "0"}}>
+              <span 
+               className='mt-0'
+               style={{fontSize: ".8em"}}>
                 Click to learn why
               </span>
               </>
@@ -222,7 +224,7 @@ const BlueSquareLayout = props => {
             />
           </Modal>
         )}
-        {isInfringementMoreThanFive && showInfoModal && 
+        {/* {isInfringementMoreThanFive && showInfoModal && 
         (<Modal show={showInfoModal} onHide={closeInfoModal}>
           <StopSelfSchedulerModal
             onHide={closeInfoModal}
@@ -230,7 +232,7 @@ const BlueSquareLayout = props => {
             infringementsNum = {infringementsNum}
             user = {userProfile}
           />
-        </Modal>)}
+        </Modal>)} */}
         {show && (
           <Modal show={show} onHide={handleClose}>
             <ScheduleReasonModal
