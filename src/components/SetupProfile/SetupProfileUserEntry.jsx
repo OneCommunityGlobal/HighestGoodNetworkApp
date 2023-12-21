@@ -414,6 +414,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
 
   const areAllHomecountryValuesFilled = () => {
     for (const key in homecountryLocation) {
+      if (key === 'city') {
+        continue; 
+      }
       if (typeof homecountryLocation[key] === 'string' && homecountryLocation[key].trim() === '') {
         return false;
       }
@@ -446,6 +449,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         homeCountry: homeCoutryDataExists ? homecountryLocation : userProfile.location,
         profilePicture: userProfile.profilePicture,
       };
+
+
 
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), data)
