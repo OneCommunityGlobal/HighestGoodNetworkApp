@@ -97,7 +97,7 @@ function ToolDetailPage() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchToolById('656a1799cbe9ebb0521ae8e3'));
+    dispatch(fetchToolById('657b3a082d8cc6bd67704ea2'));
   }, []);
 
   const details = [
