@@ -14,6 +14,8 @@ import { addReason, patchReason } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
 import { Modal } from 'react-bootstrap';
 import { boxStyle } from 'styles';
+import { color } from 'd3';
+import { fonts } from 'pdfmake/build/pdfmake';
 
 
 const BlueSquareLayout = props => {
@@ -173,19 +175,26 @@ const BlueSquareLayout = props => {
           {isInfringementMoreThanFive ? 
           <>
           <Button
-           variant='warning'
+          //  variant='warning'
            onClick={openInfoModal}
            className="w-100 text-success-emphasis"
             size="md"
             style={boxStyle}
+            id='stopSchedulerButton'
           >
             {fetchState.isFetching ? (
               <Spinner size="sm" animation="border" />
             ) : (
-              'Can\'t Schedule Time Off'
-            )}
+              <>
+              <span>Can't Schedule Time Off</span>
+              <br/>
+              <span style={{fontSize: ".8em", marginTop: "0"}}>
+                Click to learn why
+              </span>
+              </>
+              )}
           </Button> 
-            <p style={{cursor:"pointer"}} id='self-scheduler-off-info' onClick={openExplanationModal}>Click to learn why</p>
+            {/* <p style={{cursor:"pointer"}} id='self-scheduler-off-info' onClick={openExplanationModal}>Click to learn why</p> */}
           </>
           : <Button
             variant="primary"
