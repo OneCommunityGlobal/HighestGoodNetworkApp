@@ -51,6 +51,7 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey,setLocation }) => {
     }
     getUserTimeZone(location, apiKey)
       .then(response => {
+        
         if (
           response.data.status.code === 200 &&
           response.data.results &&
@@ -63,7 +64,7 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey,setLocation }) => {
               lng: response.data.results[0].geometry.lng,
             },
             country: response.data.results[0].components.country,
-            city: response.data.results[0].components.city,
+            city: response.data.results[0].components.city || '',
           };
           setLocationInput({
             ...currentLocation,
@@ -114,13 +115,13 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey,setLocation }) => {
           </Col>
         </Row>
       </ModalBody>
-      {locationInput?.country && locationInput?.city && (
+      {locationInput?.country && (
         <ModalFooter className="justify-content-start">
           <Row>
             <Col>
               <p>
                 {' '}
-                {`Do you want to represent ${locationInput?.city}, ${locationInput?.country} ?`}{' '}
+                {`Do you want to represent ${locationInput?.city ? `${locationInput?.city}, `: '' } ${locationInput?.country} ?`}{' '}
               </p>
             </Col>
           </Row>
