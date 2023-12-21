@@ -12,6 +12,9 @@ import {
   Label,
 } from 'reactstrap';
 import Joi from 'joi';
+import { toast } from 'react-toastify';
+
+import { addEquipmentType } from 'actions/bmdashboard/equipmentActions';
 
 const schema = Joi.object({
   name: Joi.string().required(),
@@ -33,13 +36,20 @@ export default function AddEquipmentModal({ modal, toggle }) {
     }
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const validate = schema.validate({ name, desc });
     if (validate.error) {
       return setErrInput(validate.error.details[0].path[0]);
     }
-    // toggle();
+    const response = await addEquipmentType({ name, desc });
+    console.log('res: ', response);
+    if (response.status === 201) {
+      toast.success('Success: new equipment type added.');
+    }
+    setName('');
+    setDesc('');
+    toggle();
   };
   return (
     <Modal isOpen={modal}>
