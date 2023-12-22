@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import { Component } from 'react';
 import { StickyContainer } from 'react-sticky';
 import {
@@ -53,8 +54,10 @@ class AddUserProfile extends Component {
     super(props);
     const { userProfiles, auth } = this.props;
     this.state = {
+      // eslint-disable-next-line react/no-unused-state
       userProfiles,
       popupOpen: false,
+      // eslint-disable-next-line react/no-unused-state
       weeklyCommittedHours: 10,
       teams: [],
       projects: [],
@@ -89,6 +92,7 @@ class AddUserProfile extends Component {
         phoneNumber: 'Phone Number is required',
       },
       timeZoneFilter: '',
+      // eslint-disable-next-line react/no-unused-state
       formSubmitted: false,
       teamCode: '',
       codeValid: false,
@@ -172,11 +176,13 @@ class AddUserProfile extends Component {
 
   // Function to call TimeZoneService with location and key
   onClickGetTimeZone = () => {
-    const location = this.state.userProfile.location.userProvided;
-    const key = this.props.timeZoneKey;
-    console.log('location: '+this.props.timeZoneAPI);
+    const { userProfile } = this.state;
+    const { timeZoneKey } = this.props;
+    const location = userProfile.location.userProvided;
+    const key = timeZoneKey;
+    // console.log('Debug 1: '+this.props.timeZoneAPI);
     if (!location) {
-      console.log('alert 1');
+      // eslint-disable-next-line no-alert
       alert('Please enter valid location');
       return;
     }
@@ -189,8 +195,8 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
-            console.log("bwahh: "+timezone);
-            let currentLocation = {
+            // console.log("Debug 2: "+timezone);
+            const currentLocation = {
               userProvided: location,
               coords: {
                 lat: response.data.results[0].geometry.lat,
@@ -200,12 +206,14 @@ class AddUserProfile extends Component {
               city: response.data.results[0].components.city,
             };
             if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
-
+            const { currState } = this.state;
+            const currStateCpy = [...currState];
+            // debug point 3
             this.setState({
-              ...this.state,
+              ...currStateCpy,
               timeZoneFilter: timezone,
               userProfile: {
-                ...this.state.userProfile,
+                ...currStateCpy.userProfile,
                 location: currentLocation,
                 timeZone: timezone,
               },
@@ -215,28 +223,32 @@ class AddUserProfile extends Component {
             `);
           }
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          return err;
+        });
     }
   };
 
   fieldsAreValid = () => {
-    const firstLength = this.state.userProfile.firstName !== '';
-    const lastLength = this.state.userProfile.lastName !== '';
-    const phone = this.state.userProfile.phoneNumber;
+    const { userProfile } = this.state;
+    const firstLength = userProfile.firstName !== '';
+    const lastLength = userProfile.lastName !== '';
+    const phone = userProfile.phoneNumber;
 
     if (phone === null) {
       toast.error('Phone Number is required');
       return false;
-    } else if (firstLength && lastLength && phone.length >= 9) {
-      return true;
-    } else {
-      toast.error('Please fill all the required fields');
-      return false;
     }
+    if (firstLength && lastLength && phone.length >= 9) {
+      return true;
+    }
+    toast.error('Please fill all the required fields');
+    return false;
   };
 
   checkIfDuplicate = (firstName, lastName) => {
-    let { userProfiles } = this.state.userProfiles;
+    const that = this;
+    const { userProfiles } = that.state.userProfiles;
 
     const duplicates = userProfiles.filter(user => {
       return (
@@ -246,12 +258,11 @@ class AddUserProfile extends Component {
     });
 
     if (duplicates.length > 0) return true;
-    else return false;
+    return false;
   };
 
-
   createUserProfile = allowsDuplicateName => {
-    let that = this;
+    const that = this;
     const {
       firstName,
       email,
@@ -271,28 +282,29 @@ class AddUserProfile extends Component {
 
     const userData = {
       password: process.env.REACT_APP_DEF_PWD,
-      role: role,
-      firstName: firstName,
-      lastName: lastName,
-      jobTitle: jobTitle,
-      phoneNumber: phoneNumber,
+      role,
+      firstName,
+      lastName,
+      jobTitle,
+      phoneNumber,
       bio: '',
       weeklycommittedHours: that.state.userProfile.weeklyCommittedHours,
-      weeklySummaryOption: weeklySummaryOption,
+      weeklySummaryOption,
       personalLinks: [],
       adminLinks: [],
-      teams: this.state.teams,
-      projects: this.state.projects,
-      email: email,
-      privacySettings: privacySettings,
-      collaborationPreference: collaborationPreference,
-      timeZone: timeZone,
-      location: location,
-      allowsDuplicateName: allowsDuplicateName,
-      createdDate: createdDate,
-      teamCode: this.state.teamCode,
+      teams: that.state.teams,
+      projects: that.state.projects,
+      email,
+      privacySettings,
+      collaborationPreference,
+      timeZone,
+      location,
+      allowsDuplicateName,
+      createdDate,
+      teamCode: that.state.teamCode,
     };
 
+    // eslint-disable-next-line react/no-unused-state
     this.setState({ formSubmitted: true });
 
     if (googleDoc) {
@@ -350,10 +362,10 @@ class AddUserProfile extends Component {
               return;
             } else {
               toast.success('User profile created.');
-              this.state.userProfile._id = res.data._id;
-              if (this.state.teams.length > 0) {
-                this.state.teams.forEach(team => {
-                  this.props.addTeamMember(
+              that.state.userProfile._id = res.data._id;
+              if (that.state.teams.length > 0) {
+                that.state.teams.forEach(team => {
+                  that.props.addTeamMember(
                     team._id,
                     res.data._id,
                     res.data.firstName,
@@ -362,7 +374,7 @@ class AddUserProfile extends Component {
                 });
               }
             }
-            this.props.userCreated();
+            that.props.userCreated();
           })
           .catch(err => {
             if (err.response?.data?.type) {
@@ -402,6 +414,7 @@ class AddUserProfile extends Component {
                     });
                   }
                   break;
+                // no default
               }
             }
             toast.error(
@@ -412,8 +425,6 @@ class AddUserProfile extends Component {
       }
     }
   };
-
-  
 
   // handleImageUpload = async e => {
   //   e.preventDefault();
@@ -488,18 +499,19 @@ class AddUserProfile extends Component {
   };
 
   handleLocation = e => {
-    console.log('value eee:'+e.target.value);
-    const locationObject = this.state.userProfile.location;
-    const keys = Object.keys(locationObject);
-    
-    keys.forEach(key => {
-      console.log(`Key: ${key}, Value: ${locationObject[key]}`);
-    });
+    // console.log('Debug 4 '+ e.target.value);
+    const { that } = this;
+    // const locationObject = that.state.userProfile.location;
+    // const keys = Object.keys(locationObject);
+
+    // keys.forEach(key => {
+    //   console.log(`Key: ${key}, Value: ${locationObject[key]}`);
+    // });
     this.setState({
-      ...this.state,
+      ...that.state,
       userProfile: {
-        ...this.state.userProfile,
-        location: { ...this.state.userProfile.location, userProvided: e.target.value },
+        ...that.state.userProfile,
+        location: { ...that.state.location, userProvided: e.target.value },
       },
     });
     this.handleUserProfile(e);
@@ -507,6 +519,7 @@ class AddUserProfile extends Component {
 
   handleUserProfile = event => {
     const { userProfile, formValid, formErrors } = this.state;
+    const { that } = this;
 
     switch (event.target.id) {
       case 'firstName':
@@ -561,12 +574,7 @@ class AddUserProfile extends Component {
         });
         break;
       case 'location':
-        const locationObject = this.state.userProfile.location;
-    const keys = Object.keys(locationObject);
-    console.log('inside SWITCH statement');
-    keys.forEach(key => {
-      console.log(`Key: ${key}, Value: ${locationObject[key]}`);
-    });
+        // debug 5
         this.setState({
           userProfile: {
             ...userProfile,
@@ -577,7 +585,6 @@ class AddUserProfile extends Component {
             [event.target.id]: !!event.target.value,
           },
         });
-        console.log('switch statement:'+this.state.userProfile.location['userProvided']);
         break;
       case 'timeZone':
         this.setState({
@@ -593,9 +600,9 @@ class AddUserProfile extends Component {
         break;
       case 'jobTitle':
         this.setState({
-          ...this.state,
+          ...that.state,
           userProfile: {
-            ...this.state.userProfile,
+            ...that.state.userProfile,
             jobTitle: event.target.value,
           },
         });
@@ -612,7 +619,7 @@ class AddUserProfile extends Component {
           },
           formErrors: {
             ...formErrors,
-            weeklyCommittedHours: !!event.target.value ? '' : 'Committed hours can not be empty',
+            weeklyCommittedHours: event.target.value ? '' : 'Committed hours can not be empty',
           },
         });
         break;
@@ -698,16 +705,27 @@ class AddUserProfile extends Component {
   };
 
   render() {
-    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
-    const phoneNumberEntered =
-      this.state.userProfile.phoneNumber === null ||
-      this.state.userProfile.phoneNumber.length === 0;
+    const {
+      userProfile,
+      popupOpen,
+      formErrors,
+      formValid,
+      timeZoneFilter,
+      projects,
+      teams,
+      teamCode,
+      codeValid,
+    } = this.state;
+    const { closePopup, role, allProjects, auth, allTeams } = this.props;
+
+    const { firstName, email, lastName, phoneNumber, jobTitle } = userProfile;
+    const phoneNumberEntered = phoneNumber === null || userProfile.phoneNumber.length === 0;
     return (
       <StickyContainer>
         <DuplicateNamePopup
-          open={this.state.popupOpen}
+          open={popupOpen}
           popupClose={this.popupClose}
-          onClose={this.props.closePopup}
+          onClose={closePopup}
           createUserProfile={this.createUserProfile}
         />
         <Container className="emp-profile add-new-user">
@@ -727,9 +745,9 @@ class AddUserProfile extends Component {
                         value={firstName}
                         onChange={this.handleUserProfile}
                         placeholder="First Name"
-                        invalid={this.state.formErrors.firstName}
+                        invalid={formErrors.firstName}
                       />
-                      <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
+                      <FormFeedback>{formErrors.firstName}</FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -741,9 +759,9 @@ class AddUserProfile extends Component {
                         value={lastName}
                         onChange={this.handleUserProfile}
                         placeholder="Last Name"
-                        invalid={this.state.formErrors.lastName}
+                        invalid={formErrors.lastName}
                       />
-                      <FormFeedback>{this.state.formErrors.lastName}</FormFeedback>
+                      <FormFeedback>{formErrors.lastName}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -777,12 +795,12 @@ class AddUserProfile extends Component {
                         value={email}
                         onChange={this.handleUserProfile}
                         placeholder="Email"
-                        invalid={this.state.formErrors.email}
+                        invalid={formErrors.email}
                       />
-                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>
+                      <FormFeedback>{formErrors.email}</FormFeedback>
                       <ToggleSwitch
                         switchType="email"
-                        state={this.state.userProfile.privacySettings?.email}
+                        state={userProfile.privacySettings?.email}
                         handleUserProfile={this.handleUserProfile}
                       />
                     </FormGroup>
@@ -802,13 +820,11 @@ class AddUserProfile extends Component {
                         onChange={phone => this.phoneChange(phone)}
                       />
                       {phoneNumberEntered && (
-                        <div className="required-user-field">
-                          {this.state.formErrors.phoneNumber}
-                        </div>
+                        <div className="required-user-field">{formErrors.phoneNumber}</div>
                       )}
                       <ToggleSwitch
                         switchType="phone"
-                        state={this.state.userProfile.privacySettings?.phoneNumber}
+                        state={userProfile.privacySettings?.phoneNumber}
                         handleUserProfile={this.handleUserProfile}
                       />
                     </FormGroup>
@@ -824,17 +840,17 @@ class AddUserProfile extends Component {
                         type="number"
                         name="weeklyCommittedHours"
                         id="weeklyCommittedHours"
-                        value={this.state.userProfile.weeklyCommittedHours}
+                        value={userProfile.weeklyCommittedHours}
                         onChange={this.handleUserProfile}
                         onFocus={this.handleUserProfile}
                         placeholder="Weekly Committed Hours"
                         invalid={
-                          this.state.formValid.weeklyCommittedHours === undefined
+                          formValid.weeklyCommittedHours === undefined
                             ? false
-                            : !this.state.formValid.weeklyCommittedHours
+                            : !formValid.weeklyCommittedHours
                         }
                       />
-                      <FormFeedback>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback>{formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -851,8 +867,8 @@ class AddUserProfile extends Component {
                         defaultValue="Volunteer"
                         onChange={this.handleUserProfile}
                       >
-                        {this.props.role.roles.map(({ roleName }) => {
-                          if (roleName === 'Owner') return;
+                        {role.roles.map(({ roleName }) => {
+                          if (roleName === 'Owner') return null;
                           return <option value={roleName}>{roleName}</option>;
                         })}
                         {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
@@ -878,7 +894,7 @@ class AddUserProfile extends Component {
                         type="text"
                         name="collaborationPreference"
                         id="collaborationPreference"
-                        value={this.state.userProfile.collaborationPreference}
+                        value={userProfile.collaborationPreference}
                         onChange={this.handleUserProfile}
                         placeholder="Skype, Zoom, etc."
                       />
@@ -895,7 +911,7 @@ class AddUserProfile extends Component {
                         type="text"
                         name="googleDoc"
                         id="googleDoc"
-                        value={this.state.userProfile.googleDoc}
+                        value={userProfile.googleDoc}
                         onChange={this.handleUserProfile}
                         placeholder="Google Doc"
                       />
@@ -912,7 +928,7 @@ class AddUserProfile extends Component {
                         type="text"
                         name="dropboxDoc"
                         id="dropboxDoc"
-                        value={this.state.userProfile.dropboxDoc}
+                        value={userProfile.dropboxDoc}
                         onChange={this.handleUserProfile}
                         placeholder="DropBox Folder"
                       />
@@ -951,7 +967,7 @@ class AddUserProfile extends Component {
                   <Col md="6">
                     <FormGroup>
                       <TimeZoneDropDown
-                        filter={this.state.timeZoneFilter}
+                        filter={timeZoneFilter}
                         onChange={this.handleUserProfile}
                         selected="America/Los_Angeles"
                         id="timeZone"
@@ -967,12 +983,12 @@ class AddUserProfile extends Component {
                     <FormGroup>
                       <div className="date-picker-item">
                         <DatePicker
-                          selected={this.state.userProfile.createdDate}
+                          selected={userProfile.createdDate}
                           minDate={new Date(DATE_PICKER_MIN_DATE)}
                           onChange={date =>
                             this.setState({
                               userProfile: {
-                                ...this.state.userProfile,
+                                ...userProfile,
                                 createdDate: date,
                               },
                             })
@@ -991,30 +1007,30 @@ class AddUserProfile extends Component {
               <TabContent id="myTabContent">
                 <TabPane>
                   <ProjectsTab
-                    userProjects={this.state.projects}
-                    projectsData={this.props ? this.props.allProjects.projects : []}
+                    userProjects={projects}
+                    projectsData={this.props ? allProjects.projects : []}
                     onAssignProject={this.onAssignProject}
                     onDeleteProject={this.onDeleteProject}
                     isUserAdmin
-                    role={this.props.auth.user.role}
+                    role={auth.user.role}
                     edit
                   />
                 </TabPane>
                 <TabPane>
                   <TeamsTab
-                    userTeams={this.state.teams}
-                    teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                    userTeams={teams}
+                    teamsData={this.props ? allTeams.allTeamsData : []}
                     onAssignTeam={this.onAssignTeam}
                     onAssignTeamCode={this.onAssignTeamCode}
                     onDeleteTeam={this.onDeleteTeam}
                     isUserAdmin
-                    role={this.props.auth.user.role}
-                    teamCode={this.state.teamCode}
+                    role={auth.user.role}
+                    teamCode={teamCode}
                     canEditTeamCode
-                    codeValid={this.state.codeValid}
+                    codeValid={codeValid}
                     setCodeValid={this.setCodeValid}
                     edit
-                    userProfile={this.state.userProfile}
+                    userProfile={userProfile}
                   />
                 </TabPane>
               </TabContent>
