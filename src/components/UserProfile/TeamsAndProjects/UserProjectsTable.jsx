@@ -483,3 +483,4 @@ const UserProjectsTable = React.memo(props => {
 });
 
 export default connect(null, { hasPermission })(UserProjectsTable);
+
