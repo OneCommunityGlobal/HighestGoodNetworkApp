@@ -224,11 +224,11 @@ export class EditableInfoModal extends Component {
           title="Click for user class information"
           style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '10px'}}
           aria-hidden="true"
-          className="fa fa-info-circle"
-          onClick={()=>this.setState({editableModalOpen: true})}
-        />
-        {editableModalOpen && (
-          <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg">
+          //className="fa fa-info-circle"
+          onClick={this.toggleFAQModal} // Open modal on click
+          />
+        { FAQModalOpen && (
+          <Modal isOpen={FAQModalOpen} toggle={this.toggleFAQModal} size="lg">
           <ModalHeader>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
           <ModalBody>
           {this.state.editing
@@ -314,4 +314,4 @@ const mapDispatchToProps = dispatch => {
 };
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditableInfoModal);
+export default connect(mapStateToProps, mapDispatchToProps)(FAQModal);

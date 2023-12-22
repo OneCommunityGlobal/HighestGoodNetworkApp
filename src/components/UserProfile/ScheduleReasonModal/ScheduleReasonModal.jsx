@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
 import { boxStyle } from 'styles'
 import   './ScheduleReasonModal.css';
-//import FAQModal from 'src/components/UserProfile/BlueSquares/FAQmodal.jsx';
+import FAQModal from 'src/components/UserProfile/BlueSquares/FAQmodal.jsx';
 
 
 
