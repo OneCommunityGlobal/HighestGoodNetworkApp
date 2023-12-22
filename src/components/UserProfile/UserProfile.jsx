@@ -741,8 +741,8 @@ function UserProfile(props) {
                 areaTitle="User Profile"
                 fontSize={24}
                 isPermissionPage={true}
-                role={props.role}
-                />
+                role={requestorRole} // Pass the 'role' prop to EditableInfoModal
+              />
               <ActiveCell
                 isActive={userProfile.isActive}
                 user={userProfile}

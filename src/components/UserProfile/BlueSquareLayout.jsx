@@ -15,7 +15,7 @@ import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 
-const BlueSquareLayout = props => {
+const BlueSquareLayout = (props, loggedInUser) => {
   const fetchingReducer = (state, action) => {
     switch (action.type) {
       case 'FETCHING_STARTED':
@@ -49,6 +49,8 @@ const BlueSquareLayout = props => {
         return state;
     }
   };
+
+
 
   const { userProfile, handleUserProfile, handleBlueSquare, canEdit } = props;
   const { privacySettings } = userProfile;
@@ -132,8 +134,9 @@ const BlueSquareLayout = props => {
                   areaName="blueSquares_info"
                   areaTitle="Blue Squares"
                   fontSize={24}
-                  isPermissionPage
-                />
+                  isPermissionPage={true}
+                  role={loggedInUser.role}
+                  />
           </div>
           <Button
             variant="primary"

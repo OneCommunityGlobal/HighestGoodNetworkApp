@@ -27,8 +27,7 @@ const ScheduleReasonModal = ({
   userId,
   IsReasonUpdated,
   setIsReasonUpdated,
-  loggedInUser,
-  asUser
+  loggedInUser
 }) => {
   useEffect(() => {
     const initialFetching = async () => {
@@ -48,15 +47,15 @@ const ScheduleReasonModal = ({
     initialFetching();
   }, [date]);
 
-    // State to control FAQModal visibility
+  console.log('loggedInUser', loggedInUser);
+  console.log('userId', userId)
+  // State to control FAQModal visibility
     const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
 
     // Function to toggle FAQModal
     const toggleFAQModal = () => {
       setIsFAQModalOpen(!isFAQModalOpen);
     };
-    const userId = asUser || loggedInUser.userId;
-    const isOwner = ['Owner'].includes(loggedInUser.role);
 
 
   return (
@@ -115,7 +114,7 @@ const ScheduleReasonModal = ({
                 areaTitle="Blue Squares FAQ"
                 fontSize={24}
                 isPermissionPage={true}
-                role={loggedInUser.role} // Pass the 'role' prop to EditableInfoModal
+                role={isOwner}
                 />
           </Button>
          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
