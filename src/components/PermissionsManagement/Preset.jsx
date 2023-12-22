@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { FormCheck } from 'react-bootstrap';
-import { Alert, Button, Form, FormGroup, Input, Label, Row } from 'reactstrap';
-import { permissionLabel } from './UserRoleTab';
-import { mainPermissions } from './RolePermissions';
+import { Button, Row } from 'reactstrap';
+import PermissionList from './PermissionList';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,8 +8,6 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { updateRole } from '../../actions/role';
 import { updatePresetById, deletePresetById } from '../../actions/rolePermissionPresets';
 import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
-import { boxStyle } from 'styles';
-import { update } from 'lodash';
 
 
 const Preset = (props) => {
@@ -102,17 +98,11 @@ const Preset = (props) => {
           </Button>
         </div>
       </div>
-      {isOpen ? Object.keys(permissionLabel).map((permission) => (
-      <li className="user-role-tab__permissions" key={permission}>
-        <p style={{
-          color: props.preset.permissions.includes(permission) ? 'green' : 'red' ,
-          fontSize:  mainPermissions.includes(permissionLabel[permission]) ? '20px':'',
-          paddingLeft:  mainPermissions.includes(permissionLabel[permission]) ? '0': '50px'
-          }}>
-          {permissionLabel[permission]}
-        </p>
-      </li>
-      )):<></>}
+      {isOpen ?
+        <PermissionList
+          rolePermissions={props.preset.permissions}
+        />
+      :<></>}
     </>
   );
 };
