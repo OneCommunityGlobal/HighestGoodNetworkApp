@@ -1,16 +1,25 @@
 import { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './LessonListForm.css';
+import { fetchBMLessons } from 'actions/bmdashboard/lessonsAction';
 import Lessons from './Lessons';
-import { DummyData } from './Lessons';
 
-function LessonList() {
+function LessonList(props) {
+  const { lessons, dispatch } = props;
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
-  const [filteredLessons, setFilteredLessons] = useState(DummyData);
+  const [filteredLessons, setFilteredLessons] = useState(lessons);
   const [filterOption, setFilterOption] = useState('1');
-  const [dummyData, setDummyData] = useState(DummyData);
+
+  useEffect(() => {
+    dispatch(fetchBMLessons());
+  }, []);
+
+  useEffect(() => {
+    setFilteredLessons([...lessons]);
+  }, [lessons]);
 
   const getWeekNumber = date => {
     const target = new Date(date.valueOf());
@@ -21,7 +30,7 @@ function LessonList() {
     if (target.getDay() !== 4) {
       target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7));
     }
-    return 1 + Math.ceil((firstThursday - target) / 604800000); // 604800000 = 7 * 24 * 60 * 60 * 1000
+    return 1 + Math.ceil((firstThursday - target) / 604800000);
   };
   const isInThisWeek = date => {
     const currentDate = new Date();
@@ -50,22 +59,23 @@ function LessonList() {
   const filterLessons = () => {
     switch (filterOption) {
       case '2':
-        setFilteredLessons(dummyData.filter(item => isInThisYear(item.date)));
+        setFilteredLessons(lessons.filter(item => isInThisYear(item.date)));
         break;
       case '3':
-        setFilteredLessons(dummyData.filter(item => isInThisMonth(item.date)));
+        setFilteredLessons(lessons.filter(item => isInThisMonth(item.date)));
         break;
       case '4':
-        setFilteredLessons(dummyData.filter(item => isInThisWeek(item.date)));
+        setFilteredLessons(lessons.filter(item => isInThisWeek(item.date)));
         break;
       default:
-        setFilteredLessons(dummyData);
+        setFilteredLessons(lessons);
         break;
     }
   };
+
   useEffect(() => {
     filterLessons();
-  }, [dummyData, filterOption]); // Update when dummyData or filterOption changes
+  }, [lessons, filterOption]);
 
   const handleInputChange = event => {
     setInputValue(event.target.value);
@@ -152,9 +162,18 @@ function LessonList() {
             </InputGroup>
           </Form.Group>
         </Form>
-        <Lessons filteredLessons={filteredLessons} />
+        <Lessons
+          filteredLessons={filteredLessons}
+          setFilteredLessons={setFilteredLessons}
+          dispatch={dispatch}
+        />
       </div>
     </div>
   );
 }
-export default LessonList;
+
+const mapStateToProps = state => ({
+  lessons: state.lessons.lessons,
+});
+
+export default connect(mapStateToProps)(LessonList);

@@ -6,16 +6,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import './LessonCard.css';
 import ReactHtmlParser from 'react-html-parser';
+import { formatDateAndTime } from 'utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 
 function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard }) {
   const maxSummaryLength = 1500;
-  // State to manage the expansion/collapse of each card
   const [expandedCards, setExpandedCards] = useState([]);
   const auth = useSelector(state => state.auth);
   const currentUserId = auth.user.userid;
   const [editableLessonId, setEditableLessonId] = useState(null);
-
   const [editableLessonSummary, setEditableLessonSummary] = useState('');
   const [validationError, setValidationError] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -31,14 +30,12 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard }
   };
 
   const handleSaveEdit = lessonId => {
-    // Check if editableLessonSummary is not empty
     if (editableLessonSummary.trim() !== '') {
       onEditLessonSummary(lessonId, editableLessonSummary);
       setEditableLessonId(null);
       setEditableLessonSummary('');
       setValidationError('');
     } else {
-      // Show validation error and prevent saving
       setValidationError('Summary cannot be empty.');
     }
   };
@@ -54,7 +51,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard }
     });
   };
   const expandAll = () => {
-    setExpandedCards(filteredLessons.map(lesson => lesson.id));
+    setExpandedCards(filteredLessons.map(lesson => lesson._id));
   };
 
   const collapseAll = () => {
@@ -66,17 +63,17 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard }
   };
 
   const lessonCards = filteredLessons.map(lesson => (
-    <Card key={lesson.id}>
-      <Card.Header onClick={() => toggleCardExpansion(lesson.id)} style={{ cursor: 'pointer' }}>
+    <Card key={lesson._id}>
+      <Card.Header onClick={() => toggleCardExpansion(lesson._id)} style={{ cursor: 'pointer' }}>
         <Nav className="nav">
           <div className="nav-title-and-date">
-            <Nav.Item className="nav-item-title">{lesson.lessonTitle}</Nav.Item>
-            <Nav.Item className="nav-item-date">Date: {lesson.date}</Nav.Item>
+            <Nav.Item className="nav-item-title">{lesson.title}</Nav.Item>
+            <Nav.Item className="nav-item-date">Date: {formatDateAndTime(lesson.date)}</Nav.Item>
           </div>
           <div>
             <Nav.Item className="card-tag">
-              {lesson.tags.map(tag => (
-                <span key={`${lesson.id} + ${tag}`} className="text-muted tag-item">
+              {lesson.tag.map(tag => (
+                <span key={`${lesson._id} + ${tag}`} className="text-muted tag-item">
                   {`#${tag}`}
                 </span>
               ))}
@@ -84,19 +81,19 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard }
           </div>
         </Nav>
       </Card.Header>
-      {expandedCards.includes(lesson.id) && (
+      {expandedCards.includes(lesson._id) && (
         <>
           <Card.Body className="scrollable-card-body">
             <Card.Text className="card-tag-and-file">
               Tags:{' '}
-              {lesson.tags.map(tag => (
-                <span key={`${lesson.id} + ${tag}`} className="tag-item">
+              {lesson.tag.map(tag => (
+                <span key={`${lesson._id} + ${tag}`} className="tag-item">
                   {`#${tag}`}
                 </span>
               ))}
             </Card.Text>
             <Card.Text className="lesson-summary">
-              {editableLessonId === lesson.id ? (
+              {editableLessonId === lesson._id ? (
                 <>
                   <textarea
                     className={`editable-lesson-summary ${validationError ? 'error' : ''}`}
@@ -104,7 +101,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard }
                     onChange={e => setEditableLessonSummary(e.target.value)}
                   />
                   {validationError && <span className="validation-error">{validationError}</span>}
-                  <button type="submit" onClick={() => handleSaveEdit(lesson.id)}>
+                  <button type="submit" onClick={() => handleSaveEdit(lesson._id)}>
                     Save
                   </button>
                   <button type="submit" onClick={handleCancelEdit}>
@@ -114,37 +111,35 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard }
               ) : (
                 <span>
                   {ReactHtmlParser(
-                    lesson.lessonSummary.length > maxSummaryLength
-                      ? `${lesson.lessonSummary.slice(0, maxSummaryLength)}...`
-                      : lesson.lessonSummary,
+                    lesson.content.length > maxSummaryLength
+                      ? `${lesson.content.slice(0, maxSummaryLength)}...`
+                      : lesson.content,
                   )}
                 </span>
               )}
             </Card.Text>
 
             <Card.Text className="card-tag-and-file">
-              File: <span className="lesson-file">{lesson.file}</span>
+              File: <span className="lesson-file">file</span>
             </Card.Text>
           </Card.Body>
           <Card.Footer className="text-muted">
             <div>
-              <span className="footer-items-author-and-from">
-                Author: {lesson.firstName} {lesson.lastName}
-              </span>
-              <span className="footer-items-author-and-from">From: {lesson.project}</span>
+              <span className="footer-items-author-and-from">Author: {lesson.author}</span>
+              <span className="footer-items-author-and-from">From: {lesson.relatedProject}</span>
             </div>
             <div className="footer-items">
-              {currentUserId === lesson.userid && (
+              {currentUserId === lesson.author && (
                 <div>
                   <button
                     className="text-muted"
                     type="button"
-                    onClick={() => handleEdit(lesson.id, lesson.lessonSummary)}
+                    onClick={() => handleEdit(lesson._id, lesson.content)}
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDeletePopup(lesson.id)}
+                    onClick={() => handleDeletePopup(lesson._id)}
                     className="text-muted"
                     type="button"
                   >
