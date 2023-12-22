@@ -7,11 +7,9 @@ import { boxStyle } from 'styles';
 import 'react-phone-input-2/lib/style.css';
 import './AddToolForm.css';
 
-//TODO edit changeHandlers for select elements
-
 const initialFormState = {
-  project: '',
-  category: 'Tool',
+  project: 'Project1',
+  category: '',
   name: '',
   invoice: '',
   unitPrice: '',
@@ -30,9 +28,10 @@ const initialFormState = {
 };
 
 export default function AddToolForm() {
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedName, setSelectedName] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Tool');
+  const [selectedName, setSelectedName] = useState('Tool1');
   const [formData, setFormData] = useState(initialFormState);
+
 
   const handleInputChange = (name, value) => {
     setFormData( prevData => ({
@@ -45,7 +44,7 @@ export default function AddToolForm() {
     const category = event.target.value;
     setSelectedCategory(category);
     setSelectedName('');
-    handleInputChange('project', category);
+    handleInputChange('category', category);
   };
 
   const handleNameChange = event => {
@@ -56,7 +55,13 @@ export default function AddToolForm() {
   const handleSubmit = event => {
     event.preventDefault();
     console.log('Data', formData)
-  }
+  };
+
+  const handleCancelClick = () => {
+    setFormData(initialFormState)
+  };
+//TO DO add tax to this calculation
+  const totalPrice = formData.unitPrice * formData.quantity + Number(formData.shippingFee);
 
   return (
     <Form className="add-tool-form container" onSubmit={handleSubmit}>
@@ -142,9 +147,9 @@ export default function AddToolForm() {
             value={formData.currency}
             onChange={event => handleInputChange('currency', event.target.value)}
           >
-            <option>USD</option>
-            <option>EUR</option>
-            <option>CAD</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="CAD">CAD</option>
           </Input>
         </FormGroup>
         <FormGroup>
@@ -168,8 +173,8 @@ export default function AddToolForm() {
             value={formData.purchaseRental}
             onChange={event => handleInputChange('purchaseRental', event.target.value)}
           >
-            <option>Purchase</option>
-            <option>Rental</option>
+            <option value="purchase">Purchase</option>
+            <option value="rental">Rental</option>
           </Input>
         </FormGroup>
         <FormGroup>
@@ -181,8 +186,8 @@ export default function AddToolForm() {
             value={formData.condition}
             onChange={event => handleInputChange('condition', event.target.value)}
           >
-            <option>New</option>
-            <option>Used</option>
+            <option value="new">New</option>
+            <option value="used">Used</option>
           </Input>
         </FormGroup>
       </div>
@@ -238,7 +243,7 @@ export default function AddToolForm() {
           <Input id="phone-number" type="tel" name="phone-number" placeholder="XXX-XX-XX" />
         </FormGroup>
       </div> */}
-      <FormGroup>
+      {/* <FormGroup>
         <Label for="phone-number">Supplier Phone Number</Label>
         <PhoneInput
           id="phone-number"
@@ -247,11 +252,16 @@ export default function AddToolForm() {
           value={formData.phoneNumber}
           onChange={event => handleInputChange('phoneNumber', event.target.value)}
         />
-      </FormGroup>
-      <FormGroup>
+      </FormGroup> */}
+      {/* <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
-        <DragAndDrop id="imageUpload" name="image" />
-      </FormGroup>
+        <DragAndDrop
+          id="imageUpload"
+          name="image"
+          value={formData.image}
+          onFilesSelected={setFiles}
+        />
+      </FormGroup> */}
 
       <FormGroup>
         <Label for="link">Link to Buy/Rent</Label>
@@ -277,10 +287,12 @@ export default function AddToolForm() {
       </FormGroup>
       <div className="add-tool-total-price">
         <div>Total Price</div>
-        <div className="total-price-calculated">30.00USD</div>
+        <div className="total-price-calculated">
+          {totalPrice} {formData.currency}
+        </div>
       </div>
       <div className="add-tool-buttons">
-        <Button outline style={boxStyle}>
+        <Button outline style={boxStyle} onClick={handleCancelClick}>
           Cancel
         </Button>
         <Button id="submit-button" style={boxStyle}>

@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './DragAndDrop.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 import { Button } from 'reactstrap';
 
-const DragAndDrop = () => {
+const DragAndDrop = ({onFilesSelected}) => {
 
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState([]);
@@ -46,6 +46,10 @@ const DragAndDrop = () => {
   const handleRemoveFile = function (index) {
     setFiles((prevFiles) => prevFiles.filter((file, i) => i !== index))
   }
+
+  useEffect(() => {
+    onFilesSelected(files)
+  }, [files, onFilesSelected])
 
   return (
     <div id="file-upload-form" onDragEnter={handleDrag} onSubmit={(e) => e.preventDefault()}>
