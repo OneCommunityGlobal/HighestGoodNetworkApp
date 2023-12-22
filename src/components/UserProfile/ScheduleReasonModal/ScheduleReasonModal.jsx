@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
 import { boxStyle } from 'styles'
 import   './ScheduleReasonModal.css';
-import FAQModal from 'src/components/UserProfile/BlueSquares/FAQmodal.jsx';
+import FAQModal from './FAQModal';
 
 
 
@@ -27,6 +27,8 @@ const ScheduleReasonModal = ({
   userId,
   IsReasonUpdated,
   setIsReasonUpdated,
+  loggedInUser,
+  asUser
 }) => {
   useEffect(() => {
     const initialFetching = async () => {
@@ -46,13 +48,16 @@ const ScheduleReasonModal = ({
     initialFetching();
   }, [date]);
 
-  //Define State for FAQ Modal
-  const [isFAQModalOpen, setFAQModalOpen] = useState(false);
+    // State to control FAQModal visibility
+    const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
 
-  // Implement toggleModal Function
-  const toggleModal = () => {
-    setFAQModalOpen(!isFAQModalOpen);
-  };
+    // Function to toggle FAQModal
+    const toggleFAQModal = () => {
+      setIsFAQModalOpen(!isFAQModalOpen);
+    };
+    const userId = asUser || loggedInUser.userId;
+    const isOwner = ['Owner'].includes(loggedInUser.role);
+
 
   return (
     <>
@@ -104,8 +109,14 @@ const ScheduleReasonModal = ({
           ) : null}
         </Modal.Body>
         <Modal.Footer>
-        <Button variant="success" title="FAQ" onClick={toggleModal} className="FAQmodal" style={boxStyle}>
-           FAQ
+        <Button variant="success" title="FAQ" onClick={toggleFAQModal} style={boxStyle}>
+        <FAQModal
+                areaName="blueSquares_FAQ"
+                areaTitle="Blue Squares FAQ"
+                fontSize={24}
+                isPermissionPage={true}
+                role={loggedInUser.role} // Pass the 'role' prop to EditableInfoModal
+                />
           </Button>
          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
