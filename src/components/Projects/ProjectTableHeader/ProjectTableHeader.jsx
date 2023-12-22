@@ -12,6 +12,9 @@ import {
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { boxStyle } from 'styles';
 
 const ProjectTableHeader = props => {
   const { role } = props; // Access the 'role' prop
@@ -24,7 +27,21 @@ const ProjectTableHeader = props => {
       </th>
       <th scope="col">{PROJECT_NAME}</th>
       <th scope="col" id="projects__category">
-        {PROJECT_CATEGORY}
+       <span className='d-flex justify-content-between'>{PROJECT_CATEGORY}
+        <DropdownButton id="" title="" size='sm'style={boxStyle} variant='info'>
+            <Dropdown.Item default value="Unspecified">Unspecified</Dropdown.Item>
+            <Dropdown.Item value="Food">Food</Dropdown.Item>
+            <Dropdown.Item value="Energy">Energy</Dropdown.Item>
+            <Dropdown.Item value="Housing">Housing</Dropdown.Item>
+            <Dropdown.Item value="Education">Education</Dropdown.Item>
+            <Dropdown.Item value="Society">Society</Dropdown.Item>
+            <Dropdown.Item value="Economics">Economics</Dropdown.Item>
+            <Dropdown.Item value="Stewardship">Stewardship</Dropdown.Item>
+            <Dropdown.Item value="Other">Other</Dropdown.Item>
+      
+        </DropdownButton>
+       </span> 
+        
       </th>
       <th scope="col" id="projects__active">
         {ACTIVE}
