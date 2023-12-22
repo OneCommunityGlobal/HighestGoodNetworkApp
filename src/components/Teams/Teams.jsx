@@ -38,7 +38,6 @@ class Teams extends React.PureComponent {
       isActive: '',
       selectedTeamCode: '',
       teams: [],
-      teamTable: [],
       sortedTeams: [],
     };
   }
@@ -47,22 +46,18 @@ class Teams extends React.PureComponent {
     // Initiating the teams fetch action.
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();
-    // console.log('teams: props', this.props)
-    this.state.teamTable = this.state.teams;
+    // console.log('teams: props', this.props);
     this.sortTeamsByModifiedDate();
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.sortedTeams !== this.state.sortedTeams) {
       // This will run whenever sortedTeams changes
-      // Here you can transform sortedTeams into the format needed for teamTable
-      const teamTable = this.state.sortedTeams.map(team => {
-        // Transform team into the format needed for teamTable
+      const teams = this.state.sortedTeams.map(team => {
         return team;
       });
 
-      // Now update teamTable in your state
-      this.setState({ teamTable });
+      this.setState({ teams });
     }
   }
 
@@ -73,8 +68,6 @@ class Teams extends React.PureComponent {
     this.state.teams = this.teamTableElements(allTeams);
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
-    console.log(this.state.teams[0].props.team.modifiedDatetime);
-    console.log(this.state.sortedTeams);
 
     return (
       <Container fluid>
@@ -96,7 +89,7 @@ class Teams extends React.PureComponent {
                 <thead>
                   <TeamTableHeader />
                 </thead>
-                <tbody>{this.state.teamTable}</tbody>
+                <tbody>{this.state.teams}</tbody>
               </table>
             </div>
           </React.Fragment>
@@ -118,8 +111,8 @@ class Teams extends React.PureComponent {
        */
       return teamSearchData
         .sort((a, b) => {
-          if (a.createdDatetime > b.createdDatetime) return -1;
-          if (a.createdDatetime < b.createdDatetime) return 1;
+          if (a.modifiedDatetime > b.modifiedDatetime) return -1;
+          if (a.modifiedDatetime < b.modifiedDatetime) return 1;
           return 0;
         })
         .map((team, index) => (
@@ -403,18 +396,11 @@ class Teams extends React.PureComponent {
   sortTeamsByModifiedDate = () => {
     const { teams } = this.state;
 
-    console.log('UNsortedTeams: ', teams);
-    
     const sortedTeams = [...teams].sort((a, b) => {
       let dateA = new Date(a.props.team.modifiedDatetime);
       let dateB = new Date(b.props.team.modifiedDatetime);
 
-      //console.log('dateA: ', dateA);
-      //console.log('dateB: ', dateB);
-
       if (dateA < dateB) {
-        console.log('dateA < dateB', dateA);
-        console.log(dateB);
         return 1;
       } else if (dateA > dateB) {
         return -1;
@@ -422,10 +408,8 @@ class Teams extends React.PureComponent {
       return 0; // Sort in descending order
     });
 
-    console.log('sortedTeams: ', sortedTeams);
-
     this.setState({ sortedTeams: sortedTeams });
-  }
+  };
 }
 const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
