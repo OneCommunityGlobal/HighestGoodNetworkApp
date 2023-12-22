@@ -9,7 +9,7 @@ export const fetchToolById = (toolId) => {
   return async dispatch => {
     axios.get(url)
       .then(res => {
-      dispatch(setTool(res.data))
+        dispatch(setTool(res.data))
       })
       .catch(error => {
       dispatch(setErrors(error))

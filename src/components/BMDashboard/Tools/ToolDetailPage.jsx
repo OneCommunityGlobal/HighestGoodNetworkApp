@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchToolById } from 'actions/bmdashboard/toolActions';
 import { Container, Button } from 'reactstrap';
@@ -80,11 +80,13 @@ function RentalDurationItem({ label, from, to }) {
 
 function ToolDetailPage() {
   const history = useHistory();
+  const { toolId } = useParams();
+
   const tool = useSelector(state => state.tool);
 
   console.log('Tool', tool);
   
-  const toolStatus = tool.logRecord.find(record => record.type === 'Check In');
+  const toolStatus = tool?.logRecord.find(record => record.type === 'Check In');
   
   let toolLogRecord;
   
@@ -97,16 +99,16 @@ function ToolDetailPage() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchToolById('657b3a082d8cc6bd67704ea2'));
+    dispatch(fetchToolById(toolId));
   }, []);
 
   const details = [
     { label: 'Belongs to project', value: 'Building 1' },
-    { label: 'Class', value: tool.itemType?.category },
-    { label: 'Name', value: tool.itemType?.name },
-    { label: 'Number', value: tool.code },
-    { label: 'Ownership', value: tool.purchaseStatus },
-    { label: 'Add Date', value: tool.rentedOnDate },
+    { label: 'Class', value: tool?.itemType.category },
+    { label: 'Name', value: tool?.itemType.name },
+    { label: 'Number', value: tool?.code },
+    { label: 'Ownership', value: tool?.purchaseStatus },
+    { label: 'Add Date', value: tool?.rentedOnDate },
     { label: 'Rental Duration' },
     { label: 'Current Usage', value: toolLogRecord },
     { label: 'Input Invoice No or ID', value: 'No123ABC' },
@@ -118,10 +120,9 @@ function ToolDetailPage() {
     { label: 'Supplier Phone Number', value: '555-33-3333' },
     {
       label: 'Link To Buy/Rent',
-      value:
-        'https://www.homedepot.com/b/Outdoors-Outdoor-Power-Equipment-Leaf-Blowers/N-5yc1vZbxav',
+      value: 'https://www.homedepot.com/',
     },
-    { label: 'Description', value: tool.itemType?.description },
+    { label: 'Description', value: tool?.itemType.description },
     //TO DO
     { label: 'Current Status', value: '' },
     //TO DO
@@ -145,8 +146,8 @@ function ToolDetailPage() {
     <RentalDurationItem
       key={generateKey()}
       label={detail.label}
-      from={tool.rentedOnDate}
-      to={tool.rentalDue}
+      from={tool?.rentedOnDate}
+      to={tool?.rentalDue}
     />
   );
 
@@ -155,7 +156,7 @@ function ToolDetailPage() {
       key={generateKey()}
       label={detail.label}
       value={detail.value}
-      title={dummyTool.title}
+      title={tool?.itemType.name}
     />
   );
 
@@ -179,7 +180,7 @@ function ToolDetailPage() {
       </header>
       <main className="ToolDetailPage__content">
         <p>
-          <img src={dummyTool.image} alt={dummyTool.title} className="ToolDetailPage__image" />
+          <img src={tool?.imageUrl} alt={tool?.itemType.name} className="ToolDetailPage__image" />
         </p>
         {details.map(renderDetails)}
         <Button outline onClick={() => history.push('/bmdashboard')}>
