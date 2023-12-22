@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { StickyContainer } from 'react-sticky';
 import {
   Container,
@@ -12,52 +12,48 @@ import {
   Button,
   TabPane,
   TabContent,
-  NavItem,
-  NavLink,
-  Nav,
 } from 'reactstrap';
-import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
-import { createUser, resetPassword } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
-import TeamsTab from '../TeamsAndProjects/TeamsTab';
-import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import { assign, get } from 'lodash';
-import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
+import { get } from 'lodash';
+
+import PhoneInput from 'react-phone-input-2';
+import DatePicker from 'react-datepicker';
+import { fetchAllProjects as fp } from '../../../actions/projects';
+
+import 'react-phone-input-2/lib/style.css';
+import TimeZoneDropDown from '../TimeZoneDropDown';
+import getUserTimeZone from '../../../services/timezoneApiService';
+import hasPermission from '../../../utils/permissions';
+import { boxStyle } from '../../../styles';
+import WeeklySummaryOptions from './WeeklySummaryOptions';
+import 'react-datepicker/dist/react-datepicker.css';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from '../../../utils/checkValidURL';
 import {
   getAllUserTeams,
   updateTeam,
   deleteTeamMember,
   addTeamMember,
 } from '../../../actions/allTeamsAction';
+import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
+import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
+import TeamsTab from '../TeamsAndProjects/TeamsTab';
+import { createUser } from '../../../services/userProfileService';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+import DuplicateNamePopup from '../../UserManagement/DuplicateNamePopup';
 
-import { fetchAllProjects } from 'actions/projects';
-
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
-import classnames from 'classnames';
-import TimeZoneDropDown from '../TimeZoneDropDown';
-import getUserTimeZone from 'services/timezoneApiService';
-import hasPermission from 'utils/permissions';
-import NewUserPopup from 'components/UserManagement/NewUserPopup';
-import { boxStyle } from 'styles';
-import WeeklySummaryOptions from './WeeklySummaryOptions';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
-
-const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+const patt = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 const nextDay = new Date();
-nextDay.setDate(nextDay.getDate()+1);
+nextDay.setDate(nextDay.getDate() + 1);
 
 class AddUserProfile extends Component {
   constructor(props) {
     super(props);
+    const { userProfiles, auth } = this.props;
     this.state = {
-      userProfiles: this.props.userProfiles,
+      userProfiles,
       popupOpen: false,
       weeklyCommittedHours: 10,
       teams: [],
@@ -97,10 +93,14 @@ class AddUserProfile extends Component {
       teamCode: '',
       codeValid: false,
     };
-    
 
-    const { user } = this.props.auth;
-    this.canAddDeleteEditOwners = user && user.role === 'Owner'
+    const { user } = auth;
+    this.canAddDeleteEditOwners = user && user.role === 'Owner';
+  }
+
+  componentDidMount() {
+    this.state.showphone = true;
+    this.onCreateNewUser();
   }
 
   popupClose = () => {
@@ -115,12 +115,588 @@ class AddUserProfile extends Component {
     });
   };
 
-  componentDidMount() {
-    this.state.showphone = true;
-    this.onCreateNewUser();
-  }
+  onDeleteTeam = deletedTeamId => {
+    const { teams } = this.state;
+    const teamsCopy = [...teams];
+    const filteredTeam = teamsCopy.filter(team => team._id !== deletedTeamId);
+
+    this.setState({
+      teams: filteredTeam,
+    });
+  };
+
+  onDeleteProject = deletedProjectId => {
+    const { projects } = this.state;
+    const projectsCopy = [...projects];
+    const _projects = projectsCopy.filter(project => project._id !== deletedProjectId);
+    this.setState({
+      projects: _projects,
+    });
+  };
+
+  onAssignTeamCode = value => {
+    this.setState({
+      teamCode: value,
+    });
+  };
+
+  onAssignTeam = assignedTeam => {
+    const { teams } = this.state;
+    const teamsCopy = [...teams];
+    teamsCopy.push(assignedTeam);
+    this.setState({
+      teams: teamsCopy,
+    });
+  };
+
+  onAssignProject = assignedProject => {
+    const { projects } = this.state;
+    const projectsCopy = [...projects];
+    projectsCopy.push(assignedProject);
+
+    this.setState({
+      projects: projectsCopy,
+    });
+  };
+
+  onCreateNewUser = () => {
+    const { fetchAllProjects, allProjects } = this.props;
+    fetchAllProjects();
+
+    const initialUserProject = allProjects.projects.filter(
+      ({ projectName }) => projectName === 'Orientation and Initial Setup',
+    );
+
+    this.setState({ projects: initialUserProject });
+  };
+
+  // Function to call TimeZoneService with location and key
+  onClickGetTimeZone = () => {
+    const location = this.state.userProfile.location.userProvided;
+    const key = this.props.timeZoneKey;
+    console.log('location: '+this.props.timeZoneAPI);
+    if (!location) {
+      console.log('alert 1');
+      alert('Please enter valid location');
+      return;
+    }
+    if (key) {
+      getUserTimeZone(location, key)
+        .then(response => {
+          if (
+            response.data.status.code === 200 &&
+            response.data.results &&
+            response.data.results.length
+          ) {
+            let timezone = response.data.results[0].annotations.timezone.name;
+            console.log("bwahh: "+timezone);
+            let currentLocation = {
+              userProvided: location,
+              coords: {
+                lat: response.data.results[0].geometry.lat,
+                lng: response.data.results[0].geometry.lng,
+              },
+              country: response.data.results[0].components.country,
+              city: response.data.results[0].components.city,
+            };
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+
+            this.setState({
+              ...this.state,
+              timeZoneFilter: timezone,
+              userProfile: {
+                ...this.state.userProfile,
+                location: currentLocation,
+                timeZone: timezone,
+              },
+            });
+          } else {
+            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
+            `);
+          }
+        })
+        .catch(err => console.log(err));
+    }
+  };
+
+  fieldsAreValid = () => {
+    const firstLength = this.state.userProfile.firstName !== '';
+    const lastLength = this.state.userProfile.lastName !== '';
+    const phone = this.state.userProfile.phoneNumber;
+
+    if (phone === null) {
+      toast.error('Phone Number is required');
+      return false;
+    } else if (firstLength && lastLength && phone.length >= 9) {
+      return true;
+    } else {
+      toast.error('Please fill all the required fields');
+      return false;
+    }
+  };
+
+  checkIfDuplicate = (firstName, lastName) => {
+    let { userProfiles } = this.state.userProfiles;
+
+    const duplicates = userProfiles.filter(user => {
+      return (
+        user.firstName.toLowerCase() === firstName.toLowerCase() &&
+        user.lastName.toLowerCase() === lastName.toLowerCase()
+      );
+    });
+
+    if (duplicates.length > 0) return true;
+    else return false;
+  };
+
+
+  createUserProfile = allowsDuplicateName => {
+    let that = this;
+    const {
+      firstName,
+      email,
+      lastName,
+      phoneNumber,
+      role,
+      privacySettings,
+      collaborationPreference,
+      googleDoc,
+      dropboxDoc,
+      jobTitle,
+      timeZone,
+      location,
+      weeklySummaryOption,
+      createdDate,
+    } = that.state.userProfile;
+
+    const userData = {
+      password: process.env.REACT_APP_DEF_PWD,
+      role: role,
+      firstName: firstName,
+      lastName: lastName,
+      jobTitle: jobTitle,
+      phoneNumber: phoneNumber,
+      bio: '',
+      weeklycommittedHours: that.state.userProfile.weeklyCommittedHours,
+      weeklySummaryOption: weeklySummaryOption,
+      personalLinks: [],
+      adminLinks: [],
+      teams: this.state.teams,
+      projects: this.state.projects,
+      email: email,
+      privacySettings: privacySettings,
+      collaborationPreference: collaborationPreference,
+      timeZone: timeZone,
+      location: location,
+      allowsDuplicateName: allowsDuplicateName,
+      createdDate: createdDate,
+      teamCode: this.state.teamCode,
+    };
+
+    this.setState({ formSubmitted: true });
+
+    if (googleDoc) {
+      if (isValidGoogleDocsUrl(googleDoc)) {
+        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
+      } else {
+        toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
+        this.setState({
+          formValid: {
+            ...that.state.formValid,
+            googleDoc: false,
+          },
+          formErrors: {
+            ...that.state.formErrors,
+            googleDoc: 'Invalid Google Doc URL',
+          },
+        });
+        return;
+      }
+    }
+    if (dropboxDoc) {
+      if (isValidMediaUrl(dropboxDoc)) {
+        userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
+      } else {
+        toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+        this.setState({
+          formValid: {
+            ...that.state.formValid,
+            dropboxDoc: false,
+          },
+          formErrors: {
+            ...that.state.formErrors,
+            dropboxDoc: 'Invalid Dropbox Link URL',
+          },
+        });
+        return;
+      }
+    }
+    if (this.fieldsAreValid()) {
+      this.setState({ showphone: false });
+      if (!email.match(patt)) {
+        toast.error('Email is not valid. Please include @ followed by .com format');
+      } else {
+        createUser(userData)
+          .then(res => {
+            if (res.data.warning) {
+              toast.warn(res.data.warning);
+            } else if (
+              this.checkIfDuplicate(userData.firstName, userData.lastName) &&
+              !allowsDuplicateName
+            ) {
+              this.setState({
+                popupOpen: true,
+              });
+              return;
+            } else {
+              toast.success('User profile created.');
+              this.state.userProfile._id = res.data._id;
+              if (this.state.teams.length > 0) {
+                this.state.teams.forEach(team => {
+                  this.props.addTeamMember(
+                    team._id,
+                    res.data._id,
+                    res.data.firstName,
+                    res.data.lastName,
+                  );
+                });
+              }
+            }
+            this.props.userCreated();
+          })
+          .catch(err => {
+            if (err.response?.data?.type) {
+              switch (err.response.data.type) {
+                case 'email':
+                  this.setState({
+                    formValid: {
+                      ...that.state.formValid,
+                      email: false,
+                    },
+                    formErrors: {
+                      ...that.state.formErrors,
+                      email: 'Email already exists',
+                    },
+                  });
+                  break;
+                case 'phoneNumber':
+                  this.setState({
+                    formValid: {
+                      ...that.state.formValid,
+                      phoneNumber: false,
+                      showphone: false,
+                    },
+                    formErrors: {
+                      ...that.state.formErrors,
+                      phoneNumber: 'Phone number already exists',
+                    },
+                  });
+                  break;
+                case 'name':
+                  if (
+                    this.checkIfDuplicate(userData.firstName, userData.lastName) &&
+                    !allowsDuplicateName
+                  ) {
+                    this.setState({
+                      popupOpen: true,
+                    });
+                  }
+                  break;
+              }
+            }
+            toast.error(
+              err.response?.data?.error ||
+                'An unknown error occurred while attempting to create this user.',
+            );
+          });
+      }
+    }
+  };
+
   
-  
+
+  // handleImageUpload = async e => {
+  //   e.preventDefault();
+
+  //   const file = e.target.files[0];
+
+  //   const allowedTypesString = 'image/png,image/jpeg, image/jpg';
+  //   const allowedTypes = allowedTypesString.split(',');
+  //   let isValid = true;
+  //   let imageUploadError = '';
+  //   if (!allowedTypes.includes(file.type)) {
+  //     imageUploadError = `File type must be ${allowedTypesString}.`;
+  //     isValid = false;
+
+  //     return this.setState({
+  //       type: 'image',
+  //       imageUploadError,
+  //       isValid,
+  //       showModal: true,
+  //       modalTitle: 'Profile Pic Error',
+  //       modalMessage: imageUploadError,
+  //     });
+  //   }
+  //   const filesizeKB = file.size / 1024;
+
+  //   if (filesizeKB > 50) {
+  //     imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either
+  //                           choose a different file, or use an online file compressor.`;
+  //     isValid = false;
+
+  //     return this.setState({
+  //       type: 'image',
+  //       imageUploadError,
+  //       isValid,
+  //       showModal: true,
+  //       modalTitle: 'Profile Pic Error',
+  //       modalMessage: imageUploadError,
+  //     });
+  //   }
+
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onloadend = () => {
+  //     this.setState({
+  //       imageUploadError: '',
+  //       userProfile: {
+  //         ...this.state.userProfile,
+  //         profilePic: reader.result,
+  //       },
+  //     });
+  //   };
+  // };
+
+  phoneChange = phone => {
+    const { userProfile, formValid, formErrors } = this.state;
+    this.setState({
+      userProfile: {
+        ...userProfile,
+        phoneNumber: phone,
+        showphone: false,
+      },
+      formValid: {
+        ...formValid,
+        phoneNumber: phone.length > 10,
+        showphone: false,
+      },
+      formErrors: {
+        ...formErrors,
+        phoneNumber: phone.length > 10 ? '' : 'Please enter valid phone number',
+      },
+    });
+  };
+
+  handleLocation = e => {
+    console.log('value eee:'+e.target.value);
+    const locationObject = this.state.userProfile.location;
+    const keys = Object.keys(locationObject);
+    
+    keys.forEach(key => {
+      console.log(`Key: ${key}, Value: ${locationObject[key]}`);
+    });
+    this.setState({
+      ...this.state,
+      userProfile: {
+        ...this.state.userProfile,
+        location: { ...this.state.userProfile.location, userProvided: e.target.value },
+      },
+    });
+    this.handleUserProfile(e);
+  };
+
+  handleUserProfile = event => {
+    const { userProfile, formValid, formErrors } = this.state;
+
+    switch (event.target.id) {
+      case 'firstName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value,
+            // [event.target.id]: event.target.value.trim(),   removed trim to allow space in name field
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: event.target.value.length > 0,
+          },
+          formErrors: {
+            ...formErrors,
+            firstName: event.target.value.length > 0 ? '' : 'First Name required',
+          },
+        });
+        break;
+      case 'lastName':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value,
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: event.target.value.length > 0,
+          },
+          formErrors: {
+            ...formErrors,
+            lastName: event.target.value.length > 0 ? '' : 'Last Name required',
+          },
+        });
+        break;
+      case 'email':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value
+              .trim()
+              .replace(/[A-Z]/g, char => char.toLowerCase()),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: event.target.value.match(patt),
+          },
+          formErrors: {
+            ...formErrors,
+            email: event.target.value.match(patt) ? '' : 'Email is not valid',
+          },
+        });
+        break;
+      case 'location':
+        const locationObject = this.state.userProfile.location;
+    const keys = Object.keys(locationObject);
+    console.log('inside SWITCH statement');
+    keys.forEach(key => {
+      console.log(`Key: ${key}, Value: ${locationObject[key]}`);
+    });
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: { ...userProfile.location, userProvided: event.target.value.trim() },
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
+          },
+        });
+        console.log('switch statement:'+this.state.userProfile.location['userProvided']);
+        break;
+      case 'timeZone':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
+          },
+        });
+        break;
+      case 'jobTitle':
+        this.setState({
+          ...this.state,
+          userProfile: {
+            ...this.state.userProfile,
+            jobTitle: event.target.value,
+          },
+        });
+        break;
+      case 'weeklyCommittedHours':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            weeklyCommittedHours: !!event.target.value ? '' : 'Committed hours can not be empty',
+          },
+        });
+        break;
+      case 'weeklySummaryOption':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
+          },
+        });
+        break;
+      case 'collaborationPreference':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
+          },
+        });
+        break;
+      case 'role':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value.trim(),
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: !!event.target.value,
+          },
+        });
+        break;
+      case 'googleDoc':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value,
+          },
+        });
+        break;
+      case 'dropboxDoc':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            [event.target.id]: event.target.value,
+          },
+        });
+        break;
+      case 'emailPubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              email: !userProfile.privacySettings?.email,
+            },
+          },
+        });
+        break;
+      case 'phonePubliclyAccessible':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            privacySettings: {
+              ...userProfile.privacySettings,
+              phoneNumber: !userProfile.privacySettings?.phoneNumber,
+            },
+          },
+        });
+        break;
+      default:
+        this.setState({
+          ...userProfile,
+        });
+    }
+  };
+
   render() {
     const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
     const phoneNumberEntered =
@@ -377,7 +953,7 @@ class AddUserProfile extends Component {
                       <TimeZoneDropDown
                         filter={this.state.timeZoneFilter}
                         onChange={this.handleUserProfile}
-                        selected={'America/Los_Angeles'}
+                        selected="America/Los_Angeles"
                         id="timeZone"
                       />
                     </FormGroup>
@@ -393,10 +969,14 @@ class AddUserProfile extends Component {
                         <DatePicker
                           selected={this.state.userProfile.createdDate}
                           minDate={new Date(DATE_PICKER_MIN_DATE)}
-                          onChange={date => this.setState({ userProfile: {
-                            ...this.state.userProfile,
-                            createdDate: date,
-                          }})}
+                          onChange={date =>
+                            this.setState({
+                              userProfile: {
+                                ...this.state.userProfile,
+                                createdDate: date,
+                              },
+                            })
+                          }
                           className="form-control"
                         />
                       </div>
@@ -415,7 +995,7 @@ class AddUserProfile extends Component {
                     projectsData={this.props ? this.props.allProjects.projects : []}
                     onAssignProject={this.onAssignProject}
                     onDeleteProject={this.onDeleteProject}
-                    isUserAdmin={true}
+                    isUserAdmin
                     role={this.props.auth.user.role}
                     edit
                   />
@@ -427,10 +1007,10 @@ class AddUserProfile extends Component {
                     onAssignTeam={this.onAssignTeam}
                     onAssignTeamCode={this.onAssignTeamCode}
                     onDeleteTeam={this.onDeleteTeam}
-                    isUserAdmin={true}
+                    isUserAdmin
                     role={this.props.auth.user.role}
                     teamCode={this.state.teamCode}
-                    canEditTeamCode={true}
+                    canEditTeamCode
                     codeValid={this.state.codeValid}
                     setCodeValid={this.setCodeValid}
                     edit
@@ -460,557 +1040,6 @@ class AddUserProfile extends Component {
       </StickyContainer>
     );
   }
-
-  onDeleteTeam = deletedTeamId => {
-    const teams = [...this.state.teams];
-    const filteredTeam = teams.filter(team => team._id !== deletedTeamId);
-
-    this.setState({
-      teams: filteredTeam,
-    });
-  };
-
-  onDeleteProject = deletedProjectId => {
-    const projects = [...this.state.projects];
-    const _projects = projects.filter(project => project._id !== deletedProjectId);
-    this.setState({
-      projects: _projects,
-    });
-  };
-
-  onAssignTeamCode = value => {
-    this.setState({
-      teamCode: value,
-    });
-  };
-
-  onAssignTeam = assignedTeam => {
-    const teams = [...this.state.teams];
-    teams.push(assignedTeam);
-    this.setState({
-      teams: teams,
-    });
-  };
-
-  onAssignProject = assignedProject => {
-    const projects = [...this.state.projects];
-    projects.push(assignedProject);
-
-    this.setState({
-      projects: projects,
-    });
-  };
-
-  onCreateNewUser = () => {
-    this.props.fetchAllProjects();
-
-    const initialUserProject = this.props.allProjects.projects.filter(
-      ({ projectName }) => projectName === 'Orientation and Initial Setup',
-    );
-
-    this.setState({ projects: initialUserProject });
-  };
-
-  // Function to call TimeZoneService with location and key
-  onClickGetTimeZone = () => {
-    const location = this.state.userProfile.location.userProvided;
-    const key = this.props.timeZoneKey;
-    if (!location) {
-      alert('Please enter valid location');
-      return;
-    }
-    if (key) {
-      getUserTimeZone(location, key)
-        .then(response => {
-          if (
-            response.data.status.code === 200 &&
-            response.data.results &&
-            response.data.results.length
-          ) {
-            let timezone = response.data.results[0].annotations.timezone.name;
-            
-            let currentLocation = {
-              userProvided: location,
-              coords: {
-                lat: response.data.results[0].geometry.lat,
-                lng: response.data.results[0].geometry.lng,
-              },
-              country: response.data.results[0].components.country,
-              city: response.data.results[0].components.city,
-            };
-            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
-            
-            this.setState({
-              ...this.state,
-              timeZoneFilter: timezone,
-              userProfile: {
-                ...this.state.userProfile,
-                location: currentLocation,
-                timeZone: timezone,
-              },
-            });
-          } else {
-            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
-            `);
-          }
-        })
-        .catch(err => console.log(err));
-    }
-  };
-
-  fieldsAreValid = () => {
-    const firstLength = this.state.userProfile.firstName !== '';
-    const lastLength = this.state.userProfile.lastName !== '';
-    const phone = this.state.userProfile.phoneNumber;
-
-    if (phone === null) {
-      toast.error('Phone Number is required');
-      return false;
-    } else if (firstLength && lastLength && phone.length >= 9) {
-      return true;
-    } else {
-      toast.error('Please fill all the required fields');
-      return false;
-    }
-  };
-
-  checkIfDuplicate = (firstName, lastName) => {
-    let { userProfiles } = this.state.userProfiles;
-
-    const duplicates = userProfiles.filter(user => {
-      return (
-        user.firstName.toLowerCase() === firstName.toLowerCase() &&
-        user.lastName.toLowerCase() === lastName.toLowerCase()
-      );
-    });
-
-    if (duplicates.length > 0) return true;
-    else return false;
-  };
-
-  createUserProfile = allowsDuplicateName => {
-    let that = this;
-    const {
-      firstName,
-      email,
-      lastName,
-      phoneNumber,
-      role,
-      privacySettings,
-      collaborationPreference,
-      googleDoc,
-      dropboxDoc,
-      jobTitle,
-      timeZone,
-      location,
-      weeklySummaryOption,
-      createdDate,
-    } = that.state.userProfile;
-
-    const userData = {
-      password: process.env.REACT_APP_DEF_PWD,
-      role: role,
-      firstName: firstName,
-      lastName: lastName,
-      jobTitle: jobTitle,
-      phoneNumber: phoneNumber,
-      bio: '',
-      weeklycommittedHours: that.state.userProfile.weeklyCommittedHours,
-      weeklySummaryOption: weeklySummaryOption,
-      personalLinks: [],
-      adminLinks: [],
-      teams: this.state.teams,
-      projects: this.state.projects,
-      email: email,
-      privacySettings: privacySettings,
-      collaborationPreference: collaborationPreference,
-      timeZone: timeZone,
-      location: location,
-      allowsDuplicateName: allowsDuplicateName,
-      createdDate: createdDate,
-      teamCode: this.state.teamCode,
-    };
-
-    this.setState({ formSubmitted: true });
-
-    if (googleDoc) {
-      if (isValidGoogleDocsUrl(googleDoc)) {
-        userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
-      } else{
-        toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
-        this.setState({
-          formValid: {
-            ...that.state.formValid,
-            googleDoc: false,
-          },
-          formErrors: {
-            ...that.state.formErrors,
-            googleDoc: 'Invalid Google Doc URL',
-          },
-        });
-        return;
-      }
-    }
-    if (dropboxDoc) {
-      if (isValidMediaUrl(dropboxDoc)) {
-          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
-        } else {
-          toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
-          this.setState({
-            formValid: {
-              ...that.state.formValid,
-              dropboxDoc: false,
-            },
-            formErrors: {
-              ...that.state.formErrors,
-              dropboxDoc: 'Invalid Dropbox Link URL',
-            },
-          });
-          return;
-        }
-    }
-    if (this.fieldsAreValid()) {
-      this.setState({ showphone: false });
-      if (!email.match(patt)) {
-        toast.error('Email is not valid. Please include @ followed by .com format');
-      } else {
-        createUser(userData)
-          .then(res => {
-            if (res.data.warning) {
-              toast.warn(res.data.warning);
-            } else if (
-              this.checkIfDuplicate(userData.firstName, userData.lastName) &&
-              !allowsDuplicateName
-            ) {
-              this.setState({
-                popupOpen: true,
-              });
-              return;
-            } else {
-              toast.success('User profile created.');
-              this.state.userProfile._id = res.data._id;
-              if(this.state.teams.length > 0){
-                this.state.teams.forEach((team) => {
-                  this.props.addTeamMember(team._id, res.data._id, res.data.firstName, res.data.lastName)
-                })
-              }
-            }
-            this.props.userCreated();
-          })
-          .catch(err => {
-            if (err.response?.data?.type) {
-              switch (err.response.data.type) {
-                case 'email':
-                  this.setState({
-                    formValid: {
-                      ...that.state.formValid,
-                      email: false,
-                    },
-                    formErrors: {
-                      ...that.state.formErrors,
-                      email: 'Email already exists',
-                    },
-                  });
-                  break;
-                case 'phoneNumber':
-                  this.setState({
-                    formValid: {
-                      ...that.state.formValid,
-                      phoneNumber: false,
-                      showphone: false,
-                    },
-                    formErrors: {
-                      ...that.state.formErrors,
-                      phoneNumber: 'Phone number already exists',
-                    },
-                  });
-                  break;
-                case 'name':
-                  if (
-                    this.checkIfDuplicate(userData.firstName, userData.lastName) &&
-                    !allowsDuplicateName
-                  ) {
-                    this.setState({
-                      popupOpen: true,
-                    });
-                  }
-                  break;
-              }
-            }
-            toast.error(
-              err.response?.data?.error ||
-                'An unknown error occurred while attempting to create this user.',
-            );
-          });
-      }
-    }
-  };
-
-  handleImageUpload = async e => {
-    e.preventDefault();
-
-    const file = e.target.files[0];
-
-    const allowedTypesString = 'image/png,image/jpeg, image/jpg';
-    const allowedTypes = allowedTypesString.split(',');
-    let isValid = true;
-    let imageUploadError = '';
-    if (!allowedTypes.includes(file.type)) {
-      imageUploadError = `File type must be ${allowedTypesString}.`;
-      isValid = false;
-
-      return this.setState({
-        type: 'image',
-        imageUploadError,
-        isValid,
-        showModal: true,
-        modalTitle: 'Profile Pic Error',
-        modalMessage: imageUploadError,
-      });
-    }
-    const filesizeKB = file.size / 1024;
-
-    if (filesizeKB > 50) {
-      imageUploadError = `\n The file you are trying to upload exceeds the maximum size of 50KB. You can either
-                            choose a different file, or use an online file compressor.`;
-      isValid = false;
-
-      return this.setState({
-        type: 'image',
-        imageUploadError,
-        isValid,
-        showModal: true,
-        modalTitle: 'Profile Pic Error',
-        modalMessage: imageUploadError,
-      });
-    }
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      this.setState({
-        imageUploadError: '',
-        userProfile: {
-          ...this.state.userProfile,
-          profilePic: reader.result,
-        },
-      });
-    };
-  };
-
-  phoneChange = phone => {
-    const { userProfile, formValid, formErrors } = this.state;
-    this.setState({
-      userProfile: {
-        ...userProfile,
-        phoneNumber: phone,
-        showphone: false,
-      },
-      formValid: {
-        ...formValid,
-        phoneNumber: phone.length > 10,
-        showphone: false,
-      },
-      formErrors: {
-        ...formErrors,
-        phoneNumber: phone.length > 10 ? '' : 'Please enter valid phone number',
-      },
-    });
-  };
-
-  handleLocation = e => {
-    this.setState({
-      ...this.state,
-      userProfile: {
-        ...this.state.userProfile,
-        location: { ...this.state.location, userProvided: e.target.value },
-      },
-    });
-    this.handleUserProfile(e);
-  };
-
-  handleUserProfile = event => {
-    const { userProfile, formValid, formErrors } = this.state;
-
-    switch (event.target.id) {
-      case 'firstName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-            // [event.target.id]: event.target.value.trim(),   removed trim to allow space in name field
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: event.target.value.length > 0,
-          },
-          formErrors: {
-            ...formErrors,
-            firstName: event.target.value.length > 0 ? '' : 'First Name required',
-          },
-        });
-        break;
-      case 'lastName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: event.target.value.length > 0,
-          },
-          formErrors: {
-            ...formErrors,
-            lastName: event.target.value.length > 0 ? '' : 'Last Name required',
-          },
-        });
-        break;
-      case 'email':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim().replace(/[A-Z]/g, (char) => char.toLowerCase()),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: event.target.value.match(patt),
-          },
-          formErrors: {
-            ...formErrors,
-            email: event.target.value.match(patt) ? '' : 'Email is not valid',
-          },
-        });
-        break;
-      case 'location':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: { ...userProfile.location, userProvided: event.target.value.trim() },
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'timeZone':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'jobTitle':
-        this.setState({
-          ...this.state,
-          userProfile: {
-            ...this.state.userProfile,
-            jobTitle: event.target.value,
-          },
-        });
-        break;
-      case 'weeklyCommittedHours':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-          formErrors: {
-            ...formErrors,
-            weeklyCommittedHours: !!event.target.value ? '' : 'Committed hours can not be empty',
-          },
-        });
-        break;
-      case 'weeklySummaryOption':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'collaborationPreference':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'role':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'googleDoc':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-          },
-        });
-        break;
-      case 'dropboxDoc':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-          },
-        });
-        break;
-      case 'emailPubliclyAccessible':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            privacySettings: {
-              ...userProfile.privacySettings,
-              email: !userProfile.privacySettings?.email,
-            },
-          },
-        });
-        break;
-      case 'phonePubliclyAccessible':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            privacySettings: {
-              ...userProfile.privacySettings,
-              phoneNumber: !userProfile.privacySettings?.phoneNumber,
-            },
-          },
-        });
-        break;
-      default:
-        this.setState({
-          ...userProfile,
-        });
-    }
-  };
 }
 
 const mapStateToProps = state => ({
@@ -1031,6 +1060,6 @@ export default connect(mapStateToProps, {
   updateTeam,
   deleteTeamMember,
   addTeamMember,
-  fetchAllProjects,
+  fp,
   hasPermission,
 })(AddUserProfile);
