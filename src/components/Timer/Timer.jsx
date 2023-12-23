@@ -12,7 +12,6 @@ import {
   FaStopCircle,
   FaUndoAlt,
 } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
 import css from './Timer.module.css';
@@ -73,8 +72,6 @@ export default function Timer() {
 
   const MAX_HOURS = 5;
   const MIN_MINS = 1;
-
-  const authId = useSelector(state => state.auth.user.userid);
 
   const [message, setMessage] = useState(defaultMessage);
   const { time, paused, started, goal, startAt } = message;
@@ -363,7 +360,6 @@ export default function Timer() {
         <TimeEntryForm
           fromTimer
           edit={false}
-          displayUserId={authId}
           toggle={toggleLogTimeModal}
           isOpen={logTimeEntryModal}
           data={logTimer}

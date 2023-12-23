@@ -24,12 +24,12 @@ const TimeEntry = (props) => {
   // props from store
   const { authUser, displayUserId, displayUserProjects, displayUserTasks } = props;
 
-  const [modal, setModal] = useState(false);
+  const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
   const dispatch = useDispatch();
 
   const { dateOfWork, personId, isTangible, projectId, taskId } = data;
 
-  const toggle = () => setModal(modal => !modal);
+  const toggle = () => setTimeEntryFormModal(modal => !modal);
 
   const timeEntryDate = moment(dateOfWork);
 
@@ -172,9 +172,8 @@ const TimeEntry = (props) => {
         userId={data.personId}
         data={data}
         toggle={toggle}
-        isOpen={modal}
+        isOpen={timeEntryFormModal}
         userProfile={userProfile}
-        displayUserId={displayUserId}
       />
     </>
   );

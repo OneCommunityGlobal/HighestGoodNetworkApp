@@ -34,7 +34,7 @@ import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from 'components/TeamMemberTasks';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
-import { getUserProjects } from '../../actions/userProjects';
+import { getUserProjects, getUserWBSs } from '../../actions/userProjects';
 import { getAllRoles } from '../../actions/role';
 import PopUpBar from '../PopUpBar';
 import TimeEntryForm from './TimeEntryForm';
@@ -121,14 +121,13 @@ const Timelog = props => {
     projectsSelected: ['all'],
     fromDate: startOfWeek(0),
     toDate: endOfWeek(0),
-    in: false,
+    infoModal: false,
     information: '',
     currentWeekEffort: 0,
     isTimeEntriesLoading: true,
   };
 
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
-  const [error, setError] = useState(null);
   const [initialTab, setInitialTab] = useState(null);
   const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
   const [currentWeekEntries, setCurrentWeekEntries] = useState(null);
@@ -147,7 +146,7 @@ const Timelog = props => {
     //change default to time log tab(1) in the following cases:
     const role = authUser.role;
     let tab = 0;
-    const UserHaveTask = doesUserHaveTaskWithWBS(disPlayUserTask, authUser.userid);
+    const userHaveTask = doesUserHaveTaskWithWBS(disPlayUserTask, authUser.userid);
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
     Accounts assigned with tasks with no wbs return and empty array.
@@ -156,7 +155,7 @@ const Timelog = props => {
     That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
     //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if (role === 'Volunteer' && !UserHaveTask) {
+    if (role === 'Volunteer' && !userHaveTask) {
       tab = 1;
     }
 
@@ -208,16 +207,15 @@ const Timelog = props => {
         props.getTimeEntriesForWeek(userId, 1),
         props.getTimeEntriesForWeek(userId, 2),
         props.getTimeEntriesForPeriod(userId, timeLogState.fromDate, timeLogState.toDate),
-        props.getUserProjects(userId),
         props.getAllRoles(),
+        props.getUserProjects(userId),
+        props.getUserWBSs(userId),
         props.getUserTasks(userId),
       ]);
       setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
     } catch (e) {
-      setError(e);
+      console.log(e);
     }
-
-    //setState({...state,activeTab:defaultTabValue});
   };
 
   const toggle = () => {
@@ -251,7 +249,7 @@ const Timelog = props => {
 
     setTimeLogState({
       ...timeLogState,
-      in: !timeLogState.in,
+      infoModal: !timeLogState.infoModal,
       information: str.split('\n').map((item, i) => <p key={i}>{item}</p>),
     });
   };
@@ -316,26 +314,20 @@ const Timelog = props => {
         Select Project/Task (all)
       </option>
     )];
-    if (displayUserProjects.length) {
-      displayUserProjects.forEach(project => {
-        const { projectId } = project;
-        project.WBSObject = {};
-        projectsObject[projectId] = project;
-      });
-    }
-    if (displayUserProjects.length && displayUserWBSs.length) {
-      displayUserWBSs.forEach(WBS => {
-        const { projectId, _id: wbsId } = WBS;
-        WBS.taskObject = [];
-        projectsObject[projectId].WBSObject[wbsId] = WBS;
-      })
-    }
-    if (displayUserProjects.length && displayUserWBSs.length && disPlayUserTask.length) {
-      disPlayUserTask.forEach(task => {
-        const { projectId, wbsId, _id: taskId } = task;
-        projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
-      });
-    }
+    displayUserProjects.forEach(project => {
+      const { projectId } = project;
+      project.WBSObject = {};
+      projectsObject[projectId] = project;
+    });
+    displayUserWBSs.forEach(WBS => {
+      const { projectId, _id: wbsId } = WBS;
+      WBS.taskObject = [];
+      projectsObject[projectId].WBSObject[wbsId] = WBS;
+    })
+    disPlayUserTask.forEach(task => {
+      const { projectId, wbsId, _id: taskId } = task;
+      projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
+    });
     for (const [projectId, project] of Object.entries(projectsObject)) {
       const { projectName, WBSObject } = project;
       options.push(
@@ -363,11 +355,12 @@ const Timelog = props => {
     return options
   };
 
-  const timeLogFunction = () => {
+  const generateTimeLogItems = (userId) => {
     //build the time log component
     const options = buildOptions();
     setProjectOrTaskOptions(options);
     updateTimeEntryItems();
+    makeBarData(userId)
   };
   
   const handleUpdateTask = useCallback(() => {
@@ -380,44 +373,19 @@ const Timelog = props => {
     changeTab(initialTab);
   }, [initialTab]);
 
-  useDeepEffect(() => {
-    // Only re-render when time entries change
-    if (!timeLogState.isTimeEntriesLoading) {
-      makeBarData(displayUserId);
-      timeLogFunction();
-    }
-  }, [timeEntries]);
-
   useEffect(() => {
     // Build the time log after new data is loaded
     if (!timeLogState.isTimeEntriesLoading) {
-      makeBarData(displayUserId);
+      generateTimeLogItems(displayUserId);
     }
-  }, [timeLogState.isTimeEntriesLoading]);
+  }, [timeLogState.isTimeEntriesLoading, timeEntries]);
 
   useEffect(() => {
     loadAsyncData(displayUserId).then(() => {
-      timeLogFunction();
       const defaultTabValue = defaultTab();
       setInitialTab(defaultTabValue);
     });
-  }, [displayUserId]);
-
-  // useEffect(() => {
-  //   // Only render (reload data) when displayUserId changes.
-  //   if (!displayUserId && !timeLogState.isTimeEntriesLoading) {
-  //     // skip the first render.
-  //     setTimeLogState(initialState);
-  //     // if (displayUserProfile._id !== displayUserId) {
-  //     //   props.getUserProfile(displayUserId);
-  //     // }
-  //     loadAsyncData(displayUserId).then(() => {
-  //       setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
-  //       const defaultTabValue = defaultTab();
-  //       setInitialTab(defaultTabValue);
-  //     });
-  //   }
-  // }, [displayUserId]);
+  }, [displayUserId, isTaskUpdated]);
 
   useEffect(() => {
     // Filter the time entries
@@ -568,7 +536,7 @@ const Timelog = props => {
                           </div>
                         )
                       )}
-                      <Modal isOpen={timeLogState.in} toggle={openInfo}>
+                      <Modal isOpen={timeLogState.infoModal} toggle={openInfo}>
                         <ModalHeader>Info</ModalHeader>
                         <ModalBody>{timeLogState.information}</ModalBody>
                         <ModalFooter>
@@ -584,7 +552,6 @@ const Timelog = props => {
                       </Modal>
                       <TimeEntryForm
                         edit={false}
-                        displayUserId={displayUserId}
                         toggle={toggle}
                         isOpen={timeLogState.timeEntryFormModal}
                         data={data}
@@ -786,8 +753,9 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   getTimeEntriesForWeek,
   getTimeEntriesForPeriod,
-  getUserProjects,
   getUserProfile,
+  getUserProjects,
+  getUserWBSs,
   getUserTasks,
   updateUserProfile,
   getAllRoles,
