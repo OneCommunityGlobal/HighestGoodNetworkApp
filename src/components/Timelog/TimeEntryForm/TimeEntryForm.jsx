@@ -15,7 +15,7 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import moment from 'moment-timezone';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
@@ -65,9 +65,12 @@ const TimeEntryForm = props => {
 
   // props from store
   const { authUser, displayUserProfile, displayUserProjects, displayUserWBSs, displayUserTasks } = props;
+  
+  const timeEntryUserId = fromTimer ? authUser.userid : displayUserProfile._id;
 
   const initialFormValues = Object.assign({
     dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+    personId: timeEntryUserId,
     projectId: '',
     wbsId: '',
     taskId: '',
@@ -75,6 +78,7 @@ const TimeEntryForm = props => {
     minutes: 0,
     notes: '',
     isTangible: !!fromTimer, // if open from Timer, isTangible is true by default
+    entryType: 'default',
   }, data);
   
   const {
@@ -88,7 +92,6 @@ const TimeEntryForm = props => {
     isTangible: initialIsTangible,
   } = initialFormValues
 
-  const timeEntryUserId = fromTimer ? authUser.userid : displayUserProfile._id;
   const timeEntryInitialProjectOrTaskId = edit ? initialProjectId + (!!initialwbsId ? '/' + initialwbsId : '') + (!!initialTaskId ? '/' + initialTaskId : ''): 'defaultProject';
 
   const initialReminder = {
@@ -190,8 +193,8 @@ const TimeEntryForm = props => {
     const date = moment(formValues.dateOfWork);
     const today = moment().tz('America/Los_Angeles');
     const isDateValid = date.isValid();
-    // Administrator/Owner can add time entries for any dates, and other roles can only edit time entry in the same day.
-    const isUserAuthorized = authUser.role === 'Administrator' || authUser.role === 'Owner' || !edit || today.diff(date, 'days') === 0
+    // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
+    const isUserAuthorized = (canEditTimeEntry && canPutUserProfileImportantInfo) || !edit || today.diff(date, 'days') === 0
     
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required'; 
     if (!isDateValid) errorObj.dateOfWork = 'Invalid date'; 
@@ -364,43 +367,43 @@ const TimeEntryForm = props => {
   const handleSubmit = async event => {
     event.preventDefault();
     setSubmitting(true);
+
+    if (edit && isEqual(formValues, initialFormValues)) {
+      toast.info(
+        `Nothing is changed for this time entry`,
+      );
+      setSubmitting(false);
+      return;
+    }
     
-    const { hours: formHours, minutes: formMinutes } = formValues;
+    const { 
+      hours: formHours, 
+      minutes: formMinutes, 
+    } = formValues;
+
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
-    
+
     if (!validateForm(isTimeModified)) {
-      console.log(validateForm(isTimeModified))
       setSubmitting(false);
       return;
     }
 
     //Construct the timeEntry object
-    const timeEntry = {
-      personId: timeEntryUserId,
-      dateOfWork: formValues.dateOfWork,
-      projectId: formValues.projectId,
-      wbsId: formValues.wbsId,
-      taskId: formValues.taskId,
-      notes: formValues.notes,
-      isTangible: formValues.isTangible,
-      entryType: 'default',
-    };
-    
+    const timeEntry = { ...formValues }
+   
     let timeEntryStatus;
 
     if (edit) {
       timeEntry.hours = formHours;
       timeEntry.minutes = formMinutes;
-      if (!reminder.editLimitNotification) {
-        editHoursByCategory(timeEntryFormUserProfile, timeEntry, formHours, formMinutes);
-        timeEntryStatus = await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
-      }
+      editHoursByCategory(timeEntryFormUserProfile, timeEntry, formHours, formMinutes);
+      timeEntryStatus = await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
     } else {
       timeEntry.timeSpent = `${formHours}:${formMinutes}:00`;
       updateHoursByCategory(timeEntryFormUserProfile, timeEntry, formHours, formMinutes);
       timeEntryStatus = await props.postTimeEntry(timeEntry);
     }
-
+    
     if (timeEntryStatus !== 200) {
       toast.error(
         `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
@@ -704,7 +707,6 @@ const TimeEntryForm = props => {
           <Button onClick={clearForm} color="danger" style={boxStyle}>
             Clear Form
           </Button>
-          {/* <Button color="primary" disabled={isSubmitting || (dataHours === formValues.hours && dataMinutes === formValues.minutes && dataNotes === formValues.notes)} onClick={handleSubmit}> */}
           <Button color="primary" onClick={handleSubmit} style={boxStyle} disabled={submitting}>
             {
               edit 
