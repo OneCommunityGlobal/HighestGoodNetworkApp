@@ -404,7 +404,7 @@ function MediaUrlLink({ summary }) {
       );
     }
   }
-  return 'Not provided!';
+  return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
 }
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
@@ -507,7 +507,7 @@ function BioLabel({ bioPosted, summary }) {
 
   let text = '';
   if (bioPosted === 'default') {
-    text = ' Not requested/posted';
+    text = 'Not requested/posted';
   } else if (bioPosted === 'posted') {
     text = 'Posted';
   } else {
@@ -515,7 +515,7 @@ function BioLabel({ bioPosted, summary }) {
   }
   return (
     <div>
-      <b style={style}>Bio announcement:</b>
+      <b style={style}>Bio announcement: </b>
       {text}
     </div>
   );
