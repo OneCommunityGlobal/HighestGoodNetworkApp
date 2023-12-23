@@ -82,9 +82,8 @@ export class Projects extends Component {
       },
     });
   };
-  // get the selected categry name
+  // get the selected categry name - sent as props to ProjectTableHeader.jsx
   onChangeCategory = (value) =>{
-    console.log("log from the onChange Category, value is", value)
     this.setState({
       categorySelectedForSort: value
     })
@@ -175,7 +174,6 @@ export class Projects extends Component {
       
     }
 
-    console.log("This the category selectedSort",categorySelectedForSort);
 
     return (
       <React.Fragment>
