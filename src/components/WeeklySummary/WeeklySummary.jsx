@@ -40,7 +40,10 @@ import { boxStyle } from 'styles';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import SkeletonLoading from '../common/SkeletonLoading';
 import DueDateTime from './DueDateTime';
-import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries';
+import {
+  getWeeklySummaries as getUserWeeklySummaries,
+  updateWeeklySummaries,
+} from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
 
 // Need this export here in order for automated testing to work.
@@ -973,7 +976,7 @@ const mapDispatchToProps = dispatch => {
   return {
     updateWeeklySummaries: (userId, weeklySummary) =>
       updateWeeklySummaries(userId, weeklySummary)(dispatch),
-    getWeeklySummaries: userId => getWeeklySummaries(userId)(dispatch),
+    getWeeklySummaries: userId => getUserWeeklySummaries(userId)(dispatch),
     getUserProfile: userId => getUserProfile(userId)(dispatch),
   };
 };
