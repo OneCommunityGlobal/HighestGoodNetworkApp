@@ -8,6 +8,7 @@ import { Table, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
+import { Tooltip } from 'reactstrap';
 import './style.css';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
@@ -60,6 +61,11 @@ const TeamMemberTask = React.memo(
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
+    const [tooltipOpen,SetTooltipOpen] = useState(false)
+
+    const toggleTooltip = () =>{
+      SetTooltipOpen(prev=>!prev)
+    }
 
     const thisWeekHours = user.totaltangibletime_hrs;
 
@@ -68,13 +74,13 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
-    const isAllowedToFollowUpWithPeople = userRole !== 'Volunteer';
     const isFollowedUpWith = [];
     const needFollowUp = [];
     //^^^
 
     const dispatch = useDispatch();
     const canUpdateTask = dispatch(hasPermission('updateTask'));
+    const isAllowedToFollowUpWithPeople = dispatch(hasPermission('deadlineFollowUp'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const handleTruncateTasksButtonClick = () => {
@@ -104,6 +110,7 @@ const TeamMemberTask = React.memo(
         }
       });
     }
+
     const followUpMouseoverText = task => {
       const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
       if (progressPersantage < 50) {
@@ -330,15 +337,17 @@ const TeamMemberTask = React.memo(
                                   <FontAwesomeIcon
                                     icon={faInfo}
                                     className="follow-up-button-info-icon"
+                                    id="follow-up-button-tip-icon"
                                     data-tip="true"
                                     data-for="follow-up-button-tip"
                                     data-delay-hide="500"
                                     aria-hidden="true"
                                   />
-                                  <ReactTooltip
-                                    id="follow-up-button-tip"
-                                    place="bottom"
-                                    effect="solid"
+                                  <Tooltip
+                                    isOpen={tooltipOpen}
+                                    target="follow-up-button-tip-icon"
+                                    toggle={toggleTooltip}
+                                    style={{ backgroundColor: 'black', color: 'white', minWidth: '500px' }}
                                   >
                                     This checkbox allows you to track follow-ups. By clicking it,
                                     you indicate that you have checked <br /> in with a person to
@@ -378,7 +387,7 @@ const TeamMemberTask = React.memo(
                                     shown in red)
                                     <br />
                                     <br />
-                                  </ReactTooltip>
+                                  </Tooltip>
                                 </>
                               )}
                             </div>

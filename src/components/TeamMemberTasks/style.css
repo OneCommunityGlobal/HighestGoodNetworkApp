@@ -74,6 +74,7 @@
   justify-self: center;
 }
 .team-task-progress-follow-up {
+  box-sizing: border-box;
   grid-column: 2 / span 1;
   grid-row: 1 / span 1;
   align-self: center;
@@ -87,7 +88,7 @@
   height: 18px;
   outline: none;
   background-color: #e1f3e2;
-  margin-right: 5px;
+  /* margin-right: 5px; */
 }
 .team-task-progress-follow-up-red {
   border: 2px solid red;
@@ -110,6 +111,7 @@
   font-size: 15px;
   align-self: center;
   justify-self: start;
+  margin-left: 5px;
 }
 .team-task-progress-bar {
   grid-column: 1 / span 3;

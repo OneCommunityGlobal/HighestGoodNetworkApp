@@ -153,6 +153,11 @@ export const permissionLabels = [
                 key: 'suggestTask',
                 description: 'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
               },
+              {
+                label: 'Deadline Follow Up And Monitoring',
+                key: 'deadlineFollowUp',
+                description: 'Gives users permission to follow up with individuals about deadlines and keep a record of those follow ups',
+              },
             ],
           },
         ],
