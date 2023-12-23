@@ -39,6 +39,8 @@ export class Projects extends Component {
       showModalDelete: false,
       showModalMsg: false,
       trackModelMsg: false,
+      // The property below is the state that tracks the selected category to sort the project list - Sucheta #PR1738
+      categorySelectedForSort : "",
       projectTarget: {
         projectName: '',
         projectId: -1,
@@ -80,7 +82,13 @@ export class Projects extends Component {
       },
     });
   };
-
+  // get the selected categry name
+  onChangeCategory = (value) =>{
+    console.log("log from the onChange Category, value is", value)
+    this.setState({
+      categorySelectedForSort: value
+    })
+  }
   confirmDelete = () => {
     // get project info
     let { projectId } = this.state.projectTarget;
@@ -117,7 +125,7 @@ export class Projects extends Component {
 
     let showModalMsg = false;
 
-
+    const {categorySelectedForSort} = this.state;
     const role = this.props.state.userProfile.role;
 
     const canPostProject = this.props.hasPermission('postProject') || this.props.hasPermission('seeProjectManagement');
@@ -129,21 +137,45 @@ export class Projects extends Component {
     // Display project lists
     let ProjectsList = [];
     if (projects.length > 0) {
-      ProjectsList = projects.map((project, index) => (
-        <Project
-          key={project._id}
-          index={index}
-          projectId={project._id}
-          name={project.projectName}
-          category={project.category || 'Unspecified'}
-          active={project.isActive}
-          onClickActive={this.onClickActive}
-          onUpdateProjectName={this.onUpdateProjectName}
-          onClickDelete={this.onClickDelete}
-          confirmDelete={this.confirmDelete}
-        />
-      ));
+      // Below mentioned if block checks if there is a selected category to sort the projects - Sucheta
+      if(categorySelectedForSort){
+        ProjectsList = projects.map((project, index) => {
+          if(project.category === categorySelectedForSort){
+           return (<Project
+            key={project._id}
+            index={index}
+            projectId={project._id}
+            name={project.projectName}
+            category={project.category || 'Unspecified'}
+            active={project.isActive}
+            onClickActive={this.onClickActive}
+            onUpdateProjectName={this.onUpdateProjectName}
+            onClickDelete={this.onClickDelete}
+            confirmDelete={this.confirmDelete}
+          />)
+          }
+        })
+      }else{
+        ProjectsList = projects.map((project, index) => (
+          <Project
+            key={project._id}
+            index={index}
+            projectId={project._id}
+            name={project.projectName}
+            category={project.category || 'Unspecified'}
+            active={project.isActive}
+            onClickActive={this.onClickActive}
+            onUpdateProjectName={this.onUpdateProjectName}
+            onClickDelete={this.onClickDelete}
+            confirmDelete={this.confirmDelete}
+          />
+        ))
+        }
+      
+      
     }
+
+    console.log("This the category selectedSort",categorySelectedForSort);
 
     return (
       <React.Fragment>
@@ -165,7 +197,7 @@ export class Projects extends Component {
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader />
+              <ProjectTableHeader onChange={this.onChangeCategory} selectedValue= {categorySelectedForSort}/>
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>

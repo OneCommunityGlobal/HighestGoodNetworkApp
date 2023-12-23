@@ -19,7 +19,7 @@ import { boxStyle } from 'styles';
 const ProjectTableHeader = props => {
   const { role } = props; // Access the 'role' prop
   const canDeleteProject = props.hasPermission('deleteProject') || props.hasPermission('seeProjectManagement');
-
+  
   return (
     <tr>
       <th scope="col" id="projects__order">
@@ -27,17 +27,18 @@ const ProjectTableHeader = props => {
       </th>
       <th scope="col">{PROJECT_NAME}</th>
       <th scope="col" id="projects__category">
+        {/* This span holds the header-name and a dropDown component */}
        <span className='d-flex justify-content-between'>{PROJECT_CATEGORY}
-        <DropdownButton id="" title="" size='sm'style={boxStyle} variant='info'>
+        <DropdownButton id="" title="" size='sm'style={boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} >
             <Dropdown.Item default value="Unspecified">Unspecified</Dropdown.Item>
-            <Dropdown.Item value="Food">Food</Dropdown.Item>
-            <Dropdown.Item value="Energy">Energy</Dropdown.Item>
-            <Dropdown.Item value="Housing">Housing</Dropdown.Item>
-            <Dropdown.Item value="Education">Education</Dropdown.Item>
-            <Dropdown.Item value="Society">Society</Dropdown.Item>
-            <Dropdown.Item value="Economics">Economics</Dropdown.Item>
-            <Dropdown.Item value="Stewardship">Stewardship</Dropdown.Item>
-            <Dropdown.Item value="Other">Other</Dropdown.Item>
+            <Dropdown.Item eventKey="Food">Food</Dropdown.Item>
+            <Dropdown.Item eventKey="Energy">Energy</Dropdown.Item>
+            <Dropdown.Item eventKey="Housing">Housing</Dropdown.Item>
+            <Dropdown.Item eventKey="Education">Education</Dropdown.Item>
+            <Dropdown.Item eventKey="Society">Society</Dropdown.Item>
+            <Dropdown.Item eventKey="Economics">Economics</Dropdown.Item>
+            <Dropdown.Item eventKey="Stewardship">Stewardship</Dropdown.Item>
+            <Dropdown.Item eventKey="Other">Other</Dropdown.Item>
       
         </DropdownButton>
        </span> 
