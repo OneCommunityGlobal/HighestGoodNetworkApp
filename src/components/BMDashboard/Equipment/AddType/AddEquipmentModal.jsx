@@ -24,6 +24,7 @@ const schema = Joi.object({
 export default function AddEquipmentModal({ modal, toggle }) {
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
+  const [fuel, setFuel] = useState('Diesel');
   const [errInput, setErrInput] = useState('');
 
   const handleChange = ({ target }) => {
@@ -34,6 +35,9 @@ export default function AddEquipmentModal({ modal, toggle }) {
     if (target.name === 'desc') {
       setDesc(target.value);
     }
+    if (target.name === 'fuel') {
+      setFuel(target.value);
+    }
   };
 
   const handleSubmit = async e => {
@@ -42,7 +46,7 @@ export default function AddEquipmentModal({ modal, toggle }) {
     if (validate.error) {
       return setErrInput(validate.error.details[0].path[0]);
     }
-    const response = await addEquipmentType({ name, desc });
+    const response = await addEquipmentType({ name, desc, fuel });
     if (response.status === 201) {
       toast.success('Success: new equipment type added.');
     } else if (response.status >= 400) {
@@ -50,12 +54,14 @@ export default function AddEquipmentModal({ modal, toggle }) {
     } else toast.warning(`Warning: unexpected status ${response.status}.`);
     setName('');
     setDesc('');
+    setFuel('');
     return toggle();
   };
 
   const handleCancel = () => {
     setName('');
     setDesc('');
+    setFuel('');
     setErrInput('');
     toggle();
   };
@@ -88,6 +94,22 @@ export default function AddEquipmentModal({ modal, toggle }) {
               onChange={handleChange}
             />
             <FormFeedback>Please enter a description.</FormFeedback>
+          </FormGroup>
+          <FormGroup>
+            <Label>Fuel Type</Label>
+            <Input
+              id="new-equipment-fuel-type"
+              name="fuel"
+              type="select"
+              value={fuel}
+              onChange={handleChange}
+            >
+              <option value="Diesel">Diesel</option>
+              <option value="Biodiesel">Biodiesel</option>
+              <option value="Gasoline">Gasoline</option>
+              <option value="Natural Gas">Natural Gas</option>
+              <option value="Ethanol">Ethanol</option>
+            </Input>
           </FormGroup>
           <Button color="primary" size="lg">
             Submit
