@@ -28,8 +28,9 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         status: '200',
       });
     case types.ADD_NEW_PROJECT:
+      allProjects.status = action.status;
       if (action.status === 201) {
-        return { ...allProjects, projects: [action.payload, ...allProjects.projects] };
+        return { ...allProjects, projects: [action.payload, ...allProjects.projects], status: action.status };
       } 
         return { ...allProjects, status: action.status };
       

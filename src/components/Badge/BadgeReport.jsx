@@ -327,7 +327,7 @@ const BadgeReport = props => {
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
-                        ? formatDate(value.lastModified)
+                        ? formatDate(value.lastModified.substring(0, 10))
                         : value.lastModified.toLocaleString().substring(0, 10)}
                     </td>
                     <td>
