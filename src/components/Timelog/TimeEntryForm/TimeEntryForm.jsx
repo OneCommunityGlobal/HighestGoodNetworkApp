@@ -355,15 +355,7 @@ const TimeEntryForm = props => {
    * @param {*} closed If true, the form closes after being cleared.
    */
   const clearForm = closed => {
-    const newInputs = {
-      ...formValues,
-      notes: '',
-      projectId: '',
-      dateOfWork: moment()
-        .tz('America/Los_Angeles')
-        .format('YYYY-MM-DD'),
-    };
-    setFormValues(newInputs);
+    setFormValues(initialFormValues);
     setReminder({ ...initialReminder });
     setErrors({});
     if (closed === true && isOpen) toggle();
