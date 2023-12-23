@@ -4,7 +4,7 @@ export const permissionLabels = [
     description: 'Category for all permissions related to reports',
     subperms: [
       {
-        label: 'See Analytics Reports (WIP)',
+        label: 'See Analytics Reports',
         key: 'getReports',
         description: 'Make ONLY "Reports -> “Reports” option appear/accessible.',
       },
