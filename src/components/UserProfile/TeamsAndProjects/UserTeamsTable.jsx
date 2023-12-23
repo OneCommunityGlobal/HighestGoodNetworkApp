@@ -42,8 +42,8 @@ const UserTeamsTable = props => {
               <Col md="7">
                 <span className="teams-span">Visibility</span>
               </Col>
-              <Col md="5">
-                <ToggleSwitch
+              <Col md='5'>
+              <ToggleSwitch
                   switchType="visible"
                   state={props.isVisible}
                   handleUserProfile={props.onUserVisibilitySwitch}
@@ -108,8 +108,8 @@ const UserTeamsTable = props => {
             <thead>
               {props.role && (
                 <tr>
-                  <th style={{ width: '70px' }}>#</th>
-                  <th>Team Name</th>
+                  <th>#</th>
+
                   {canAssignTeamToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
                 </tr>
               )}
@@ -144,23 +144,20 @@ const UserTeamsTable = props => {
         </div>
       </div>
       <div className="teamtable-container tablet">
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
           {props.canEditVisibility && (
             <>
-              <Col
-                md="12"
+              <Col 
+                md='12' 
                 style={{
                   backgroundColor: ' #e9ecef',
                   border: '1px solid #ced4da',
                   marginBottom: '10px',
                 }}
               >
-                <span className="teams-span">Visibility</span>
+              <span className="teams-span">Visibility</span>
               </Col>
-              <Col
-                md="12"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
+              <Col md='12' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <ToggleSwitch
                   switchType="visible"
                   state={props.isVisible}

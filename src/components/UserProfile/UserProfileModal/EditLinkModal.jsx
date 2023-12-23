@@ -112,14 +112,9 @@ const EditLinkModal = props => {
   };
 
   const isDifferentMediaUrl = () => {
-    let mediaLink = null;
-    if (userProfile.adminLinks.length >= 2) {
-      mediaLink = userProfile.adminLinks[1].Link;
-    }
-    else if (userProfile.adminLinks.length === 1 && userProfile.adminLinks[0].Name === 'Media Folder') {
-      mediaLink = userProfile.adminLinks[0].Link;
-    } 
-    if (mediaLink && mediaLink !== mediaFolderLink.Link) {
+    //* This is to compare the mediaUrl with Media Folder link when editing in the input area.
+    //* Because mediaUrl is a differnt object, but the link should be the same as Media Folder's link.
+    if (userProfile.mediaUrl !== mediaFolderLink.Link  && userProfile.mediaUrl !== '') {
       setMediaFolderDiffWarning(true);
     } else {
       setMediaFolderDiffWarning(false);
@@ -150,8 +145,8 @@ const EditLinkModal = props => {
   };
 
   const handleUpdate = async () => {
-    const isGoogleDocsValid = isValidGoogleDocsUrl(googleLink.Link);
-    const isDropboxValid = isValidMediaUrl(mediaFolderLink.Link);
+    const isGoogleDocsValid = isValidUrl(googleLink.Link);
+    const isDropboxValid = isValidUrl(mediaFolderLink.Link);
     const updatable =
       (isGoogleDocsValid && isDropboxValid) ||
       (googleLink.Link === '' && mediaFolderLink.Link === '') ||

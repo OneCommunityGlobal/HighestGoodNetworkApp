@@ -9,14 +9,11 @@ export default function SelectForm({
   // create selectable projects
   let materialSet = [];
   if (materials.length) {
-    if (selectedProject === 'all')
-      materialSet = [...new Set(materials.map(m => m.inventoryItemType?.name))];
+    if (selectedProject === 'all') materialSet = [...new Set(materials.map(m => m.itemType?.name))];
     else
       materialSet = [
         ...new Set(
-          materials
-            .filter(mat => mat.project.projectName === selectedProject)
-            .map(m => m.inventoryItemType?.name),
+          materials.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
         ),
       ];
   }
