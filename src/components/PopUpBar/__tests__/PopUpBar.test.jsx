@@ -12,7 +12,7 @@ const renderComponent = () => {
 };
 
 // Test Cases
-describe('Test Suite for PoUpBar', () => {
+describe('Test Suite for PopUpBar', () => {
   it('Test Case 1: Renders without crashing', () => {
     renderComponent();
     const actualText = screen.getByTestId('test-popup');
