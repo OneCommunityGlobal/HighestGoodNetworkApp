@@ -41,6 +41,7 @@ export class Projects extends Component {
       trackModelMsg: false,
       // The property below is the state that tracks the selected category to sort the project list - Sucheta #PR1738
       categorySelectedForSort : "",
+      showStatus: "",
       projectTarget: {
         projectName: '',
         projectId: -1,
@@ -82,12 +83,19 @@ export class Projects extends Component {
       },
     });
   };
-  // get the selected categry name - sent as props to ProjectTableHeader.jsx
+  // sort project list by category
   onChangeCategory = (value) =>{
     this.setState({
       categorySelectedForSort: value
     })
   }
+  // sort project list by status- active / inactive
+  onSelectStatus = (value)=>{
+    this.setState({
+      showStatus: value
+    })
+  }
+
   confirmDelete = () => {
     // get project info
     let { projectId } = this.state.projectTarget;
@@ -125,6 +133,7 @@ export class Projects extends Component {
     let showModalMsg = false;
 
     const {categorySelectedForSort} = this.state;
+    const {showStatus} = this.state;
     const role = this.props.state.userProfile.role;
 
     const canPostProject = this.props.hasPermission('postProject') || this.props.hasPermission('seeProjectManagement');
@@ -138,8 +147,63 @@ export class Projects extends Component {
     if (projects.length > 0) {
       // Below mentioned if block checks if there is a selected category to sort the projects - Sucheta
       if(categorySelectedForSort){
+         if(categorySelectedForSort&&showStatus=== "Active"){
+          ProjectsList = projects.map((project, index) => {
+            if(project.category === categorySelectedForSort && project.isActive){
+             return (<Project
+              key={project._id}
+              index={index}
+              projectId={project._id}
+              name={project.projectName}
+              category={project.category || 'Unspecified'}
+              active={project.isActive}
+              onClickActive={this.onClickActive}
+              onUpdateProjectName={this.onUpdateProjectName}
+              onClickDelete={this.onClickDelete}
+              confirmDelete={this.confirmDelete}
+            />)
+            }
+          })
+         }else if(categorySelectedForSort&&showStatus=== "Inactive"){
+          ProjectsList = projects.map((project, index) => {
+            if(project.category === categorySelectedForSort && !project.isActive){
+             return (<Project
+              key={project._id}
+              index={index}
+              projectId={project._id}
+              name={project.projectName}
+              category={project.category || 'Unspecified'}
+              active={project.isActive}
+              onClickActive={this.onClickActive}
+              onUpdateProjectName={this.onUpdateProjectName}
+              onClickDelete={this.onClickDelete}
+              confirmDelete={this.confirmDelete}
+            />)
+            }
+          })
+         }
+         else{
+          ProjectsList = projects.map((project, index) => {
+            if(project.category === categorySelectedForSort){
+             return (<Project
+              key={project._id}
+              index={index}
+              projectId={project._id}
+              name={project.projectName}
+              category={project.category || 'Unspecified'}
+              active={project.isActive}
+              onClickActive={this.onClickActive}
+              onUpdateProjectName={this.onUpdateProjectName}
+              onClickDelete={this.onClickDelete}
+              confirmDelete={this.confirmDelete}
+            />)
+            }
+          })
+         }
+        
+      }else if(showStatus === "Active"){
         ProjectsList = projects.map((project, index) => {
-          if(project.category === categorySelectedForSort){
+          if(project.isActive){
            return (<Project
             key={project._id}
             index={index}
@@ -154,6 +218,25 @@ export class Projects extends Component {
           />)
           }
         })
+
+      }else if(showStatus === "Inactive"){
+        ProjectsList = projects.map((project, index) => {
+          if(!project.isActive){
+           return (<Project
+            key={project._id}
+            index={index}
+            projectId={project._id}
+            name={project.projectName}
+            category={project.category || 'Unspecified'}
+            active={project.isActive}
+            onClickActive={this.onClickActive}
+            onUpdateProjectName={this.onUpdateProjectName}
+            onClickDelete={this.onClickDelete}
+            confirmDelete={this.confirmDelete}
+          />)
+          }
+        })
+        
       }else{
         ProjectsList = projects.map((project, index) => (
           <Project
@@ -173,7 +256,6 @@ export class Projects extends Component {
       
       
     }
-
 
     return (
       <React.Fragment>
@@ -195,7 +277,7 @@ export class Projects extends Component {
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader onChange={this.onChangeCategory} selectedValue= {categorySelectedForSort}/>
+              <ProjectTableHeader onChange={this.onChangeCategory} selectedValue= {categorySelectedForSort} showStatus={showStatus} selectStatus={this.onSelectStatus}/>
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>

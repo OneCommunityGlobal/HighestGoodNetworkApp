@@ -45,7 +45,14 @@ const ProjectTableHeader = props => {
         
       </th>
       <th scope="col" id="projects__active">
-        {ACTIVE}
+        
+        <span className='d-flex justify-content-between'>{ACTIVE}
+        <DropdownButton className='ml-2' id="" title="" size='sm'style={boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus} >
+        <Dropdown.Item default value="Unspecified">Choose Status</Dropdown.Item>
+            <Dropdown.Item eventKey="Active">Active</Dropdown.Item>
+            <Dropdown.Item eventKey="Inactive">Inactive</Dropdown.Item>
+        </DropdownButton>
+       </span> 
       </th>
       <th scope="col" id="projects__inv">
         {INVENTORY}
