@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import TagSent from './TagSent';
 import './TagsSearch.css';
 
-function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems }) {
+function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems, disableInput }) {
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -68,6 +68,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
             placeholder={placeholder}
             className="border border-dark rounded form-control px-2"
             onChange={handleFilter}
+            disabled={disableInput}
           />
           {filteredData.length !== 0 ? (
             <ul
@@ -87,7 +88,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
                     }
                     onClick={event => handleClick(event, member)}
                   >
-                    {member.firstName + ' ' + member.lastName}
+                    {`${member.firstName  } ${  member.lastName}`}
                   </li>
                 </a>
               ))}

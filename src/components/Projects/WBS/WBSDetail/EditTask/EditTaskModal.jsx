@@ -2,22 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from 'languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
-import { updateTask } from '../../../../../actions/task';
+import { updateTask } from 'actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
+import TagsSearch from '../components/TagsSearch';
+import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 
-const EditTaskModal = props => {
+// const EditTaskModal = props => {
+function EditTaskModal(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
@@ -27,6 +29,7 @@ const EditTaskModal = props => {
   // permissions
   const canUpdateTask = props.hasPermission('updateTask');
   const canSuggestTask = props.hasPermission('suggestTask');
+  const editable = canSuggestTask || canUpdateTask;
 
   // states from hooks
   const [thisTask, setThisTask] = useState();
@@ -53,7 +56,7 @@ const EditTaskModal = props => {
   const [dueDate, setDueDate] = useState();
   const [dateWarning, setDateWarning] = useState(false);
 
-  const res = [...(resourceItems ? resourceItems : [])];
+  const res = [...(resourceItems || [])];
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
     { value: 'Housing', label: 'Housing' },
@@ -66,7 +69,19 @@ const EditTaskModal = props => {
     { value: 'Other', label: 'Other' },
   ];
   const FORMAT = 'MM/dd/yy';
-
+  
+  const EditorInit = {
+      menubar: false,
+      plugins: 'advlist autolink autoresize lists link charmap table paste help',
+      toolbar:
+        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                        subscript superscript charmap  | help',
+      branding: false,
+      min_height: 180,
+      max_height: 300,
+      autoresize_bottom_margin: 1,
+  };
   /*
   * -------------------------------- functions --------------------------------
   */
@@ -194,10 +209,15 @@ const EditTaskModal = props => {
       toggle();
       toast.success('Update Success!')
     } else {
-      toast.error('Update failed! Error is ' + props.tasks.error);
+      toast.error(`Update failed! Error is ${  props.tasks.error}`);
     }
   };
 
+  const convertDate = (date) => {
+    if(date){
+      return dateFnsFormat(new Date(date), FORMAT);
+    }
+}
   /*
   * -------------------------------- useEffects --------------------------------
   */
@@ -263,8 +283,7 @@ const EditTaskModal = props => {
               </tr>
               <tr>
                 <td scope="col">Task Name</td>
-                <td scope="col">
-                  {/* change by Sucheta */}
+                {ReadOnlySectionWrapper(
                   <textarea
                     rows="2"
                     type="text"
@@ -272,13 +291,14 @@ const EditTaskModal = props => {
                     onChange={e => setTaskName(e.target.value)}
                     onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
-                  />
-                 
-                </td>
+                  />, 
+                  editable,
+                  taskName
+                )}
               </tr>
               <tr>
                 <td scope="col">Priority</td>
-                <td scope="col">
+                {ReadOnlySectionWrapper(
                   <select
                     id="priority"
                     onChange={e => setPriority(e.target.value)}
@@ -287,8 +307,10 @@ const EditTaskModal = props => {
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
                     <option value="Tertiary">Tertiary</option>
-                  </select>
-                </td>
+                  </select>,
+                  editable,
+                  priority
+                )}
               </tr>
               <tr>
                 <td scope="col">Resources</td>
@@ -297,16 +319,17 @@ const EditTaskModal = props => {
                     <TagsSearch
                       placeholder="Add resources"
                       members={allMembers.filter(user=>user.isActive)}
-                      addResources={addResources}
-                      removeResource={removeResource}
+                      addResources={editable? addResources : () => {}}
+                      removeResource={editable? removeResource : () => {}}
                       resourceItems={resourceItems}
+                      disableInput={!editable}
                     />
                   </div>
                 </td>
               </tr>
               <tr>
                 <td scope="col">Assigned</td>
-                <td scope="col">
+                {ReadOnlySectionWrapper(
                   <div className="flex-row d-inline align-items-center">
                     <div className="form-check form-check-inline">
                       <input
@@ -336,71 +359,75 @@ const EditTaskModal = props => {
                         No
                       </label>
                     </div>
-                  </div>
-                </td>
+                  </div>,
+                  editable,
+                  assigned? 'Yes' : 'No'
+                )}
               </tr>
               <tr>
                 <td scope="col">Status</td>
-                <td scope="col">
+                {ReadOnlySectionWrapper(
                   <div className="flex-row  d-inline align-items-center">
-                  <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="active"
-                        name="status"
-                        value="Active"
-                        checked={status === 'Active' || status === 'Started'}
-                        onChange={(e) => setStatus(e.target.value)}
-                      />
-                      <label className="form-check-label" htmlFor="active">
-                        Active
-                      </label>
-                    </div>
                     <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="notStarted"
-                        name="status"
-                        value="Not Started"
-                        checked={status === 'Not Started'}
-                        onChange={(e) => setStatus(e.target.value)}
-                      />
-                      <label className="form-check-label" htmlFor="notStarted">
-                        Not Started
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="paused"
-                        name="status"
-                        value="Paused"
-                        checked={status === 'Paused'}
-                        onChange={(e) => setStatus(e.target.value)}
-                      />
-                      <label className="form-check-label" htmlFor="paused">
-                        Paused
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="complete"
-                        name="status"
-                        value="Complete"
-                        checked={status === 'Complete'}
-                        onChange={(e) => setStatus(e.target.value)}
-                      />
-                      <label className="form-check-label" htmlFor="complete">
-                        Complete
-                      </label>
-                    </div>
-                  </div>
-                </td>
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          id="active"
+                          name="status"
+                          value="Active"
+                          checked={status === 'Active' || status === 'Started'}
+                          onChange={(e) => setStatus(e.target.value)}
+                        />
+                        <label className="form-check-label" htmlFor="active">
+                          Active
+                        </label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          id="notStarted"
+                          name="status"
+                          value="Not Started"
+                          checked={status === 'Not Started'}
+                          onChange={(e) => setStatus(e.target.value)}
+                        />
+                        <label className="form-check-label" htmlFor="notStarted">
+                          Not Started
+                        </label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          id="paused"
+                          name="status"
+                          value="Paused"
+                          checked={status === 'Paused'}
+                          onChange={(e) => setStatus(e.target.value)}
+                        />
+                        <label className="form-check-label" htmlFor="paused">
+                          Paused
+                        </label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          id="complete"
+                          name="status"
+                          value="Complete"
+                          checked={status === 'Complete'}
+                          onChange={(e) => setStatus(e.target.value)}
+                        />
+                        <label className="form-check-label" htmlFor="complete">
+                          Complete
+                        </label>
+                      </div>
+                  </div>,
+                  editable,
+                  status
+                )}
               </tr>
               <tr>
                 <td scope="col" data-tip="Hours - Best-case">
@@ -420,6 +447,7 @@ const EditTaskModal = props => {
                       onBlur={() => calHoursEstimate()}
                       id="bestCase"
                       className="w-25"
+                      disabled={!editable}
                     />
                     <div className="warning">
                       {hoursWarning
@@ -439,6 +467,7 @@ const EditTaskModal = props => {
                       onChange={e => setHoursWorst(e.target.value)}
                       onBlur={() => calHoursEstimate('hoursWorst')}
                       className="w-25"
+                      disabled={!editable}
                     />
                     <div className="warning">
                       {hoursWarning
@@ -458,6 +487,7 @@ const EditTaskModal = props => {
                       onChange={e => setHoursMost(e.target.value)}
                       onBlur={() => calHoursEstimate('hoursMost')}
                       className="w-25"
+                      disabled={!editable}
                     />
                     <div className="warning">
                       {hoursWarning
@@ -476,6 +506,7 @@ const EditTaskModal = props => {
                       value={hoursEstimate}
                       onChange={e => setHoursEstimate(e.target.value)}
                       className="w-25"
+                      disabled={!editable}
                     />
                   </div>
                 </td>
@@ -483,30 +514,36 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
-                  <div >
-                    <input
-                      type="text"
-                      aria-label="Search user"
-                      placeholder="Link"
-                      className="task-resouces-input"
-                      data-tip="Add a link"
-                      onChange={e => setLink(e.target.value)}
-                      value={link}
-                    />
-                    <button
-                      className="task-resouces-btn"
-                      type="button"
-                      data-tip="Add Link"
-                      onClick={addLink}
-                    >
-                      <i className="fa fa-plus" aria-hidden="true" />
-                    </button>
-                  </div>
+                  {ReadOnlySectionWrapper(
+                    <div >
+                      <input
+                        type="text"
+                        aria-label="Search user"
+                        placeholder="Link"
+                        className="task-resouces-input"
+                        data-tip="Add a link"
+                        onChange={e => setLink(e.target.value)}
+                        value={link}
+                        disabled={!editable}
+                      />
+                      <button
+                        className="task-resouces-btn"
+                        type="button"
+                        data-tip="Add Link"
+                        onClick={addLink}
+                      >
+                        <i className="fa fa-plus" aria-hidden="true" />
+                      </button>
+                    </div>,
+                    editable,
+                    null,
+                    {componentOnly:true}
+                  )}
                   <div>
                     {links?.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i}>
-                          <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)} ></i>
+                          {editable && <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={editable? () => removeLink(i) : () => {}}  /> }
                           <a href={link} className="task-link" target="_blank" data-tip={link} rel="noreferrer">
                             {link}
                           </a>
@@ -518,33 +555,25 @@ const EditTaskModal = props => {
               </tr>
               <tr>
                 <td scope="col">Category</td>
-                <td scope="col">
+                {ReadOnlySectionWrapper(
                   <select value={category} onChange={e => setCategory(e.target.value)}>
                     {categoryOptions.map(cla => (
                       <option value={cla.value} key={cla.value}>
                         {cla.label}
                       </option>
                     ))}
-                  </select>
-                </td>
+                  </select>,
+                  editable,
+                  category
+                )}
               </tr>
 
               <tr>
                 <td scope="col" colSpan="2">
                   Why this Task is Important
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
+                    disabled={!editable}
+                    init={EditorInit}
                     name="why-info"
                     className="why-info form-control"
                     value={whyInfo}
@@ -556,18 +585,8 @@ const EditTaskModal = props => {
                 <td scope="col" colSpan="2">
                   Design Intent
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
+                    disabled={!editable}
+                    init={EditorInit}
                     name="intent-info"
                     className="intent-info form-control"
                     value={intentInfo}
@@ -579,18 +598,8 @@ const EditTaskModal = props => {
                 <td scope="col" colSpan="2">
                   Endstate
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
+                    disabled={!editable}
+                    init={EditorInit}
                     name="endstate-info"
                     className="endstate-info form-control"
                     value={endstateInfo}
@@ -600,7 +609,7 @@ const EditTaskModal = props => {
               </tr>
               <tr>
                 <td scope="col">Start Date</td>
-                <td scope="col">
+                {ReadOnlySectionWrapper(
                   <div>
                     <DayPickerInput
                       format={FORMAT}
@@ -612,23 +621,28 @@ const EditTaskModal = props => {
                     <div className="warning">
                       {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
                     </div>
-                  </div>
-                </td>
+                  </div>,
+                  editable,
+                  convertDate(startedDate)
+                )}
               </tr>
               <tr>
                 <td scope="col">End Date</td>
-                <td scope="col">
-                  <DayPickerInput
-                    format={FORMAT}
-                    formatDate={formatDate}
-                    placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                    onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                    value={dueDate}
-                  />
-                  <div className="warning">
-                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                  </div>
-                </td>
+                  {ReadOnlySectionWrapper(
+                    <div>
+                    <DayPickerInput
+                      format={FORMAT}
+                      formatDate={formatDate}
+                      placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+                      onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
+                    />
+                    <div className="warning">
+                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    </div>
+                    </div>,
+                    editable,
+                    convertDate(dueDate)
+                  )}
               </tr>
             </tbody>
           </table>
