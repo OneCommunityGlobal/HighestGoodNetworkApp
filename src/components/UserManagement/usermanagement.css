@@ -58,6 +58,17 @@ thead {
   text-align: center;
 }
 
+#card_team{
+  background: linear-gradient(to bottom, #64b7ff 5%, #08397e 100%);
+  background-color: #1d62f0;
+  border-radius: 8px;
+  border:#08397e;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 #card_active {
   /* background: #fbad4c; */
   background: linear-gradient(to bottom, #ffdb56 5%, #ff9145 100%);
