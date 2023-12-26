@@ -45,6 +45,7 @@ import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
+import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
 import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
@@ -631,6 +632,7 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canSeeQSC = props.hasPermission('seeQSC');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
@@ -721,6 +723,18 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
+            { canSeeQSC ? <QuickSetupModal
+              canAddTitle={props.hasPermission('addNewTitle')}
+              canAssignTitle={props.hasPermission('assignTitle')}
+              setSaved={setSaved}
+              handleSubmit={handleSubmit}
+              setUserProfile={setUserProfile}
+              userProfile={userProfile}
+              userTeams={teams || []}
+              teamsData={props?.allTeams?.allTeamsData || []}
+              projectsData={props?.allProjects?.projects || []}
+              /> : ''
+              }
           </Col>
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
