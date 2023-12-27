@@ -99,7 +99,7 @@
   transition-duration: 300ms;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 460px) {
   .btns {
     display: grid;
     grid-template-columns: auto auto auto auto;
