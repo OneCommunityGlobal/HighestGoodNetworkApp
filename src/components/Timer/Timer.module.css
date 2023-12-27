@@ -31,12 +31,6 @@
   color: white;
 }
 
-/* @media (max-width: 768px) {
-  .timer-container .add-btn span {
-    display: none;
-  }
-} */
-
 .timer {
   position: absolute;
   width: 280px;
@@ -103,4 +97,26 @@
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
+}
+
+@media (max-width: 576px) {
+  .btns {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+  }
+
+  .btns button {
+    padding: 1px 5px;
+  }
+}
+
+@media (max-width: 410px) {
+  .btns {
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
+
+  .btns button {
+    padding: 1px 3px;
+  }
 }
