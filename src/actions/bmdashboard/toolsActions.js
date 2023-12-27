@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { SET_TOOLS } from 'constants/bmdashboard/toolsConstants';

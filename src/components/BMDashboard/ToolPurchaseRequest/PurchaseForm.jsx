@@ -1,6 +1,4 @@
-/* eslint-disable no-shadow */
-/* eslint-disable import/no-unresolved */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -14,27 +12,19 @@ import './PurchaseForm.css';
 
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
-  const tools = useSelector(state => state.tools);
+  const tools = useSelector(state => state.bmInvTypes.filter(item => item.category === 'Tool'));
   const history = useHistory();
 
   const [projectId, setProjectId] = useState('');
   const [toolId, setToolId] = useState('');
   const [quantity, setQty] = useState('');
-  const [unit, setUnit] = useState('');
   const [priority, setPriority] = useState('Low');
   const [brand, setBrand] = useState('');
   const [validationError, setValidationError] = useState('');
 
-  useEffect(() => {
-    if (toolId) {
-      const toolId = tools.find(type => type._id === toolId);
-      setUnit(tools.unit);
-    } else setUnit('');
-  }, [toolId]);
-
   const schema = Joi.object({
     projectId: Joi.string().required(),
-    matTypeId: Joi.string().required(),
+    toolId: Joi.string().required(),
     quantity: Joi.number()
       .min(1)
       .max(999)
@@ -138,7 +128,6 @@ export default function PurchaseForm() {
                 setQty(currentTarget.value);
               }}
             />
-            <span>{unit}</span>
           </div>
         </FormGroup>
         <FormGroup>

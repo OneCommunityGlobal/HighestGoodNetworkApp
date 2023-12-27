@@ -29,6 +29,9 @@ export const ENDPOINTS = {
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
+  TIME_ENTRIES_LOST_USER_LIST: `${APIEndpoint}/TimeEntry/lostUsers`,
+  TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
+  TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
@@ -84,7 +87,7 @@ export const ENDPOINTS = {
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
-  PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
+  PRESETS_BY_ID: (roleNameOrPresetId) => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
   OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
@@ -92,27 +95,34 @@ export const ENDPOINTS = {
   OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
   OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
     `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
-  SETUP_NEW_USER: () => `${APIEndpoint}/getInitialSetuptoken`,
-  VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
-  SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
+
+  SETUP_NEW_USER: () =>
+    `${APIEndpoint}/getInitialSetuptoken`,
+  VALIDATE_TOKEN: () =>
+    `${APIEndpoint}/validateToken`,
+  SETUP_NEW_USER_PROFILE: () =>
+    `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+  MAP_LOCATIONS_BY_TOKEN: () => `${APIEndpoint}/mapLocationsToken`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
-  // reasons endpoints
+
+
+  //reasons endpoints
   CREATEREASON: () => {
-    return `${APIEndpoint}/reason/`;
+    return `${APIEndpoint}/reason/`
   },
-  GETALLUSERREASONS: userId => {
-    return `${APIEndpoint}/reason/${userId}`;
+  GETALLUSERREASONS: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
   },
-  GETSINGLEREASONBYID: userId => {
-    return `${APIEndpoint}/reason/single/${userId}`;
+  GETSINGLEREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/single/${userId}`
   },
-  PATCHUSERREASONBYID: userId => {
-    return `${APIEndpoint}/reason/${userId}`;
+  PATCHUSERREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
   },
-  DELETEUSERREASONBYID: userId => {
-    return `${APIEndpoint}/reason/${userId}`;
+  DELETEUSERREASONBYID: (userId) => {
+    return `${APIEndpoint}/reason/${userId}`
   },
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
@@ -122,7 +132,11 @@ export const ENDPOINTS = {
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
-  BM_PROJECTS: `${APIEndpoint}/bm/projects`
+  BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
+  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
+  BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
+  BM_TOOLS: `${APIEndpoint}/bm//tools/purchase`,
 };
 
 export const ApiEndpoint = APIEndpoint;
