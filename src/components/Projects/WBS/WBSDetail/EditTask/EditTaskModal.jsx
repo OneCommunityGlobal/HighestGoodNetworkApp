@@ -18,7 +18,6 @@ import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 
-// const EditTaskModal = props => {
 function EditTaskModal(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
