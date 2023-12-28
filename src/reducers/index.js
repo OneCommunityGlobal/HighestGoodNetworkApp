@@ -25,8 +25,7 @@ import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
-import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
-import { infoCollectionsReducer} from './informationReducer';
+import { infoCollectionsReducer } from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 
 // bm dashboard
@@ -63,12 +62,11 @@ export default combineReducers({
   role: roleReducer,
   rolePreset: rolePresetReducer,
   ownerMessage: ownerMessageReducer,
-  ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
 
   // bmdashboard
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
-  bmInvTypes: bmInvTypeReducer,
+  bmInvTypes: bmInvTypeReducer
 });

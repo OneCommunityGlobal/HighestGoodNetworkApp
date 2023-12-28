@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export const getPeopleReportData = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
@@ -35,11 +37,12 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects }) => {
   const projectsWithLoggedHoursLegend = {};
   const tasksWithLoggedHours = userTask?.filter(({ hoursLogged }) => hoursLogged);
 
-  tasksWithLoggedHours.forEach(({ _id, hoursLogged, taskName }) => {
-    tasksWithLoggedHoursById[_id] = hoursLogged;
-    tasksLegend[_id] = [taskName, getRounded(hoursLogged)];
+  tasksWithLoggedHours.forEach(({ taskId, hoursLogged, taskName }) => {
+    // renamed _id to taskId
+    tasksWithLoggedHoursById[taskId] = hoursLogged;
+    tasksLegend[taskId] = [taskName, getRounded(hoursLogged)];
 
-    const currentTask = userTask?.find(task => task._id === _id);
+    const currentTask = userTask?.find(task => task._id === taskId); // changed _id to taskId
 
     if (currentTask) {
       const currentProjectName = allProjects?.projects?.find(

@@ -61,6 +61,7 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: [],
       teamCodes: [],
       colorOptions: [],
+      auth: [],
     };
   }
 
@@ -76,7 +77,6 @@ export class WeeklySummariesReport extends Component {
       hasPermission,
       auth,
     } = this.props;
-
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
@@ -86,7 +86,10 @@ export class WeeklySummariesReport extends Component {
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner';
+    this.codeEditPermission =
+      hasPermission('editTeamCode') ||
+      auth.user.role === 'Owner' ||
+      auth.user.role === 'Administrator';
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -100,52 +103,6 @@ export class WeeklySummariesReport extends Component {
       );
       return { ...summary, promisedHoursByWeek };
     });
-
-    // const teamCodeSet = [
-    //   ...new Set(
-    //     summariesCopy
-    //       .filter(summary => {
-    //         if (summary.teamCode === '') {
-    //           return false;
-    //         }
-    //         return true;
-    //       })
-    //       .map(s => s.teamCode),
-    //   ),
-    // ];
-    // this.teamCodes = [];
-
-    // const colorOptionSet = [
-    //   ...new Set(
-    //     summariesCopy
-    //       .filter(summary => {
-    //         if (summary.weeklySummaryOption === undefined) {
-    //           return false;
-    //         }
-    //         return true;
-    //       })
-    //       .map(s => s.weeklySummaryOption),
-    //   ),
-    // ];
-    // this.colorOptions = [];
-
-    // if (teamCodeSet.length !== 0) {
-    //   teamCodeSet.forEach((code, index) => {
-    //     const codeLabel = `${code} (${
-    //       summariesCopy.filter(summary => summary.teamCode === code).length
-    //     })`;
-    //     this.teamCodes[index] = { value: code, label: codeLabel };
-    //   });
-    //   colorOptionSet.forEach((option, index) => {
-    //     this.colorOptions[index] = { value: option, label: option };
-    //   });
-    // }
-
-    // const noCodeLabel = `Select All With NO Code (${
-    //   summariesCopy.filter(summary => summary.teamCode === '').length
-    // })`;
-    // const sortedTeamCodes = this.teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
-    // this.teamCodes = [...sortedTeamCodes, { value: '', label: noCodeLabel }];
 
     /*
      * refactor logic of commentted codes above
@@ -188,7 +145,6 @@ export class WeeklySummariesReport extends Component {
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
       });
-
     this.setState({
       loading,
       allRoleInfo: [],
@@ -202,6 +158,7 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: summariesCopy,
       colorOptions,
       teamCodes,
+      auth,
     });
 
     await getInfoCollections();
@@ -230,26 +187,6 @@ export class WeeklySummariesReport extends Component {
       this.setState({ loading });
     }
   }
-
-  // componentDidUpdate(preProps) {
-  //   const {summaries} = preProps
-
-  //   if (this.props.summaries !== summaries) {
-  //     let summariesCopy = [...summaries];
-  //     summariesCopy = this.alphabetize(summariesCopy);
-
-  //     // 3. add new key of promised hours by week
-  //     summariesCopy = summariesCopy.map(summary => {
-  //       // append the promised hours starting from the latest week (this week)
-  //       const promisedHoursByWeek = this.weekDates.map(weekDate =>
-  //         this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-  //       );
-  //       return { ...summary, promisedHoursByWeek };
-  //     });
-
-  //     this.setState({filteredSummaries: summariesCopy, summaries: summariesCopy})
-  //   }
-  // }
 
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
@@ -348,7 +285,6 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-
     const { role } = this.props;
     const {
       loading,
@@ -362,8 +298,8 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries,
       colorOptions,
       teamCodes,
+      auth,
     } = this.state;
-
     const { error } = this.props;
 
     if (error) {
@@ -490,6 +426,7 @@ export class WeeklySummariesReport extends Component {
                         badges={badges}
                         loadBadges={loadBadges}
                         canEditTeamCode={this.codeEditPermission}
+                        auth={auth}
                       />
                     </Col>
                   </Row>
