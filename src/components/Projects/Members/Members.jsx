@@ -179,7 +179,7 @@ const Members = props => {
                 projectId={projectId}
                 uid={member._id}
                 fullName={member.firstName + ' ' + member.lastName}
-                data-testid={`member-${member._id}`} // Add a test id to each member element
+                //data-testid={`member-${member._id}`} // Add a test id to each member element
               />
             ))}
           </tbody>
