@@ -6,17 +6,25 @@ import { connect } from 'react-redux';
 /**
  * The header row of the team table.
  */
-export const TeamTableHeader = React.memo(props => {
+export const TeamTableHeader = React.memo(({ onTeamNameSort, onTeamActiveSort,...props }) => {
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
+
   return (
     <tr>
       <th scope="col" id="teams__order">
         #
       </th>
-      <th scope="col">{TEAM_NAME}</th>
+      <th scope="col">
+        {/* Add the sorting button */}
+        <button onClick={onTeamNameSort}>
+          {TEAM_NAME}
+        </button>
+      </th>
       <th scope="col" id="teams__active">
-        {ACTIVE}
+        <button onClick={onTeamActiveSort}>
+          {ACTIVE}
+        </button>
       </th>
       <th scope="col" id="teams__members">
         {MEMBERS}
