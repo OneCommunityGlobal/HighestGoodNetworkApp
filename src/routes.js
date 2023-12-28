@@ -46,7 +46,6 @@ import Inventory from './components/Inventory';
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
-import AddMaterial from 'components/BMDashboard/AddMaterial/AddMaterial';
 
 // import MaterialsList from './components/BMDashboard/MaterialsList';
 // import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
@@ -56,7 +55,7 @@ const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'
 const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
-
+const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
@@ -208,7 +207,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
-        <BMProtectedRoute path="/bmdashboard/materials/add" component={AddMaterial} />
+        <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}

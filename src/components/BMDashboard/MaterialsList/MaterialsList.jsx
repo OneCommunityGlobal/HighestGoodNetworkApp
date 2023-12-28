@@ -20,12 +20,12 @@ export function MaterialsList(props) {
   // dispatch materials fetch action : on load and update
   // // response is mapped to materials or errors in redux store
   useEffect(() => {
-    if (!postMaterialUpdateResult || postMaterialUpdateResult?.result == null) dispatch(fetchAllMaterials());
+    if (!postMaterialUpdateResult || postMaterialUpdateResult?.result == null)
+      dispatch(fetchAllMaterials());
   }, [postMaterialUpdateResult?.result]); // To refresh with new materials after update
 
   useEffect(() => {
-    if (materials)
-      setFilteredMaterials([...materials]);
+    if (materials) setFilteredMaterials([...materials]);
   }, [materials]);
 
   // filter materials data by project
@@ -70,8 +70,7 @@ export function MaterialsList(props) {
       <h3>Materials</h3>
       <section>
         <span style={{ display: 'flex', margin: '5px' }}>
-          {
-            materials &&
+          {materials && (
             <>
               <SelectForm
                 materials={materials}
@@ -85,7 +84,7 @@ export function MaterialsList(props) {
                 setSelectedMaterial={setSelectedMaterial}
               />
             </>
-          }
+          )}
         </span>
         {filteredMaterials && <MaterialsTable filteredMaterials={filteredMaterials} />}
       </section>
