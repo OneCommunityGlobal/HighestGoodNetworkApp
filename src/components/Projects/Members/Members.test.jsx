@@ -119,7 +119,7 @@ describe('Members component', () => {
       hasPermission: jest.fn(() => true),
     };
 
-    const { getByTestId } = render(
+    const { getByTest } = render(
       <Provider store={store}>
         <Router>
           <Members {...props} />
