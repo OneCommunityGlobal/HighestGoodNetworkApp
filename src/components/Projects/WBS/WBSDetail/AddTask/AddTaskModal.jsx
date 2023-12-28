@@ -358,7 +358,7 @@ function AddTaskModal(props) {
                         type="radio"
                         id="true"
                         name="Assigned"
-                        value
+                        value={true}
                         checked={assigned}
                         onChange={() => setAssigned(true)}
                       />
