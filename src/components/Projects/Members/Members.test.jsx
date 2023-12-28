@@ -128,14 +128,20 @@ describe('Members component', () => {
     );
 
     await waitFor(() => {
-      // Use a test id or other selectors to target the members in the rendered component
-      const memberJohn = getByTestId('member-member-1');
-      const memberNameJohn = getByTestId('member-name-member-1');
+      // // Use a test id or other selectors to target the members in the rendered component
+      // const memberJohn = getByTestId('member-member-1');
+      // const memberNameJohn = getByTestId('member-name-member-1');
    
 
+      // // Add assertions based on your component structure and test requirements
+      // expect(memberJohn).toBeInTheDocument();
+      // expect(memberNameJohn).toHaveTextContent('John Doe');
+
+      // Use querySelector to find the element by class name and content
+      const memberNameJohn = getByText('John Doe', { selector: 'td.members__name' });
+
       // Add assertions based on your component structure and test requirements
-      expect(memberJohn).toBeInTheDocument();
-      expect(memberNameJohn).toHaveTextContent('John Doe');
+      expect(memberNameJohn).toBeInTheDocument();
 
 
     });
