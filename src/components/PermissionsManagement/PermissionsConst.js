@@ -47,7 +47,7 @@ export const permissionLabels = [
       {
         label: 'Modify Important User Info',
         key: 'putUserProfileImportantInfo',
-        description: 'WIP',
+        description: 'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
     ]
   },
@@ -273,21 +273,21 @@ export const permissionLabels = [
     label: 'Popup Management',
     description: 'Category for all permissions related to popup management',
     subperms: [
-      {
-        label: 'Create Popups',
-        key: 'createPopup',
-        description: 'WIP',
-      },
+      // {
+      //   label: 'Create Popups',
+      //   key: 'createPopup',
+      //   description: 'WIP',
+      // },
       {
         label: 'Edit Popups',
         key: 'updatePopup',
         description: 'WIP',
       },
-      {
-        label: 'Delete Popups',
-        key: 'deletePopup',
-        description: 'WIP - not implemented',
-      },
+      // {
+      //   label: 'Delete Popups',
+      //   key: 'deletePopup',
+      //   description: 'WIP - not implemented',
+      // },
     ]
   },
   {
