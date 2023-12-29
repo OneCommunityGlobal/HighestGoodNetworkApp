@@ -248,20 +248,32 @@ export const permissionLabels = [
           {
             label: 'Add Time Entry (Others)',
             key: 'postTimeEntry',
+<<<<<<< HEAD
             description:
               'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button". Currently not implemented.',
+=======
+            description: 'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button". Currently not implemented.',
+>>>>>>> 24ce77844 (Edit permission descriptions, add missing labels, and re-remove associatedPermissions)
           },
           {
             label: 'Toggle Tangible Time Self',
             key: 'toggleTangibleTime',
+<<<<<<< HEAD
             description:
               'Gives the user permission to toggle the Tangible check when editing their own time entry.',
+=======
+            description: 'Gives the user permission to toggle the Tangible check when editing their own time entry.',
+>>>>>>> 24ce77844 (Edit permission descriptions, add missing labels, and re-remove associatedPermissions)
           },
           {
             label: 'Delete Time Entry (Others)',
             key: 'deleteTimeEntry',
+<<<<<<< HEAD
             description:
               'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
+=======
+            description: 'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
+>>>>>>> 24ce77844 (Edit permission descriptions, add missing labels, and re-remove associatedPermissions)
           },
           {
             label: 'Edit Time Entries',
@@ -275,6 +287,7 @@ export const permissionLabels = [
               {
                 label: 'Edit Timelog Description',
                 key: 'editTimeEntry',
+<<<<<<< HEAD
                 description:
                   'Gives the user permission to edit the description of any time log entry.',
               },
@@ -295,6 +308,25 @@ export const permissionLabels = [
         ],
       },
     ],
+=======
+                description: 'Gives the user permission to edit the description of any time log entry.',
+              },
+              {
+                label: 'Toggle Tangible/Intangible Time Others',
+                key: 'editTimeEntry',
+                description: 'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
+              },
+              {
+                label: 'Change Date on Intangible Time Entry',
+                key: 'editTimelogDate',
+                description: 'Gives the user permission to edit the date when adding an intangible time entry.',
+              },
+            ]
+          }
+        ]
+      }
+    ]
+>>>>>>> 24ce77844 (Edit permission descriptions, add missing labels, and re-remove associatedPermissions)
   },
   {
     label: 'Permissions Management',
