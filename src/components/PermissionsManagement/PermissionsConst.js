@@ -233,12 +233,12 @@ export const permissionLabels = [
                 description: 'Gives the user permission to edit the description of any time log entry.',
               },
               {
-                label: 'Toggle Tangible/Intangible Time Others',
+                label: 'Toggle Tangible Time Others',
                 key: 'editTimeEntry',
                 description: 'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
               },
               {
-                label: 'Change Date on Intangible Time Entry',
+                label: 'Change Time Entry Date',
                 key: 'editTimelogDate',
                 description: 'Gives the user permission to edit the date when adding an intangible time entry.',
               },
