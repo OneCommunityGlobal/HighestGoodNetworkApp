@@ -91,7 +91,12 @@ class Teams extends React.PureComponent {
               />
               <table className="table table-bordered table-responsive-sm">
                 <thead>
-                  <TeamTableHeader onTeamNameSort={this.toggleTeamNameSort} onTeamActiveSort={this.toggleTeamActiveSort}/>
+                  <TeamTableHeader 
+                    onTeamNameSort={this.toggleTeamNameSort} 
+                    onTeamActiveSort={this.toggleTeamActiveSort} 
+                    sortTeamNameState={this.state.sortTeamNameState}
+                    sortTeamActiveState={this.state.sortTeamActiveState} 
+                    />
                 </thead>
                 {
                   this.state.teamNameSearchText === '' && this.state.wildCardSearchText === '' ? (
@@ -450,7 +455,7 @@ class Teams extends React.PureComponent {
       sortedTeams = sortedTeams.map((team, index) => ({...team, props: {...team.props, index}}));
     }
   
-    this.setState({ sortedTeams, sortTeamNameState: newSortState });
+    this.setState({ sortedTeams, sortTeamNameState: newSortState, sortTeamActiveState: 'none' });
   };  
 
   toggleTeamActiveSort = () => {
@@ -482,7 +487,7 @@ class Teams extends React.PureComponent {
       sortedTeams = sortedTeams.map((team, index) => ({...team, props: {...team.props, index}}));
     }
   
-    this.setState({ sortedTeams, sortTeamActiveState: newSortState });
+    this.setState({ sortedTeams, sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
   };  
 }
 const mapStateToProps = state => ({ state });
