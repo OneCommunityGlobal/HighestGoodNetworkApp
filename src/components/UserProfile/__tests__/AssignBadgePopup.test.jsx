@@ -1,7 +1,7 @@
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store'; // If using Redux
-import MockAssignTableRow from './MockAssignTableRow';
+import MockAssignTableRow from '../MockData/MockAssignTableRow';
 import AssignBadgePopup from '../AssignBadgePopup';
 
 /** ********************************TEST PRE-REQUISITE*************************************** */
@@ -34,7 +34,7 @@ const renderComponent = () => {
   );
 };
 
-jest.mock('axios');
+// jest.mock('axios');
 
 /** **************************************TEST CASES******************************************** */
 describe('Userprofile/AssignBadgePopup Test Suite', () => {
