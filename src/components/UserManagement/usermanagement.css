@@ -48,7 +48,7 @@ thead {
 
 #card_project {
   /* background: #1d62f0; */
-  background: linear-gradient(to bottom, #64b7ff 5%, #08397e 100%);
+  background: linear-gradient(to right bottom,  rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
   background-color: #1d62f0;
   border-radius: 8px;
   border:#08397e;
@@ -59,8 +59,8 @@ thead {
 }
 
 #card_team{
-  background: linear-gradient(to bottom, #64b7ff 5%, #08397e 100%);
-  background-color: #1d62f0;
+  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
+  background-color: dodgerblue;
   border-radius: 8px;
   border:#08397e;
   color: white;
@@ -71,7 +71,7 @@ thead {
 
 #card_active {
   /* background: #fbad4c; */
-  background: linear-gradient(to bottom, #ffdb56 5%, #ff9145 100%);
+  background: linear-gradient(to right bottom, #ffdb56 5%, #ff9145 100%);
   background-color: #fac17b;
   border-radius: 8px;
   border:#ff9145;
