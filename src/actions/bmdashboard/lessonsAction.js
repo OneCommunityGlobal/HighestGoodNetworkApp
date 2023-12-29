@@ -1,19 +1,49 @@
 import axios from "axios";
 import { ENDPOINTS } from "utils/URL";
 import { GET_BM_LESSONS, UPDATE_LESSON, DELETE_LESSON } from "constants/bmdashboard/lessonConstants";
+import { getUserProfile } from "actions/userProfile";
+import { fetchProjectById } from "actions/bmdashboard/projectByIdAction";
+
 
 export const fetchBMLessons = () => {
   return async dispatch => {
-    axios.get(ENDPOINTS.BM_LESSONS)
-    .then(res => {
-      dispatch(setLessons(res.data))
-    })
-    .catch(err => {
-      console.log('err', err)
-      dispatch(setErrors(err))
-    })
-  } 
-}
+    try {
+      const response = await axios.get(ENDPOINTS.BM_LESSONS);
+      const lessons = response.data;
+      const authorIds = lessons.map(lesson => lesson.author);
+      const projectIds = lessons.map(lesson => lesson.relatedProject);
+
+      // Fetch user profiles and project details concurrently
+      const [projectDetails, userProfiles] = await Promise.all([
+        Promise.all(projectIds.map(projectId => dispatch(fetchProjectById(projectId)))),
+        Promise.all(authorIds.map(authorId => dispatch(getUserProfile(authorId))))
+      ]);
+
+      const updatedLessons = lessons.map((lesson, index) => {
+        return {
+        ...lesson,
+        author: userProfiles[index]
+        ? {
+            id: userProfiles[index]._id,
+            name: `${userProfiles[index].firstName} ${userProfiles[index].lastName}`,
+          }
+        : lesson.author,
+      relatedProject: projectDetails[index]
+        ? {
+            id: projectDetails[index]._id, 
+            name: projectDetails[index].projectName,
+          }
+        : lesson.relatedProject,
+    };
+      });
+      // Dispatch an action to update the lessons with the new author and project info
+      dispatch(setLessons(updatedLessons));
+    } catch (error) {
+      console.error('Error fetching lessons:', error);
+      dispatch(setErrors(error));
+    }
+  };
+};
 
 export const setLessons = payload => {
   return {
@@ -56,6 +86,7 @@ export const updateLesson = (lessonId, content) => {
       dispatch(fetchBMLessons())
       
     };
+    
   }
   
   export const deleteLesson = (lessonId) => {

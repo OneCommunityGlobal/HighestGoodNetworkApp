@@ -125,11 +125,13 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard }
           </Card.Body>
           <Card.Footer className="text-muted">
             <div>
-              <span className="footer-items-author-and-from">Author: {lesson.author}</span>
-              <span className="footer-items-author-and-from">From: {lesson.relatedProject}</span>
+              <span className="footer-items-author-and-from">Author: {lesson.author.name}</span>
+              <span className="footer-items-author-and-from">
+                From: {lesson.relatedProject.name}
+              </span>
             </div>
             <div className="footer-items">
-              {currentUserId === lesson.author && (
+              {currentUserId === lesson.author.id && (
                 <div>
                   <button
                     className="text-muted"

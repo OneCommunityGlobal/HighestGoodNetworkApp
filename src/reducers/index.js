@@ -33,6 +33,7 @@ import { materialsReducer } from './bmdashboard/materialsReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { lessonsReducer } from './bmdashboard/lessonsReducer';
+import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 
 
 export default combineReducers({
@@ -71,5 +72,6 @@ export default combineReducers({
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
-  lessons: lessonsReducer
+  lessons: lessonsReducer,
+  project: bmProjectByIdReducer
 });

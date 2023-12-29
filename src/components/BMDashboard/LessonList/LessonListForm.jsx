@@ -4,6 +4,7 @@ import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './LessonListForm.css';
 import { fetchBMLessons } from 'actions/bmdashboard/lessonsAction';
+// import { getUserProfile } from 'actions/userProfile';
 import Lessons from './Lessons';
 
 function LessonList(props) {
@@ -12,7 +13,6 @@ function LessonList(props) {
   const [inputValue, setInputValue] = useState('');
   const [filteredLessons, setFilteredLessons] = useState(lessons);
   const [filterOption, setFilterOption] = useState('1');
-
   useEffect(() => {
     dispatch(fetchBMLessons());
   }, []);
