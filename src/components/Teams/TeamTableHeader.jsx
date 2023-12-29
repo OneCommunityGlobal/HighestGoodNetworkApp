@@ -6,9 +6,18 @@ import { connect } from 'react-redux';
 /**
  * The header row of the team table.
  */
-export const TeamTableHeader = React.memo(({ onTeamNameSort, onTeamActiveSort,...props }) => {
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+export const TeamTableHeader = React.memo(
+  ({ onTeamNameSort, onTeamActiveSort, sortTeamNameState, sortTeamActiveState, ...props }) => {
+    const canDeleteTeam = props.hasPermission('deleteTeam');
+    const canPutTeam = props.hasPermission('putTeam');
+
+    const getSortIcon = (sortState) => {
+      switch(sortState) {
+        case 'ascending': return '↑';
+        case 'descending': return '↓';
+        default: return '⇵'; // Default icon or whatever you prefer
+      }
+    }
 
   return (
     <tr>
@@ -18,12 +27,12 @@ export const TeamTableHeader = React.memo(({ onTeamNameSort, onTeamActiveSort,..
       <th scope="col">
         {/* Add the sorting button */}
         <button onClick={onTeamNameSort}>
-          {TEAM_NAME}
+          {getSortIcon(sortTeamNameState)}{TEAM_NAME}
         </button>
       </th>
       <th scope="col" id="teams__active">
         <button onClick={onTeamActiveSort}>
-          {ACTIVE}
+          {getSortIcon(sortTeamActiveState)}{ACTIVE}
         </button>
       </th>
       <th scope="col" id="teams__members">
