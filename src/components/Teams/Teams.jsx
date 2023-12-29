@@ -39,6 +39,7 @@ class Teams extends React.PureComponent {
       selectedTeamCode: '',
       teams: [],
       sortedTeams: [],
+      teamsTable: [],
     };
   }
 
@@ -53,11 +54,11 @@ class Teams extends React.PureComponent {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.sortedTeams !== this.state.sortedTeams) {
       // This will run whenever sortedTeams changes
-      const teams = this.state.sortedTeams.map(team => {
+      const teamsTable = this.state.sortedTeams.map(team => {
         return team;
       });
 
-      this.setState({ teams });
+      this.setState({ teamsTable });
     }
   }
 
@@ -87,9 +88,15 @@ class Teams extends React.PureComponent {
               />
               <table className="table table-bordered table-responsive-sm">
                 <thead>
-                  <TeamTableHeader />
+                  <TeamTableHeader onTeamNameSort={this.toggleTeamNameSort} onTeamActiveSort={this.toggleTeamActiveSort}/>
                 </thead>
-                <tbody>{this.state.teams}</tbody>
+                {
+                  this.state.teamNameSearchText === '' && this.state.wildCardSearchText === '' ? (
+                    <tbody>{this.state.teamsTable}</tbody>
+                  ) : (
+                    <tbody>{this.state.teams}</tbody>
+                  )
+                }
               </table>
             </div>
           </React.Fragment>
@@ -409,6 +416,42 @@ class Teams extends React.PureComponent {
     });
 
     this.setState({ sortedTeams: sortedTeams });
+  };
+
+  toggleTeamNameSort = () => {
+    const { teams, sortTeamNameAscending } = this.state;
+
+    const sortedTeams = [...teams].sort((a, b) => {
+      if (a.props.name < b.props.name) {
+        return sortTeamNameAscending ? 1 : -1;
+      }
+      if (a.props.name > b.props.name) {
+        return sortTeamNameAscending ? -1 : 1;
+      }
+      return 0;
+    });
+
+    this.setState({ sortedTeams, sortTeamNameAscending: !sortTeamNameAscending }, () => {
+      console.log('sortedTeams: ', this.state.sortedTeams);
+    });
+  };
+
+  toggleTeamActiveSort = () => {
+    const { teams, sortTeamActiveAscending } = this.state;
+
+    const sortedTeams = [...teams].sort((a, b) => {
+      if (a.props.active < b.props.active) {
+        return sortTeamActiveAscending ? 1 : -1;
+      }
+      if (a.props.active > b.props.active) {
+        return sortTeamActiveAscending ? -1 : 1;
+      }
+      return 0;
+    });
+
+    this.setState({ sortedTeams, sortTeamActiveAscending: !sortTeamActiveAscending }, () => {
+      console.log('sortedTeams: ', this.state.sortedTeams);
+    });
   };
 }
 const mapStateToProps = state => ({ state });
