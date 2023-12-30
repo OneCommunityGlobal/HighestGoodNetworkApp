@@ -11,6 +11,7 @@ import { RoutePermissions } from 'utils/routePermissions';
 // import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
+import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 // import Reports from './components/Reports';
@@ -209,7 +210,8 @@ export default (
         <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
 
-        <BMProtectedRoute path="/bmdashboard/equipment" fallback component={EquipmentList} />
+        <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
+        <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
