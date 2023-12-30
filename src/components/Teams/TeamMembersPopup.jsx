@@ -25,9 +25,16 @@ export const TeamMembersPopup = React.memo(props => {
 
 
   const onAddUser = () => {
-    if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
-      props.onAddUser(selectedUser);
-      setSearchText('');
+    if (selectedUser) {
+      const isDuplicate = props.members.teamMembers.some(x => x._id === selectedUser._id);
+      if (!isDuplicate) {
+        props.onAddUser(selectedUser);
+        setSearchText('');
+        setDuplicateUserAlert(false);
+      } else {
+        setSearchText('');
+        setDuplicateUserAlert(true);
+      }
     } else {
       setDuplicateUserAlert(false);
       onValidation(false);
@@ -36,6 +43,7 @@ export const TeamMembersPopup = React.memo(props => {
   const selectUser = user => {
     onSelectUser(user);
     onValidation(true);
+    setDuplicateUserAlert(false);
   };
 
   /**
@@ -123,6 +131,7 @@ export const TeamMembersPopup = React.memo(props => {
 
   useEffect(() => {
     onValidation(true);
+    setDuplicateUserAlert(false);
   }, [props.open]);
 
   return (
@@ -144,7 +153,15 @@ export const TeamMembersPopup = React.memo(props => {
               </Button>
             </div>
           )}
-          {!isValidUser && <Alert color="danger">Please choose a valid user.</Alert>}
+
+          {duplicateUserAlert ? (
+            <Alert color="danger">Member is already a part of this team.</Alert>
+          ) : isValidUser === false ? (
+            <Alert color="danger">Please choose a valid user.</Alert>
+          ) : (
+            <></>
+          )}
+
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <tr>
