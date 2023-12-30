@@ -9,15 +9,15 @@ function ConsumablesViewModal({ modal, setModal, record, recordType }) {
     };
 
     return (
-      <Modal isOpen={modal} size={"xl"} className="ModalViewContainer">
+      <Modal isOpen={modal} size="xl" className="ModalViewContainer">
         <ModalHeader>
           Consumables &nbsp;
-          {recordType == 'UpdatesView' ? 'Update History'
-            : recordType == 'PurchasesView' ? 'Purchase History'
-              : recordType == 'UpdatesEdit' ? 'Edit Record' : ''}
+          {recordType === 'UpdatesView' && 'Update History'}
+          {recordType === 'PurchasesView' && 'Purchase History'}
+          {recordType === 'UpdatesEdit' && 'Edit Record'}
         </ModalHeader>
         <ModalBody>
-          <div >
+          <div>
             <Table>
               <Record record={record} recordType={recordType} />
             </Table>
@@ -47,9 +47,9 @@ function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.updateRecord.map((data, idx) => {
+          {record.updateRecord.map(data => {
             return (
-              <tr key={idx}>
+              <tr key={data._id}>
                 <td>{moment.utc(data.date).format('LL')}</td>
                 <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
                 <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
@@ -77,9 +77,9 @@ function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.purchaseRecord.map((data, idx) => {
+          {record.purchaseRecord.map(data => {
             return (
-              <tr key={idx}>
+              <tr key={data._id}>
                 <td>{moment.utc(data.date).format('LL')}</td>
                 <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
                 <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>

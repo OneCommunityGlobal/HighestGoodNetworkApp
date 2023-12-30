@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import './Consumables.css'
+import './Consumables.css';
 
 function ConsumablesInputs({ consumable, setConsumable, project, setProject }) {
   const dispatch = useDispatch();
   const projects = useSelector(state => state.bmProjects);
-  const [formattedProjects, setFormattedProjects] = useState([]); //For React-Select
-  const [formattedConsumables, setFormattedConsumables] = useState([]); //For React-Select
+  const [formattedProjects, setFormattedProjects] = useState([]); // For React-Select
+  const [formattedConsumables, setFormattedConsumables] = useState([]); // For React-Select
   const consumables = useSelector(state => state.bmConsumables.consumableslist);
 
   useEffect(() => {
@@ -30,11 +30,14 @@ function ConsumablesInputs({ consumable, setConsumable, project, setProject }) {
     let _formattedConsumables = [{ label: 'All Consumables', value: '0' }];
 
     if (consumables.length) {
-      if (project.value === '0') consumablesSet = [...new Set(consumables.map(rec => rec.itemType.name))];
+      if (project.value === '0')
+        consumablesSet = [...new Set(consumables.map(rec => rec.itemType.name))];
       else
         consumablesSet = [
           ...new Set(
-            consumables.filter(rec => rec.project?.name === project.label).map(rec => rec.itemType.name),
+            consumables
+              .filter(rec => rec.project?.name === project.label)
+              .map(rec => rec.itemType.name),
           ),
         ];
     }
@@ -42,17 +45,17 @@ function ConsumablesInputs({ consumable, setConsumable, project, setProject }) {
       return { label: con, value: con };
     });
     _formattedConsumables = _formattedConsumables.concat(temp);
-    setFormattedConsumables(_formattedConsumables)
-  }, [consumables, project])
+    setFormattedConsumables(_formattedConsumables);
+  }, [consumables, project]);
 
-  const projectHandler = (selected) => {
+  const projectHandler = selected => {
     setProject(selected);
-    setConsumable({ label: 'All Consumables', value: '0' })
-  }
+    setConsumable({ label: 'All Consumables', value: '0' });
+  };
 
-  const consumableHandler = (selected) => {
+  const consumableHandler = selected => {
     setConsumable(selected);
-  }
+  };
 
   return (
     <div className="container">

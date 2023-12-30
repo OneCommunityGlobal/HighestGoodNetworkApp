@@ -3,14 +3,13 @@ import { useSelector } from 'react-redux';
 import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import './Consumables.css'
-import ConsumablesViewModal from './ConsumablesViewModal';
+import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import './Consumables.css';
 import ReactTooltip from 'react-tooltip';
+import ConsumablesViewModal from './ConsumablesViewModal';
 
-function ConsumablesTable({ consumable, setConsumable, project, setProject }) {
-
-  //Data fetched in the parent component : ConsumablesView
+function ConsumablesTable({ consumable, project }) {
+  // Data fetched in the parent component : ConsumablesView
   const consumables = useSelector(state => state.bmConsumables.consumableslist);
   const [recordType, setRecordType] = useState(null);
   const [modal, setModal] = useState(false);
@@ -19,34 +18,44 @@ function ConsumablesTable({ consumable, setConsumable, project, setProject }) {
   const [iconToDisplay, setIconToDisplay] = useState({ project: faSortUp, itemType: faSortUp });
   const [consumablesViewData, setConsumablesViewData] = useState(consumables);
 
-  const handleSort = (column) => {
+  const handleSort = column => {
+    if (!column || consumables.length === 0) return;
     switch (column) {
       case 'project': {
         setSortOrder({ ...sortOrder, project: sortOrder.project === 'asc' ? 'desc' : 'asc' });
-        setIconToDisplay({ ...iconToDisplay, project: iconToDisplay.project === faSortUp ? faSortDown : faSortUp });
+        setIconToDisplay({
+          ...iconToDisplay,
+          project: iconToDisplay.project === faSortUp ? faSortDown : faSortUp,
+        });
         const factor = sortOrder.project === 'asc' ? 1 : -1;
         const _consumablesViewData = [...consumables].sort((a, b) => {
-          return factor * (a?.project?.name.localeCompare(b?.project?.name));
+          return factor * a.project.name.localeCompare(b.project.name);
         });
         setConsumablesViewData(_consumablesViewData);
         break;
       }
       case 'itemType': {
         setSortOrder({ ...sortOrder, itemType: sortOrder.itemType === 'asc' ? 'desc' : 'asc' });
-        setIconToDisplay({ ...iconToDisplay, itemType: iconToDisplay.itemType === faSortUp ? faSortDown : faSortUp });
+        setIconToDisplay({
+          ...iconToDisplay,
+          itemType: iconToDisplay.itemType === faSortUp ? faSortDown : faSortUp,
+        });
         const factor = sortOrder.itemType === 'asc' ? 1 : -1;
         const _consumablesViewData = [...consumables].sort((a, b) => {
-          return factor * (a?.itemType?.name.localeCompare(b?.itemType?.name));
+          return factor * a.itemType.name.localeCompare(b.itemType.name);
         });
         setConsumablesViewData(_consumablesViewData);
+        break;
+      }
+      default: {
         break;
       }
     }
   };
 
   const handleOpenModal = (row, type) => {
-    setSelectedRow(row); //current row data
-    setRecordType(type); //UpdatesEdit/UpdatesView/PurchasesEdit/PurchasesView
+    setSelectedRow(row); // current row data
+    setRecordType(type); // UpdatesEdit/UpdatesView/PurchasesEdit/PurchasesView
     setModal(true);
   };
 
@@ -78,23 +87,34 @@ function ConsumablesTable({ consumable, setConsumable, project, setProject }) {
   }, [project, consumable]);
 
   return (
-    <div >
-      <div >
-        <ConsumablesViewModal modal={modal} setModal={setModal} recordType={recordType} record={selectedRow} />
-        <Table responsive >
-          <thead className='BuildingTableHeaderLine'>
+    <div>
+      <div>
+        <ConsumablesViewModal
+          modal={modal}
+          setModal={setModal}
+          recordType={recordType}
+          record={selectedRow}
+        />
+        <Table responsive>
+          <thead className="BuildingTableHeaderLine">
             <tr>
               <th onClick={() => handleSort('project')}>
-                <div data-tip={`Sort project ${sortOrder['project']}`} className='d-flex  align-self-stretch cusorpointer'>
+                <div
+                  data-tip={`Sort project ${sortOrder.project}`}
+                  className="d-flex  align-self-stretch cusorpointer"
+                >
                   <div>Project</div>
-                  <FontAwesomeIcon icon={iconToDisplay['project']} size="lg" />
+                  <FontAwesomeIcon icon={iconToDisplay.project} size="lg" />
                 </div>
                 <ReactTooltip />
               </th>
               <th onClick={() => handleSort('itemType')}>
-                <div data-tip={`Sort name ${sortOrder['itemType']}`} className='d-flex align-items-stretch cusorpointer'>
+                <div
+                  data-tip={`Sort name ${sortOrder.itemType}`}
+                  className="d-flex align-items-stretch cusorpointer"
+                >
                   <div>Name</div>
-                  <FontAwesomeIcon icon={iconToDisplay['itemType']} size="lg" />
+                  <FontAwesomeIcon icon={iconToDisplay.itemType} size="lg" />
                 </div>
                 <ReactTooltip />
               </th>
@@ -157,7 +177,7 @@ function ConsumablesTable({ consumable, setConsumable, project, setProject }) {
         </Table>
       </div>
     </div>
-  )
+  );
 }
 
-export default ConsumablesTable
+export default ConsumablesTable;

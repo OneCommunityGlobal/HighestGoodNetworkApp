@@ -1,1 +1,2 @@
 export const SET_CONSUMABLES = 'SET_CONSUMABLES';
+export default SET_CONSUMABLES;
