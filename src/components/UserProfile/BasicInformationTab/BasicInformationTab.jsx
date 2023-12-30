@@ -107,7 +107,7 @@ const Title = props => {
 
 const Email = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
-  const { email, privacySettings } = userProfile;
+  const { email, privacySettings, emailSubscriptions } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
 
@@ -119,6 +119,12 @@ const Email = props => {
             <ToggleSwitch
               switchType="email"
               state={privacySettings?.email}
+              handleUserProfile={props.handleUserProfile}
+            />
+
+            <ToggleSwitch
+              switchType="email-subcription"
+              state={emailSubscriptions? emailSubscriptions : false}
               handleUserProfile={props.handleUserProfile}
             />
 
