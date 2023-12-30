@@ -1,3 +1,20 @@
+export const getAllPermissionKeys = () => {
+  return getAllSubpermissionKeys(permissionLabels);
+};
+
+const getAllSubpermissionKeys = (permissions) => {
+  const keys = [];
+  for(permission in permissions){
+    if(permission.subperms){
+      keys.concat(getAllSubpermisisonKeys(permission.subperms))
+    }
+    else {
+      keys.append(permission)
+    }
+  }
+  return keys;
+};
+
 export const permissionLabels = [
   {
     label: 'Reports',
