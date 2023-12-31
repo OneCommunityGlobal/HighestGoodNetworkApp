@@ -19,9 +19,15 @@ export const getUserProjects = userId => {
 export const getUserWBSs = userId => {
   const url = ENDPOINTS.WBS_USER(userId);
   return async dispatch => {
-    const res = await axios.get(url);
-    if (res.status === 200) {
-      await dispatch(setUserWBSs(res.data));
+    try {
+      const res = await axios.get(url);
+      if (res.status === 200) {
+        await dispatch(setUserWBSs(res.data));
+      } else {
+        console.log(`Get user WBS request status is not 200, status message: ${res.statusText}`)
+      }
+    } catch (error) {
+      console.log(error)
     }
   };
 };

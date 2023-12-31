@@ -28,9 +28,15 @@ export const getUserProfile = userId => {
 export const getUserTasks = userId => {
   const url = ENDPOINTS.TASKS_BY_USERID(userId);
   return async dispatch => {
-    const res = await axios.get(url);
-    if (res.status === 200) {
-      dispatch(getUserTaskActionCreator(res.data));
+    try {
+      const res = await axios.get(url);
+      if (res.status === 200) {
+        dispatch(getUserTaskActionCreator(res.data));
+      } else {
+        console.log(`Get user task request status is not 200, status message: ${res.statusText}`)
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 };

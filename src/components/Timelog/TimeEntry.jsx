@@ -67,7 +67,7 @@ const TimeEntry = (props) => {
     const newData = {
       ...data,
       isTangible: !data.isTangible,
-      curruserId: curruserId,
+      curruserId: displayUserId,
       timeSpent: `${data.hours}:${data.minutes}:00`,
     };
     dispatch(editTimeEntry(data._id, newData));

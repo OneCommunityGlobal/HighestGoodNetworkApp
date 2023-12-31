@@ -21,7 +21,7 @@ import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import { getUserProjects, getUserWBSs } from '../../../actions/userProjects';
-import { getUserProfile, updateUserProfile, getUserTasks } from 'actions/userProfile';
+import { getUserProfile, updateUserProfile } from 'actions/userProfile';
 
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -232,6 +232,7 @@ const TimeEntryForm = props => {
 
     return isEmpty(errorObj);
   };
+
   //Update hoursByCategory when submitting new time entry
   const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
     const { hoursByCategory } = userProfile;
@@ -343,6 +344,7 @@ const TimeEntryForm = props => {
         }
       }
     }
+
     checkNegativeNumber(userProfile);
     //update database
     try {
@@ -754,7 +756,6 @@ export default connect(mapStateToProps, {
   hasPermission,
   getUserProfile,
   updateUserProfile,
-  getUserTasks,
   getUserProjects,
   getUserWBSs,
   editTimeEntry,
