@@ -72,7 +72,7 @@ const DeleteUserPopup = React.memo(props => {
         )}
         {!(canDeleteUser) && (
           <>
-            Unauthorised Action
+            Unauthorized Action
           </>
         )}
 

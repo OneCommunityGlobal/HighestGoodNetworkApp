@@ -47,7 +47,7 @@ export const DeleteTeamPopup = React.memo(props => {
         )}
         {!(canDeleteTeam || canPutTeam) && (
           <>
-            Unauthorised Action
+            Unauthorized Action
           </>
         )}
         <Button color="primary" onClick={closePopup} style={boxStyle}>
