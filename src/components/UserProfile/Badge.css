@@ -56,8 +56,7 @@
   text-align: center;
   font: 11px Arial, sans-serif;
   position: absolute;
-  right: 40px;
-  bottom: 13px;
+  transform: translate(85%, -150%);
   z-index: 0;
 }
 
