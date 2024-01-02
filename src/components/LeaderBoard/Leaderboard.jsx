@@ -13,6 +13,9 @@ import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { getUserProfile } from 'actions/userProfile';
+import { setViewingUser } from 'actions/viewingUserAction';
+import { useDispatch } from 'react-redux';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -43,6 +46,7 @@ function LeaderBoard({
   asUser,
   totalTimeMouseoverText,
 }) {
+  const dispatch = useDispatch();
   const userId = asUser || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
@@ -89,13 +93,25 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
-    dashboardClose();
-    window.open(
-      `/dashboard/${item.personId}`,
-      'Popup',
-      'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
-    );
+    dispatch(getUserProfile(item.personId)).then(user => {
+      dispatch(
+        setViewingUser({
+          isViewing: true,
+          user,
+          firstName: user.firstName,
+          role: user.role,
+        }),
+      );
+      dashboardClose();
+
+      window.open(
+        `/dashboard/${item.personId}`,
+        'Popup',
+        'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
+      );
+    });
   };
+
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     await getLeaderboardData(userId);

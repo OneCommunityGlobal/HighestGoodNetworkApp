@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import { connect } from 'react-redux';
+import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import PopUpBar from '../PopUpBar';
 import '../../App.css';
-import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [userProfile, setUserProfile] = useState(undefined);
-  const { match, auth } = props;
-  const userId = match.params.userId || auth.user.userid;
+
+  const { auth, viewingUser } = props;
+  const getInitialUserId = () => (viewingUser.isViewing ? viewingUser.user._id : auth.user.userid);
+  const [userId, setUserId] = useState(getInitialUserId());
 
   const toggle = () => {
     setPopup(!popup);
@@ -33,18 +34,11 @@ export function Dashboard(props) {
   }, []);
 
   useEffect(() => {
-    const {
-      match: { params },
-      getUserProfile,
-    } = props;
-    if (params && params.userId && userId !== params.userId) {
-      getUserProfile(params.userId);
-    }
-  }, [props]);
+    setUserId(getInitialUserId());
+  }, [viewingUser, auth.user]);
 
   return (
     <Container fluid>
-      {match.params.userId && auth.user.userid !== match.params.userId ? <PopUpBar /> : ''}
       <SummaryBar
         userProfile={userProfile}
         setUserProfile={setUserProfile}
@@ -94,6 +88,7 @@ export function Dashboard(props) {
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  viewingUser: state.viewingUser,
 });
 
 export default connect(mapStateToProps, {

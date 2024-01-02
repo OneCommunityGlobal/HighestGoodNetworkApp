@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector} from 'react-redux';
+import { Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
@@ -42,11 +43,30 @@ import Logout from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import PopUpBar from 'components/PopUpBar';
+import { setViewingUser } from 'actions/viewingUserAction';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const [popup, setPopup] = useState(false);
+  const { viewingUser, auth } = useSelector(state => state);
+  const {
+    isViewing,
+    profilePic: viewingProfilePic,
+    firstName: viewingFirstName,
+    user: viewingUserObj
+  } = viewingUser;
+  const {
+    isAuthenticated,
+    profilePic: authProfilePic,
+    firstName: authFirstName,
+    user: authUser
+  } = auth;
+  
+  const profilePic = isViewing ? viewingProfilePic : authProfilePic;
+  const firstName = isViewing ? viewingFirstName : authFirstName;
+  const user = isViewing ? viewingUserObj : authUser;
 
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
@@ -99,6 +119,12 @@ export const Header = props => {
     setLogoutPopup(true);
   };
 
+  const updateViewingUser = () => {
+    setPopup(prevPopup=> !prevPopup)
+    dispatch(setViewingUser({ new: false, isViewing: false }));
+    window.close();
+  };
+
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="xl">
@@ -133,7 +159,7 @@ export const Header = props => {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                <NavLink tag={Link} to={isViewing ? `/timelog/${user._id}`:`/timelog/${user.userid}`}>
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
@@ -162,7 +188,7 @@ export const Header = props => {
               </NavItem>
             }
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                <NavLink tag={Link} to={ isViewing ? `/timelog/${user._id}` : `/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">
                     <i className="badge badge-pill badge-danger badge-notify">
                       {/* Pull number of unread messages */}
@@ -225,7 +251,7 @@ export const Header = props => {
                 </UncontrolledDropdown>
               )}
               <NavItem>
-                <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
+                <NavLink tag={Link} to={isViewing ? `/userprofile/${user._id}` : `/userprofile/${user.userid}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
@@ -243,7 +269,7 @@ export const Header = props => {
                 <DropdownMenu>
                   <DropdownItem header>Hello {firstName}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
+                  <DropdownItem tag={Link} to={ isViewing ? `/userprofile/${user._id}` : `/userprofile/${user.userid}`}> 
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
@@ -259,6 +285,23 @@ export const Header = props => {
           </Collapse>
         )}
       </Navbar>
+      {isViewing && <PopUpBar onClickClose={()=> setPopup(prevPopup=> !prevPopup)} userProfile={user}/> }
+      <div>
+        <Modal isOpen={popup} >
+          <ModalHeader >Return to your Dashboard</ModalHeader>
+          <ModalBody>
+            <p>Are you sure you wish to return to your own dashboard?</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant='primary' onClick={updateViewingUser}>
+              Ok
+            </Button>{' '}
+            <Button variant='secondary' onClick={()=> setPopup(prevPopup=> !prevPopup)}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </div>
     </div>
   );
 };

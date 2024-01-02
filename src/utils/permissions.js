@@ -3,9 +3,19 @@ const hasPermission = (action) => {
   return (dispatch, getState) => {
     const state = getState();
     const rolePermissions = state.role.roles;
-    const userRole = state.auth.user.role;
-    const userPermissions = state.auth.user.permissions?.frontPermissions;
+    const { viewingUser, auth } = state;
 
+    const {
+      isViewing,
+      role: viewingUserRole,
+      permissions: viewingUserPermissions
+    } = viewingUser;
+    
+    const userRole = isViewing ? viewingUserRole : auth.user?.role;
+    const userPermissions = isViewing
+      ? viewingUserPermissions?.frontPermissions
+      : auth.user?.permissions?.frontPermissions;
+    
     if (userRole && rolePermissions && rolePermissions.length != 0) {
       const roleIndex = rolePermissions?.findIndex(({ roleName }) => roleName === userRole);
       let permissions = [];
