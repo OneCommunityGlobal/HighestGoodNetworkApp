@@ -85,16 +85,6 @@ function ToolDetailPage() {
   const tool = useSelector(state => state.tool);
 
   console.log('Tool', tool);
-  
-  const toolStatus = tool?.logRecord.find(record => record.type === 'Check In');
-  
-  let toolLogRecord;
-  
-  if (toolStatus) {
-    toolLogRecord = 'Checked In';
-  } else {
-    toolLogRecord = 'Checked out';
-  };
 
   const dispatch = useDispatch();
 
@@ -102,19 +92,41 @@ function ToolDetailPage() {
     dispatch(fetchToolById(toolId));
   }, []);
 
+    const toolStatus = tool?.logRecord.find(record => record.type === 'Check In');
+
+    let toolLogRecord;
+
+    if (toolStatus) {
+      toolLogRecord = 'Checked In';
+    } else {
+      toolLogRecord = 'Checked out';
+    }
+
+
+  function formatDateString(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  }
+
+  const formattedRentedOnDate = formatDateString(tool?.rentedOnDate);
+  const formattedRentedDueDate = formatDateString(tool?.rentalDueDate);
+  const formattedLastUpdateDate = formatDateString(tool?.updateRecord[0].date);
+
+  const lastUsedPerson = `${tool?.updateRecord[0].createdBy.firstName} ${tool?.updateRecord[0].createdBy.lastName}`;
+  
   const details = [
     { label: 'Belongs to project', value: 'Building 1' },
     { label: 'Class', value: tool?.itemType.category },
     { label: 'Name', value: tool?.itemType.name },
     { label: 'Number', value: tool?.code },
+    //TO DO
     { label: 'Ownership', value: tool?.purchaseStatus },
-    { label: 'Add Date', value: tool?.rentedOnDate },
+    { label: 'Add Date', value: 'MM - DD - YYYY' },
     { label: 'Rental Duration' },
     { label: 'Current Usage', value: toolLogRecord },
     { label: 'Input Invoice No or ID', value: 'No123ABC' },
     { label: 'Price', value: '150USD' },
-    //TO DO
-    { label: 'Add Condition', value: '' },
+    { label: 'Add Condition', value: 'New' },
     { label: 'Shipping Fee', value: '25USD' },
     { label: 'Taxes', value: '15USD' },
     { label: 'Supplier Phone Number', value: '555-33-3333' },
@@ -123,12 +135,10 @@ function ToolDetailPage() {
       value: 'https://www.homedepot.com/',
     },
     { label: 'Description', value: tool?.itemType.description },
-    //TO DO
-    { label: 'Current Status', value: '' },
-    //TO DO
-    { label: 'Last Update Date', value: '' },
-    { label: 'Last Used Person', value: '' },
-    { label: 'Last Used Task', value: 'garden clean up' },
+    { label: 'Current Status', value: tool?.updateRecord[0].condition },
+    { label: 'Last Update Date', value: formattedLastUpdateDate },
+    { label: 'Last Used Person', value: lastUsedPerson },
+    { label: 'Last Used Task', value: 'Garden clean up' },
     { label: 'Asked for a replacement?', value: 'No' },
   ];
 
@@ -146,8 +156,8 @@ function ToolDetailPage() {
     <RentalDurationItem
       key={generateKey()}
       label={detail.label}
-      from={tool?.rentedOnDate}
-      to={tool?.rentalDue}
+      from={formattedRentedOnDate}
+      to={formattedRentedDueDate}
     />
   );
 
