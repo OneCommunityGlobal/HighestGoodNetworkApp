@@ -80,6 +80,12 @@
   margin: 2rem auto;
 }
 
+.inv-form-info {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .inv-form-group {
   margin: 1.5rem auto;
 }
