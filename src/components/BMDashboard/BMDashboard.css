@@ -65,6 +65,19 @@
   white-space: no-wrap;
 }
 
+/* error page */
+
+.bm-error-page {
+  width: 100%;
+  max-width: 1536px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.bm-error-page section {
+  margin-top: 2rem;
+}
+
 /* forms */
 
 .inv-form-page-container {
