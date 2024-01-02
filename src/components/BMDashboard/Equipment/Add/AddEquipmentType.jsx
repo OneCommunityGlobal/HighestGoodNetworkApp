@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CiCircleInfo } from 'react-icons/ci';
+import { BiInfoCircle } from 'react-icons/bi';
 
 import AddTypeForm from './AddTypeForm';
 import '../../BMDashboard.css';
@@ -24,7 +24,7 @@ export default function AddEquipmentType() {
       <header>
         <h2>Add Type: Equipment</h2>
         <p className="inv-form-info">
-          <CiCircleInfo />
+          <BiInfoCircle />
           Add a new type of equipment so it can be purchased and used in projects.
         </p>
       </header>

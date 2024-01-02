@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, FormGroup, FormFeedback, Label, Input, Button } from 'reactstrap';
+import { Form, FormGroup, FormFeedback, FormText, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
@@ -16,7 +16,9 @@ const FuelTypes = {
 
 const schema = Joi.object({
   name: Joi.string().required(),
-  desc: Joi.string().required(),
+  desc: Joi.string()
+    .required()
+    .max(150),
 });
 
 export default function AddTypeForm() {
@@ -25,6 +27,7 @@ export default function AddTypeForm() {
   const [desc, setDesc] = useState('');
   const [fuel, setFuel] = useState(FuelTypes.dies);
   const [errInput, setErrInput] = useState('');
+  const [errType, setErrType] = useState('');
 
   const handleChange = ({ target }) => {
     setErrInput('');
@@ -44,6 +47,7 @@ export default function AddTypeForm() {
     const validate = schema.validate({ name, desc });
     if (validate.error) {
       setErrInput(validate.error.details[0].path[0]);
+      setErrType(validate.error.details[0].type);
       return;
     }
     const response = await addEquipmentType({ name, desc, fuel });
@@ -88,7 +92,12 @@ export default function AddTypeForm() {
           invalid={errInput === 'desc'}
           onChange={handleChange}
         />
-        <FormFeedback>Please enter a description.</FormFeedback>
+        {!errInput && <FormText>Max 150 characters</FormText>}
+        <FormFeedback>
+          {errType === 'string.max'
+            ? 'Exceeds maximum character limit (150).'
+            : 'Please enter a description.'}
+        </FormFeedback>
       </FormGroup>
       <FormGroup className="inv-form-group">
         <Label className="inv-form-required">Fuel Type</Label>
@@ -110,7 +119,7 @@ export default function AddTypeForm() {
         <Button color="secondary" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button color="primary" disabled={!name || !desc || !fuel}>
+        <Button color="primary" disabled={!name}>
           Submit
         </Button>
       </div>
