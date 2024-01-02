@@ -110,7 +110,9 @@ export default function AddTypeForm() {
         <Button color="secondary" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button color="primary">Submit</Button>
+        <Button color="primary" disabled={!name || !desc || !fuel}>
+          Submit
+        </Button>
       </div>
     </Form>
   );
