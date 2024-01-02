@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import AddTypeForm from './AddTypeForm';
+import '../../BMDashboard.css';
 
 export default function AddEquipmentType() {
   const errors = useSelector(state => state.errors);
@@ -18,9 +19,9 @@ export default function AddEquipmentType() {
   }
 
   return (
-    <main>
+    <main className="inv-form-page-container">
       <header>
-        <h2>Add Equipment Type</h2>
+        <h2>Add Type: Equipment</h2>
       </header>
       <AddTypeForm />
     </main>

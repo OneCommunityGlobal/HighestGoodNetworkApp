@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 
 import { addEquipmentType } from 'actions/bmdashboard/equipmentActions';
 
-const FuelTypeEnum = {
+const FuelTypes = {
   dies: 'Diesel',
   biod: 'Biodiesel',
   gaso: 'Gasoline',
@@ -23,7 +23,7 @@ export default function AddTypeForm() {
   const history = useHistory();
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
-  const [fuel, setFuel] = useState(FuelTypeEnum.dies);
+  const [fuel, setFuel] = useState(FuelTypes.dies);
   const [errInput, setErrInput] = useState('');
 
   const handleChange = ({ target }) => {
@@ -60,8 +60,8 @@ export default function AddTypeForm() {
   const handleCancel = () => history.goBack();
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <FormGroup>
+    <Form onSubmit={handleSubmit} className="inv-form">
+      <FormGroup className="inv-form-group">
         <Label htmlFor="new-equipment-name">Name</Label>
         <Input
           id="new-equipment-name"
@@ -71,21 +71,22 @@ export default function AddTypeForm() {
           invalid={errInput === 'name'}
           onChange={handleChange}
         />
-        <FormFeedback>Please enter a name.</FormFeedback>
+        <FormFeedback className="inv-form-feedback">Please enter a name.</FormFeedback>
       </FormGroup>
-      <FormGroup>
+      <FormGroup className="inv-form-group">
         <Label htmlFor="new-equipment-description">Description</Label>
         <Input
           id="new-equipment-description"
           name="desc"
-          type="text"
+          type="textarea"
+          rows={2}
           value={desc}
           invalid={errInput === 'desc'}
           onChange={handleChange}
         />
         <FormFeedback>Please enter a description.</FormFeedback>
       </FormGroup>
-      <FormGroup>
+      <FormGroup className="inv-form-group">
         <Label>Fuel Type</Label>
         <Input
           id="new-equipment-fuel-type"
@@ -94,19 +95,19 @@ export default function AddTypeForm() {
           value={fuel}
           onChange={handleChange}
         >
-          <option value={FuelTypeEnum.dies}>{FuelTypeEnum.dies}</option>
-          <option value={FuelTypeEnum.biod}>{FuelTypeEnum.biod}</option>
-          <option value={FuelTypeEnum.gaso}>{FuelTypeEnum.gaso}</option>
-          <option value={FuelTypeEnum.natg}>{FuelTypeEnum.natg}</option>
-          <option value={FuelTypeEnum.etha}>{FuelTypeEnum.etha}</option>
+          <option value={FuelTypes.dies}>{FuelTypes.dies}</option>
+          <option value={FuelTypes.biod}>{FuelTypes.biod}</option>
+          <option value={FuelTypes.gaso}>{FuelTypes.gaso}</option>
+          <option value={FuelTypes.natg}>{FuelTypes.natg}</option>
+          <option value={FuelTypes.etha}>{FuelTypes.etha}</option>
         </Input>
       </FormGroup>
-      <Button color="secondary" size="lg" onClick={handleCancel}>
-        Cancel
-      </Button>
-      <Button color="primary" size="lg">
-        Submit
-      </Button>
+      <div className="inv-form-btn-group">
+        <Button color="secondary" onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button color="primary">Submit</Button>
+      </div>
     </Form>
   );
 }
