@@ -60,9 +60,17 @@ export default function AddToolForm() {
   const handleCancelClick = () => {
     setFormData(initialFormState)
   };
-//TO DO add tax to this calculation
-  const totalPrice = formData.unitPrice * formData.quantity + Number(formData.shippingFee);
 
+  const { unitPrice, quantity, taxes, shippingFee } = formData;
+
+  const calculateTotalPrice = (price, totalQuantity) => price * totalQuantity;
+  const calculateTotalTax = (taxPercentage, totalPrice) => (taxPercentage * totalPrice) / 100;
+
+  const totalPrice = calculateTotalPrice(unitPrice, quantity);
+  const totalTax = calculateTotalTax(Number(taxes), totalPrice);
+  const totalPriceWithShipping = totalPrice + totalTax + Number(shippingFee);
+
+  
   return (
     <Form className="add-tool-form container" onSubmit={handleSubmit}>
       <FormGroup>
@@ -288,7 +296,7 @@ export default function AddToolForm() {
       <div className="add-tool-total-price">
         <div>Total Price</div>
         <div className="total-price-calculated">
-          {totalPrice} {formData.currency}
+          {totalPriceWithShipping} {formData.currency}
         </div>
       </div>
       <div className="add-tool-buttons">
