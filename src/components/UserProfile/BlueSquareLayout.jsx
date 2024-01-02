@@ -86,14 +86,7 @@ const BlueSquareLayout = props => {
     setShow(false);
   }, []);
 
-  // This handler is used for Info Modal, that open when button "Can't Schedule Time Off" is clicked 
-  const openInfoModal = useCallback(() => { 
-    setShowInfoModal(true);
-  }, []);
-// This handler is used to close Info Modal, 
-  const closeInfoModal = useCallback(() => {
-    setShowInfoModal(false);
-  }, []);
+  
   // This handler is used for Explanation Modal, that open when <a>Click to learn why </a> is clicked 
   const openExplanationModal = useCallback(() => { 
     setShowExplanation(true);

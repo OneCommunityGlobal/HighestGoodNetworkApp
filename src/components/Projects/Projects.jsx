@@ -166,7 +166,7 @@ export class Projects extends Component {
             <thead>
               <ProjectTableHeader />
             </thead>
-            <tbody>{ProjectsList}</tbody>
+              <tbody>{ProjectsList}</tbody>
           </table>
         </div>
 
