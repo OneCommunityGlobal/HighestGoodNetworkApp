@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BiInfoCircle } from 'react-icons/bi';
 
+import BMError from 'components/BMDashboard/shared/BMError';
 import AddTypeForm from './AddTypeForm';
 import '../../BMDashboard.css';
 
@@ -16,7 +17,12 @@ export default function AddEquipmentType() {
   }, [errors]);
 
   if (isError) {
-    return <div>{JSON.stringify(errors)}</div>;
+    return (
+      <main className="bm-error-page">
+        <h2>Add Type: Equipment</h2>
+        <BMError errors={errors} />
+      </main>
+    );
   }
 
   return (
