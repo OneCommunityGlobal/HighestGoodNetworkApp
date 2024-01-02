@@ -62,7 +62,9 @@ export default function AddTypeForm() {
   return (
     <Form onSubmit={handleSubmit} className="inv-form">
       <FormGroup className="inv-form-group">
-        <Label htmlFor="new-equipment-name">Name</Label>
+        <Label htmlFor="new-equipment-name" className="inv-form-required">
+          Name
+        </Label>
         <Input
           id="new-equipment-name"
           name="name"
@@ -74,7 +76,9 @@ export default function AddTypeForm() {
         <FormFeedback className="inv-form-feedback">Please enter a name.</FormFeedback>
       </FormGroup>
       <FormGroup className="inv-form-group">
-        <Label htmlFor="new-equipment-description">Description</Label>
+        <Label htmlFor="new-equipment-description" className="inv-form-required">
+          Description
+        </Label>
         <Input
           id="new-equipment-description"
           name="desc"
@@ -87,7 +91,7 @@ export default function AddTypeForm() {
         <FormFeedback>Please enter a description.</FormFeedback>
       </FormGroup>
       <FormGroup className="inv-form-group">
-        <Label>Fuel Type</Label>
+        <Label className="inv-form-required">Fuel Type</Label>
         <Input
           id="new-equipment-fuel-type"
           name="fuel"
