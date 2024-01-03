@@ -31,7 +31,7 @@ export async function patchReason(userId, reasonData) {
     }
   }
 
-  // gets all scheduled reasons
+  // gets all scheduled reasons - Sucheta
 export async function getAllReasons(userId){
   try{
     const url = ENDPOINTS.GETALLUSERREASONS(userId);

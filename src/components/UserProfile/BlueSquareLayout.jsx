@@ -14,13 +14,6 @@ import { addReason, patchReason, getAllReasons } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
 import { Modal } from 'react-bootstrap';
 import { boxStyle } from 'styles';
-import { ENDPOINTS } from 'utils/URL';
-import axios from 'axios';
-import { dispatch } from 'd3';
-import { set } from 'lodash';
-
-
-
 
 
 const BlueSquareLayout = props => {
@@ -66,6 +59,8 @@ const BlueSquareLayout = props => {
   const [show, setShow] = useState(false);
   const [showExplanation, setShowExplanation]= useState(false);
   const [allreasons, setAllReasons]= useState("");
+  const [numberOfReasons, setNumberOfReasons] = useState("");
+  const [addsReason, setAddsReason] = useState(false); // this flag will be set to true, each time a scheduled reason has been added - sucheta
   const [reason, setReason] = useState('');
   const [date, setDate] = useState(
     moment
@@ -102,7 +97,31 @@ const BlueSquareLayout = props => {
     setShowExplanation(false);
   }, []);
   
-  
+ 
+   // checks for blueSquare scheduled reasons 
+  useEffect(()=>{
+    let isMounted = true;
+    const checkReasons = async ()=>{
+      fetchDispatch({type: 'FETCHING_STARTED'})
+      const response = await getAllReasons(userProfile._id);
+      if (response.status !== 200) {
+        fetchDispatch({
+          type: 'ERROR',
+          payload: { message: response.message, errorCode: response.errorCode },
+        });
+      } else {
+        fetchDispatch({ type: 'SUCCESS' });
+        if (isMounted){
+          setAllReasons(response.data.reasons)
+          setNumberOfReasons(response.data.reasons.length);
+        }
+        
+        }
+    }
+    checkReasons()
+    return () => isMounted = false;
+
+  }, [addsReason])
   
 //  This useEffect will check for any changes in the number of infringements
   useEffect(()=>{
@@ -120,27 +139,8 @@ const BlueSquareLayout = props => {
       }
       
     }
-    // checks for blueSquare scheduled reasons 
-    const checkReasons = async ()=>{
-      fetchDispatch({type: 'FETCHING_STARTED'})
-      const response = await getAllReasons(userProfile._id);
-      if (response.status !== 200) {
-        fetchDispatch({
-          type: 'ERROR',
-          payload: { message: response.message, errorCode: response.errorCode },
-        });
-      } else {
-        // console.log(response.data)
-        fetchDispatch({ type: 'SUCCESS' });
-        setAllReasons(response.data)
-        }
-    }
-    checkReasons();
     checkInfringementCount();
   },[]);
-  console.log("This is all reason", allreasons);
-  // console.log(infringementsNum);
-  // console.log(parseInt(userProfile.infringements.length) + parseInt(allreasons.reasons.length));
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -167,9 +167,11 @@ const BlueSquareLayout = props => {
         });
       } else {
         fetchDispatch({ type: 'SUCCESS' });
+        setAddsReason(true); 
       }
     }
     setIsReasonUpdated(false);
+    setAddsReason(false);
   };
 
   if (canEdit) {
@@ -188,35 +190,33 @@ const BlueSquareLayout = props => {
         </div>
 
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} isInfringementMoreThanFive={isInfringementMoreThanFive} userRole={userProfile.role}/>
-         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares -  by Sucheta */}
+         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons -  by Sucheta */}
         <div className="mt-4 w-100">
-          {isInfringementMoreThanFive ? 
-          <>
-          <Button
-          //  variant='warning'
-           onClick={openExplanationModal}
-           className="w-100 text-success-emphasis"
-            size="md"
-            style={boxStyle}
-            id='stopSchedulerButton'
-          >
-            {fetchState.isFetching ? (
-              <Spinner size="sm" animation="border" />
-            ) : (
-              <>
-              <span>Can't Schedule Time Off</span>
-              <br/>
-              <span 
-               className='mt-0'
-               style={{fontSize: ".8em"}}>
-                Click to learn why
-              </span>
-              </>
-              )}
-          </Button> 
-            {/* <p style={{cursor:"pointer"}} id='self-scheduler-off-info' onClick={openExplanationModal}>Click to learn why</p> */}
-          </>
-          : <Button
+            {
+              isInfringementMoreThanFive || numberOfReasons >= 5 || (infringementsNum + numberOfReasons >= 5 ) ?  <>
+              <Button
+              //  variant='warning'
+               onClick={openExplanationModal}
+               className="w-100 text-success-emphasis"
+                size="md"
+                style={boxStyle}
+                id='stopSchedulerButton'
+              >
+                {fetchState.isFetching ? (
+                  <Spinner size="sm" animation="border" />
+                ) : (
+                  <>
+                  <span>Can't Schedule Time Off</span>
+                  <br/>
+                  <span 
+                   className='mt-0'
+                   style={{fontSize: ".8em"}}>
+                    Click to learn why
+                  </span>
+                  </>
+                  )}
+              </Button> 
+              </> : <Button
             variant="primary"
             onClick={handleOpen}
             className="w-100"
@@ -231,27 +231,20 @@ const BlueSquareLayout = props => {
             ) : (
               'Schedule Blue Square Reason'
             )}
-          </Button> }
+          </Button>
+          }
         </div>
-        {isInfringementMoreThanFive && showExplanation && (
+        {(isInfringementMoreThanFive || numberOfReasons >= 5 || (infringementsNum + numberOfReasons >= 5 )) && showExplanation && (
           <Modal show={showExplanation} onHide={closeExplanationModal}>
             <SchedulerExplanationModal
               onHide={closeExplanationModal}
               handleClose = {closeExplanationModal}
               infringementsNum = {infringementsNum}
+              reasons = {allreasons}
               infringements = {userProfile.infringements}
             />
           </Modal>
         )}
-        {/* {isInfringementMoreThanFive && showInfoModal && 
-        (<Modal show={showInfoModal} onHide={closeInfoModal}>
-          <StopSelfSchedulerModal
-            onHide={closeInfoModal}
-            handleClose = {closeInfoModal}
-            infringementsNum = {infringementsNum}
-            user = {userProfile}
-          />
-        </Modal>)} */}
         {show && (
           <Modal show={show} onHide={handleClose}>
             <ScheduleReasonModal
