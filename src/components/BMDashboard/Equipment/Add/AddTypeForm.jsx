@@ -53,6 +53,8 @@ export default function AddTypeForm() {
     const response = await addEquipmentType({ name, desc, fuel });
     if (response.status === 201) {
       toast.success('Success: new equipment type added.');
+    } else if (response.status === 409) {
+      toast.error(`Error: that type already exists.`);
     } else if (response.status >= 400) {
       toast.error(`Error: ${response.status} ${response.statusText}.`);
     } else toast.warning(`Warning: unexpected status ${response.status}.`);
