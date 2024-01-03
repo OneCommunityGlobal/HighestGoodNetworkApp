@@ -10,10 +10,16 @@ import SchedulerExplanationModal from './SchedulerExplanationModal/SchedulerExpl
 import { useState, useEffect } from 'react';
 import { useReducer } from 'react';
 import Spinner from 'react-bootstrap/Spinner';
-import { addReason, patchReason } from 'actions/reasonsActions';
+import { addReason, patchReason, getAllReasons } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
 import { Modal } from 'react-bootstrap';
 import { boxStyle } from 'styles';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
+import { dispatch } from 'd3';
+import { set } from 'lodash';
+
+
 
 
 
@@ -58,8 +64,8 @@ const BlueSquareLayout = props => {
   const [infringementsNum, setInfringementsNum] = useState(userProfile.infringements.length)
   const [isInfringementMoreThanFive, setIsInfringementMoreThanFive] = useState(false);
   const [show, setShow] = useState(false);
-  // const [showInfoModal, setShowInfoModal]= useState(false);
   const [showExplanation, setShowExplanation]= useState(false);
+  const [allreasons, setAllReasons]= useState("");
   const [reason, setReason] = useState('');
   const [date, setDate] = useState(
     moment
@@ -95,8 +101,9 @@ const BlueSquareLayout = props => {
   const closeExplanationModal  = useCallback(() => {
     setShowExplanation(false);
   }, []);
-
-
+  
+  
+  
 //  This useEffect will check for any changes in the number of infringements
   useEffect(()=>{
     const checkInfringementCount = ()=>{
@@ -113,9 +120,28 @@ const BlueSquareLayout = props => {
       }
       
     }
+    // checks for blueSquare scheduled reasons 
+    const checkReasons = async ()=>{
+      fetchDispatch({type: 'FETCHING_STARTED'})
+      const response = await getAllReasons(userProfile._id);
+      if (response.status !== 200) {
+        fetchDispatch({
+          type: 'ERROR',
+          payload: { message: response.message, errorCode: response.errorCode },
+        });
+      } else {
+        // console.log(response.data)
+        fetchDispatch({ type: 'SUCCESS' });
+        setAllReasons(response.data)
+        }
+    }
+    checkReasons();
     checkInfringementCount();
   },[]);
-  
+  console.log("This is all reason", allreasons);
+  // console.log(infringementsNum);
+  // console.log(parseInt(userProfile.infringements.length) + parseInt(allreasons.reasons.length));
+
   const handleSubmit = async event => {
     event.preventDefault();
     if (fetchState.isSet && IsReasonUpdated) { //if reason already exists and if it is changed by the user

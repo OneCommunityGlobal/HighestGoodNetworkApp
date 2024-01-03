@@ -29,7 +29,7 @@ const ScheduleReasonModal = ({
     const initialFetching = async () => {
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await getReasonByDate(userId, date);
-      console.log("This is the response from ScheduleReasonModal.jsx",response);
+      console.log(response);
       if (response.status !== 200) {
         fetchDispatch({
           type: 'ERROR',

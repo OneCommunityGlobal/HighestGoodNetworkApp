@@ -30,3 +30,14 @@ export async function patchReason(userId, reasonData) {
       return {message: error.response.data.message, errorCode: error.response.data.message, status: error.response.status}
     }
   }
+
+  // gets all scheduled reasons
+export async function getAllReasons(userId){
+  try{
+    const url = ENDPOINTS.GETALLUSERREASONS(userId);
+    const response = await axios.get(url);
+        return Promise.resolve(response)
+  }catch(error){
+    return {message: error.response.data.message, errorCode:error.response.data.message, status: error.repsonse.status}
+  }
+}
