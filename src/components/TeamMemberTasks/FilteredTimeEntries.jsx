@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import moment from 'moment';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 
-const FilteredTimeEntries = ({ data, displayYear }) => {
+const FilteredTimeEntries = ({ data }) => {
   const [projectName, setProjectName] = useState('');
   const [projectCategory, setProjectCategory] = useState('');
   const [taskName, setTaskName] = useState('');
@@ -95,7 +95,6 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
             <div className="date-div">
               <div>
                 <h4>{dateOfWork.format('MMM D')}</h4>
-                {displayYear && <h5>{dateOfWork.format('YYYY')}</h5>}
                 <h5 className="text-info">{dateOfWork.format('dddd')}</h5>
               </div>
             </div>

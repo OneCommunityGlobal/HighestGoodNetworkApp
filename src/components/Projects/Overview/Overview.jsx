@@ -22,9 +22,9 @@ const Overview = props => {
         <div className="card-body">
           <h4 className="card-title">{props.numberOfActive}</h4>
           <h6 className="card-subtitle">
-            <div className="isActive">
-              <i className="fa fa-circle" aria-hidden="true"></i> {ACTIVE_PROJECTS}
-            </div>
+            {/* <div className="isActive"> */}
+              <i className="fa fa-circle fa-circle-isActive" aria-hidden="true"></i> {ACTIVE_PROJECTS}
+            {/* </div> */}
           </h6>
         </div>
       </div>
