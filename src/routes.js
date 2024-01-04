@@ -43,6 +43,7 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 // import BadgeManagement from './components/Badge/BadgeManagement';
 
+
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
