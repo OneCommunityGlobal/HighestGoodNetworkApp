@@ -9,6 +9,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+// import { useHistory } from "react-router-dom";
 import { formatDate } from 'utils/formatDate';
 
 /**
@@ -32,7 +33,7 @@ const UserTableData = React.memo(props => {
   const checkPermissionsOnOwner = () => {
     return (
       props.user.role === 'Owner' &&
-      !hasPermission(props.role, 'addDeleteEditOwners', props.roles, props.userPermissions)
+      !hasPermission('addDeleteEditOwners')
     );
   };
 
@@ -153,8 +154,8 @@ const UserTableData = React.memo(props => {
                     </>
           }
           <span className="usermanagement-actions-cell">
-              <ResetPasswordButton user={props.user} isSmallButton />
-            </span>
+                      <ResetPasswordButton user={props.user} isSmallButton />
+                    </span>
         </td>
       )}
     </tr>
