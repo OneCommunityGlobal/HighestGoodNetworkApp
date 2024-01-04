@@ -35,6 +35,7 @@ import TeamMemberTasks from 'components/TeamMemberTasks';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTask } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
+import Badge from '../Badge';
 import { getAllRoles } from '../../actions/role';
 import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
@@ -251,7 +252,7 @@ const Timelog = props => {
   };
 
   const renderViewingTimeEntriesFrom = () => {
-    if (state.activeTab === 0 || state.activeTab === 5) {
+    if (state.activeTab === 0 || state.activeTab === 5 || state.activeTab === 6) {
       return <></>;
     } else if (state.activeTab === 4) {
       return (
@@ -674,6 +675,18 @@ const Timelog = props => {
                         Weekly Summaries
                       </NavLink>
                     </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: state.activeTab === 6 })}
+                        onClick={() => {
+                          changeTab(6);
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Badges
+                      </NavLink>
+                    </NavItem>
                   </Nav>
 
                   <TabContent activeTab={state.activeTab}>
@@ -714,7 +727,7 @@ const Timelog = props => {
                         </Button>
                       </Form>
                     )}
-                    {state.activeTab === 0 || state.activeTab === 5 ? (
+                    {state.activeTab === 0 || state.activeTab === 5 || state.activeTab === 6 ? (
                       <></>
                     ) : (
                       <Form className="mb-2">
@@ -745,7 +758,7 @@ const Timelog = props => {
                       </Form>
                     )}
 
-                    {state.activeTab === 0 || state.activeTab === 5 ? (
+                    {state.activeTab === 0 || state.activeTab === 5 || state.activeTab === 6 ? (
                       <></>
                     ) : (
                       <EffortBar
@@ -763,6 +776,9 @@ const Timelog = props => {
                     <TabPane tabId={4}>{periodEntries}</TabPane>
                     <TabPane tabId={5}>
                       <WeeklySummaries userProfile={userProfile} />
+                    </TabPane>
+                    <TabPane tabId={6}>
+                      <Badge userId={userId} role={role} />
                     </TabPane>
                   </TabContent>
                 </CardBody>
