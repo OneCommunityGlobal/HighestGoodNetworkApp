@@ -58,8 +58,6 @@ function ToolDetailPage() {
 
   const tool = useSelector(state => state.tool);
 
-  console.log('Tool', tool);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -92,7 +90,6 @@ function ToolDetailPage() {
     { label: 'Class', value: tool?.itemType.category },
     { label: 'Name', value: tool?.itemType.name },
     { label: 'Number', value: tool?.code },
-    //TO DO
     { label: 'Ownership', value: tool?.purchaseStatus },
     { label: 'Add Date', value: 'MM - DD - YYYY' },
     // Remove 'Rental Duration' from details if 'Ownership' is 'Purchase'
