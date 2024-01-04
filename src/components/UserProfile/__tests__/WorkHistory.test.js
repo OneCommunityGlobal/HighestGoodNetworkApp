@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import WorkHistory from '../../components/UserProfile/WorkHistory';
+import WorkHistory from '../WorkHistory';
 
 describe('WorkHistory Component', () => {
   test('renders Hours Contributed and Volunteering History sections', () => {
