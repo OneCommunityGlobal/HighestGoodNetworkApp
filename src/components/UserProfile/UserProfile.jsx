@@ -622,9 +622,10 @@ function UserProfile(props) {
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
+  const { viewingUser } = props;
 
   const authEmail = props.userProfile?.email;
-  const isUserSelf = targetUserId === requestorId;
+  const isUserSelf = viewingUser.isViewing ? (targetUserId === viewingUser.user._id) : (targetUserId === requestorId);
 
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');

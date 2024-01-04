@@ -16,6 +16,7 @@ const mapStateToProps = state => ({
   allTeams: state,
   role: state.role,
   taskItems: state.tasks.taskItems,
+  viewingUser: state.viewingUser,
 });
 
 export default connect(mapStateToProps, {

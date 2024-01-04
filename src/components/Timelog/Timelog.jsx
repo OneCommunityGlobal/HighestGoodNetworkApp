@@ -91,10 +91,12 @@ const Timelog = props => {
   const role = useSelector(state => state.role);
   const userTask = useSelector(state => state.userTask);
   const userIdByState = useSelector(state => state.auth.user.userid);
+  const {viewingUser} = useSelector(state => state);
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
 
   const LoggedInuserId = auth.user.userid;
-  const curruserId = props?.match?.params?.userId || props.asUser;
+
+  const curruserId = viewingUser.isViewing ? viewingUser.user._id : props.asUser;
 
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
@@ -368,7 +370,7 @@ const Timelog = props => {
       const defaultTabValue = defaultTab();
       setInitialTab(defaultTabValue);
     });
-  }, []);
+  }, [props.asUser]);
 
   useEffect(() => {
     changeTab(initialTab);
