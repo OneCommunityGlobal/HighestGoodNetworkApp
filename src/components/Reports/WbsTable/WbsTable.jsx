@@ -4,6 +4,7 @@ import './WbsTable.css';
 import {useState} from 'react';
 import { Link, useParams } from 'react-router-dom'
 
+
 export const WbsTable = ({ wbs, skip, take }) => {
   const [copyMessage, setCopyMessage ] = useState("Copy id to clipboard");
   const {projectId} = useParams();
@@ -30,11 +31,11 @@ export const WbsTable = ({ wbs, skip, take }) => {
           {item.wbsName}
           </Link > 
        </div>
-          <div className="projects__active--input">
+          <div className="projects-active-input">
             {item.isActive ? (
-              <tasks className="isActive">
+              <div className="isActive">
                 <i className="fa fa-circle" aria-hidden="true"></i>
-              </tasks>
+              </div>
             ) : (
               <div className="isNotActive">
                 <i className="fa fa-circle-o" aria-hidden="true"></i>

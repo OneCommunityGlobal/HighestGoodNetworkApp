@@ -8,7 +8,7 @@
   height: 450px;
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 1463px) {
   .wbs-and-members-blocks-wrapper {
     grid-auto-flow: column;
     grid-template-columns: 1fr 1fr;

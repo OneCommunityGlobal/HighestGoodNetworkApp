@@ -7,10 +7,17 @@
   margin-bottom: 12px;
 }
 
-.projects__active--input {
-  width: 100%;
-  ;
+.project-profile{
+  width: 150px;
 }
+
+.project-id {
+  width: 20px;
+}
+
+/* .projects-active-input {
+  width: 100%;
+} */
 
 
 

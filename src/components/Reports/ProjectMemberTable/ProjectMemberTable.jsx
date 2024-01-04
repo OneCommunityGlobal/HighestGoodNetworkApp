@@ -46,19 +46,19 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
 
   const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
     <div className="project-member-table-row" id={'tr_' + member._id} key={'ac_' + member._id}>
-      <div className='projectId'>
+      <div className='project-id'>
         <div>{skip + index + 1}</div>
       </div>
-      <Link className='projectProfile' to={`/userprofile/${member._id}`} title="View Profile">
+      <Link className='project-profile' to={`/userprofile/${member._id}`} title="View Profile">
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
         </div>
       </Link>
-      <div className="projects__active--input">
+      <div className="projects-active-input">
         {member.active ? (
-          <tasks className="isActive">
+          <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
-          </tasks>
+          </div>
         ) : (
           <div className="isNotActive">
             <i className="fa fa-circle-o" aria-hidden="true"></i>
@@ -68,7 +68,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div className='member_id' onClick={()=>copyContent(member._id)} onMouseEnter={()=>setCopyMessage("Copy id to clipboard")}>{member._id}
       <div>{copyMessage}</div>
       </div>
-      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>      
+      {/* <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>       */}
     </div>
   ));
 
@@ -82,11 +82,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
         </div>
       </Link>
-      <div className="projects__active--input">
+      <div className="projects-active-input">
         {member.active ? (
-          <tasks className="isActive">
+          <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
-          </tasks>
+          </div>
         ) : (
           <div className="isNotActive">
             <i className="fa fa-circle-o" aria-hidden="true"></i>

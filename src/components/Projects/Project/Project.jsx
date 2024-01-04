@@ -79,7 +79,7 @@ const Project = props => {
           category
         )}
       </td>
-      <td className="projects__active--input" onClick={canPutProject ? updateActive : null}>
+      <td className="projects-active-input" onClick={canPutProject ? updateActive : null}>
         {props.active ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>

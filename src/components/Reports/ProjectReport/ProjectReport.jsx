@@ -54,6 +54,8 @@ export const ProjectReport = ({ match }) => {
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
           <Paging totalElementsCount={memberCount}>
             <ProjectMemberTable
+            skip=""
+            take=""
               projectMembers={projectMembers}
               handleMemberCount={handleMemberCount}
             />

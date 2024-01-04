@@ -16,7 +16,7 @@ function TeamTable(props) {
             {team.teamName}
           </Link>
         </td>
-        <td className="projects__active--input">
+        <td className="projects-active-input">
           {team.isActive ? (
             <div className="isActive">
               <i className="fa fa-circle" aria-hidden="true" />
