@@ -74,5 +74,68 @@ describe('reset password button ', () => {
       }
 
     });
+    it('should pop a alert when empty password input', async () => {
+      if (userProfileMock.email !== "devadmin@hgn.net") {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+        await userEvent.type(screen.getByLabelText(/new password/i), '', {
+          allAtOnce: false,
+        });
+        await userEvent.type(screen.getByLabelText(/confirm password/i), '', {
+          allAtOnce: false,
+        });
+        userEvent.click(screen.getAllByRole('button', { name: /reset password/i })[1]);
+        await waitFor(() => {
+          expect(alertMock).toHaveBeenCalledTimes(1);
+        });
+      }
+      else {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+        expect(alertMock).toHaveBeenCalledTimes(1);
+      }
+    });
+    it('should pop a alert when new password is less than 8 characters', async () => {
+      if (userProfileMock.email !== "devadmin@hgn.net") {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+        await userEvent.type(screen.getByLabelText(/new password/i), '1234567', {
+          allAtOnce: false,
+        });
+        await userEvent.type(screen.getByLabelText(/confirm password/i), '1234567', {
+          allAtOnce: false,
+        });
+        userEvent.click(screen.getAllByRole('button', { name: /reset password/i })[1]);
+        await waitFor(() => {
+          expect(alertMock).toHaveBeenCalledTimes(1);
+        });
+      }
+      else {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+        expect(alertMock).toHaveBeenCalledTimes(1);
+      }
+    });
+    it('should pop a alert when new password pair does not match', async () => {
+      if (userProfileMock.email !== "devadmin@hgn.net") {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+        await userEvent.type(screen.getByLabelText(/new password/i), 'QAZ123wsxedc!@#', {
+          allAtOnce: false,
+        });
+        await userEvent.type(screen.getByLabelText(/confirm password/i), 'QAZ123wsxedc!@^', {
+          allAtOnce: false,
+        });
+        userEvent.click(screen.getAllByRole('button', { name: /reset password/i })[1]);
+        await waitFor(() => {
+          expect(alertMock).toHaveBeenCalledTimes(1);
+        });
+      }
+      else {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+        expect(alertMock).toHaveBeenCalledTimes(1);
+      }
+    });
   });
 });
