@@ -18,10 +18,10 @@ function SchedulerExplanationModal({infringementsNum,handleClose, infringements,
           <p>Including your time already requested off, you have used the equivalent of <span style={{color:"red",fontWeight:500}}>{infringementsNum}</span> blue squares and <span style={{color:"red",fontWeight:500}}>{reasons.length}</span> schedule time offs. <span style={{fontWeight:500, color:"green"}}>5</span> is the maximum allowed per year. Please remove a time-off request below or contact your Administrator if you need to request time off in addition to what is listed here:
 </p>      
           
-          {infringements && <><h5>INFRINGEMENTS</h5><ol className='p-3 ml-2'>{infringements.map((el,index)=>{
+          {(infringements.length > 0) && <><h5>INFRINGEMENTS</h5><ol className='p-3 ml-2'>{infringements.map((el,index)=>{
             return <li key={el._id} className='p-2'>{el.description}</li>
           })}</ol></>}
-          {reasons && <>
+          {reasons.length > 0 && <>
           <h5>SCHEDULED REASONS</h5>
           <ul className='p-3 ml-2'>
           {reasons.map((el,index)=>{

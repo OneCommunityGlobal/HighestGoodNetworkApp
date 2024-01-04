@@ -122,26 +122,25 @@ const BlueSquareLayout = props => {
     return () => isMounted = false;
 
   }, [addsReason])
-  
-//  This useEffect will check for any changes in the number of infringements
+
   useEffect(()=>{
     const checkInfringementCount = ()=>{
+      setInfringementsNum(userProfile.infringements.length)
       if(userProfile.role === "Administrator" || userProfile.role === "Owner"){
         setIsInfringementMoreThanFive(false);
         return
       }else{
-        if(userProfile.infringements.length >= 5){
+        if(infringementsNum >= 5){
           setIsInfringementMoreThanFive(true)
         }
         else{
           setIsInfringementMoreThanFive(false)
         }
       }
-      
     }
     checkInfringementCount();
-  },[]);
-
+  },[userProfile]);
+  
   const handleSubmit = async event => {
     event.preventDefault();
     if (fetchState.isSet && IsReasonUpdated) { //if reason already exists and if it is changed by the user
@@ -159,7 +158,7 @@ const BlueSquareLayout = props => {
     } else { //add/create reason
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await addReason(userProfile._id, { date: date, message: reason });
-      console.log(response);
+      // console.log(response);
       if (response.status !== 200) {
         fetchDispatch({
           type: 'ERROR',
@@ -193,7 +192,7 @@ const BlueSquareLayout = props => {
          {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons -  by Sucheta */}
         <div className="mt-4 w-100">
             {
-              isInfringementMoreThanFive || numberOfReasons >= 5 || (infringementsNum + numberOfReasons >= 5 ) ?  <>
+              ((isInfringementMoreThanFive || numberOfReasons >= 5 || (infringementsNum + numberOfReasons >= 5 )) && !(userProfile.role === "Administrator" || userProfile.role === "Owner") )?  <>
               <Button
               //  variant='warning'
                onClick={openExplanationModal}

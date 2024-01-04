@@ -56,6 +56,7 @@ import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
+import { set } from 'lodash';
 
 function UserProfile(props) {
   /* Constant values */
@@ -99,6 +100,7 @@ function UserProfile(props) {
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
+ 
 
   const userProfileRef = useRef();
 
@@ -126,6 +128,7 @@ function UserProfile(props) {
     setUserProfile({ ...userProfile, teams, projects });
     setOriginalUserProfile({ ...originalUserProfile, teams, projects });
   }, [teams, projects]);
+
 
   useEffect(() => {
     setShowLoading(true);
@@ -459,7 +462,9 @@ function UserProfile(props) {
    * @param {String} operation 'add' | 'update' | 'delete'
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
+    
     if (operation === 'add') {
+    
       const newBlueSquare = { date: dateStamp, description: summary };
       setOriginalUserProfile({
         ...originalUserProfile,
@@ -470,23 +475,31 @@ function UserProfile(props) {
         infringements: userProfile.infringements?.concat(newBlueSquare),
       });
       setModalTitle('Blue Square');
+      
+      
     } else if (operation === 'update') {
+    
       const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares !== []) {
+      if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
+        
+        
       }
-      if (summary != null && currentBlueSquares !== []) {
+      if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
+       
       }
 
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
+      
       let newInfringements = [...userProfile?.infringements] || [];
-      if (newInfringements !== []) {
+      if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
+       
       }
     }
     setShowModal(false);
