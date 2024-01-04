@@ -111,12 +111,35 @@ body.dark .container-component-wrapper {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  padding: 8px 0px 8px 0px;
 }
 
 .total-report-item {
   display: flex;
   flex-direction: row;
   margin: 0px 25px 0px 0px;
+}
+
+.lost-time-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 8px 0px 8px 0px;
+}
+
+.lost-time-item {
+  display: flex;
+  flex-direction: row;
+  margin: 0px 25px 0px 0px;
+}
+
+.type-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.type-item {
+  padding-left: 30px;
 }
 
 @media screen and (max-width: 1350px) {
@@ -172,6 +195,12 @@ body.dark .container-component-wrapper {
     margin: 4px;
   }
   .total-report-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 1rem;
+  }
+  .lost-time-container {
     display: flex;
     flex-direction: column;
     justify-content: space-around;

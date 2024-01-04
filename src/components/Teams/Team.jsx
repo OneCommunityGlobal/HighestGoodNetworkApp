@@ -61,7 +61,7 @@ const Team = props => {
           </div>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true" />
+            <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'/>
           </div>
         )}
         </button>

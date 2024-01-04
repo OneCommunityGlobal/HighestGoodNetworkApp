@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import {
   updateUserProfileProperty,
   getUserProfile,
-  getUserTask,
+  getUserTasks,
 } from '../../../actions/userProfile';
 
 import { getUserProjects } from '../../../actions/userProjects';
@@ -92,7 +92,7 @@ class PeopleReport extends Component {
     if (match) {
       const { userId } = match.params;
       await this.props.getUserProfile(userId);
-      await this.props.getUserTask(userId);
+      await this.props.getUserTasks(userId);
       await this.props.getUserProjects(userId);
       await this.props.getWeeklySummaries(userId);
       await this.props.getTimeEntriesForPeriod(userId, fromDate, toDate);
@@ -592,7 +592,7 @@ export default connect(getPeopleReportData, {
   updateUserProfileProperty,
   getWeeklySummaries,
   updateWeeklySummaries,
-  getUserTask,
+  getUserTasks,
   getUserProjects,
   getTimeEntriesForPeriod,
 })(PeopleReport);
