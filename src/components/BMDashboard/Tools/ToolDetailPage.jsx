@@ -7,36 +7,6 @@ import { v4 as uuidv4 } from 'uuid';
 import ToolModal from './ToolModal';
 import './ToolDetailPage.css';
 
-// TO DO: add fields to buildingtool model and extract them here, replace dummy tool
-
-const dummyTool = {
-  toolId: 1,
-  image:
-    'https://www.bhg.com/thmb/pUCCsrlUI40Ikl-h7_xtpm1cEEg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/gas-2-stroke-cycle-backpack-leaf-blower-with-tube-throttle-1fc228c0ed8b48ce9efe2353c9cadcaa.jpg',
-  title: 'leafblower',
-  projectId: 123,
-  class: 'tool',
-  number: '1',
-  ownership: 'rental',
-  addDate: '12-12-20',
-  returnDate: '1-30-21',
-  currentUsage: 'inUse',
-  invoiceNo: '12345abcde',
-  price: '100$',
-  condition: 'new',
-  shippingFee: '0$',
-  taxes: '6$',
-  supplierPhoneNo: '111-111-1111',
-  linkToBuy:
-    'https://www.homedepot.com/b/Outdoors-Outdoor-Power-Equipment-Leaf-Blowers/N-5yc1vZbxav',
-  description: 'ECHO PB-580T gas blower has a tube throttle with variable speed',
-  currentStatus: 'working well',
-  lastUpdated: 'MM-DD-YYYY',
-  lastUsedBy: 'Jane Doe',
-  lastUsedTask: 'garden-cleaning',
-  askedForReplacement: false,
-};
-
 function DetailItem({ label, value }) {
   return (
     <p className="ToolDetailPage__detail_item">
@@ -92,16 +62,15 @@ function ToolDetailPage() {
     dispatch(fetchToolById(toolId));
   }, []);
 
-    const toolStatus = tool?.logRecord.find(record => record.type === 'Check In');
+  const toolStatus = tool?.logRecord.find(record => record.type === 'Check In');
 
-    let toolLogRecord;
+  let toolLogRecord;
 
-    if (toolStatus) {
-      toolLogRecord = 'Checked In';
-    } else {
-      toolLogRecord = 'Checked out';
-    }
-
+  if (toolStatus) {
+    toolLogRecord = 'Checked In';
+  } else {
+    toolLogRecord = 'Checked out';
+  }
 
   function formatDateString(dateString) {
     const date = new Date(dateString);
