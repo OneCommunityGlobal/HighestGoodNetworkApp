@@ -83,10 +83,10 @@ function ToolDetailPage() {
 
   const formattedRentedOnDate = formatDateString(tool?.rentedOnDate);
   const formattedRentedDueDate = formatDateString(tool?.rentalDueDate);
-  const formattedLastUpdateDate = formatDateString(tool?.updateRecord[0].date);
+  const formattedLastUpdateDate = formatDateString(tool?.updateRecord[0]?.date);
 
-  const lastUsedPerson = `${tool?.updateRecord[0].createdBy.firstName} ${tool?.updateRecord[0].createdBy.lastName}`;
-  
+  const lastUsedPerson = `${tool?.updateRecord[0]?.createdBy.firstName} ${tool?.updateRecord[0]?.createdBy.lastName}`;
+
   const details = [
     { label: 'Belongs to project', value: 'Building 1' },
     { label: 'Class', value: tool?.itemType.category },
@@ -95,7 +95,8 @@ function ToolDetailPage() {
     //TO DO
     { label: 'Ownership', value: tool?.purchaseStatus },
     { label: 'Add Date', value: 'MM - DD - YYYY' },
-    { label: 'Rental Duration' },
+    // Remove 'Rental Duration' from details if 'Ownership' is 'Purchase'
+    tool?.purchaseStatus === 'Purchase' ? null : { label: 'Rental Duration' },
     { label: 'Current Usage', value: toolLogRecord },
     { label: 'Dashed Line' },
     { label: 'Input Invoice No or ID', value: 'No123ABC' },
@@ -110,7 +111,7 @@ function ToolDetailPage() {
     },
     { label: 'Description', value: tool?.itemType.description },
     { label: 'Dashed Line' },
-    { label: 'Current Status', value: tool?.updateRecord[0].condition },
+    { label: 'Current Status', value: tool?.updateRecord[0]?.condition },
     { label: 'Last Update Date', value: formattedLastUpdateDate },
     { label: 'Last Used Person', value: lastUsedPerson },
     { label: 'Last Used Task', value: 'Garden clean up' },
@@ -173,7 +174,7 @@ function ToolDetailPage() {
         <p>
           <img src={tool?.imageUrl} alt={tool?.itemType.name} className="ToolDetailPage__image" />
         </p>
-        {details.map(renderDetails)}
+        {details.filter(Boolean).map(renderDetails)}
         <Button outline onClick={() => history.push('/bmdashboard')}>
           Back to List
         </Button>
