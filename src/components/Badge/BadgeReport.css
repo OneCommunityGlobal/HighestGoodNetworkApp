@@ -15,4 +15,5 @@
 .dropdown-menu {
   height: 15vh;
   overflow-y: scroll;
+  overflow: auto;
 }
