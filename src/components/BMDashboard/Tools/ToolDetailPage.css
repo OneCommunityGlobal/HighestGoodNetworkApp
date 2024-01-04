@@ -34,3 +34,10 @@ button.descriptionItem_button{
 button.descriptionItem_button:hover{
   background-color: transparent;
 }
+
+.ToolDetailPage__dashed_line{
+  border-top: 1px dashed #000; 
+  width: 50%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

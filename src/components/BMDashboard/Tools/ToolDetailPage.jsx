@@ -48,6 +48,10 @@ function RentalDurationItem({ label, from, to }) {
   );
 }
 
+function DashedLineItem() {
+  return <div className="ToolDetailPage__dashed_line" />;
+}
+
 function ToolDetailPage() {
   const history = useHistory();
   const { toolId } = useParams();
@@ -93,6 +97,7 @@ function ToolDetailPage() {
     { label: 'Add Date', value: 'MM - DD - YYYY' },
     { label: 'Rental Duration' },
     { label: 'Current Usage', value: toolLogRecord },
+    { label: 'Dashed Line' },
     { label: 'Input Invoice No or ID', value: 'No123ABC' },
     { label: 'Price', value: '150USD' },
     { label: 'Add Condition', value: 'New' },
@@ -104,6 +109,7 @@ function ToolDetailPage() {
       value: 'https://www.homedepot.com/',
     },
     { label: 'Description', value: tool?.itemType.description },
+    { label: 'Dashed Line' },
     { label: 'Current Status', value: tool?.updateRecord[0].condition },
     { label: 'Last Update Date', value: formattedLastUpdateDate },
     { label: 'Last Used Person', value: lastUsedPerson },
@@ -139,6 +145,10 @@ function ToolDetailPage() {
     />
   );
 
+  const renderDashedLineItem = detail => (
+    <DashedLineItem key={generateKey()} label={detail.label} />
+  );
+
   const renderDetails = detail => {
     switch (detail.label) {
       case 'Link To Buy/Rent':
@@ -147,6 +157,8 @@ function ToolDetailPage() {
         return renderDescriptionItem(detail);
       case 'Rental Duration':
         return renderRentalDurationItem(detail);
+      case 'Dashed Line':
+        return renderDashedLineItem(detail);
       default:
         return renderDetailItem(detail);
     }
