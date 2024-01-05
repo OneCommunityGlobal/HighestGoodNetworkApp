@@ -49,9 +49,10 @@ const BlueSquareLayout = (props, loggedInUser) => {
         return state;
     }
   };
+  
 
-
-
+  const role = userProfile?.role;
+  
   const { userProfile, handleUserProfile, handleBlueSquare, canEdit } = props;
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
@@ -80,6 +81,7 @@ const BlueSquareLayout = (props, loggedInUser) => {
   const handleClose = useCallback(() => {
     setShow(false);
   }, []);
+
 
   
   const handleSubmit = async event => {
@@ -135,7 +137,7 @@ const BlueSquareLayout = (props, loggedInUser) => {
                   areaTitle="Blue Squares"
                   fontSize={24}
                   isPermissionPage={true}
-                  role={loggedInUser.role}
+                  role={role}
                   />
           </div>
           <Button

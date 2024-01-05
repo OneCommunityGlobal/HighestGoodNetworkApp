@@ -26,8 +26,7 @@ const ScheduleReasonModal = ({
   fetchDispatch,
   userId,
   IsReasonUpdated,
-  setIsReasonUpdated,
-  loggedInUser
+  setIsReasonUpdated
 }) => {
   useEffect(() => {
     const initialFetching = async () => {
@@ -47,8 +46,7 @@ const ScheduleReasonModal = ({
     initialFetching();
   }, [date]);
 
-  console.log('loggedInUser', loggedInUser);
-  console.log('userId', userId)
+  
   // State to control FAQModal visibility
     const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
 
@@ -57,6 +55,13 @@ const ScheduleReasonModal = ({
       setIsFAQModalOpen(!isFAQModalOpen);
     };
 
+
+    console.log('role', role);
+    //const role = userProfile?.role;
+    //const role = state.userProfile?.role;
+
+    //const role = this.props.state.userProfile.role;
+    console.log('role', role);
 
   return (
     <>
@@ -114,7 +119,7 @@ const ScheduleReasonModal = ({
                 areaTitle="Blue Squares FAQ"
                 fontSize={24}
                 isPermissionPage={true}
-                role={isOwner}
+                //role={role}
                 />
           </Button>
          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
