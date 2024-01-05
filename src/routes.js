@@ -50,8 +50,6 @@ import BMLogin from './components/BMDashboard/Login';
 // import MaterialsList from './components/BMDashboard/MaterialsList';
 // import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 // import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
-// eslint-disable-next-line import/order
-import ToolDetailPage from 'components/BMDashboard/Tools/ToolDetailPage';
 
 const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
 const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
@@ -210,9 +208,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
-        <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />  
-          
-      {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
+        {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
         {/* ----- END BM Dashboard Routing ----- */}
