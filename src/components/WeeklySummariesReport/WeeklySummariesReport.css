@@ -55,7 +55,7 @@
 }
 
 @media (min-width: 482px) {
-  .teamcode-wrapper{
+  .teamcode-wrapper {
     display: flex;
     white-space: nowrap;
     align-items: center;
@@ -71,16 +71,17 @@
   .options {
     max-height: 570px;
     overflow-y: scroll;
+    font-family: 'Courier New', Courier, monospace;
   }
 
   .options::-webkit-scrollbar {
     width: 5px;
   }
-  
+
   .options::-webkit-scrollbar-track {
     background: rgb(0, 0, 0, 0);
   }
-  
+
   .options::-webkit-scrollbar-thumb {
     background: rgb(206, 212, 218);
     border-radius: 8px;
@@ -90,4 +91,18 @@
     padding: 5px 10px;
     margin-bottom: 0.25rem;
   }
+}
+
+.weekly-summary-report-container {
+  display: flex;
+  flex-direction: row;
+}
+.weekly-summary-text {
+  max-width: 100%;
+  margin-right: 5px;
+}
+
+.copy-icon {
+  cursor: pointer;
+  margin: 2px 2px;
 }

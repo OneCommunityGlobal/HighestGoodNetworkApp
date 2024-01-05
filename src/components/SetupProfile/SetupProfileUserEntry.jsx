@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -12,22 +12,27 @@ import {
   InputGroupAddon,
   InputGroup,
   InputGroupText,
+  UncontrolledTooltip,
 } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
 import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
-import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import logo from '../../assets/images/logo.png';
 import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import { getUserTimeZone } from '../../services/timezoneApiService';
+import getUserTimeZone from '../../services/timezoneApiService';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
+import RequirementModal from './requirementModal';
+import HomeCountryModal from './homeCountryModal';
+import ProfilePictureModal from './profilePictureModal';
+import Image from 'react-bootstrap/Image';
+import './SetupProfileUserEntry.css';
 
 const SetupProfileUserEntry = ({ token, userEmail }) => {
   const dispatch = useDispatch();
@@ -50,9 +55,15 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     collaborationPreference: 'Zoom',
     jobTitle: '',
     timeZone: '',
-    location: '',
+    location: {
+      userProvided: '',
+      coords: { lat: '', lng: '' },
+      country: '',
+      city: '',
+    },
     timeZoneFilter: '',
     token,
+    profilePicture: '',
   });
   const [formErrors, setFormErrors] = useState({
     firstName: '',
@@ -67,6 +78,22 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     location: '',
     timeZoneFilterClicked: 'false',
   });
+  const [requirementModalOpen, setRequirementModalOpen] = useState(false);
+  const [requirementModalError, setrequirementModalError] = useState('');
+  const [requirementsBoxChecked, setrequirementsBoxChecked] = useState(false);
+  const [homecountryModalOpen, sethomecountryModalOpen] = useState(false);
+  const [homecountryLocation, setHomecountryLocation] = useState({
+    userProvided: '',
+    coords: { lat: '', lng: '' },
+    country: '',
+    city: '',
+  });
+  const [profilePictureModalOpen, setprofilePictureModalOpen] = useState(false);
+  const [profilePictureModalError, setprofilePictureModalError] = useState({
+    message: '',
+    type: '',
+  });
+  const pictureInputRef = useRef(null);
 
   //  get the timezone API key using the setup token
   useEffect(() => {
@@ -74,6 +101,25 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       setAPIkey(response.data.userAPIKey);
     });
   }, []);
+
+  const toggleRequirementModal = () => {
+    setrequirementModalError('');
+    setRequirementModalOpen(prev => !prev);
+  };
+
+  const toggleHomecountryModal = () => {
+    if (requirementsBoxChecked) {
+      sethomecountryModalOpen(prev => !prev);
+    } else {
+      setrequirementModalError('You need to read and accept the requirements first');
+    }
+  };
+
+  const toggleProfilePictureModal = () => {
+    setprofilePictureModalOpen(prev => !prev);
+  };
+
+  const handleRequirementsBoxChecked = () => setrequirementsBoxChecked(!requirementsBoxChecked);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -91,6 +137,62 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     }));
   };
 
+  const handleLocation = event => {
+    const { id, value } = event.target;
+    setUserProfile(prevProfile => ({
+      ...prevProfile,
+      [id]: {
+        ...prevProfile.location,
+        userProvided: value,
+      },
+    }));
+  };
+
+  const handleProfilePictureClick = () => {
+    pictureInputRef.current.click();
+  };
+
+  const handleProfilePictureUpload = e => {
+    
+    const pictureFile = e.target.files[0];
+    if (typeof pictureFile !== 'undefined') {
+      const PictureSizeInKB = pictureFile.size / 1024;
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+
+      if (!allowedTypes.includes(pictureFile.type)) {
+        setprofilePictureModalError(prev => ({
+          ...prev,
+          message: 'File type not permitted. Allowed types are png, jpeg and jpg',
+          type: 'fileType',
+        }));
+        setprofilePictureModalOpen(true);
+        pictureInputRef.current.value = null
+        return;
+      }
+
+      if (PictureSizeInKB > 50) {
+        setprofilePictureModalError(prev => ({
+          ...prev,
+          message: `The file you are trying to upload exceeds the maximum size of 50KB. You can either
+          choose a different file, or use an online file compressor.`,
+          type: 'size',
+        }));
+        setprofilePictureModalOpen(true);
+        pictureInputRef.current.value = null
+        return;
+      }
+
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(pictureFile);
+      fileReader.onloadend = () => {
+        setUserProfile(prevProfile => ({
+          ...prevProfile,
+          profilePicture: fileReader.result,
+        }));
+      };
+    }
+  };
+
   const phoneChange = phone => {
     setUserProfile(prevProfile => ({
       ...prevProfile,
@@ -103,8 +205,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       ...prevErrors,
       timeZoneFilterClicked: '',
     }));
-
-    if (!userProfile.location) {
+    const location = userProfile.location.userProvided;
+    if (!location) {
       alert('Please enter valid location');
       return;
     }
@@ -112,8 +214,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       console.log('Geocoding API key missing');
       return;
     }
-
-    getUserTimeZone(userProfile.location, APIkey)
+    getUserTimeZone(location, APIkey)
       .then(response => {
         if (
           response.data.status.code === 200 &&
@@ -121,11 +222,20 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
           response.data.results.length
         ) {
           let timezone = response.data.results[0].annotations.timezone.name;
-
+          let currentLocation = {
+            userProvided: location,
+            coords: {
+              lat: response.data.results[0].geometry.lat,
+              lng: response.data.results[0].geometry.lng,
+            },
+            country: response.data.results[0].components.country,
+            city: response.data.results[0].components.city,
+          };
           setUserProfile(prevProfile => ({
             ...prevProfile,
             timeZoneFilter: timezone,
             timeZone: timezone,
+            location: currentLocation,
           }));
         } else {
           alert('Invalid location or ' + response.data.status.message);
@@ -271,7 +381,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
 
     // Validate Location
 
-    if (userProfile.location.trim() === '') {
+    if (userProfile.location.userProvided.trim() === '') {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         location: 'Location is required',
@@ -302,11 +412,23 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     return isDataValid;
   };
 
+  const areAllHomecountryValuesFilled = () => {
+    for (const key in homecountryLocation) {
+      if (key === 'city') {
+        continue; 
+      }
+      if (typeof homecountryLocation[key] === 'string' && homecountryLocation[key].trim() === '') {
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleFormSubmit = e => {
     e.preventDefault();
 
     const isDataValid = validateFormData();
-
+    const homeCoutryDataExists = areAllHomecountryValuesFilled();
     if (isDataValid) {
       const data = {
         firstName: userProfile.firstName.trim(),
@@ -322,9 +444,13 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         },
         jobTitle: userProfile.jobTitle.trim(),
         timeZone: userProfile.timeZone.trim(),
-        location: userProfile.location.trim(),
+        location: userProfile.location,
         token,
+        homeCountry: homeCoutryDataExists ? homecountryLocation : userProfile.location,
+        profilePicture: userProfile.profilePicture,
       };
+
+
 
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), data)
@@ -365,8 +491,43 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
           <Col md="12">
             <Form>
               <Row>
+                <Col md="2" className="text-md-right my-2 pb-1">
+                  <Image
+                    src={userProfile.profilePicture || '/Portrait_Placeholder.png'}
+                    alt=""
+                    id="profile-picture"
+                  />
+                </Col>
+                <Col md="3" id="add-profile-picture-col">
+                  <input
+                    style={{ display: 'none' }}
+                    type="file"
+                    name="profilePicture"
+                    id="profilePicture"
+                    ref={pictureInputRef}
+                    onChange={handleProfilePictureUpload}
+                    accept="image/png,image/jpeg, image/jpg"
+                  />
+                  <Button
+                    className="btn btn-secondary btn-md btn-block"
+                    id="add-profile-picture-btn"
+                    onClick={handleProfilePictureClick}
+                  >
+                    add profile picture
+                  </Button>
+                  <ProfilePictureModal
+                    isOpen={profilePictureModalOpen}
+                    toggle={toggleProfilePictureModal}
+                    error={profilePictureModalError}
+                  />
+                </Col>
+                <Col md="3"></Col>
+              </Row>
+              <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Name</Label>
+                  <Label>
+                    Name<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="3">
                   <FormGroup>
@@ -403,7 +564,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Password</Label>
+                  <Label>
+                    Password<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="3">
                   <InputGroup>
@@ -466,7 +629,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Job Title</Label>
+                  <Label>
+                    Job Title<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md={{ size: 6 }}>
                   <FormGroup>
@@ -487,7 +652,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Email/Phone</Label>
+                  <Label>
+                    Email/Phone<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="3">
                   <FormGroup>
@@ -525,7 +692,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Video Call Preference</Label>
+                  <Label>
+                    Video Call Preference<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="6">
                   <FormGroup>
@@ -546,7 +715,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               </Row>
               <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Location</Label>
+                  <Label>
+                    Location<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
 
                 <Col md="6 pr-0">
@@ -558,9 +729,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                           name="location"
                           id="location"
                           placeholder="Location"
-                          value={userProfile.location}
+                          value={userProfile.location.userProvided}
                           onChange={e => {
-                            handleChange(e);
+                            handleLocation(e);
                           }}
                           invalid={formErrors.location !== ''}
                         />
@@ -568,7 +739,13 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                       </FormGroup>
                     </Col>
                     <Col md="6 pr-0">
-                      <Button color="secondary " block size="md" onClick={getTimeZone}>
+                      <Button
+                        color="secondary "
+                        block
+                        size="md"
+                        onClick={getTimeZone}
+                        id="setup-rofile-entry-tz-btn"
+                      >
                         Get Time Zone
                       </Button>
                       <Input
@@ -583,8 +760,77 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                 </Col>
               </Row>
               <Row>
+                <Col md="2" className="text-md-right">
+                  <Label className="w-100  text-wrap">
+                    Do you represent a country other than your current residence?
+                    <i className="fa fa-info-circle ml-1" id="countryRep" />
+                    <UncontrolledTooltip
+                      placement="right"
+                      target="countryRep"
+                      id="coutry-rep-tooltip"
+                    >
+                      <p className="alert alert-info" id="country-rep-info">
+                        One Community is a global effort and international team that has had
+                        volunteers volunteering from and/or representing 60 countries around the
+                        world. Complete this field if you are currently residing in a country other
+                        than your own and wish to be represented on our global contributors map with
+                        your birth country instead of your current country or residence.
+                      </p>
+                    </UncontrolledTooltip>
+                  </Label>
+                </Col>
+
+                <Col md="6 pr-0">
+                  <Row>
+                    <Col md="6">
+                      <Button
+                        color="secondary "
+                        block
+                        size="md"
+                        id="setup-rofile-entry-rr-btn"
+                        onClick={toggleRequirementModal}
+                      >
+                        Read The Requirements
+                      </Button>
+                      <Input
+                        style={{
+                          display: 'none',
+                        }}
+                        invalid={requirementModalError !== ''}
+                      />
+                      <FormFeedback>{requirementModalError}</FormFeedback>
+                      <RequirementModal
+                        isOpen={requirementModalOpen}
+                        toggle={toggleRequirementModal}
+                        handleCheckbox={handleRequirementsBoxChecked}
+                        isChecked={requirementsBoxChecked}
+                      />
+                    </Col>
+                    <Col md="6 pr-0">
+                      <Button
+                        color="secondary "
+                        block
+                        size="md"
+                        id="setup-rofile-entry-hc-btn"
+                        onClick={toggleHomecountryModal}
+                      >
+                        Set Home Country
+                      </Button>
+                      <HomeCountryModal
+                        isOpen={homecountryModalOpen}
+                        toggle={toggleHomecountryModal}
+                        apiKey={APIkey}
+                        setLocation={setHomecountryLocation}
+                      />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+              <Row>
                 <Col md="2" className="text-md-right my-2">
-                  <Label>Time Zone</Label>
+                  <Label>
+                    Time Zone<span style={{ color: 'red' }}>*</span>
+                  </Label>
                 </Col>
                 <Col md="6">
                   <FormGroup>

@@ -8,7 +8,7 @@ export const ENDPOINTS = {
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
-  INFO_COLLECTION: infoId =>`${APIEndpoint}/informations/${infoId}`,
+  INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
@@ -29,10 +29,12 @@ export const ENDPOINTS = {
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
+  TIME_ENTRIES_LOST_USER_LIST: `${APIEndpoint}/TimeEntry/lostUsers`,
+  TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
+  TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
-  TIMER: userId => `${APIEndpoint}/timer/${userId}`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
   TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,
@@ -46,6 +48,7 @@ export const ENDPOINTS = {
   TASK_DEL: (taskId, motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
   TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`,
+  TASK_UPDATE_STATUS: taskId => `${APIEndpoint}/task/updateStatus/${taskId}`,
   DELETE_CHILDREN: taskId => `${APIEndpoint}/task/delete/children/${taskId}`,
   GET_USER_BY_NAME: name => `${APIEndpoint}/userprofile/name/${name}`,
   FIX_TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
@@ -75,6 +78,7 @@ export const ENDPOINTS = {
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
+  TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
   TIMEZONE_KEY: `${APIEndpoint}/timezone`,
   GEOCODE_URI: (location, key) =>
     `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
@@ -86,11 +90,7 @@ export const ENDPOINTS = {
   PRESETS_BY_ID: (roleNameOrPresetId) => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
-  OWNERMESSAGE_BY_ID: ownerMessageId => `${APIEndpoint}/ownerMessage/${ownerMessageId}`,
 
-  OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
-  OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
-    `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
   SETUP_NEW_USER: () =>
     `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () =>
@@ -98,6 +98,8 @@ export const ENDPOINTS = {
   SETUP_NEW_USER_PROFILE: () =>
     `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+  MAP_LOCATIONS_BY_TOKEN: () => `${APIEndpoint}/mapLocationsToken`,
+  ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
 
 
@@ -123,8 +125,12 @@ export const ENDPOINTS = {
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
-  BM_MATERIALS_LIST: `${APIEndpoint}/bm/materials`,
-  BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`
+  BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
+  BM_MATERIALS: `${APIEndpoint}/bm/materials`,
+  BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
+  BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
+  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`
 };
 
 export const ApiEndpoint = APIEndpoint;
