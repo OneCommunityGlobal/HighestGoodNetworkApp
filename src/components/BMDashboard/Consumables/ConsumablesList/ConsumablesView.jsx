@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ConsumablesTable from './ConsumablesTable';
 import ConsumablesInputs from './ConsumablesInputs';
 import './Consumables.css';

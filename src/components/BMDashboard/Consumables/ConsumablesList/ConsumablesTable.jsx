@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import './Consumables.css';
 import ReactTooltip from 'react-tooltip';
-import ConsumablesViewModal from './ConsumablesViewModal';
 import { fetchAllConsumables } from 'actions/bmdashboard/consumableActions';
+import ConsumablesViewModal from './ConsumablesViewModal';
 
 function ConsumablesTable({ consumable, project }) {
   // Data fetched in the parent component : ConsumablesView
@@ -26,8 +26,8 @@ function ConsumablesTable({ consumable, project }) {
   }, []);
 
   useEffect(() => {
-    setConsumablesViewData(consumables)
-  }, [consumables])
+    setConsumablesViewData(consumables);
+  }, [consumables]);
 
   const handleSort = column => {
     if (!column || consumables.length === 0) return;
