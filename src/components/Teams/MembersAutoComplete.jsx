@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
-
+import { searchWithAccent } from 'utils/search'
 export const MemberAutoComplete = props => {
   const [isOpen, toggle] = useState(false);
 
@@ -45,9 +45,9 @@ export const MemberAutoComplete = props => {
             .filter(user => {
               if (
                 user.isActive &&
-                (user.firstName.toLowerCase().includes(props.searchText.toLowerCase()) ||
-                user.lastName.toLowerCase().includes(props.searchText.toLowerCase())) &&
-                !props.existingMembers.some(member => member._id === user._id)
+                (searchWithAccent(user.firstName,props.searchText) ||
+                searchWithAccent(user.lastName,props.searchText)) &&
+                !props.existingMembers?.some(member => member._id === user._id)
               ) {
                 return true;
               }
@@ -56,6 +56,7 @@ export const MemberAutoComplete = props => {
             .map(item => (
               <div
                 className="user-auto-cpmplete"
+                key={item._id}
                 onClick={() => {
                   props.setSearchText(`${item.firstName} ${item.lastName}`);
                   toggle(false);

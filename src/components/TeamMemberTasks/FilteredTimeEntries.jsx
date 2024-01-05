@@ -4,11 +4,12 @@ import ReactHtmlParser from 'react-html-parser';
 import './filteredTimeEntries.css';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 import moment from 'moment';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 
-const FilteredTimeEntries = ({ data, displayYear }) => {
+const FilteredTimeEntries = ({ data }) => {
   const [projectName, setProjectName] = useState('');
   const [projectCategory, setProjectCategory] = useState('');
   const [taskName, setTaskName] = useState('');
@@ -64,7 +65,9 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
         setProjectCategory(res?.data.category.toLowerCase() || '');
         setProjectName(res?.data?.projectName || '');
       })
-      .catch(err => console.log(err));
+      .catch(() => {
+        toast.error(`There was a problem fetching the project with ID ${data.projectId}.`);
+      });
   }, []);
 
   useEffect(() => {
@@ -75,7 +78,9 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
         setTaskClassification(res?.data?.classification.toLowerCase() || '');
         setTaskName(res?.data?.taskName || '');
       })
-      .catch(err => console.log(err));
+      .catch(() => {
+        toast.error(`There was a problem fetching tasks for the project with ID ${data.projectId}.`);
+      });
   }, []);
 
   return (
@@ -90,7 +95,6 @@ const FilteredTimeEntries = ({ data, displayYear }) => {
             <div className="date-div">
               <div>
                 <h4>{dateOfWork.format('MMM D')}</h4>
-                {displayYear && <h5>{dateOfWork.format('YYYY')}</h5>}
                 <h5 className="text-info">{dateOfWork.format('dddd')}</h5>
               </div>
             </div>
