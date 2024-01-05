@@ -25,7 +25,6 @@ import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
-import { ownerStandardMessageReducer } from './ownerStandardMessageReducer';
 import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
@@ -64,7 +63,6 @@ export default combineReducers({
   role: roleReducer,
   rolePreset: rolePresetReducer,
   ownerMessage: ownerMessageReducer,
-  ownerStandardMessage: ownerStandardMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
 

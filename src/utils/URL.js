@@ -92,9 +92,6 @@ export const ENDPOINTS = {
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
 
-  OWNERSTANDARDMESSAGE: () => `${APIEndpoint}/ownerStandardMessage`,
-  OWNERSTANDARDMESSAGE_BY_ID: ownerStandardMessageId =>
-    `${APIEndpoint}/ownerStandardMessage/${ownerStandardMessageId}`,
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   SETUP_NEW_USER: () =>
     `${APIEndpoint}/getInitialSetuptoken`,
