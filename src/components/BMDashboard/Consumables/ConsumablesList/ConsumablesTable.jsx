@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,16 +7,27 @@ import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import './Consumables.css';
 import ReactTooltip from 'react-tooltip';
 import ConsumablesViewModal from './ConsumablesViewModal';
+import { fetchAllConsumables } from 'actions/bmdashboard/consumableActions';
 
 function ConsumablesTable({ consumable, project }) {
   // Data fetched in the parent component : ConsumablesView
+  const dispatch = useDispatch();
+
   const consumables = useSelector(state => state.bmConsumables.consumableslist);
   const [recordType, setRecordType] = useState(null);
   const [modal, setModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [sortOrder, setSortOrder] = useState({ project: 'asc', itemType: 'asc' });
   const [iconToDisplay, setIconToDisplay] = useState({ project: faSortUp, itemType: faSortUp });
-  const [consumablesViewData, setConsumablesViewData] = useState(consumables);
+  const [consumablesViewData, setConsumablesViewData] = useState(null);
+
+  useEffect(() => {
+    dispatch(fetchAllConsumables());
+  }, []);
+
+  useEffect(() => {
+    setConsumablesViewData(consumables)
+  }, [consumables])
 
   const handleSort = column => {
     if (!column || consumables.length === 0) return;
