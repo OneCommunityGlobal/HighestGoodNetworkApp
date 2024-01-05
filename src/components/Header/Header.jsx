@@ -59,8 +59,7 @@ export const Header = props => {
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
   // Projects
-  const canSeeProjectManagementTab =
-    props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canSeeProjectManagementTab = props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
   const canPostProject = props.hasPermission('postProject');
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
@@ -73,7 +72,6 @@ export const Header = props => {
   // Roles
   const canPutRole = props.hasPermission('putRole');
   // Permissions
-  // Permissions
   const canManageUser = props.hasPermission('putUserProfilePermissions');
 
   const dispatch = useDispatch();
@@ -81,7 +79,6 @@ export const Header = props => {
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
-      props.getTimerData(props.auth.user.userid);
       if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
