@@ -40,7 +40,10 @@ import { boxStyle } from 'styles';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import SkeletonLoading from '../common/SkeletonLoading';
 import DueDateTime from './DueDateTime';
-import { getWeeklySummaries, updateWeeklySummaries } from '../../actions/weeklySummaries';
+import {
+  getWeeklySummaries as getUserWeeklySummaries,
+  updateWeeklySummaries,
+} from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
 
 // Need this export here in order for automated testing to work.
@@ -152,9 +155,16 @@ export class WeeklySummary extends Component {
   async componentDidMount() {
     const { dueDate: _dueDate } = this.state;
     // eslint-disable-next-line no-shadow
-    const { getWeeklySummaries, asUser, currentUser, summaries, fetchError, loading } = this.props;
+    const {
+      getWeeklySummaries,
+      displayUserId,
+      currentUser,
+      summaries,
+      fetchError,
+      loading,
+    } = this.props;
 
-    await getWeeklySummaries(asUser || currentUser.userid);
+    await getWeeklySummaries(displayUserId || currentUser.userid);
 
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = summaries;
 
@@ -495,7 +505,7 @@ export class WeeklySummary extends Component {
     }
 
     // eslint-disable-next-line no-shadow
-    const { updateWeeklySummaries, asUser, currentUser } = this.props;
+    const { updateWeeklySummaries, displayUserId, currentUser } = this.props;
 
     // Construct the modified weekly summaries
     const modifiedWeeklySummaries = {
@@ -509,7 +519,7 @@ export class WeeklySummary extends Component {
     };
 
     // Update weekly summaries
-    return updateWeeklySummaries(asUser || currentUser.userid, modifiedWeeklySummaries);
+    return updateWeeklySummaries(displayUserId || currentUser.userid, modifiedWeeklySummaries);
   };
 
   // Updates user profile and weekly summaries
@@ -522,13 +532,13 @@ export class WeeklySummary extends Component {
 
   // Handler for success scenario after save
   handleSaveSuccess = async toastIdOnSave => {
-    const { asUser, currentUser } = this.props;
+    const { displayUserId, currentUser } = this.props;
     toast.success('✔ The data was saved successfully!', {
       toastId: toastIdOnSave,
       pauseOnFocusLoss: false,
       autoClose: 3000,
     });
-    await this.updateUserData(asUser || currentUser.userid);
+    await this.updateUserData(displayUserId || currentUser.userid);
   };
 
   // Handler for error scenario after save
@@ -970,7 +980,7 @@ const mapDispatchToProps = dispatch => {
   return {
     updateWeeklySummaries: (userId, weeklySummary) =>
       updateWeeklySummaries(userId, weeklySummary)(dispatch),
-    getWeeklySummaries: userId => getWeeklySummaries(userId)(dispatch),
+    getWeeklySummaries: userId => getUserWeeklySummaries(userId)(dispatch),
     getUserProfile: userId => getUserProfile(userId)(dispatch),
   };
 };

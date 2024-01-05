@@ -64,45 +64,9 @@ function FormattedReport({
   badges,
   loadBadges,
   canEditTeamCode,
+  auth,
 }) {
-  const emails = [];
-
-  summaries.forEach(summary => {
-    if (summary.email !== undefined && summary.email !== null) {
-      emails.push(summary.email);
-    }
-  });
-  const handleEmailButtonClick = () => {
-    const batchSize = 90;
-    const emailChunks = [];
-
-    for (let i = 0; i < emails.length; i += batchSize) {
-      emailChunks.push(emails.slice(i, i + batchSize));
-    }
-
-    const openEmailClientWithBatchInNewTab = batch => {
-      const emailAddresses = batch.join(', ');
-      const mailtoLink = `mailto:?bcc=${emailAddresses}`;
-      window.open(mailtoLink, '_blank');
-    };
-
-    emailChunks.forEach((batch, index) => {
-      setTimeout(() => {
-        openEmailClientWithBatchInNewTab(batch);
-      }, index * 2000);
-    });
-  };
-
-  const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
-  const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
-
-  const toggleEmailTooltip = () => {
-    setEmailTooltipOpen(!emailTooltipOpen);
-  };
-
-  const toggleCopyTooltip = () => {
-    setCopyTooltipOpen(!copyTooltipOpen);
-  };
+  // if (auth?.user?.role){console.log(auth.user.role)}
 
   return (
     <>
@@ -121,40 +85,89 @@ function FormattedReport({
           />
         ))}
       </ListGroup>
-      <div className="d-flex align-items-center">
-        <h4>Emails</h4>
-        <Tooltip
-          placement="top"
-          isOpen={emailTooltipOpen}
-          target="emailIcon"
-          toggle={toggleEmailTooltip}
-        >
-          Launch the email client, organizing the recipient email addresses into batches, each
-          containing a maximum of 90 addresses.
-        </Tooltip>
-        <FontAwesomeIcon
-          className="mx-2"
-          onClick={handleEmailButtonClick}
-          icon={faMailBulk}
-          size="lg"
-          style={{ color: '#0f8aa9', cursor: 'pointer' }}
-          id="emailIcon"
-        />
-        <Tooltip
-          placement="top"
-          isOpen={copyTooltipOpen}
-          target="copytoclipboard"
-          toggle={toggleCopyTooltip}
-        >
-          Click to copy all emails.
-        </Tooltip>
-        <div id="copytoclipboard">
-          <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
-        </div>
-      </div>
-      <p>{emails.join(', ')}</p>
+      <EmailsList summaries={summaries} auth={auth} />
     </>
   );
+}
+
+function EmailsList({ summaries, auth }) {
+  const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
+  const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
+  if (auth?.user?.role) {
+    const { role } = auth.user;
+    if (role === 'Administrator' || role === 'Owner') {
+      const emails = [];
+      summaries.forEach(summary => {
+        if (summary.email !== undefined && summary.email !== null) {
+          emails.push(summary.email);
+        }
+      });
+      const handleEmailButtonClick = () => {
+        const batchSize = 90;
+        const emailChunks = [];
+        for (let i = 0; i < emails.length; i += batchSize) {
+          emailChunks.push(emails.slice(i, i + batchSize));
+        }
+        const openEmailClientWithBatchInNewTab = batch => {
+          const emailAddresses = batch.join(', ');
+          const mailtoLink = `mailto:?bcc=${emailAddresses}`;
+          window.open(mailtoLink, '_blank');
+        };
+        emailChunks.forEach((batch, index) => {
+          setTimeout(() => {
+            openEmailClientWithBatchInNewTab(batch);
+          }, index * 2000);
+        });
+      };
+
+      const toggleEmailTooltip = () => {
+        setEmailTooltipOpen(!emailTooltipOpen);
+      };
+
+      const toggleCopyTooltip = () => {
+        setCopyTooltipOpen(!copyTooltipOpen);
+      };
+
+      return (
+        <>
+          <div className="d-flex align-items-center">
+            <h4>Emails</h4>
+            <Tooltip
+              placement="top"
+              isOpen={emailTooltipOpen}
+              target="emailIcon"
+              toggle={toggleEmailTooltip}
+            >
+              Launch the email client, organizing the recipient email addresses into batches, each
+              containing a maximum of 90 addresses.
+            </Tooltip>
+            <FontAwesomeIcon
+              className="mx-2"
+              onClick={handleEmailButtonClick}
+              icon={faMailBulk}
+              size="lg"
+              style={{ color: '#0f8aa9', cursor: 'pointer' }}
+              id="emailIcon"
+            />
+            <Tooltip
+              placement="top"
+              isOpen={copyTooltipOpen}
+              target="copytoclipboard"
+              toggle={toggleCopyTooltip}
+            >
+              Click to copy all emails.
+            </Tooltip>
+            <div id="copytoclipboard">
+              <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
+            </div>
+          </div>
+          <p>{emails.join(', ')}</p>
+        </>
+      );
+    }
+    return null;
+  }
+  return null;
 }
 
 function ReportDetails({

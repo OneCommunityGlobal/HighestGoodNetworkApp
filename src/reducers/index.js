@@ -65,12 +65,11 @@ export default combineReducers({
   rolePreset: rolePresetReducer,
   ownerMessage: ownerMessageReducer,
   ownerStandardMessage: ownerStandardMessageReducer,
-  dashboardData: weeklySummariesAIPromptReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
 
   // bmdashboard
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
-  bmInvTypes: bmInvTypeReducer,
+  bmInvTypes: bmInvTypeReducer
 });
