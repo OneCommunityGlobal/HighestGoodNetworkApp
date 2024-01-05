@@ -31,6 +31,8 @@ import Loading from '../common/Loading';
 import { PROJECT_DELETE_POPUP_ID } from './../../constants/popupId';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { sortBy } from 'lodash';
+
 
 export class Projects extends Component {
   constructor(props) {
@@ -42,6 +44,7 @@ export class Projects extends Component {
       // The property below is the state that tracks the selected category to sort the project list - Sucheta #PR1738
       categorySelectedForSort : "",
       showStatus: "",
+      sortBy: "",
       projectTarget: {
         projectName: '',
         projectId: -1,
@@ -83,19 +86,40 @@ export class Projects extends Component {
       },
     });
   };
-  // sort project list by category
+  // sort project list by category - Sucheta
   onChangeCategory = (value) =>{
     this.setState({
       categorySelectedForSort: value
     })
   }
-  // sort project list by status- active / inactive
+  // sort project list by status- active / inactive - Sucheta
   onSelectStatus = (value)=>{
     this.setState({
       showStatus: value
     })
   }
+  // handle sort function (WIP)
+  handleSort = (e)=>{
+    if(e.target.id === "Ascending"){
+    //  let sortedArray = projects.sort((a,b)=>{
+    //     return (a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1);
+    //  })
+     this.setState({
+      sortBy: "Ascending"
+     })
 
+    }else if(e.target.id === "Descending"){
+      this.setState({
+        sortBy: "Descending"
+      })
+
+    }else{
+      this.setState({
+        sortBy: ""
+      })
+    }
+  }
+ 
   confirmDelete = () => {
     // get project info
     let { projectId } = this.state.projectTarget;
@@ -131,9 +155,11 @@ export class Projects extends Component {
     let numberOfActive = projects.filter(project => project.isActive).length;
 
     let showModalMsg = false;
-
+    
     const {categorySelectedForSort} = this.state;
     const {showStatus} = this.state;
+    const {projectList} = this.state;
+
     const role = this.props.state.userProfile.role;
 
     const canPostProject = this.props.hasPermission('postProject') || this.props.hasPermission('seeProjectManagement');
@@ -145,6 +171,7 @@ export class Projects extends Component {
     // Display project lists
     let ProjectsList = [];
     if (projects.length > 0) {
+      let sortedProjects = "";
       // Below mentioned if block checks if there is a selected category to sort the projects - Sucheta
       if(categorySelectedForSort){
          if(categorySelectedForSort&&showStatus=== "Active"){
@@ -277,7 +304,7 @@ export class Projects extends Component {
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader onChange={this.onChangeCategory} selectedValue= {categorySelectedForSort} showStatus={showStatus} selectStatus={this.onSelectStatus}/>
+              <ProjectTableHeader onChange={this.onChangeCategory} selectedValue= {categorySelectedForSort} showStatus={showStatus} selectStatus={this.onSelectStatus} handleSort = {this.handleSort}/>
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>

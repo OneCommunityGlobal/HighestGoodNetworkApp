@@ -12,9 +12,12 @@ import {
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSort, faArrowUp, faArrowDown} from '@fortawesome/free-solid-svg-icons';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { boxStyle } from 'styles';
+import { Button } from 'reactstrap';
 
 const ProjectTableHeader = props => {
   const { role } = props; // Access the 'role' prop
@@ -25,7 +28,14 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__order">
         #
       </th>
-      <th scope="col">{PROJECT_NAME}</th>
+      <th scope="col" className='d-flex justify-content-between'>{PROJECT_NAME}
+      {/* Below tag adds an up arrow and a downArrow buttons to sort Product names alphabetically- Sucheta */}
+      <span className='d-flex flex-wrap'>
+      <Button size='sm' className='ml-3' id='Ascending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowDown} pointerEvents="none"/></Button>
+      <Button size='sm' className='ml-2' id='Descending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowUp} pointerEvents="none"/></Button>
+  
+      </span>
+      </th>
       <th scope="col" id="projects__category">
         {/* This span holds the header-name and a dropDown component */}
        <span className='d-flex justify-content-between'>{PROJECT_CATEGORY}
