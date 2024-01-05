@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import DragAndDrop from 'components/common/DragAndDrop/DragAndDrop';
-import PhoneInput from 'react-phone-input-2';
+import { PhoneInput } from 'components/common/PhoneInput/PhoneInput';
 
 import { boxStyle } from 'styles';
 import 'react-phone-input-2/lib/style.css';
@@ -21,6 +21,7 @@ const initialFormState = {
   toDate: '',
   shippingFee: '',
   taxes: '',
+  areaCode: '',
   phoneNumber: '',
   image: [],
   link: '',
@@ -34,7 +35,7 @@ export default function AddToolForm() {
 
 
   const handleInputChange = (name, value) => {
-    setFormData( prevData => ({
+    setFormData(prevData => ({
       ...prevData,
       [name]: value,
     }));
@@ -58,7 +59,12 @@ export default function AddToolForm() {
   };
 
   const handleCancelClick = () => {
-    setFormData(initialFormState)
+    setFormData(initialFormState);
+  };
+
+  //TO DO: fix this
+  const handlePhoneNumberChange = ({ areaCode, phoneNumber }) => {
+    setFormData({ areaCode, phoneNumber });
   };
 
   const { unitPrice, quantity, taxes, shippingFee } = formData;
@@ -251,16 +257,8 @@ export default function AddToolForm() {
           <Input id="phone-number" type="tel" name="phone-number" placeholder="XXX-XX-XX" />
         </FormGroup>
       </div> */}
-      {/* <FormGroup>
-        <Label for="phone-number">Supplier Phone Number</Label>
-        <PhoneInput
-          id="phone-number"
-          name="phone-number"
-          inputClass="phone-input-style"
-          value={formData.phoneNumber}
-          onChange={event => handleInputChange('phoneNumber', event.target.value)}
-        />
-      </FormGroup> */}
+
+    <PhoneInput onPhoneNumberChange={{handlePhoneNumberChange}}/>
       {/* <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
         <DragAndDrop
