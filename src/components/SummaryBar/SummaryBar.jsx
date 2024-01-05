@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -49,6 +49,99 @@ const SummaryBar = props => {
   const authenticateUserId = authenticateUser ? authenticateUser.userid : '';
 
   const matchUser = asUser == authenticateUserId ? true : false;
+  const [categoryDescription, setCategoryDescription] = useState();
+  const sortableContainerRef = useRef(null);
+
+
+  const editRadioButtonSelected = (value) => {
+
+    // dynamic way to set description rather than using tenerary operators.
+
+    setEditType(value);
+
+    if (value === 'add') {
+      setCategoryDescription('Add Category');
+    } else if (value === 'edit') {
+      setCategoryDescription('Edit Categories');
+    } else if (value === 'delete') {
+      setCategoryDescription('Delete category (Write the suggestion category number from the dropdown to delete it).');
+    }
+  };
+
+  const onDragToggleDraggingClass = (event) => {
+    event.currentTarget.classList.toggle('sortable-draggable-dragging');
+  };
+
+
+  const onSortableDragOver = (event) => {
+    event.preventDefault();
+    const draggedElement = event.currentTarget.querySelector('.sortable-draggable-dragging');
+    const nextElement = getDraggedNextElement(sortableContainerRef.current, event.clientY);
+
+    if (nextElement == null && draggedElement) {
+      sortableContainerRef.current.appendChild(draggedElement);
+    } else {
+      sortableContainerRef.current.insertBefore(draggedElement, nextElement);
+    }
+
+  };
+
+  const getDraggedNextElement = (container, yMouse) => {
+
+    // grab all draggable elements that are not being dragged.
+    const draggableElements = [...container.querySelectorAll('.sortable-draggable:not(.sortable-dragging)')];
+
+    // below uses the array of draggable elements and uses the offset to find the closest draggable element after
+    // the element is dragged
+    if (draggableElements) {      
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = yMouse - box.top - (box.height / 2);
+
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+
+      }, {offset: Number.NEGATIVE_INFINITY}).element;
+    }
+
+  };
+  
+  const handleEditClick = (event) => {
+    
+    let currentTarget = event.currentTarget;
+
+    if (currentTarget) {
+      
+      const parentEditableBool = currentTarget.parentNode.contentEditable === 'true';
+      currentTarget.parentNode.contentEditable = (!parentEditableBool);
+      currentTarget.contentEditable = false;
+      currentTarget.parentNode.style.cursor = 'grab';
+
+      if (!parentEditableBool) {
+
+        // Assuming the text node is the first child
+        const textNode = currentTarget.parentNode.childNodes[0]; 
+        const range = document.createRange();
+        const selection = window.getSelection();
+
+        range.setStart(textNode, textNode.length);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        event.currentTarget.parentNode.style.cursor = 'text';
+        currentTarget.parentNode.focus();
+      }
+
+      currentTarget.classList.toggle('fa-edit');
+      currentTarget.classList.toggle('fa-check');
+    }
+
+  };
+
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   useEffect(() => {
@@ -139,7 +232,7 @@ const SummaryBar = props => {
   const [inputFiled, setInputField] = useState([]);
   const [takeInput, setTakeInput] = useState(false);
   const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('');
-  const [editType, seteditType] = useState('');
+  const [editType, setEditType] = useState('');
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
@@ -157,6 +250,20 @@ const SummaryBar = props => {
         isvalid = false;
       }
     });
+
+    if (data && data.action && data.action == 'edit') {
+      const updatedSuggestionCategory = Array.from(sortableContainerRef.current.children).map((child) => {
+        return child.textContent;
+      });
+
+      updatedSuggestionCategory.forEach(function(value, key) {
+        if (value.trim() === '') {
+          isvalid = false;
+        }
+      });
+
+      data.updatedSuggestionCategory = updatedSuggestionCategory;
+    }
 
     return isvalid ? data : null;
   };
@@ -182,16 +289,23 @@ const SummaryBar = props => {
   };
   //
   const setnewfields = (fielddata, setfield) => {
-    setfield(prev => {
-      let newarr = prev;
-      if (fielddata.action === 'add') newarr.unshift(fielddata.newField);
-      if (fielddata.action === 'delete') {
-        newarr = newarr.filter((item, index) => {
-          return fielddata.field ? fielddata.newField !== item : +fielddata.newField !== index + 1;
-        });
-      }
-      return newarr;
-    });
+
+    if (fielddata?.action == 'edit' && fielddata?.updatedSuggestionCategory) {
+      console.log('this ran');
+      setfield(fielddata.updatedSuggestionCategory);
+      console.log('suggestionCategory: ' + suggestionCategory);
+    } else {
+      setfield(prev => {
+        let newarr = [...prev];
+        if (fielddata.action === 'add') newarr.unshift(fielddata.newField);
+        if (fielddata.action === 'delete') {
+          newarr = newarr.filter((item, index) => {
+            return fielddata.field ? fielddata.newField !== item : +fielddata.newField !== index + 1;
+          });
+        }
+        return newarr;
+      });
+    }
   };
   //add new text field or suggestion category by owner class and update the backend
   const editField = async event => {
@@ -209,7 +323,7 @@ const SummaryBar = props => {
         setnewfields(data, setInputField);
       }
       setExtraFieldForSuggestionForm('');
-      seteditType('');
+      setEditType('');
       httpService
         .post(`${ApiEndpoint}/dashboard/suggestionoption/${userProfile._id}`, data)
         .catch(e => {});
@@ -510,7 +624,7 @@ const SummaryBar = props => {
                     <FormGroup check>
                       <Label check>
                         <Input
-                          onChange={() => seteditType('add')}
+                          onChange={(e) => editRadioButtonSelected(e.target.value)}
                           type="radio"
                           name="action"
                           value={'add'}
@@ -519,10 +633,24 @@ const SummaryBar = props => {
                         Add
                       </Label>
                     </FormGroup>
+                    {extraFieldForSuggestionForm === 'suggestion' && (
+                      <FormGroup check>
+                        <Label check>
+                          <Input
+                            onChange={(e) => editRadioButtonSelected(e.target.value)}
+                            type="radio"
+                            name="action"
+                            value={'edit'}
+                            required
+                          />{' '}
+                          Edit
+                        </Label>
+                      </FormGroup>
+                    )}
                     <FormGroup check>
                       <Label check>
                         <Input
-                          onChange={() => seteditType('delete')}
+                          onChange={(e) => editRadioButtonSelected(e.target.value)}
                           type="radio"
                           name="action"
                           value={'delete'}
@@ -539,26 +667,41 @@ const SummaryBar = props => {
                     <FormGroup>
                       <Label for="newField">
                         {extraFieldForSuggestionForm === 'suggestion'
-                          ? editType === 'delete'
-                            ? 'Delete category (Write the suggestion category number from the dropdown to delete it).'
-                            : 'Add category'
-                          : editType === 'add'
-                          ? 'Add Field'
-                          : 'Delete field (Copy the field name to delete it).'}
-                      </Label>
-                      <Input
-                        type="textarea"
-                        name="newField"
-                        id="newField"
-                        placeholder={
-                          extraFieldForSuggestionForm === 'suggestion'
-                            ? editType === 'delete'
-                              ? 'write the category number, like 1 or 2 etc'
-                              : 'write the category name'
-                            : 'write the field name'
+                          && categoryDescription 
                         }
-                        required
-                      />
+                      </Label>
+                      {editType !== 'edit' &&
+                        <Input
+                          type="textarea"
+                          name="newField"
+                          id="newField"
+                          placeholder={
+                            extraFieldForSuggestionForm === 'suggestion'
+                              ? editType === 'delete'
+                                ? 'write the category number, like 1 or 2 etc'
+                                : 'write the category name'
+                              : 'write the field name'
+                          }
+                          required
+                        />
+                      }
+                      {editType === 'edit' && 
+                        <div className='sortable-container' ref={sortableContainerRef} onDragOver={(e) => onSortableDragOver(e)}>
+                          {suggestionCategory.map((value, index) => (
+                              <p
+                                key={index}
+                                className='sortable-content sortable-draggable'
+                                draggable="true"
+                                onDragStart={(event) => onDragToggleDraggingClass(event)}
+                                onDragEnd={(event) => onDragToggleDraggingClass(event)}
+                              >
+                                {value}
+                                <span className="edit-icon fa fa-edit" onClick={(event) => handleEditClick(event)}>
+                                </span>
+                              </p>
+                            ))}
+                        </div>
+                      }
                     </FormGroup>
                   )}
                   <Button id="add" type="submit" color="success" size="md">
@@ -567,7 +710,7 @@ const SummaryBar = props => {
                   &nbsp;&nbsp;&nbsp;
                   <Button
                     onClick={() => {
-                      seteditType('');
+                      setEditType('');
                       setExtraFieldForSuggestionForm('');
                     }}
                     type="button"
