@@ -50,6 +50,7 @@ import BMLogin from './components/BMDashboard/Login';
 // import MaterialsList from './components/BMDashboard/MaterialsList';
 // import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 // import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+// eslint-disable-next-line import/order
 import ToolDetailPage from 'components/BMDashboard/Tools/ToolDetailPage';
 
 const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
