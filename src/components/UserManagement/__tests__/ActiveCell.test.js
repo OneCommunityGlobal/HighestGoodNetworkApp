@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ActiveCell from '../../components/UserManagement/ActiveCell'; // Adjust the import path as necessary.
+import ActiveCell from '../ActiveCell'; // Adjust the import path as necessary.
 
 describe('ActiveCell', () => {
   it('renders with the correct active class', () => {
