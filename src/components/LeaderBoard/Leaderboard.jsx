@@ -40,10 +40,10 @@ function LeaderBoard({
   organizationData,
   timeEntries,
   isVisible,
-  asUser,
+  displayUserId,
   totalTimeMouseoverText,
 }) {
-  const userId = asUser || loggedInUser.userId;
+  const userId = displayUserId || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
