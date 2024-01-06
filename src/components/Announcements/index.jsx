@@ -32,8 +32,8 @@ function Announcements() {
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
       const editor = tinymce.get('email-editor');
       if (editor) {
-        editor.insertContent(imageTag); // 插入图片到编辑器
-        setEmailContent(editor.getContent()); // 更新 emailContent 状态
+        editor.insertContent(imageTag);
+        setEmailContent(editor.getContent());
       }
     });
     e.target.value = '';
