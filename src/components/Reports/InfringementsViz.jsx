@@ -26,8 +26,13 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       d3.selectAll('#infplot > *').remove();
     } else {
       d3.selectAll('#infplot > *').remove();
-      const margin = { top: 10, right: 30, bottom: 30, left: 60 };
-      const width = 1000 - margin.left - margin.right;
+      const margin = { top: 30, right: 20, bottom: 30, left: 20 };
+      const containerWidth =
+        window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+      // Adjusted width based on the available space
+      const width = Math.min(containerWidth - margin.left - margin.right, 1000);
+
       const height = 400 - margin.top - margin.bottom;
 
       const tooltipEl = function(d) {
@@ -275,7 +280,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       <Button onClick={handleModalShow} aria-expanded={graphVisible} style={boxStyle}>
         Show Infringements Graph
       </Button>
-      <div id="infplot" />
+      <div className="kaitest" id="infplot" />
 
       <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>

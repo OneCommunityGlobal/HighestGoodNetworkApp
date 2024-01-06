@@ -174,7 +174,17 @@ body {
   margin: 16px 0px 16px 0px;
   display: flex;
 }
-
+.kaitest{
+  width: 100%;
+}
+@media (max-width: 850px) {
+  .intro_date {
+    margin: 16px 0px 16px 0px;
+    display: flex;
+    justify-content: center;
+  }
+  
+}
 .intro_date div {
   display: inline-flex;
   vertical-align: top;
