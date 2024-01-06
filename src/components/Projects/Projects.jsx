@@ -101,9 +101,6 @@ export class Projects extends Component {
   // handle sort function (WIP)
   handleSort = (e)=>{
     if(e.target.id === "Ascending"){
-    //  let sortedArray = projects.sort((a,b)=>{
-    //     return (a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1);
-    //  })
      this.setState({
       sortBy: "Ascending"
      })
@@ -158,7 +155,7 @@ export class Projects extends Component {
     
     const {categorySelectedForSort} = this.state;
     const {showStatus} = this.state;
-    const {projectList} = this.state;
+    const {sortBy} = this.state;
 
     const role = this.props.state.userProfile.role;
 
@@ -170,12 +167,33 @@ export class Projects extends Component {
 
     // Display project lists
     let ProjectsList = [];
+
     if (projects.length > 0) {
-      let sortedProjects = "";
+      
+      let sortedList = ""; // If user chooses to get sorted project list, this variable stores sorted project list - Sucheta
+      if(sortBy === "Ascending"){
+        sortedList = projects.sort((a,b)=>{
+          if(a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase()){
+            return -1
+          }else if(a.projectName[0].toLowerCase() > b.projectName[0].toLowerCase()){
+            return 1
+          }else{return 0}
+        })
+      }else if(sortBy === "Descending"){
+        sortedList = projects.sort((a,b)=>{
+          if(a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase()){
+            return 1
+          }else if(a.projectName[0].toLowerCase() > b.projectName[0].toLowerCase()){
+            return -1
+          }else{return 0}
+        })
+        
+      }
       // Below mentioned if block checks if there is a selected category to sort the projects - Sucheta
+      
       if(categorySelectedForSort){
          if(categorySelectedForSort&&showStatus=== "Active"){
-          ProjectsList = projects.map((project, index) => {
+          ProjectsList =  (sortBy?sortedList: projects).map((project, index) => {
             if(project.category === categorySelectedForSort && project.isActive){
              return (<Project
               key={project._id}
@@ -192,7 +210,7 @@ export class Projects extends Component {
             }
           })
          }else if(categorySelectedForSort&&showStatus=== "Inactive"){
-          ProjectsList = projects.map((project, index) => {
+          ProjectsList = (sortBy?sortedList: projects).map((project, index) => {
             if(project.category === categorySelectedForSort && !project.isActive){
              return (<Project
               key={project._id}
@@ -210,7 +228,7 @@ export class Projects extends Component {
           })
          }
          else{
-          ProjectsList = projects.map((project, index) => {
+          ProjectsList = (sortBy?sortedList: projects).map((project, index) => {
             if(project.category === categorySelectedForSort){
              return (<Project
               key={project._id}
@@ -229,7 +247,7 @@ export class Projects extends Component {
          }
         
       }else if(showStatus === "Active"){
-        ProjectsList = projects.map((project, index) => {
+        ProjectsList = (sortBy?sortedList: projects).map((project, index) => {
           if(project.isActive){
            return (<Project
             key={project._id}
@@ -247,7 +265,7 @@ export class Projects extends Component {
         })
 
       }else if(showStatus === "Inactive"){
-        ProjectsList = projects.map((project, index) => {
+        ProjectsList = (sortBy?sortedList: projects).map((project, index) => {
           if(!project.isActive){
            return (<Project
             key={project._id}
@@ -265,7 +283,7 @@ export class Projects extends Component {
         })
         
       }else{
-        ProjectsList = projects.map((project, index) => (
+        ProjectsList = (sortBy?sortedList: projects).map((project, index) => (
           <Project
             key={project._id}
             index={index}
