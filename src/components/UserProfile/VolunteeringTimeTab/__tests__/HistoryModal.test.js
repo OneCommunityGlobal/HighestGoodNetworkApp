@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import HistoryModal from '../../../components/UserProfile/VolunteeringTimeTab/HistoryModal';
+import HistoryModal from '../HistoryModal';
 
 describe('HistoryModal Component', () => {
   const mockToggle = jest.fn();
