@@ -45,25 +45,6 @@
   flex-wrap: wrap;
   text-align: start;
   margin: 0;
-  font-size: clamp(0.8em, 2.5vw, 0.9em);
+  font-size: clamp(0.9em, 2.5vw, 1em);
 }
-
-.project-summary_item{  
-  padding: 10px;  
-  align-items: center;
-}
-
-.project-summary_label{
-  margin-right: 5px;
-}
-
-.project-summary_span {
-  color: #3ea0cb;
-  font-weight: bold;
-  margin-left: 1em;
-  display: inline-block;
-  white-space: no-wrap;
-}
-
-
 
