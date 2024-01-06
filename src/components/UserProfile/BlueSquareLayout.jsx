@@ -51,9 +51,15 @@ const BlueSquareLayout = (props, loggedInUser) => {
   };
   
 
-  const role = userProfile?.role;
   
-  const { userProfile, handleUserProfile, handleBlueSquare, canEdit } = props;
+  const { userProfile, handleUserProfile, handleBlueSquare, canEdit, role } = props;
+  //const { role } = props; // Access the 'role' prop
+  //const isOwner = ['Owner'].includes(loggedInUser.role);
+
+  console.log('userProfile:', props.userProfile);
+
+  console.log('Role:', userProfile.role);
+
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [reason, setReason] = useState('');
@@ -136,8 +142,8 @@ const BlueSquareLayout = (props, loggedInUser) => {
                   areaName="blueSquares_info"
                   areaTitle="Blue Squares"
                   fontSize={24}
-                  isPermissionPage={true}
-                  role={role}
+                  isPermissionPage
+                  role={userProfile.role}
                   />
           </div>
           <Button

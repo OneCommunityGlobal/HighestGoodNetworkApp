@@ -11,7 +11,6 @@ import   './ScheduleReasonModal.css';
 import FAQModal from './FAQModal';
 
 
-
 const ScheduleReasonModal = ({
   handleClose,
   show,
@@ -55,13 +54,8 @@ const ScheduleReasonModal = ({
       setIsFAQModalOpen(!isFAQModalOpen);
     };
 
+    //const { role } = props; // Access the 'role' prop
 
-    console.log('role', role);
-    //const role = userProfile?.role;
-    //const role = state.userProfile?.role;
-
-    //const role = this.props.state.userProfile.role;
-    console.log('role', role);
 
   return (
     <>
