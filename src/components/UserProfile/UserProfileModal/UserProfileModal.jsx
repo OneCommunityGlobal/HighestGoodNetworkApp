@@ -43,6 +43,7 @@ const UserProfileModal = props => {
   }
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canEditAdminLinks = props.hasPermission('manageAdminLinks');
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -145,7 +146,7 @@ const UserProfileModal = props => {
       <ModalBody>
         {type === 'updateLink' && (
           <div>
-            {canPutUserProfile && (
+            {(canPutUserProfile || canEditAdminLinks) && (
               <CardBody>
                 <Card>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
