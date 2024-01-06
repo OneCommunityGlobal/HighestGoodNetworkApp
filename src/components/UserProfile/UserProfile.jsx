@@ -497,18 +497,28 @@ function UserProfile(props) {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
+    
+    console.log("props.match.prarams.userId", props.match.params.userId);
+    console.log("userProfileRef.current", userProfileRef.current);
     try {
+    
+      console.log('error before updateuser profile');
+      console.log("props.match.params.userId", props.match.params.userId);
       await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
-
+      console.log('error after update user profile');
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
       await loadUserProfile();
+    
       await loadUserTasks();
+    
       setSaved(false);
     } catch (err) {
+      console.log({err});
       alert('An error occurred while attempting to save this profile.');
     }
   };
@@ -629,6 +639,7 @@ function UserProfile(props) {
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canEditLink = props.hasPermission('manageAdminLinks');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
 
@@ -642,6 +653,8 @@ function UserProfile(props) {
     : canPutUserProfile;
 
   const canEdit = canEditUserProfile || isUserSelf;
+
+  const canManageEditLink = canEditLink;
 
   const customStyles = {
     control: (base, state) => ({
@@ -859,6 +872,7 @@ function UserProfile(props) {
                 handleSubmit={handleSubmit}
                 role={requestorRole}
                 canEdit={canEdit}
+                canManageEditLink={canManageEditLink}
               />
               <BlueSquareLayout
                 userProfile={userProfile}

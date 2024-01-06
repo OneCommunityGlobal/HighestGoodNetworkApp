@@ -3,6 +3,7 @@ import UserLinks from '../UserLinks';
 import LinkModButton from '../UserProfileEdit/LinkModButton';
 
 const UserLinkLayout = props => {
+  console.log({props});
   const { userProfile, updateLink, handleLinkModel, handleSubmit } = props;
 
   const { adminLinks, personalLinks } = userProfile;
@@ -10,7 +11,7 @@ const UserLinkLayout = props => {
   return (
     <div data-testid="user-link">
       <p style={{ display: 'inline-block', marginRight: 10 }}>LINKS </p>
-      {props.canEdit ? (
+      {(props.canEdit || props.canManageEditLink) ? (
         <LinkModButton userProfile={userProfile} updateLink={updateLink} role={props.role} handleSubmit={handleSubmit}/>
       ) : null}
       <UserLinks linkSection="user" links={personalLinks} handleLinkModel={handleLinkModel} />
