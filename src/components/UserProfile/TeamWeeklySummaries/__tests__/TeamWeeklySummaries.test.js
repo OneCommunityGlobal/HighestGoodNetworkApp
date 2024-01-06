@@ -15,14 +15,14 @@ describe('Test Suite for Team Weekly Summaries component', () => {
     },
   };
 
-  test('Test 1 : Renders component with empty data', () => {
+  it('Test 1 : Renders component with empty data', () => {
     render(<TeamWeeklySummaries name="John Doe" i={0} data={{}} />);
     
     // component renders without crashing
     expect(screen.getByTestId('team-weekly-summaries')).toBeInTheDocument();
   });
   
-  test('Test 2 : Assert the component handles missing or null summary', () => {
+  it('Test 2 : Assert the component handles missing or null summary', () => {
     render(<TeamWeeklySummaries name="John Doe" i={0} data={{ summary: null }} />);
     
     //  component renders without crashing
@@ -30,7 +30,7 @@ describe('Test Suite for Team Weekly Summaries component', () => {
   });
   
  
-  test('Test 3 : Assert the  rendered date range matches the expected format', async () => {
+  it('Test 3 : Assert the  rendered date range matches the expected format', async () => {
     render(<TeamWeeklySummaries {...testData} />);
   const dateFormat = screen.getByText(/[\d]{2}-[A-Za-z]{3}-[\d]{2}/); // Regex pattern for date format
   const toWord = screen.getByText(/ to /);  // Check for the "to" separator
@@ -39,7 +39,7 @@ describe('Test Suite for Team Weekly Summaries component', () => {
   expect(toWord).toBeInTheDocument();
   });
 
-  test('Test 4 : Displays the expected date range ', async () => {
+  it('Test 4 : Displays the expected date range ', async () => {
     render(<TeamWeeklySummaries {...testData} />);
          const fromDate = moment().format('DD-MMM-YY');
       const toDate = moment().subtract(1, 'week').isoWeekday(7).format('DD-MMM-YY');
@@ -59,13 +59,13 @@ describe('Test Suite for Team Weekly Summaries component', () => {
     expect(dateRangeElement.textContent).toMatch(new RegExp(`${toDate}\\s+to\\s+${fromDate}`));
 
   });
-  test('Test 5 : Assert if correct users summary is displayed ', async () => {
+  it('Test 5 : Assert if correct users summary is displayed ', async () => {
     render(<TeamWeeklySummaries {...testData} />);
     const summaryText = screen.getByText(/Viewing John Doe's summary/);
     expect(summaryText).toBeInTheDocument();
 
   });
-  test('Test 6 : Assert presence of copy icon', async () => {
+  it('Test 6 : Assert presence of copy icon', async () => {
     render(<TeamWeeklySummaries {...testData} />);
 
     //Check if the copy icon is present
@@ -74,7 +74,7 @@ describe('Test Suite for Team Weekly Summaries component', () => {
   });
 
 
-  test('Test 7 : Displays message for missing summary', () => {
+  it('Test 7 : Displays message for missing summary', () => {
     const testDataNoSummary = {
       name: 'Jane Smith',
       i: 1,
