@@ -1,12 +1,14 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
 import TeamReportLogs from './TeamReportLogs';
 import TeamsReportLogs from './TeamsReportLogs';
 import TeamReportCharts from './TeamReportCharts';
 import TeamsReportCharts from './TeamsReportCharts';
-import ReportCharts from './ReportCharts';
+import './ReportCharts.css';
 
 function UserLoginPrivileges({
+  // eslint-disable-next-line no-unused-vars
   role,
   teamName,
   teamMembers,
@@ -19,20 +21,20 @@ function UserLoginPrivileges({
   let teamWeeklyCommittedHours = 0;
   let teamTotalBlueSquares = 0;
 
-  teamMembers.map(member => {
+  teamMembers.forEach(member => {
     teamWeeklyCommittedHours += member.weeklycommittedHours;
     teamTotalBlueSquares += member.infringements.length;
   });
 
-  //selectedTeams
+  // selectedTeams
   const [selectedTeamsMembers, setSelectedTeamsMembers] = useState([]);
 
   const [selectedTeamsData, setSelectedTeamsData] = useState([]);
   const [selectedTeamsTotalValues, setSelectedTeamsTotalValues] = useState({});
 
   useEffect(() => {
-    const teamsData = selectedTeamsMembers.map((teamMembers, index) => {
-      const { totalCommitedHours, totalOfMembers, totalBlueSquares } = teamMembers.reduce(
+    const teamsData = selectedTeamsMembers.map((currentTeamMembers, index) => {
+      const { totalCommitedHours, totalOfMembers, totalBlueSquares } = currentTeamMembers.reduce(
         (totals, member) => {
           return {
             totalCommitedHours: totals.totalCommitedHours + member.weeklycommittedHours,
@@ -122,9 +124,9 @@ function UserLoginPrivileges({
       />
       {/* Two cards with pie charts with data */}
       <div
+        className="mobile-chart"
         style={{
           display: 'flex',
-          flexDirection: 'row',
           gap: '16px',
         }}
       >

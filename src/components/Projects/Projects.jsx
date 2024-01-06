@@ -30,6 +30,7 @@ import { connect } from 'react-redux';
 import Loading from '../common/Loading';
 import { PROJECT_DELETE_POPUP_ID } from './../../constants/popupId';
 import hasPermission from '../../utils/permissions';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 export class Projects extends Component {
   constructor(props) {
@@ -42,6 +43,7 @@ export class Projects extends Component {
         projectName: '',
         projectId: -1,
         active: false,
+        category: '',
       },
       projectInfoModal: false,
     };
@@ -60,7 +62,6 @@ export class Projects extends Component {
   };
 
   onUpdateProjectName = (projectId, projectName, category, isActive) => {
-    console.log('updateName', projectId, projectName, category, isActive);
     this.props.modifyProject('updateName', projectId, projectName, category, isActive);
   };
 
@@ -68,13 +69,14 @@ export class Projects extends Component {
    * Changes the number of projects
    * Also update the number of active project
    */
-  onClickDelete = (projectId, active, projectName) => {
+  onClickDelete = (projectId, active, projectName, category) => {
     this.setState({
       showModalDelete: true,
       projectTarget: {
         projectId,
         projectName,
         active,
+        category,
       },
     });
   };
@@ -89,13 +91,13 @@ export class Projects extends Component {
   };
 
   setInactiveProject = () => {
-    let { projectId, projectName } = this.state.projectTarget;
-    this.props.modifyProject('setActive', projectId, projectName, true);
+    let { projectId, projectName, category } = this.state.projectTarget;
+    this.props.modifyProject('setActive', projectId, projectName, category, true);
     // disable modal
     this.setState({ showModalDelete: false });
   };
 
-  addProject = (name, category) => {
+  postProject = (name, category) => {
     this.props.postNewProject(name, category, true);
     this.setState({ trackModelMsg: true });
   };
@@ -115,14 +117,14 @@ export class Projects extends Component {
 
     let showModalMsg = false;
 
+
+    const role = this.props.state.userProfile.role;
+
+    const canPostProject = this.props.hasPermission('postProject') || this.props.hasPermission('seeProjectManagement');
+
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
     }
-
-    const role = this.props.state.auth.user.role;
-    const userPermissions = this.props.state.auth.user?.permissions?.frontPermissions;
-
-    const { roles } = this.props.state.role;
 
     // Display project lists
     let ProjectsList = [];
@@ -145,27 +147,25 @@ export class Projects extends Component {
 
     return (
       <React.Fragment>
-        <ProjectInfoModal isOpen={projectInfoModal} toggle={this.toggleProjectInfoModal} />
         <div className="container mt-3">
           {fetching || !fetched ? <Loading /> : null}
+          <div className="d-flex align-items-center">
           <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <i
-            data-toggle="tooltip"
-            data-placement="right"
-            title="Click for more information"
-            style={{ fontSize: 24, cursor: 'pointer' }}
-            aria-hidden="true"
-            className="fa fa-info-circle"
-            onClick={this.toggleProjectInfoModal}
+          <EditableInfoModal
+            areaName="projectsInfoModal"
+            areaTitle="Projects"
+            fontSize={30}
+            isPermissionPage={true}
+            role={role}
           />
+        </div>
+
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          {hasPermission(role, 'addProject', roles, userPermissions) ? (
-            <AddProject addNewProject={this.addProject} />
-          ) : null}
+          {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader role={role} roles={roles} userPermissions={userPermissions} />
+              <ProjectTableHeader />
             </thead>
             <tbody>{ProjectsList}</tbody>
           </table>
@@ -211,4 +211,5 @@ export default connect(mapStateToProps, {
   deleteProject,
   modifyProject,
   getPopupById,
+  hasPermission,
 })(Projects);

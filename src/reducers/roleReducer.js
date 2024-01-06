@@ -1,4 +1,4 @@
-import * as types from './../constants/role';
+import * as types from "../constants/role";
 
 const initialState = {
   roles: [],

@@ -16,7 +16,7 @@ const ProjectsTab = props => {
     handleSubmit,
     disabled,
   } = props;
-  const [addProjectPopupOpen, setaddProjectPopupOpen] = useState(false);
+  const [postProjectPopupOpen, setPostProjectPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
   const onSelectDeleteProject = projectId => {
     onDeleteProject(projectId);
@@ -25,21 +25,21 @@ const ProjectsTab = props => {
   const onSelectAssignProject = project => {
     onAssignProject(project);
     setRenderedOn(Date.now());
-    //setaddProjectPopupOpen(false);
+    //setPostProjectPopupOpen(false);
   };
 
   const onAddProjectPopupShow = () => {
-    setaddProjectPopupOpen(true);
+    setPostProjectPopupOpen(true);
   };
 
   const onAddProjectPopupClose = () => {
-    setaddProjectPopupOpen(false);
+    setPostProjectPopupOpen(false);
   };
 
   return (
     <React.Fragment>
       <AddProjectPopup
-        open={addProjectPopupOpen}
+        open={postProjectPopupOpen}
         onClose={onAddProjectPopupClose}
         userProjectsById={userProjects}
         projects={projectsData}

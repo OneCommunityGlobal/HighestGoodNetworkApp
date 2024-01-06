@@ -3,25 +3,27 @@ import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactst
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
 import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+// import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { useSelector } from 'react-redux';
-import { getUserTimeZone } from 'services/timezoneApiService';
+import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { formatDate } from 'utils/formatDate';
+import { isString } from 'lodash';
 
 const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
-
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit} = props;
   const { firstName, lastName } = userProfile;
-
   if (canEdit) {
     return (
       <>
-        <Col md="3">
+        <Col md="3" >
           <FormGroup>
             <Input
               type="text"
@@ -77,7 +79,7 @@ const Title = props => {
   if (canEdit) {
     return (
       <>
-        <Col>
+        <Col md="6">
           <FormGroup>
             <Input
               type="text"
@@ -112,7 +114,7 @@ const Email = props => {
   if (canEdit) {
     return (
       <>
-        <Col>
+        <Col md="6">
           <FormGroup>
             <ToggleSwitch
               switchType="email"
@@ -185,7 +187,7 @@ const Phone = props => {
   if (canEdit) {
     return (
       <>
-        <Col>
+        <Col md="6">
           <FormGroup>
             <ToggleSwitch
               switchType="phone"
@@ -193,6 +195,7 @@ const Phone = props => {
               handleUserProfile={handleUserProfile}
             />
             <PhoneInput
+              inputClass='phone-input-style'
               country={'us'}
               value={phoneNumber}
               onChange={phoneNumber => {
@@ -242,7 +245,7 @@ const TimeZoneDifference = props => {
   if (!isUserSelf) {
     return (
       <>
-        <Col>
+        <Col md="7">
           <p>{signedOffset} hours</p>
         </Col>
       </>
@@ -251,7 +254,7 @@ const TimeZoneDifference = props => {
 
   return (
     <>
-      <Col>
+      <Col md="7">
         <p>This is your own profile page</p>
       </Col>
     </>
@@ -266,24 +269,38 @@ const BasicInformationTab = props => {
     handleUserProfile,
     formValid,
     setFormValid,
-    role,
     canEdit,
     canEditRole,
     roles,
-    userPermissions,
+    role,
     loadUserProfile,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
-  const [location, setLocation] = useState('');
-  const key = useSelector(state => state.timeZoneAPI.userAPIKey);
 
+  let topMargin = '6px';
+  if (isUserSelf) {
+    topMargin = '0px';
+  }
+  const key = useSelector(state => state.timeZoneAPI.userAPIKey);
+  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const handleLocation = e => {
+    setUserProfile({
+      ...userProfile,
+      location: { 
+        userProvided: e.target.value, 
+        coords: { lat: '', lng: '' }, 
+        country: '', 
+        city: ''
+    },
+    });
+  };
   const onClickGetTimeZone = () => {
-    if (!location) {
+    if (!userProfile.location.userProvided) {
       alert('Please enter valid location');
       return;
     }
     if (key) {
-      getUserTimeZone(location, key)
+      getUserTimeZone(userProfile.location.userProvided, key)
         .then(response => {
           if (
             response.data.status.code === 200 &&
@@ -291,15 +308,35 @@ const BasicInformationTab = props => {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+            let currentLocation = {
+              userProvided: userProfile.location.userProvided,
+              coords: {
+                lat: response.data.results[0].geometry.lat,
+                lng: response.data.results[0].geometry.lng,
+              },
+              country: response.data.results[0].components.country,
+              city: response.data.results[0].components.city,
+            };
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+            
             setTimeZoneFilter(timezone);
-            setUserProfile({ ...userProfile, timeZone: timezone });
+            setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
           } else {
-            alert('Invalid location or ' + response.data.status.message);
+            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
+            `);
           }
         })
         .catch(err => console.log(err));
     }
   };
+
+  function locationCheckValue(loc) {
+    if(loc.userProvided) return loc.userProvided
+    const str = isString(loc)
+    return str ? loc : ''
+  }
+
+
   return (
     <div>
       <div data-testid="basic-info-tab" className="basic-info-tab-desktop">
@@ -326,6 +363,7 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
@@ -349,6 +387,7 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
@@ -373,6 +412,7 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
@@ -396,12 +436,13 @@ const BasicInformationTab = props => {
             role={props.role}
             canEdit={canEdit}
           />
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
             <Label>Video Call Preference</Label>
           </Col>
-          <Col>
+          <Col md="6">
             {canEdit ? (
               <FormGroup disabled={!canEdit}>
                 <Input
@@ -419,18 +460,23 @@ const BasicInformationTab = props => {
               `${userProfile.collaborationPreference}`
             )}
           </Col>
+          <Col md="1"></Col>
         </Row>
         <Row>
           <Col>
             <Label>Role</Label>
           </Col>
-          <Col>
+          <Col md="6">
             {canEditRole && !isUserSelf ? (
               <FormGroup>
                 <select
                   value={userProfile.role}
                   onChange={e => {
-                    setUserProfile({ ...userProfile, role: e.target.value });
+                    setUserProfile({
+                      ...userProfile,
+                      role: e.target.value,
+                      permissions: { ...userProfile.permissions, frontPermissions: [] },
+                    });
                   }}
                   id="role"
                   name="role"
@@ -438,10 +484,14 @@ const BasicInformationTab = props => {
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
-                    return <option value={roleName}>{roleName}</option>;
+                    return (
+                      <option key={roleName} value={roleName}>
+                        {roleName}
+                      </option>
+                    );
                   })}
-                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                    <option value="Owner">Owner</option>
+                  {canAddDeleteEditOwners && (
+                                        <option value="Owner" style={{marginLeft:"5px"}}>Owner</option>
                   )}
                 </select>
               </FormGroup>
@@ -449,45 +499,56 @@ const BasicInformationTab = props => {
               `${userProfile.role}`
             )}
           </Col>
+          {(
+              
+              <Col md="1">
+                <div style={{marginTop:topMargin}}>
+                  <EditableInfoModal
+                  role={role}
+                  areaName={'roleInfo'}
+                  areaTitle="Roles"
+                  fontSize={30}
+                  />
+                </div>
+              </Col>
+             )}  
+             
         </Row>
         {canEdit && (
           <Row>
-            <Col md={{ size: 6, offset: 0 }} className="text-md-left my-2">
+            <Col md={{ size: 5, offset: 0}} >
               <Label>Location</Label>
             </Col>
-            <Col md="6">
-              <Row>
-                <Col md="6">
+            <Col>
+            <Row className='ml-0'>
+                <Col className='p-0' style={{marginRight:"10px"}}>
                   <Input
-                    onChange={e => {
-                      setLocation(e.target.value);
-                      setUserProfile({ ...userProfile, location: e.target.value });
-                    }}
-                    value={userProfile.location}
+                    onChange={handleLocation}
+                    value={locationCheckValue(userProfile.location)}
                   />
                 </Col>
-                <Col md="6">
-                  <div className="w-100 pt-1 mb-2 mx-auto">
-                    <Button
-                      color="secondary"
-                      block
-                      size="sm"
-                      onClick={onClickGetTimeZone}
-                      style={boxStyle}
-                    >
-                      Get Time Zone
-                    </Button>
-                  </div>
+                <Col className='p-0'>
+                  <Button
+                    color="secondary"
+                    block
+                    onClick={onClickGetTimeZone}
+                    style={boxStyle}
+                    className='px-0'
+                  >
+                    Get Time Zone
+                  </Button>
                 </Col>
+
               </Row>
             </Col>
+            <Col md="1"></Col>
           </Row>
         )}
-        <Row style={{ marginBottom: '10px' }}>
+        <Row style={{ marginTop:'15px', marginBottom: '10px'}}>
           <Col>
             <Label>Time Zone</Label>
           </Col>
-          <Col>
+          <Col md="6">
             {!canEdit && <p>{userProfile.timeZone}</p>}
             {canEdit && (
               <TimeZoneDropDown
@@ -499,9 +560,10 @@ const BasicInformationTab = props => {
               />
             )}
           </Col>
+          <Col md="1"></Col>
         </Row>
         <Row>
-          <Col>
+          <Col md="5">
             <label>Difference in this Time Zone from Your Local</label>
           </Col>
           <TimeZoneDifference
@@ -521,7 +583,7 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                ? 'Paused until ' + formatDate(userProfile.reactivationDate)
                 : 'Inactive'}
             </Label>
             &nbsp;
@@ -539,7 +601,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>
               {userProfile.endDate
-                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+                ? 'End Date ' + formatDate(userProfile.endDate)
                 : 'End Date ' + 'N/A'}
             </Label>
           </Col>
@@ -691,11 +753,9 @@ const BasicInformationTab = props => {
                 >
                   {roles.map(({ roleName }) => {
                     if (roleName === 'Owner') return;
-                    return <option value={roleName}>{roleName}</option>;
+                    return <option key={roleName} value={roleName}>{roleName}</option>;
                   })}
-                  {hasPermission(role, 'addDeleteEditOwners', roles, userPermissions) && (
-                    <option value="Owner">Owner</option>
-                  )}
+                  {canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                 </select>
               </FormGroup>
             ) : (
@@ -712,12 +772,8 @@ const BasicInformationTab = props => {
 
             <Col className="cols">
               <Input
-                onChange={e => {
-                  setLocation(e.target.value);
-                  setUserProfile({ ...userProfile, location: e.target.value });
-                }}
-                value={userProfile.location}
-                style={{ marginBottom: '10px' }}
+                onChange={handleLocation}
+                value={userProfile.location.userProvided || ''}
               />
 
               <div>
@@ -728,7 +784,7 @@ const BasicInformationTab = props => {
             </Col>
           </Col>
         )}
-        <Col className="cols">
+        <Col>
           <Col>
             <Label>Time Zone</Label>
           </Col>
@@ -766,7 +822,7 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + moment(userProfile.reactivationDate).format('YYYY-MM-DD')
+                  ? 'Paused until ' + formatDate(userProfile.reactivationDate)
                   : 'Inactive'}
               </Label>
               &nbsp;
@@ -776,7 +832,7 @@ const BasicInformationTab = props => {
           <Col>
             <Label>
               {userProfile.endDate
-                ? 'End Date ' + userProfile.endDate.toLocaleString().split('T')[0]
+                ? 'End Date ' + formatDate(userProfile.endDate)
                 : 'End Date ' + 'N/A'}
             </Label>
             {canEdit && <SetUpFinalDayButton isBigBtn={true} userProfile={userProfile} />}
@@ -786,4 +842,4 @@ const BasicInformationTab = props => {
     </div>
   );
 };
-export default BasicInformationTab;
+export default connect(null, { hasPermission })(BasicInformationTab);

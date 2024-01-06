@@ -1,6 +1,33 @@
+@import url('./UserProfileModal.css');
 @media (max-width: 1024px) {
   .link-fields {
     display: flex;
     flex-direction: column;
   }
+}
+
+.invalid-help-context,
+.warning-help-context {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  margin-bottom: auto;
+  padding-left: 0.4rem;
+}
+
+.custom-label {
+  display: flex;
+  padding: 0.6em 0.4em;
+  margin: 2px;
+  width: 80%;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }

@@ -16,12 +16,14 @@ import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
+import hasPermission from '../../utils/permissions';
 import { boxStyle } from 'styles';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
-  const permissionsUser = props.userProfile?.permissions?.frontPermissions;
+  const canAssignBadges = props.hasPermission('assignBadges');
 
   const toggle = () => setOpen(!isOpen);
 
@@ -36,7 +38,13 @@ export const Badges = props => {
   }, [isOpen, isAssignOpen]);
 
   // Determines what congratulatory text should displayed.
-  const badgesEarned = props.userProfile.badgeCollection.length;
+  const badgesEarned = props.userProfile.badgeCollection.reduce((acc, badge) => {
+    if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+      return acc + 1;
+    }
+    return acc + Math.round(Number(badge.count));
+  }, 0);
+  
   const subject = props.isUserSelf ? 'You have' : 'This person has';
   const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
@@ -50,10 +58,21 @@ export const Badges = props => {
       <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
         <CardHeader>
           <div className="badge-header">
-            <span className="badge-header-title">
-              Featured Badges <i className="fa fa-info-circle" id="FeaturedBadgeInfo" />
-            </span>
-            <div>
+           
+              <span>
+                Featured Badges
+              </span>
+              <span className="badge-header-title">
+                <EditableInfoModal
+                  areaName="FeaturedBadgesInfoPoint"
+                  areaTitle="Featured Badges"
+                  fontSize={20}
+                  isPermissionPage={true}
+                  role={props.role}
+                />
+              </span>
+        
+            <div >
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
@@ -72,14 +91,13 @@ export const Badges = props => {
                         setUserProfile={props.setUserProfile}
                         setOriginalUserProfile={props.setOriginalUserProfile}
                         handleSubmit={props.handleSubmit}
-                        permissionsUser={permissionsUser}
+                        isUserSelf={props.isUserSelf}
                       />
                     </ModalBody>
                   </Modal>
                 </>
               )}
-              {((props.canEdit && (props.role == 'Owner' || props.role == 'Administrator')) ||
-                props.userPermissions.includes('assignBadgeOthers')) && (
+              {canAssignBadges && (
                 <>
                   <Button
                     className="btn--dark-sea-green mr-2"
@@ -106,20 +124,28 @@ export const Badges = props => {
           </div>
         </CardHeader>
         <CardBody style={{ overflow: 'auto' }}>
-          <FeaturedBadges badges={props.userProfile.badgeCollection} />
+          <FeaturedBadges personalBestMaxHrs={props.userProfile.personalBestMaxHrs} badges={props.userProfile.badgeCollection} />
         </CardBody>
-        <CardFooter
-          style={{
-            fontWeight: 'bold',
-            fontSize: 18,
-            color: '#285739',
-          }}
-        >
-          {congratulatoryText}
-          <i className="fa fa-info-circle" id="CountInfo" />
+        <CardFooter style={{ display: 'flex', alignItems: 'center' }}>
+          <span
+            style={{
+              fontWeight: 'bold',
+              fontSize: 18,
+              color: '#285739',
+            }}
+          >
+            {congratulatoryText}
+          </span>
+          <EditableInfoModal
+            areaName="NumberOfBadgesInfoPoint"
+            areaTitle="Number of Badges"
+            role={props.role}
+            fontSize={20}
+            isPermissionPage={true}
+          />
         </CardFooter>
       </Card>
-      <UncontrolledTooltip
+      {/* <UncontrolledTooltip
         placement="right"
         target="FeaturedBadgeInfo"
         style={{ backgroundColor: '#666', color: '#fff' }}
@@ -143,8 +169,8 @@ export const Badges = props => {
           No worries though, we&apos;re sure there are other areas of your life where you are a
           Champion already. Stick with us long enough and this will be another one.
         </p>
-      </UncontrolledTooltip>
-      <UncontrolledTooltip
+      </UncontrolledTooltip> */}
+      {/* <UncontrolledTooltip
         placement="auto"
         target="CountInfo"
         style={{ backgroundColor: '#666', color: '#fff' }}
@@ -157,13 +183,14 @@ export const Badges = props => {
           There are many things in life to be proud of. Some are even worth bragging about. If your
           number here is large, it definitely falls into the later category.
         </p>
-      </UncontrolledTooltip>
+      </UncontrolledTooltip> */}
     </>
   );
 };
 
 const mapDispatchToProps = dispatch => ({
   clearSelected: () => dispatch(clearSelected()),
+  hasPermission: (permission) => dispatch(hasPermission(permission)),
 });
 
 const mapStateToProps = state => ({

@@ -9,47 +9,64 @@ import { ENDPOINTS } from '../utils/URL';
  * number === 2 week before last
  */
 export const getTimeEntriesForWeek = (userId, offset) => {
-  //TODO: Environment variable for server timezone
+  // TODO: Environment variable for server timezone
 
   const fromDate = moment()
     .tz('America/Los_Angeles')
     .startOf('week')
     .subtract(offset, 'weeks')
-    .format('YYYY-MM-DD');
+    .format('YYYY-MM-DDTHH:mm:ss');
 
   const toDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
     .subtract(offset, 'weeks')
-    .format('YYYY-MM-DD');
+    .format('YYYY-MM-DDTHH:mm:ss');
 
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
-        //logout error
+        // logout error
         loggedOut = true;
       }
     });
     if (!loggedOut || !res || !res.data) {
-      await dispatch(setTimeEntriesForWeek(res.data, offset));
+      const filteredEntries = res.data.filter(entry => {
+        const entryDate = moment(entry.dateOfWork); // Convert the entry date to a moment object
+        return entryDate.isBetween(fromDate, toDate, 'day', '[]'); // Check if the entry date is within the range (inclusive)
+      });
+      await dispatch(setTimeEntriesForWeek(filteredEntries, offset));
+      // await dispatch(setTimeEntriesForWeek(res.data, offset));
     }
   };
 };
 
 export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DDTHH:mm:ss');
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
       if (error.status === 401) {
-        //logout error
+        // logout error
         loggedOut = true;
       }
     });
     if (!loggedOut || !res || !res.data) {
-      await dispatch(setTimeEntriesForPeriod(res.data));
+      const filteredEntries = res.data.filter(entry => {
+        const entryDate = moment(entry.dateOfWork); // Convert the entry date to a moment object
+        return entryDate.isBetween(fromDate, toDate, 'day', '[]'); // Check if the entry date is within the range (inclusive)
+      });
+      filteredEntries.sort((a, b) => {
+        return moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf();
+      });
+
+      await dispatch(setTimeEntriesForPeriod(filteredEntries));
+      // await dispatch(setTimeEntriesForPeriod(res.data));
     }
   };
 };
@@ -59,7 +76,9 @@ export const postTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry));
+      if(timeEntry.entryType == 'default'){
+        dispatch(updateTimeEntries(timeEntry));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -72,7 +91,9 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   return async dispatch => {
     try {
       const res = await axios.put(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      if (timeEntry.entryType == 'default') {
+        dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -85,7 +106,9 @@ export const deleteTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.delete(url);
-      dispatch(updateTimeEntries(timeEntry));
+      if (timeEntry.entryType == 'default') {
+        dispatch(updateTimeEntries(timeEntry));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;

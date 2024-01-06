@@ -3,6 +3,7 @@ jobs:
   build_PROD:
     docker:
       - image: cimg/node:14.17.0
+    resource_class: large
     steps:
       - checkout
       - run:
@@ -10,43 +11,39 @@ jobs:
           command: 'sudo npm install'
       - run:
           name: Run react build
-          command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true npm run build && sudo mv build/index.html build/200.html'
+          command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS npm run build && sudo mv build/index.html build/200.html'
       - run:
           name: Deploy app
           command: ./node_modules/.bin/surge build --domain $SURGE_DOMAIN_PROD
 
   build_development:
     docker:
-      - image: ubuntu:20.04
+      # Change from Ubnutu to cimg/node:14.21.3.
+      # cimg convient image comes with node, yarn, and other pre-installed software.
+      # This will remove the steps of install node, yarn, and other software.
+      - image: cimg/node:14.21.3
+    resource_class: large
     steps:
       - checkout
-      - run:
-          name: Install ubuntu updates
-          command: apt-get update && apt-get upgrade -y
-      - run:
-          name: Install curl and zip
-          command: apt-get install curl zip -y
-      - run:
-          name: Download and execute Node.js 14.x install script from node source
-          command: curl -sL https://deb.nodesource.com/setup_14.x | bash -
-      - run:
-          name: Install Node.js and NPM
-          command: apt-get install nodejs -y
-      - run:
-          name: Download and execute Yarn istallation script
-          command: curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr/share/keyrings/yarnkey.gpg >/dev/null
-      - run:
-          name: Add yarn to sources.list
-          command: echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | tee /etc/apt/sources.list.d/yarn.list
-      - run:
-          name: Install yarn
-          command: apt-get install yarn -y
+      - restore_cache:
+          keys:
+            #   Update the key to v1.1-dependencies-{{ checksum "package-lock.json" }} since the base image switched.
+            #   Otherwise, we would have persmission issues while retriving the cache saved from the preivous image
+            - v1.1-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Install HighestGoodNetworkApp's NodeJS dependencies
           command: npm install
       - run:
           name: Build the React client
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true DISABLE_ESLINT_PLUGIN=true && npm run build
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS && npm run build
+      - run:
+          name: Export error log if 'Build the React client' failed
+          command: |
+            mkdir -p /tmp/err_logs
+            cp -r /home/circleci/.npm/_logs/* /tmp/err_logs
+          when: on_fail
+      - store_artifacts:
+          path: /tmp/err_logs
       - run:
           name: Create ZIP archive of build directory
           command: zip -r build.zip build
@@ -59,10 +56,15 @@ jobs:
       - run:
           name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV --project ./build
+      - save_cache:
+          key: v1.1-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
 
   build_beta:
     docker:
       - image: ubuntu:20.04
+    resource_class: large
     steps:
       - checkout
       - run:
@@ -91,7 +93,7 @@ jobs:
           command: npm install
       - run:
           name: Build the React client
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA SKIP_PREFLIGHT_CHECK=true && npm run build
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS && npm run build
       - run:
           name: Create ZIP archive of build directory
           command: zip -r build.zip build

@@ -1,8 +1,8 @@
+// eslint-disable-next-line no-unused-vars
 import { React, useEffect } from 'react';
 import './ReportCharts.css';
 import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
-import { generateArrayOfUniqColors } from '../../../common/PieChart/colorsGenerator';
 import '../../../common/PieChart/PieChart.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
@@ -14,6 +14,7 @@ function TeamReportCharts({
 }) {
   const totalHoursAvailable = teamWeeklyCommittedHours - totalTeamWeeklyWorkedHours;
 
+  // eslint-disable-next-line no-unused-vars
   const chart = {
     teamWeeklyCommittedHours,
     totalTeamWeeklyWorkedHours,
@@ -35,13 +36,13 @@ function TeamReportCharts({
   const pie = d3.pie().value(d => d[1]);
 
   useEffect(() => {
-    const data_ready = pie(
+    const dataReady = pie(
       Object.entries([teamWeeklyCommittedHours, totalTeamWeeklyWorkedHours, totalHoursAvailable]),
     );
 
     getCreateSvgPie()
       .selectAll('whatever')
-      .data(data_ready)
+      .data(dataReady)
       .join('path')
       .attr(
         'd',
@@ -61,10 +62,18 @@ function TeamReportCharts({
   return (
     <section className="team-report-chart-wrapper">
       <div className="team-report-chart-teams">
-        <h4>{title}</h4>
-        <div className="team-report-chart-info-wrapper">
+        <h4 style={{ textAlign: 'center' }}>{title}</h4>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyItems: 'center',
+            alignItems: 'center',
+          }}
+          className="team-report-chart-info-wrapper mobile-pie-chart"
+        >
           <div className="team-report-chart-info">
-            <div className="pie-chart-wrapper">
+            <div className="pie-chart-wrapper mobile-pie-chart">
               <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
               <div className="pie-chart-info-detail">
                 <div className="pie-chart-info-detail-title">
@@ -89,7 +98,7 @@ function TeamReportCharts({
               </div>
             </div>
           </div>
-          <div className="team-report-chart-info"></div>
+          <div className="team-report-chart-info" />
         </div>
       </div>
     </section>

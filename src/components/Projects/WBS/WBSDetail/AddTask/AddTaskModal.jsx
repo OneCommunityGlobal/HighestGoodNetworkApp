@@ -1,153 +1,128 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
-import { fetchAllTasks, addNewTask } from '../../../../../actions/task';
+import { addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
 import { boxStyle } from 'styles';
+import { useMemo } from 'react';
 
 function AddTaskModal(props) {
-  const tasks = props.tasks.taskItems;
+  /*
+  * -------------------------------- variable declarations -------------------------------- 
+  */
+  // props from store 
+  const { tasks, copiedTask, allMembers, allProjects, error } = props;
 
-  // members
-  const [members, setMembers] = useState([]);
-  useEffect(() => {
-    const activeUsers = props.projectMembers.members.filter(member => member.isActive);
-    setMembers(activeUsers);
-  }, [props.projectMembers.members]);
-
-  // modal
-  const [modal, setModal] = useState(false);
-  const toggle = () => setModal(!modal);
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const setToggle = () => {
-    try {
-      props.openChild();
-    } catch {}
-    toggle();
-  };
-
-  // task Num
-  let newNum = '1';
-
-  // task name
+  // states from hooks
+  const defaultCategory = useMemo(() => {
+    if (props.taskId) {
+      return tasks.find(({ _id }) => _id === props.taskId).category;
+    } else {
+      return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
+    }  
+  }, []);
   const [taskName, setTaskName] = useState('');
-
-  // priority
   const [priority, setPriority] = useState('Primary');
-
-  // members name
-  const [memberName, setMemberName] = useState(' ');
-
-  // resources
   const [resourceItems, setResourceItems] = useState([]);
-
-  // assigned
-  const [assigned, setAssigned] = useState(true);
-
-  // status
-  const [status, setStatus] = useState(true);
-
-  // hour best
+  const [assigned, setAssigned] = useState(false);
+  const [status, setStatus] = useState('Started');
   const [hoursBest, setHoursBest] = useState(0);
-
-  // hour worst
-  const [hoursWorst, setHoursWorst] = useState(0);
-
-  // hour most
   const [hoursMost, setHoursMost] = useState(0);
-
-  // hour estimate
+  const [hoursWorst, setHoursWorst] = useState(0);
   const [hoursEstimate, setHoursEstimate] = useState(0);
-
-  // started date
-  const [startedDate, setStartedDate] = useState('');
-
-  // due date
-  const [dueDate, setDueDate] = useState('');
-
-  // links
+  const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
-
-  // Why info (Why is this task important)
+  const [category, setCategory] = useState(defaultCategory);
   const [whyInfo, setWhyInfo] = useState('');
-
-  // Intent info (Design intent)
   const [intentInfo, setIntentInfo] = useState('');
-
-  // Endstate info (what it should look like when done)
+  const [startedDate, setStartedDate] = useState('');
   const [endstateInfo, setEndstateInfo] = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const [modal, setModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [newTaskNum, setNewTaskNum] = useState('1');
+  const [dateWarning, setDateWarning] = useState(false);
+  const [hoursWarning, setHoursWarning] = useState(false);
+  const priorityRef = useRef(null);
 
-  // category
   const categoryOptions = [
+    { value: 'Unspecified', label: 'Unspecified' },
     { value: 'Housing', label: 'Housing' },
     { value: 'Food', label: 'Food' },
     { value: 'Energy', label: 'Energy' },
     { value: 'Education', label: 'Education' },
-    { value: 'Soceity', label: 'Soceity' },
+    { value: 'Society', label: 'Society' },
     { value: 'Economics', label: 'Economics' },
     { value: 'Stewardship', label: 'Stewardship' },
     { value: 'Other', label: 'Other' },
   ];
-  const [category, setCategory] = useState('Housing');
+  const FORMAT = 'MM/dd/yy';
 
-  // Warning
-  const [dateWarning, setDateWarning] = useState(false);
-  const [hoursWarning, setHoursWarning] = useState(false);
+  /*
+  * -------------------------------- functions -------------------------------- 
+  */
+  const toggle = () => setModal(!modal);
+
+  const openModal = () => {
+    if (!props.isOpen && props.setIsOpen) props.setIsOpen(true);
+    toggle();
+  };
 
   const getNewNum = () => {
-    if (tasks.length > 0) {
-      if (props.taskId) {
-        const childTasks = tasks.filter(task => task.mother === props.taskId);
-        newNum = `${props.parentNum !== null ? `${props.parentNum}.` : ''}${childTasks.length + 1}`;
-        newNum = newNum.replace(/.0/g, '');
-      } else {
-        newNum = `${tasks.filter(task => task.level === 1).length + 1}`;
-      }
+    let newNum;
+    if (props.taskId) { 
+      const numOfLastInnerLevelTask = tasks.reduce((num, task) => {
+        if (task.mother === props.taskId) {
+          const numIndexArray = task.num.split('.');
+          const numOfInnerLevel = numIndexArray[props.level];
+          num = +numOfInnerLevel > num ? +numOfInnerLevel : num;
+        }
+        return num;
+      }, 0);
+      const currentLevelIndexes = props.taskNum.replaceAll('.0', '').split('.');
+      currentLevelIndexes[props.level] = `${numOfLastInnerLevelTask + 1}`;
+      newNum = currentLevelIndexes.join('.');
+    } else {
+      const numOfLastLevelOneTask = tasks.reduce((num, task) => {
+        if (task.level === 1) {
+          const numIndexArray = task.num.split('.');
+          const indexOfFirstNum = numIndexArray[0];
+          num = +indexOfFirstNum > num ? +indexOfFirstNum : num;
+        }
+        return num;
+      }, 0)
+      newNum = `${numOfLastLevelOneTask + 1}`;
     }
+    return newNum;
   };
 
   const removeResource = userID => {
-    const removeIndex = resourceItems.map(item => item.userID).indexOf(userID);
-    setResourceItems([
-      ...resourceItems.slice(0, removeIndex),
-      ...resourceItems.slice(removeIndex + 1),
-    ]);
+    const newResource = resourceItems.filter(item => item.userID !== userID);
+    setResourceItems(newResource);
+    if (!newResource.length) setAssigned(false);
   };
 
   const addResources = (userID, first, last, profilePic) => {
-    setResourceItems([
+    const newResource = [
       {
         userID,
         name: `${first} ${last}`,
         profilePic,
       },
       ...resourceItems,
-    ]);
+    ]
+    setResourceItems(newResource);
+    setAssigned(true);
   };
 
-  // Date picker
-  const FORMAT = 'MM/dd/yy';
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
 
-  // Links
-  const [link, setLink] = useState('');
-  const addLink = () => {
-    setLinks([...links, link]);
-  };
-
-  const removeLink = index => {
-    setLinks([...links.slice(0, index), ...links.slice(index + 1)]);
-  };
-
-  // Hours estimate
   const calHoursEstimate = (isOn = null) => {
     let currHoursMost = parseInt(hoursMost);
     let currHoursWorst = parseInt(hoursWorst);
@@ -172,19 +147,6 @@ function AddTaskModal(props) {
     }
   };
 
-  // parent Id
-  let parentId1 = null;
-  let parentId2 = null;
-  let parentId3 = null;
-
-  if (props.level === 1) {
-    parentId1 = props.taskId;
-  } else if (props.level === 2) {
-    parentId2 = props.taskId;
-  } else if (props.level === 3) {
-    parentId3 = props.taskId;
-  }
-
   const changeDateStart = startDate => {
     setStartedDate(startDate);
     if (dueDate) {
@@ -207,10 +169,18 @@ function AddTaskModal(props) {
     }
   };
 
+  const addLink = () => {
+    setLinks([...links, link]);
+    setLink('');
+  };
+
+  const removeLink = index => {
+    setLinks([...links.slice(0, index), ...links.slice(index + 1)]);
+  };
+
   const clear = () => {
     setTaskName('');
     setPriority('Primary');
-    setMemberName(' ');
     setResourceItems([]);
     setAssigned(false);
     setStatus('Started');
@@ -224,61 +194,39 @@ function AddTaskModal(props) {
     setWhyInfo('');
     setIntentInfo('');
     setEndstateInfo('');
-    setCategory('');
+    setCategory(defaultCategory);
   };
 
   const paste = () => {
-    taskName && setTaskName(props.tasks.copiedTask.taskName);
+    setTaskName(copiedTask.taskName)
 
-    if (props.tasks.copiedTask.priority === 'Secondary') {
-      document.getElementById('priority').selectedIndex = 1;
-    } else if (props.tasks.copiedTask.priority === 'Tertiary') {
-      document.getElementById('priority').selectedIndex = 2;
-    } else {
-      document.getElementById('priority').selectedIndex = 0;
-    }
-    setPriority(props.tasks.copiedTask.priority);
+    setPriority(copiedTask.priority);
+    priorityRef.current.value = copiedTask.priority;
 
-    setMemberName();
-    setResourceItems(props.tasks.copiedTask.resources);
+    setResourceItems(copiedTask.resources);
+    setAssigned(copiedTask.isAssigned);
+    setStatus(copiedTask.status);
 
-    if (props.tasks.copiedTask.isAssigned === true) {
-      document.getElementById('Assigned').selectedIndex = 0;
-    } else {
-      document.getElementById('Assigned').selectedIndex = 1;
-    }
-    setAssigned(props.tasks.copiedTask.isAssigned);
+    setHoursBest(copiedTask.hoursBest);
+    setHoursWorst(copiedTask.hoursWorst);
+    setHoursMost(copiedTask.hoursMost);
+    setHoursEstimate(copiedTask.estimatedHours);
 
-    // Not enough cases here
-    if (props.tasks.copiedTask.status === 'Not Started') {
-      document.getElementById('Status').selectedIndex = 0;
-    } else {
-      document.getElementById('Status').selectedIndex = 1;
-    }
-    setStatus(props.tasks.copiedTask.status);
+    setStartedDate(copiedTask.startedDatetime);
+    setDueDate(copiedTask.dueDatetime);
 
-    setHoursBest(props.tasks.copiedTask.hoursBest);
-    setHoursWorst(props.tasks.copiedTask.hoursWorst);
-    setHoursMost(props.tasks.copiedTask.hoursMost);
-    setHoursEstimate(props.tasks.copiedTask.estimatedHours);
-
-    setStartedDate(props.tasks.copiedTask.startedDatetime);
-    setDueDate(props.tasks.copiedTask.dueDatetime);
-
-    setLinks(props.tasks.copiedTask.links);
-    setWhyInfo(props.tasks.copiedTask.whyInfo);
-    setIntentInfo(props.tasks.copiedTask.intentInfo);
-    setEndstateInfo(props.tasks.copiedTask.endstateInfo);
+    setLinks(copiedTask.links);
+    setWhyInfo(copiedTask.whyInfo);
+    setIntentInfo(copiedTask.intentInfo);
+    setEndstateInfo(copiedTask.endstateInfo);
   };
 
-  const addNewTask = () => {
-    setIsLoading(true);
-
+  const addNewTask = async () => {
     const newTask = {
-      wbsId: props.wbsId,
       taskName,
-      num: newNum,
-      level: newNum.length > 1 ? newNum.split('.').length : 1,
+      wbsId: props.wbsId,
+      num: newTaskNum,
+      level: props.taskId ? props.level + 1 : 1,
       priority,
       resources: resourceItems,
       isAssigned: assigned,
@@ -290,53 +238,52 @@ function AddTaskModal(props) {
       startedDatetime: startedDate,
       dueDatetime: dueDate,
       links,
+      category,
+      parentId1: props.level === 1 ? props.taskId : props.parentId1, 
+      parentId2: props.level === 2 ? props.taskId : props.parentId2,
+      parentId3: props.level === 3 ? props.taskId : props.parentId3,
       mother: props.taskId,
-      parentId1,
-      parentId2,
-      parentId3,
-      position: tasks.length,
+      position: 0, // it is required in database schema, didn't find its usage
       isActive: true,
       whyInfo,
       intentInfo,
       endstateInfo,
-      category,
     };
-
-    props.addNewTask(newTask, props.wbsId);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      if (props.tasks.error === 'none') {
-        toggle();
-        getNewNum();
-        setTaskName('');
-      }
-    }, 1000);
+    await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
+    props.load();
+    toggle();
   };
 
+  /*
+  * -------------------------------- useEffects -------------------------------- 
+  */
   useEffect(() => {
-    if (props.level >= 1) {
-      const categoryMother = props.tasks.taskItems.find(({ _id }) => _id === props.taskId).category;
-      if (categoryMother) {
-        setCategory(categoryMother);
-      }
-    } else {
-      const res = props.allProjects.projects.filter(obj => obj._id === props.projectId)[0];
-      setCategory(res.category);
-    }
-  }, [props.level]);
+    setNewTaskNum(getNewNum());
+  }, [modal]);
 
-  getNewNum();
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  }, [links]);
+
+  useEffect(() => {
+    if (error === 'outdated') {
+      alert('Database changed since your page loaded , click OK to get the newest data!');
+      props.load();
+    } else {
+      clear();
+    }
+  }, [error, tasks])
 
   return (
-    <div className="controlBtn">
+    <>
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle} className="w-100 align-items-center">
+          <ReactTooltip delayShow={300}/>
           <p className="fs-2 d-inline mr-3">Add New Task</p>
           <button
             type="button"
             size="small"
-            className="btn btn-primary btn-sm margin-left"
+            className="btn btn-primary btn-sm ml-2"
             onClick={() => paste()}
             disabled={hoursWarning}
             style={boxStyle}
@@ -346,7 +293,7 @@ function AddTaskModal(props) {
           <button
             type="button"
             size="small"
-            className="btn btn-danger btn-sm margin-left"
+            className="btn btn-danger btn-sm ml-2"
             onClick={() => clear()}
             style={boxStyle}
           >
@@ -354,22 +301,22 @@ function AddTaskModal(props) {
           </button>
         </ModalHeader>
         <ModalBody>
-          <ReactTooltip />
-
           <table className="table table-bordered responsive">
             <tbody>
               <tr>
                 <td scope="col" data-tip="WBS ID">
                   WBS #
                 </td>
-                <td scope="col">{newNum.replace(/.0/g, '')}</td>
+                <td scope="col">{newTaskNum}</td>
               </tr>
               <tr>
                 <td scope="col">Task Name</td>
                 <td scope="col">
-                  <input
+                  {/* Fix Task-name formatting - by Sucheta */}
+                  <textarea
                     type="text"
-                    className="task-name"
+                    rows="2"
+                    className="task-name border border-dark rounded"
                     onChange={e => setTaskName(e.target.value)}
                     onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
@@ -379,7 +326,7 @@ function AddTaskModal(props) {
               <tr>
                 <td scope="col">Priority</td>
                 <td scope="col">
-                  <select id="priority" onChange={e => setPriority(e.target.value)}>
+                  <select id="priority" onChange={e => setPriority(e.target.value)} ref={priorityRef}>
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
                     <option value="Tertiary">Tertiary</option>
@@ -392,7 +339,7 @@ function AddTaskModal(props) {
                   <div>
                     <TagsSearch
                       placeholder="Add resources"
-                      members={members}
+                      members={allMembers.filter(user=>user.isActive)}
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
@@ -403,7 +350,7 @@ function AddTaskModal(props) {
               <tr>
                 <td scope="col">Assigned</td>
                 <td scope="col">
-                  <div className="flex-row d-inline align-items-center">
+                  <div className="flex-row d-inline align-items-center" >
                     <div className="form-check form-check-inline">
                       <input
                         className="form-check-input"
@@ -412,7 +359,7 @@ function AddTaskModal(props) {
                         name="Assigned"
                         value={true}
                         checked={assigned}
-                        onClick={() => setAssigned(true)}
+                        onChange={() => setAssigned(true)}
                       />
                       <label className="form-check-label" htmlFor="true">
                         Yes
@@ -426,7 +373,7 @@ function AddTaskModal(props) {
                         name="Assigned"
                         value={false}
                         checked={!assigned}
-                        onClick={() => setAssigned(false)}
+                        onChange={() => setAssigned(false)}
                       />
                       <label className="form-check-label" htmlFor="false">
                         No
@@ -438,19 +385,19 @@ function AddTaskModal(props) {
               <tr>
                 <td scope="col">Status</td>
                 <td scope="col">
-                  <div className="flex-row  d-inline align-items-center">
+                  <div className="flex-row  d-inline align-items-center" >
                     <div className="form-check form-check-inline">
                       <input
                         className="form-check-input"
                         type="radio"
-                        id="started"
-                        name="started"
-                        value={true}
-                        checked={status}
-                        onClick={() => setStatus(true)}
+                        id="active"
+                        name="status"
+                        value="Active"
+                        checked={status === 'Active' || status === 'Started'}
+                        onChange={(e) => setStatus(e.target.value)}
                       />
-                      <label className="form-check-label" htmlFor="started">
-                        Started
+                      <label className="form-check-label" htmlFor="active">
+                        Active
                       </label>
                     </div>
                     <div className="form-check form-check-inline">
@@ -458,13 +405,41 @@ function AddTaskModal(props) {
                         className="form-check-input"
                         type="radio"
                         id="notStarted"
-                        name="started"
-                        value={false}
-                        checked={!status}
-                        onClick={() => setStatus(false)}
+                        name="status"
+                        value="Not Started"
+                        checked={status === 'Not Started'}
+                        onChange={(e) => setStatus(e.target.value)}
                       />
                       <label className="form-check-label" htmlFor="notStarted">
                         Not Started
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="paused"
+                        name="status"
+                        value="Paused"
+                        checked={status === 'Paused'}
+                        onChange={(e) => setStatus(e.target.value)}
+                      />
+                      <label className="form-check-label" htmlFor="paused">
+                        Paused
+                      </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        id="complete"
+                        name="status"
+                        value="Complete"
+                        checked={status === 'Complete'}
+                        onChange={(e) => setStatus(e.target.value)}
+                      />
+                      <label className="form-check-label" htmlFor="complete">
+                        Complete
                       </label>
                     </div>
                   </div>
@@ -551,7 +526,7 @@ function AddTaskModal(props) {
               <tr>
                 <td scope="col">Links</td>
                 <td scope="col">
-                  <div>
+                  <div className="d-flex flex-row">
                     <input
                       type="text"
                       aria-label="Search user"
@@ -559,12 +534,13 @@ function AddTaskModal(props) {
                       className="task-resouces-input"
                       data-tip="Add a link"
                       onChange={e => setLink(e.target.value)}
+                      value={link}
                     />
                     <button
                       className="task-resouces-btn"
                       type="button"
                       data-tip="Add Link"
-                      onClick={() => addLink()}
+                      onClick={addLink}
                     >
                       <i className="fa fa-plus" aria-hidden="true" />
                     </button>
@@ -573,12 +549,10 @@ function AddTaskModal(props) {
                     {links.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i}>
-                          <a href={link} target="_blank" rel="noreferrer">
+                          <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)} ></i>
+                          <a href={link} className="task-link" target="_blank" rel="noreferrer">
                             {link}
                           </a>
-                          <span className="remove-link" onClick={() => removeLink(i)}>
-                            x
-                          </span>
                         </div>
                       ) : null,
                     )}
@@ -706,22 +680,25 @@ function AddTaskModal(props) {
             isLoading ? (
               ' Adding...'
             ) : (
-              <Button color="primary" onClick={toggle && addNewTask} disabled={hoursWarning}>
+              <Button color="primary" onClick={addNewTask} disabled={hoursWarning} style={boxStyle}>
                 Save
               </Button>
             )
           ) : null}
         </ModalFooter>
       </Modal>
-      <Button color="primary" size="sm" onClick={setToggle} style={boxStyle}>
+      <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={boxStyle}>
         Add Task
       </Button>
-    </div>
+    </>
   );
 }
 
-const mapStateToProps = state => state;
-export default connect(mapStateToProps, {
-  addNewTask,
-  fetchAllTasks,
-})(AddTaskModal);
+const mapStateToProps = state => ({ 
+  tasks: state.tasks.taskItems,
+  copiedTask: state.tasks.copiedTask,
+  allMembers: state.projectMembers.members,
+  allProjects: state.allProjects,
+  error: state.tasks.error,
+ });
+export default connect(mapStateToProps, { addNewTask })(AddTaskModal);

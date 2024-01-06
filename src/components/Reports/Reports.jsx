@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import { Container } from 'reactstrap';
+import { Container, Button } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
@@ -16,16 +16,31 @@ import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
 import peopleImage from './images/People.svg';
 import teamsImage from './images/Teams.svg';
-
+import ReactTooltip from 'react-tooltip';
+import TotalPeopleReport from './TotalReport/TotalPeopleReport';
+import TotalTeamReport from './TotalReport/TotalTeamReport';
+import TotalProjectReport from './TotalReport/TotalProjectReport';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import AddLostTime from './LostTime/AddLostTime';
+import LostTimeHistory from './LostTime/LostTimeHistory';
+import { searchWithAccent } from 'utils/search';
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
+  
   constructor(props) {
     super(props);
     this.state = {
       showProjects: false,
       showPeople: false,
       showTeams: false,
+      showTotalPeople: false,
+      showTotalTeam: false,
+      showTotalProject: false,
+      showAddTimeForm: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+      showAddProjHistory: false,
       teamNameSearchText: '',
       teamMembersPopupOpen: false,
       deleteTeamPopupOpen: false,
@@ -67,24 +82,35 @@ class ReportsPage extends Component {
       users: {},
       startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
+      teamMemberList: {},
+      remainedTeams: [],
     };
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable = this.showPeopleTable.bind(this);
     this.showTeamsTable = this.showTeamsTable.bind(this);
+    this.showTotalPeople = this.showTotalPeople.bind(this);
+    this.showTotalTeam = this.showTotalTeam.bind(this);
+    this.showTotalProject = this.showTotalProject.bind(this);
+    this.showAddPersonHistory = this.showAddPersonHistory.bind(this);
+    this.showAddTeamHistory = this.showAddTeamHistory.bind(this);
+    this.showAddProjHistory = this.showAddProjHistory.bind(this);
     this.setActive = this.setActive.bind(this);
     this.setInActive = this.setInActive.bind(this);
     this.setAll = this.setAll.bind(this);
+    this.setTeamMemberList = this.setTeamMemberList.bind(this);
+    this.setAddTime = this.setAddTime.bind(this);
+    this.setRemainedTeams = this.setRemainedTeams.bind(this);
   }
 
   async componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
-    this.state = {
+    this.setState({
       showProjects: false,
       showPeople: false,
       showTeams: false,
       checkActive: '',
-    };
+    });
     this.props.getAllUserProfile();
   }
 
@@ -102,13 +128,11 @@ class ReportsPage extends Component {
       // Applying the search filters before creating each team table data element
       if (
         (project.projectName &&
-          project.projectName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
+          searchWithAccent(project.projectName,this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          project.projectName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
+        searchWithAccent(project.projectName,this.state.wildCardSearchText))
       ) {
         return project;
       }
@@ -123,11 +147,11 @@ class ReportsPage extends Component {
       // Applying the search filters before creating each team table data element
       if (
         (team.teamName &&
-          team.teamName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) > -1 &&
+          searchWithAccent(team.teamName, this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          team.teamName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1)
+        searchWithAccent(team.teamName, this.state.wildCardSearchText))
       ) {
         return team;
       }
@@ -142,17 +166,14 @@ class ReportsPage extends Component {
       // Applying the search filters before creating each team table data element
       if (
         (userProfile.firstName &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.teamNameSearchText.toLowerCase()) >
-            -1 &&
+          searchWithAccent(userProfile.firstName, this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          userProfile.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1) ||
+           searchWithAccent(userProfile.firstName, this.state.wildCardSearchText)) ||
         (this.state.wildCardSearchText !== '' &&
           userProfile.lastName &&
-          userProfile.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) >
-            -1)
+          searchWithAccent(userProfile.lastName, this.state.wildCardSearchText))
       ) {
         return (
           new Date(Date.parse(userProfile.createdDate)) >= this.state.startDate &&
@@ -183,11 +204,45 @@ class ReportsPage extends Component {
     }));
   }
 
+  setTeamMemberList(list) {
+    this.setState(() => ({
+      teamMemberList: list,
+    }));
+  }
+
+  setAddTime() {
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: !prevState.showAddTimeForm,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+    }));
+  }
+
+  setRemainedTeams(teams) {
+    this.setState(() => ({
+      remainedTeams: teams,
+    }));
+  }
+
   showProjectTable() {
     this.setState(prevState => ({
       showProjects: !prevState.showProjects,
       showPeople: false,
       showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
@@ -196,6 +251,13 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: false,
       showTeams: !prevState.showTeams,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
@@ -204,18 +266,109 @@ class ReportsPage extends Component {
       showProjects: false,
       showPeople: !prevState.showPeople,
       showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
-  showTasksTable() {
+  showTotalPeople() {
     this.setState(prevState => ({
       showProjects: false,
       showPeople: false,
       showTeams: false,
+      showTotalProject: false,
+      showTotalPeople: !prevState.showTotalPeople,
+      showTotalTeam: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
     }));
   }
 
+  showTotalTeam() {
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: !prevState.showTotalTeam,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+    }));
+  }
+  showTotalProject() {
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: !prevState.showTotalProject,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+    }));
+  }
+
+  showAddProjHistory() {
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: !prevState.showAddProjHistory,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+    }));
+  }
+
+  showAddPersonHistory() {
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: !prevState.showAddPersonHistory,
+      showAddTeamHistory: false,
+    }));
+  }
+
+  showAddTeamHistory() {
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: !prevState.showAddTeamHistory,
+    }));
+  }
+  
+
   render() {
+    const userRole = this.props.state.userProfile.role;
+    const myRole = this.props.state.auth.user.role;
     const { projects } = this.props.state.allProjects;
     const { allTeams } = this.props.state.allTeamsData;
     const { userProfiles } = this.props.state.allUserProfiles;
@@ -243,7 +396,19 @@ class ReportsPage extends Component {
     return (
       <Container fluid className="mb-5 container-component-wrapper">
         <div className="container-component-category">
-          <h2 className="mt-3 mb-5">Reports Page</h2>
+        <h2 className="mt-3 mb-5">
+          <div className="d-flex align-items-center">
+            <span className="mr-2">Reports Page</span>
+            <EditableInfoModal
+              areaName="ReportsPage"
+              areaTitle="Reports Page"
+              role={userRole}
+              fontSize={26}
+              isPermissionPage={true}
+              className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+            />
+          </div>
+        </h2>
           <div>
             <p>Select a Category</p>
           </div>
@@ -294,7 +459,7 @@ class ReportsPage extends Component {
               {this.state.teamSearchData?.length}
             </button> */}
           </div>
-          <div className="mt-4 bg-white p-4 rounded-5">
+          <div className="mt-4 bg-white p-3 rounded-5">
             <div>
               <a>Select a Filter</a>
             </div>
@@ -332,7 +497,7 @@ class ReportsPage extends Component {
               />
             </div>
             <div className="date-picker-container">
-              <td id="task_startDate" className="date-picker-item">
+              <div id="task_startDate" className="date-picker-item">
                 <label htmlFor="task_startDate" className="date-picker-label">
                   {' '}
                   Start Date
@@ -341,11 +506,16 @@ class ReportsPage extends Component {
                   selected={this.state.startDate}
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
                   maxDate={new Date()}
-                  onChange={date => this.setState({ startDate: date })}
+                  onChange={date => {
+                    if (date > new Date(DATE_PICKER_MIN_DATE) && date <= this.state.endDate) {
+                      this.setState({ startDate: date });
+                    }
+                  }}
                   className="form-control"
+                  popperPlacement="top-start"
                 />
-              </td>
-              <td id="task_EndDate" className="date-picker-item">
+              </div>
+              <div id="task_EndDate" className="date-picker-item">
                 <label htmlFor="task_EndDate" className="date-picker-label">
                   {' '}
                   End Date
@@ -354,17 +524,257 @@ class ReportsPage extends Component {
                   selected={this.state.endDate}
                   maxDate={new Date()}
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
-                  onChange={date => this.setState({ endDate: date })}
+                  onChange={date => {
+                    if (date >= this.state.startDate) {
+                      this.setState({ endDate: date });
+                    }
+                  }}
                   className="form-control"
+                  popperPlacement="top"
                 />
-              </td>
+              </div>
             </div>
+            <div className="total-report-container">
+              <div className="total-report-item">
+                <Button color="info" onClick={this.showTotalProject}>
+                  {this.state.showTotalProject
+                    ? 'Hide Total Project Report'
+                    : 'Show Total Project Report'}
+                </Button>
+                <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                <EditableInfoModal
+                  areaName="totalProjectReportInfoPoint"
+                  areaTitle="Total Project Report"
+                  role={userRole}
+                  fontSize={15}
+                  isPermissionPage={true}
+                />
+                </div>
+              </div>
+              <div className="total-report-item">
+                <Button color="info" onClick={this.showTotalPeople}>
+                  {this.state.showTotalPeople
+                    ? 'Hide Total People Report'
+                    : 'Show Total People Report'}
+                </Button>
+                <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                <EditableInfoModal
+                  areaName="totalPeopleReportInfoPoint"
+                  areaTitle="Total People Report"
+                  role={userRole}
+                  fontSize={15}
+                  isPermissionPage={true}
+                />
+                </div>
+              </div>
+              <div className="total-report-item">
+                <Button color="info" onClick={this.showTotalTeam}>
+                  {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
+                </Button>
+                <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                <EditableInfoModal
+                  areaName="totalTeamReportInfoPoint"
+                  areaTitle="Total Team Report"
+                  role={userRole}
+                  fontSize={15}
+                  isPermissionPage={true}
+                />
+                </div>
+              </div>
+            </div>
+            {myRole != 'Owner' && (
+              <div className='lost-time-container'>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddProjHistory}>
+                    {this.state.showAddProjHistory
+                      ? 'Hide Project Lost Time'
+                      : 'Show Project Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="projectLostTimeInfoPoint"
+                      areaTitle="Project Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddPersonHistory}>
+                    {this.state.showAddPersonHistory
+                      ? 'Hide Person Lost Time'
+                      : 'Show Person Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="personLostTimeInfoPoint"
+                      areaTitle="Person Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddTeamHistory}>
+                    {this.state.showAddTeamHistory
+                      ? 'Hide Team Lost Time'
+                      : 'Show Team Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="teamLostTimeInfoPoint"
+                      areaTitle="Team Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+          {myRole === 'Owner' && (
+            <div className="mt-4 bg-white p-3 rounded-5">
+              <div className='lost-time-container'>
+                <div className='lost-time-item'>
+                  <Button color='success' onClick={this.setAddTime} >
+                    Add Lost Time
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="addLostTimeInfoPoint"
+                      areaTitle="Add Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className='lost-time-container'>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddProjHistory}>
+                    {this.state.showAddProjHistory
+                      ? 'Hide Project Lost Time'
+                      : 'Show Project Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="projectLostTimeInfoPoint"
+                      areaTitle="Project Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddPersonHistory}>
+                    {this.state.showAddPersonHistory
+                      ? 'Hide Person Lost Time'
+                      : 'Show Person Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="personLostTimeInfoPoint"
+                      areaTitle="Person Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+                <div className='lost-time-item'>
+                  <Button color='info' onClick={this.showAddTeamHistory}>
+                    {this.state.showAddTeamHistory
+                      ? 'Hide Team Lost Time'
+                      : 'Show Team Lost Time'}
+                  </Button>
+                  <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                    <EditableInfoModal
+                      areaName="teamLostTimeInfoPoint"
+                      areaTitle="Team Lost Time"
+                      role={myRole}
+                      fontSize={15}
+                      isPermissionPage={true}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <div className="table-data-container mt-5">
           {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
           {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
-          {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} />}
+          {this.state.showTeams && 
+            <TeamTable 
+              allTeams={this.state.teamSearchData}
+            />
+          }
+          {this.state.showTotalProject && (
+            <TotalProjectReport
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              userProfiles={userProfiles}
+              projects={projects}
+            />
+          )}
+          {this.state.showTotalPeople && (
+            <TotalPeopleReport
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              userProfiles={userProfiles}
+            />
+          )}
+          {this.state.showTotalTeam && (
+            <TotalTeamReport
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              userProfiles={userProfiles}
+              allTeamsData={allTeams}
+              passTeamMemberList={this.setTeamMemberList}
+              savedTeamMemberList={this.state.teamMemberList}
+            />
+          )}
+          {(this.state.showAddTimeForm && myRole === 'Owner') && 
+            <AddLostTime
+              isOpen = {this.state.showAddTimeForm}
+              toggle = {this.setAddTime}
+              projects = {projects}
+              teams = {allTeams}
+              users = {userProfiles}
+            />
+          }
+          {this.state.showAddPersonHistory && (
+            <LostTimeHistory
+              type={"person"}
+              isOpen={this.state.showAddPersonHistory}
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              allData = {userProfiles}
+            />
+          )}
+          {this.state.showAddTeamHistory && (
+            <LostTimeHistory
+              type={"team"}
+              isOpen={this.state.showAddTeamHistory}
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              allData = {allTeams}
+            />
+          )}
+          {this.state.showAddProjHistory && (
+            <LostTimeHistory
+              type={"project"}
+              isOpen={this.state.showAddProjHistory}
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              allData = {projects}
+            />
+          )}
         </div>
       </Container>
     );
