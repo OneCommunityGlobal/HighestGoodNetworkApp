@@ -21,8 +21,6 @@ const EditLinkModal = props => {
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
-  const canManageEditLink = props.hasPermission('manageAdminLinks');
-
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
     { Name: 'Media Folder', Link: '' },
@@ -147,7 +145,6 @@ const EditLinkModal = props => {
   };
 
   const handleUpdate = async (err) => {
-    console.log('handleupdate clicked');
     const isGoogleDocsValid = isValidUrl(googleLink.Link);
     const isDropboxValid = isValidUrl(mediaFolderLink.Link);
     const updatable =

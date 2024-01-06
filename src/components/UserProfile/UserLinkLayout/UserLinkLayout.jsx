@@ -3,7 +3,7 @@ import UserLinks from '../UserLinks';
 import LinkModButton from '../UserProfileEdit/LinkModButton';
 
 const UserLinkLayout = props => {
-  console.log({props});
+
   const { userProfile, updateLink, handleLinkModel, handleSubmit } = props;
 
   const { adminLinks, personalLinks } = userProfile;

@@ -44,49 +44,18 @@ export const putUserProfile = data => dispatch => {
   dispatch(putUserProfileActionCreator(data));
 };
 
-export const manageEditLink = data => dispatch => {
-  dispatch(putUserProfileActionCreator(data))
-}
-
 export const clearUserProfile = () => ({ type: CLEAR_USER_PROFILE });
 
-// export const updateUserProfile = (userId, userProfile) => {
-//   console.log("in updateUserProfile function");
-//   const url = ENDPOINTS.USER_PROFILE(userId);
-//   return async dispatch => {
-//     console.log("in dispatch function");
-//     const res = await axios.put(url, userProfile);
-//     onsole.log("in after axios put function");
-//     if (res.status === 200) {
-//       await dispatch(getUserProfileActionCreator(userProfile));
-//     }
-//     console.log('above res.status comment');
-//     return res.status;
-//   };
-// };
-
 export const updateUserProfile = (userId, userProfile) => {
-  console.log("in updateUserProfile function");
   const url = ENDPOINTS.USER_PROFILE(userId);
-  console.log({url});
   return async dispatch => {
-    
-    try {
-      console.log("in dispatch function");
-      const res = await axios.put(url, userProfile);
-      console.log("in after axios put function");
-      if (res.status === 200) {
-        await dispatch(getUserProfileActionCreator(userProfile));
-      }
-      console.log('above res.status comment');
-      return res.status;
-    } catch (error) {
-      console.error('Error:', error); // Log the error
-      throw error; // Re-throw the error to propagate it further
+    const res = await axios.put(url, userProfile);
+    if (res.status === 200) {
+      await dispatch(getUserProfileActionCreator(userProfile));
     }
+    return res.status;
   };
 };
-
 
 export const updateUserProfileProperty = (userProfile, key, value) => {
   const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfile._id);
