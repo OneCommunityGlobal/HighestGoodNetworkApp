@@ -16,6 +16,10 @@
   gap: 30px;
 }
 
+.dark .role-name {
+  color: white 
+}
+
 .permissions-management__title {
   font-size: 1.8rem;
 }
@@ -128,6 +132,17 @@
 
 .role-name:hover {
   background-color: lightgrey;
+}
+
+body.dark .role-name-link {
+  color: #fff
+}
+
+.role-name-link:hover {
+  display: inline-block;
+  text-decoration: none;
+  transform: scale(1.1);
+  transition: all 0.2 ease-in-out;
 }
 
 @media only screen and (max-width: 1199px) {

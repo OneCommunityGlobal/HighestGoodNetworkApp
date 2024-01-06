@@ -20,6 +20,11 @@
   padding: 0 16px;
   border-bottom: 3px solid #f8f7f8;
 }
+
+.dark .reports-table-head {
+  background-color: #333
+}
+
 .wbs-table-cell {
   flex: 1 !important;
 }

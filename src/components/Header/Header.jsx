@@ -42,11 +42,14 @@ import Logout from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import { BsFillSunFill, BsFillMoonFill } from 'react-icons/bs';
 
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const [theme, setTheme] = useState('light');
+  const [checked, setChecked] = useState();
 
   // Reports
   const canGetReports = props.hasPermission('getReports');
@@ -89,7 +92,19 @@ export const Header = props => {
     if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
+    const mode = localStorage.getItem('mode');
+    if(mode){
+      setTheme(mode)
+      if(mode === 'dark'){
+        setChecked('checked')
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    document.body.className = theme;
+    }, [theme]);
+
   const roles = props.role?.roles;
 
   const toggle = () => {
@@ -100,8 +115,19 @@ export const Header = props => {
     setLogoutPopup(true);
   };
 
+   const toggleTheme = e => {
+    if (theme === 'dark' || e.target.value === 'checked') {
+      localStorage.setItem('mode', 'light');
+      setTheme('light');
+    } else {
+      localStorage.setItem('mode', 'dark');
+      setTheme('dark');
+    }
+  };
+  
+
   return (
-    <div className="header-wrapper">
+    <div className="header-wrapper {`${theme}`}">
       <Navbar className="py-3 navbar" color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
@@ -115,6 +141,14 @@ export const Header = props => {
             </div>
           )}
         </div>
+
+        {isAuthenticated && <div className={`${theme}-toggle`}> 
+          <button onClick={toggleTheme} className='dark-toggle'>
+            {theme === 'dark' ? (<BsFillMoonFill className='toggle-icon' style={{color: "yellow"}}/>) 
+            : (<BsFillSunFill className='toggle-icon' style={{color: "yellow"}}/>)}
+          </button>
+        </div>}
+
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>

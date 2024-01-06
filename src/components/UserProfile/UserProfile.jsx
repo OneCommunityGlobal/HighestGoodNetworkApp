@@ -128,6 +128,12 @@ function UserProfile(props) {
   }, [teams, projects]);
 
   useEffect(() => {
+    loadUserProfile();
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
+  }, []);
+
+  useEffect(() => {
     setShowLoading(true);
     loadUserProfile();
     loadUserTasks();

@@ -112,6 +112,8 @@ class ReportsPage extends Component {
       checkActive: '',
     });
     this.props.getAllUserProfile();
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
   }
 
   /**

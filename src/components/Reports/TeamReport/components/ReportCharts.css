@@ -85,6 +85,11 @@
     margin-right: 8px;
 }
 
+
+.dark .team-report-chart-teams {
+    background-color: #333;
+}
+
 @media screen and (max-width: 1100px) {
     .mobile-pie-chart {
         display: flex;

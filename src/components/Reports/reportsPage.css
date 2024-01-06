@@ -15,6 +15,10 @@
   margin: 0px;
 }
 
+body.dark .container-component-wrapper {
+  background-color: #333;
+}
+
 .container-component-category {
   width: 720px;
   display: flex;
@@ -225,3 +229,5 @@
     margin: 8px 0;
   }
 }
+
+

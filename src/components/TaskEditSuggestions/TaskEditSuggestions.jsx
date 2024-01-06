@@ -21,6 +21,12 @@ export const TaskEditSuggestions = () => {
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(fetchtaskEditSuggestions());
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
+  }, []);
+
   const handleToggleTaskEditSuggestionModal = currentTaskEditSuggestion => {
     setCurrentTaskEditSuggestion(currentTaskEditSuggestion);
     setIsTaskEditSuggestionModalOpen(!isTaskEditSuggestionModalOpen);

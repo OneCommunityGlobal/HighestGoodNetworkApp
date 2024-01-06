@@ -83,6 +83,8 @@ function Task(props) {
   }, [props.filterState, tasks])
 
   useEffect(() => {
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
     if (tableRowRef.current) {
       const spanColNum = tableRowRef.current.cells.length;
       setTableColNum(spanColNum);

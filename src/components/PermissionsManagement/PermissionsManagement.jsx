@@ -35,6 +35,8 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     getAllRoles();
     getInfoCollections();
     getUserRole(auth?.user.userid);
+    const mode = localStorage.getItem('mode');
+      document.body.className = mode;
   }, []);
 
   const togglePopUpUserPermissions = () => {

@@ -26,7 +26,10 @@ class UpdatePassword extends Form {
   }
   
 
-  componentDidMount() {}
+  componentDidMount() {
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.errors.error !== this.props.errors.error) {

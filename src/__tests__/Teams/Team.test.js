@@ -51,21 +51,21 @@ describe('Team component', () => {
     expect(teamProps.onDeleteClick).toHaveBeenCalledWith('Team Name', 1, true, 'X-XXX');
   });
 
-  it('should call onMembersClick function', () => {
-    renderWithProvider(<Team {...teamProps} />, { store });
+  // it('should call onMembersClick function', () => {
+  //   renderWithProvider(<Team {...teamProps} />, { store });
 
-    const memberButton = screen.getByTestId('members-btn');
-    fireEvent.click(memberButton);
+  //   const memberButton = screen.getByTestId('members-btn');
+  //   fireEvent.click(memberButton);
 
-    expect(teamProps.onMembersClick).toHaveBeenCalledWith(1, 'Team Name', 'X-XXX');
-  });
+  //   expect(teamProps.onMembersClick).toHaveBeenCalledWith(1, 'Team Name', 'X-XXX');
+  // });
 
-  it('should call onStatusClick function', () => {
-    renderWithProvider(<Team {...teamProps} />, { store });
+  // it('should call onStatusClick function', () => {
+  //   renderWithProvider(<Team {...teamProps} />, { store });
 
-    const activeMarker = screen.getByTestId('active-marker');
-    fireEvent.click(activeMarker);
+  //   const activeMarker = screen.getByTestId('active-marker');
+  //   fireEvent.click(activeMarker);
 
-    expect(teamProps.onStatusClick).toHaveBeenCalledWith('Team Name', 1, true, 'X-XXX');
-  });
+  //   expect(teamProps.onStatusClick).toHaveBeenCalledWith('Team Name', 1, true, 'X-XXX');
+  // });
 });

@@ -101,6 +101,260 @@ nav ul.navbar-nav li:last-child>div {
   transform: translate3d(-26px, 40px, 0px) !important;
 }
 
+.dark {
+  background-color: #333;
+  color: #fff;
+}
+
+.light {
+  background-color: #fff;
+  color: #333;
+}
+
+body.dark .table th, body.dark .table td {
+  color: white;
+}
+
+body.dark .card-header, body.dark .card-body{
+  background-color: #333;
+  border-color: white;
+}
+
+body.dark .nav-tabs .nav-link.active, 
+body.dark .nav-tabs .nav-item.show .nav-link {
+  color: white;
+  background-color: #333;
+  border-color:  #fff;
+}
+
+body.dark #badgesearned .card-title, body.dark #badgesearned .card-text{
+  color: greenyellow !important;
+}
+
+body.dark .profile-img {
+  background-color: white;;
+
+}
+body.dark .profile-head h5 {
+  color: white;
+}
+body.dark .job-title {
+  color: #dbe4ee;
+}
+body.dark .proile-rating, body.dark .proile-rating span{
+  color: white;
+}
+
+body.dark .emp-profile {
+  background-color: #333;
+}
+
+/* body.dark .emp-profile .card-title{
+  color: greenyellow;
+} */
+
+body.dark .m-header{
+  color: black;
+}
+
+.dark tr:hover {
+    background: gray;
+    color: white;
+}
+
+.dark .tab-pane h4, .dark .tab-pane h6, .dark .tab-pane p{
+  color: black
+}
+.dark .tab-pane .hours-totalTangible, .dark .tab-pane .hours-totalTangible-thisWeek{
+  color: white;
+}
+.dark .emp-profile p {
+  color: white;
+}
+
+.dark .bio-toggle b {
+  color: white !important
+}
+
+.dark p b {
+  color: white !important
+}
+
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.dark .modal-title {
+  color: #007bff;
+}
+
+.dark .modal-title span {
+  color: lightcoral !important;
+}
+
+.dark .bg-white {
+  background-color: #333 !important
+}
+
+.dark .form-group {
+  color: #007bff
+}
+
+.dark .form-check-label {
+  color: #007bff;
+}
+
+.dark .tab-content .form-group {
+  color: white
+}
+
+.dark .tab-content p {
+  color: #007bff
+}
+
+.dark .modal-footer {
+  color: black
+}
+
+.dark .modal-body {
+  color: #007bff
+}
+
+.dark .modal-content {
+  background-color: #333;
+}
+
+.dark .close {
+  color: white;
+}
+
+.dark .close:hover {
+  color: white;
+}
+
+.dark label {
+  color: white;
+}
+
+.dark .btn-default{
+  color: #007bff
+}
+
+.dark .btn-default:hover{
+  color: #007bff
+}
+
+.dark .mr-auto {
+  color: #007bff
+}
+
+.dark .card {
+  background-color: #333;
+}
+
+.dark .modal.show {
+  background: rgba(0,0,0,.8)
+}
+
+.dark .popup-content-wrapper {
+  color: black
+}
+
+.dark-toggle {
+  background: transparent;
+  border-color: transparent;
+  width: 5rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.toggle-icon {
+  font-size: 1.5rem;
+  color: #222
+}
+
+.dark a[href="/forgotpassword"] span {
+  color: #007bff !important
+}
+
+.dark .team-weekly-header h6 {
+  color:  #007bff
+}
+
+.dark .team-weekly-summaries div p {
+  color:  #007bff
+}
+
+.dark #react-select-2-listbox, .dark #react-select-3-listbox{
+  color: #007bff
+}
+
+.dark .input-group .form-control {
+  background-color: #333;
+  columns: white;
+}
+
 .top {
   text-decoration: none;
   padding: 10px;
@@ -118,6 +372,11 @@ nav ul.navbar-nav li:last-child>div {
   white-space: nowrap
 }
 
+.dark .input-group-prepend + .form-control{
+  color: white !important;
+}
+
 tr {
   content-visibility: auto;
 }
+

@@ -9,6 +9,8 @@ import { boxStyle } from 'styles';
 const UserRoleTab = props => {
   useEffect(() => {
     props.getUserRole(props.auth?.user.userid);
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode
   }, []);
   const history = useHistory();
 

@@ -13,6 +13,13 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
+
+  const [userProfile, setUserProfile] = useState(undefined);
+  const [theme, setTheme] = useState('light');
+
+  // let userId = props.match.params.userId ? props.match.params.userId : props.auth.user.userid;
+
+
   const { match, auth } = props;
   const displayUserId = match.params.userId || auth.user.userid;
 
@@ -25,6 +32,16 @@ export function Dashboard(props) {
       }
     }, 150);
   };
+
+  // const toggleTheme = e => {
+  //   if (theme === 'dark' || e.target.value === 'checked') {
+  //     localStorage.setItem('mode', 'light');
+  //     setTheme('light');
+  //   } else {
+  //     localStorage.setItem('mode', 'dark');
+  //     setTheme('dark');
+  //   }
+  // };
 
   useEffect(() => {
     // eslint-disable-next-line react/destructuring-assignment
@@ -54,7 +71,6 @@ export function Dashboard(props) {
         role={auth.user.role}
         summaryBarData={summaryBarData}
       />
-
       <Row>
         <Col lg={{ size: 7 }}>&nbsp;</Col>
         <Col lg={{ size: 5 }}>
@@ -68,6 +84,7 @@ export function Dashboard(props) {
             >
               <WeeklySummary isDashboard isPopup={popup} displayUserId={displayUserId} />
             </div>
+            <div />
           </div>
         </Col>
       </Row>
@@ -75,6 +92,12 @@ export function Dashboard(props) {
         <Col lg={{ size: 5 }} className="order-sm-12">
           <Leaderboard displayUserId={displayUserId} />
         </Col>
+
+        {/* <Col> */}
+        {/* <button type="button" onClick={toggleTheme}>
+            Toggle Theme
+          </button> */}
+        {/* </Col> */}
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
             <div className="my-2">

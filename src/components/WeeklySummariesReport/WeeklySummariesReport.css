@@ -11,6 +11,17 @@
   border: 1px solid transparent;
   border-color: #fff #dee2e6 #dee2e6;
 }
+body.dark .tab-content {
+  background-color: #333;
+  border: 1px solid transparent;
+  border-color: #fff ;
+}
+body.dark .team-member-tasks{
+  background-color: #333;
+}
+body.dark .header-box, body.dark .header-box h1{
+  color: white;
+}
 
 .report-wrapper {
   padding: 20px 0;

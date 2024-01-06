@@ -47,7 +47,6 @@ import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -141,7 +140,6 @@ const Timelog = props => {
   const displayUserId = props?.match?.params?.userId || authUser.userid;
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
-
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = authUser.role;
@@ -163,6 +161,7 @@ const Timelog = props => {
     if (!props.isDashboard) {
       tab = 1;
     }
+    
     return tab;
   };
 
@@ -274,6 +273,16 @@ const Timelog = props => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
     const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
+  };
+
+
+  const generateTimeEntries = data => {
+    if (!state.projectsSelected.includes('all')) {
+      data = data.filter(entry => state.projectsSelected.includes(entry.projectId));
+    }
+    return data.map(entry => (
+      <TimeEntry data={entry} displayYear={false} key={entry._id} userProfile={userProfile} />
+    ));
   };
 
   const renderViewingTimeEntriesFrom = () => {
@@ -389,6 +398,22 @@ const Timelog = props => {
 
   useEffect(() => {
     // Filter the time entries
+    generateAllTimeEntries().then(response => {
+      setCurrentWeekEntries(response[0]);
+      setLastWeekEntries(response[1]);
+      setBeforeLastEntries(response[2]);
+      setPeriodEntries(response[3]);
+    });
+  }, [state.projectsSelected]);
+
+  const isOwner = auth.user.userid === userId;
+  const fullName = `${userProfile.firstName} ${userProfile.lastName}`;
+
+  useEffect(() => {
+    const mode = localStorage.getItem('mode');
+    document.body.className = mode;
+  }, []);
+
     updateTimeEntryItems();
   }, [timeLogState.projectsSelected]);
   
@@ -428,7 +453,6 @@ const Timelog = props => {
               </div>
             </div>
           ) : null}
-          
           <Row>
             <Col md={12}>
               <Card>
@@ -436,6 +460,13 @@ const Timelog = props => {
                   <Row>
                     <Col md={11}>
                       <CardTitle tag="h4">
+                        Tasks and Timelogs &nbsp;
+                        <i
+                          className="fa fa-info-circle"
+                          data-tip
+                          data-for="registerTip"
+                          aria-hidden="true"
+                          onClick={openInfo}
                       <div className="d-flex align-items-center">
                         <span className="mb-1 mr-2">Tasks and Timelogs</span>
                         <EditableInfoModal
@@ -445,7 +476,6 @@ const Timelog = props => {
                           isPermissionPage={true}
                           role={authUser.role} // Pass the 'role' prop to EditableInfoModal
                         />
-                      </div>
                         <span style={{ padding: '0 5px' }}>
                           <ActiveCell
                             isActive={displayUserProfile.isActive}
@@ -761,3 +791,4 @@ export default connect(mapStateToProps, {
   getAllRoles,
   hasPermission,
 })(Timelog);
+
