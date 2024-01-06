@@ -36,6 +36,7 @@ export const ENDPOINTS = {
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
+  WBS_USER: userId => `${APIEndpoint}/wbs/user/${userId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
   TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
@@ -43,8 +44,8 @@ export const ENDPOINTS = {
   TASK_WBS_DELETE: wbsId => `${APIEndpoint}/task/wbs/del/${wbsId}`,
   TASK_WBS: wbsId => `${APIEndpoint}/task/wbs/${wbsId}`,
   TASKS_UPDATE: `${APIEndpoint}/tasks/update`,
-  TASKS_BY_USERID: members => `${APIEndpoint}/tasks/userProfile?members=${members}`,
-  TASKS_BY_userID: userId => `${APIEndpoint}/tasks/userProfile/${userId}`,
+  TASKS_BY_USERID: userId => `${APIEndpoint}/tasks/user/${userId}`,
+  // TASKS_BY_userID: userId => `${APIEndpoint}/tasks/userProfile/${userId}`,
   TASK_DEL: (taskId, motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
   TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`,
@@ -130,7 +131,8 @@ export const ENDPOINTS = {
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
-  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`
+  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
+  BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`
 };
 
 export const ApiEndpoint = APIEndpoint;
