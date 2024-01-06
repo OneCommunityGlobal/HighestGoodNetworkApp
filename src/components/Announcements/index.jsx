@@ -25,7 +25,7 @@ function Announcements() {
     reader.readAsDataURL(file);
   };
 
-  const addImageToEmailContent = () => {
+  const addImageToEmailContent = e => {
     const imageFile = document.querySelector('input[type="file"]').files[0];
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
@@ -36,6 +36,7 @@ function Announcements() {
         setEmailContent(editor.getContent()); // 更新 emailContent 状态
       }
     });
+    e.target.value = '';
   };
   // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
 
@@ -132,7 +133,7 @@ function Announcements() {
           </button>
           <div>
             <hr />
-            <p>Upload Header</p>
+            <p>Upload Header (or footer)</p>
             <div style={{ overflow: 'hidden' }}>
               <input type="file" onChange={addImageToEmailContent} />
             </div>
