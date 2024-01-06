@@ -229,7 +229,5 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;    
-    width: 1000px;
-    margin-left: 732px;
   }
 }
