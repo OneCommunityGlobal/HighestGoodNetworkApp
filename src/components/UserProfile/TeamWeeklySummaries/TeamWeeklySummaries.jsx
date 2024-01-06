@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
+
 function TeamWeeklySummaries({ name, i, data }) {
   const getWeekDates = weekIndex => ({
     fromDate: moment()
@@ -20,7 +21,7 @@ function TeamWeeklySummaries({ name, i, data }) {
       .format('DD-MMM-YY'),
   });
   return (
-    <div className="team-weekly-summaries">
+    <div className="team-weekly-summaries" data-testid="team-weekly-summaries">
       <div className="team-weekly-header">
         <h6 className="team-weekly-header-date">
           {getWeekDates(i).fromDate} to {getWeekDates(i).toDate}
@@ -37,6 +38,7 @@ function TeamWeeklySummaries({ name, i, data }) {
           <FontAwesomeIcon
             icon={faCopy}
             className="copy-icon"
+            data-testid="copy-icon"
             onClick={() => {
               const parsedSummary = data.summary.replace(/<\/?[^>]+>|&nbsp;/g, '');
               navigator.clipboard.writeText(parsedSummary);
