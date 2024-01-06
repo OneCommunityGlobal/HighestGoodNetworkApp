@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { boxStyle } from 'styles';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
+import './UserRoleTab.css';
 
 
 
