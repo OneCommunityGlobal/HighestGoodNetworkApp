@@ -43,11 +43,11 @@ function LeaderBoard({
   organizationData,
   timeEntries,
   isVisible,
-  asUser,
+  displayUserId,
   totalTimeMouseoverText,
 }) {
   const dispatch = useDispatch();
-  const userId = asUser || loggedInUser.userId;
+  const userId = displayUserId || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
@@ -72,7 +72,7 @@ function LeaderBoard({
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
-          const elem = document.getElementById(`id${userId}`); //
+          const elem = document.getElementById(`id${userId}`);
 
           if (elem) {
             const topPos = elem.offsetTop;

@@ -12,7 +12,6 @@ import '../../App.css';
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const [userProfile, setUserProfile] = useState(undefined);
 
   const { auth, viewingUser } = props;
   const getInitialUserId = () => (viewingUser.isViewing ? viewingUser.user._id : auth.user.userid);
@@ -40,9 +39,7 @@ export function Dashboard(props) {
   return (
     <Container fluid>
       <SummaryBar
-        userProfile={userProfile}
-        setUserProfile={setUserProfile}
-        asUser={userId}
+        displayUserId={userId}
         toggleSubmitForm={toggle}
         role={auth.user.role}
         summaryBarData={summaryBarData}
@@ -59,25 +56,25 @@ export function Dashboard(props) {
               onKeyDown={toggle}
               tabIndex="0"
             >
-              <WeeklySummary isDashboard isPopup={popup} asUser={userId} />
+              <WeeklySummary isDashboard isPopup={popup} displayUserId={userId} />
             </div>
           </div>
         </Col>
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard asUser={userId} />
+          <Leaderboard displayUserId={userId} />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary asUser={userId} setPopup={setPopup} />
+                <WeeklySummary displayUserId={userId} setPopup={setPopup} />
               </div>
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            <Timelog isDashboard asUser={userId} passSummaryBarData={setSummaryBarData} />
+            <Timelog isDashboard passSummaryBarData={setSummaryBarData} />
           </div>
           <Badge userId={userId} role={auth.user.role} />
         </Col>
