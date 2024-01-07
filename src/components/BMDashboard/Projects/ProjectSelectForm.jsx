@@ -1,20 +1,25 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
+import ErrorAlert from '../ErrorAlert';
 
-function ProjectSelectForm({ projects }) {
+function ProjectSelectForm() {
+  const projects = useSelector(state => state.bmProjects);
   const history = useHistory();
   const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [error, setError] = useState(false);
 
   const selectOptions = projects.map(project => {
     return (
-      <option key={project.projectId} value={project.projectId}>
-        {project.projectName}
+      <option key={project._id} value={project._id}>
+        {project.name}
       </option>
     );
   });
 
   const handleOptionChange = event => {
+    setError(false);
     setSelectedProjectId(event.target.value);
   };
 
@@ -23,8 +28,7 @@ function ProjectSelectForm({ projects }) {
       // navigate to a new page with information about the selected project
       history.push(`/bmdashboard/projects/${selectedProjectId}`);
     } else {
-      // eslint-disable-next-line no-alert
-      alert('Please select an option first');
+      setError(true);
     }
   };
 
@@ -55,6 +59,7 @@ function ProjectSelectForm({ projects }) {
             Go to Project Dashboard
           </Button>
         </Col>
+        <ErrorAlert error={error} message="Please select a project" />
       </Row>
     </Form>
   );
