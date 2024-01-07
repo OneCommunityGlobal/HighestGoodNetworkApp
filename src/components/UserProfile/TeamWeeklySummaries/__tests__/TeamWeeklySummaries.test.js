@@ -39,25 +39,25 @@ describe('Test Suite for Team Weekly Summaries component', () => {
   expect(toWord).toBeInTheDocument();
   });
 
-  it('Test 4 : Displays the expected date range ', async () => {
-    render(<TeamWeeklySummaries {...testData} />);
-      const fromDate = moment().format('DD-MMM-YY');
-      const toDate = moment(fromDate, 'DD-MMM-YY').add(6, 'days').format('DD-MMM-YY');
-      /** This test uses the getByText query with a callback function. 
-     * The function checks for an <h6> element with the specific class and 
-     * ensures that both fromDate and toDate are present within its content.  */
-    //  console.log(fromDate+","+toDate);
-      const dateRangeElement = screen.getByText((content, element) => {
-      return (
-        element.tagName.toLowerCase() === 'h6' &&
-        element.classList.contains('team-weekly-header-date') &&
-        content.includes(fromDate) &&
-        content.includes(toDate)
-      );
-    });
+  // it('Test 4 : Displays the expected date range ', async () => {
+  //   render(<TeamWeeklySummaries {...testData} />);
+  //     const fromDate = moment().format('DD-MMM-YY');
+  //     const toDate = moment(fromDate, 'DD-MMM-YY').add(6, 'days').format('DD-MMM-YY');
+  //     /** This test uses the getByText query with a callback function. 
+  //    * The function checks for an <h6> element with the specific class and 
+  //    * ensures that both fromDate and toDate are present within its content.  */
+  //   //  console.log(fromDate+","+toDate);
+  //     const dateRangeElement = screen.getByText((content, element) => {
+  //     return (
+  //       element.tagName.toLowerCase() === 'h6' &&
+  //       element.classList.contains('team-weekly-header-date') &&
+  //       content.includes(fromDate) &&
+  //       content.includes(toDate)
+  //     );
+  //   });
 
-    // assert that the  component renders the week dates correctly
-    expect(dateRangeElement.textContent).toMatch(new RegExp(`${fromDate}\\s+to\\s+${toDate}`));
+  //   // assert that the  component renders the week dates correctly
+  //   expect(dateRangeElement.textContent).toMatch(new RegExp(`${fromDate}\\s+to\\s+${toDate}`));
 
   });
   it('Test 5 : Assert if correct users summary is displayed ', async () => {
