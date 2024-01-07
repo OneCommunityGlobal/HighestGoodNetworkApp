@@ -25,7 +25,8 @@ import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
-import { infoCollectionsReducer } from './informationReducer';
+import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
+import { infoCollectionsReducer} from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 
 // bm dashboard
