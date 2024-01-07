@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import DropDownSearchBox from '../../components/UserManagement/DropDownSearchBox';
+import DropDownSearchBox from '../DropDownSearchBox';
 
 describe('DropDownSearchBox', () => {
   const mockSearchCallback = jest.fn();

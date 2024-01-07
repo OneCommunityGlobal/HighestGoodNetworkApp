@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import TangibleInfoModal from '../../components/Timelog/TimeEntryForm/TangibleInfoModal'; // Adjust the path as necessary
+import TangibleInfoModal from '../../TimeEntryForm/TangibleInfoModal'; // Adjust the path as necessary
 
 describe('TangibleInfoModal Component', () => {
   const mockSetVisible = jest.fn();

@@ -92,6 +92,7 @@ export const ENDPOINTS = {
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
 
+  AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   SETUP_NEW_USER: () =>
     `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () =>
