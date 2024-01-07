@@ -629,6 +629,7 @@ class AddUserProfile extends Component {
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
+      trophyFollowedUp: false,
     };
 
     this.setState({ formSubmitted: true });
