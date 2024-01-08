@@ -11,14 +11,14 @@ describe('TimeZoneDropDown Component', () => {
     'Asia/Tokyo': { utcOffset: '+09:00' }
   };
 
-  it('renders with default props', () => {
-    render(<TimeZoneDropDown onChange={mockOnChange} />);
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
+  it('renders with default props (no props provided)', () => {
+    render(<TimeZoneDropDown />);
+    expect(screen.getByTestId('time_zone_dropdown')).toBeInTheDocument();
   });
 
   it('renders with a selected time zone', () => {
     render(<TimeZoneDropDown selected='Europe/London' onChange={mockOnChange} />);
-    expect(screen.getByRole('combobox')).toHaveValue('Europe/London');
+    expect(screen.getByTestId('time_zone_dropdown')).toHaveValue('Europe/London');
   });
 
   it('filters time zones based on filter prop', () => {
@@ -29,7 +29,7 @@ describe('TimeZoneDropDown Component', () => {
 
   it('calls onChange when a different time zone is selected', () => {
     render(<TimeZoneDropDown onChange={mockOnChange} />);
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Asia/Tokyo' } });
+    fireEvent.change(screen.getByTestId('time_zone_dropdown'), { target: { value: 'Asia/Tokyo' } });
     expect(mockOnChange).toHaveBeenCalled();
   });
 
@@ -37,5 +37,15 @@ describe('TimeZoneDropDown Component', () => {
     const { rerender } = render(<TimeZoneDropDown filter='' onChange={mockOnChange} />);
     rerender(<TimeZoneDropDown filter='Tokyo' onChange={mockOnChange} />);
     expect(mockOnChange).toHaveBeenCalled();
+  });
+
+  test('handles incorrect filter provided', () => {
+    render(<TimeZoneDropDown filter='123' />);
+    expect(screen.queryAllByTestId('time_zone_option')).toHaveLength(0);
+  });
+
+  test('handles invalid time zone names provided', () => {
+    render(<TimeZoneDropDown selected="InvalidTimeZone" />);
+    expect(screen.getByTestId('time_zone_dropdown')).toHaveValue('Africa/Abidjan');
   });
 });
