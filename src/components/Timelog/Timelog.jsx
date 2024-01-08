@@ -102,7 +102,7 @@ const Timelog = props => {
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
-  
+
   // access the store states
   const {
     authUser,
@@ -113,7 +113,7 @@ const Timelog = props => {
     displayUserWBSs,
     disPlayUserTask,
   } = props;
- 
+
   const initialState = {
     timeEntryFormModal: false,
     summary: false,
@@ -362,7 +362,7 @@ const Timelog = props => {
     updateTimeEntryItems();
     makeBarData(userId)
   };
-  
+
   const handleUpdateTask = useCallback(() => {
     setIsTaskUpdated(!isTaskUpdated);
   }, []);
@@ -385,13 +385,13 @@ const Timelog = props => {
       const defaultTabValue = defaultTab();
       setInitialTab(defaultTabValue);
     });
-  }, [displayUserId, isTaskUpdated]);
+  }, [displayUserId]);
 
   useEffect(() => {
     // Filter the time entries
     updateTimeEntryItems();
   }, [timeLogState.projectsSelected]);
-  
+
   return (
     <div>
       {!props.isDashboard ? (
@@ -416,7 +416,7 @@ const Timelog = props => {
         />
         </div>
       )}
-      
+
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
@@ -428,7 +428,7 @@ const Timelog = props => {
               </div>
             </div>
           ) : null}
-          
+
           <Row>
             <Col md={12}>
               <Card>
