@@ -56,9 +56,9 @@ const TeamMemberTasks = React.memo(props => {
   }
 
   //moved the userId variable to before the first useEffect so the dispatch function can access it
-  //Make so the userId gets the url param. If the url param is not available, it'll get the asUser passed as a props
-  //If the asUser is not defined, it'll be equal the auth.user.userid from the store
-  const userId = props?.match?.params?.userId || props.asUser || props.auth.user.userid;
+  //Make so the userId gets the url param. If the url param is not available, it'll get the displayUserId passed as a props
+  //If the displayUserId is not defined, it'll be equal the auth.user.userid from the store
+  const userId = props?.match?.params?.userId || props.displayUserId || props.auth.user.userid;
 
   const dispatch = useDispatch();
 
