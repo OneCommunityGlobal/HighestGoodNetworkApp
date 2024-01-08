@@ -14,16 +14,8 @@ describe('OwnerMessage Component', () => {
         },
       },
       ownerMessage: {
-        0: {
-          message: 'Sample Message', 
-          _id: 'sampleId', 
-        },
-      },
-      ownerStandardMessage: {
-        0: {
-          message: 'Sample Standard Message', 
-          _id: 'standardSampleId', 
-        },
+        message: 'Sample Message', 
+        standardMessage: 'Sample Standard Message', 
       },
     };
 

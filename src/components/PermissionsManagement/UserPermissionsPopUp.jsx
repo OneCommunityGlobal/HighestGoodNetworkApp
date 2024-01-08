@@ -54,18 +54,24 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
     await axios
       .put(url, newUserInfo)
       .then(res => {
-        res.data;
-      })
-      .catch(err => console.log(err));
-    getAllUsers();
-
-    const SUCCESS_MESSAGE = `
+        const SUCCESS_MESSAGE = `
         Permission has been updated successfully. Be sure to tell them that you are changing these
         permissions and for that they need to log out and log back in for their new permissions to take
         place.`;
-    toast.success(SUCCESS_MESSAGE, {
-      autoClose: 10000,
-    });
+        toast.success(SUCCESS_MESSAGE, {
+          autoClose: 10000,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        const ERROR_MESSAGE = `
+        Permission updated failed. ${err}
+        `
+        toast.error(ERROR_MESSAGE, {
+          autoClose: 10000,
+        })
+      });
+    getAllUsers();
   };
   useEffect(() => {
     refInput.current.focus();
