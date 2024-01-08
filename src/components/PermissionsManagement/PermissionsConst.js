@@ -81,6 +81,11 @@ export const permissionLabels = [
         description: 'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
       },
       {
+        label: 'Modify Badge Amount',
+        key: 'modifyBadgeAmount',
+        description: 'Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component',
+      },
+      {
         label: 'Assign Badges',
         key: 'assignBadges',
         description: 'Gives the user permission to assign badges to others users "User Profile" -> "Assign Badges" or to increase or decrease the count of a badge on the Badge Reports Component',

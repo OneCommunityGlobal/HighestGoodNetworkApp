@@ -24,6 +24,7 @@ export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
   const canAssignBadges = props.hasPermission('assignBadges');
+  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
 
   const toggle = () => setOpen(!isOpen);
 
@@ -73,7 +74,7 @@ export const Badges = props => {
               </span>
         
             <div >
-              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
+              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator' || canModifyBadgeAmount) && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
                     Select Featured

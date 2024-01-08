@@ -39,9 +39,12 @@ const BadgeReport = props => {
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
   let [badgeToDelete, setBadgeToDelete] = useState([]);
+  
 
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
+  const canAssignBadges = props.hasPermission('assignBadges');
+  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
@@ -196,8 +199,12 @@ const BadgeReport = props => {
     const oldBadge = JSON.parse(JSON.stringify(badge));
     newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
     if (value === 0 || newValue.length === 0) {
-      // upon reaching 0, show delete modal
-      handleDeleteBadge(oldBadge);
+        if(canModifyBadgeAmount && (!canUpdateBadges || !canDeleteBadges)){
+          newValue = 1;
+        }else{
+        // upon reaching 0, show delete modal
+        handleDeleteBadge(oldBadge);
+      }
     }
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -346,7 +353,7 @@ const BadgeReport = props => {
                       </UncontrolledDropdown>
                     </td>
                     <td>
-                      {canUpdateBadges ? (
+                      {canUpdateBadges || canModifyBadgeAmount ? (
                         <Input
                           type="number"
                           value={Math.round(value.count)}
@@ -386,6 +393,7 @@ const BadgeReport = props => {
                           onChange={e => {
                             featuredChange(value, index, e);
                           }}
+                          disabled={canModifyBadgeAmount && !(canUpdateBadges || canAssignBadges)}
                         />
                       </FormGroup>
                     </td>
