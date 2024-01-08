@@ -7,9 +7,11 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 
 function WarningIcon(props) {
-  const [btnColor, setBtnColor] = useState('white');
-  const [dateAssigned, setDateAssigned] = useState({});
-  const { id } = props;
+  const { id, color, date, warningText } = props;
+
+  const [btnColor, setBtnColor] = useState(color ? color : 'white');
+  const [dateAssigned, setDateAssigned] = useState(date ? date : null);
+  const [timeAssigned, setTimeAssigned] = useState(date ? date : null);
 
   const clicked = id => {
     const today = moment().format('MM/DD/YYYY HH:mm:ss a');
@@ -20,10 +22,11 @@ function WarningIcon(props) {
 
     // console.log('id is', id);
     setBtnColor(colorAssigned);
-    setDateAssigned({ todaysDate: null, todaysTime: null });
+    setDateAssigned(todaysDate);
+    setDateAssigned(todaysTime);
 
     //color needs to be dynically added
-    props.handleWarningIconClicked(id, colorAssigned, todaysDate);
+    props.handleWarningIconClicked(id, colorAssigned, todaysDate, warningText);
   };
 
   // console.log('button color', btnColor);
@@ -31,7 +34,7 @@ function WarningIcon(props) {
   const popover = (
     <Popover id="popover-basic">
       <Popover.Title as="h4">Date Assigned</Popover.Title>
-      <Popover.Content>{dateAssigned.todaysDate}</Popover.Content>
+      <Popover.Content>{dateAssigned}</Popover.Content>
     </Popover>
   );
 

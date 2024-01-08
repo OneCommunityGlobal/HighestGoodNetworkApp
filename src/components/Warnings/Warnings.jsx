@@ -3,7 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import hasPermission from 'utils/permissions';
 import { useDispatch, useSelector } from 'react-redux';
-import { getWarningsByUserId, postWarningByUserId } from '../../actions/warnings';
+import {
+  getWarningsByUserId,
+  postWarningByUserId,
+  deleteWarningsById,
+} from '../../actions/warnings';
 
 import WarningItem from './WarningItem';
 import { Button } from 'react-bootstrap';
@@ -17,20 +21,17 @@ import './Warnings.css';
 //admins and owners should see it by default using userRole
 // the wanring button is only visiable to owners and admins
 
-export default function Warning({}) {
-  // console.log('props isnide of warnings', props);
+export default function Warning({ personId }) {
   const dispatch = useDispatch();
 
-  // const { userId } = useSelector(state => {
-  //   console.log('state', state);
-  // });
-  const { userid } = useSelector(state => state.auth.user);
+  // const { userid } = useSelector(state => state.auth.user);
 
-  // console.log('user inside of warning', userid);
-  // console.log('userId inside of warnings', userId);
+  const [usersWarnings, setUsersWarnings] = useState([]);
+
+  console.log('users warnins', usersWarnings);
   const [toggle, setToggle] = useState(false);
 
-  const [options, setOptions] = useState([
+  const [warningOptions, setWarningOptions] = useState([
     'Better Descriptions',
     'Log Time to Tasks',
     'Log Time as You Go',
@@ -38,69 +39,66 @@ export default function Warning({}) {
     'Intangible Time Log w/o Reason',
   ]);
 
-  useEffect(() => {
-    // const getUsersWarnings = async () => {
-    //   const res = await dispatch(getWarningsByUserId(userid));
-    //   console.log('res', res);
-    // };
-    // getUsersWarnings();
-  }, []);
-
-  // useEffect(() => {
-  //   if (userId) {
-  //     setCurUser(userId);
-  //   }
-  // }, [userId]);
-
-  // useEffect(() => {
-  //   const {
-  //     match: { params },
-  //     getUserProfile,
-  //   } = props;
-  //   if (params && params.userId && userId !== params.userId) {
-  //     getUserProfile(params.userId);
-  //   }
-  // }, [props]);
-
   const handleToggle = () => {
     setToggle(prev => !prev);
+    //when fetch its an array of objects
+    dispatch(getWarningsByUserId(personId)).then(res => {
+      setUsersWarnings(res);
+    });
   };
 
-  const handlePostWarningDetails = async (id, color, dateAssigned) => {
+  const handleDeleteWarnings = async () => {
+    console.log('hgandle delete called');
+    dispatch(deleteWarningsById(personId));
+    // setCurWarnings([]);
+  };
+  const handlePostWarningDetails = async (id, color, dateAssigned, warningText) => {
     const data = {
-      userId: userid,
+      userId: personId,
       iconId: id,
-      color: color,
+      color,
       date: dateAssigned,
-      description: 'Better Descriptions',
+      description: warningText,
     };
-    console.log('props.userid', data);
-    const res = await dispatch(postWarningByUserId(data));
 
-    console.log('res', res);
-    // console.log('data', data);
-    // console.log('id', id, 'color', color, dateAssigned);
+    dispatch(postWarningByUserId(data)).then(res => {
+      console.log('res after posting', res);
+      // being posted as a single an array with all the objects inside
+      setUsersWarnings(res.warnings);
+    });
   };
   // each warnign will have 8 circles
   // store warnings in an array
   //looop through each wanring rendering 8 circles and the text below inside of warnings component
 
-  // const warnings = options.map(warning => (
-  //   <WarningItem warningText={warning} userId={userId} userRole={userRole} />
-  // ));
-
-  // console.log('warnings', warnings);
   const warnings = !toggle
     ? null
-    : options.map(warning => (
-        <WarningItem warningText={warning} handlePostWarningDetails={handlePostWarningDetails} />
+    : usersWarnings.map(warning => (
+        <WarningItem
+          warnings={warning.warnings}
+          warningText={warning.title}
+          handlePostWarningDetails={handlePostWarningDetails}
+        />
       ));
+
+  // const warnings = !toggle ? null : (
+  //   <WarningItem
+  //     // warningText={warning}
+  //     handleDeleteWarnings={handleDeleteWarnings}
+  //     handlePostWarningDetails={handlePostWarningDetails}
+  //     warningOptions={warningOptions}
+  //     // curWarnings={curWarnings}
+  //   />
+  // );
+
   return (
     <div className="warnings-container">
       <Button className="btn btn-warning warning-btn" size="sm" onClick={handleToggle}>
         {toggle ? 'Hide' : 'Tracking'}
       </Button>
-      <div className="warning-wrapper">{warnings} </div>
+      <Button onClick={handleDeleteWarnings}>Delete</Button>
+
+      <div className="warning-wrapper"> {warnings}</div>
     </div>
   );
 }
