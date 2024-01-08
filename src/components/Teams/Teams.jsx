@@ -66,7 +66,6 @@ class Teams extends React.PureComponent {
       // Teams have changed, update or re-fetch them
       this.props.getAllUserTeams();
       this.props.getAllUserProfile();
-      this.sortTeamsByModifiedDate();
     }
   }
 
