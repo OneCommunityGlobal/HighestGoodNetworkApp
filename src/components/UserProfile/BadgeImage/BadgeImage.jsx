@@ -16,17 +16,17 @@ const BadgeImage = props => {
             id={'popover_' + props.time + props.index.toString()}
             alt=""
           />
-        </div>
 
-        {props.badgeData.type == 'Personal Max' ? (
-          <span data-testid="badge_featured_count_personalmax" className={'badge_featured_count_personalmax'}>
-            {`${Math.floor(props.personalBestMaxHrs)} ${Math.floor(props.personalBestMaxHrs) <= 1 ? ' hr' : ' hrs'}`}
-          </span>
-        ) : props.count < 100 ? (
-          <span data-testid="badge_featured_count" className={'badge_featured_count'}>{Math.round(props.count)}</span>
-        ) : (
-          <span data-testid="badge_featured_count_3_digit" className="badge_featured_count_3_digit">{Math.round(props.count)}</span>
-        )}
+          {props.badgeData.type == 'Personal Max' ? (
+            <span data-testid="badge_featured_count_personalmax" className={'badge_featured_count_personalmax'}>
+              {`${Math.floor(props.personalBestMaxHrs)} ${Math.floor(props.personalBestMaxHrs) <= 1 ? ' hr' : ' hrs'}`}
+            </span>
+          ) : props.count < 100 ? (
+            <span data-testid="badge_featured_count" className={'badge_featured_count'}>{Math.round(props.count)}</span>
+          ) : (
+            <span data-testid="badge_featured_count_3_digit" className="badge_featured_count_3_digit">{Math.round(props.count)}</span>
+          )}
+        </div>
       </div>
       <Popover
         trigger="hover"

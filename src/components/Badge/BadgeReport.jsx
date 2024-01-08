@@ -184,6 +184,7 @@ const BadgeReport = props => {
 
       if (typeof newBadges[index] === 'string') {
         newBadges[index].lastModified = new Date(newBadges[index].lastModified);
+
       }
     });
     setSortBadges(newBadges);
@@ -327,8 +328,9 @@ const BadgeReport = props => {
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
+                        // ? formatDate(value.lastModified.substring(0, 10))
                         ? formatDate(value.lastModified)
-                        : value.lastModified.toLocaleString().substring(0, 10)}
+                        : value.lastModified.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}
                     </td>
                     <td>
                       {' '}
@@ -338,7 +340,7 @@ const BadgeReport = props => {
                         </DropdownToggle>
                         <DropdownMenu>
                           {value.earnedDate.map((date, i) => {
-                            return <DropdownItem key={i}>{formatDate(date)}</DropdownItem>;
+                            return <DropdownItem key={i}>{date}</DropdownItem>;
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
@@ -482,7 +484,7 @@ const BadgeReport = props => {
                     <td>
                       {typeof value.lastModified == 'string'
                         ? formatDate(value.lastModified)
-                        : value.lastModified.toLocaleString().substring(0, 10)}
+                        : value.lastModified.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}
                     </td>
 
                     <td>
