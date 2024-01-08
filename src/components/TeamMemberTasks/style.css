@@ -90,13 +90,13 @@
   text-align: center;
   vertical-align: middle;
   background: #ff4d4f;
-  border-radius: 40px;
+  border-radius: 50%;
   color: #fff;
   height: 25px;
   font-size: 15px;
   width: 25px;
   top: 3px;
-  right: 0;
+  right: -10px;
 }
 
 .team-clocks {

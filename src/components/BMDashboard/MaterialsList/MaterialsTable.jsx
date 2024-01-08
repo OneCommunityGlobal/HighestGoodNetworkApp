@@ -45,7 +45,9 @@ export default function MaterialsTable({ filteredMaterials }) {
   const sortingAsc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = [].concat(...sortedData).sort((a, b) => (a.project.name >= b.project.name ? 1 : -1));
+      sorted = []
+        .concat(...sortedData)
+        .sort((a, b) => (a.project?.name >= b.project?.name ? 1 : -1));
     } else if (columnName === 'InventoryItemType') {
       sorted = []
         .concat(...sortedData)
@@ -60,7 +62,9 @@ export default function MaterialsTable({ filteredMaterials }) {
   const sortingDesc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = [].concat(...sortedData).sort((a, b) => (a.project.name <= b.project.name ? 1 : -1));
+      sorted = []
+        .concat(...sortedData)
+        .sort((a, b) => (a.project?.name <= b.project?.name ? 1 : -1));
     } else if (columnName === 'InventoryItemType') {
       sorted = []
         .concat(...sortedData)
@@ -130,7 +134,7 @@ export default function MaterialsTable({ filteredMaterials }) {
               sortedData.map(mat => {
                 return (
                   <tr key={mat._id}>
-                    <td>{mat.project.name}</td>
+                    <td>{mat.project?.name}</td>
                     {/* Note: optional chaining to prevent crashes while db work ongoing */}
                     <td>{mat.itemType?.name}</td>
                     <td>{mat.itemType?.unit}</td>

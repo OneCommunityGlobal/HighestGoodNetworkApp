@@ -1,8 +1,17 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Suspense } from 'react';
 
-function ProtectedRoute({ component: Component, render, auth, roles, routePermissions, ...rest }) {
+function ProtectedRoute({
+  component: Component,
+  render,
+  auth,
+  roles,
+  routePermissions,
+  fallback,
+  ...rest
+}) {
   const permissions = roles?.find(({ roleName }) => roleName === auth.user.role)?.permissions;
   const userPermissions = auth.user?.permissions?.frontPermissions;
   let hasPermissionToAccess = permissions?.some(perm => perm === routePermissions);
@@ -31,7 +40,23 @@ function ProtectedRoute({ component: Component, render, auth, roles, routePermis
         if (routePermissions && !hasPermissionToAccess) {
           return <Redirect to={{ pathname: '/dashboard', state: { from: props.location } }} />;
         }
-        return Component ? <Component {...props} /> : render(props);
+        // eslint-disable-next-line no-nested-ternary
+        return Component && fallback ? (
+          <Suspense
+            fallback={
+              <div className="d-flex justify-content-center">
+                <i className="fa fa-spinner fa-pulse" />
+              </div>
+            }
+          >
+            {' '}
+            <Component {...props} />{' '}
+          </Suspense>
+        ) : Component ? (
+          <Component {...props} />
+        ) : (
+          render(props)
+        );
       }}
     />
   );

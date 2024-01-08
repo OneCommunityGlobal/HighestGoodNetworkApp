@@ -312,9 +312,11 @@ function AddTaskModal(props) {
               <tr>
                 <td scope="col">Task Name</td>
                 <td scope="col">
-                  <input
+                  {/* Fix Task-name formatting - by Sucheta */}
+                  <textarea
                     type="text"
-                    className="task-name"
+                    rows="2"
+                    className="task-name border border-dark rounded"
                     onChange={e => setTaskName(e.target.value)}
                     onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}

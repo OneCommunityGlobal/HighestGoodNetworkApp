@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Suspense } from 'react';
 
-function BMProtectedRoute({ component: Component, render, auth, ...rest }) {
+function BMProtectedRoute({ component: Component, render, auth, fallback, ...rest }) {
   return (
     <Route
       {...rest}
@@ -15,7 +16,23 @@ function BMProtectedRoute({ component: Component, render, auth, ...rest }) {
             <Redirect to={{ pathname: '/bmdashboard/login', state: { from: props.location } }} />
           );
         }
-        return Component ? <Component {...props} /> : render(props);
+        // eslint-disable-next-line no-nested-ternary
+        return Component && fallback ? (
+          <Suspense
+            fallback={
+              <div className="d-flex justify-content-center">
+                <i className="fa fa-spinner fa-pulse" />
+              </div>
+            }
+          >
+            {' '}
+            <Component {...props} />{' '}
+          </Suspense>
+        ) : Component ? (
+          <Component {...props} />
+        ) : (
+          render(props)
+        );
       }}
     />
   );

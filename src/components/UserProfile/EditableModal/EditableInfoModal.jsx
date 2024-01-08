@@ -252,32 +252,33 @@ export class EditableInfoModal extends Component {
           }
           </ModalBody>
           <ModalFooter>
-          <Row>
-            <Col md={{ size: 5, offset:4}}>
-            {(this.state.editing)&&
+          <Row className='no-gutters'>
+          {(this.state.editing)&&
             (
-                <Select 
+              <Col md={6} style={{paddingRight: '2px'}}>
+               <Select 
                   options={options} 
                   onChange={this.handleSelectChange}
                   value={options.find(option => option.value === this.state.visibility)} 
                   />
-            )
+              </Col>)
             }
-             </Col>
+
             {(CanEdit&&this.state.editing)&&
             (
-              <Col md={{ size: 1}} style={{paddingLeft:'5px'}}>
+              <Col md={3} style={{paddingLeft: '4px'}}
+              >
                 <Button
                   className='saveBtn' 
                   onClick={this.handleSave}
                   style={boxStyle}>Save</Button>
               </Col>)
             }
-          <Col 
-            md={{ size: 1}}
-            >
-            <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
-          </Col>
+            <Col 
+              md={3}
+              >
+              <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
+            </Col>
           </Row>
           </ModalFooter>
           </Modal>
