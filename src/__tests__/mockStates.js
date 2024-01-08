@@ -420,6 +420,11 @@ export const allProjectsMock = {
   status: '200',
 };
 
+export const viewingUserMock = {
+  isViewing: false,
+  user: {},
+};
+
 export const authMock = {
   isAdmin: true,
   user: {

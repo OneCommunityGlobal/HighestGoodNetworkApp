@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import TeamMembersPopup from 'components/Teams/TeamMembersPopup';
 import thunk from 'redux-thunk';
-import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
+import { authMock, userProfileMock, rolesMock, viewingUserMock } from '../../__tests__/mockStates';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
@@ -17,6 +17,7 @@ const renderComponent = props => {
     auth: authMock,
     userProfile: userProfileMock,
     role: rolesMock.role,
+    viewingUser:viewingUserMock,
     ...props,
   });
 

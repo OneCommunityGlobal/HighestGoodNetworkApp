@@ -3,7 +3,7 @@ import { fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { WeeklySummariesReport } from './WeeklySummariesReport';
 import hasPermission from '../../utils/permissions';
-import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
+import { authMock, userProfileMock, rolesMock, viewingUserMock } from '../../__tests__/mockStates';
 import { renderWithProvider } from '../../__tests__/utils';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -17,6 +17,7 @@ describe('WeeklySummariesReport page', () => {
       auth: authMock,
       userProfile: userProfileMock,
       role: rolesMock.role,
+      viewingUser: viewingUserMock,
     });
   });
   describe('On page load', () => {

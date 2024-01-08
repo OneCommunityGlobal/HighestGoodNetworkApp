@@ -122,7 +122,6 @@ export const Header = props => {
   const updateViewingUser = () => {
     setPopup(prevPopup=> !prevPopup)
     dispatch(setViewingUser({ new: false, isViewing: false }));
-    window.close();
   };
 
   return (

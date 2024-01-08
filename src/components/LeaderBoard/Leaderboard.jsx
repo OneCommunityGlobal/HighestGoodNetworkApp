@@ -103,12 +103,6 @@ function LeaderBoard({
         }),
       );
       dashboardClose();
-
-      window.open(
-        `/dashboard/${item.personId}`,
-        'Popup',
-        'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
-      );
     });
   };
 

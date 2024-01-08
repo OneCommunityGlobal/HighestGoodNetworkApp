@@ -10,6 +10,7 @@ import {
   timeEntryMock,
   userProjectMock,
   rolesMock,
+  viewingUserMock,
 } from '../mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../utils';
 import TimeEntryForm from '../../components/Timelog/TimeEntryForm';
@@ -29,6 +30,7 @@ xdescribe('<TimeEntryForm edit/>', () => {
       userProjects: userProjectMock,
       userProfile: userProfileMock,
       role: rolesMock,
+      viewingUser: viewingUserMock,
     });
     toggle = jest.fn();
     store.dispatch = jest.fn();

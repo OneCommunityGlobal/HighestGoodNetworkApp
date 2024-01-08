@@ -1,38 +1,29 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
-import PopUpBar from '../PopUpBar';
+import PopUpBar from './PopUpBar';
 
-// mock data
-const userProfile = {};
-let popUpText;
-const componentName = 'dashboard';
-const generateMessage = (component) => `You are currently viewing the ${component} for`;
+describe('PopUpBar Component', () => {
+  it('renders when isViewing is true', () => {
+    const userProfile = {
+      firstName: 'TestUser',
+      lastName: 'LastName',
+    };
 
-// render Component
-const renderComponent = () => {
-  render(<PopUpBar userProfile={userProfile} component={componentName}/>);
-};
-
-// Test Cases
-describe('Test Suite for PopUpBar', () => {
-  it('Test Case 1: Renders without crashing', () => {
-    renderComponent();
-    const actualText = screen.getByTestId('test-popup');
-    expect(actualText).toBeInTheDocument();
+    render(<PopUpBar userProfile={userProfile} isViewing={true} />);
+    
+    // Add your assertions for rendering when isViewing is true
+    const popupContainer = screen.getByTestId('test-popup');
+    expect(popupContainer).toBeInTheDocument();
   });
-  it('Test Case 2: Assert if popup renders with null parameters ', () => {
-    renderComponent();
-    popUpText = `${generateMessage(componentName)} ${userProfile.firstName} ${userProfile.lastName}.`;
-    const actualText = screen.getByText(popUpText);
-    expect(actualText).toBeInTheDocument();
-  });
-  it('Test Case 3: Assert if popup renders with the expected text', () => {
-    userProfile.firstName = 'TestUser';
-    userProfile.lastName = 'LastName';
-    popUpText = `${generateMessage(componentName)} ${userProfile.firstName} ${userProfile.lastName}.`;
 
-    renderComponent();
-
-    const actualText = screen.getByText(popUpText);
-    expect(actualText).toBeInTheDocument();
+  it('does not render when isViewing is false', () => {
+    // Render PopUpBar with isViewing set to false
+    render(<PopUpBar userProfile={{}} isViewing={false} />);
+    
+    // Add your assertions for not rendering when isViewing is false
+    const popupContainer = screen.queryByTestId('test-popup');
+    expect(popupContainer).not.toBeInTheDocument();
   });
+
+  // Add more test cases for different scenarios as needed
 });

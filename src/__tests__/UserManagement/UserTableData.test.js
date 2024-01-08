@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UserTableData from '../../components/UserManagement/UserTableData';
-import { authMock, userProfileMock, rolesMock } from '../mockStates';
+import { authMock, userProfileMock, rolesMock, viewingUserMock } from '../mockStates';
 import { renderWithProvider } from '../utils';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -19,7 +19,8 @@ describe('User Table Data', () => {
     store = mockStore({
       auth: authMock,
       userProfile: userProfileMock,
-      role: rolesMock.role
+      role: rolesMock.role,
+      viewingUser: viewingUserMock,
     });
     onPauseResumeClick = jest.fn();
     onDeleteClick = jest.fn();

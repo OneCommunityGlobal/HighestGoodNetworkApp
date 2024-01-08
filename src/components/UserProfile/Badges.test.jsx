@@ -1,7 +1,7 @@
 import React from 'react';
 import Badges from './Badges';
 import { renderWithEnzymeProvider as renderWithProvider } from '../../__tests__/utils';
-import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
+import { authMock, userProfileMock, rolesMock, viewingUserMock } from '../../__tests__/mockStates';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
@@ -14,7 +14,8 @@ describe('Badges Component', () => {
     store = mockStore({
       auth: authMock,
       userProfile: userProfileMock,
-      role: rolesMock.role
+      role: rolesMock.role,
+      viewingUser: viewingUserMock,
     });
   })
   const badgeProps = {

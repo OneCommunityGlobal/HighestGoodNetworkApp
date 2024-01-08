@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { render, fireEvent, screen } from '@testing-library/react';
 import thunk from 'redux-thunk';
-import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
+import { authMock, userProfileMock, rolesMock, viewingUserMock } from '../../__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
@@ -20,6 +20,7 @@ beforeEach(() => {
     auth: authMock,
     userProfile: userProfileMock,
     role: rolesMock.role,
+    viewingUser: viewingUserMock,
   });
 });
 

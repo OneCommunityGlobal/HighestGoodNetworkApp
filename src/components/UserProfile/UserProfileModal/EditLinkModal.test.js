@@ -3,7 +3,7 @@ import { fireEvent, within } from "@testing-library/react";
 import EditLinkModal from "components/UserProfile/UserProfileModal/EditLinkModal";
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { rolesMock, authMock, userProfileMock, userProjectMock } from "__tests__/mockStates";
+import { rolesMock, authMock, userProfileMock, userProjectMock, viewingUserMock } from "__tests__/mockStates";
 import { renderWithProvider } from "__tests__/utils";
 
 
@@ -44,7 +44,8 @@ describe('EditLinkModal permission checks', () =>{
       auth: {...authMock,isAdmin:false,user:{...authMock.user, role:'Volunteer'}},
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock.role
+      role: rolesMock.role,
+      viewingUser: viewingUserMock,
     });
 
     component = renderWithProvider(<EditLinkModal {...props} />, {store})
@@ -73,7 +74,8 @@ describe('EditLinkModal with admin links and personal links', () => {
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock.role
+      role: rolesMock.role,
+      viewingUser: viewingUserMock,
     });
 
     component = renderWithProvider(<EditLinkModal {...props} />, {store})
@@ -159,7 +161,8 @@ describe('Edit Link Modal with empty links', () =>{
       auth: authMock,
       userProjects: userProjectMock,
       userProfile: userProfileMock,
-      role: rolesMock.role
+      role: rolesMock.role,
+      viewingUser: viewingUserMock,
     });
 
     component = renderWithProvider(<EditLinkModal {...props} />, {store})
