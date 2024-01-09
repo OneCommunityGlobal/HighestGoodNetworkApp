@@ -555,25 +555,29 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
           // eslint-disable-next-line react/no-array-index-key
           <div className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
             {' '}
-            <img src={value.imageUrl} id={`popover_${value._id}`} alt='""' />
-            <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-              <Card className="text-center">
-                <CardImg className="badge_image_lg" src={value?.imageUrl} />
-                <CardBody>
-                  <CardTitle
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: 18,
-                      color: '#285739',
-                      marginBottom: 15,
-                    }}
-                  >
-                    {value?.badgeName}
-                  </CardTitle>
-                  <CardText>{value?.description}</CardText>
-                </CardBody>
-              </Card>
-            </UncontrolledPopover>
+            {value && value.imageUrl && value._id && (
+              <>
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                  <Card className="text-center">
+                    <CardImg className="badge_image_lg" src={value.imageUrl} />
+                    <CardBody>
+                      <CardTitle
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: 18,
+                          color: '#285739',
+                          marginBottom: 15,
+                        }}
+                      >
+                        {value.badgeName}
+                      </CardTitle>
+                      <CardText>{value.description}</CardText>
+                    </CardBody>
+                  </Card>
+                </UncontrolledPopover>
+              </>
+            )}
           </div>
         ))}
       </ListGroupItem>

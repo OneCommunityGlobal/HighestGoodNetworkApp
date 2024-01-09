@@ -313,12 +313,6 @@ export const createNewBadge = newBadge => async dispatch => {
 export const updateBadge = (badgeId, badgeData) => async dispatch => {
   try {
     await axios.put(ENDPOINTS.BADGE_BY_ID(badgeId), badgeData);
-    dispatch(
-      getMessage('Awesomesauce! You have successfully updated the badge to the system!', 'success'),
-    );
-    setTimeout(() => {
-      dispatch(closeAlert());
-    }, 6000);
     dispatch(fetchAllBadges());
   } catch (e) {
     if (e.response.status === 403 || 400) {
