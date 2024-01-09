@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent  } from '@testing-library/react';
 import TeamWeeklySummaries from '../TeamWeeklySummaries';
 import 'moment-timezone'; 
 import moment from 'moment';
@@ -41,12 +41,11 @@ describe('Test Suite for Team Weekly Summaries component', () => {
 
   it('Test 4 : Displays the expected date range ', async () => {
     render(<TeamWeeklySummaries {...testData} />);
-      const fromDate = moment().format('DD-MMM-YY');
-      const toDate = moment(fromDate, 'DD-MMM-YY').add(6, 'days').format('DD-MMM-YY');
-      /** This test uses the getByText query with a callback function. 
+         const fromDate = moment().format('DD-MMM-YY');
+      const toDate = moment().subtract(1, 'week').isoWeekday(7).format('DD-MMM-YY');
+       /** This test uses the getByText query with a callback function. 
      * The function checks for an <h6> element with the specific class and 
      * ensures that both fromDate and toDate are present within its content.  */
-    //  console.log(fromDate+","+toDate);
       const dateRangeElement = screen.getByText((content, element) => {
       return (
         element.tagName.toLowerCase() === 'h6' &&
@@ -57,7 +56,7 @@ describe('Test Suite for Team Weekly Summaries component', () => {
     });
 
     // assert that the  component renders the week dates correctly
-    expect(dateRangeElement.textContent).toMatch(new RegExp(`${fromDate}\\s+to\\s+${toDate}`));
+    expect(dateRangeElement.textContent).toMatch(new RegExp(`${toDate}\\s+to\\s+${fromDate}`));
 
   });
   it('Test 5 : Assert if correct users summary is displayed ', async () => {
