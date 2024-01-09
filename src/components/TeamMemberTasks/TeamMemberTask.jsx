@@ -10,7 +10,7 @@ import hasPermission from 'utils/permissions';
 import './style.css';
 import { boxStyle } from 'styles';
 import ReviewButton from './ReviewButton';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
@@ -192,8 +192,7 @@ const TeamMemberTask = React.memo(
                           <div>
                             <ReviewButton
                               user={user}
-                              myUserId={userId}
-                              myRole={userRole}
+                              userId={userId}
                               task={task}
                               updateTask={updateTaskStatus}
                               style={boxStyle}
