@@ -73,6 +73,7 @@ export const Header = props => {
   const canPutRole = props.hasPermission('putRole');
   // Permissions
   const canManageUser = props.hasPermission('putUserProfilePermissions');
+  const canEditHeaderMessage = props.hasPermission('editHeaderMessage');
 
   const dispatch = useDispatch();
 
@@ -109,7 +110,7 @@ export const Header = props => {
           style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
           {isAuthenticated && <Timer />}
-          {isAuthenticated && (
+          {(isAuthenticated || canEditHeaderMessage) &&(
             <div className="owner-message">
               <OwnerMessage />
             </div>
