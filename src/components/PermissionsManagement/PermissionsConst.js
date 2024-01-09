@@ -54,6 +54,11 @@ export const permissionLabels = [
         key: 'putUserProfileImportantInfo',
         description: 'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
+      {
+        label: 'Reset / Change Password (Others)',
+        key: 'resetPassword',
+        description: 'Gives the user permission to Reset and/or Change the password of any user but Owner/Admin classes. ',
+      }
     ]
   },
   {
