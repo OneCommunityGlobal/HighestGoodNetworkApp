@@ -59,7 +59,7 @@ function RolePermissions(props) {
   }, [roleName]);
 
 
-  const saveNewPreset = async () => {
+  const handleSaveNewPreset = async () => {
     let count = 1;
     while (props.presets.some(preset => preset.presetName === 'New Preset ' + count)) {
       count += 1;
@@ -69,7 +69,13 @@ function RolePermissions(props) {
       roleName: props.role,
       permissions: permissions,
     };
-    props.createNewPreset(newPreset);
+
+    const status = await props.createNewPreset(newPreset);
+    if (status === 0) {
+      toast.success(`Preset created successfully`)
+    } else {
+      toast.error(`Error creating preset`)
+    }
   };
 
   const updateInfo = async () => {
@@ -130,9 +136,7 @@ function RolePermissions(props) {
                   <Button
                     className="btn_save"
                     color="success"
-                    onClick={() => {
-                      saveNewPreset();
-                    }}
+                    onClick={handleSaveNewPreset}
                     style={boxStyle}
                   >
                     Create New Preset
@@ -253,7 +257,7 @@ function RolePermissions(props) {
           </Button>
         </ModalFooter>
       </Modal>
-      
+
       <Modal
         isOpen={showPresetModal}
         toggle={() => {

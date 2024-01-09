@@ -74,11 +74,11 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.map(({ date, status, brand, priority, quantity, requestedBy }) => {
+          {record.map(({ date, status, brandPref, priority, quantity, requestedBy }) => {
             return (
               <tr key={date + requestedBy._id}>
                 <td>{priority}</td>
-                <td>{brand}</td>
+                <td>{brandPref}</td>
                 <td>{quantity || '-'}</td>
                 <td>
                   <a href={`/userprofile/${requestedBy._id}`}>
