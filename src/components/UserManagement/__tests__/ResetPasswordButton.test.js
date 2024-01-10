@@ -1,9 +1,9 @@
 import React from 'react';
 import { screen, render, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ResetPasswordButton from '../../components/UserManagement/ResetPasswordButton';
-import * as services from '../../services/userProfileService';
-import { userProfileMock } from '../mockStates';
+import ResetPasswordButton from '../ResetPasswordButton';
+import * as services from '../../../services/userProfileService';
+import { userProfileMock } from '../../../__tests__/mockStates';
 import { toast } from 'react-toastify';
 jest.mock('react-toastify');
 
