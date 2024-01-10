@@ -1,0 +1,36 @@
+.types-list-container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+
+  --color-h50: #e8f4f9;
+  --color-h100: #78bdda;
+  --color-h500: #0d5675;
+  --color-n0: #ffffff;
+  --color-text: #1c8bcc;
+  --font-clickable: Roboto;
+}
+
+.card-header {
+  background-color: var(--color-h50);
+  color: var(--color-text);
+  font-family: var(--font-clickable);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.button-container {
+  margin-top: 10px;
+  display: flex;
+}
+
+.button-container a {
+  background-color: var(--color-h500);
+  color: var(--color-n0);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-family: Inter;
+  text-align: center;
+  text-decoration: none;
+}
