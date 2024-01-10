@@ -52,7 +52,7 @@ import BMLogin from './components/BMDashboard/Login';
 import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesList/ConsumablesView';
 
 import EquipmentList from './components/BMDashboard/Equipment/List';
-import CheckTypes from 'components/BMDashboard/shared/CheckTypes';
+import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 // import MaterialsList from './components/BMDashboard/MaterialsList';
 // import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 // import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';

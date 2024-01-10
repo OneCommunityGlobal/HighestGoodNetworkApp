@@ -1,16 +1,15 @@
 import { fetchInvTypeByType } from 'actions/bmdashboard/invTypeActions';
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Card, CardBody, Table } from 'reactstrap';
+import { Card, CardBody, Table } from 'reactstrap';
 
 function CheckTypes({ type }) {
-
   const buildingInventoryTypes = useSelector(state => state.bmInvTypes.list);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchInvTypeByType(type))
-  }, [])
+    dispatch(fetchInvTypeByType(type));
+  }, []);
 
   return (
     <div>
@@ -42,4 +41,4 @@ function CheckTypes({ type }) {
   );
 }
 
-export default CheckTypes
+export default CheckTypes;

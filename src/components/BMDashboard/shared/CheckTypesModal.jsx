@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import CheckTypes from './CheckTypes';
 
@@ -18,7 +17,7 @@ function CheckTypesModal({ modal, setModal, type }) {
         <Button onClick={toggle}>Close</Button>
       </ModalFooter>
     </Modal>
-  )
+  );
 }
 
-export default CheckTypesModal
+export default CheckTypesModal;

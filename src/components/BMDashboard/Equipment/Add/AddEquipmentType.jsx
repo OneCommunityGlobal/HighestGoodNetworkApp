@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BsInfoCircle } from 'react-icons/bs';
-// import { Button } from 'reactstrap';
-
 import BMError from 'components/BMDashboard/shared/BMError';
-// import CheckTypesModal from 'components/BMDashboard/shared/CheckTypesModal';
-import AddTypeForm from './AddTypeForm';
 import '../../BMDashboard.css';
 import { Button } from 'reactstrap';
 import CheckTypesModal from 'components/BMDashboard/shared/CheckTypesModal';
+import AddTypeForm from './AddTypeForm';
 
 export default function AddEquipmentType() {
   const errors = useSelector(state => state.errors);
   const [isError, setIsError] = useState(false);
   const [modal, setModal] = useState(false);
-
-  // const toggle = () => setShowModal(prev => !prev);
 
   useEffect(() => {
     if (Object.entries(errors).length) {
@@ -34,7 +29,7 @@ export default function AddEquipmentType() {
 
   return (
     <main className="inv-form-page-container">
-      <CheckTypesModal modal={modal} setModal={setModal} type={'Equipments'} />
+      <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
       <header>
         <h2>Add Type: Equipment</h2>
         <div className="inv-form-info">
