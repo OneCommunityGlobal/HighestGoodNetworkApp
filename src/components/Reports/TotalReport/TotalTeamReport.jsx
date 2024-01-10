@@ -18,6 +18,7 @@ function TotalTeamReport(props) {
   const [dataReady, setDataReady] = useState(false);
   const [showTotalTeamTable, setShowTotalTeamTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
+  const [teamTimeEntries, setTeamTimeEntries] = useState([]);
   const [allTeams, setAllTeams] = useState([]);
   const [teamInMonth, setTeamInMonth] = useState([]);
   const [teamInYear, setTeamInYear] = useState([]);
@@ -26,11 +27,12 @@ function TotalTeamReport(props) {
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
   const [userNameList, setUserNameList] = useState({});
 
-  const { startDate, endDate, userProfiles } = props;
+  const { startDate, endDate, userProfiles, allTeamsData } = props;
 
   const fromDate = startDate.toLocaleDateString('en-CA');
   const toDate = endDate.toLocaleDateString('en-CA');
   const userList = userProfiles.map(user => user._id);
+  const teamList = allTeamsData.map(team => team._id);
 
   const filterTeamByEndDate = (teams, endDateTime) => {
     const filteredTeams = teams
@@ -87,13 +89,34 @@ function TotalTeamReport(props) {
         }
       });
     });
+    teamTimeEntries?.forEach(entry => {
+      const key = entry.teamId;
+      if (!accTeam[key]) {
+        accTeam[key] = {
+          teamId: key,
+          teamName: entry.teamName,
+          hours: 0,
+          minutes: 0,
+          tangibleHours: 0,
+          tangibleMinutes: 0,
+        };
+      }
+      const hours = parseInt(entry.hours);
+      const minutes = parseInt(entry.minutes);
+      accTeam[key].hours += hours;
+      accTeam[key].minutes += minutes;
+      if(entry.isTangible){
+        accTeam[key].tangibleHours += hours;
+        accTeam[key].tangibleMinutes += minutes;
+      }
+    });
     return accTeam;
   };
 
   const loadTimeEntriesForPeriod = async () => {
     // get the time entries of every user in the selected time range.
     // console.log('Load time entries within the time range');
-    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
@@ -111,7 +134,27 @@ function TotalTeamReport(props) {
         // eslint-disable-next-line no-console
         console.log(err.message);
       });
+
+    url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
+    const teamTimeEntries = await axios
+      .post(url, { teams: teamList, fromDate, toDate })
+      .then(res => {
+        return res.data.map(entry => {
+          return {
+            teamId: entry.teamId,
+            hours: entry.hours,
+            minutes: entry.minutes,
+            isTangible: entry.isTangible,
+            date: entry.dateOfWork,
+            teamName: entry.teamName,
+          };
+        });
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
     setAllTimeEntries(timeEntries);
+    setTeamTimeEntries(teamTimeEntries);
   };
 
   const sumByUser = (objectArray, property) => {
@@ -229,7 +272,7 @@ function TotalTeamReport(props) {
       setAllTeamsMembers(savedTeamMemberList);
       setTeamMemberLoaded(true);
     } else {
-      matchTeamUser(allTeams).then(() => {
+      matchTeamUser(allTeamsData).then(() => {
         setTeamMemberLoaded(true);
       });
     }

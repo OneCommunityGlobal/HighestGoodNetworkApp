@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import './style.css';
 import './reviewButton.css';
 import { boxStyle } from 'styles';
@@ -10,13 +11,15 @@ import { ApiEndpoint } from 'utils/URL';
 
 const ReviewButton = ({
   user,
-  myUserId,
-  myRole,
   task,
   updateTask
 }) => {
+ 
 
 
+
+  const myUserId = useSelector(state => state.auth.user.userid);
+  const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
   const [link, setLink] = useState("");
   const [verifyModal, setVerifyModal] = useState(false);
@@ -98,8 +101,8 @@ const ReviewButton = ({
           </UncontrolledDropdown>
         );
       } else if (user.personId == myUserId) {
-        return <Button className='reviewBtn' color='success' onClick={() => {updReviewStat("Unsubmitted");}}>
-          More work needed, reset this button
+        return <Button className='reviewBtn' color='info' disabled>
+          Work Submitted and Awaiting Review
         </Button>;
       } else {
         return <Button className='reviewBtn' color='success' disabled>
