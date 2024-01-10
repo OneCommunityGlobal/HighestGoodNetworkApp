@@ -301,6 +301,22 @@ function LeaderBoard({
                     }}
                   >
                     {item.name}
+                    {currentDate.isSameOrAfter(
+                      moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                    ) &&
+                    currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) ? (
+                      <sup>
+                        {' '}
+                        +
+                        {Math.floor(
+                          1 +
+                            moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(
+                              moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                              'weeks',
+                            ),
+                        )}
+                      </sup>
+                    ) : null}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
                   {hasVisibilityIconPermission && !item.isVisible && (
