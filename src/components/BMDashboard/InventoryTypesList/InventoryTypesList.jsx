@@ -5,6 +5,7 @@ import { fetchMaterialTypes } from 'actions/bmdashboard/invTypeActions';
 import { Accordion, Card } from 'react-bootstrap';
 import BMError from '../shared/BMError';
 
+import TypesTable from './TypesTable';
 import './TypesList.css';
 
 // NOTE: placeholder data
@@ -12,7 +13,7 @@ const placeText =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.s';
 
 export function InventoryTypesList(props) {
-  const { invTypes, errors, dispatch } = props;
+  const { materialTypes, errors, dispatch } = props;
 
   const [isError, setIsError] = useState(false);
 
@@ -38,19 +39,21 @@ export function InventoryTypesList(props) {
   }
 
   // NOTE: logs
-  console.log(invTypes);
+  // console.log(materialTypes);
 
   return (
     <div className="types-list-container">
       <h3>All Inventory Types</h3>
 
-      <Accordion defaultActiveKey="0">
-        <Card>
+      <Accordion defaultActiveKey="0" className="accordion">
+        <Card className="card">
           <Accordion.Toggle as={Card.Header} eventKey="0" className="card-header">
             Material
           </Accordion.Toggle>
           <Accordion.Collapse eventKey="0">
-            <Card.Body>{placeText}</Card.Body>
+            <Card.Body>
+              <TypesTable itemTypes={materialTypes} />
+            </Card.Body>
           </Accordion.Collapse>
         </Card>
 
@@ -102,7 +105,8 @@ export function InventoryTypesList(props) {
 }
 
 const mapStateToProps = state => ({
-  invTypes: state.bmInvTypes,
+  // invTypes: state.bmInvTypes,
+  materialTypes: state.bmInvTypes,
   errors: state.errors,
 });
 
