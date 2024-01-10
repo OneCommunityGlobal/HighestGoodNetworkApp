@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import { GET_TOOL_BY_ID } from 'constants/bmdashboard/toolsConstants';
+import GET_TOOL_BY_ID from 'constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from 'constants/errors';
 
 
