@@ -1,22 +1,24 @@
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
+import React from 'react'
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import CheckTypes from './CheckTypes';
 
-export default function CheckTypesModal({ showModal, toggle }) {
+function CheckTypesModal({ modal, setModal, type }) {
+  const toggle = () => {
+    setModal(false);
+  };
   return (
-    <Modal isOpen={showModal}>
-      <ModalHeader>Inventory Types</ModalHeader>
+    <Modal isOpen={modal} size="xl">
+      <ModalHeader>{type}</ModalHeader>
       <ModalBody>
-        <Table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Category</th>
-            </tr>
-          </thead>
-        </Table>
+        <div className="records_modal_table_container">
+          <CheckTypes type={type} />
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button onClick={toggle}>Close</Button>
       </ModalFooter>
     </Modal>
-  );
+  )
 }
+
+export default CheckTypesModal
