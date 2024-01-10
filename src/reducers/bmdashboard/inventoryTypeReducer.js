@@ -1,7 +1,11 @@
 import GET_MATERIAL_TYPES, { GET_INV_BY_TYPE } from "constants/bmdashboard/inventoryTypeConstants";
 
 const defaultState = {
-  list: []
+  list: [],
+  invTypeList: {
+    "All": null, "Materials": null, "Consumables": null, "Equipments": null,
+    "Reusables": null, "Tools:": null
+  }
 }
 
 export const bmInvTypeReducer = (types = defaultState, action) => {
@@ -11,9 +15,11 @@ export const bmInvTypeReducer = (types = defaultState, action) => {
       return { ...types }
     }
     case GET_INV_BY_TYPE: {
-      types.list = action.payload
+      types.invTypeList[action.payload.type] = [...action.payload.data]
       return { ...types }
     }
+    default: {
+      return types;
+    }
   }
-  return types
 }
