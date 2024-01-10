@@ -34,3 +34,10 @@
   text-align: center;
   text-decoration: none;
 }
+
+.btn-types {
+  background-color: var(--color-h100);
+  color: var(--color-n0);
+  font-family: var(--font-clickable);
+  border: none;
+}
