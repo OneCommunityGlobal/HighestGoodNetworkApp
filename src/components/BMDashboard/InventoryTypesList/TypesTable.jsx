@@ -1,16 +1,18 @@
 import { Table, Button } from 'react-bootstrap';
 import TypeRow from './TypeRow';
 
-export default function TypesTable({ itemTypes }) {
+export default function TypesTable(props) {
+  const { itemTypes, category } = props;
+
   const handleAdd = () => {
     // TODO:
-    console.log('Added type:', itemTypes[0]?.category);
+    console.log('Added type:', category);
   };
 
   return (
     <div>
       <Table hover borderless size="sm" responsive="lg">
-        <thead>
+        <thead className="table-header">
           <tr>
             <th>ID</th>
             <th>Name</th>
