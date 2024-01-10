@@ -309,12 +309,11 @@ function LeaderBoard({
                         {' '}
                         +
                         {Math.floor(
-                          1 +
-                            moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(
-                              moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-                              'weeks',
-                            ),
-                        )}
+                          moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(
+                            moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                            'weeks',
+                          ),
+                        ) + 1}
                       </sup>
                     ) : null}
                   </Link>
