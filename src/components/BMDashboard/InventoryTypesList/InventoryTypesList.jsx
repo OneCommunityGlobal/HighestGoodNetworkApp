@@ -2,7 +2,14 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { fetchMaterialTypes } from 'actions/bmdashboard/invTypeActions';
+import { Accordion, Card } from 'react-bootstrap';
 import BMError from '../shared/BMError';
+
+import './TypesList.css';
+
+// NOTE: placeholder data
+const placeText =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.s';
 
 export function InventoryTypesList(props) {
   const { invTypes, errors, dispatch } = props;
@@ -34,8 +41,62 @@ export function InventoryTypesList(props) {
   console.log(invTypes);
 
   return (
-    <div>
+    <div className="types-list-container">
       <h3>All Inventory Types</h3>
+
+      <Accordion defaultActiveKey="0">
+        <Card>
+          <Accordion.Toggle as={Card.Header} eventKey="0" className="card-header">
+            Material
+          </Accordion.Toggle>
+          <Accordion.Collapse eventKey="0">
+            <Card.Body>{placeText}</Card.Body>
+          </Accordion.Collapse>
+        </Card>
+
+        <Card>
+          <Accordion.Toggle as={Card.Header} eventKey="1">
+            Tool
+          </Accordion.Toggle>
+          <Accordion.Collapse eventKey="1">
+            <Card.Body>{placeText}</Card.Body>
+          </Accordion.Collapse>
+        </Card>
+
+        <Card>
+          <Accordion.Toggle as={Card.Header} eventKey="2">
+            Equipment
+          </Accordion.Toggle>
+          <Accordion.Collapse eventKey="2">
+            <Card.Body>{placeText}</Card.Body>
+          </Accordion.Collapse>
+        </Card>
+
+        <Card>
+          <Accordion.Toggle as={Card.Header} eventKey="3">
+            Consumable
+          </Accordion.Toggle>
+          <Accordion.Collapse eventKey="3">
+            <Card.Body>{placeText}</Card.Body>
+          </Accordion.Collapse>
+        </Card>
+
+        <Card>
+          <Accordion.Toggle as={Card.Header} eventKey="4">
+            Reusable
+          </Accordion.Toggle>
+          <Accordion.Collapse eventKey="4">
+            <Card.Body>{placeText}</Card.Body>
+          </Accordion.Collapse>
+        </Card>
+      </Accordion>
+
+      <div className="button-container">
+        {/* TODO: should redirect to the Equipment/Tool List Page, which is not implemented yet */}
+        <a href="#back-to-previous" target="_blank" id="back-to-previous" role="button">
+          Back to previous list page
+        </a>
+      </div>
     </div>
   );
 }
