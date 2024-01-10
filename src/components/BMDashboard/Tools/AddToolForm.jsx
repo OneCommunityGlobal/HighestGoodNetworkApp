@@ -7,6 +7,12 @@ import { boxStyle } from 'styles';
 import 'react-phone-input-2/lib/style.css';
 import './AddToolForm.css';
 
+
+//TO DO: fix orderTotal to be displayed in console
+//area code not saving to state
+//drag and drop pass the image to a parent
+//fix alignment
+
 const initialFormState = {
   project: 'Project1',
   category: 'Tool',
@@ -23,7 +29,7 @@ const initialFormState = {
   taxes: '',
   areaCode: '+1',
   phoneNumber: '',
-  image: [],
+  images: [],
   link: '',
   description: '',
   orderTotal: '',
@@ -33,6 +39,8 @@ export default function AddToolForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [selectedCategory, setSelectedCategory] = useState(formData.category);
   const [selectedName, setSelectedName] = useState(formData.name);
+  const [isPurchased, setIsPurchased] = useState(true);
+  // const [files, setFiles] = useState(formData.images);
 
   const handleInputChange = (name, value) => {
     setFormData(prevData => ({
@@ -52,6 +60,16 @@ export default function AddToolForm() {
     const name = event.target.value;
     setSelectedName(name);
     handleInputChange('name', name);
+  };
+
+  const handlePurchaseRentalChange = event => {
+    const selectedOption = event.target.value;
+    if (selectedOption === 'purchase') {
+      setIsPurchased(true);
+    } else {
+      setIsPurchased(false);
+    }
+    handleInputChange('purchaseRental', selectedOption);
   };
 
   const handlePhoneNumberChange = ({ areaCode, phoneNumber }) => {
@@ -74,10 +92,10 @@ export default function AddToolForm() {
   const handleSubmit = event => {
     event.preventDefault();
     //TO DO: fix orderTotal to be displayed in console
-    const orderTotal = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
+    // const orderTotal = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
     setFormData(prevData => ({
       ...prevData,
-      orderTotal,
+      orderTotal: totalPriceWithShipping,
     }));
     console.log('Data', formData);
   };
@@ -85,6 +103,10 @@ export default function AddToolForm() {
   const handleCancelClick = () => {
     setFormData(initialFormState);
   };
+
+  // const handleFilesSelected = selectedFiles => {
+  //   console.log('Files received', selectedFiles);
+  // };
 
   return (
     <Form className="add-tool-form container" onSubmit={handleSubmit}>
@@ -194,7 +216,7 @@ export default function AddToolForm() {
             type="select"
             name="purchase-rental"
             value={formData.purchaseRental}
-            onChange={event => handleInputChange('purchaseRental', event.target.value)}
+            onChange={handlePurchaseRentalChange}
           >
             <option value="purchase">Purchase</option>
             <option value="rental">Rental</option>
@@ -233,6 +255,7 @@ export default function AddToolForm() {
             name="to-date"
             value={formData.toDate}
             onChange={event => handleInputChange('toDate', event.target.value)}
+            disabled={isPurchased}
           />
         </FormGroup>
       </div>
@@ -268,8 +291,8 @@ export default function AddToolForm() {
         <DragAndDrop
           id="imageUpload"
           name="image"
-          value={formData.image}
-          onFilesSelected={setFiles}
+          value={formData.images}
+          onFilesSelected={handleFilesSelected}
         />
       </FormGroup> */}
 

@@ -15,7 +15,7 @@ const DragAndDrop = ({onFilesSelected}) => {
 
     if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
-    } else if (e.type === "drageleave") {
+    } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };

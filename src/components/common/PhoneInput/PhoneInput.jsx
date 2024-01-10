@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { InputGroup, FormGroup, Input, Label, Col, Row } from 'reactstrap';
+import './PhoneInput.css';
 
 export const PhoneInput = ({onPhoneNumberChange}) => {
   const [areaCode, setAreaCode] = useState('');
@@ -17,19 +18,19 @@ export const PhoneInput = ({onPhoneNumberChange}) => {
 
   
   return (
-    <FormGroup>
+    <FormGroup className="phone-input-container">
       <Label>Supplier Phone Number</Label>
-    <InputGroup>
+    <InputGroup className="phone-input-content">
       <Row>
         {/* Area code */}
-        <Col xs='auto' className="pr-1">            
+        <Col xs='2' className="pr-1">            
               <Input
                 type="select"
                 value={areaCode}
                 onChange={handleAreaCodeChange}
                 style={{width: '70px'}}>
               <option value="1">+1</option>
-            <option value="44">+44</option>
+              <option value="44">+44</option>
             {/* Add more area codes as needed */}
               </Input>            
         </Col>
