@@ -11,40 +11,39 @@ function CheckTypes({ type }) {
 
   useEffect(() => {
     if (buildingInventoryTypes.invTypeList[InvType] != null)
-      setbuildingInvTypes([...buildingInventoryTypes.invTypeList[InvType]])
+      setbuildingInvTypes([...buildingInventoryTypes.invTypeList[InvType]]);
   }, [buildingInventoryTypes]);
 
   useEffect(() => {
-    if (buildingInventoryTypes.invTypeList[InvType] == null)
-      dispatch(fetchInvTypeByType(InvType));
+    if (buildingInventoryTypes.invTypeList[InvType] == null) dispatch(fetchInvTypeByType(InvType));
     else {
-      //In cache
-      setbuildingInvTypes([...buildingInventoryTypes.invTypeList[InvType]])
+      // In cache
+      setbuildingInvTypes([...buildingInventoryTypes.invTypeList[InvType]]);
     }
-  }, [InvType])
-
+  }, [InvType]);
 
   return (
     <div>
       <Card>
         <CardBody>
           <FormGroup row>
-            <Label
-              for="selectType"
-              lg={2} sm={4}
-            >
+            <Label for="selectType" lg={2} sm={4}>
               Select Type
             </Label>
             <Col lg={4} sm={8}>
-              <Input id="selectType"
+              <Input
+                id="selectType"
                 name="select"
-                type="select" value={InvType} onChange={(e) => setInvType(e.target.value)}>
-                <option value="All" >All</option>
-                <option value="Materials" >Materials</option>
-                <option value="Consumables" >Consumables</option>
-                <option value="Equipments" >Equipment</option>
-                <option value="Tools" >Tools</option>
-                <option value="Reusables" >Reusables</option>
+                type="select"
+                value={InvType}
+                onChange={e => setInvType(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Materials">Materials</option>
+                <option value="Consumables">Consumables</option>
+                <option value="Equipments">Equipment</option>
+                <option value="Tools">Tools</option>
+                <option value="Reusables">Reusables</option>
               </Input>
             </Col>
           </FormGroup>
