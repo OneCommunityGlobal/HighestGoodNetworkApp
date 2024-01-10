@@ -35,7 +35,6 @@ export default function AddEquipmentType() {
   return (
     <main className="inv-form-page-container">
       <CheckTypesModal modal={modal} setModal={setModal} type={'Equipments'} />
-      {modal && 'modal'}
       <header>
         <h2>Add Type: Equipment</h2>
         <div className="inv-form-info">
