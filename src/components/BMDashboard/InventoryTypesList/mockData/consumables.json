@@ -1,0 +1,12 @@
+[
+  {
+    "__t": "consumable_type",
+    "_id": "659db6fc6c9a8a56419eb4de",
+    "category": "Consumable",
+    "name": "Knives",
+    "description": "Cutting. ",
+    "size": "10",
+    "createdBy": "656abd06f78cbd833d4b9156",
+    "__v": 0
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "__t": "equipment_type",
+    "_id": "65983a50d1ef1c549a6599ef",
+    "category": "Equipment",
+    "name": "Back hoe",
+    "description": "Outdoor equipment for digging trenches and footings. ",
+    "fuelType": "Diesel",
+    "createdBy": "656abd06f78cbd833d4b9156",
+    "__v": 0
+  },
+  {
+    "__t": "equipment_type",
+    "_id": "659b1c1da55ddd1a589679de",
+    "category": "Equipment",
+    "name": "Dragline Excavator",
+    "description": "Mechanized excavator and crawler that operates with a shovel or scoop attached to the machine only with cables.",
+    "fuelType": "Diesel",
+    "createdBy": "649f2045e6e8721830f51b60",
+    "__v": 0
+  }
+]
