@@ -9,8 +9,8 @@ import './AddToolForm.css';
 
 const initialFormState = {
   project: 'Project1',
-  category: '',
-  name: '',
+  category: 'Tool',
+  name: 'Tool1',
   invoice: '',
   unitPrice: '',
   currency: 'USD',
@@ -21,25 +21,25 @@ const initialFormState = {
   toDate: '',
   shippingFee: '',
   taxes: '',
-  areaCode: '',
+  areaCode: '+1',
   phoneNumber: '',
   image: [],
   link: '',
   description: '',
+  orderTotal: '',
 };
 
 export default function AddToolForm() {
-  const [selectedCategory, setSelectedCategory] = useState('Tool');
-  const [selectedName, setSelectedName] = useState('Tool1');
   const [formData, setFormData] = useState(initialFormState);
-
+  const [selectedCategory, setSelectedCategory] = useState(formData.category);
+  const [selectedName, setSelectedName] = useState(formData.name);
 
   const handleInputChange = (name, value) => {
     setFormData(prevData => ({
       ...prevData,
       [name]: value,
     }));
- };
+  };
 
   const handleCategoryChange = event => {
     const category = event.target.value;
@@ -49,22 +49,17 @@ export default function AddToolForm() {
   };
 
   const handleNameChange = event => {
-    setSelectedName(event.target.value);
-    handleInputChange('name', event.target.value);
+    const name = event.target.value;
+    setSelectedName(name);
+    handleInputChange('name', name);
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    console.log('Data', formData)
-  };
-
-  const handleCancelClick = () => {
-    setFormData(initialFormState);
-  };
-
-  //TO DO: fix this
   const handlePhoneNumberChange = ({ areaCode, phoneNumber }) => {
-    setFormData({ areaCode, phoneNumber });
+    setFormData(prevData => ({
+      ...prevData,
+      areaCode,
+      phoneNumber,
+    }));
   };
 
   const { unitPrice, quantity, taxes, shippingFee } = formData;
@@ -74,9 +69,23 @@ export default function AddToolForm() {
 
   const totalPrice = calculateTotalPrice(unitPrice, quantity);
   const totalTax = calculateTotalTax(Number(taxes), totalPrice);
-  const totalPriceWithShipping = totalPrice + totalTax + Number(shippingFee);
+  const totalPriceWithShipping = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
 
-  
+  const handleSubmit = event => {
+    event.preventDefault();
+    //TO DO: fix orderTotal to be displayed in console
+    const orderTotal = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
+    setFormData(prevData => ({
+      ...prevData,
+      orderTotal,
+    }));
+    console.log('Data', formData);
+  };
+
+  const handleCancelClick = () => {
+    setFormData(initialFormState);
+  };
+
   return (
     <Form className="add-tool-form container" onSubmit={handleSubmit}>
       <FormGroup>
@@ -251,14 +260,9 @@ export default function AddToolForm() {
           />
         </FormGroup>
       </div>
-      {/* <div className="add-tool-supplier-phone">
-        <FormGroup>
-          <Label for="phone-number">Supplier phone number</Label>
-          <Input id="phone-number" type="tel" name="phone-number" placeholder="XXX-XX-XX" />
-        </FormGroup>
-      </div> */}
 
-    <PhoneInput onPhoneNumberChange={{handlePhoneNumberChange}}/>
+      <PhoneInput onPhoneNumberChange={handlePhoneNumberChange} />
+
       {/* <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
         <DragAndDrop
