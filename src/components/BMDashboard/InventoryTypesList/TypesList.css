@@ -41,3 +41,7 @@
   font-family: var(--font-clickable);
   border: none;
 }
+
+.table-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}

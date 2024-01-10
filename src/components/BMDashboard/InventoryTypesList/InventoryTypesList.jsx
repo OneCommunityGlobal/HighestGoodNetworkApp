@@ -7,10 +7,7 @@ import BMError from '../shared/BMError';
 
 import TypesTable from './TypesTable';
 import './TypesList.css';
-
-// NOTE: placeholder data
-const placeText =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.s';
+import { equipmentTypes, consumableTypes, toolTypes, reusableTypes } from './mockData';
 
 export function InventoryTypesList(props) {
   const { materialTypes, errors, dispatch } = props;
@@ -38,21 +35,18 @@ export function InventoryTypesList(props) {
     );
   }
 
-  // NOTE: logs
-  // console.log(materialTypes);
-
   return (
     <div className="types-list-container">
       <h3>All Inventory Types</h3>
 
-      <Accordion defaultActiveKey="0" className="accordion">
-        <Card className="card">
-          <Accordion.Toggle as={Card.Header} eventKey="0" className="card-header">
+      <Accordion defaultActiveKey="0">
+        <Card>
+          <Accordion.Toggle as={Card.Header} eventKey="0">
             Material
           </Accordion.Toggle>
           <Accordion.Collapse eventKey="0">
             <Card.Body>
-              <TypesTable itemTypes={materialTypes} />
+              <TypesTable itemTypes={materialTypes} category="Material" />
             </Card.Body>
           </Accordion.Collapse>
         </Card>
@@ -62,7 +56,9 @@ export function InventoryTypesList(props) {
             Tool
           </Accordion.Toggle>
           <Accordion.Collapse eventKey="1">
-            <Card.Body>{placeText}</Card.Body>
+            <Card.Body>
+              <TypesTable itemTypes={toolTypes} category="Tool" />
+            </Card.Body>
           </Accordion.Collapse>
         </Card>
 
@@ -71,7 +67,9 @@ export function InventoryTypesList(props) {
             Equipment
           </Accordion.Toggle>
           <Accordion.Collapse eventKey="2">
-            <Card.Body>{placeText}</Card.Body>
+            <Card.Body>
+              <TypesTable itemTypes={equipmentTypes} category="Equipment" />
+            </Card.Body>
           </Accordion.Collapse>
         </Card>
 
@@ -80,7 +78,9 @@ export function InventoryTypesList(props) {
             Consumable
           </Accordion.Toggle>
           <Accordion.Collapse eventKey="3">
-            <Card.Body>{placeText}</Card.Body>
+            <Card.Body>
+              <TypesTable itemTypes={consumableTypes} category="Consumable" />
+            </Card.Body>
           </Accordion.Collapse>
         </Card>
 
@@ -89,7 +89,9 @@ export function InventoryTypesList(props) {
             Reusable
           </Accordion.Toggle>
           <Accordion.Collapse eventKey="4">
-            <Card.Body>{placeText}</Card.Body>
+            <Card.Body>
+              <TypesTable itemTypes={reusableTypes} category="Reusable" />
+            </Card.Body>
           </Accordion.Collapse>
         </Card>
       </Accordion>
