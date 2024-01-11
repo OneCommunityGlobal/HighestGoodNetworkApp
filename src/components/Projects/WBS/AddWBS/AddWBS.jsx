@@ -21,7 +21,6 @@ const AddWBS = props => {
     }
     setNewName(newName);
   };
-
   return (
     <>
       {canPostWBS ? (
