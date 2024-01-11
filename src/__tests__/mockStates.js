@@ -1279,7 +1279,7 @@ describe('Stop Error', () => {
   it('should not error out due to no tests (mockStates.js)', () => {});
 });
 
-import { formatDate } from 'utils/formatDate';
+
 
 export const dummyProfileMock = {
   hoursByCategory: {
@@ -1306,9 +1306,9 @@ export const dummyProfileMock = {
   firstName: 'Volunteer',
   lastName: 'tester',
   email: 'volunteer@hgn.net',
-  endDate: formatDate("2029-08-07"),
-  reactivationDate: formatDate("2024-01-01"),
-  createdDate: formatDate("2023-08-07"),
+  endDate: "2029-08-07",
+  reactivationDate: "2024-01-01",
+  createdDate: "2023-08-07",
   adminLinks: [
     {
       Name: 'self',

@@ -6,6 +6,7 @@ import { authMock, userProfileMock, rolesMock, dummyProfileMock } from '../../..
 import { renderWithProvider } from '../../../__tests__/utils.js';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
+import { formatDate } from '../../../utils/formatDate';
 
 const mockStore = configureStore([thunk]);
 
@@ -143,13 +144,13 @@ describe('More User Table Data tests', () => {
   describe('Structure', () => {
     it('should render the correct start date', () => {
       console.log(dummyProfileMock.createdDate);
-      expect(screen.getByText(dummyProfileMock.createdDate)).toBeInTheDocument();
+      expect(screen.getByText(formatDate(dummyProfileMock.createdDate))).toBeInTheDocument();
     });
     it('should render the correct end date', () => {
-      expect(screen.getByText(dummyProfileMock.endDate)).toBeInTheDocument();
+      expect(screen.getByText(formatDate(dummyProfileMock.endDate))).toBeInTheDocument();
     });
     it('should render the correct pause date', () => {
-      expect(screen.getByText(dummyProfileMock.reactivationDate)).toBeInTheDocument();
+      expect(screen.getByText(formatDate(dummyProfileMock.reactivationDate))).toBeInTheDocument();
     });
     it('should render the correct weekly hrs', () => {
       expect(screen.getByText(dummyProfileMock.weeklycommittedHours)).toBeInTheDocument();
