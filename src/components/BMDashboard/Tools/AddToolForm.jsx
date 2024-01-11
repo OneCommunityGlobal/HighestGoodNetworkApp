@@ -98,6 +98,7 @@ export default function AddToolForm() {
       orderTotal: totalPriceWithShipping,
     }));
     console.log('Data', formData);
+    //TO DO: post request to submit the data
   };
 
   const handleCancelClick = () => {

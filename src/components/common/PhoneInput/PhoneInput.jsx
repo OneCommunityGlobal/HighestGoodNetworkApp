@@ -23,7 +23,7 @@ export const PhoneInput = ({onPhoneNumberChange}) => {
     <InputGroup className="phone-input-content">
       <Row>
         {/* Area code */}
-        <Col xs='2' className="pr-1">            
+        <Col xs='auto' className="pr-1">            
               <Input
                 type="select"
                 value={areaCode}
@@ -35,7 +35,7 @@ export const PhoneInput = ({onPhoneNumberChange}) => {
               </Input>            
         </Col>
         {/* phone number */}
-        <Col className="pl-1">
+        <Col className="pl-1 pr-0">
           <Input
             type="text"
             placeholder="xxx-xx-xxxx"
