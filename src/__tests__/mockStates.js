@@ -1278,3 +1278,63 @@ export const rolesMock = {
 describe('Stop Error', () => {
   it('should not error out due to no tests (mockStates.js)', () => {});
 });
+
+import { formatDate } from 'utils/formatDate';
+
+export const dummyProfileMock = {
+  hoursByCategory: {
+    housing: 0,
+    food: 0,
+    education: 0,
+    society: 0,
+    energy: 0,
+  },
+  timeEntryEditHistory: [],
+  isActive: false,
+  totalTangibleHrs: 21,
+  phoneNumber: ['4012351234'],
+  weeklycommittedHours: 10,
+  _id: '5edf141c78f1380017b829a6',
+  emailPubliclyAccessible: true,
+  phoneNumberPubliclyAccessible: true,
+  badgeCollection: [],
+  role: 'Volunteer',
+  permissions: {
+    frontPermissions: [],
+    backPermissions: []
+  },
+  firstName: 'Volunteer',
+  lastName: 'tester',
+  email: 'volunteer@hgn.net',
+  endDate: formatDate("2029-08-07"),
+  reactivationDate: formatDate("2024-01-01"),
+  createdDate: formatDate("2023-08-07"),
+  adminLinks: [
+    {
+      Name: 'self',
+      Link: '5edf141c78f1380017b829a6',
+    },
+    {
+      Name: 'voulunteer',
+      Link: '5eecff1e80d46831c828ed86',
+    },
+  ],
+  personalLinks: [
+    {
+      Name: 'facebook',
+      Link: 'facebook.com',
+    },
+    {
+      Name: 'personal website',
+      Link: 'http://www.capdevile.dev',
+    },
+  ],
+  jobTitle: ['Software Engineer'],
+  privacySettings: {
+    email: true,
+    phoneNumber: true,
+    blueSquares: true,
+  },
+  mediaUrl: 'http://dropbox.com',
+  weeklySummariesCount: 0,
+};

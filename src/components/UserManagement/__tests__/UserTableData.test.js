@@ -1,9 +1,9 @@
 import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import UserTableData from '../../components/UserManagement/UserTableData';
-import { authMock, userProfileMock, rolesMock } from '../mockStates';
-import { renderWithProvider } from '../utils';
+import UserTableData from '../UserTableData';
+import { authMock, userProfileMock, rolesMock, dummyProfileMock } from '../../../__tests__/mockStates.js';
+import { renderWithProvider } from '../../../__tests__/utils.js';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
@@ -107,4 +107,53 @@ describe('User Table Data', () => {
       }
     });
   });
+});
+
+describe('More User Table Data tests', () => {
+  let onPauseResumeClick;
+  let onDeleteClick;
+  let onActiveInactiveClick;
+  let store;
+  beforeEach(() => {
+    store = mockStore({
+      auth: authMock,
+      userProfile: dummyProfileMock,
+      role: rolesMock.role
+    });
+    onPauseResumeClick = jest.fn();
+    onDeleteClick = jest.fn();
+    onActiveInactiveClick = jest.fn();
+    renderWithProvider(
+      <table>
+        <tbody>
+          <UserTableData
+            isActive
+            index={0}
+            user={dummyProfileMock}
+            onActiveInactiveClick={onActiveInactiveClick}
+            onPauseResumeClick={onPauseResumeClick}
+            onDeleteClick={onDeleteClick}
+            userId={dummyProfileMock._id}
+          />
+        </tbody>
+      </table>,
+      { store, }
+    );
+  });
+  describe('Structure', () => {
+    it('should render the correct start date', () => {
+      console.log(dummyProfileMock.createdDate);
+      expect(screen.getByText(dummyProfileMock.createdDate)).toBeInTheDocument();
+    });
+    it('should render the correct end date', () => {
+      expect(screen.getByText(dummyProfileMock.endDate)).toBeInTheDocument();
+    });
+    it('should render the correct pause date', () => {
+      expect(screen.getByText(dummyProfileMock.reactivationDate)).toBeInTheDocument();
+    });
+    it('should render the correct weekly hrs', () => {
+      expect(screen.getByText(dummyProfileMock.weeklycommittedHours)).toBeInTheDocument();
+    });
+  });
+  
 });
