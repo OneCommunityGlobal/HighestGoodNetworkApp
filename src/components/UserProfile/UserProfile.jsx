@@ -622,7 +622,7 @@ function UserProfile(props) {
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
-
+  const {role: userRole} = userProfile;
   const authEmail = props.userProfile?.email;
   const isUserSelf = targetUserId === requestorId;
 
@@ -631,7 +631,8 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
-
+  const canResetPassword = props.hasPermission('resetPassword') && !(userRole === "Administrator" || userRole === "Owner") ;
+ 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
   const selfIsDevAdminUneditable = cantUpdateDevAdminDetails(authEmail, authEmail);
 
@@ -1344,7 +1345,7 @@ function UserProfile(props) {
           <Col md="4"></Col>
           <Col md="8" className="desktop-panel">
             <div className="profileEditButtonContainer">
-              {canUpdatePassword && canEdit && !isUserSelf && (
+              {(canUpdatePassword && canEdit && !isUserSelf) || (canResetPassword) && (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
