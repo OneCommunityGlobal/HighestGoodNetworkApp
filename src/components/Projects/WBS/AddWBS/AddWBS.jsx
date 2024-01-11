@@ -28,7 +28,6 @@ const AddWBS = props => {
           <div className="input-group-prepend">
             <span className="input-group-text">Add new WBS</span>
           </div>
-
           <input
             autoFocus
             type="text"
