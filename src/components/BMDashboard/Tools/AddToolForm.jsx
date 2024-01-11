@@ -9,8 +9,7 @@ import './AddToolForm.css';
 
 
 //TO DO: fix orderTotal to be displayed in console
-//area code not saving to state
-//drag and drop pass the image to a parent
+//drag and drop pass the data to formData in parent
 //fix alignment
 
 const initialFormState = {
@@ -105,9 +104,9 @@ export default function AddToolForm() {
     setFormData(initialFormState);
   };
 
-  // const handleFilesSelected = selectedFiles => {
-  //   console.log('Files received', selectedFiles);
-  // };
+  const handleFilesSelected = selectedFiles => {
+    console.log('Files received', selectedFiles);
+  };
 
   return (
     <Form className="add-tool-form container" onSubmit={handleSubmit}>
@@ -287,7 +286,7 @@ export default function AddToolForm() {
 
       <PhoneInput onPhoneNumberChange={handlePhoneNumberChange} />
 
-      {/* <FormGroup>
+      <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
         <DragAndDrop
           id="imageUpload"
@@ -295,7 +294,7 @@ export default function AddToolForm() {
           value={formData.images}
           onFilesSelected={handleFilesSelected}
         />
-      </FormGroup> */}
+      </FormGroup>
 
       <FormGroup>
         <Label for="link">Link to Buy/Rent</Label>

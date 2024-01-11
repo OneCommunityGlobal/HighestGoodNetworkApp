@@ -3,7 +3,7 @@ import { InputGroup, FormGroup, Input, Label, Col, Row } from 'reactstrap';
 import './PhoneInput.css';
 
 export const PhoneInput = ({onPhoneNumberChange}) => {
-  const [areaCode, setAreaCode] = useState('');
+  const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const handleAreaCodeChange = e => {
