@@ -92,6 +92,7 @@ export const ENDPOINTS = {
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
 
+  AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   SETUP_NEW_USER: () =>
     `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () =>
@@ -130,9 +131,11 @@ export const ENDPOINTS = {
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
+  BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
-  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`
+  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
+  BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`
 };
 
 export const ApiEndpoint = APIEndpoint;
