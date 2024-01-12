@@ -23,12 +23,15 @@ import {
 } from 'actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
 import { similarity } from './SimilarityCheck';
-import MaterialTypesList from './MaterialTypesList';
+import Select from 'react-select';
 
 function AddMaterial() {
   const dispatch = useDispatch();
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
   const buildingInventoryUnits = useSelector(state => state.bmInvUnits.list);
+  const [formattedUnits, setFormattedUnits] = useState([]);
+  const [similarityData, setSimilarityData] = useState([]);
+
   const [material, setMaterial] = useState({
     name: '',
     unit: '',
@@ -46,12 +49,18 @@ function AddMaterial() {
     customUnitCheck: '',
     total: true,
   });
-  const [similarityData, setSimilarityData] = useState([]);
 
   useEffect(() => {
     dispatch(fetchMaterialTypes());
     dispatch(fetchInvUnits());
   }, []);
+
+  useEffect(() => {
+    let _formattedUnits = buildingInventoryUnits.map(proj => {
+      return { label: proj.unit, value: proj.unit };
+    });
+    setFormattedUnits(_formattedUnits);
+  }, [buildingInventoryUnits]);
 
   useEffect(() => {
     if (postBuildingInventoryResult?.error === true) {
@@ -76,8 +85,7 @@ function AddMaterial() {
       .min(10)
       .max(150)
       .required(),
-    unit: Joi.string()
-      .allow('')
+    unit: Joi
       .optional(),
     customUnit: Joi.string()
       .allow('')
@@ -130,7 +138,7 @@ function AddMaterial() {
       for (let i = 0; i < buildingInventoryUnits.length; i += 1) {
         const similarityPercent = similarity(buildingInventoryUnits[i].unit, material.customUnit);
         // console.log(buildingInventoryUnits[i].unit, similarityPercent)
-        if (similarityPercent > 0.65) {
+        if (similarityPercent > 0.50) {
           const simObj = {
             unitFromStore: buildingInventoryUnits[i].unit,
             similarityPercent: similarityPercent * 100,
@@ -143,7 +151,7 @@ function AddMaterial() {
       const _similarityData = [];
       setSimilarityData([..._similarityData]);
     }
-    if (similarityData.length !== 0 && !material.customUnitCheck) {
+    if (complete && similarityData.length !== 0 && !material.customUnitCheck) {
       validationErrorFlag = validationErrorFlag || true;
       validations.customUnitCheck = 'Please confirm or select a unit from available ones';
     } else {
@@ -157,22 +165,30 @@ function AddMaterial() {
     return validationErrorFlag;
   };
 
+  const unitSelectHandler = (value) => {
+    material.customUnit = '';
+    material.customUnitCheck = false;
+    material.allowNewMeasurement = false;
+    material['unit'] = value;
+    setMaterial({ ...material });
+  }
+
   const changeHandler = e => {
     const field = e.target.name;
-    const { value } = e.target;
+    let { value } = e.target;
     material[field] = value;
     if (field === 'customUnit') {
       if (value) {
         material.unit = '';
       }
     }
-    if (field === 'unit') {
-      if (value !== '') {
-        material.customUnit = '';
-        material.customUnitCheck = false;
-        material.allowNewMeasurement = false;
-      }
-    }
+    // if (field === 'unit') {
+    //   if (value !== '') {
+    //     material.customUnit = '';
+    //     material.customUnitCheck = false;
+    //     material.allowNewMeasurement = false;
+    //   }
+    // }
     if (field === 'customUnitCheck' || field === 'allowNewMeasurement') {
       material[field] = e.target.checked;
     }
@@ -182,9 +198,13 @@ function AddMaterial() {
 
   const submitHandler = () => {
     const error = validationHandler(null, null, true);
-
+    console.log(error, validations)
     if (!error) {
-      dispatch(postBuildingInventoryType(material));
+      //formatted for react-select
+      let _material = { ...material };
+      _material.unit = material.unit?.value;
+      console.log(_material)
+      dispatch(postBuildingInventoryType(_material));
     }
   };
 
@@ -238,8 +258,8 @@ function AddMaterial() {
                     <Label for="unit" lg={2} sm={4} className="materialFormLabel">
                       Measurement
                     </Label>
-                    <Col lg={4} sm={8} className="materialFormValue">
-                      <Input
+                    <Col lg={4} sm={8} >
+                      {/* <Input
                         id="unit"
                         name="unit"
                         type="select"
@@ -254,7 +274,17 @@ function AddMaterial() {
                             {matType.unit}
                           </option>
                         ))}
-                      </Input>
+                      </Input> */}
+
+                      <Select
+                        id="unit"
+                        name="unit"
+                        onChange={unitSelectHandler}
+                        options={formattedUnits}
+                        value={material.unit}
+                        defaultValue={formattedUnits[0]}
+                      />
+
                     </Col>
                   </FormGroup>
 
@@ -268,7 +298,7 @@ function AddMaterial() {
                       onChange={e => changeHandler(e)}
                     />
                     <Label check for="allowNewMeasurement">
-                      Please check here if you want to enter a New Measurement
+                      Please check here if you want to enter a New Measurement. (You can always choose from provided list for better calculations)
                     </Label>
                   </FormGroup>
 
@@ -396,8 +426,6 @@ function AddMaterial() {
                 </Form>
               </CardBody>
             </Card>
-            <hr />
-            <MaterialTypesList />
           </div>
         </div>
       </Container>

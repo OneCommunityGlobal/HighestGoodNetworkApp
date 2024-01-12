@@ -23,7 +23,7 @@ export const postBuildingInventoryType = (payload) => {
         dispatch(setPostBuildingInventoryTypeResult(res.data))
       })
       .catch(err => {
-        dispatch(setPostErrorBuildingInventoryTypeResult('Sorry! Some error occurred!'))
+        dispatch(setPostErrorBuildingInventoryTypeResult(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'))
       })
   }
 }

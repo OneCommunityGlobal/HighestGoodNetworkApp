@@ -1,12 +1,12 @@
 .materialContainer {
   padding: 0% !important;
-
+  min-height: 100vh;
 }
 
 .materialPage {
   background-color: #E8F4F9;
   width: 100%;
-  height: auto;
+  min-height: 100%;
   margin: 0px;
   padding: 1rem 2rem;
   font-size: 15px;
