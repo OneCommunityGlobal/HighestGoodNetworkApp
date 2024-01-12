@@ -16,8 +16,11 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
       d3.selectAll('#tlplot > *').remove();
     } else {
       d3.selectAll('#tlplot > *').remove();
-      const margin = { top: 10, right: 30, bottom: 30, left: 60 };
-      const width = 1000 - margin.left - margin.right;
+      const margin = { top: 30, right: 20, bottom: 30, left: 20 };
+      const containerWidth = '1000';
+      // Adjusted width based on the available space
+      const width = Math.min(containerWidth - margin.left - margin.right, 1000);
+
       const height = 400 - margin.top - margin.bottom;
 
       const tooltipEl = function generateTooltipElement(d) {
@@ -54,8 +57,9 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
       const svg = d3
         .select('#tlplot')
         .append('svg')
-        .attr('width', width + margin.left + margin.right)
+        .attr('width', '100%')
         .attr('height', height + margin.top + margin.bottom)
+        .attr('viewBox', `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`)
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -158,11 +162,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
       const legend = d3
         .select('#tlplot')
         .append('div')
-        .attr('class', 'legendContainer')
-        .style('position', 'relative')
-        .style('top', `-450px`)
-        .style('left', `980px`);
-
+        .attr('class', 'legendContainer');
       legend.html(legendEl(totalHours));
 
       legend.select('.entLabelsOff').on('click', function handleEntLabelsOffClick() {

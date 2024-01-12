@@ -27,9 +27,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
     } else {
       d3.selectAll('#infplot > *').remove();
       const margin = { top: 30, right: 20, bottom: 30, left: 20 };
-      const containerWidth =
-        window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-
+      const containerWidth = '1000';
       // Adjusted width based on the available space
       const width = Math.min(containerWidth - margin.left - margin.right, 1000);
 
@@ -70,8 +68,9 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       const svg = d3
         .select('#infplot')
         .append('svg')
-        .attr('width', width + margin.left + margin.right)
+        .attr('width', '100%')
         .attr('height', height + margin.top + margin.bottom)
+        .attr('viewBox', `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`)
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -184,11 +183,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       const legend = d3
         .select('#infplot')
         .append('div')
-        .attr('class', 'legendContainer')
-        .style('position', 'relative')
-        .style('top', `-450px`)
-        .style('left', `980px`);
-
+        .attr('class', 'legendContainer');
       legend.html(legendEl());
 
       legend.select('.infLabelsOff').on('click', function() {
@@ -287,7 +282,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
           <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <table id="inf">
+          <div id="inf">
             <thead>
               <tr>
                 <th>Descriptions</th>
@@ -304,7 +299,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
                   })
                 : null}
             </tbody>
-          </table>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>
