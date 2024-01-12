@@ -34,6 +34,7 @@ import { materialsReducer } from './bmdashboard/materialsReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
+import { toolByIdReducer } from './bmdashboard/toolByIdReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -71,5 +72,6 @@ export default combineReducers({
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
-  bmConsumables: consumablesReducer
+  bmConsumables: consumablesReducer,
+  tool: toolByIdReducer,
 });

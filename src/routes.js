@@ -52,6 +52,7 @@ import BMLogin from './components/BMDashboard/Login';
 import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesList/ConsumablesView';
 
 import EquipmentList from './components/BMDashboard/Equipment/List';
+import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 // import MaterialsList from './components/BMDashboard/MaterialsList';
 // import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 // import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
@@ -217,6 +218,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
