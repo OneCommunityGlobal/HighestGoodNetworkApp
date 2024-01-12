@@ -21,7 +21,7 @@ function TeamWeeklySummaries({ name, i, data }) {
   });
   return (
     <div className="team-weekly-summaries" data-testid="team-weekly-summaries">
-      <div className="team-weekly-header" >
+      <div className="team-weekly-header"  >
         <h6 className="team-weekly-header-date">
           {getWeekDates(i).fromDate} to {getWeekDates(i).toDate}
         </h6>{' '}
