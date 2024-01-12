@@ -30,7 +30,7 @@ const rootReducers = combineReducers({
   ...sessionReducers,
 })
 
-const persistedReducer = persistReducer(sessionPersistConfig, persistReducer(localPersistConfig, rootReducers));
+export const persistedReducer = persistReducer(sessionPersistConfig, persistReducer(localPersistConfig, rootReducers));
 
 export default () => {
   const store = createStore(
