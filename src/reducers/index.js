@@ -25,6 +25,7 @@ import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
+import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 
@@ -33,6 +34,7 @@ import { materialsReducer } from './bmdashboard/materialsReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
+import { consumablesReducer } from './bmdashboard/consumablesReducer';
 
 export default combineReducers({
   auth: authReducer,
@@ -70,5 +72,6 @@ export default combineReducers({
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
-  bmInvUnits: bmInvUnitReducer
+  bmInvUnits: bmInvUnitReducer,
+  bmConsumables: consumablesReducer
 });

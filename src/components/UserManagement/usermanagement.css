@@ -10,7 +10,6 @@ thead {
 #new_usermanagement {
   margin-bottom: 10px;
   box-sizing: border-box;
-
   width: calc(100vw - 45px);
 }
 #user-management-table {
@@ -48,17 +47,44 @@ thead {
 }
 
 #card_project {
-  background: #1d62f0;
+  /* background: #1d62f0; */
+  background: linear-gradient(to right bottom,  rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
+  background-color: #1d62f0;
+  border-radius: 8px;
+  border:#08397e;
   color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#card_team{
+  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
+  background-color: dodgerblue;
+  border-radius: 8px;
+  border:#08397e;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 #card_active {
-  background: #fbad4c;
+  /* background: #fbad4c; */
+  background: linear-gradient(to right bottom, #ffdb56 5%, #ff9145 100%);
+  background-color: #fac17b;
+  border-radius: 8px;
+  border:#ff9145;
   color: white;
+  align-items: center; 
+  justify-content: center;
+  text-align: center;
+
 }
 
 .email_cell {
   position: relative;
+ 
 }
 
 .copy_icon {
@@ -87,6 +113,10 @@ thead {
 }
 
 .isActive i {
+  color: lawngreen;
+}
+
+.fa-circle-isActive {
   color: lawngreen;
 }
 

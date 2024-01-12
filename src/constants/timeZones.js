@@ -24,6 +24,12 @@ export const timeZones = [
     utcDstOffset: '+00:00',
   },
   {
+    countryCode: 'MW',
+    name: 'Africa/Blantyre',
+    utcOffset: '+02:00',
+    utcDstOffset: '+00:00',
+  },
+  {
     countryCode: 'EG',
     name: 'Africa/Cairo',
     utcOffset: '+02:00',

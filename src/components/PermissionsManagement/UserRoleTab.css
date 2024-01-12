@@ -111,6 +111,7 @@
   height: 40px; /* You can adjust this value */
   line-height: 40px; /* This should be the same as the height */
   min-width: 80px; /* Optional: Sets a minimum width for the button */
+  padding: 0px 10px; /* Optional: Adds some padding inside the button */
 }
 
 .info-button {
