@@ -46,25 +46,14 @@ const ScheduleReasonModal = ({
     initialFetching();
   }, [date]);
 
-// Assuming you have a reference to the <select> element, you can use document.getElementById or other methods to get the element
-const selectElement = document.getElementById("role");
+  //use document.getElementById to get the element of role
+  const selectElement = document.getElementById("role");
 
-// Get the selected value
-const role = selectElement.value;
-
-//   console.log("role: ",role)
-
-//   if (role === "Owner") {
-//     // Perform actions specific to the "Owner" role
-//     console.log("User is an Owner");
-// } else {
-//     // Perform actions for other roles or provide an error message
-//     console.log("User is not an Owner");
-// }
-
+  // Get the selected value
+  const role = selectElement.value;
 
   // State to control FAQModal visibility
-    const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
+  const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
 
     // Function to toggle FAQModal
     const toggleFAQModal = () => {

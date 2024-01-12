@@ -57,10 +57,6 @@ export class FAQModal extends Component {
     fontSize: 24,
   };
 
-  //showModal = () => {
-  //  this.setState({ FAQModalOpen: true });
-  //};
-
   async componentDidMount() {
     await this.props.getInfoCollections();
     const {infoCollections, role, areaTitle, areaName, fontSize, isPermissionPage} = this.props;
