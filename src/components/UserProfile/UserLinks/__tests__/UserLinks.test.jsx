@@ -14,13 +14,13 @@ function renderComponent(props)
 
 describe("Test suite for UserLinks components ",()=>{
  
-  it("Test case 1 : Component renders without crashing ",()=>{
+  it("Test Case 1 : Component renders without crashing ",()=>{
     renderComponent (links);
     const userLinkContainer= screen.getByTestId("testLinkContainer");
     expect(userLinkContainer).toBeInTheDocument();
 
   });
-  it("Test case 2: Assert if the link name is not rendered when  empty string is passed ",()=>{
+  it("Test Case 2 : Assert if the link name is not rendered when  empty string is passed ",()=>{
     links=[{Link:'',name: ''}];
     renderComponent (links);
     const userLinkContainer= screen.getByTestId("testLinkContainer");
@@ -30,7 +30,7 @@ describe("Test suite for UserLinks components ",()=>{
     const hyperLinkObj=screen.queryByTestId("testHyperLink");
     expect(hyperLinkObj).not.toBeInTheDocument();
   });
-  it("Test case 3: Assert if the link name is rendered  for a valid external link " , ()=>
+  it("Test Case 3 : Assert if the link name is rendered  for a valid external link " , ()=>
   {
     links=[{Link:'https',Name: 'Test'}];
     renderComponent (links);
@@ -42,7 +42,7 @@ describe("Test suite for UserLinks components ",()=>{
    
 
   });
-  it("Test case 4: Assert if the link name is not rendered  for an invalid external link " , ()=>
+  it("Test Case 4 : Assert if the link name is not rendered  for an invalid external link " , ()=>
   {
     // Test Data 1
     links=[{Link:'', Name: 'Test'}];
@@ -80,7 +80,7 @@ describe("Test suite for UserLinks components ",()=>{
 
   });
 
-  it("Test Case 7: Assert if both the internal & extenal link Name is displayed in upper case",()=>{
+  it("Test Case 7 : Assert if both the internal & extenal link Name is displayed in upper case",()=>{
     // external link validation 
     links=[{Link:'http://sampleTest.com', Name: 'externallink'}];
     renderComponent (links);
