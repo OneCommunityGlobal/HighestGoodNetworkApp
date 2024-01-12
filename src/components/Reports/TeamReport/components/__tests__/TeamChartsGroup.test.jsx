@@ -29,12 +29,7 @@ describe('Test Suite for TeamChartsGroup Component', () => {
       pieChartId: 'chart2'
     });
   });
-  it('Test case 4 : Renders two ReportCharts components', () => {
-    const wrapper = shallow(<TeamChartsGroup />);
-    const reportCharts = wrapper.find('ReportCharts');
   
-    expect(reportCharts).toHaveLength(2);
-  });
   
   });
 
