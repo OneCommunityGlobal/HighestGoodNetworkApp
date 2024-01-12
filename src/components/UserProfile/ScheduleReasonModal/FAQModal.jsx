@@ -57,9 +57,9 @@ export class FAQModal extends Component {
     fontSize: 24,
   };
 
-  showModal = () => {
-    this.setState({ FAQModalOpen: true });
-  };
+  //showModal = () => {
+  //  this.setState({ FAQModalOpen: true });
+  //};
 
   async componentDidMount() {
     await this.props.getInfoCollections();

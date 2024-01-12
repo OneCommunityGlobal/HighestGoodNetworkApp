@@ -9,7 +9,8 @@ import { getReasonByDate } from 'actions/reasonsActions';
 import { boxStyle } from 'styles'
 import   './ScheduleReasonModal.css';
 import FAQModal from './FAQModal';
-
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import UserProfile from '../UserProfile';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -25,7 +26,7 @@ const ScheduleReasonModal = ({
   fetchDispatch,
   userId,
   IsReasonUpdated,
-  setIsReasonUpdated
+  setIsReasonUpdated,
 }) => {
   useEffect(() => {
     const initialFetching = async () => {
@@ -45,19 +46,32 @@ const ScheduleReasonModal = ({
     initialFetching();
   }, [date]);
 
-  
+// Assuming you have a reference to the <select> element, you can use document.getElementById or other methods to get the element
+const selectElement = document.getElementById("role");
+
+// Get the selected value
+const role = selectElement.value;
+
+//   console.log("role: ",role)
+
+//   if (role === "Owner") {
+//     // Perform actions specific to the "Owner" role
+//     console.log("User is an Owner");
+// } else {
+//     // Perform actions for other roles or provide an error message
+//     console.log("User is not an Owner");
+// }
+
+
   // State to control FAQModal visibility
     const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
 
     // Function to toggle FAQModal
     const toggleFAQModal = () => {
       setIsFAQModalOpen(!isFAQModalOpen);
-    };
+    };    
 
-    //const { role } = props; // Access the 'role' prop
-
-
-  return (
+    return (
     <>
       <Modal.Header closeButton={true}>
         <Modal.Title className="centered-container">Choose to Use a Blue Square</Modal.Title>
@@ -108,14 +122,15 @@ const ScheduleReasonModal = ({
         </Modal.Body>
         <Modal.Footer>
         <Button variant="success" title="FAQ" onClick={toggleFAQModal} style={boxStyle}>
-        <FAQModal
-                areaName="blueSquares_FAQ"
-                areaTitle="Blue Squares FAQ"
-                fontSize={24}
-                isPermissionPage={true}
-                //role={role}
-                />
-          </Button>
+            <FAQModal
+              areaName="blueSquares_FAQ"
+              areaTitle="Blue Squares FAQ"
+              fontSize={24}
+              isPermissionPage={true}
+              role={role}
+              />
+        </Button>
+
          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>

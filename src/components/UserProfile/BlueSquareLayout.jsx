@@ -53,12 +53,6 @@ const BlueSquareLayout = (props, loggedInUser) => {
 
   
   const { userProfile, handleUserProfile, handleBlueSquare, canEdit, role } = props;
-  //const { role } = props; // Access the 'role' prop
-  //const isOwner = ['Owner'].includes(loggedInUser.role);
-
-  console.log('userProfile:', props.userProfile);
-
-  console.log('Role:', userProfile.role);
 
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
@@ -119,7 +113,7 @@ const BlueSquareLayout = (props, loggedInUser) => {
     }
     setIsReasonUpdated(false);
   };
-
+  
   if (canEdit) {
     return (
       <div data-testid="blueSqaure-field">
