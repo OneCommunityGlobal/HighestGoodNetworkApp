@@ -22,8 +22,8 @@ import {
   resetPostBuildingInventoryTypeResult,
 } from 'actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
-import { similarity } from './SimilarityCheck';
 import Select from 'react-select';
+import { similarity } from './SimilarityCheck';
 
 function AddMaterial() {
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ function AddMaterial() {
   }, []);
 
   useEffect(() => {
-    let _formattedUnits = buildingInventoryUnits.map(proj => {
+    const _formattedUnits = buildingInventoryUnits.map(proj => {
       return { label: proj.unit, value: proj.unit };
     });
     setFormattedUnits(_formattedUnits);
@@ -85,8 +85,7 @@ function AddMaterial() {
       .min(10)
       .max(150)
       .required(),
-    unit: Joi
-      .optional(),
+    unit: Joi.optional(),
     customUnit: Joi.string()
       .allow('')
       .optional(),
@@ -138,7 +137,7 @@ function AddMaterial() {
       for (let i = 0; i < buildingInventoryUnits.length; i += 1) {
         const similarityPercent = similarity(buildingInventoryUnits[i].unit, material.customUnit);
         // console.log(buildingInventoryUnits[i].unit, similarityPercent)
-        if (similarityPercent > 0.50) {
+        if (similarityPercent > 0.5) {
           const simObj = {
             unitFromStore: buildingInventoryUnits[i].unit,
             similarityPercent: similarityPercent * 100,
@@ -165,17 +164,17 @@ function AddMaterial() {
     return validationErrorFlag;
   };
 
-  const unitSelectHandler = (value) => {
+  const unitSelectHandler = value => {
     material.customUnit = '';
     material.customUnitCheck = false;
     material.allowNewMeasurement = false;
-    material['unit'] = value;
+    material.unit = value;
     setMaterial({ ...material });
-  }
+  };
 
   const changeHandler = e => {
     const field = e.target.name;
-    let { value } = e.target;
+    const { value } = e.target;
     material[field] = value;
     if (field === 'customUnit') {
       if (value) {
@@ -198,12 +197,10 @@ function AddMaterial() {
 
   const submitHandler = () => {
     const error = validationHandler(null, null, true);
-    console.log(error, validations)
     if (!error) {
-      //formatted for react-select
-      let _material = { ...material };
+      // formatted for react-select
+      const _material = { ...material };
       _material.unit = material.unit?.value;
-      console.log(_material)
       dispatch(postBuildingInventoryType(_material));
     }
   };
@@ -258,7 +255,7 @@ function AddMaterial() {
                     <Label for="unit" lg={2} sm={4} className="materialFormLabel">
                       Measurement
                     </Label>
-                    <Col lg={4} sm={8} >
+                    <Col lg={4} sm={8}>
                       {/* <Input
                         id="unit"
                         name="unit"
@@ -284,7 +281,6 @@ function AddMaterial() {
                         value={material.unit}
                         defaultValue={formattedUnits[0]}
                       />
-
                     </Col>
                   </FormGroup>
 
@@ -298,7 +294,8 @@ function AddMaterial() {
                       onChange={e => changeHandler(e)}
                     />
                     <Label check for="allowNewMeasurement">
-                      Please check here if you want to enter a New Measurement. (You can always choose from provided list for better calculations)
+                      Please check here if you want to enter a New Measurement. (You can always
+                      choose from provided list for better calculations)
                     </Label>
                   </FormGroup>
 

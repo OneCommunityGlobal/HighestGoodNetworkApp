@@ -1,6 +1,6 @@
 export function editDistance(_s1, _s2) {
-  let s1 = _s1.toLowerCase().replace(/\s/g, '');
-  let s2 = _s2.toLowerCase().replace(/\s/g, '');
+  const s1 = _s1.toLowerCase().replace(/\s/g, '');
+  const s2 = _s2.toLowerCase().replace(/\s/g, '');
 
   const costs = [];
   for (let i = 0; i <= s1.length; i += 1) {
