@@ -39,7 +39,7 @@ export default function AddToolForm() {
   const [selectedCategory, setSelectedCategory] = useState(formData.category);
   const [selectedName, setSelectedName] = useState(formData.name);
   const [isPurchased, setIsPurchased] = useState(true);
-  // const [files, setFiles] = useState(formData.images);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const handleInputChange = (name, value) => {
     setFormData(prevData => ({
@@ -106,6 +106,10 @@ export default function AddToolForm() {
 
   const handleFilesSelected = selectedFiles => {
     console.log('Files received', selectedFiles);
+  };
+
+  const handleRemoveFile = index => {
+    setUploadedFiles(prevUploadedFiles => prevUploadedFiles.filter((file, i) => i !== index));
   };
 
   return (
@@ -293,7 +297,20 @@ export default function AddToolForm() {
           name="image"
           value={formData.images}
           onFilesSelected={handleFilesSelected}
+          updateUploadedFiles={setUploadedFiles}
         />
+        {uploadedFiles.length > 0 && (
+          <div className="file-preview-container">
+            {uploadedFiles.map((file, index) => (
+              <div key={index} className="file-preview">
+                <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
+                <Button color="danger" onClick={() => handleRemoveFile(index)}>
+                  Remove
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
       </FormGroup>
 
       <FormGroup>
