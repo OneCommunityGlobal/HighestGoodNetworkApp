@@ -55,14 +55,14 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     weeklyCommittedHours: '10',
     collaborationPreference: 'Zoom',
     jobTitle: '',
-    timeZone: '',
+    timeZone: 'America/Los_Angeles',
     location: {
       userProvided: '',
       coords: { lat: '', lng: '' },
       country: '',
       city: '',
     },
-    timeZoneFilter: '',
+    timeZoneFilter: 'America/Los_Angeles',
     token,
     profilePicture: '',
   });
@@ -263,9 +263,17 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       ...prevErrors,
       timeZoneFilterClicked: '',
     }));
+    setFormErrors(prevErrors => ({
+      ...prevErrors,
+      location: '',
+    }));
+    
     const location = userProfile.location.userProvided;
     if (!location) {
-      alert('Please enter valid location');
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        location: 'Please enter valid location',
+      }));
       return;
     }
     if (!APIkey) {
@@ -296,7 +304,10 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
             location: currentLocation,
           }));
         } else {
-          alert('Invalid location or ' + response.data.status.message);
+          setFormErrors(prevErrors => ({
+            ...prevErrors,
+            location: 'Invalid location',
+          }));
         }
       })
       .catch(err => console.log(err));
@@ -853,7 +864,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
             <Col md="8">
               <FormGroup>
                 <TimeZoneDropDown
-                  selected={'America/Los_Angeles'}
                   id="timeZone"
                   onChange={e => handleChange(e)}
                   filter={userProfile.timeZoneFilter}
@@ -877,21 +887,21 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                   <button
                     type="button"
                     className="close"
-                    data-dismiss="alert"
-                    aria-label="Close"
                     onClick={toggleDeleteHoumeCountryModal}
                   >
                     <span aria-hidden="true">&times;</span>
                   </button>
+                   
                 </div>
-                <DeleteHoumeCountryModal
+               
+              </Col>
+            </Row>
+          )}
+          <DeleteHoumeCountryModal
                   isOpen={deleteHoumeCountryModal}
                   toggle={toggleDeleteHoumeCountryModal}
                   setLocation={setHomecountryLocation}
                 />
-              </Col>
-            </Row>
-          )}
           <Row>
             <Col md={{ size: 8, offset: 3 }}>
               <div className="alert alert-info text-center">

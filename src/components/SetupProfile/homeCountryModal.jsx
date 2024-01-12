@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import {
+  Container,
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Label,
   Input,
   Row,
   Col,
@@ -99,8 +99,15 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
     setLocationInput(locationInitialState);
   };
 
+  const reset = () =>{
+    setLocationInput(locationInitialState);
+    setLocationAdded(false);
+    setLocationRefused(false); 
+    setrequirementsBoxChecked(false);
+  }
+
   return (
-    <Modal isOpen={isOpen} toggle={toggle}>
+    <Modal isOpen={isOpen} toggle={toggle} onOpened={reset}>
       <ModalHeader toggle={toggle}>Set Home City and/or Country</ModalHeader>
       <ModalBody>
         <Row className='mb-3'>
@@ -155,6 +162,7 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
       </ModalBody>
       {locationInput?.country && (
         <ModalFooter className="justify-content-start">
+          <Container>
           <Row>
             <Col>
               <p>
@@ -175,6 +183,7 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
               </Button>
             </Col>
           </Row>
+          </Container>
         </ModalFooter>
       )}
       {locationAdded && (
