@@ -10,7 +10,7 @@ import './AddToolForm.css';
 
 //TO DO: fix orderTotal to be displayed in console
 //drag and drop pass the data to formData in parent
-//fix alignment
+//drag and drop remove image on cancel click
 
 const initialFormState = {
   project: 'Project1',
@@ -305,7 +305,7 @@ export default function AddToolForm() {
               <div key={index} className="file-preview">
                 <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
                 <Button color="danger" onClick={() => handleRemoveFile(index)}>
-                  Remove
+                  X
                 </Button>
               </div>
             ))}

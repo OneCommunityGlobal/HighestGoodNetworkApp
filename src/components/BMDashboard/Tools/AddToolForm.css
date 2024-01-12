@@ -1,6 +1,5 @@
 .add-tool-form{
   width: 100%;
-  border: 1px solid green;
 }
 
 .add-tool-form Label{
@@ -40,8 +39,20 @@ font-size: .8em;
   padding-right: 1em;
 }
 
+.file-preview-container{
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
 @media screen and (max-width: 640px) {
   .add-tool-flex-group {
+    display: block;
+  }
+
+  .file-preview-container{
     display: block;
   }
 }

@@ -51,10 +51,10 @@
   text-decoration-line: underline;
 }
 
-.file-preview-container{
+/* .file-preview-container{
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
   width: 100%;
   height: 10vh; 
-}
+} */
