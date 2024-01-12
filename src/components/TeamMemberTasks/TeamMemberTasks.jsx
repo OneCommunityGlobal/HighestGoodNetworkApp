@@ -7,100 +7,39 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
-import { getTeamMemberTasksData } from './selectors';
-import { getUserProfile } from '../../actions/userProfile';
 import './style.css';
-import { fetchAllManagingTeams } from '../../actions/team';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
+import TimeEntry from '../Timelog/TimeEntry';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 
 const TeamMemberTasks = React.memo(props => {
+  // props from redux store
+  const { authUser, displayUser, isLoading, usersWithTasks, usersWithTimeEntries } = props;
+
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
   const [currentUserId, setCurrentUserId] = useState('');
-  const { isLoading, usersWithTasks } = useSelector(getTeamMemberTasksData);
   const [tasks, setTasks] = useState();
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
   const [teamList, setTeamList] = useState([]);
   const [timeEntriesList, setTimeEntriesList] = useState([]);
-  const [selectedPeriod, setSelectedPeriod] = useState();
-  const [isTimeLogActive, setIsTimeLogActive] = useState(false);
-  const [twentyFourHoursTimeEntries, setTwentyFourHoursTimeEntries] = useState([]);
-  const [fortyEightHoursTimeEntries, setFortyEightHoursTimeEntries] = useState([]);
-  const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState(null);
+  const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
-  // const [displayData, setDisplayData] = useState([]);
-  // const [hasMore, setHasMore] = useState(true);
-
-  //added it to keep track if the renderTeamsList should run
-  const [shouldRun, setShouldRun] = useState(false);
-
-  //role state so it's more easily changed, the initial value is empty, so it'll be determinated on the first useEffect
-  const [userRole, setUserRole] = useState('');
-
-  //function to get user's role if the current user's id is different from the authenticated user
-  function getUserRole(userId) {
-    const fetchedUser = axios.get(ENDPOINTS.USER_PROFILE(userId));
-    return fetchedUser;
-  }
-
-  //moved the userId variable to before the first useEffect so the dispatch function can access it
-  //Make so the userId gets the url param. If the url param is not available, it'll get the displayUserId passed as a props
-  //If the displayUserId is not defined, it'll be equal the auth.user.userid from the store
-  const userId = props?.match?.params?.userId || props.displayUserId || props.auth.user.userid;
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    const initialFetching = async () => {
-      //Passed the userid as argument to fetchTeamMembersTask
-      //the fetchTeamMembersTask has a function inside id that gets the userId from the store, like the last part of the userId variable in this file
-      //so, before it gets from the store, it'll see if the userId is provided.
-      //It works because the userId first looks for the url param. If it gets the param, it will provide it to the userId
-      //after that, fetchTeamMembersTask will look for the team member's tasks of the provided userId
-      //fetch current user's role, so it can be displayed. It will only happen if the current user's id is different of the auth user id
-      //if it's not differente, it'll attribute the current authenticated user's role.
-      //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
-      if (userId !== props.auth.user.userid) {
-        await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
-        const currentUserRole = getUserRole(userId)
-          .then(resp => resp)
-          .then(user => {
-            setUserRole(user.data.role);
-          });
-      } else {
-        await dispatch(fetchTeamMembersTask(userId, null));
-        setUserRole(props.auth.user.role);
-      }
-      setShouldRun(true);
-    };
-    initialFetching();
-  }, []);
-
-  useEffect(() => {
-    if (clickedToShowModal) {
-      setMarkAsDoneModal(true);
-    }
-  }, [currentUserId]);
-
-  useEffect(() => {
-    if (isLoading === false && shouldRun) {
-      renderTeamsList();
-      closeMarkAsDone();
-    }
-  }, [usersWithTasks, shouldRun]);
-
+  
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
     setMarkAsDoneModal(false);
@@ -113,7 +52,7 @@ const TeamMemberTasks = React.memo(props => {
       taskId,
     };
     submitTasks(newTask);
-    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, true));
+    dispatch(fetchTeamMembersTask(displayUser._id));
     props.handleUpdateTask();
   }, []);
 
@@ -137,7 +76,7 @@ const TeamMemberTasks = React.memo(props => {
     } catch (error) {
       toast.error('Failed to update task');
     }
-    dispatch(fetchTeamMembersTask(userId, props.auth.user.userid, true));
+    dispatch(fetchTeamMembersTask(displayUser._id));
     props.handleUpdateTask();
   }, []);
 
@@ -166,58 +105,38 @@ const TeamMemberTasks = React.memo(props => {
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
     //if the authentitated user is seeing it's own notification
-    if (currentUserId === props.auth.user.userid) {
+    if (currentUserId === authUser.userid) {
       dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
     }
     handleOpenTaskNotificationModal();
   };
 
-  const getTimeEntriesForPeriod = async teamList => {
-    let twentyFourList = [];
-    let fortyEightList = [];
-
-    //1, fetch data of past 72hrs timelogs
-    const fromDate = moment()
-      .tz('America/Los_Angeles')
-      .subtract(72, 'hours')
-      .format('YYYY-MM-DD');
-    const toDate = moment()
-      .tz('America/Los_Angeles')
-      .format('YYYY-MM-DD');
-
-    const userIds = teamList.map(user => user.personId);
-
-    const userListTasksRequest = async userList => {
-      const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
-      return axios.post(url, { users: userList, fromDate, toDate });
-    };
-
-    const taskResponse = await userListTasksRequest(userIds);
-    const usersListTasks = taskResponse.data;
-
-    //2. Generate array of past 24/48 hrs timelogs
-    usersListTasks.map(entry => {
-      const threeDaysAgo = moment()
+  const getTimeEntriesForPeriod = async (selectedPeriod) => {
+    const threeDaysAgo = moment()
         .tz('America/Los_Angeles')
         .subtract(72, 'hours')
         .format('YYYY-MM-DD');
 
-      const twoDaysAgo = moment()
-        .tz('America/Los_Angeles')
-        .subtract(48, 'hours')
-        .format('YYYY-MM-DD');
+    const twoDaysAgo = moment()
+      .tz('America/Los_Angeles')
+      .subtract(48, 'hours')
+      .format('YYYY-MM-DD');
 
-      setSeventyTwoHoursTimeEntries([...seventyTwoHoursTimeEntries, entry]);
-      const isFortyEight = moment(entry.dateOfWork).isAfter(threeDaysAgo);
-      if (isFortyEight) fortyEightList.push(entry);
-      const isTwentyFour = moment(entry.dateOfWork).isAfter(twoDaysAgo);
-      if (isTwentyFour) twentyFourList.push(entry);
-    });
-
-    //3. set three array of time logs
-    setSeventyTwoHoursTimeEntries([...usersListTasks]);
-    setFortyEightHoursTimeEntries([...fortyEightList]);
-    setTwentyFourHoursTimeEntries([...twentyFourList]);
+    switch (selectedPeriod) {
+      case 24:
+        const twentyFourList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
+        setTimeEntriesList(twentyFourList);
+        break;
+      case 48:
+        const fortyEightList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(threeDaysAgo));
+        setTimeEntriesList(fortyEightList);
+        break;
+      case 72:
+        setTimeEntriesList(usersWithTimeEntries);
+        break;
+      default:
+        setTimeEntriesList([]);
+    }
 
     setFinishLoading(true);
   };
@@ -225,95 +144,58 @@ const TeamMemberTasks = React.memo(props => {
   //Display timelogs based on selected period
   const selectPeriod = period => {
     if (period === selectedPeriod) {
-      setIsTimeLogActive(!isTimeLogActive);
+      setIsTimeFilterActive(false);
+      setSelectedPeriod(null);
     } else {
-      setIsTimeLogActive(true);
-    }
-    setSelectedPeriod(period);
-    if (period === 24) {
-      setTimeEntriesList([...twentyFourHoursTimeEntries]);
-    } else if (period === 48) {
-      setTimeEntriesList([...fortyEightHoursTimeEntries]);
-    } else {
-      setTimeEntriesList([...seventyTwoHoursTimeEntries]);
+      setIsTimeFilterActive(true);
+      setSelectedPeriod(period);
     }
   };
 
   const renderTeamsList = async () => {
     if (usersWithTasks && usersWithTasks.length > 0) {
-      // give different users different views
-      let filteredMembers = usersWithTasks.filter(member => {
-        if (userRole === 'Volunteer' || userRole === 'Core Team') {
-          return member.role === 'Volunteer' || member.role === 'Core Team';
-        } else if (userRole === 'Manager' || userRole === 'Mentor') {
-          return (
-            member.role === 'Volunteer' ||
-            member.role === 'Core Team' ||
-            member.role === 'Manager' ||
-            member.role === 'Mentor'
-          );
-        } else {
-          return member;
-        }
-      });
-
       //sort all users by their name
-      filteredMembers.sort((a, b) => {
-        let filteredMembersA = a.name.toLowerCase();
-        let filteredMembersB = b.name.toLowerCase();
-
-        if (filteredMembersA < filteredMembersB) {
-          return -1;
-        }
-        if (filteredMembersA > filteredMembersB) {
-          return 1;
-        }
-        return 0;
-      });
+      usersWithTasks.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
 
       //find currentUser
-      const currentUser = filteredMembers.find(user => user.personId === userId);
+      const currentUserIndex = usersWithTasks.findIndex(user => user.personId === displayUser._id);
+
       // if current user doesn't have any task, the currentUser cannot be found
-
-      if (currentUser) {
+      if (usersWithTasks[currentUserIndex].tasks.length) {
         //conditional variable for moving current user up front.
-        let moveCurrentUserFront = false;
-
-        //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
-        for (const task of currentUser.tasks) {
-          if (task.wbsId && task.projectId) {
-            moveCurrentUserFront = true;
-            break;
-          }
-        }
-        //if needs to move current user up front, first remove current user from filterMembers. Then put the current user on top of the list.
-        if (moveCurrentUserFront) {
-          //removed currentUser
-          filteredMembers = filteredMembers.filter(user => user.personId !== userId);
-          //push currentUser on top of the array.
-          filteredMembers.unshift(currentUser);
-        }
+        usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
       }
 
-      getTimeEntriesForPeriod(filteredMembers);
-      setTeamList([...filteredMembers]);
+      setTeamList([...usersWithTasks]);
     }
   };
 
-  // const loadFunc = useCallback(pageNum => {
-  //   if (teamList.length <= displayData.length) {
-  //     setHasMore(false);
-  //     return;
-  //   }
+  useEffect(() => {
+    // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
+    const initialFetching = async () => {
+      await dispatch(fetchTeamMembersTask(displayUser._id));
+    };
+    initialFetching();
+  }, []);
 
-  //   const start = pageNum * 10;
-  //   setDisplayData([...displayData, ...teamList.slice(start, start + 10)]);
-  //   setHasMore(true);
-  // });
+  useEffect(() => {
+    if (clickedToShowModal) {
+      setMarkAsDoneModal(true);
+    }
+  }, [currentUserId]);
 
-  // useEffect(() => {
-  //   loadFunc();
-  // }, [teamList]);
+  useEffect(() => {
+    if (!isLoading) {
+      renderTeamsList();
+      closeMarkAsDone();
+    }
+  }, [usersWithTasks]);
+
+  useEffect(() => {
+    getTimeEntriesForPeriod(selectedPeriod);
+  }, [selectedPeriod, usersWithTimeEntries]);
+
+  
 
   return (
     <div className="container team-member-tasks">
@@ -326,9 +208,9 @@ const TeamMemberTasks = React.memo(props => {
               className="circle-border 24h"
               title="Timelogs submitted in the past 24 hours"
               style={{
-                color: selectedPeriod === 24 && isTimeLogActive ? 'white' : hrsFilterBtnRed,
+                color: selectedPeriod === 24 && isTimeFilterActive ? 'white' : hrsFilterBtnRed,
                 backgroundColor:
-                  selectedPeriod === 24 && isTimeLogActive ? hrsFilterBtnRed : 'white',
+                  selectedPeriod === 24 && isTimeFilterActive ? hrsFilterBtnRed : 'white',
                 border: '1px solid #DC143C',
               }}
               onClick={() => selectPeriod(24)}
@@ -340,9 +222,9 @@ const TeamMemberTasks = React.memo(props => {
               className="circle-border 48h"
               title="Timelogs submitted in the past 48 hours"
               style={{
-                color: selectedPeriod === 48 && isTimeLogActive ? 'white' : hrsFilterBtnBlue,
+                color: selectedPeriod === 48 && isTimeFilterActive ? 'white' : hrsFilterBtnBlue,
                 backgroundColor:
-                  selectedPeriod === 48 && isTimeLogActive ? hrsFilterBtnBlue : 'white',
+                  selectedPeriod === 48 && isTimeFilterActive ? hrsFilterBtnBlue : 'white',
                 border: '1px solid #6495ED',
               }}
               onClick={() => selectPeriod(48)}
@@ -354,8 +236,8 @@ const TeamMemberTasks = React.memo(props => {
               className="circle-border 72h"
               title="Timelogs submitted in the past 72 hours"
               style={{
-                color: selectedPeriod === 72 && isTimeLogActive ? 'white' : '#228B22',
-                backgroundColor: selectedPeriod === 72 && isTimeLogActive ? '#228B22' : 'white',
+                color: selectedPeriod === 72 && isTimeFilterActive ? 'white' : '#228B22',
+                backgroundColor: selectedPeriod === 72 && isTimeFilterActive ? '#228B22' : 'white',
                 border: '1px solid #228B22',
               }}
               onClick={() => selectPeriod(72)}
@@ -374,7 +256,7 @@ const TeamMemberTasks = React.memo(props => {
         userId={currentUserId}
         toggle={handleOpenTaskNotificationModal}
         onApprove={handleTaskNotificationRead}
-        loggedInUserId={props.auth.user.userid}
+        loggedInUserId={authUser.userid}
       />
       {currentUserId != '' && (
         <TaskCompletedModal
@@ -431,7 +313,7 @@ const TeamMemberTasks = React.memo(props => {
                     <tr>
                       <th>Tasks(s)</th>
                       <th className="team-task-progress">Progress</th>
-                      {userRole === 'Administrator' ? <th>Status</th> : null}
+                      {displayUser.role === 'Administrator' ? <th>Status</th> : null}
                     </tr>
                   </thead>
                 </Table>
@@ -443,7 +325,7 @@ const TeamMemberTasks = React.memo(props => {
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
               teamList.map(user => {
-                if (!isTimeLogActive) {
+                if (!isTimeFilterActive) {
                   return (
                     <TeamMemberTask
                       user={user}
@@ -452,11 +334,9 @@ const TeamMemberTasks = React.memo(props => {
                       handleMarkAsDoneModal={handleMarkAsDoneModal}
                       handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                       handleTaskModalOption={handleTaskModalOption}
-                      userRole={userRole}
+                      userRole={displayUser.role}
                       updateTaskStatus={updateTaskStatus}
-                      roles={props.roles}
-                      userPermissions={props.userPermissions}
-                      userId={userId}
+                      userId={displayUser._id}
                     />
                   );
                 } else {
@@ -469,11 +349,9 @@ const TeamMemberTasks = React.memo(props => {
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
                         handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                         handleTaskModalOption={handleTaskModalOption}
-                        userRole={userRole}
+                        userRole={displayUser.role}
                         updateTaskStatus={updateTaskStatus}
-                        roles={props.roles}
-                        userPermissions={props.userPermissions}
-                        userId={userId}
+                        userId={displayUser._id}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
@@ -481,7 +359,12 @@ const TeamMemberTasks = React.memo(props => {
                           .map(timeEntry => (
                             <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={3} style={{ padding: 0 }}>
-                                <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
+                                <TimeEntry 
+                                  fromTaskTab
+                                  data={timeEntry}
+                                  key={timeEntry._id}
+                                  timeEntryUserProfile={timeEntry.userProfile}
+                                />
                               </td>
                             </tr>
                           ))}
@@ -498,15 +381,11 @@ const TeamMemberTasks = React.memo(props => {
 });
 
 const mapStateToProps = state => ({
-  auth: state.auth,
-  userId: state.userProfile.id,
-  managingTeams: state.userProfile.teams,
-  teamsInfo: state.managingTeams,
-  roles: state.role.roles,
-  userPermissions: state.auth?.permissions?.frontPermissions,
+  authUser: state.auth.user.userid,
+  displayUser: state.userProfile,
+  isLoading: state.teamMemberTasks.isLoading,
+  usersWithTasks: state.teamMemberTasks.usersWithTasks,
+  usersWithTimeEntries: state.teamMemberTasks.usersWithTimeEntries,
 });
 
-export default connect(mapStateToProps, {
-  getUserProfile,
-  fetchAllManagingTeams,
-})(TeamMemberTasks);
+export default connect(mapStateToProps, null)(TeamMemberTasks);
