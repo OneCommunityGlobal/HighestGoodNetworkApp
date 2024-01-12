@@ -14,7 +14,6 @@ import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import TimeEntry from '../Timelog/TimeEntry';
-import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
