@@ -5,7 +5,7 @@ import { GET_ERRORS } from 'constants/errors';
 
 export const purchaseTools = async body => {
   return axios
-    .post(ENDPOINTS.BM_TOOLS, body)
+    .post(ENDPOINTS.BM_TOOLS_PURCHASE, body)
     .then(res => res)
     .catch(err => {
       if (err.response) return err.response;
