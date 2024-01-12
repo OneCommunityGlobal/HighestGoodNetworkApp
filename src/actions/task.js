@@ -17,7 +17,6 @@ import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/ser
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
-import { dispatch } from 'd3';
 
 const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
 const selectUserId = state => state.auth.user.userid;
