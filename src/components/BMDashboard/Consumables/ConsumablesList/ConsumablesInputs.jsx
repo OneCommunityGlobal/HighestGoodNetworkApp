@@ -31,13 +31,13 @@ function ConsumablesInputs({ consumable, setConsumable, project, setProject }) {
 
     if (consumables.length) {
       if (project.value === '0')
-        consumablesSet = [...new Set(consumables.map(rec => rec.itemType.name))];
+        consumablesSet = [...new Set(consumables.map(rec => rec.itemType?.name))];
       else
         consumablesSet = [
           ...new Set(
             consumables
               .filter(rec => rec.project?.name === project.label)
-              .map(rec => rec.itemType.name),
+              .map(rec => rec.itemType?.name),
           ),
         ];
     }
