@@ -63,7 +63,6 @@ function LessonForm() {
     if (projectId) {
       const projectname = `Project ${projectId}`;
       setLessonFormTags([projectname]);
-      setSelectedProject(projectId);
     }
   }, []);
   // when user selects a file updates selectedFile variable
@@ -153,6 +152,7 @@ function LessonForm() {
                 type="text"
                 placeholder="Enter title here"
                 onChange={handleLessonTitleInput}
+                maxLength={40}
               />
             </Form.Group>
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
