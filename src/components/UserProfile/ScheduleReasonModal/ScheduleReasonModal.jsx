@@ -7,6 +7,8 @@ import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import { useEffect, useState } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { boxStyle } from 'styles';
 import './ScheduleReasonModal.css';
 
@@ -45,8 +47,20 @@ const ScheduleReasonModal = ({
   }, [date]);
 
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const [returnDate, setReturnDate] = useState(date);
+  const nextSundayDate = new Date(moment(date));
+  const [returnDate, setReturnDate] = useState(nextSundayDate);
   const [offTimeWeeks, setOffTimeWeeks] = useState([]);
+  const [dateInputError, setDateInputError] = useState('')
+
+  const validateDateIsNotBeforeToday = returnDate => {
+    const isBeforeToday = moment(returnDate).isBefore(moment(), 'day');
+    if (isBeforeToday) {
+      setDateInputError('The selected return date must be after today')
+      return false;
+    }
+    setDateInputError('')
+    return true;
+  };
 
   const toggleConfirmationModal = () => {
     setConfirmationModal(prev => !prev);
@@ -73,8 +87,14 @@ const ScheduleReasonModal = ({
     return date.format('MM/DD/YYYY');
   };
 
+  const filterSunday = date => {
+    const losAngelesDate = moment(date).tz('America/Los_Angeles');
+    return losAngelesDate.day() === 6; // Sunday
+  };
+
   const handleSaveReason = e => {
     e.preventDefault();
+    if (!validateDateIsNotBeforeToday(returnDate)) return;
     const weeks = getWeekIntervals(returnDate);
     setOffTimeWeeks(weeks);
     toggleConfirmationModal();
@@ -113,15 +133,19 @@ const ScheduleReasonModal = ({
               </p>
             </Form.Label>
             <Form.Label>Choose the Sunday of the week you'll return:</Form.Label>
-            <Form.Control
-              name="datePicker"
-              type="date"
-              className="w-100"
-              value={returnDate}
-              onChange={e => {
-                setReturnDate(e.target.value);
+            <DatePicker
+              selected={returnDate}
+              onChange={date => {
+                setReturnDate(date);
               }}
+              filterDate={filterSunday}
+              dateFormat="MM/dd/yyyy"
+              placeholderText="Select a Sunday"
+              id="dateOfLeave"
+              className="form-control"
+              wrapperClassName="w-100"
             />
+            <Form.Text className="text-danger pl-1">{dateInputError}</Form.Text>
             <Form.Label className="mt-4">
               What is your reason for requesting this time off?
             </Form.Label>
