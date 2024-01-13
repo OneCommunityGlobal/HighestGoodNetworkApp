@@ -25,8 +25,6 @@ const ScheduleReasonModal = ({
   fetchMessage,
   fetchDispatch,
   userId,
-  IsReasonUpdated,
-  setIsReasonUpdated,
 }) => {
   useEffect(() => {
     const initialFetching = async () => {
@@ -108,7 +106,6 @@ const ScheduleReasonModal = ({
               value={reason}
               onChange={e => {
                 setReason(e.target.value);
-                setIsReasonUpdated(true);
               }}
               disabled={fetchState.isFetching}
             />
@@ -126,10 +123,11 @@ const ScheduleReasonModal = ({
           <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
+          {/* Save button */}
           <Button
             variant="primary"
             type="submit"
-            disabled={fetchState.isFetching || !IsReasonUpdated}
+            disabled={fetchState.isFetching || !reason}
             title="To Save - add a new reason or edit an existing reason. 
           Clicking 'Save' will generate an email to you and One Community as a record of this request."
             style={boxStyle}
