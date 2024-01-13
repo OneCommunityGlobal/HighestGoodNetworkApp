@@ -82,7 +82,6 @@ export class WeeklySummariesReport extends Component {
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
-    const filteredBadgeData = allBadgeData.filter(badge => badge.showReport === true);
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
@@ -150,7 +149,7 @@ export class WeeklySummariesReport extends Component {
         sessionStorage.getItem('tabSelection') === null
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
-      badges: filteredBadgeData,
+      badges: allBadgeData,
       hasSeeBadgePermission: badgeStatusCode === 200,
       filteredSummaries: summariesCopy,
       colorOptions,

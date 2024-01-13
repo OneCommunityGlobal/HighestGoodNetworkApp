@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -180,9 +180,14 @@ function ReportDetails({
   loadBadges,
   canEditTeamCode,
 }) {
+  const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+
+  useEffect(() => {
+    setFilteredBadges(badges.filter(badge => badge.showReport === true));
+  }, []);
 
   return (
     <li className="list-group-item px-0" ref={ref}>
@@ -231,7 +236,7 @@ function ReportDetails({
           </Col>
           <Col xs="6">
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
             )}
           </Col>
         </Row>
