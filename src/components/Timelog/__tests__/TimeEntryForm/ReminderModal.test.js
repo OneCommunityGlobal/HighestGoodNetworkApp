@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import ReminderModal from '../../../components/Timelog/TimeEntryForm/ReminderModal'; // Adjust the path as necessary
+import ReminderModal from '../../TimeEntryForm/ReminderModal'; // Adjust the path as necessary
 
 describe('ReminderModal Component', () => {
   const mockSetVisible = jest.fn();
