@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import userTableDataPermissions from '../../utils/userTableDataPermissions';
-import UserTableHeader from '../../components/UserManagement/UserTableHeader';
+import userTableDataPermissions from '../../../utils/userTableDataPermissions';
+import UserTableHeader from '../UserTableHeader';
 import {
   ACTIVE,
   FIRST_NAME,
@@ -15,7 +15,7 @@ import {
   USER_RESUME_DATE,
   USER_START_DATE,
   USER_END_DATE,
-} from '../../languages/en/ui';
+} from '../../../languages/en/ui';
 
 // Mock userTableDataPermissions function
 jest.mock('utils/userTableDataPermissions', () => jest.fn());

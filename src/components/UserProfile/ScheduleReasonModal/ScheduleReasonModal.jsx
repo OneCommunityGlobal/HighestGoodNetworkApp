@@ -11,6 +11,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { boxStyle } from 'styles';
 import './ScheduleReasonModal.css';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import CustomDatePickerInput from './CustomDatePickerInput.jsx';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -32,19 +35,27 @@ const ScheduleReasonModal = ({
     const initialFetching = async () => {
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await getReasonByDate(userId, date);
-      console.log(response);
+      // console.log(response);
       if (response.status !== 200) {
         fetchDispatch({
           type: 'ERROR',
           payload: { message: response.message, errorCode: response.errorCode },
         });
       } else {
-        setReason(response.data.reason);
+        // console.log('reason: ', reason);
+        // console.log('date: ', date);
+        if (reason !== response.data.reason && response.data.reason !== '') {
+          setReason(response.data.reason);
+        }
         fetchDispatch({ type: 'FETCHING_FINISHED', payload: { isSet: response.data.isSet } });
       }
     };
     initialFetching();
   }, [date]);
+
+  function isSunday(date) {
+    return date.getDay() === 0;
+  }
 
   const [confirmationModal, setConfirmationModal] = useState(false);
   const nextSundayDate = new Date(moment(date));
