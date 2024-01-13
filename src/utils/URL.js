@@ -125,6 +125,8 @@ export const ENDPOINTS = {
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
 
+  GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
