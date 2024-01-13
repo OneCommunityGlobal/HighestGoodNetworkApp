@@ -11,9 +11,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { boxStyle } from 'styles';
 import './ScheduleReasonModal.css';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import CustomDatePickerInput from './CustomDatePickerInput.jsx';
+
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -52,10 +50,6 @@ const ScheduleReasonModal = ({
     };
     initialFetching();
   }, [date]);
-
-  function isSunday(date) {
-    return date.getDay() === 0;
-  }
 
   const [confirmationModal, setConfirmationModal] = useState(false);
   const nextSundayDate = new Date(moment(date));
