@@ -258,7 +258,7 @@ function TimeEntriesViz({ timeEntries, fromDate, toDate }) {
   return (
     <div>
       <Button onClick={() => setShow(!show)} aria-expanded={show} style={boxStyle}>
-        Show Time Entries Graph
+        {show ? 'Hide Time Entries Graph' : 'Show Time Entries Graph'}
       </Button>
       <div id="tlplot" />
     </div>

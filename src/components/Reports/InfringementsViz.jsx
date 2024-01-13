@@ -273,7 +273,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
   return (
     <div>
       <Button onClick={handleModalShow} aria-expanded={graphVisible} style={boxStyle}>
-        Show Infringements Graph
+        {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
       <div className="kaitest" id="infplot" />
 
