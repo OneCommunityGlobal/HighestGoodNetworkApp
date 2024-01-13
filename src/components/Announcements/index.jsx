@@ -16,6 +16,10 @@ function Announcements() {
     const emails = e.target.value.split(',');
     setEmailList(emails);
   };
+  
+  const handleHeaderContentChange = e => {
+    setHeaderContent(e.target.value);
+  }
 
   const convertImageToBase64 = (file, callback) => {
     const reader = new FileReader();
@@ -39,7 +43,15 @@ function Announcements() {
     e.target.value = '';
   };
   // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
-
+  const addHeaderToEmailContent = () => {
+    if (!headerContent) return;
+    const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
+      const editor = tinymce.get('email-editor');
+      if (editor) {
+        editor.insertContent(imageTag);
+        setEmailContent(editor.getContent());
+      }
+  };
   const handleSendEmails = () => {
     const htmlContent = emailContent;
     // Send the HTML content using your sendEmail function
@@ -133,6 +145,14 @@ function Announcements() {
           </button>
           <div>
             <hr />
+            <p>Insert header or footer image link</p>
+            <div style={{ overflow: 'hidden' }}>
+              <input type="text" onChange={handleHeaderContentChange}/>
+            </div>
+            <button type="button" className="send-button" onClick={addHeaderToEmailContent}>
+              Insert
+            </button>
+            <hr />
             <p>Upload Header (or footer)</p>
             <div style={{ overflow: 'hidden' }}>
               <input type="file" onChange={addImageToEmailContent} />
@@ -151,3 +171,4 @@ function Announcements() {
 }
 
 export default Announcements;
+
