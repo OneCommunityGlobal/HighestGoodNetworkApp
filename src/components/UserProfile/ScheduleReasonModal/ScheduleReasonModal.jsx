@@ -1,13 +1,14 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { Container, Row, Col, Modal as NestedModal, ModalBody, ModalFooter } from 'reactstrap';
 import Form from 'react-bootstrap/Form';
 import moment from 'moment';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getReasonByDate } from 'actions/reasonsActions';
 import { boxStyle } from 'styles';
-import   './ScheduleReasonModal.css';
+import './ScheduleReasonModal.css';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -43,39 +44,87 @@ const ScheduleReasonModal = ({
     initialFetching();
   }, [date]);
 
+  const [confirmationModal, setConfirmationModal] = useState(false);
+  const [returnDate, setReturnDate] = useState(date);
+  const [offTimeWeeks, setOffTimeWeeks] = useState([]);
+
+  const toggleConfirmationModal = () => {
+    setConfirmationModal(prev => !prev);
+  };
+
+  const getWeekIntervals = endDate => {
+    const result = [];
+    const endDateTime = moment(endDate);
+
+    let currentDate = moment();
+
+    while (currentDate < endDateTime) {
+      const weekStart = moment(currentDate).startOf('week');
+      const weekEnd = moment(currentDate).endOf('week');
+      const formattedInterval =  [formatDate(weekStart), formatDate(weekEnd)];
+      result.push(formattedInterval);
+      currentDate.add(7, 'days');
+    }
+
+    return result;
+  };
+
+  const formatDate = date => {
+    return date.format('MM/DD/YYYY');
+  };
+
+  const handleSaveReason = e => {
+    e.preventDefault();
+    const weeks = getWeekIntervals(returnDate);
+    setOffTimeWeeks(weeks);
+    toggleConfirmationModal();
+  };
+
+  const handelConfirmReason = ()=>{
+    setDate(returnDate)
+    handleSubmit()
+    toggleConfirmationModal()
+  }
+
   return (
     <>
       <Modal.Header closeButton={true}>
         <Modal.Title className="centered-container">
-        <div className="centered-text">Choose to Use a Blue Square</div>
-        <div className="centered-text">(function under development)</div> 
+          <div className="centered-text">Choose to Use a Blue Square</div>
+          <div className="centered-text">(function under development)</div>
         </Modal.Title>
-        
       </Modal.Header>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSaveReason}>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
             <Form.Label>
               {/* Schedule a reason to be used on this weekend's blue square for {user.firstName} */}
-              Need to take a week off for an emergency or vacation? That's no problem. The system will still issue you a blue square but scheduling here will note this reason on it so it's clear you chose to use one (vs receiving one for missing something) and let us know in advance. Blue squares are meant for situations like this and we allow 5 a year.
+              Need to take a week off for an emergency or vacation? That's no problem. The system
+              will still issue you a blue square but scheduling here will note this reason on it so
+              it's clear you chose to use one (vs receiving one for missing something) and let us
+              know in advance. Blue squares are meant for situations like this and we allow 5 a
+              year.
             </Form.Label>
             <Form.Label>
               <p>
-                To schedule your time off, you need to CHOOSE THE SUNDAY OF THE WEEK YOU’LL RETURN. This is the date needed so your reason ends up on the blue square that will be auto-issued AT THE END OF THE WEEK YOU'LL BE GONE.
+                To schedule your time off, you need to CHOOSE THE SUNDAY OF THE WEEK YOU’LL RETURN.
+                This is the date needed so your reason ends up on the blue square that will be
+                auto-issued AT THE END OF THE WEEK YOU'LL BE GONE.
               </p>
             </Form.Label>
-            <Form.Label>Choose the Sunday of the week you'll return: 
-              </Form.Label>
+            <Form.Label>Choose the Sunday of the week you'll return:</Form.Label>
             <Form.Control
               name="datePicker"
               type="date"
               className="w-100"
-              value={date}
+              value={returnDate}
               onChange={e => {
-                setDate(e.target.value);
+                setReturnDate(e.target.value);
               }}
             />
-            <Form.Label className="mt-4">What is your reason for requesting this time off?</Form.Label>
+            <Form.Label className="mt-4">
+              What is your reason for requesting this time off?
+            </Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
@@ -83,7 +132,7 @@ const ScheduleReasonModal = ({
               className="w-100"
               placeholder="Please be detailed in describing your reason and, if it is different than your scheduled Sunday, include the expected date you’ll return to work."
               value={reason}
-               onChange={e => {
+              onChange={e => {
                 setReason(e.target.value);
                 setIsReasonUpdated(true);
               }}
@@ -97,16 +146,54 @@ const ScheduleReasonModal = ({
           ) : null}
         </Modal.Body>
         <Modal.Footer>
-        <Button variant="success" title="Function coming" onClick={handleClose} style={boxStyle}>
-           FAQ
+          <Button variant="success" title="Function coming" onClick={handleClose} style={boxStyle}>
+            FAQ
           </Button>
-         <Button variant="secondary" onClick={handleClose} style={boxStyle}>
+          <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
-          <Button variant="primary" type="submit" disabled={fetchState.isFetching || !IsReasonUpdated} title="To Save - add a new reason or edit an existing reason. 
-          Clicking 'Save' will generate an email to you and One Community as a record of this request." style={boxStyle}>
+          <Button
+            variant="primary"
+            type="submit"
+            disabled={fetchState.isFetching || !IsReasonUpdated}
+            title="To Save - add a new reason or edit an existing reason. 
+          Clicking 'Save' will generate an email to you and One Community as a record of this request."
+            style={boxStyle}
+          >
             {fetchState.isFetching ? <Spinner animation="border" size="sm" /> : 'Save'}
           </Button>
+          <NestedModal isOpen={confirmationModal} toggle={toggleConfirmationModal}>
+            <ModalBody>
+              <Container>
+                <Row>
+                  <Col>
+                    The blue square reason will be scheduled for the following{' '}
+                    {offTimeWeeks.length > 1 ? `weeks` : `week`}:
+                  </Col>
+                </Row>
+                {offTimeWeeks.length > 0 && (
+                  <Row>
+                    <Col>
+                      {offTimeWeeks.map((ele,index) => (
+                        <li key={index}><b>{`From `}</b>{ele[0]}<b>{` To `}</b>{ele[1]}</li>
+                      ))}
+                    </Col>
+                  </Row>
+                )}
+                <Row>
+                  <Col>Please confirm your selection</Col>
+                </Row>
+              </Container>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="primary" onClick={handelConfirmReason}>
+                Confirm
+              </Button>
+              <Button variant="secondary" onClick={toggleConfirmationModal}>
+                Cancel
+              </Button>
+            </ModalFooter>
+          </NestedModal>
         </Modal.Footer>
       </Form>
     </>
