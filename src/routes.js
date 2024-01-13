@@ -216,9 +216,9 @@ export default (
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
-        <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
-          
+        <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 

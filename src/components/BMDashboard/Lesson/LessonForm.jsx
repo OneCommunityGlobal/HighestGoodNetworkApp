@@ -20,9 +20,11 @@ function LessonForm() {
   const [prevselectedProject, setprevSelectedProject] = useState(null); // used to track the previously project selected for deletion in tags when changed
   const [selectedProject, setSelectedProject] = useState(null); // Track selected project in Belongs to dropdown
   // eslint-disable-next-line no-unused-vars
-  const [selectedRole, setSelectedRole] = useState(null); // track selected role in View by dropdown
+  const [selectedRole, setSelectedRole] = useState('All'); // track selected role in View by dropdown
   // eslint-disable-next-line no-unused-vars
   const [LessonText, setLessonText] = useState(null); // track lesson text
+  // eslint-disable-next-line no-unused-vars
+  const [LessonTitleText, setLessonTitleText] = useState(null); // track lessontitle text
   const { projectId } = useParams(); // passed project id in parameters
 
   // track user input in the tag input feild
@@ -61,6 +63,7 @@ function LessonForm() {
     if (projectId) {
       const projectname = `Project ${projectId}`;
       setLessonFormTags([projectname]);
+      setSelectedProject(projectId);
     }
   }, []);
   // when user selects a file updates selectedFile variable
@@ -107,6 +110,10 @@ function LessonForm() {
     const lessonforminput = e.target.value;
     setLessonText(lessonforminput);
   };
+  const handleLessonTitleInput = e => {
+    const lessonformtitleinput = e.target.value;
+    setLessonTitleText(lessonformtitleinput);
+  };
   useEffect(() => {
     if (selectedProject && prevselectedProject !== selectedProject) {
       // Remove the tag for the previously selected project
@@ -131,12 +138,23 @@ function LessonForm() {
     // console.log(selectedRole, "selecedRole")
     // console.log(selectedFile, "selected file")
     // console.log(LessonText, "lesson text")
+    // console.log(LessonTitleText,"lesson title")
   };
   return (
     <div className="MasterContainer">
       <div className="FormContainer">
         <Form onSubmit={LessonFormSubmit}>
           <div className="WriteLessonAndTagDiv">
+            <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
+              <Form.Label className="LessonLabel">Lesson Title</Form.Label>
+              <Form.Control
+                required
+                className="LessonTitle"
+                type="text"
+                placeholder="Enter title here"
+                onChange={handleLessonTitleInput}
+              />
+            </Form.Group>
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
               <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
               <Form.Control
