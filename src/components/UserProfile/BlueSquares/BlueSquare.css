@@ -1,8 +1,9 @@
 #wrapper .report {
   position: absolute;
-  left: 10px;
-  right: 10px;
-  top: 2vh;
+  left: -140px;
+  top: 0;
+  width: 200px;
+  overflow-y: auto;
   visibility: hidden;
 }
 
