@@ -386,7 +386,7 @@ class UserProfileEdit extends Component {
         modalTitle: 'Blue Square',
         type,
       });
-    } else if (type === 'viewBlueSquare' || type === 'modBlueSquare' || type === 'editBlueSquare' || type === 'deleteBlueSquare') {
+    } else if (type === 'viewBlueSquare' || type === 'modBlueSquare' || type === 'handleBlueSquare' || type === 'editBlueSquare' || type === 'deleteBlueSquare') {
       this.setState({
         showModal: status,
         modalTitle: 'Blue Square',

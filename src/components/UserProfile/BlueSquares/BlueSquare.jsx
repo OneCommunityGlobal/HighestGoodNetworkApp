@@ -27,12 +27,18 @@ const BlueSquare = (props) => {
                 onClick={() => {
                   if (!blueSquare._id) {
                     handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
-                  } else if (canPutUserProfileImportantInfo && canDeleteBuleSquare) {
+                  } else if (canPutUserProfileImportantInfo) {
                     handleBlueSquare(
                       canPutUserProfileImportantInfo,
                       'modBlueSquare',
                       blueSquare._id,
                     );
+                    } else if (isInfringementAuthorizer && canDeleteBuleSquare){
+                      handleBlueSquare(
+                        isInfringementAuthorizer,
+                        'handleBlueSquare',
+                        blueSquare._id,
+                      );
                     } else if (isInfringementAuthorizer) {
                       handleBlueSquare(
                         isInfringementAuthorizer,

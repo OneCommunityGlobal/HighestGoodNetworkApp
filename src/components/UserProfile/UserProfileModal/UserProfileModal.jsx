@@ -36,7 +36,7 @@ const UserProfileModal = props => {
     },
   ];
 
-  if (type === 'viewBlueSquare' || type === 'modBlueSquare' || type === 'editBlueSquare' || type === 'deleteBlueSquare') {
+  if (type === 'viewBlueSquare' || type === 'modBlueSquare' || type === 'handleBlueSquare' || type === 'editBlueSquare' || type === 'deleteBlueSquare') {
     if (id.length > 0) {
       blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
     }
@@ -314,13 +314,13 @@ const UserProfileModal = props => {
           </>
         )}
 
-        {(type === 'modBlueSquare' || type === 'editBlueSquare' || type === 'deleteBlueSquare')&& (
+        {(type === 'modBlueSquare' || type === 'handleBlueSquare' || type === 'editBlueSquare' || type === 'deleteBlueSquare')&& (
           <>
             <FormGroup>
               <Label for="date">Date</Label>
               <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} disabled={type === 'deleteBlueSquare'}/>
             </FormGroup>
-            
+
             <FormGroup>
               <Label for="report">Summary</Label>
               <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} disabled={type === 'deleteBlueSquare'}/>
@@ -364,8 +364,8 @@ const UserProfileModal = props => {
             Submit
           </Button>
         )}
-
-        {type === 'modBlueSquare' && (
+          {console.log(type)}
+        {type === 'handleBlueSquare' && (
           <>
             <Button
               color="info"
