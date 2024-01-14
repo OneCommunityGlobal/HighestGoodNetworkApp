@@ -85,6 +85,8 @@ export class WeeklySummariesReport extends Component {
 
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
+    this.canToggleRequestBio = hasPermission('requestBio');
+    this.canRequestBio = this.canToggleRequestBio;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
     this.codeEditPermission =
       hasPermission('editTeamCode') ||
@@ -422,6 +424,7 @@ export class WeeklySummariesReport extends Component {
                         summaries={filteredSummaries}
                         weekIndex={index}
                         bioCanEdit={this.bioEditPermission}
+                        canRequestBio={this.canRequestBio}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={allRoleInfo}
                         badges={badges}

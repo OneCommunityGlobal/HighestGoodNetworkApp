@@ -59,6 +59,7 @@ function FormattedReport({
   summaries,
   weekIndex,
   bioCanEdit,
+  canRequestBio,
   canEditSummaryCount,
   allRoleInfo,
   badges,
@@ -78,6 +79,7 @@ function FormattedReport({
             summary={summary}
             weekIndex={weekIndex}
             bioCanEdit={bioCanEdit}
+            canRequestBio={canRequestBio}
             canEditSummaryCount={canEditSummaryCount}
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
@@ -176,6 +178,7 @@ function ReportDetails({
   summary,
   weekIndex,
   bioCanEdit,
+  canRequestBio,
   canEditSummaryCount,
   allRoleInfo,
   badges,
@@ -207,6 +210,7 @@ function ReportDetails({
               <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
                 <Bio
                   bioCanEdit={bioCanEdit}
+                  canRequestBio={canRequestBio}
                   userId={summary._id}
                   bioPosted={summary.bioPosted}
                   summary={summary}
@@ -463,9 +467,9 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
   );
 }
 
-function Bio({ bioCanEdit, ...props }) {
+function Bio({ bioCanEdit, canRequestBio, ...props }) {
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
+  return bioCanEdit || canRequestBio ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
 function BioSwitch({ userId, bioPosted, summary }) {
