@@ -615,6 +615,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   };
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
   const googleDocLink = getGoogleDocLink(summary);
   // Determine whether to use grayscale or color icon based on googleDocLink
@@ -624,7 +625,18 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   return (
     <>
       <b>Name: </b>
-      <Link className="ml-2" to={`/userProfile/${summary._id}`} title="View Profile">
+      <Link
+        className="ml-2"
+        to={`/userProfile/${summary._id}`}
+        style={{
+          color:
+            currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              ? 'rgba(128, 128, 128, 0.5)'
+              : undefined,
+        }}
+        title="View Profile"
+      >
         {summary.firstName} {summary.lastName}
       </Link>
 

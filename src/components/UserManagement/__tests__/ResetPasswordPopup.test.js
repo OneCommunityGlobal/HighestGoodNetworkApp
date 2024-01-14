@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ResetPasswordPopup from '../../components/UserManagement/ResetPasswordPopup';
+import ResetPasswordPopup from '../ResetPasswordPopup';
 
 const invalidPasswordError =
   'Please choose a strong password which is at least 8 characters long and should contains a digit , a capital letter and a special character.';
@@ -38,11 +38,41 @@ describe('reset password popup', () => {
         .forEach((button) => userEvent.click(button));
       expect(onClose).toHaveBeenCalledTimes(2);
     });
-    it('should popup error when the password does not meet the requirement', async () => {
+    it('should popup error when the password length does not meet the requirement', async () => {
       await userEvent.type(screen.getByLabelText(/new password/i), 'AB@12345!', {
         allAtOnce: false,
       });
       await userEvent.type(screen.getByLabelText(/confirm password/i), 'AB@12345!', {
+        allAtOnce: false,
+      });
+      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      expect(screen.getByText(invalidPasswordError)).toBeInTheDocument();
+    });
+    it('should popup error when the password contains illegal symbol', async () => {
+      await userEvent.type(screen.getByLabelText(/new password/i), 'AB@12345.', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'AB@12345.', {
+        allAtOnce: false,
+      });
+      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      expect(screen.getByText(invalidPasswordError)).toBeInTheDocument();
+    });
+    it('should popup error when the password contains only numbers', async () => {
+      await userEvent.type(screen.getByLabelText(/new password/i), '12345678', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password/i), '12345678', {
+        allAtOnce: false,
+      });
+      userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+      expect(screen.getByText(invalidPasswordError)).toBeInTheDocument();
+    });
+    it('should popup error when the password contains only characters', async () => {
+      await userEvent.type(screen.getByLabelText(/new password/i), 'qazwsxedc', {
+        allAtOnce: false,
+      });
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'qazwsxedc', {
         allAtOnce: false,
       });
       userEvent.click(screen.getByRole('button', { name: /reset password/i }));

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from 'reactstrap';
 import './style.css';
 import './reviewButton.css';
@@ -10,12 +11,11 @@ import { ApiEndpoint } from 'utils/URL';
 
 const ReviewButton = ({
   user,
-  myUserId,
-  myRole,
   task,
   updateTask
 }) => {
-
+  const myUserId = useSelector(state => state.auth.user.userid);
+  const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {

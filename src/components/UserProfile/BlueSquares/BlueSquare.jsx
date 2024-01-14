@@ -7,6 +7,7 @@ import { formatDateFromDescriptionString } from 'utils/formatDateFromDescription
 
 const BlueSquare = (props) => {
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const canDeleteBuleSquare = props.hasPermission('deleteInfringements');
   const { blueSquares, handleBlueSquare } = props;
 
@@ -15,23 +16,23 @@ const BlueSquare = (props) => {
       <div className="blueSquares">
         {blueSquares
           ? blueSquares
-              .sort((a, b) => (a.date > b.date ? 1 : -1))
-              .map((blueSquare, index) => (
-                <div
-                  key={index}
-                  role="button"
-                  id="wrapper"
-                  data-testid="blueSquare"
-                  className="blueSquareButton"
-                  onClick={() => {
-                    if (!blueSquare._id) {
-                      handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
-                    } else if (isInfringementAuthorizer && canDeleteBuleSquare) {
-                      handleBlueSquare(
-                        isInfringementAuthorizer,
-                        'modBlueSquare',
-                        blueSquare._id,
-                      );
+            .sort((a, b) => (a.date > b.date ? 1 : -1))
+            .map((blueSquare, index) => (
+              <div
+                key={index}
+                role="button"
+                id="wrapper"
+                data-testid="blueSquare"
+                className="blueSquareButton"
+                onClick={() => {
+                  if (!blueSquare._id) {
+                    handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
+                  } else if (canPutUserProfileImportantInfo && canDeleteBuleSquare) {
+                    handleBlueSquare(
+                      canPutUserProfileImportantInfo,
+                      'modBlueSquare',
+                      blueSquare._id,
+                    );
                     } else if (isInfringementAuthorizer) {
                       handleBlueSquare(
                         isInfringementAuthorizer,
@@ -44,23 +45,23 @@ const BlueSquare = (props) => {
                         'deleteBlueSquare',
                         blueSquare._id,
                       );
-                    } else {
-                      handleBlueSquare(
-                        !isInfringementAuthorizer,
-                        'viewBlueSquare',
-                        blueSquare._id,
-                      );
-                    }
-                  }}
-                >
-                  <div className="report" data-testid="report">
-                    <div className="title">{formatDate(blueSquare.date)}</div>
-                    {blueSquare.description !== undefined && 
-                      <div className="summary">{formatDateFromDescriptionString(blueSquare.description)}</div>
-                    }
-                  </div>
+                  } else {
+                    handleBlueSquare(
+                      !isInfringementAuthorizer,
+                      'viewBlueSquare',
+                      blueSquare._id,
+                    );
+                  }
+                }}
+              >
+                <div className="report" data-testid="report">
+                  <div className="title">{formatDate(blueSquare.date)}</div>
+                  {blueSquare.description !== undefined &&
+                    <div className="summary">{formatDateFromDescriptionString(blueSquare.description)}</div>
+                  }
                 </div>
-              ))
+              </div>
+            ))
           : null}
       </div>
 
