@@ -12,7 +12,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { boxStyle } from 'styles';
 import './ScheduleReasonModal.css';
 
-
 const ScheduleReasonModal = ({
   handleClose,
   show,
@@ -52,18 +51,16 @@ const ScheduleReasonModal = ({
   }, [date]);
 
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const nextSundayDate = new Date(moment(date));
-  const [returnDate, setReturnDate] = useState(nextSundayDate);
   const [offTimeWeeks, setOffTimeWeeks] = useState([]);
-  const [dateInputError, setDateInputError] = useState('')
+  const [dateInputError, setDateInputError] = useState('');
 
   const validateDateIsNotBeforeToday = returnDate => {
     const isBeforeToday = moment(returnDate).isBefore(moment(), 'day');
     if (isBeforeToday) {
-      setDateInputError('The selected return date must be after today')
+      setDateInputError('The selected return date must be after today');
       return false;
     }
-    setDateInputError('')
+    setDateInputError('');
     return true;
   };
 
@@ -80,7 +77,7 @@ const ScheduleReasonModal = ({
     while (currentDate < endDateTime) {
       const weekStart = moment(currentDate).startOf('week');
       const weekEnd = moment(currentDate).endOf('week');
-      const formattedInterval =  [formatDate(weekStart), formatDate(weekEnd)];
+      const formattedInterval = [formatDate(weekStart), formatDate(weekEnd)];
       result.push(formattedInterval);
       currentDate.add(7, 'days');
     }
@@ -99,23 +96,16 @@ const ScheduleReasonModal = ({
 
   const handleSaveReason = e => {
     e.preventDefault();
-    if (!validateDateIsNotBeforeToday(returnDate)) return;
-    const weeks = getWeekIntervals(returnDate);
+    if (!validateDateIsNotBeforeToday(date)) return;
+    const weeks = getWeekIntervals(date);
     setOffTimeWeeks(weeks);
     toggleConfirmationModal();
   };
 
-  const handelConfirmReason = ()=>{
-    const dateTZ  = moment(returnDate)
-    .tz('America/Los_Angeles')
-    .endOf('week')
-    .toISOString()
-    .split('T')[0];
-    console.log(dateTZ)
-    setDate(dateTZ)
-    handleSubmit()
-    toggleConfirmationModal()
-  }
+  const handelConfirmReason = () => {
+    handleSubmit();
+    toggleConfirmationModal();
+  };
 
   return (
     <>
@@ -145,12 +135,18 @@ const ScheduleReasonModal = ({
             </Form.Label>
             <Form.Label>Choose the Sunday of the week you'll return:</Form.Label>
             <DatePicker
-              selected={returnDate}
-              onChange={date => {
-                setReturnDate(date);
+              selected={moment(date).toDate()}
+              onChange={dateSelected => {
+                const dateSelectedTz = moment(dateSelected)
+                  .tz('America/Los_Angeles')
+                  .endOf('week')
+                  .toISOString()
+                  .split('T')[0];
+                console.log(dateSelectedTz);
+                setDate(dateSelectedTz);
               }}
               filterDate={filterSunday}
-              dateFormat="MM/dd/yyyy"
+              dateFormat="yyyy-MM-dd"
               placeholderText="Select a Sunday"
               id="dateOfLeave"
               className="form-control"
@@ -209,8 +205,13 @@ const ScheduleReasonModal = ({
                 {offTimeWeeks.length > 0 && (
                   <Row>
                     <Col>
-                      {offTimeWeeks.map((ele,index) => (
-                        <li key={index}><b>{`From `}</b>{ele[0]}<b>{` To `}</b>{ele[1]}</li>
+                      {offTimeWeeks.map((ele, index) => (
+                        <li key={index}>
+                          <b>{`From `}</b>
+                          {ele[0]}
+                          <b>{` To `}</b>
+                          {ele[1]}
+                        </li>
                       ))}
                     </Col>
                   </Row>
