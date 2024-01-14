@@ -42,8 +42,8 @@ const UserTeamsTable = props => {
               <Col md="7">
                 <span className="teams-span">Visibility</span>
               </Col>
-              <Col md="5">
-                <ToggleSwitch
+              <Col md='5'>
+              <ToggleSwitch
                   switchType="visible"
                   state={props.isVisible}
                   handleUserProfile={props.onUserVisibilitySwitch}
@@ -108,9 +108,8 @@ const UserTeamsTable = props => {
             <thead>
               {props.role && (
                 <tr>
-                  <th style={{ width: '70px' }}>#</th>
-                  <th>Team Name</th>
-                  {canAssignTeamToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
+                  <th>#</th>
+                  {canAssignTeamToUsers ? <th style={{ width: '100px' }}>Team Name</th> : null}
                 </tr>
               )}
             </thead>
@@ -118,10 +117,10 @@ const UserTeamsTable = props => {
               {props.userTeamsById.length > 0 ? (
                 props.userTeamsById.map((team, index) => (
                   <tr key={index} className="tr">
-                    <td>{index + 1}</td>
+                    <td style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
                     <td>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
-                      <td style={{ textAlign: 'center'}}>
+                      <td style={{ textAlign: 'center', width: '20%' }}>
                         <Button
                           disabled={!canAssignTeamToUsers}
                           color="danger"
@@ -147,20 +146,17 @@ const UserTeamsTable = props => {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {props.canEditVisibility && (
             <>
-              <Col
-                md="12"
+              <Col 
+                md='12' 
                 style={{
                   backgroundColor: ' #e9ecef',
                   border: '1px solid #ced4da',
                   marginBottom: '10px',
                 }}
               >
-                <span className="teams-span">Visibility</span>
+              <span className="teams-span">Visibility</span>
               </Col>
-              <Col
-                md="12"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              >
+              <Col md='12' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                 <ToggleSwitch
                   switchType="visible"
                   state={props.isVisible}

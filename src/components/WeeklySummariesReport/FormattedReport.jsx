@@ -64,45 +64,10 @@ function FormattedReport({
   badges,
   loadBadges,
   canEditTeamCode,
+  auth,
+  canSeeBioHighlight,
 }) {
-  const emails = [];
-
-  summaries.forEach(summary => {
-    if (summary.email !== undefined && summary.email !== null) {
-      emails.push(summary.email);
-    }
-  });
-  const handleEmailButtonClick = () => {
-    const batchSize = 90;
-    const emailChunks = [];
-
-    for (let i = 0; i < emails.length; i += batchSize) {
-      emailChunks.push(emails.slice(i, i + batchSize));
-    }
-
-    const openEmailClientWithBatchInNewTab = batch => {
-      const emailAddresses = batch.join(', ');
-      const mailtoLink = `mailto:?bcc=${emailAddresses}`;
-      window.open(mailtoLink, '_blank');
-    };
-
-    emailChunks.forEach((batch, index) => {
-      setTimeout(() => {
-        openEmailClientWithBatchInNewTab(batch);
-      }, index * 2000);
-    });
-  };
-
-  const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
-  const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
-
-  const toggleEmailTooltip = () => {
-    setEmailTooltipOpen(!emailTooltipOpen);
-  };
-
-  const toggleCopyTooltip = () => {
-    setCopyTooltipOpen(!copyTooltipOpen);
-  };
+  // if (auth?.user?.role){console.log(auth.user.role)}
 
   return (
     <>
@@ -118,43 +83,93 @@ function FormattedReport({
             canEditTeamCode={canEditTeamCode}
             badges={badges}
             loadBadges={loadBadges}
+            canSeeBioHighlight={canSeeBioHighlight}
           />
         ))}
       </ListGroup>
-      <div className="d-flex align-items-center">
-        <h4>Emails</h4>
-        <Tooltip
-          placement="top"
-          isOpen={emailTooltipOpen}
-          target="emailIcon"
-          toggle={toggleEmailTooltip}
-        >
-          Launch the email client, organizing the recipient email addresses into batches, each
-          containing a maximum of 90 addresses.
-        </Tooltip>
-        <FontAwesomeIcon
-          className="mx-2"
-          onClick={handleEmailButtonClick}
-          icon={faMailBulk}
-          size="lg"
-          style={{ color: '#0f8aa9', cursor: 'pointer' }}
-          id="emailIcon"
-        />
-        <Tooltip
-          placement="top"
-          isOpen={copyTooltipOpen}
-          target="copytoclipboard"
-          toggle={toggleCopyTooltip}
-        >
-          Click to copy all emails.
-        </Tooltip>
-        <div id="copytoclipboard">
-          <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
-        </div>
-      </div>
-      <p>{emails.join(', ')}</p>
+      <EmailsList summaries={summaries} auth={auth} />
     </>
   );
+}
+
+function EmailsList({ summaries, auth }) {
+  const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
+  const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
+  if (auth?.user?.role) {
+    const { role } = auth.user;
+    if (role === 'Administrator' || role === 'Owner') {
+      const emails = [];
+      summaries.forEach(summary => {
+        if (summary.email !== undefined && summary.email !== null) {
+          emails.push(summary.email);
+        }
+      });
+      const handleEmailButtonClick = () => {
+        const batchSize = 90;
+        const emailChunks = [];
+        for (let i = 0; i < emails.length; i += batchSize) {
+          emailChunks.push(emails.slice(i, i + batchSize));
+        }
+        const openEmailClientWithBatchInNewTab = batch => {
+          const emailAddresses = batch.join(', ');
+          const mailtoLink = `mailto:?bcc=${emailAddresses}`;
+          window.open(mailtoLink, '_blank');
+        };
+        emailChunks.forEach((batch, index) => {
+          setTimeout(() => {
+            openEmailClientWithBatchInNewTab(batch);
+          }, index * 2000);
+        });
+      };
+
+      const toggleEmailTooltip = () => {
+        setEmailTooltipOpen(!emailTooltipOpen);
+      };
+
+      const toggleCopyTooltip = () => {
+        setCopyTooltipOpen(!copyTooltipOpen);
+      };
+
+      return (
+        <>
+          <div className="d-flex align-items-center">
+            <h4>Emails</h4>
+            <Tooltip
+              placement="top"
+              isOpen={emailTooltipOpen}
+              target="emailIcon"
+              toggle={toggleEmailTooltip}
+            >
+              Launch the email client, organizing the recipient email addresses into batches, each
+              containing a maximum of 90 addresses.
+            </Tooltip>
+            <FontAwesomeIcon
+              className="mx-2"
+              onClick={handleEmailButtonClick}
+              icon={faMailBulk}
+              size="lg"
+              style={{ color: '#0f8aa9', cursor: 'pointer' }}
+              id="emailIcon"
+            />
+            <Tooltip
+              placement="top"
+              isOpen={copyTooltipOpen}
+              target="copytoclipboard"
+              toggle={toggleCopyTooltip}
+            >
+              Click to copy all emails.
+            </Tooltip>
+            <div id="copytoclipboard">
+              <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
+            </div>
+          </div>
+          <p>{emails.join(', ')}</p>
+        </>
+      );
+    }
+    return null;
+  }
+  return null;
 }
 
 function ReportDetails({
@@ -166,10 +181,16 @@ function ReportDetails({
   badges,
   loadBadges,
   canEditTeamCode,
+  canSeeBioHighlight,
 }) {
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const isMeetCriteria =
+    canSeeBioHighlight &&
+    summary.totalTangibleHrs > 80 &&
+    summary.daysInTeam > 60 &&
+    summary.bioPosted !== 'posted';
 
   return (
     <li className="list-group-item px-0" ref={ref}>
@@ -183,14 +204,14 @@ function ReportDetails({
               <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
             </ListGroupItem>
             <ListGroupItem>
-              <Bio
-                bioCanEdit={bioCanEdit}
-                userId={summary._id}
-                bioPosted={summary.bioPosted}
-                summary={summary}
-                totalTangibleHrs={summary.totalTangibleHrs}
-                daysInTeam={summary.daysInTeam}
-              />
+              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+                <Bio
+                  bioCanEdit={bioCanEdit}
+                  userId={summary._id}
+                  bioPosted={summary.bioPosted}
+                  summary={summary}
+                />
+              </div>
             </ListGroupItem>
             <ListGroupItem>
               <TotalValidWeeklySummaries
@@ -383,7 +404,7 @@ function MediaUrlLink({ summary }) {
       );
     }
   }
-  return 'Not provided!';
+  return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
 }
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
@@ -447,10 +468,9 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam }) {
+function BioSwitch({ userId, bioPosted, summary }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
-  const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
   // eslint-disable-next-line no-shadow
@@ -462,7 +482,7 @@ function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
   };
 
   return (
-    <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+    <div>
       <div className="bio-toggle">
         <b style={style}>Bio announcement:</b>
       </div>
@@ -487,7 +507,7 @@ function BioLabel({ bioPosted, summary }) {
 
   let text = '';
   if (bioPosted === 'default') {
-    text = ' Not requested/posted';
+    text = 'Not requested/posted';
   } else if (bioPosted === 'posted') {
     text = 'Posted';
   } else {
@@ -495,7 +515,7 @@ function BioLabel({ bioPosted, summary }) {
   }
   return (
     <div>
-      <b style={style}>Bio announcement:</b>
+      <b style={style}>Bio announcement: </b>
       {text}
     </div>
   );
@@ -595,6 +615,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   };
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
   const googleDocLink = getGoogleDocLink(summary);
   // Determine whether to use grayscale or color icon based on googleDocLink
@@ -604,7 +625,18 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   return (
     <>
       <b>Name: </b>
-      <Link className="ml-2" to={`/userProfile/${summary._id}`} title="View Profile">
+      <Link
+        className="ml-2"
+        to={`/userProfile/${summary._id}`}
+        style={{
+          color:
+            currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              ? 'rgba(128, 128, 128, 0.5)'
+              : undefined,
+        }}
+        title="View Profile"
+      >
         {summary.firstName} {summary.lastName}
       </Link>
 

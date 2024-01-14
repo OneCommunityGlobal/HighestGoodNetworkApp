@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
+import CustomInput from './CustomInput.jsx';
 import getUserTimeZone from 'services/timezoneApiService';
 import { useSelector } from 'react-redux';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import { createLocation, editLocation } from 'services/mapLocationsService';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const initialLocationData = {
-  firstName: 'Prior to HGN Data Collection',
-  lastName: 'Prior to HGN Data Collection',
-  jobTitle: 'Prior to HGN Data Collection',
+  firstName: '',
+  lastName: '',
+  jobTitle: '',
   location: {
     userProvided: '',
     coords: {
@@ -30,7 +31,7 @@ function AddOrEditPopup({
   isEdit,
   editProfile,
   submitText,
-  apiKey
+  apiKey,
 }) {
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
@@ -169,10 +170,10 @@ function AddOrEditPopup({
         if (!res) {
           throw new Error();
         }
-        onClose();
         toast.success('A person successfully added to a map!');
         setManuallyUserProfiles(prev => [...prev, { ...res.data, type: 'm_user' }]);
-        setLocationData(newLocationObject);
+        setLocationData(initialLocationData);
+        setFormSubmitted(true);
       } else if (isEdit) {
         const res = await editLocation(newLocationObject);
         if (!res || res.status !== 200) {
@@ -215,6 +216,20 @@ function AddOrEditPopup({
     }
   }
 
+  const firstNameRef = useRef(null);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        if (firstNameRef.current) {
+          firstNameRef.current.focus();
+        }
+      }, 100);
+      setFormSubmitted(false);
+    }
+  }, [open, formSubmitted]);
+
   return (
     <Modal isOpen={open} toggle={onClose} className="modal-dialog modal-lg">
       <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
@@ -222,7 +237,7 @@ function AddOrEditPopup({
       </ModalHeader>
       <ModalBody>
         <Form onSubmit={onSubmitHandler}>
-          <Input
+          <CustomInput
             type="text"
             name="firstName"
             value={locationData.firstName}
@@ -231,6 +246,7 @@ function AddOrEditPopup({
             onChange={locationDataHandler}
             required
             error={errors.firstName}
+            ref={firstNameRef}
           />
           <Input
             type="text"
