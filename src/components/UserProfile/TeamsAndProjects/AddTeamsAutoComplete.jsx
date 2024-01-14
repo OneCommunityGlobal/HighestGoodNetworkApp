@@ -7,6 +7,7 @@ const AddTeamsAutoComplete = React.memo(props => {
 
   React.useEffect(() => {
     if (!props.selectedTeam) props.setSearchText('');
+    else props.setSearchText(props.selectedTeam.teamName);
   }, [props.selectedTeam, props.setSearchText]);
 
   return (
@@ -45,6 +46,7 @@ const AddTeamsAutoComplete = React.memo(props => {
             .map(item => (
               <div
                 className="team-auto-complete"
+                key={item._id}
                 onClick={() => {
                   props.setSearchText(item.teamName);
                   toggle(false);
@@ -55,7 +57,7 @@ const AddTeamsAutoComplete = React.memo(props => {
               </div>
             ))}
             
-            {props.teamsData.allTeams.every(team => team.teamName.toLowerCase() !== props.searchText.toLowerCase()) && (
+            {!props.addLostHour && props.teamsData.allTeams.every(team => team.teamName.toLowerCase() !== props.searchText.toLowerCase()) && (
               <div
                 className="team-auto-complete"
                 onClick={() => {

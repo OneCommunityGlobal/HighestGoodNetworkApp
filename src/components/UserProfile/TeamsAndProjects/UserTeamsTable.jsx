@@ -109,8 +109,7 @@ const UserTeamsTable = props => {
               {props.role && (
                 <tr>
                   <th>#</th>
-
-                  {canAssignTeamToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
+                  {canAssignTeamToUsers ? <th style={{ width: '100px' }}>Team Name</th> : null}
                 </tr>
               )}
             </thead>
@@ -118,10 +117,10 @@ const UserTeamsTable = props => {
               {props.userTeamsById.length > 0 ? (
                 props.userTeamsById.map((team, index) => (
                   <tr key={index} className="tr">
-                    <td>{index + 1}</td>
+                    <td style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
                     <td>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
-                      <td style={{ textAlign: 'center'}}>
+                      <td style={{ textAlign: 'center', width: '20%' }}>
                         <Button
                           disabled={!canAssignTeamToUsers}
                           color="danger"
@@ -144,7 +143,7 @@ const UserTeamsTable = props => {
         </div>
       </div>
       <div className="teamtable-container tablet">
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           {props.canEditVisibility && (
             <>
               <Col 

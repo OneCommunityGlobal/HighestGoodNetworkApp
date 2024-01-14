@@ -1,0 +1,85 @@
+#coutry-rep-tooltip {
+  max-width: 400px;
+  background-color: #d1ecf1;
+  border: 1px solid black;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  font-size: 1rem;
+  opacity: 1;
+}
+
+#country-rep-info {
+  color: black;
+  margin-bottom: 0px;
+  border: none;
+}
+
+#requirement-checkbox-wrap {
+  display: flex;
+  flex-direction: row;
+}
+
+#requirement-checkbox {
+  position: relative;
+  top: 0.2rem;
+  margin-top: 0px;
+  margin-left: 0px;
+}
+
+#profile-picture {
+  box-sizing: border-box;
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  padding: 4px;
+  border: 3px solid #d1ecf1;
+}
+#add-profile-picture-col {
+  box-sizing: border-box;
+  display: flex;
+  padding-bottom: 1rem;
+}
+#add-profile-picture-btn {
+  align-self: flex-end;
+}
+.profile-setup-user-entry-container {
+  display: grid;
+  grid-template-rows: 10vh 1fr;
+}
+.profile-setup-user-entry-header {
+  height: 100%;
+  width: 100%;
+  background-color: #343a40;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+.profile-setup-user-entry-logo {
+  height: 7vh;
+  width: auto;
+}
+#profile-setup-user-entry-form-container {
+  box-sizing: border-box;
+  margin-top: 5vh;
+  width: 100vw;
+  padding: 0px;
+  display: grid;
+  justify-items: center;
+}
+
+#setup-profile-phone-input {
+  max-width: 100%;
+  background-color: red;
+}
+#profile-setup-user-entry-form{
+    max-width: 2000px;
+    width: 95%;
+}
+.tooltip.show {
+    opacity: 1 !important; /* Your desired opacity value */
+  }
+
+  @media (max-width: 768px) {
+    #password-input-group{
+        margin-bottom: 1rem;
+    }
+  }
