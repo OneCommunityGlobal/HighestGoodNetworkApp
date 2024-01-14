@@ -135,7 +135,7 @@ export const ENDPOINTS = {
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
-  BM_TOOLS_PURCHASE: `${APIEndpoint}/bm//tools/purchase`,
+  BM_TOOLS_PURCHASE: `${APIEndpoint}/bm/tools/purchase`,
 };
 
 export const ApiEndpoint = APIEndpoint;
