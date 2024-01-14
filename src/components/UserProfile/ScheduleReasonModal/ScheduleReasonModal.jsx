@@ -41,7 +41,7 @@ const ScheduleReasonModal = ({
       } else {
         // console.log('reason: ', reason);
         // console.log('date: ', date);
-        if (reason !== response.data.reason && response.data.reason !== '') {
+        if (reason !== response.data.reason ) {
           setReason(response.data.reason);
         }
         fetchDispatch({ type: 'FETCHING_FINISHED', payload: { isSet: response.data.isSet } });
@@ -69,20 +69,12 @@ const ScheduleReasonModal = ({
   };
 
   const getWeekIntervals = endDate => {
-    const result = [];
-    const endDateTime = moment(endDate);
+    const weekEnd = moment(endDate).subtract(1, 'day');
+    const weekStart = moment(weekEnd).startOf('week');
 
-    let currentDate = moment();
+    const formattedInterval = [formatDate(weekStart), formatDate(weekEnd)];
 
-    while (currentDate < endDateTime) {
-      const weekStart = moment(currentDate).startOf('week');
-      const weekEnd = moment(currentDate).endOf('week');
-      const formattedInterval = [formatDate(weekStart), formatDate(weekEnd)];
-      result.push(formattedInterval);
-      currentDate.add(7, 'days');
-    }
-
-    return result;
+    return formattedInterval;
   };
 
   const formatDate = date => {
@@ -197,22 +189,17 @@ const ScheduleReasonModal = ({
             <ModalBody>
               <Container>
                 <Row>
-                  <Col>
-                    The blue square reason will be scheduled for the following{' '}
-                    {offTimeWeeks.length > 1 ? `weeks` : `week`}:
-                  </Col>
+                  <Col className='mb-1'>The blue square reason will be scheduled for the following week:</Col>
                 </Row>
                 {offTimeWeeks.length > 0 && (
                   <Row>
-                    <Col>
-                      {offTimeWeeks.map((ele, index) => (
-                        <li key={index}>
-                          <b>{`From `}</b>
-                          {ele[0]}
-                          <b>{` To `}</b>
-                          {ele[1]}
-                        </li>
-                      ))}
+                    <Col  className='mb-1'>
+                      <li>
+                        <b>{`From `}</b>
+                        {offTimeWeeks[0]}
+                        <b>{` To `}</b>
+                        {offTimeWeeks[1]}
+                      </li>
                     </Col>
                   </Row>
                 )}
