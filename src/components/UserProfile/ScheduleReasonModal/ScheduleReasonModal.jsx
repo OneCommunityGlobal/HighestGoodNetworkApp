@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { Container, Row, Col, Modal as NestedModal, ModalBody, ModalFooter } from 'reactstrap';
 import Form from 'react-bootstrap/Form';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import { useEffect, useState } from 'react';
@@ -106,7 +106,13 @@ const ScheduleReasonModal = ({
   };
 
   const handelConfirmReason = ()=>{
-    setDate(returnDate)
+    const dateTZ  = moment(returnDate)
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .toISOString()
+    .split('T')[0];
+    console.log(dateTZ)
+    setDate(dateTZ)
     handleSubmit()
     toggleConfirmationModal()
   }
