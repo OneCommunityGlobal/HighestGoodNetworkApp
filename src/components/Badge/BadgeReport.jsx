@@ -19,6 +19,7 @@ import {
   UncontrolledPopover,
   DropdownMenu,
   DropdownItem,
+  UncontrolledTooltip
 } from 'reactstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -191,6 +192,7 @@ const BadgeReport = props => {
   }, [props.badges]);
 
   const countChange = (badge, index, newValue) => {
+    debugger;
     let newBadges = sortBadges.slice();
     let value = newValue.length === 0 ? 0 : parseInt(newValue);
     const oldBadge = JSON.parse(JSON.stringify(badge));
@@ -199,25 +201,26 @@ const BadgeReport = props => {
       // upon reaching 0, show delete modal
       handleDeleteBadge(oldBadge);
     }
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    // Add 1 beacuse the month start at zero
-    let mm = today.getMonth() + 1;
-    let dd = today.getDate();
-
-    mm < 10 ? (mm = '0' + mm) : mm;
-    dd < 10 ? (dd = '0' + dd) : dd;
-    const formatedDate = `${yyyy}-${mm}-${dd}`;
-
-    newBadges.map((bdg, i) => {
-      if (newValue > bdg.count && i === index) {
+    //Updated: 01/11/24
+    // fix formatedDate format
+    const currentDate = new Date(Date.now());
+    const formatedDate = formatDate(currentDate)
+    // Updated: 01/11/24
+    // fix the bug that it didn't compare newValue to oldBadge.count
+    newBadges.forEach((bdg, i) => {
+      if (newValue > oldBadge.count && i === index) {
         bdg.earnedDate.push(formatedDate);
-      } else if (newValue < bdg.count && i === index) {
-        bdg.earnedDate.pop();
+      } else if (newValue < oldBadge.count && i === index) {
+        // New requirement: We want to keep to the earned date so that there's still a record
+        // that badges were earned. hasBadgeDeletionImpact indicates a deletion has occured.
+        // The original code which remove the earned date is deleted.
+        bdg.hasBadgeDeletionImpact = true;
+        
       }
     });
 
     newBadges[index].count = newValue;
+
     setSortBadges(newBadges);
   };
 
@@ -268,6 +271,8 @@ const BadgeReport = props => {
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
     }
+    // Update: we will compare the original count with the new count to detect badge deletion
+
 
     await props.changeBadgesByUserID(props.userId, newBadgeCollection);
     await props.getUserProfile(props.userId);
@@ -290,7 +295,7 @@ const BadgeReport = props => {
           <Table>
             <thead style={{ zIndex: '10' }}>
               <tr style={{ zIndex: '10' }}>
-                <th style={{ width: '93px' }}>Badge</th>
+                <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
                 <th style={{ width: '110px' }}>Earned Dates</th>
@@ -332,10 +337,11 @@ const BadgeReport = props => {
                         ? formatDate(value.lastModified)
                         : value.lastModified.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}
                     </td>
-                    <td>
+                    <td style={{ display: 'flex', alignItems: 'center' }} >
+                      <>
                       {' '}
-                      <UncontrolledDropdown className="me-2" direction="down">
-                        <DropdownToggle caret color="primary" style={boxStyle}>
+                      <UncontrolledDropdown className="me-2" direction="down" >
+                        <DropdownToggle caret color="primary" style={boxStyle} >
                           Dates
                         </DropdownToggle>
                         <DropdownMenu className='badge_dropdown'>
@@ -344,6 +350,23 @@ const BadgeReport = props => {
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
+                      {value.hasBadgeDeletionImpact && value.hasBadgeDeletionImpact === true ?
+                            (<>
+                              <span id="mismatchExplainationTooltip" style={{paddingLeft: '3px'}}>
+                                {'  '} *
+                              </span>
+                              <UncontrolledTooltip
+                                placement="bottom"
+                                target="mismatchExplainationTooltip"
+                                style={{ maxWidth: '300px' }}
+                              >
+                                This record contains a mismatch in the badge count and associated dates. It indicates that a badge has been deleted. 
+                                Despite the deletion, we retain the earned date to ensure a record of the badge earned for historical purposes.
+                              </UncontrolledTooltip>
+                            </>)
+                            : null
+                        }
+                      </>
                     </td>
                     <td>
                       {canUpdateBadges ? (
@@ -616,6 +639,7 @@ const BadgeReport = props => {
             <span>Export Selected/Featured Badges to PDF</span>
           </Button>
         </div>
+       
         <Modal isOpen={showModal}>
           <ModalBody>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
