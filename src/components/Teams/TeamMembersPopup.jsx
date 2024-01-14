@@ -13,8 +13,8 @@ export const TeamMembersPopup = React.memo(props => {
     props.onClose();
     setSortOrder(0)
   };
-  const [selectedUser, onSelectUser] = useState(undefined);
-  const [isValidUser, onValidation] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(undefined);
+  const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
   const [memberList, setMemberList] = useState([]);
@@ -37,12 +37,12 @@ export const TeamMembersPopup = React.memo(props => {
       }
     } else {
       setDuplicateUserAlert(false);
-      onValidation(false);
+      setIsValidUser(false);
     }
   };
   const selectUser = user => {
-    onSelectUser(user);
-    onValidation(true);
+    setSelectedUser(user);
+    setIsValidUser(true);
     setDuplicateUserAlert(false);
   };
 
@@ -130,7 +130,7 @@ export const TeamMembersPopup = React.memo(props => {
   }, [props.members.teamMembers, sortOrder])
 
   useEffect(() => {
-    onValidation(true);
+    setIsValidUser(true);
     setDuplicateUserAlert(false);
   }, [props.open]);
 
