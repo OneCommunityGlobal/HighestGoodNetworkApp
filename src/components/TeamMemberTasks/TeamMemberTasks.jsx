@@ -447,6 +447,7 @@ const TeamMemberTasks = React.memo(props => {
                   return (
                     <TeamMemberTask
                       user={user}
+                      userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes('putReviewStatus')}
                       key={user.personId}
                       handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                       handleMarkAsDoneModal={handleMarkAsDoneModal}
