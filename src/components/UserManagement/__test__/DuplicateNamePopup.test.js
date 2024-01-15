@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import DuplicateNamePopup from '../../components/UserManagement/DuplicateNamePopup';
+import DuplicateNamePopup from '../DuplicateNamePopup';
 
 describe('DuplicateNamePopup', () => {
   const mockCreateUserProfile = jest.fn();

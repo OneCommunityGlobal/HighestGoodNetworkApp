@@ -1,5 +1,6 @@
-const { ENDPOINTS } =  require('../../utils/URL');
-const { returnUpdatedBadgesCollection } = require('../../actions/badgeManagement');
+
+const { ENDPOINTS } =  require('../../../utils/URL');
+const { returnUpdatedBadgesCollection } = require('../../../actions/badgeManagement');
 const axios = require('axios');
 jest.mock('axios');
 
