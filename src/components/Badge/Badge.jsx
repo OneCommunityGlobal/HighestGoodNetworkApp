@@ -55,13 +55,18 @@ const Badge = props => {
       ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
       : '';
 
-    return `Bravo! You have earned ${totalBadge} ${
-      totalBadge === 1 ? 'badge' : 'badges'
-    }${personalMaxText}! `;
+    return `Bravo! You have earned ${totalBadge} ${totalBadge === 1 ? 'badge' : 'badges'
+      }${personalMaxText}! `;
   };
 
   useEffect(() => {
-    const userId = props.userId;
+    if (props.userId) {
+      props.getUserProfile(props.userId);
+    }
+  }, [props.userId, props.getUserProfile]);
+
+  useEffect(() => {
+    // Assuming badgeCollection is part of the userProfile in Redux store
     let count = 0;
     if (props.userProfile.badgeCollection) {
       props.userProfile.badgeCollection.forEach(badge => {
@@ -73,7 +78,8 @@ const Badge = props => {
       });
       setTotalBadge(Math.round(count));
     }
-  }, [props.userProfile.badgeCollection, totalBadge]);
+  }, [props.userProfile.badgeCollection]);
+
 
   return (
     <>
@@ -187,4 +193,6 @@ const mapStateToProps = state => ({
   userProfile: state.userProfile,
 });
 
-export default connect(mapStateToProps)(Badge);
+export default connect(mapStateToProps, {
+  getUserProfile,
+})(Badge);

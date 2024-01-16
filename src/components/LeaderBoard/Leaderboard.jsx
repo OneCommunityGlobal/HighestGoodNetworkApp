@@ -63,7 +63,7 @@ function LeaderBoard({
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
-  }, [timeEntries]);
+  }, [userId, timeEntries]);
 
   useDeepEffect(() => {
     try {
