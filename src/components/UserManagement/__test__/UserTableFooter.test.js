@@ -1,8 +1,6 @@
 import React from 'react';
-import { screen, render, fireEvent, cleanup } from '@testing-library/react';
+import { screen, render, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../../../__tests__/mockStates';
-import { renderWithProvider, renderWithRouterMatch } from '../../../__tests__/utils';
 import UserTableFooter from '../UserTableFooter';
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -31,6 +29,15 @@ describe('user table footer', () => {
     );
   });
   describe('structure', () => {
+    const pageSize = 10;
+    const selectedPage = 1;
+    const datacount = 60;
+    it('should render a page summary info', () => {
+      let right_num = pageSize * selectedPage;
+      let left_num = 1 + (selectedPage-1) * pageSize;
+      let page_summ = `Showing ${left_num} - ${right_num} of ${datacount}`;
+      expect(screen.getByText(page_summ)).toBeInTheDocument();
+    });
     it('should render a dropdown', () => {
       expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
@@ -95,6 +102,50 @@ describe('user table footer', () => {
       userEvent.click(screen.getByRole('button', { name: /previous/i }));
       expect(onPageSelect).toHaveBeenCalled();
       expect(onPageSelect).toHaveBeenCalledWith(1);
+    });
+  });
+});
+
+describe('user table footer tests', () => {
+  let onSelectPageSize;
+  let onPageSelect;
+  beforeEach(() => {
+    onSelectPageSize = jest.fn();
+    onPageSelect = jest.fn();
+    const pageSize = 10;
+    const selectedPage = 4;
+    const datacount = 60;
+    const isSelected = true;
+    const pageNo = 1;
+    render(
+      <UserTableFooter
+        onSelectPageSize={onSelectPageSize}
+        onPageSelect={onPageSelect}
+        pageSize={pageSize}
+        selectedPage={selectedPage}
+        datacount={datacount}
+        isSelected={isSelected}
+        pageNo={pageNo}
+      />,
+    );
+  });
+  describe('more tests for the summary', () => {
+    const pageSize = 10;
+    const selectedPage = 4;
+    const datacount = 60;
+    it('should render a page summary info', () => {
+      let right_num = pageSize * selectedPage;
+      let left_num = 1 + (selectedPage-1) * pageSize;
+      let page_summ = `Showing ${left_num} - ${right_num} of ${datacount}`;
+      expect(screen.getByText(page_summ)).toBeInTheDocument();
+    });
+    it('should display correct summary info', async () => {
+      userEvent.click(screen.getByRole('button', { name: /4/i }));
+      expect(onPageSelect).toHaveBeenCalledWith(4);
+      let right_num = pageSize * selectedPage;
+      let left_num = 1 + (selectedPage-1) * pageSize;
+      let page_summ = `Showing ${left_num} - ${right_num} of ${datacount}`;
+      expect(screen.getByText(page_summ)).toBeInTheDocument();
     });
   });
 });
