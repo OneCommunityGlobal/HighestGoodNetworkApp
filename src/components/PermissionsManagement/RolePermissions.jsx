@@ -88,7 +88,8 @@ function RolePermissions(props) {
       roleId: id,
     };
     try {
-      await props.updateRole(id, updatedRole);
+      delete userProfile.permissions  // prevent overriding 'permissions' key-value pair
+      await props.updateRole(id, {...updatedRole, ...userProfile});
       history.push('/permissionsmanagement');
       toast.success('Role updated successfully');
       setChanged(false);

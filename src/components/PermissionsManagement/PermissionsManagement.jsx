@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from "axios"
 
 import { Button, Modal, ModalBody, ModalHeader, Row, Col } from 'reactstrap';
 import './PermissionsManagement.css';
@@ -13,10 +14,15 @@ import { getAllRoles } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
+import PermissionChangeLogTable from './PermissionChangeLogTable'
+import { ENDPOINTS } from 'utils/URL';
 
 function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile, hasPermission, getInfoCollections }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
+  // Added permissionChangeLogs state management
+  const [changeLogs, setChangeLogs] = useState([])
+  const [loading, setLoading] = useState(true);
 
   const canPostRole = hasPermission('postRole');
   const canPutRole = hasPermission('putRole');
@@ -35,6 +41,19 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     getAllRoles();
     getInfoCollections();
     getUserRole(auth?.user.userid);
+    // added. call getChangeLogs
+    const getChangeLogs = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid))
+        setChangeLogs(response.data)
+        setLoading(false);
+      }
+      catch (error) {
+        console.error('Error fetching change logs:', error)
+      }
+    }
+
+    getChangeLogs()
   }, []);
 
   const togglePopUpUserPermissions = () => {
@@ -69,9 +88,33 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                     isPermissionPage
                   />
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          {userProfile?.role === 'Owner' && (
+            <div className="buttons-container">
+              <Button
+                className="permissions-management__button"
+                type="button"
+                color="success"
+                onClick={() => togglePopUpNewRole()}
+                style={boxStyle}
+              >
+                Add New Role
+              </Button>
+              <Button
+                color="primary"
+                className="permissions-management__button"
+                type="button"
+                onClick={() => {
+                  togglePopUpUserPermissions();
+                }}
+                style={boxStyle}
+              >
+                Manage User Permissions
+              </Button>
+            </div>
+          )}
         </div>
         }
         {(canPostRole || canManageUserPermissions) && (
@@ -101,35 +144,11 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
           </div>
         )}
       </div>
-      <div className="permissions-management--flex">
-        <Modal isOpen={isNewRolePopUpOpen} toggle={togglePopUpNewRole} id="modal-content__new-role">
-          <ModalHeader
-            toggle={togglePopUpNewRole}
-            cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-          >
-            Create New Role
-          </ModalHeader>
-          <ModalBody id="modal-body_new-role--padding">
-            <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} />
-          </ModalBody>
-        </Modal>
-        <Modal
-          isOpen={isUserPermissionsOpen}
-          toggle={togglePopUpUserPermissions}
-          id="modal-content__new-role"
-        >
-          <ModalHeader
-            toggle={togglePopUpUserPermissions}
-            cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-          >
-            Manage User Permissions
-          </ModalHeader>
-          <ModalBody id="modal-body_new-role--padding">
-            <UserPermissionsPopUp toggle={togglePopUpUserPermissions} />
-          </ModalBody>
-        </Modal>
-      </div>
-    </div>
+      {loading && (<p className='loading-message'>Loading...</p>)}
+      {changeLogs?.length > 0 && (<PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} />)}
+      <br />
+      <br />
+    </>
   );
 }
 
