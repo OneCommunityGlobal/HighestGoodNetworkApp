@@ -3,10 +3,18 @@
   width: 100%;
 }
 
+.permission-change-log-table--header {
+  background-color: #e3f0fb;
+}
+
 .permission-change-log-table--header,
 .permission-change-log-table--cell {
   border: 1px solid #ddd;
   padding: 8px;
+}
+
+tr:hover {
+  background-color: #e3f0fb;
 }
 
 .permission-change-log-table--button {
