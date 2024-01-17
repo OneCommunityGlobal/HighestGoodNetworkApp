@@ -48,6 +48,7 @@ import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { useParams } from 'react-router-dom';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -127,6 +128,11 @@ const Timelog = props => {
     isTimeEntriesLoading: true,
   };
 
+  const timeEntryFormData = {
+    isTangible: false,
+    personId: displayUserProfile._id,
+  }
+
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
   const [initialTab, setInitialTab] = useState(null);
   const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
@@ -135,10 +141,10 @@ const Timelog = props => {
   const [beforeLastEntries, setBeforeLastEntries] = useState(null);
   const [periodEntries, setPeriodEntries] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const [data, setData] = useState({ isTangible: false });
   const [timeLogState, setTimeLogState] = useState(initialState);
+  const { userId: paramsUserId } = useParams();
 
-  const displayUserId = props?.match?.params?.userId || authUser.userid;
+  const displayUserId = paramsUserId || authUser.userid;
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
@@ -192,7 +198,7 @@ const Timelog = props => {
         data={entry}
         displayYear={false}
         key={entry._id}
-        userProfile={displayUserProfile}
+        timeEntryUserProfile={displayUserProfile}
       />
     ));
   };
@@ -451,7 +457,7 @@ const Timelog = props => {
                             isActive={displayUserProfile.isActive}
                             user={displayUserProfile}
                             onClick={() => {
-                              props.updateUserProfile(displayUserId, {
+                              props.updateUserProfile({
                                 ...displayUserProfile,
                                 isActive: !displayUserProfile.isActive,
                                 endDate:
@@ -554,7 +560,7 @@ const Timelog = props => {
                         edit={false}
                         toggle={toggle}
                         isOpen={timeLogState.timeEntryFormModal}
-                        data={data}
+                        data={timeEntryFormData}
                         userProfile={displayUserProfile}
                         roles={roles}
                         isTaskUpdated={isTaskUpdated}
@@ -719,7 +725,7 @@ const Timelog = props => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks displayUserId={displayUserId} handleUpdateTask={handleUpdateTask} />
+                      <TeamMemberTasks handleUpdateTask={handleUpdateTask} />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>
