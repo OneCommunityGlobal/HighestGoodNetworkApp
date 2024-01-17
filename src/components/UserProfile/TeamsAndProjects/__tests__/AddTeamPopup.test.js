@@ -238,4 +238,38 @@ describe('AddTeamPopup component', () => {
     await store.dispatch(getAllUserTeams());
     expect(store.getActions()).toEqual(expectedActions);
   });
+  it('check if postNewTeams puts out an error message when the axios post request fails', async () => {
+    const errorResponse = { response: { status: 404, data: { message: 'Not Found' } } };
+
+    axios.post.mockRejectedValue(errorResponse);
+    const store = mockStore({});
+
+    // when the resource is not present
+    const errorResponseMessage = await store.dispatch(postNewTeam('New Team', true));
+    expect(errorResponseMessage.status).toBe(404);
+    expect(errorResponseMessage.data.message).toBe('Not Found');
+
+    // when there is a server error
+    const errorRequest = { request: {} };
+    axios.post.mockRejectedValue(errorRequest);
+    const errorRequestMessage = await store.dispatch(postNewTeam('New Team', true));
+    expect(errorRequestMessage.status).toBe(500);
+    expect(errorRequestMessage.message).toBe('No response received from the server');
+
+    // when the error does not have request or response
+    const error = { message: 'Internal Server Error' };
+    axios.post.mockRejectedValue(error);
+    const errorMessage = await store.dispatch(postNewTeam('New Team', true));
+    expect(errorMessage.message).toBe('Internal Server Error');
+  });
+  it('check if getAllUserTeams puts out an error message when axios get request fails', async () => {
+    axios.get.mockRejectedValue();
+    const store = mockStore({});
+
+    const expectedActions = [{ type: RECEIVE_ALL_USER_TEAMS, payload: undefined }];
+    await store.dispatch(getAllUserTeams());
+
+    // when there is error in the get request then the payload becomes undefined
+    expect(store.getActions()).toEqual(expectedActions);
+  });
 });
