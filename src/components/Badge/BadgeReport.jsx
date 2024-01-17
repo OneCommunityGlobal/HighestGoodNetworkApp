@@ -192,36 +192,63 @@ const BadgeReport = props => {
   }, [props.badges]);
 
   const countChange = (badge, index, newValue) => {
+  
     debugger;
-    let newBadges = sortBadges.slice();
-    let value = newValue.length === 0 ? 0 : parseInt(newValue);
-    const oldBadge = JSON.parse(JSON.stringify(badge));
-    newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
-    if (value === 0 || newValue.length === 0) {
-      // upon reaching 0, show delete modal
-      handleDeleteBadge(oldBadge);
+    let copyOfExisitingBadges = [...sortBadges];
+    newValue = newValue === null || newValue === undefined ? -1 : parseInt(newValue);
+    if( newValue < 0 || !copyOfExisitingBadges || copyOfExisitingBadges.length === 0){
+      toast.error('Error: Invalid badge count or the badge is not exist in the badge records. Please fresh the page. If the problem persists, please contact the administrator.');
+      return;
     }
-    //Updated: 01/11/24
-    // fix formatedDate format
-    const currentDate = new Date(Date.now());
-    const formatedDate = formatDate(currentDate)
-    // Updated: 01/11/24
-    // fix the bug that it didn't compare newValue to oldBadge.count
-    newBadges.forEach((bdg, i) => {
-      if (newValue > oldBadge.count && i === index) {
-        bdg.earnedDate.push(formatedDate);
-      } else if (newValue < oldBadge.count && i === index) {
-        // New requirement: We want to keep to the earned date so that there's still a record
-        // that badges were earned. hasBadgeDeletionImpact indicates a deletion has occured.
-        // The original code which remove the earned date is deleted.
-        bdg.hasBadgeDeletionImpact = true;
+    
+    const recordBeforeUpdate = props.badges.filter(item => item.badge._id === badge.badge._id);
+    // New requirement: We want to keep to the earned date so that there's still a record
+    // that badges were earned. hasBadgeDeletionImpact indicates a deletion has occured.
+    // The original code which remove the earned date is deleted.
+    if(recordBeforeUpdate.length !== 0){
+      const badgePrevState = badge;
+      if(newValue === 0) {
+        // Prev states before onChange event
+        handleDeleteBadge(badgePrevState);
+        // let newBadges = sortBadges.filter(badge => badge.badge._id !== badgeToDelete.badge._id);
+        // setSortBadges(newBadges);
+        return;
+      } else{
+        // Value of the existing record from the database before frontend udpate commit to db. 
+        const badgeCountFromExsitingRecord =  parseInt(recordBeforeUpdate[0].count);
         
+        const currentDate = new Date(Date.now());
+        const formatedDate = formatDate(currentDate)
+        // new > prev && new > exsiting: check impact of deletion and push new date. Case: decrease and increase. Remove temp asterisk.
+        // new > prev && new < exsiting: do nothihng
+        // new < prev && new < exsiting: set deletion flag to true
+        // new < prev && new > exsiting OR new < pre && new === existing: remove earned date. Case: increase then decrease. Remove temp added earned dates. 
+        // new > prev && new === exsiting: remove temp asterisk
+        copyOfExisitingBadges = copyOfExisitingBadges.map(item => {
+          if(item.badge._id === badge.badge._id){
+            if(newValue > badgePrevState.count && newValue >= badgeCountFromExsitingRecord){
+              if(!recordBeforeUpdate.hasBadgeDeletionImpact){
+                item.hasBadgeDeletionImpact = false;
+              }
+              if(newValue > badgeCountFromExsitingRecord){
+                item.earnedDate = [...item.earnedDate, formatedDate]
+              }
+            }  else if (newValue < badgePrevState.count && newValue < badgeCountFromExsitingRecord && !item.hasBadgeDeletionImpact ){
+              item.hasBadgeDeletionImpact = true;
+            } else {
+              item.earnedDate =  item.earnedDate.slice(0, -1)
+            }
+            item.count = newValue;
+            return item;
+          }
+          return item;
+        });
       }
-    });
-
-    newBadges[index].count = newValue;
-
-    setSortBadges(newBadges);
+      setSortBadges(copyOfExisitingBadges);
+    } else{
+      toast.error('Error: The badge may not exist in the badge records. Please fresh the page. If the problem persists, please contact the administrator.');
+      return;
+    }
   };
 
   const featuredChange = (badge, index, e) => {
