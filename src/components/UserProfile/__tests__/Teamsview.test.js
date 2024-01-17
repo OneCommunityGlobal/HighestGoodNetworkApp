@@ -59,7 +59,7 @@ describe('Team Table Data component', () => {
     );
     expect(screen.queryByText('Delete')).not.toBeInTheDocument();
   });
-  it('check delete button', () => {
+  it('check if mockhandleTeam called when delete button is clicked', () => {
     const teamsData = [
       {
         teamName: 'team11',
@@ -83,6 +83,29 @@ describe('Team Table Data component', () => {
     const deleteElement = container.querySelector('[data-item="aaa123"]');
     fireEvent.click(deleteElement);
     expect(mockhandleTeam).toHaveBeenCalled();
+  });
+  it('check if mockhandleTeam not called when delete button is not clicked', () => {
+    const teamsData = [
+      {
+        teamName: 'team11',
+        _id: 'aaa123',
+        isActive: true,
+      },
+      {
+        teamName: 'team12',
+        _id: 'bbb456',
+        isActive: true,
+      },
+    ];
+    const { container } = render(
+      <Teams
+        teamsdata={teamsData}
+        allTeams={mockallTeams}
+        handleTeam={mockhandleTeam}
+        edit={true}
+      />,
+    );
+    expect(mockhandleTeam).not.toHaveBeenCalled();
   });
 });
 describe('Teams component', () => {
