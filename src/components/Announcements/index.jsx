@@ -59,7 +59,11 @@ function Announcements() {
   };
 
   const handleBroadcastEmails = () => {
-    const htmlContent = emailContent;
+    const htmlContent = `
+    <div style="max-width: 500px; width: 100%; margin: auto;">
+      ${emailContent}
+    </div>
+  `;
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
