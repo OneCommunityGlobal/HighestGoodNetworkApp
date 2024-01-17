@@ -37,8 +37,14 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Button,
 } from 'reactstrap';
 import Logout from '../Logout/Logout';
+import PopUpBar from 'components/PopUpBar';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
@@ -46,11 +52,12 @@ import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks'
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { isAuthenticated, user, firstName:authFirstName } = props.auth;
-  const [firstName, setFirstName] = useState(authFirstName);
+  const { isAuthenticated, user } = props.auth;
+  const [firstName, setFirstName] = useState(props.auth.firstName);
   const [profilePic, setProfilePic] = useState(props.auth.profilePic);
   const [displayUserId, setDisplayUserId] = useState(user.userid);
-
+  const [popup, setPopup] = useState(false);
+  const [isAuthUser, setIsAuthUser] = useState(true);
   // Reports
   const canGetReports = props.hasPermission('getReports');
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
@@ -86,10 +93,12 @@ export const Header = props => {
         setDisplayUserId(sessionStorageData.userId);
         setFirstName(sessionStorageData.firstName);
         setProfilePic(sessionStorageData.profilePic);
+        setIsAuthUser(false);
       } else {
         setDisplayUserId(user.userid);
         setFirstName(props.auth.firstName);
         setProfilePic(props.auth.profilePic);
+        setIsAuthUser(true);
       }
     };
   
@@ -128,6 +137,12 @@ export const Header = props => {
   const openModal = () => {
     setLogoutPopup(true);
   };
+
+  const removeViewingUser = () => {
+    setPopup(false);
+    sessionStorage.removeItem('viewingUser');
+    window.dispatchEvent(new Event('storage'));
+  }
 
   return (
     <div className="header-wrapper">
@@ -293,6 +308,23 @@ export const Header = props => {
           </Collapse>
         )}
       </Navbar>
+      {!isAuthUser && <PopUpBar onClickClose={()=> setPopup(prevPopup=> !prevPopup)} viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))}/> }
+      <div>
+        <Modal isOpen={popup} >
+          <ModalHeader >Return to your Dashboard</ModalHeader>
+          <ModalBody>
+            <p>Are you sure you wish to return to your own dashboard?</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant='primary' onClick={removeViewingUser}>
+              Ok
+            </Button>{' '}
+            <Button variant='secondary' onClick={()=> setPopup(prevPopup=> !prevPopup)}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </div>
     </div>
   );
 };

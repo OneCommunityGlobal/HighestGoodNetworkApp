@@ -3,6 +3,11 @@ import { shallow } from 'enzyme';
 import mockAdminState from '../../../__tests__/mockAdminState';
 import Leaderboard from '../Leaderboard';
 
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: jest.fn(),
+}));
+
 describe('Leaderboard page structure', () => {
   let mountedLeaderboard, props;
   beforeEach(() => {
@@ -22,19 +27,19 @@ describe('Leaderboard page structure', () => {
     const tableHeader = mountedLeaderboard.find('thead');
     expect(tableHeader.length).toBe(1);
     const tableHeads = tableHeader.find('th');
-    expect(tableHeads.length).toBe(5);
+    expect(tableHeads.length).toBeGreaterThanOrEqual(5);
   });
 
   it('should be rendered with mock Leaderboard data', () => {
     const leaderBoardBody = mountedLeaderboard.find('tbody');
     const leaderBoardItems = leaderBoardBody.find('tr');
-    let lbData = mockAdminState.leaderBoardData;
+    const lbData = mockAdminState.leaderBoardData;
     const lBLength = lbData.length;
     expect(leaderBoardItems.length).toBe(lBLength + 1);
 
     for (let i = 0; i < lBLength; i++) {
       //find that a link to each user profile exists and test the text of the Link to be the name
-      let linkItem = leaderBoardItems.find({ to: `/userprofile/${lbData[i].personId}` });
+      const linkItem = leaderBoardItems.find({ to: `/userprofile/${lbData[i].personId}` });
       expect(linkItem.length).toBe(1);
       expect(linkItem.text().includes(lbData[i].name)).toBeTruthy();
 

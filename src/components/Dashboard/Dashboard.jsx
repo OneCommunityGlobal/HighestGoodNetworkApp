@@ -6,7 +6,6 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 
@@ -21,8 +20,6 @@ export function Dashboard(props) {
     viewingUser ? viewingUser.userId : authUser.userid,
   );
 
-  const isAuthUser = displayUserId === authUser.userid;
-
   const toggle = () => {
     setPopup(!popup);
     setTimeout(() => {
@@ -31,11 +28,6 @@ export function Dashboard(props) {
         elem.scrollIntoView();
       }
     }, 150);
-  };
-
-  const removeViewingUser = () => {
-    sessionStorage.removeItem('viewingUser');
-    window.dispatchEvent(new Event('storage'));
   };
 
   const handleStorageEvent = () => {
@@ -58,7 +50,6 @@ export function Dashboard(props) {
 
   return (
     <Container fluid>
-      {!isAuthUser ? <PopUpBar component="dashboard" onClickClose={removeViewingUser} /> : ''}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}

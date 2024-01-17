@@ -238,6 +238,8 @@ const SummaryBar = props => {
       : '';
   };
 
+  const canEditData = () => !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') && canPutUserProfileImportantInfo;
+
   useEffect(() => {
     setUserProfile(userProfile);
   }, [userProfile]);
@@ -264,10 +266,10 @@ const SummaryBar = props => {
 
   return (
     displayUserProfile !== undefined && summaryBarData !== undefined 
-      ? <Container
+    ? <Container
           fluid
           className={
-            isAuthUser || canPutUserProfileImportantInfo
+            isAuthUser || canEditData()
               ? 'px-lg-0 bg--bar'
               : 'px-lg-0 bg--bar disabled-bar'
           }
@@ -333,7 +335,7 @@ const SummaryBar = props => {
                 {!weeklySummary ? (
                   <div className="border-red col-4 bg--white-smoke no-gutters">
                     <div className="py-1"> </div>
-                    {isAuthUser || canPutUserProfileImportantInfo ? (
+                    { isAuthUser || canEditData()  ? (
                       <p
                         className={
                           'text-center summary-toggle large_text_summary text--black text-danger'

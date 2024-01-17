@@ -160,7 +160,7 @@ const TeamMemberTasks = React.memo(props => {
       const currentUserIndex = usersWithTasks.findIndex(user => user.personId === displayUser._id);
 
       // if current user doesn't have any task, the currentUser cannot be found
-      if (usersWithTasks[currentUserIndex].tasks.length) {
+      if (usersWithTasks[currentUserIndex]?.tasks.length) {
         //conditional variable for moving current user up front.
         usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
       }

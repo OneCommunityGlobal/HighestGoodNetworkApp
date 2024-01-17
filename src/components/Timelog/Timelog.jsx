@@ -36,7 +36,6 @@ import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/ti
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
 import { getUserProjects, getUserWBSs } from '../../actions/userProjects';
 import { getAllRoles } from '../../actions/role';
-import PopUpBar from '../PopUpBar';
 import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
@@ -48,7 +47,6 @@ import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { useParams } from 'react-router-dom';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -149,7 +147,6 @@ const Timelog = props => {
     viewingUser ? viewingUser.userId : authUser.userid,
   );
 
-  // const displayUserId = paramsUserId || authUser.userid;
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
@@ -384,12 +381,6 @@ const Timelog = props => {
     setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
   }
 
-  const removeViewingUser = () => {
-    sessionStorage.removeItem('viewingUser');
-    setViewingUser(false);
-    setDisplayUserId(authUser.userid);
-  };
-
   /*---------------- useEffects -------------- */
   useEffect(() => {
     changeTab(initialTab);
@@ -426,7 +417,6 @@ const Timelog = props => {
     <div>
       {!props.isDashboard ? (
         <Container fluid>
-          {!isAuthUser && <PopUpBar component="timelog" onClickClose={removeViewingUser}/>}
           <SummaryBar
             displayUserId={displayUserId}
             toggleSubmitForm={() => showSummary(isAuthUser)}
@@ -556,7 +546,7 @@ const Timelog = props => {
                           </div>
                         </div>
                       ) : (
-                        canPutUserProfileImportantInfo && (
+                        !(viewingUser && viewingUser.role === 'Owner' && authUser.role !== 'Owner') && (canPutUserProfileImportantInfo) && (
                           <div className="float-right">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
