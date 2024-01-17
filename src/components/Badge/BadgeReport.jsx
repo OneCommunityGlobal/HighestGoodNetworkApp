@@ -231,11 +231,11 @@ const BadgeReport = props => {
               if(newValue > badgeCountFromExsitingRecord){
                 item.earnedDate = [...item.earnedDate, formatedDate]
               }
-            }  else if (newValue < badgePrevState.count && newValue < badgeCountFromExsitingRecord && !item.hasBadgeDeletionImpact ){
+            } else if (newValue < badgePrevState.count && newValue < badgeCountFromExsitingRecord ){
               item.hasBadgeDeletionImpact = true;
-            } else {
+            } else if(newValue < badgePrevState.count && newValue >= badgeCountFromExsitingRecord){
               item.earnedDate =  item.earnedDate.slice(0, -1)
-            }
+            } 
             item.count = newValue;
             return item;
           }
