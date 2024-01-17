@@ -149,7 +149,7 @@ function Announcements() {
           </button>
           <div>
             <hr />
-            <p>Insert header or footer image link</p>
+            <p>Insert header or image link</p>
             <div style={{ overflow: 'hidden' }}>
               <input type="text" onChange={handleHeaderContentChange}/>
             </div>
