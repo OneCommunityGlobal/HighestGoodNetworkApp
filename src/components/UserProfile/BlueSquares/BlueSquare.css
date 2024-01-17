@@ -67,3 +67,17 @@
   background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
   background-color: #0061a7;
 }
+
+
+@media (max-width: 1420px) {
+  
+ #wrapper .report { 
+    left: 60px;
+    top: -280px; 
+    z-index: 1;
+    overflow: visible;
+  }
+
+}
+
+
