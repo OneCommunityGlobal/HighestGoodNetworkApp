@@ -152,7 +152,7 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const renderTeamsList = async () => {
-    if (usersWithTasks && usersWithTasks.length > 0) {
+    if (usersWithTasks.length > 0) {
       //sort all users by their name
       usersWithTasks.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
 
@@ -160,7 +160,7 @@ const TeamMemberTasks = React.memo(props => {
       const currentUserIndex = usersWithTasks.findIndex(user => user.personId === displayUser._id);
 
       // if current user doesn't have any task, the currentUser cannot be found
-      if (usersWithTasks[currentUserIndex].tasks.length) {
+      if (usersWithTasks[currentUserIndex]?.tasks.length) {
         //conditional variable for moving current user up front.
         usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
       }
