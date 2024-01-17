@@ -8,6 +8,10 @@ import thunk from 'redux-thunk'
 
 const mockStore = configureMockStore([thunk]);
 
+jest.mock('utils/permissions', () => ({
+  canPostWBS: jest.fn((a) => true),
+}));
+
 const renderAddWBS = (addWBSProps) => {
   const initialState = {
     auth: {
@@ -46,6 +50,8 @@ describe("AddWBS component structure", () => {
     const sampleProps = {
       role: 'Owner',
     };
+    const hasPermission = jest.fn((a) => true)
+    sampleProps.hasPermission = hasPermission;
     renderAddWBS(sampleProps);
   });
 
@@ -86,6 +92,8 @@ describe('AddWBS component state handlers', () => {
       addWBS: mockAddNewWBS,
       projectId: mockProjectId,
     };
+    const hasPermission = jest.fn((a) => true)
+    sampleProps.hasPermission = hasPermission;
     renderAddWBS(sampleProps);
 
   });
@@ -99,7 +107,7 @@ describe('AddWBS component state handlers', () => {
   });
 
 
-  ///// This test is failing because the addNewWBS function is not being called in the component
+  // /// This test is failing because the addNewWBS function is not being called in the component
   // test('Button click handler calls addNewWBS with correct arguments', () => {
   //   const inputField = screen.getByRole('textbox');
   //

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -15,13 +15,13 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import moment from 'moment-timezone';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
+import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
-import { getUserProjects } from '../../../actions/userProjects';
-import { getUserProfile } from 'actions/userProfile';
-import { updateUserProfile } from 'actions/userProfile';
+import { getUserProjects, getUserWBSs } from '../../../actions/userProjects';
+import { getUserProfile, updateUserProfile } from 'actions/userProfile';
 
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -29,310 +29,244 @@ import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
-import { getTimeEntryFormData } from './selectors';
 import checkNegativeNumber from 'utils/checkNegativeHours';
 import fixDiscrepancy from 'utils/fixDiscrepancy';
 import { boxStyle } from 'styles';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
+ * There are five use cases:
+ *  1. Auth user logs new time entry from Timer to auth user: edit is false, fromTimer is true, isTangible is true;
+ *  2. Auth user adds time entry from 'Add Intangible Time Entry' button to auth user: edit is false, fromTimer is false, isTangible depends;
+ *  3. Auth user with permission adds time entry from 'Add Intangible Time Entry for XXX' button to XXX user: edit is false, fromTimer is false, isTangible depends;
+ *  4. Auth user edits existing time entry of auth user: edit is true, fromTimer is false, isTangble depends;
+ *  5. Auth user with permission edits existing time entry of other user: edit is true, fromTimer is false, isTangble depends;
  *
  * @param {boolean} props.edit If true, the time entry already exists and is being modified
- * @param {string} props.userId
+ * @param {string} props.timeEntryUserId
  * @param {function} props.toggle Toggles the visability of this modal
  * @param {boolean} props.isOpen Whether or not this modal is visible
- * @param {*} props.timer
- * @param {boolean} props.data.isTangible
+ * @param {boolean} props.dataIsTangible
  * @param {*} props.userProfile
- * @param {string} props.LoggedInuserId
- * @param {string} props.curruserId
  * @returns
  */
-const TimeEntryForm = props => {
 
-  const { userId, edit, data, isOpen, toggle, timer, LoggedInuserId, curruserId, sendStop } = props;
+const TimeEntryForm = props => {
+  /*---------------- variables -------------- */
+  // props from parent
+  const { 
+    fromTimer, 
+    sendStop,
+    edit, 
+    data, 
+    toggle, 
+    isOpen, 
+  } = props;
+
+  // props from store
+  const { authUser } = props;
+  
+  
+  const initialFormValues = Object.assign({
+    dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+    personId: authUser.userid,
+    projectId: '',
+    wbsId: '',
+    taskId: '',
+    hours: 0,
+    minutes: 0,
+    notes: '',
+    isTangible: false, 
+    entryType: 'default',
+  }, data);
+
+  const timeEntryUserId = fromTimer ? authUser.userid : data.personId;
+  
+  const {
+    dateOfWork: initialDateOfWork,
+    projectId: initialProjectId,
+    wbsId: initialwbsId,
+    taskId: initialTaskId,
+    hours: initialHours,
+    minutes: initialMinutes,
+    notes: initialNotes,
+    isTangible: initialIsTangible,
+  } = initialFormValues
+
+  const timeEntryInitialProjectOrTaskId = edit ? initialProjectId + (!!initialwbsId ? '/' + initialwbsId : '') + (!!initialTaskId ? '/' + initialTaskId : ''): 'defaultProject';
+
+  const initialReminder = {
+    openModal: false,
+    hasLink: initialNotes.includes('http'),
+    remind: '',
+    enoughWords: initialNotes.split(' ').length > 10,
+    editLimitNotification: true,
+  };
+
+  const [formValues, setFormValues] = useState(initialFormValues);
+  const [timeEntryFormUserProfile, setTimeEntryFormUserProfile] = useState(null);
+  const [timeEntryFormUserProjects, setTimeEntryFormUserProjects] = useState([]);
+  const [timeEntryFormUserWBSs, setTimeEntryFormUserWBSs] = useState([]);
+  const [timeEntryFormUserTasks, setTimeEntryFormUserTasks] = useState([]);
+  const [projectOrTaskId, setProjectOrTaskId] = useState(timeEntryInitialProjectOrTaskId);
+  const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [reminder, setReminder] = useState(initialReminder);
+  const [isTangibleInfoModalVisible, setTangibleInfoModalVisibility] = useState(false);
+  const [isAboutModalVisible, setAboutModalVisible] = useState(false);
+  const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
-  const initialFormValues = {
-    dateOfWork: moment()
-      .tz('America/Los_Angeles')
-      .format('YYYY-MM-DD'),
-    hours: 0,
-    minutes: 0,
-    projectId: '',
-    notes: '',
-    isTangible: data.isTangible,
-  };
-
-  const initialReminder = {
-    notification: false,
-    hasLink: data && data.notes && data.notes.includes('http') ? true : false,
-    remind: '',
-    wordCount: data && data.notes && data.notes.split(' ').length > 10 ? 10 : 0,
-    editNotice: true,
-  };
-
-  const [inputs, setInputs] = useState(edit ? data : initialFormValues);
-  const [errors, setErrors] = useState({});
-  const [close, setClose] = useState(false);
-  const [reminder, setReminder] = useState(initialReminder);
-  const [isTangibleInfoModalVisible, setTangibleInfoModalVisibleModalVisible] = useState(false);
-  const [isInfoModalVisible, setInfoModalVisible] = useState(false);
-  const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [formDataBeforeEdit, setFormDataBeforeEdit] = useState({});
-  const [submitting, setSubmitting] = useState(false);
-
-  const fromTimer = !isEmpty(timer);
-  const { userProfile, currentUserRole } = useSelector(getTimeEntryFormData);
-
-  const dispatch = useDispatch();
-
-  const tangibleInfoToggle = e => {
-    e.preventDefault();
-    setTangibleInfoModalVisibleModalVisible(!isTangibleInfoModalVisible);
-  };
-
-  const filterTasks = (tasks, id) => {
-    let result = [];
-    for (let i = 0; i < tasks.length; i++) {
-      let resourcesLength = tasks[i].resources.length;
-      for (let j = 0; j < resourcesLength; j++) {
-        if (tasks[i].resources[j].completedTask === false && tasks[i].resources[j].userID === id) {
-          result.push(tasks[i]);
-          break;
-        }
-      }
-    }
-    return result;
-  };
-
-  useEffect(() => {
-    //this to make sure that the form is cleared before closing
-    if (close && inputs.projectId == '') {
-      //double make sure close is set to false to stop form from reclosing on open
-      setClose(false);
-      setClose(close => {
-        setTimeout(function myfunc() {
-          toggle();
-        }, 100);
-        return false;
-      });
-    }
-  }, [close, inputs]);
-
-  useEffect(() => {
-    axios
-      .get(ENDPOINTS.USER_PROFILE(userId))
-      .then(res => {
-        setProjects(res?.data?.projects || []);
-      })
-      .catch(err => console.log(err));
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get(ENDPOINTS.TASKS_BY_USERID(userId))
-      .then(res => {
-        let activeTasks = filterTasks(res?.data, userId);
-        setTasks(activeTasks || []);
-      })
-      .catch(err => console.log(err));
-  }, [props.isTaskUpdated]);
-
-  //grab form data before editing
-  useEffect(() => {
-    if (isOpen && edit) {
-      setFormDataBeforeEdit(inputs);
-    }
-  }, [isOpen]);
-
-  const openModal = () =>
+  /*---------------- methods -------------- */
+  const toggleRemainder = () =>
     setReminder(reminder => ({
       ...reminder,
-      notification: !reminder.notification,
+      openModal: !reminder.openModal,
     }));
 
   const cancelChange = () => {
     setReminder(initialReminder);
-    setInputs(inputs => ({
-      ...inputs,
-      hours: data.hours,
-      minutes: data.minutes,
+    setFormValues(formValues => ({
+      ...formValues,
+      hours: initialHours,
+      minutes: initialMinutes,
     }));
   };
 
-  useEffect(() => {
-    const fetchProjects = async userId => {
-      await dispatch(getUserProjects(userId));
-    };
-    fetchProjects(userId);
-    return () => fetchProjects(userId);
-  }, [userId, dispatch]);
-
-  useEffect(() => {
-    setInputs({ ...inputs, ...timer });
-  }, [timer]);
-
-  const projectOrTaskOptions = projects.map(project => (
-    <option value={project._id} key={project._id}>
-      {project.projectName}
-    </option>
-  ));
-  projectOrTaskOptions.unshift(
-    <option value="" key="none" disabled>
-      Select Project/Task
-    </option>,
-  );
-
-  const taskOptions = tasks.map(task => (
-    <option value={task._id} key={task._id}>
-      {task.taskName}
-    </option>
-  ));
-
-  projectOrTaskOptions.push(taskOptions);
-
   const getEditMessage = () => {
-    let editCount = 0;
-    userProfile.timeEntryEditHistory.forEach(item => {
-      if (
-        moment()
-          .tz('America/Los_Angeles')
-          .diff(item.date, 'days') <= 365
-      ) {
-        editCount += 1;
-      }
-    });
+    const editCount = timeEntryFormUserProfile?.timeEntryEditHistory.filter(item => 
+      moment().tz('America/Los_Angeles').diff(item.date, 'days') <= 365
+    ).length;
     return `If you edit your time entries 5 times or more within the span of a year, you will be issued a blue square on the 5th time.
     You will receive an additional blue square for each edit beyond the 5th.
     Currently, you have edited your time entries ${editCount} times within the last 365 days.
     Do you wish to continue?`;
   };
 
+  const handleInputChange = event => {
+    event.persist();
+    const target = event.target;
+    switch (target.name) {
+      case 'hours': 
+        if (+target.value < 0 || +target.value > 40) return;
+        return setFormValues(formValues => ({ ...formValues, hours: +target.value}));
+      case 'minutes':
+        if (+target.value < 0 || +target.value > 59) return;
+        return setFormValues(formValues => ({ ...formValues, minutes: +target.value}));
+      case 'isTangible':
+        return setFormValues(formValues => ({ ...formValues, isTangible: target.checked }));
+      default: 
+        return setFormValues(formValues => ({ ...formValues, [target.name]: target.value}));
+    }
+  };
+
+  const handleProjectOrTaskChange = event => {
+    const optionValue = event.target.value;
+    const ids = optionValue.split('/');
+    const [projectId, wbsId, taskId] = ids.length > 1 ? ids : [ids[0], null, null]
+    setFormValues(formValues => ({
+      ...formValues,
+      projectId,
+      wbsId,
+      taskId,
+    }))
+    setProjectOrTaskId(optionValue);
+  }
+
+  const handleEditorChange = (content, editor) => {
+    const { wordcount } = editor.plugins;
+    const hasLink = content.indexOf('http://') > -1 || content.indexOf('https://') > -1;
+    const enoughWords = wordcount.body.getWordCount() > 10;
+    setFormValues(formValues => ({ ...formValues, [editor.id]: content }));
+    setReminder(reminder => ({
+      ...reminder,
+      enoughWords,
+      hasLink,
+    }));
+  };
+
   const validateForm = isTimeModified => {
-    const result = {};
-
-    if (inputs.dateOfWork === '') {
-      result.dateOfWork = 'Date is required';
-    } else {
-      const date = moment(inputs.dateOfWork);
-      const today = moment(
-        moment()
-          .tz('America/Los_Angeles')
-          .format('YYYY-MM-DD'),
-      );
-      if (!date.isValid()) {
-        result.dateOfWork = 'Invalid date';
-      }
-      // Administrator/Owner can add time entries for any dates. Other roles cannot.
-      // Editing details of past date is possible for any role.
-      else if (
-        currentUserRole !== 'Administrator' &&
-        currentUserRole !== 'Owner' &&
-        !edit &&
-        today.diff(date, 'days') !== 0
-      ) {
-        result.dateOfWork = 'Invalid date. Please refresh the page.';
-      }
+    const errorObj = {};
+    const remindObj = { ...initialReminder };
+    const date = moment(formValues.dateOfWork);
+    const today = moment().tz('America/Los_Angeles');
+    const isDateValid = date.isValid();
+    // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
+    const isUserAuthorized = (canEditTimeEntry && canPutUserProfileImportantInfo) || !edit || today.diff(date, 'days') === 0
+    
+    if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required'; 
+    if (!isDateValid) errorObj.dateOfWork = 'Invalid date'; 
+    if (!isUserAuthorized) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
+    if (!formValues.hours && !formValues.minutes) errorObj.time ='Time should be greater than 0 minutes';
+    if (!formValues.projectId) errorObj.projectId = 'Project/Task is required';
+    
+    if (!reminder.enoughWords) {
+      remindObj.remind = 'Please write a more detailed description of your work completed, write at least 1-2 sentences.';
+      errorObj.notes = 'Description and reference link are required';
+    } else if (!reminder.hasLink) {
+      remindObj.remind = 'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)';
+      errorObj.notes = 'Description and reference link are required';
     }
 
-    if (inputs.hours === '' && inputs.minutes === '') {
-      result.time = 'Time is required';
-    } else {
-      const hours = inputs.hours === '' ? 0 : inputs.hours * 1;
-      const minutes = inputs.minutes === '' ? 0 : inputs.minutes * 1;
-      if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        result.time = 'Hours and minutes should be integers';
-      }
-      if (hours < 0 || minutes < 0 || (hours === 0 && minutes === 0)) {
-        result.time = 'Time should be greater than 0';
-      }
+    setErrors(errorObj);
+
+    if (remindObj.remind) {
+      setReminder(remindObj);
+      toggleRemainder();
+      return false
     }
 
-    if (inputs.projectId === '') {
-      result.projectId = 'Project/Task is required';
-    }
-
-    if (reminder.wordCount < 10) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'Please write a more detailed description of your work completed, write at least 1-2 sentences.',
-      }));
-      result.notes = 'Description and reference link are required';
-    }
-
-    if (reminder.wordCount >= 10 && !reminder.hasLink) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind:
-          'Do you have a link to your Google Doc or other place to review this work? You should add it if you do. (Note: Please include http[s]:// in your URL)',
-      }));
-      result.notes = 'Description and reference link are required';
-    }
-
-    if (
-      !canPutUserProfileImportantInfo &&
-      data.isTangible &&
-      isTimeModified &&
-      reminder.editNotice
+    if (!canPutUserProfileImportantInfo
+      && initialIsTangible
+      && isTimeModified
+      && reminder.editLimitNotification
     ) {
-      openModal();
-      setReminder(reminder => ({
-        ...reminder,
-        remind: getEditMessage(),
-        editNotice: !reminder.editNotice,
-      }));
-      return false;
+      remindObj.remind = getEditMessage();
+      remindObj.editLimitNotification = !reminder.editLimitNotification;
+      setReminder(remindObj);
+      toggleRemainder();
+      return false
     }
 
-    setErrors(result);
-    return isEmpty(result);
+    return isEmpty(errorObj);
   };
 
   //Update hoursByCategory when submitting new time entry
-  const updateHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
-    const { hoursByCategory } = userProfile;
+  const updateHoursByCategory = async (timeEntry, hours, minutes) => {
     const { projectId, isTangible, personId } = timeEntry;
+    const url = ENDPOINTS.USER_PROFILE(personId);
 
-    //fix discrepancy in hours in userProfile if any
+    try {
+      const { data: userProfile } = await axios.get(url);
 
-    fixDiscrepancy(userProfile);
+      const { hoursByCategory } = userProfile;
 
-    //Format hours && minutes
-    const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
+      //fix discrepancy in hours in userProfile if any
+      fixDiscrepancy(userProfile);
 
-    //log  hours to intangible time entry
-    if (isTangible !== 'true') {
-      userProfile.totalIntangibleHrs += volunteerTime;
-    } else {
-      //This is get to know which project or task is selected
-      const foundProject = projects.find(project => project._id === projectId);
-      const foundTask = tasks.find(task => task._id === projectId);
+      //Format hours && minutes
+      const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
-      //Get category
-      const category = foundProject
-        ? foundProject.category.toLowerCase()
-        : foundTask.category.toLowerCase();
-
-      //update hours
-      const isFindCategory = Object.keys(hoursByCategory).find(
-        key => key === category && key !== 'unassigned',
-      );
-      if (isFindCategory) {
-        hoursByCategory[category] += volunteerTime;
+      //log  hours to intangible time entry
+      if (isTangible !== true) {
+        userProfile.totalIntangibleHrs += volunteerTime;
       } else {
-        hoursByCategory['unassigned'] += volunteerTime;
+        //This is get to know which project or task is selected
+        const timeEntryProject = timeEntryFormUserProjects.find(project => project.projectId === projectId);
+        const category = timeEntryProject?.category.toLowerCase() || '';
+
+        //update hours
+        if (category in hoursByCategory) {
+          hoursByCategory[category] += volunteerTime;
+        } else {
+          hoursByCategory['unassigned'] += volunteerTime;
+        }
       }
-    }
 
     //update database
-    try {
-      const url = ENDPOINTS.USER_PROFILE(personId);
       await axios.put(url, userProfile);
     } catch (error) {
       console.log(error);
@@ -340,248 +274,93 @@ const TimeEntryForm = props => {
   };
 
   //Update hoursByCategory when editing old time entry
-  const editHoursByCategory = async (userProfile, timeEntry, hours, minutes) => {
-    const { hoursByCategory } = userProfile;
-    const { projectId: currProjectId, isTangible: currIsTangible } = timeEntry;
-    const {
-      projectId: oldProjectId,
-      isTangible,
-      hours: oldHours,
-      minutes: oldMinutes,
-    } = formDataBeforeEdit;
-    let category;
-    const oldIsTangible = isTangible.toString();
+  const editHoursByCategory = async (timeEntry, hours, minutes) => {
+    const { projectId: formProjectId, isTangible: formIsTangible, personId } = timeEntry;
+    const url = ENDPOINTS.USER_PROFILE(personId);
 
-    //hours before && after edit
-    const oldEntryTime = parseFloat(oldHours) + parseFloat(oldMinutes) / 60;
-    const currEntryTime = parseFloat(hours) + parseFloat(minutes) / 60;
-    const timeDifference = currEntryTime - oldEntryTime;
-
-    //No hours needs to be updated
-    if (
-      oldEntryTime === currEntryTime &&
-      oldProjectId === currProjectId &&
-      oldIsTangible === currIsTangible
-    ) {
-      return;
-    }
-
-    //if time entry keeps intangible before and after edit, means we don't need update tangible hours
-    if (oldIsTangible === 'false' && currIsTangible === 'false') {
-      userProfile.totalIntangibleHrs += timeDifference;
-    }
-
-    //found project or task
-    const foundProject = projects.find(project => project._id === currProjectId);
-    const foundTask = tasks.find(task => task._id === currProjectId);
-
-    category = foundProject
-      ? foundProject.category.toLowerCase()
-      : foundTask?.category.toLowerCase();
-    const isFindCategory = Object.keys(hoursByCategory).find(
-      key => key === category && key !== 'unassigned',
-    );
-
-    //if change timeEntry from intangible to tangible, we need add hours on categories
-    if (oldIsTangible === 'false' && currIsTangible === 'true') {
-      userProfile.totalIntangibleHrs -= currEntryTime;
-      isFindCategory
-        ? (hoursByCategory[category] += currEntryTime)
-        : (hoursByCategory['unassigned'] += currEntryTime);
-    }
-
-    //if change timeEntry from tangible to intangible, we need deduct hours on categories
-    if (oldIsTangible === 'true' && currIsTangible === 'false') {
-      userProfile.totalIntangibleHrs += currEntryTime;
-      isFindCategory
-        ? (hoursByCategory[category] -= currEntryTime)
-        : (hoursByCategory['unassigned'] -= currEntryTime);
-    }
-
-    //if timeEntry is tangible before and after edit
-    if (oldIsTangible === 'true' && currIsTangible === 'true') {
-      //if project didn't change, add timeDifference on category
-      if (oldProjectId === currProjectId) {
-        isFindCategory
-          ? (hoursByCategory[category] += timeDifference)
-          : (hoursByCategory['unassigned'] += timeDifference);
-      } else {
-        const foundOldProject = projects.find(project => project._id === oldProjectId);
-        const foundOldTask = tasks.find(task => task._id === oldProjectId);
-
-        const oldCategory = foundOldProject
-          ? foundOldProject.category.toLowerCase()
-          : foundOldTask.classification.toLowerCase();
-
-        const isFindOldCategory = Object.keys(hoursByCategory).find(key => key === category);
-        isFindOldCategory
-          ? (hoursByCategory[oldCategory] -= oldEntryTime)
-          : (hoursByCategory['unassigned'] -= oldEntryTime);
-
-        isFindCategory
-          ? (hoursByCategory[category] += currEntryTime)
-          : (hoursByCategory['unassigned'] += currEntryTime);
-      }
-    }
-    checkNegativeNumber(userProfile);
-    //update database
     try {
-      const url = ENDPOINTS.USER_PROFILE(timeEntry.personId);
+      const { data: userProfile } = await axios.get(url);
+
+      const { hoursByCategory  } = userProfile;
+      const isRegularUser = authUser.role !== 'Administrator' && authUser.role !== 'Owner'
+
+
+      //hours before && after edit
+      const dataEntryTime = parseFloat(initialHours) + parseFloat(initialMinutes) / 60;
+      const formEntryTime = parseFloat(hours) + parseFloat(minutes) / 60;
+      const timeDifference = formEntryTime - dataEntryTime;
+
+      //No hours needs to be updated
+      if (dataEntryTime === formEntryTime 
+        && initialProjectId === formProjectId
+        && initialIsTangible === formIsTangible
+      ) {
+        return;
+      }
+
+      //if time entry keeps intangible before and after edit, means we don't need update tangible hours
+      if (initialIsTangible === false && formIsTangible === false) {
+        userProfile.totalIntangibleHrs += timeDifference;
+      }
+
+      //found project 
+      const formTimeEntryProject = timeEntryFormUserProjects.find(project => project.projectId === formProjectId);
+      const formCategory = formTimeEntryProject?.category.toLowerCase();
+      
+      //if change timeEntry from intangible to tangible, we need add hours on categories
+      if (initialIsTangible === false && formIsTangible === true) {
+        userProfile.totalIntangibleHrs -= formEntryTime;
+        if (formCategory in hoursByCategory) {
+          hoursByCategory[formCategory] += volunteerTime;
+        } else {
+          hoursByCategory['unassigned'] += volunteerTime;
+        }
+      }
+
+      //if change timeEntry from tangible to intangible, we need deduct hours on categories
+      if (initialIsTangible === true && formIsTangible === false) {
+        userProfile.totalIntangibleHrs += formEntryTime;
+        if (formCategory in hoursByCategory) {
+          hoursByCategory[formCategory] -= volunteerTime;
+        } else {
+          hoursByCategory['unassigned'] -= volunteerTime;
+        }
+      }
+
+      //if timeEntry is tangible before and after edit
+      if (initialIsTangible === true && formIsTangible === true) {
+        //if project didn't change, add timeDifference on category
+        if (initialProjectId === formProjectId) {
+          if (formCategory in hoursByCategory) {
+            hoursByCategory[formCategory] += timeDifference;
+          } else {
+            hoursByCategory['unassigned'] += timeDifference;
+          }
+        } else {
+          const dataTimeEntryProject = timeEntryFormUserProjects.find(project => project.projectId === initialProjectId);
+          const dataCategory = dataTimeEntryProject?.category.toLowerCase();
+
+          if (dataCategory in hoursByCategory) {
+            hoursByCategory[dataCategory] -= dataEntryTime;
+          } else {
+            hoursByCategory['unassigned'] -= dataEntryTime;
+          }
+
+          if (formCategory in hoursByCategory) {
+            hoursByCategory[formCategory] += formEntryTime;
+          } else {
+            hoursByCategory['unassigned'] += formEntryTime;
+          }
+        }
+      }
+
+      checkNegativeNumber(userProfile);
+      //update database
+  
       await axios.put(url, userProfile);
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const handleSubmit = async event => {
-    setSubmitting(true);
-    //Validation and variable initialization
-    if (event) event.preventDefault();
-
-    const hours = inputs.hours || 0;
-    const minutes = inputs.minutes || 0;
-    const isTimeModified = edit && (data.hours !== hours || data.minutes !== minutes);
-
-    if (!validateForm(isTimeModified)) {
-      setSubmitting(false);
-      return;
-    }
-
-    //Construct the timeEntry object
-    const timeEntry = {
-      personId: userId,
-      dateOfWork: inputs.dateOfWork,
-      projectId: inputs.projectId,
-      notes: inputs.notes,
-      isTangible: inputs.isTangible.toString(),
-      curruserId: curruserId,
-    };
-
-    if (edit) {
-      timeEntry.hours = hours;
-      timeEntry.minutes = minutes;
-    } else {
-      timeEntry.timeSpent = `${hours}:${minutes}:00`;
-    }
-
-    // Problem: fix timelog entry for other user page
-    // To fix the problem of both wrong details getting updated in mongoDB and frontend, the response from the payload is stored in curruserProfile as userProfile contains the user whose timelog page we are viewing.
-    // This can lead to the details being mixed up in mongoDB and in turn updating mongoDB with wrong user details
-    //Update userprofile hoursByCategory
-    const curruserProfile = await dispatch(getUserProfile(userId));
-
-
-    let timeEntryStatus;
-    if (edit) {
-      if (!reminder.notice) {
-        if (curruserProfile) {
-          editHoursByCategory(curruserProfile, timeEntry, hours, minutes);
-        }
-        timeEntryStatus = await dispatch(editTimeEntry(data._id, timeEntry, data.dateOfWork));
-      }
-    } else {
-      if (curruserProfile) {
-        updateHoursByCategory(curruserProfile, timeEntry, hours, minutes);
-      }
-      timeEntryStatus = await dispatch(postTimeEntry(timeEntry));
-    }
-
-    if (timeEntryStatus !== 200) {
-      toggle();
-      alert(
-        `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
-      );
-      return;
-    }
-
-    // see if this is the first time the user is logging time
-    if (!edit) {
-      if (curruserProfile.isFirstTimelog && curruserProfile.isFirstTimelog === true) {
-        const updatedUserProfile = {
-          ...curruserProfile,
-          createdDate: new Date(),
-          isFirstTimelog: false,
-        };
-
-        dispatch(updateUserProfile(curruserProfile._id, updatedUserProfile));
-      }
-    }
-
-    if (!props.edit) setInputs(initialFormValues);
-
-    await getUserProfile(userId)(dispatch);
-
-    // Problem: fix timelog entry for other user page
-    // To fix the problem of both wrong details getting updated in mongoDB and frontend, the state variable needs to be updated for user profile in order to get the right details
-    // In addition to updating state, an update to time entries for 0th week is necessary as updateTimeEntries() under action is updating 0th week particularly with the logged in user's time entry
-
-    await dispatch(getUserProfile(curruserId));
-    await dispatch(getTimeEntriesForWeek(curruserId, 0));
-
-    //Clear the form and clean up.
-    if (fromTimer) {
-      sendStop();
-      clearForm();
-    } else if (!reminder.notice) {
-      setReminder(reminder => ({
-        ...reminder,
-        editNotice: !reminder.editNotice,
-      }));
-    }
-
-    setReminder(initialReminder);
-    if (isOpen) toggle();
-    setSubmitting(false);
-  };
-
-  const handleInputChange = event => {
-    event.persist();
-    setInputs(inputs => ({
-      ...inputs,
-      [event.target.name]: event.target.value,
-    }));
-  };
-
-  const handleHHInputChange = event => {
-    event.persist();
-    if (event.target.value < 0 || event.target.value > 40) {
-      return;
-    }
-    setInputs(inputs => ({
-      ...inputs,
-      [event.target.name]: event.target.value,
-    }));
-  };
-
-  const handleMMInputChange = event => {
-    event.persist();
-    if (event.target.value < 0 || event.target.value > 59) {
-      return;
-    }
-    setInputs(inputs => ({
-      ...inputs,
-      [event.target.name]: event.target.value,
-    }));
-  };
-
-  const handleEditorChange = (content, editor) => {
-    inputs.notes = content;
-    const { wordcount } = editor.plugins;
-
-    setInputs(inputs => ({ ...inputs, [editor.id]: content }));
-    setReminder(reminder => ({
-      ...reminder,
-      wordCount: wordcount.body.getWordCount(),
-      hasLink: inputs.notes.indexOf('http://') > -1 || inputs.notes.indexOf('https://') > -1,
-    }));
-  };
-
-  const handleCheckboxChange = event => {
-    event.persist();
-    setInputs(inputs => ({
-      ...inputs,
-      [event.target.name]: event.target.checked,
-    }));
   };
 
   /**
@@ -589,44 +368,201 @@ const TimeEntryForm = props => {
    * @param {*} closed If true, the form closes after being cleared.
    */
   const clearForm = closed => {
-    const newInputs = {
-      ...inputs,
-      notes: '',
-      projectId: '',
-      dateOfWork: moment()
-        .tz('America/Los_Angeles')
-        .format('YYYY-MM-DD'),
-    };
-    setInputs(newInputs);
+    setFormValues(initialFormValues);
     setReminder({ ...initialReminder });
     setErrors({});
     if (closed === true && isOpen) toggle();
   };
 
+  const handleSubmit = async event => {
+    event.preventDefault();
+    setSubmitting(true);
+
+    if (edit && isEqual(formValues, initialFormValues)) {
+      toast.info(`Nothing is changed for this time entry`);
+      setSubmitting(false);
+      return;
+    }
+    
+    const { 
+      hours: formHours, 
+      minutes: formMinutes, 
+    } = formValues;
+
+    const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
+
+    if (!validateForm(isTimeModified)) {
+      setSubmitting(false);
+      return;
+    }
+
+    //Construct the timeEntry object
+    const timeEntry = { ...formValues }
+   
+    let timeEntryStatus;
+
+    if (edit) {
+      timeEntry.hours = formHours;
+      timeEntry.minutes = formMinutes;
+      editHoursByCategory(timeEntry, formHours, formMinutes);
+      timeEntryStatus = await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
+    } else {
+      timeEntry.timeSpent = `${formHours}:${formMinutes}:00`;
+      updateHoursByCategory(timeEntry, formHours, formMinutes);
+      timeEntryStatus = await props.postTimeEntry(timeEntry);
+    }
+    
+    if (timeEntryStatus !== 200) {
+      toast.error(`An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`);
+      setSubmitting(false);
+      return;
+    }
+
+    // see if this is the first time the user is logging time
+    if (!edit) {
+      if (timeEntryFormUserProfile?.isFirstTimelog) {
+        const updatedUserProfile = {
+          ...timeEntryFormUserProfile,
+          createdDate: new Date(),
+          isFirstTimelog: false,
+        };
+        await updateUserProfile(updatedUserProfile);
+      }
+    }
+  
+    setFormValues(initialFormValues);
+
+    //Clear the form and clean up.
+    if (fromTimer) {
+      sendStop();
+      clearForm();
+    } else if (!reminder.editLimitNotification) {
+      setReminder(reminder => ({
+        ...reminder,
+        editLimitNotification: !reminder.editLimitNotification,
+      }));
+    }
+
+    await Promise.all([props.getTimeEntriesForWeek(timeEntryUserId, 0), props.getUserProfile(timeEntryUserId)]);
+
+    setReminder(initialReminder);
+    if (isOpen) toggle();
+    setSubmitting(false);
+  };
+
+  const tangibleInfoModalToggle = e => {
+    e.preventDefault();
+    setTangibleInfoModalVisibility(!isTangibleInfoModalVisible);
+  };
+
+  const aboutModalToggle = e => {
+    e.preventDefault();
+    setAboutModalVisible(!isTangibleInfoModalVisible);
+  };
+
+  const buildOptions = () => {
+    const projectsObject = {};
+    const options = [(
+      <option value="defaultProject" key="defaultProject" disabled>
+        Select Project/Task
+      </option>
+    )];
+    timeEntryFormUserProjects.forEach(project => {
+      const { projectId } = project;
+      project.WBSObject = {};
+      projectsObject[projectId] = project;
+    });
+    timeEntryFormUserWBSs.forEach(WBS => {
+      const { projectId, _id: wbsId } = WBS;
+      WBS.taskObject = {};
+      projectsObject[projectId].WBSObject[wbsId] = WBS;
+    })
+    timeEntryFormUserTasks.forEach(task => {
+      const { projectId, wbsId, _id: taskId, resources } = task;
+      const isTaskCompletedForTimeEntryUser = resources.find(resource => resource.userID === timeEntryUserId).completedTask;
+      if (!isTaskCompletedForTimeEntryUser) {
+        projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
+      }
+    });
+
+    for (const [projectId, project] of Object.entries(projectsObject)) {
+      const { projectName, WBSObject } = project;
+      options.push(
+        <option value={projectId} key={projectId} >
+          {projectName}
+        </option>
+      )
+      for (const [wbsId, WBS] of Object.entries(WBSObject)) {
+        const { wbsName, taskObject } = WBS;
+        if (Object.keys(taskObject).length) {
+          options.push(
+            <option value={`${projectId}/${wbsId}`} key={`TimeEntryForm_${wbsId}`} disabled>
+                {`\u2003WBS: ${wbsName}`}
+            </option>
+          )
+          for (const [taskId, task] of Object.entries(taskObject)) {
+            const { taskName } = task;
+            options.push(
+              <option value={`${projectId}/${wbsId}/${taskId}`} key={`TimeEntryForm_${taskId}`} >
+                  {`\u2003\u2003 ↳ ${taskName}`}
+              </option>
+            )
+          }
+        }
+      }
+    };
+    return options
+  }
+
+  /** 
+   * Rectify: This will run whenever TimeEntryForm is opened, since time entry data does not bound to store states (e.g., userProfile, userProjects, userTasks..)
+   * */
+  const loadAsyncData = async (timeEntryUserId) => {
+    setIsAsyncDataLoaded(false);
+    try {
+      const profileURL = ENDPOINTS.USER_PROFILE(timeEntryUserId);
+      const projectURL = ENDPOINTS.USER_PROJECTS(timeEntryUserId);
+      const wbsURL = ENDPOINTS.WBS_USER(timeEntryUserId);
+      const taskURL = ENDPOINTS.TASKS_BY_USERID(timeEntryUserId);
+      
+      const profilePromise = axios.get(profileURL);
+      const projectPromise = axios.get(projectURL);
+      const wbsPromise = axios.get(wbsURL);
+      const taskPromise = axios.get(taskURL);
+
+      const [userProfileRes, userProjectsRes, userWBSsRes, userTasksRes] = await Promise.all([profilePromise, projectPromise, wbsPromise, taskPromise]);
+      setTimeEntryFormUserProfile(userProfileRes.data);
+      setTimeEntryFormUserProjects(userProjectsRes.data);
+      setTimeEntryFormUserWBSs(userWBSsRes.data);
+      setTimeEntryFormUserTasks(userTasksRes.data);
+      setIsAsyncDataLoaded(true);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  /*---------------- useEffects -------------- */
+  useEffect(() => {
+    if (isAsyncDataLoaded) {
+      const options = buildOptions();
+      setProjectsAndTasksOptions(options);
+    }
+  }, [isAsyncDataLoaded])
+
+  //grab form data before editing
+  useEffect(() => {
+    if (isOpen) {
+      loadAsyncData(timeEntryUserId);
+    } 
+  }, [isOpen]);
+
   return (
     <>
-      <TangibleInfoModal
-        visible={isTangibleInfoModalVisible}
-        setVisible={setTangibleInfoModalVisibleModalVisible}
-      />
-
-      <AboutModal visible={isInfoModalVisible} setVisible={setInfoModalVisible} />
-
-      <ReminderModal
-        inputs={inputs}
-        data={data}
-        edit={edit}
-        reminder={reminder}
-        visible={reminder.notification}
-        setVisible={visible => setReminder({ ...reminder, notification: visible })}
-        cancelChange={cancelChange}
-      />
-
       <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
         <ModalHeader toggle={toggle}>
           <div>
             {edit ? 'Edit ' : 'Add '}
-            {inputs.isTangible ? (
+            {formValues.isTangible ? (
               <span style={{ color: 'blue' }}>Tangible </span>
             ) : (
               <span style={{ color: 'orange' }}>Intangible </span>
@@ -638,7 +574,7 @@ const TimeEntryForm = props => {
               data-for="registerTip"
               aria-hidden="true"
               title="timeEntryTip"
-              onClick={() => setInfoModalVisible(true)}
+              onClick={aboutModalToggle}
             />
           </div>
           <ReactTooltip id="registerTip" place="bottom" effect="solid">
@@ -649,23 +585,14 @@ const TimeEntryForm = props => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-              {canEditTimeEntry && !fromTimer ? (
                 <Input
                   type="date"
                   name="dateOfWork"
                   id="dateOfWork"
-                  value={inputs.dateOfWork}
+                  value={formValues.dateOfWork}
                   onChange={handleInputChange}
+                  disabled={!canEditTimeEntry || fromTimer}
                 />
-              ) : (
-                <Input
-                  type="date"
-                  name="dateOfWork"
-                  id="dateOfWork"
-                  value={inputs.dateOfWork}
-                  disabled
-                />
-              )}
               {'dateOfWork' in errors && (
                 <div className="text-danger">
                   <small>{errors.dateOfWork}</small>
@@ -683,8 +610,8 @@ const TimeEntryForm = props => {
                     min={0}
                     max={40}
                     placeholder="Hours"
-                    value={inputs.hours}
-                    onChange={handleHHInputChange}
+                    value={formValues.hours}
+                    onChange={handleInputChange}
                     disabled={fromTimer}
                   />
                 </Col>
@@ -696,8 +623,8 @@ const TimeEntryForm = props => {
                     min={0}
                     max={59}
                     placeholder="Minutes"
-                    value={inputs.minutes}
-                    onChange={handleMMInputChange}
+                    value={formValues.minutes}
+                    onChange={handleInputChange}
                     disabled={fromTimer}
                   />
                 </Col>
@@ -712,12 +639,12 @@ const TimeEntryForm = props => {
               <Label for="project">Project/Task</Label>
               <Input
                 type="select"
-                name="projectId"
-                id="projectId"
-                value={inputs.projectId}
-                onChange={handleInputChange}
+                name="projectOrTask"
+                id="projectOrTask"
+                value={projectOrTaskId || "title"}
+                onChange={handleProjectOrTaskChange}
               >
-                {projectOrTaskOptions}
+                {projectsAndTasksOptions}
               </Input>
               {'projectId' in errors && (
                 <div className="text-danger">
@@ -746,7 +673,7 @@ const TimeEntryForm = props => {
                 id="notes"
                 name="notes"
                 className="form-control"
-                value={inputs.notes}
+                value={formValues.notes}
                 onEditorChange={handleEditorChange}
               />
 
@@ -761,9 +688,9 @@ const TimeEntryForm = props => {
                 <Input
                   type="checkbox"
                   name="isTangible"
-                  checked={inputs.isTangible}
-                  onChange={handleCheckboxChange}
-                  disabled={!canEditTimeEntry && !data.isTangible}
+                  checked={formValues.isTangible}
+                  onChange={handleInputChange}
+                  disabled={!canEditTimeEntry && !initialIsTangible}
                 />
                 Tangible&nbsp;
                 <i
@@ -772,7 +699,7 @@ const TimeEntryForm = props => {
                   data-for="tangibleTip"
                   aria-hidden="true"
                   title="tangibleTip"
-                  onClick={tangibleInfoToggle}
+                  onClick={tangibleInfoModalToggle}
                 />
                 <ReactTooltip id="tangibleTip" place="bottom" effect="solid">
                   Click this icon to learn about tangible and intangible time.
@@ -786,26 +713,52 @@ const TimeEntryForm = props => {
           <Button onClick={clearForm} color="danger" style={boxStyle}>
             Clear Form
           </Button>
-          {/* <Button color="primary" disabled={isSubmitting || (data.hours === inputs.hours && data.minutes === inputs.minutes && data.notes === inputs.notes)} onClick={handleSubmit}> */}
           <Button color="primary" onClick={handleSubmit} style={boxStyle} disabled={submitting}>
-            {edit ? 'Save' : (submitting ? 'Submitting...' : 'Submit')}
+            {
+              edit 
+                ? (submitting ? 'Saving...' : 'Save')
+                : (submitting ? 'Submitting...' : 'Submit')
+            }
           </Button>
         </ModalFooter>
       </Modal>
+      <TangibleInfoModal
+        visible={isTangibleInfoModalVisible}
+        setVisible={setTangibleInfoModalVisibility}
+      />
+      <AboutModal visible={isAboutModalVisible} setVisible={setAboutModalVisible} />
+      <ReminderModal
+        inputs={formValues}
+        data={data}
+        edit={edit}
+        reminder={reminder}
+        visible={reminder.openModal}
+        setVisible={toggleRemainder}
+        cancelChange={cancelChange}
+      />
     </>
   );
 };
 
 TimeEntryForm.propTypes = {
   edit: PropTypes.bool.isRequired,
-  userId: PropTypes.string.isRequired,
   toggle: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
-  timer: PropTypes.any,
   data: PropTypes.any.isRequired,
-  LoggedInuserId: PropTypes.string,
-  curruserId: PropTypes.string,
   handleStop: PropTypes.func,
 };
 
-export default connect(null, { hasPermission })(TimeEntryForm);
+const mapStateToProps = state => ({
+  authUser: state.auth.user,
+})
+
+export default connect(mapStateToProps, { 
+  hasPermission,
+  getUserProfile,
+  updateUserProfile,
+  getUserProjects,
+  getUserWBSs,
+  editTimeEntry,
+  postTimeEntry,
+  getTimeEntriesForWeek,
+})(TimeEntryForm);
