@@ -128,6 +128,11 @@ const Timelog = props => {
     isTimeEntriesLoading: true,
   };
 
+  const timeEntryFormData = {
+    isTangible: false,
+    personId: displayUserProfile._id,
+  }
+
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
   const [initialTab, setInitialTab] = useState(null);
   const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
@@ -136,7 +141,6 @@ const Timelog = props => {
   const [beforeLastEntries, setBeforeLastEntries] = useState(null);
   const [periodEntries, setPeriodEntries] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const [data, setData] = useState({ isTangible: false });
   const [timeLogState, setTimeLogState] = useState(initialState);
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
@@ -580,7 +584,7 @@ const Timelog = props => {
                         edit={false}
                         toggle={toggle}
                         isOpen={timeLogState.timeEntryFormModal}
-                        data={data}
+                        data={timeEntryFormData}
                         userProfile={displayUserProfile}
                         roles={roles}
                         isTaskUpdated={isTaskUpdated}
