@@ -64,7 +64,7 @@ const filteredReducer = (reducer) => {
   };
 }
 
-const rootReducers = concatenateReducers([filteredReducer(sessionPersistReducer), filteredReducer(localPersistReducer)])
+export const rootReducers = concatenateReducers([filteredReducer(sessionPersistReducer), filteredReducer(localPersistReducer)])
 
 export default () => {
   const store = createStore(
