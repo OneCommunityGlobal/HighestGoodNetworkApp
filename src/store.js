@@ -49,10 +49,7 @@ const filteredReducer = (reducer) => {
   return (state, action) => {
       let filteredState = state
       if (knownKeys.length && state !== undefined) {
-          filteredState = knownKeys.reduce((current, key) => {
-              current[key] = state[key];
-              return current
-          }, {})
+          filteredState = knownKeys.reduce((current, key) => Object.assign(current, { [key]: state[key] }), {})
       }
       const newState = reducer(filteredState, action)
       let nextState = state
