@@ -6,26 +6,23 @@ import { ApiEndpoint } from 'utils/URL';
 const initialState = {
   isLoading: false,
   usersWithTasks: [],
-  usersWithTimeEntries: []
 };
 
 export const teamMemberTasksReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'FETCH_TEAM_MEMBERS_DATA_BEGIN':
+    case 'DATA_LOADING':
       return { ...state, isLoading: true };
-    case 'FETCH_TEAM_MEMBERS_DATA_ERROR':
+    case 'FINISH_LOADING':
       return { ...state, isLoading: false };
-    case 'FETCH_TEAM_MEMBERS_TASK_SUCCESS': // fall through
-    case 'FETCH_TEAM_MEMBERS_TIMEENTRIES_SUCCESS':
-      return { ...state, isLoading: false, ...action.payload };
-    case 'UPDATE_TEAM_MEMBERS_TIMEENTRY_SUCCESS':
-      const { usersWithTimeEntries } = state;
-      const newTimeEntry = action.payload;
-      const updatedTimeEntries = usersWithTimeEntries.map((timeentry) => {
-        if (timeentry._id === newTimeEntry._id) return { ...timeentry, ...newTimeEntry };
-        return timeentry
-      })
-      return { ...state, usersWithTimeEntries: updatedTimeEntries }
+    case 'FETCH_TEAM_MEMBERS_TASK_BEGIN':
+      return { ...state, isLoading: true };
+    case 'FETCH_TEAM_MEMBERS_TASK_SUCCESS':
+      return { ...state, isLoading: false, usersWithTasks: [...action.payload] }; // change that when there will be backend
+    case 'FETCH_TEAM_MEMBERS_TASK_ERROR':
+      return { ...state, isLoading: false };
+    // TODO:
+    //   1. check structure of usersWithTasks to find what id is called for user, task, and taskNotification
+    //   2. check what taskNotification looks like when there is no taskNotification - is it an empty array? empty object? something else?
     case 'DELETE_TASK_NOTIFICATION_SUCCESS':
       return {
         ...state,

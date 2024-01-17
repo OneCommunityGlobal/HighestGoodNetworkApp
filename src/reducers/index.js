@@ -35,23 +35,31 @@ import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 
-const localReducers = {
+export default combineReducers({
   auth: authReducer,
+  userProfile: userProfileByIdReducer,
+  userTask: userTaskByIdReducer,
   allUserProfiles: allUserProfilesReducer,
+  leaderBoardData: leaderboardDataReducer,
+  orgData: orgDataReducer,
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
   allProjects: allProjectsReducer,
   projectReport: projectReportReducer,
+  userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
   managingTeams: managingTeamsReducer,
   allTeamsData: allUserTeamsReducer,
+  teamsTeamMembers: teamUsersReducer,
   team: teamByIdReducer,
   wbs: wbsReducer,
   tasks: taskReducer,
   errors: errorsReducer,
+  timeEntries: timeEntriesReducer,
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,
+  teamMemberTasks: teamMemberTasksReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
   rolePreset: rolePresetReducer,
@@ -64,17 +72,4 @@ const localReducers = {
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
   bmConsumables: consumablesReducer
-};
-
-const sessionReducers = {
-  userProfile: userProfileByIdReducer,
-  userTask: userTaskByIdReducer,
-  leaderBoardData: leaderboardDataReducer,
-  orgData: orgDataReducer,
-  userProjects: userProjectsReducer,
-  teamsTeamMembers: teamUsersReducer,
-  timeEntries: timeEntriesReducer,
-  teamMemberTasks: teamMemberTasksReducer,
-};
-
-export { localReducers, sessionReducers };
+});

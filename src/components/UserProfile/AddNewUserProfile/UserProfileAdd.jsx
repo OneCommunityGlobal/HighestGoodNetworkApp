@@ -25,7 +25,7 @@ import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
 import { assign, get } from 'lodash';
-import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
+import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
   updateTeam,
@@ -1113,6 +1113,7 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   getUserProfile,
   clearUserProfile,
+  updateUserProfile,
   getAllUserTeams,
   updateTeam,
   deleteTeamMember,

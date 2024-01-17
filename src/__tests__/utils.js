@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
 import { Router, Route } from 'react-router-dom';
 import thunk from 'redux-thunk';
-import { persistedReducer as reducer } from '../store';
+import reducer from '../reducers';
 
 const middleware = [thunk];
 

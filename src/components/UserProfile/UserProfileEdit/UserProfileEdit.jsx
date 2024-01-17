@@ -159,7 +159,7 @@ class UserProfileEdit extends Component {
   };
 
   saveChanges = () => {
-    this.props.updateUserProfile(this.state.userProfile);
+    this.props.updateUserProfile(this.props.match.params.userId, this.state.userProfile);
   };
 
   handleUserProfile = event => {
@@ -467,7 +467,7 @@ class UserProfileEdit extends Component {
   handleSubmit = async event => {
     const { updateUserProfile, match } = this.props;
     const { userProfile, formValid } = this.state;
-    const submitResult = await updateUserProfile(userProfile);
+    const submitResult = await updateUserProfile(match.params.userId, userProfile);
   };
 
   updateLink = (personalLinksUpdate, adminLinksUpdate) =>

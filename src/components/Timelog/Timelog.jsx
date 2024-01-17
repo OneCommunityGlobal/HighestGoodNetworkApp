@@ -48,7 +48,6 @@ import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { useParams } from 'react-router-dom';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -142,9 +141,8 @@ const Timelog = props => {
   const [periodEntries, setPeriodEntries] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
-  const { userId: paramsUserId } = useParams();
 
-  const displayUserId = paramsUserId || authUser.userid;
+  const displayUserId = props?.match?.params?.userId || authUser.userid;
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
@@ -198,7 +196,7 @@ const Timelog = props => {
         data={entry}
         displayYear={false}
         key={entry._id}
-        timeEntryUserProfile={displayUserProfile}
+        userProfile={displayUserProfile}
       />
     ));
   };
@@ -457,7 +455,7 @@ const Timelog = props => {
                             isActive={displayUserProfile.isActive}
                             user={displayUserProfile}
                             onClick={() => {
-                              props.updateUserProfile({
+                              props.updateUserProfile(displayUserId, {
                                 ...displayUserProfile,
                                 isActive: !displayUserProfile.isActive,
                                 endDate:
@@ -725,7 +723,7 @@ const Timelog = props => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks handleUpdateTask={handleUpdateTask} />
+                      <TeamMemberTasks displayUserId={displayUserId} handleUpdateTask={handleUpdateTask} />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>
