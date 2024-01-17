@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import AddWBS from './AddWBS';
+import AddWBS from '../AddWBS';
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store'

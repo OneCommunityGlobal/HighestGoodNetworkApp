@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import mockSummaries from 'weeklySummariesReportData'; // Located in the tested component's __mocks__ folder
-import GeneratePdfReport from '../components/WeeklySummariesReport/GeneratePdfReport';
+import GeneratePdfReport from '../../WeeklySummariesReport/GeneratePdfReport';
 
 const getWeekDates = () => ({
   fromDate: 'June 14th',
