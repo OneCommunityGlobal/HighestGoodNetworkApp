@@ -46,7 +46,10 @@ import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks'
 export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const { isAuthenticated, user, firstName:authFirstName } = props.auth;
+  const [firstName, setFirstName] = useState(authFirstName);
+  const [profilePic, setProfilePic] = useState(props.auth.profilePic);
+  const [displayUserId, setDisplayUserId] = useState(user.userid);
 
   // Reports
   const canGetReports = props.hasPermission('getReports');
@@ -75,6 +78,32 @@ export const Header = props => {
   const canManageUser = props.hasPermission('putUserProfilePermissions');
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const handleStorageEvent = () => {
+      const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+      if (sessionStorageData) {
+        setDisplayUserId(sessionStorageData.userId);
+        setFirstName(sessionStorageData.firstName);
+        setProfilePic(sessionStorageData.profilePic);
+      } else {
+        setDisplayUserId(user.userid);
+        setFirstName(props.auth.firstName);
+        setProfilePic(props.auth.profilePic);
+      }
+    };
+  
+    // Set the initial state when the component mounts
+    handleStorageEvent();
+  
+    // Add the event listener
+    window.addEventListener('storage', handleStorageEvent);
+  
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, [user.userid, props.auth.firstName]);
 
   useEffect(() => {
     if (props.auth.isAuthenticated) {
@@ -167,7 +196,7 @@ export const Header = props => {
               </NavItem>
             }
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                   <i className="fa fa-bell i-large">
                     <i className="badge badge-pill badge-danger badge-notify">
                       {/* Pull number of unread messages */}
@@ -230,7 +259,7 @@ export const Header = props => {
                 </UncontrolledDropdown>
               )}
               <NavItem>
-                <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
+                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
@@ -248,11 +277,11 @@ export const Header = props => {
                 <DropdownMenu>
                   <DropdownItem header>Hello {firstName}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
+                  <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                    <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`}>
                       {UPDATE_PASSWORD}
                     </DropdownItem>
                   )}

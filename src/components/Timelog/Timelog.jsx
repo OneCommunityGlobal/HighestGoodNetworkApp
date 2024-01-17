@@ -138,9 +138,14 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [data, setData] = useState({ isTangible: false });
   const [timeLogState, setTimeLogState] = useState(initialState);
-  const { userId: paramsUserId } = useParams();
 
-  const displayUserId = paramsUserId || authUser.userid;
+  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  const [displayUserId, setDisplayUserId] = useState(
+    viewingUser ? viewingUser.userId : authUser.userid,
+  );
+
+  // const displayUserId = paramsUserId || authUser.userid;
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
@@ -369,6 +374,17 @@ const Timelog = props => {
     setIsTaskUpdated(!isTaskUpdated);
   }, []);
 
+  const handleStorageEvent = () =>{
+    const sessionStorageData = checkSessionStorage();
+    setViewingUser(sessionStorageData || false);
+    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+  }
+
+  const removeViewingUser = () => {
+    sessionStorage.removeItem('viewingUser');
+    setViewingUser(false);
+    setDisplayUserId(authUser.userid);
+  };
 
   /*---------------- useEffects -------------- */
   useEffect(() => {
@@ -380,7 +396,7 @@ const Timelog = props => {
     if (!timeLogState.isTimeEntriesLoading) {
       generateTimeLogItems(displayUserId);
     }
-  }, [timeLogState.isTimeEntriesLoading, timeEntries]);
+  }, [timeLogState.isTimeEntriesLoading, timeEntries, displayUserId]);
 
   useEffect(() => {
     loadAsyncData(displayUserId).then(() => {
@@ -393,12 +409,20 @@ const Timelog = props => {
     // Filter the time entries
     updateTimeEntryItems();
   }, [timeLogState.projectsSelected]);
-  
+
+  useEffect(() => {
+    // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  },[]);
+
   return (
     <div>
       {!props.isDashboard ? (
         <Container fluid>
-          {!isAuthUser && <PopUpBar component="timelog" />}
+          {!isAuthUser && <PopUpBar component="timelog" onClickClose={removeViewingUser}/>}
           <SummaryBar
             displayUserId={displayUserId}
             toggleSubmitForm={() => showSummary(isAuthUser)}

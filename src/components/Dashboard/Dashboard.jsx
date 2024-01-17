@@ -13,8 +13,13 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { match, authUser } = props;
-  const displayUserId = match.params.userId || authUser.userid;
+  const { authUser } = props;
+
+  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  const [displayUserId, setDisplayUserId] = useState(
+    viewingUser ? viewingUser.userId : authUser.userid,
+  );
 
   const isAuthUser = displayUserId === authUser.userid;
 
@@ -28,6 +33,24 @@ export function Dashboard(props) {
     }, 150);
   };
 
+  const removeViewingUser = () => {
+    sessionStorage.removeItem('viewingUser');
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  const handleStorageEvent = () => {
+    const sessionStorageData = checkSessionStorage();
+    setViewingUser(sessionStorageData || false);
+    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+  };
+
+  useEffect(() => {
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, []);
+
   useEffect(() => {
     // eslint-disable-next-line react/destructuring-assignment
     props.getTimeZoneAPIKey();
@@ -35,7 +58,7 @@ export function Dashboard(props) {
 
   return (
     <Container fluid>
-      {!isAuthUser ? <PopUpBar component="dashboard" /> : ''}
+      {!isAuthUser ? <PopUpBar component="dashboard" onClickClose={removeViewingUser} /> : ''}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -81,7 +104,7 @@ export function Dashboard(props) {
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            <Timelog isDashboard passSummaryBarData={setSummaryBarData} match={match} />
+            <Timelog isDashboard passSummaryBarData={setSummaryBarData} />
           </div>
           <Badge userId={displayUserId} role={authUser.role} />
         </Col>
