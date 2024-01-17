@@ -225,7 +225,6 @@ const BadgeReport = props => {
         copyOfExisitingBadges = copyOfExisitingBadges.map(item => {
           if(item.badge._id === badge.badge._id){
             if(newValue > badgePrevState.count && newValue >= badgeCountFromExsitingRecord){
-              debugger;
               if(recordBeforeUpdate[0].hasBadgeDeletionImpact === false){
                 item.hasBadgeDeletionImpact = false;
               }
