@@ -192,8 +192,6 @@ const BadgeReport = props => {
   }, [props.badges]);
 
   const countChange = (badge, index, newValue) => {
-  
-    debugger;
     let copyOfExisitingBadges = [...sortBadges];
     newValue = newValue === null || newValue === undefined ? -1 : parseInt(newValue);
     if( newValue < 0 || !copyOfExisitingBadges || copyOfExisitingBadges.length === 0){
@@ -227,7 +225,8 @@ const BadgeReport = props => {
         copyOfExisitingBadges = copyOfExisitingBadges.map(item => {
           if(item.badge._id === badge.badge._id){
             if(newValue > badgePrevState.count && newValue >= badgeCountFromExsitingRecord){
-              if(!recordBeforeUpdate.hasBadgeDeletionImpact){
+              debugger;
+              if(recordBeforeUpdate[0].hasBadgeDeletionImpact === false){
                 item.hasBadgeDeletionImpact = false;
               }
               if(newValue > badgeCountFromExsitingRecord){
