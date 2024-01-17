@@ -489,7 +489,37 @@ export const userProfileMock = {
   _id: '5edf141c78f1380017b829a6',
   emailPubliclyAccessible: true,
   phoneNumberPubliclyAccessible: true,
-  badgeCollection: [],
+  badgeCollection: [ {
+    _id: 'abc1',
+    badgeName: '30 HOURS 3-WEEK STREAK',
+    category: 'Stewardship',
+    imageUrl: 'https://www.test.com/30-HOURS-STREAK-3-WEEKS-200-PX.png',
+    ranking: 118,
+    description:
+      'Contributing 30 hours for one week is impressive. Doing it for 3 weeks in a row is absolutely amazing! Well done!',
+    months: null,
+    multiple: null,
+    people: null,
+    totalHrs: 30,
+    type: 'X Hours for X Week Streak',
+    weeks: 3,
+    showReport: true,
+  },
+  {
+    _id: 'abc2',
+    badgeName: 'Personal Max',
+    category: 'Stewardship',
+    imageUrl: 'https://www.test.com/LEADER-OF-40-PLUS-TEAM-TRAILBLAZER-200-PX.png',
+    ranking: 53,
+    description:
+      'You are a leader! More specifically, you’ve led a team of 40 people or more as a member of One Community. Fantastic work!',
+    months: null,
+    multiple: null,
+    people: 40,
+    totalHrs: null,
+    type: 'Personal Max',
+    weeks: null,
+  },],
   infringements: [
     {
       _id: '5ee5caf08b333c03b836b9a8',

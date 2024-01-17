@@ -73,8 +73,11 @@ const Badge = props => {
       });
       setTotalBadge(Math.round(count));
     }
+    console.log('Badge Collection: ', props.userProfile.badgeCollection);
+    console.log('Total Badge Count: ', totalBadge);
   }, [props.userProfile.badgeCollection, totalBadge]);
-
+  console.log('Generated Badge Text: ', generateBadgeText(totalBadge, props.userProfile.badgeCollection, props.userProfile.personalBestMaxHrs));
+  console.log(props.userProfile.badgeCollection[0].count);
   return (
     <>
       <Container className="right-padding-temp-fix">
