@@ -1,0 +1,72 @@
+.subscribeContainer {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.header {
+  font-size: 24px; /* Adjust size as needed */
+  color: #333; /* Dark text for readability */
+  margin-bottom: 16px; /* Space below the header */
+  font-weight: bold; /* Makes the header text bold */
+  text-align: center; /* Centers the header text */
+  padding: 20px; /* Padding around the text for space */
+  background-color: #f8f8f8; /* Light background for the header section */
+  border-bottom: 1px solid #e7e7e7; /* A subtle line to separate from the content below */
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #333;
+  border-radius: 10px;
+  /* more styles for your input field */
+}
+
+.inputField.error {
+  border: 1px solid red;
+  /* additional styles for input field when there is an error */
+}
+
+.subscribeButton {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #333;
+  background-color: #4497a8;
+  border-radius: 10px;
+  /* styles for your subscribe button */
+}
+
+.subscribeButton:hover {
+  opacity: 0.8;
+  /* additional styles for subscribe button on hover */
+}
+
+.errorMessage {
+  color: red;
+  /* additional styles for error message */
+}
+
+.description {
+  color: #666; /* Subdued text color for body text */
+  font-size: 16px; /* Readable font size for most users */
+  margin-bottom: 12px; /* Spacing between paragraphs */
+}
+
+.note {
+  color: #999; /* Even more subdued text color for notes */
+  font-size: 14px; /* Slightly smaller font for less important text */
+  margin-bottom: 20px; /* More spacing to separate from the form */
+}
+
+
+
+/* Add responsive designs and other styles as needed */
+@media (max-width: 768px) {
+  .header {
+    font-size: 20px; /* Slightly smaller text on smaller screens */
+    padding: 15px; /* Less padding on smaller screens */
+  }
+}

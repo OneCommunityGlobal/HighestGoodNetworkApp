@@ -78,3 +78,28 @@ export const updateEmailSubscription = (subscription=true) => {
     }
   };
 };
+
+export const addNonHgnUserEmailSubscription = (email='') => {
+  const url = ENDPOINTS.NON_HGN_EMAIL_SUBSCRIPTION;
+
+  return async () => {
+    try {
+      const response = await axios.post(url, { email});
+      console.log('Email sent successfully:', response);
+
+      // Display a success toast
+      toast.success('Successfully opt-in email subcription', {
+        position: 'top-center', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    } catch (error) {
+      console.error('Error sending email:', error);
+
+      // Display an error toast
+      toast.error('Error sending request', {
+        position: 'top-center', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    }
+  };
+};
