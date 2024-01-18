@@ -2,7 +2,7 @@ import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
-import TeamTable from '../components/Reports/TeamTable.jsx';
+import TeamTable from '../../Reports/TeamTable.jsx';
 import thunk from 'redux-thunk';
 
 const middlewares = [thunk];

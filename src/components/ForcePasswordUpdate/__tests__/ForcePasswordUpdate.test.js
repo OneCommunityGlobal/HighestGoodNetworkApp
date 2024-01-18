@@ -1,16 +1,16 @@
-import { renderWithProvider, renderWithRouterMatch } from './utils.js';
+import { renderWithProvider, renderWithRouterMatch } from '../../../__tests__/utils.js';
 import '@testing-library/jest-dom/extend-expect';
 import React from 'react';
-import mockState from './mockAdminState.js';
+import mockState from '../../../__tests__/mockAdminState.js';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '../../../utils/URL.js';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import routes from './../routes';
-import { ForcePasswordUpdate } from '../components/ForcePasswordUpdate/ForcePasswordUpdate';
-import { forcePasswordUpdate as fPU } from './../actions/updatePassword';
-import { clearErrors } from './../actions/errorsActions';
+import routes from '../../../routes.js';
+import { ForcePasswordUpdate } from '../ForcePasswordUpdate.jsx';
+import { forcePasswordUpdate as fPU } from '../../../actions/updatePassword.js';
+import { clearErrors } from '../../../actions/errorsActions.js';
 import { shallow } from 'enzyme';
 
 describe('Force Password Update page structure', () => {

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import Overview from './Overview';
+import Overview from '../Overview';
 
 describe('Overview Component', () => {
   it('renders correctly with props', () => {
