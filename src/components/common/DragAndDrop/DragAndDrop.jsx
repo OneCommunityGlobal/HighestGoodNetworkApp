@@ -1,26 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import './DragAndDrop.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
-import { Button } from 'reactstrap';
 
 const DragAndDrop = ({onFilesSelected, updateUploadedFiles}) => {
 
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState([]);
 
+  const memoizedOnFilesSelected = useCallback((files) => {
+    onFilesSelected(files);
+  }, [onFilesSelected]);
+  
+  const memoizedUpdateUploadedFiles = useCallback((newFiles) => {
+    updateUploadedFiles((prevUploadedFiles) => [...prevUploadedFiles, ...newFiles]);
+  }, [updateUploadedFiles]);
+
   const handleDrag = function (e) {
     e.preventDefault();
     e.stopPropagation();
-console.log(e.type)
     if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
     } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };
-
-  console.log(dragActive);
 
   const handleDrop = function (e) {
     e.preventDefault();
@@ -31,11 +35,10 @@ console.log(e.type)
       const newFiles = Array.from(droppedFiles);
       setFiles((prevFiles) => [...prevFiles, ...newFiles]);
       console.log("DROPPED", files);
-      updateUploadedFiles((prevUploadedFiles) => [...prevUploadedFiles, ...newFiles]);
+      memoizedUpdateUploadedFiles(newFiles);
     }
-  }
+  };
   
-
   const handleChange = function (e) {
     e.preventDefault();
     const selectedFiles = e.target.files;
@@ -52,8 +55,8 @@ console.log(e.type)
   // }
 
   useEffect(() => {
-    onFilesSelected(files)
-  }, [files, onFilesSelected])
+    memoizedOnFilesSelected(files)
+  }, [files, memoizedOnFilesSelected])
 
   return (
     <div id="file-upload-form" onDragEnter={handleDrag} onSubmit={(e) => e.preventDefault()}>

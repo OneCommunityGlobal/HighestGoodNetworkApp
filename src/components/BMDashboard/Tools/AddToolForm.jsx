@@ -30,8 +30,7 @@ const initialFormState = {
   phoneNumber: '',
   images: [],
   link: '',
-  description: '',
-  orderTotal: '',
+  description: ''
 };
 
 export default function AddToolForm() {
@@ -92,10 +91,10 @@ export default function AddToolForm() {
     event.preventDefault();
     //TO DO: fix orderTotal to be displayed in console
     // const orderTotal = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
-    setFormData(prevData => ({
-      ...prevData,
-      orderTotal: totalPriceWithShipping,
-    }));
+    // setFormData(prevData => ({
+    //   ...prevData,
+    //   orderTotal: totalPriceWithShipping,
+    // }));
     console.log('Data', formData);
     //TO DO: post request to submit the data
   };
@@ -106,6 +105,7 @@ export default function AddToolForm() {
 
   const handleFilesSelected = selectedFiles => {
     console.log('Files received', selectedFiles);
+    
   };
 
   const handleRemoveFile = index => {
