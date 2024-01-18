@@ -61,6 +61,7 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: [],
       teamCodes: [],
       colorOptions: [],
+      auth: [],
     };
   }
 
@@ -76,7 +77,6 @@ export class WeeklySummariesReport extends Component {
       hasPermission,
       auth,
     } = this.props;
-
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
@@ -86,7 +86,11 @@ export class WeeklySummariesReport extends Component {
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner';
+    this.codeEditPermission =
+      hasPermission('editTeamCode') ||
+      auth.user.role === 'Owner' ||
+      auth.user.role === 'Administrator';
+    this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -142,7 +146,6 @@ export class WeeklySummariesReport extends Component {
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
       });
-
     this.setState({
       loading,
       allRoleInfo: [],
@@ -156,6 +159,7 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: summariesCopy,
       colorOptions,
       teamCodes,
+      auth,
     });
 
     await getInfoCollections();
@@ -295,8 +299,8 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries,
       colorOptions,
       teamCodes,
+      auth,
     } = this.state;
-
     const { error } = this.props;
 
     if (error) {
@@ -423,6 +427,8 @@ export class WeeklySummariesReport extends Component {
                         badges={badges}
                         loadBadges={loadBadges}
                         canEditTeamCode={this.codeEditPermission}
+                        auth={auth}
+                        canSeeBioHighlight={this.canSeeBioHighlight}
                       />
                     </Col>
                   </Row>

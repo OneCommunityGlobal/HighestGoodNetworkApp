@@ -122,21 +122,28 @@ export const getAllUserTeams = () => {
 
 /**
  * posting new team
- */
-export const postNewTeam = (name) => {
-  const data = { teamName: name };
-  const url = ENDPOINTS.TEAM;
-  return async (dispatch) => {
-    try {
-      const teamCreateResponse = await axios.post(url, data);
-      dispatch(addNewTeam(teamCreateResponse.data, true));
-      return teamCreateResponse;
-    } catch (error) {
-      return error.response.data.error;
-    }
-
-  };
+*/
+export const postNewTeam = (name, status) => {
+  const data = { teamName: name, isActive: status };
+  const teamCreationPromise = axios.post(ENDPOINTS.TEAM, data);
+  return (dispatch) => {
+    return teamCreationPromise
+      .then((res) => {
+        dispatch(addNewTeam(res.data, true));
+        return res; // return the server response
+      })
+      .catch((error) => {
+        if (error.response) {
+          return error.response; // return the server response
+        } else if (error.request) {
+          return { status: 500, message: 'No response received from the server' };
+        } else {
+          return { status: 500, message: error.message };
+        }
+      });
+  }; 
 };
+
 
 /**
  * delete an existing team
@@ -195,7 +202,7 @@ export const getTeamMembers = (teamId) => {
  * @param {*} teamId  - the team to be deleted
  */
 export const deleteTeamMember = (teamId, userId) => {
-  const requestData = { users: [{ userId, operation: 'UnAssign' }] };
+  const requestData = { userId, operation: 'UnAssign' };
   const teamMemberDeletePromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async (dispatch) => {
     teamMemberDeletePromise.then(() => {
@@ -208,11 +215,11 @@ export const deleteTeamMember = (teamId, userId) => {
  * Adding an existing user to team
  */
 export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime) => {
-  const requestData = { users: [{ userId, operation: 'Assign' }] };
+  const requestData = { userId, operation: 'Assign' };
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async (dispatch) => {
-    teamMemberAddPromise.then(() => {
-      dispatch(teamMemberAddAction({ _id: userId, firstName, lastName, role, addDateTime }));
+    teamMemberAddPromise.then((res) => {
+      dispatch(teamMemberAddAction(res.data.newMember));
     });
   };
 };
