@@ -3,10 +3,13 @@
  * Author: Henry Ng - 03/20/20
  ******************************************************************************* */
 import axios from 'axios';
+import moment from 'moment';
 import {
   fetchTeamMembersTaskSuccess,
-  fetchTeamMembersTaskBegin,
-  fetchTeamMembersTaskError,
+  fetchTeamMembersTimeEntriesSuccess,
+  updateTeamMembersTimeEntrySuccess,
+  fetchTeamMembersDataBegin,
+  fetchTeamMembersDataError,
   deleteTaskNotificationSuccess,
   deleteTaskNotificationBegin,
 } from 'components/TeamMemberTasks/actions';
@@ -20,43 +23,60 @@ const selectUserId = state => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) =>
   state.tasks.taskItems.find(({ _id }) => _id === taskId);
 
-// for those who are not familiarized, this is a arrow function inside a arrow function.
-// It's the same as doing function(currentUserId){async function(dispatch, getState)}
-//Because of the closure, the inside function have access the currentUserId, that it uses and provides to the userId
-//I've also added authentiatedUserId param so, if you are seeing another user's dashboard, it can fetch the authenticated user tasks to make a filter when seeing an owner or another user
-export const fetchTeamMembersTask = (
-  currentUserId,
-  authenticatedUserId,
-  shouldReload = true,
-) => async (dispatch, getState) => {
-
+export const fetchTeamMembersTask = (displayUserId) => async (dispatch) => {
   try {
-    const state = getState();
-    // The userId will be equal the currentUserId if provided, if not, it'll call the selectFetchTeamMembersTaskData, that will return the current user id that's on the store
+    dispatch(fetchTeamMembersDataBegin());
 
-    const userId = currentUserId ? currentUserId : selectFetchTeamMembersTaskData(state);
-    const authUserId = authenticatedUserId ? authenticatedUserId : null;
+    const { data: usersWithTasks } = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(displayUserId));
 
-    if (shouldReload) {
-      dispatch(fetchTeamMembersTaskBegin());
-    }
+    dispatch(fetchTeamMembersTaskSuccess({ usersWithTasks }));
 
-    const response = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(userId));
-
-    //if you are seeing another user's dashboard, the authenticated user id will be provided so the filter can be made
-    if (authUserId !== null) {
-      const originalTasks = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(authUserId));
-      const authUserTasks = originalTasks.data;
-      const userTasks = response.data;
-      const correctedTasks = userTasks.filter(task => {
-        return authUserTasks.some(task2 => task2.personId === task.personId);
-      });
-      dispatch(fetchTeamMembersTaskSuccess(correctedTasks));
-    } else {
-      dispatch(fetchTeamMembersTaskSuccess(response.data));
-    }
+    await dispatch(fetchTeamMembersTimeEntries());
   } catch (error) {
-    dispatch(fetchTeamMembersTaskError());
+    dispatch(fetchTeamMembersDataError());
+  }
+};
+
+export const fetchTeamMembersTimeEntries = () => async (dispatch, getState) => {
+  try {
+    dispatch(fetchTeamMembersDataBegin());
+
+    const { teamMemberTasks } = getState();
+    const fromDate = moment()
+      .tz('America/Los_Angeles')
+      .subtract(72, 'hours')
+      .format('YYYY-MM-DD');
+    const toDate = moment()
+      .tz('America/Los_Angeles')
+      .format('YYYY-MM-DD');
+
+    // only request for users with task
+    const userIds = teamMemberTasks.usersWithTasks.map(user => user.personId)
+
+    const { data: usersWithTimeEntries } = await axios.post(ENDPOINTS.TIME_ENTRIES_USER_LIST, {
+      users: userIds, 
+      fromDate, 
+      toDate
+    });
+
+    dispatch(fetchTeamMembersTimeEntriesSuccess({ usersWithTimeEntries }));
+  } catch (error) {
+    dispatch(fetchTeamMembersDataError());
+  }
+};
+
+export const editTeamMemberTimeEntry = (newDate) => async (dispatch) => {
+  const { userProfile, ...timeEntry } = newDate;
+  const timeEntryURL = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntry._id);
+  const userProfileURL = ENDPOINTS.USER_PROFILE(userProfile._id);
+  try {
+    const updateTimeEntryPromise = axios.put(timeEntryURL, timeEntry);
+    const updateUserProfilePromise = axios.put(userProfileURL, userProfile);
+    const res = await Promise.all([updateTimeEntryPromise, updateUserProfilePromise]);
+    const { data: newTimeEntry } = res[0];
+    dispatch(updateTeamMembersTimeEntrySuccess({ ...newTimeEntry, userProfile }));
+  } catch (e) {
+    console.log(e)
   }
 };
 
