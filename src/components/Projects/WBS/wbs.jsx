@@ -8,9 +8,9 @@ import { connect } from 'react-redux';
 import { addNewWBS, fetchAllWBS } from '../../../actions/wbs';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
-import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
 import { boxStyle } from 'styles';
+import AddWBS from './AddWBS';
 
 const WBS = props => {
   const projectId = props.match.params.projectId;
@@ -33,7 +33,7 @@ const WBS = props => {
             <div id="member_project__name">Projects</div>
           </ol>
         </nav>
-
+        
         <AddWBS projectId={projectId} />
 
         <table className="table table-bordered table-responsive-sm">
