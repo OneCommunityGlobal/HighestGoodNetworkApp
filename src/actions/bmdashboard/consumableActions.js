@@ -17,6 +17,17 @@ export const setErrors = payload => {
   }
 }
 
+export const purchaseConsumable = async body => {
+  return axios
+    .post(ENDPOINTS.BM_CONSUMABLES_PURCHASE, body)
+    .then(res => res)
+    .catch(err => {
+      if (err.response) return err.response;
+      if (err.request) return err.request;
+      return err.message;
+    });
+}
+
 export const fetchAllConsumables = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_CONSUMABLES)

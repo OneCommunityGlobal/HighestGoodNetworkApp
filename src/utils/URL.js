@@ -132,6 +132,8 @@ export const ENDPOINTS = {
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
+  BM_CONSUMABLE_TYPES : `${APIEndpoint}/bm/invtypes/consumables`,
+  BM_CONSUMABLES_PURCHASE: `${APIEndpoint}/bm/consumables/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
