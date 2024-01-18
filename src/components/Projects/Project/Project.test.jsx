@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -55,9 +55,10 @@ describe('Project Component', () => {
 
     const { getByDisplayValue, getByTestId } = renderProject(sampleProject);
 
-    // Using getByDisplayValue to find the input element with the value "Sample Project"
+   
+    //Using getByDisplayValue to find the input element with the value "Sample Project"
     expect(getByDisplayValue('Sample Project')).toBeInTheDocument();
-    // Verify that the select element is rendered
+    //Verify that the select element is rendered
     const selectElement = getByTestId('projects__category--input');
     expect(selectElement).toBeInTheDocument();
     expect(getByTestId('project-active')).toBeInTheDocument();

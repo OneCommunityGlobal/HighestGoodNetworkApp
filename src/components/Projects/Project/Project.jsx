@@ -136,5 +136,3 @@ const Project = props => {
 const mapStateToProps = state => state;
 export default connect(mapStateToProps, { hasPermission })(Project);
 
-const mapStateToProps = state => state;
-export default connect(mapStateToProps, { hasPermission })(Project);
