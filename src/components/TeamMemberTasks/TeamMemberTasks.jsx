@@ -38,7 +38,7 @@ const TeamMemberTasks = React.memo(props => {
   const [taskModalOption, setTaskModalOption] = useState('');
 
   const dispatch = useDispatch();
-  
+
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
     setMarkAsDoneModal(false);
@@ -152,7 +152,7 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const renderTeamsList = async () => {
-    if (usersWithTasks && usersWithTasks.length > 0) {
+    if (usersWithTasks.length > 0) {
       //sort all users by their name
       usersWithTasks.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
 
@@ -194,7 +194,7 @@ const TeamMemberTasks = React.memo(props => {
     getTimeEntriesForPeriod(selectedPeriod);
   }, [selectedPeriod, usersWithTimeEntries]);
 
-  
+
 
   return (
     <div className="container team-member-tasks">
@@ -358,7 +358,7 @@ const TeamMemberTasks = React.memo(props => {
                           .map(timeEntry => (
                             <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={3} style={{ padding: 0 }}>
-                                <TimeEntry 
+                                <TimeEntry
                                   fromTaskTab
                                   data={timeEntry}
                                   key={timeEntry._id}

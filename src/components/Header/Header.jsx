@@ -117,7 +117,7 @@ export const Header = props => {
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
-      if (props.auth.user.role === 'Administrator') {
+      if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
     }
