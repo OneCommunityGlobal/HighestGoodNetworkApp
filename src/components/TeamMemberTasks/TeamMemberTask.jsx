@@ -72,6 +72,7 @@ const TeamMemberTask = React.memo(
 
     const dispatch = useDispatch();
     const canUpdateTask = dispatch(hasPermission('updateTask'));
+    const canDeleteTask = dispatch(hasPermission('deleteDashboardTask'))
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const handleTruncateTasksButtonClick = () => {
@@ -189,7 +190,7 @@ const TeamMemberTask = React.memo(
                                 data-testid={`tick-${task.taskName}`}
                               />
                             )}
-                            {canUpdateTask && (
+                            {canUpdateTask || canDeleteTask && (
                               <FontAwesomeIcon
                                 className="team-member-task-remove"
                                 icon={faTimes}
