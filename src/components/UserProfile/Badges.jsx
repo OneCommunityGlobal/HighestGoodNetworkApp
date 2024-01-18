@@ -39,7 +39,7 @@ export const Badges = props => {
 
   // Determines what congratulatory text should displayed.
   const badgesEarned = props.userProfile.badgeCollection.reduce((acc, badge) => {
-    if (badge?.badge?.setUserProfile === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+    if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
       return acc + 1;
     }
     return acc + Math.round(Number(badge.count));
