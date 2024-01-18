@@ -10,7 +10,7 @@ import { persistedReducer as reducer } from '../store';
 
 const middleware = [thunk];
 
-function renderWithProvider(
+export function renderWithProvider(
   ui,
   { initialState, store = createStore(reducer), ...renderOptions } = {},
 ) {
@@ -85,8 +85,8 @@ export function sleep(ms) {
 // re-export everything
 export * from '@testing-library/react';
 // override render method
-export { renderWithProvider };
+// export { renderWithProvider };
 
 describe('Stop Error', () => {
-  it('should not error out due to no tests  (utils.js)', () => {});
+  it('should not error out due to no tests  (utils.js)', () => { });
 });

@@ -489,37 +489,8 @@ export const userProfileMock = {
   _id: '5edf141c78f1380017b829a6',
   emailPubliclyAccessible: true,
   phoneNumberPubliclyAccessible: true,
-  badgeCollection: [ {
-    _id: 'abc1',
-    badgeName: '30 HOURS 3-WEEK STREAK',
-    category: 'Stewardship',
-    imageUrl: 'https://www.test.com/30-HOURS-STREAK-3-WEEKS-200-PX.png',
-    ranking: 118,
-    description:
-      'Contributing 30 hours for one week is impressive. Doing it for 3 weeks in a row is absolutely amazing! Well done!',
-    months: null,
-    multiple: null,
-    people: null,
-    totalHrs: 30,
-    type: 'X Hours for X Week Streak',
-    weeks: 3,
-    showReport: true,
-  },
-  {
-    _id: 'abc2',
-    badgeName: 'Personal Max',
-    category: 'Stewardship',
-    imageUrl: 'https://www.test.com/LEADER-OF-40-PLUS-TEAM-TRAILBLAZER-200-PX.png',
-    ranking: 53,
-    description:
-      'You are a leader! More specifically, you’ve led a team of 40 people or more as a member of One Community. Fantastic work!',
-    months: null,
-    multiple: null,
-    people: 40,
-    totalHrs: null,
-    type: 'Personal Max',
-    weeks: null,
-  },],
+  personalBestMaxHrs: 50,
+  badgeCollection: [],
   infringements: [
     {
       _id: '5ee5caf08b333c03b836b9a8',
@@ -657,7 +628,7 @@ export const timeEntryMock = {
       {
         _id: '5f2e1c7ab0186f202baf9d20',
         notes:
-        '<p>d g g sg sd gs dg ag dg c jh&nbsp;</p>\n<p><a href="https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit">https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit#</a></p>\n<p>&nbsp;</p>',
+          '<p>d g g sg sd gs dg ag dg c jh&nbsp;</p>\n<p><a href="https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit">https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit#</a></p>\n<p>&nbsp;</p>',
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5e606e4f37477100173680ac',
@@ -1306,5 +1277,5 @@ export const rolesMock = {
 }
 
 describe('Stop Error', () => {
-  it('should not error out due to no tests (mockStates.js)', () => {});
+  it('should not error out due to no tests (mockStates.js)', () => { });
 });
