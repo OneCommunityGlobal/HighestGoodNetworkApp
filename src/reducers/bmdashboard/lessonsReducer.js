@@ -1,4 +1,4 @@
-import { GET_BM_LESSONS, UPDATE_LESSON, DELETE_LESSON } from '../../constants/bmdashboard/lessonConstants'
+import { GET_BM_LESSONS, UPDATE_LESSON, DELETE_LESSON, BM_LESSON_LIKES, SET_LESSON } from '../../constants/bmdashboard/lessonConstants'
 
 const initialState = {
   lessons: [],
@@ -52,9 +52,27 @@ export const lessonsReducer = (state = initialState, action) => {
               lessons: updatedLessons,
             };
           }
-          // Return the current state if the lesson to delete is not found
+          
           return state;
 
+
+      case SET_LESSON:
+      return {
+        ...state,
+        lessons: state.lessons.map((lesson) =>
+          lesson._id === action.payload._id ? action.payload : lesson
+        ),
+      };
+      case BM_LESSON_LIKES:
+        const updatedLesson = action.payload;
+        const updatedLessons = state.lessons.map(lesson => {
+          return lesson._id === updatedLesson._id ? updatedLesson : lesson;
+        });
+  
+        return {
+          ...state,
+          lessons: updatedLessons,
+        };
 
       default:
         return state;

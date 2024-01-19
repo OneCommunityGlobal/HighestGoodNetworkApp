@@ -129,6 +129,8 @@ export const ENDPOINTS = {
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_LESSONS: `${APIEndpoint}/bm/lessons`,
   BM_LESSON: `${APIEndpoint}/bm/lesson/`,
+  BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
+
 };
 
 export const ApiEndpoint = APIEndpoint;
