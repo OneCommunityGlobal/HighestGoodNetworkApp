@@ -45,7 +45,7 @@ const Project = props => {
       <th className="projects__order--input" scope="row">
         <div>{props.index + 1}</div>
       </th>
-      <td className="projects__name--input">
+      <td data-testid="projects__name--input" className="projects__name--input">
         {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
           <input
             type="text"
