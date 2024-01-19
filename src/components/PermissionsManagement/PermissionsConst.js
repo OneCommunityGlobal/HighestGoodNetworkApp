@@ -4,14 +4,14 @@ export const getAllPermissionKeys = () => {
 
 const getAllSubpermissionKeys = (permissions) => {
   const keys = [];
-  for(permission in permissions){
+  permissions.forEach((permission) => {
     if(permission.subperms){
-      keys.concat(getAllSubpermisisonKeys(permission.subperms))
+      keys.push(...getAllSubpermissionKeys(permission.subperms))
     }
     else {
-      keys.append(permission)
+      keys.push(permission.key)
     }
-  }
+  });
   return keys;
 };
 
