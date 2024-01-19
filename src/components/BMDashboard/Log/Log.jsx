@@ -4,13 +4,19 @@ import "./Log.css";
 
 function Log() {
     const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
-    const logFormHeading = "Tool Equipment Daily Activities Log"
+    const [isCheckInOutDropdownOpen, setIsCheckInOutDropdownOpen] = useState(false);
+    const logFormHeading = "Tool Equipment Daily Activities Log";
+
     const toggleProjectDowndown = () => {
         setIsProjectDropdownOpen((prevState) => setIsProjectDropdownOpen(!prevState));
     };
 
+    const toggleCheckInOutDropdown = () => {
+        setIsCheckInOutDropdownOpen((prevState) => setIsCheckInOutDropdownOpen(!prevState));
+    };
+
     return (
-        <div className='log-container'>
+        <div className='log-form-container'>
             <Form>
                 <Row>
                     <Label>
@@ -47,7 +53,7 @@ function Log() {
                     <Row>
                         <Col>Check in or Out: </Col>
                         <Col>
-                                <Dropdown isOpen={isProjectDropdownOpen} toggle={toggleProjectDowndown}>
+                                <Dropdown isOpen={isCheckInOutDropdownOpen} toggle={toggleCheckInOutDropdown}>
                                     <DropdownToggle caret>Check out</DropdownToggle>
                                         <DropdownMenu>
                                             <DropdownItem>Test 1</DropdownItem>

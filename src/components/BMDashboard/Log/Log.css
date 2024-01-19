@@ -1,3 +1,7 @@
-.log-container {
-    background-color: blue;
+.log-form-container {
+    margin: 0 auto;
+    max-width: 625px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 50px;
 }
