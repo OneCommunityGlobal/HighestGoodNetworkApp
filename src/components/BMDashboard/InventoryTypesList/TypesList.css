@@ -29,6 +29,7 @@
   color: var(--color-text);
   font-weight: bold;
   cursor: pointer;
+  text-align: start;
 }
 
 .button-container {
@@ -53,4 +54,10 @@
 
 .table-header {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.arrow-icon {
+  padding-right: 4px;
+  width: 20px;
+  height: auto;
 }

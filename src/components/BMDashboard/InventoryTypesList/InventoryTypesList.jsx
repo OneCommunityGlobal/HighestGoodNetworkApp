@@ -10,6 +10,7 @@ import BMError from '../shared/BMError';
 import TypesTable from './TypesTable';
 import './TypesList.css';
 import { equipmentTypes, consumableTypes, toolTypes, reusableTypes } from './mockData';
+import AccordionToggle from './AccordionToggle';
 
 export function InventoryTypesList(props) {
   const { materialTypes, errors, dispatch } = props;
@@ -55,11 +56,11 @@ export function InventoryTypesList(props) {
         />
       </div>
 
-      <Accordion defaultActiveKey="-1">
+      <Accordion>
         <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="0">
+          <AccordionToggle as={Card.Header} eventKey="0">
             Material
-          </Accordion.Toggle>
+          </AccordionToggle>
           <Accordion.Collapse eventKey="0">
             <Card.Body>
               <TypesTable itemTypes={materialTypes} category="Material" />
@@ -68,9 +69,9 @@ export function InventoryTypesList(props) {
         </Card>
 
         <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="1">
+          <AccordionToggle as={Card.Header} eventKey="1">
             Tool
-          </Accordion.Toggle>
+          </AccordionToggle>
           <Accordion.Collapse eventKey="1">
             <Card.Body>
               <TypesTable itemTypes={toolTypes} category="Tool" />
@@ -79,9 +80,9 @@ export function InventoryTypesList(props) {
         </Card>
 
         <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="2">
+          <AccordionToggle as={Card.Header} eventKey="2">
             Equipment
-          </Accordion.Toggle>
+          </AccordionToggle>
           <Accordion.Collapse eventKey="2">
             <Card.Body>
               <TypesTable itemTypes={equipmentTypes} category="Equipment" />
@@ -90,9 +91,9 @@ export function InventoryTypesList(props) {
         </Card>
 
         <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="3">
+          <AccordionToggle as={Card.Header} eventKey="3">
             Consumable
-          </Accordion.Toggle>
+          </AccordionToggle>
           <Accordion.Collapse eventKey="3">
             <Card.Body>
               <TypesTable itemTypes={consumableTypes} category="Consumable" />
@@ -101,9 +102,9 @@ export function InventoryTypesList(props) {
         </Card>
 
         <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="4">
+          <AccordionToggle as={Card.Header} eventKey="4">
             Reusable
-          </Accordion.Toggle>
+          </AccordionToggle>
           <Accordion.Collapse eventKey="4">
             <Card.Body>
               <TypesTable itemTypes={reusableTypes} category="Reusable" />
