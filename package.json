@@ -60,6 +60,7 @@
     "read-excel-file": "^5.5.3",
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",
+    "redux-concatenate-reducers": "^1.0.0",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
     "tinymce": "^5.10.8",
@@ -103,7 +104,6 @@
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-testing-library": "^3.6.0",
-    "jest-environment-jsdom-sixteen": "^1.0.3",
     "msw": "^0.19.5",
     "node-sass": "^8.0.0",
     "prettier": "^1.19.1",
@@ -111,6 +111,7 @@
     "husky": "^8.0.0",
     "sinon": "^7.3.2",
     "surge": "^0.21.6",
+    "jest-environment-jsdom-sixteen": "^1.0.3",
     "node-fetch": "^3.1.1"
   }
 }

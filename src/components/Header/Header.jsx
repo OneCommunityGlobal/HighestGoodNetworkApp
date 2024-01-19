@@ -49,6 +49,7 @@ export const Header = props => {
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
   // Reports
+  const canGetReports = props.hasPermission('getReports');
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
 
@@ -78,7 +79,7 @@ export const Header = props => {
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
-      if (props.auth.user.role === 'Administrator') {
+      if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
     }
@@ -133,28 +134,32 @@ export const Header = props => {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                <NavLink tag={Link} to={`/timelog`}>
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {canGetWeeklySummaries ? (
+              {(canGetReports || canGetWeeklySummaries) ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                        <DropdownItem tag={Link} to="/reports">
-                          {REPORTS}
-                        </DropdownItem>
-                        <DropdownItem tag={Link} to="/weeklysummariesreport">
-                          {WEEKLY_SUMMARIES_REPORT}
-                        </DropdownItem>
+                        {canGetReports &&
+                          <DropdownItem tag={Link} to="/reports">
+                            {REPORTS}
+                          </DropdownItem>
+                        }
+                        {canGetWeeklySummaries &&
+                          <DropdownItem tag={Link} to="/weeklysummariesreport">
+                            {WEEKLY_SUMMARIES_REPORT}
+                          </DropdownItem>
+                        }
                         <DropdownItem tag={Link} to="/teamlocations">
                           {TEAM_LOCATIONS}
                         </DropdownItem>
                   </DropdownMenu>
               </UncontrolledDropdown>
-              ) : 
+              ) :
               <NavItem>
                 <NavLink tag={Link} to="/teamlocations">
                   {TEAM_LOCATIONS}
