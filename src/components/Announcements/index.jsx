@@ -60,7 +60,7 @@ function Announcements() {
 
   const handleBroadcastEmails = () => {
     const htmlContent = `
-    <div style="max-width: 500px; width: 100%; margin: auto;">
+    <div style="max-width: 800px; width: 100%; margin: auto;">
       ${emailContent}
     </div>
   `;
