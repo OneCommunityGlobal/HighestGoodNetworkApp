@@ -1,12 +1,11 @@
 .centered-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-  }
-  
-  .centered-text {
-    display: inline-block;
-    margin-top: 10px;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 
+.centered-text {
+  display: inline-block;
+  margin-top: 10px;
+}
