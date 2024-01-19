@@ -3,8 +3,10 @@ import { connect } from 'react-redux';
 
 import { fetchMaterialTypes } from 'actions/bmdashboard/invTypeActions';
 import { Accordion, Card } from 'react-bootstrap';
-import BMError from '../shared/BMError';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
+import BMError from '../shared/BMError';
 import TypesTable from './TypesTable';
 import './TypesList.css';
 import { equipmentTypes, consumableTypes, toolTypes, reusableTypes } from './mockData';
@@ -13,6 +15,7 @@ export function InventoryTypesList(props) {
   const { materialTypes, errors, dispatch } = props;
 
   const [isError, setIsError] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // dispatch inventory type fetch action on load
   // NOTE: only materials for now
@@ -37,9 +40,22 @@ export function InventoryTypesList(props) {
 
   return (
     <div className="types-list-container">
-      <h3>All Inventory Types</h3>
+      <h1>All Inventory Types</h1>
 
-      <Accordion defaultActiveKey="0">
+      <div className="timestamp-container">
+        <span>Time:</span>
+        <DatePicker
+          selected={currentTime}
+          onChange={date => setCurrentTime(date)}
+          dateFormat="MM-dd-yyyy hh:mm:ss"
+          id="timestamp"
+          showTimeInput
+          // NOTE: all users can edit since the User Class has not been implemented yet
+          // disabled
+        />
+      </div>
+
+      <Accordion defaultActiveKey="-1">
         <Card>
           <Accordion.Toggle as={Card.Header} eventKey="0">
             Material
