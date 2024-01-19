@@ -1,7 +1,11 @@
-import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE } from "constants/bmdashboard/inventoryTypeConstants";
+import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE } from "constants/bmdashboard/inventoryTypeConstants";
 
 const defaultState = {
   list: [],
+  invTypeList: {
+    "All": null, "Materials": null, "Consumables": null, "Equipments": null,
+    "Reusables": null, "Tools:": null
+  },
   postedResult: {
     result: null,
     error: null,
@@ -14,7 +18,9 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
   switch (action.type) {
     case GET_MATERIAL_TYPES:
       state.list = action.payload;
-      return { ...state }
+      return { 
+        ...state
+      };
     case POST_BUILDING_MATERIAL_INVENTORY_TYPE:
       return {
         ...state,
@@ -41,10 +47,13 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
           success: null,
           error: null
         }
+      };
+      case GET_INV_BY_TYPE: {
+        types.invTypeList[action.payload.type] = [...action.payload.data]
+        return { ...state }
       }
-    default:
-      {
-        return state;
-      }
+    default: {
+      return state;
+    }
   }
-}
+};
