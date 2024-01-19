@@ -12,10 +12,21 @@
   --font-clickable: Roboto;
 }
 
+.timestamp-container {
+  display: flex;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+#timestamp {
+  padding: 0 5px;
+  border: 1px solid var(--color-h50);
+  border-radius: 5px;
+}
+
 .card-header {
   background-color: var(--color-h50);
   color: var(--color-text);
-  font-family: var(--font-clickable);
   font-weight: bold;
   cursor: pointer;
 }
@@ -30,7 +41,6 @@
   color: var(--color-n0);
   padding: 10px 16px;
   border-radius: 12px;
-  font-family: Inter;
   text-align: center;
   text-decoration: none;
 }
@@ -38,7 +48,6 @@
 .btn-types {
   background-color: var(--color-h100);
   color: var(--color-n0);
-  font-family: var(--font-clickable);
   border: none;
 }
 
