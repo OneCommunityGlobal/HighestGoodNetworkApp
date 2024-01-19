@@ -618,7 +618,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               ...prevErrors,
               email: 'This email is already in use, Please contact your manager',
             }));
-            console.log('in akwkejkwer');
           }
           console.log(error.response);
         });
