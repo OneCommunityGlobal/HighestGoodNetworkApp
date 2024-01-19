@@ -41,6 +41,8 @@ const Project = props => {
   };
 
   return (
+    <table>
+    <tbody>
     <tr className="projects__tr" id={'tr_' + props.projectId}>
       <th className="projects__order--input" scope="row">
         <div>{props.index + 1}</div>
@@ -131,6 +133,8 @@ const Project = props => {
         </td>
       ) : null}
     </tr>
+    </tbody>
+    </table>
   );
 };
 const mapStateToProps = state => state;

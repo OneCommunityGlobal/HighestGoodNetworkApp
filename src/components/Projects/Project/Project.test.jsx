@@ -6,31 +6,23 @@ import configureMockStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
 import Project from './Project';
 import thunk from 'redux-thunk'
+import { authMock, rolesMock, userProfileMock } from '../../../__tests__/mockStates';
 
 const middlewares = [thunk]
 const mockStore = configureMockStore(middlewares);
 
-const renderProject = (props, haspermission) => {
-  const initialState = {
-    role: {
-      roles: []
-    },
-    auth: {
-      user: {
-        role: 'Owner', 
-        permissions: {
-          frontPermissions: [],
-        },
-      },
-    },
-  };
-  const store = mockStore(initialState);
+const renderProject = props => {
+  const store = mockStore({
+    auth: authMock,
+    userProfile: userProfileMock,
+    role: rolesMock.role,
+  });
 
   return render(
     <Provider store={store}>
       {/* Wrap your component with BrowserRouter */}
       <BrowserRouter>
-        <Project {...props} hasPermission={haspermission} />
+        <Project {...props} />
       </BrowserRouter>
     </Provider>
   );
@@ -39,7 +31,7 @@ const renderProject = (props, haspermission) => {
 
 describe('Project Component', () => {
 
-  it('renders correctly with props', async() => {
+  it('renders correctly with props',() => {
 
     const sampleProject = {
       projectId: 1,
@@ -47,108 +39,100 @@ describe('Project Component', () => {
       name: 'Sample Project',
       category: 'Unspecified',
       active: true,
-      onUpdateProjectName: false,
-      onClickActive: false,
-      onClickDelete: false,
-      hasPermission: true,
+      onUpdateProjectName: jest.fn(),
+      onClickActive: jest.fn(),
+      onClickDelete: jest.fn(),
     };
 
-    const { getByText, getByTestId, container } = renderProject(sampleProject);
-    console.log(container.innerHTML)
-    // Wait for the element to be present
-    await waitFor(() => {
-      // Use screen.getByText to find the text content directly
-      const inputElement = getByText('Sample Project');
-      // Check if the input element is present and has the expected value
-      expect(inputElement).toBeInTheDocument();
-      expect(inputElement.tagName).toBe('TD');
-      
-    });
-   
+    const { getByDisplayValue, getByTestId } = renderProject(sampleProject);
+
+    // Use getByDisplayValue to find the input element with the specified value
+    const inputElement = getByDisplayValue('Sample Project');
+
+    // Check if the input element is present
+    expect(inputElement).toBeInTheDocument();
+
     expect(getByTestId('project-active')).toBeInTheDocument();
+    expect(getByTestId('delete-button')).toBeInTheDocument();
 
     // Verify the default value
-    expect(getByText('Unspecified')).toBeInTheDocument();
+    expect(getByDisplayValue('Unspecified')).toBeInTheDocument();
   });
 
-  it('updates project name on input change', async() => {
+  it('updates project name on input change', async () => {
     const sampleProject = {
       projectId: 1,
       index: 0,
       name: 'Sample Project',
       category: 'Unspecified',
       active: true,
-      onUpdateProjectName: false,
-      onClickActive: false,
-      onClickDelete: false,
-      hasPermission: true,
-      canPutProject: true,
+      onUpdateProjectName: jest.fn(),
+      onClickActive: jest.fn(),
+      onClickDelete: jest.fn(),
+    };
+  
+    const { getByTestId, getByDisplayValue } = renderProject(sampleProject);
+  
+    // Find the input element using getByDisplayValue
+    const inputElement = getByDisplayValue('Sample Project');
+  
+    // Check if the input element is present
+    expect(inputElement).toBeInTheDocument();
+  
+    // Simulate a user changing the input value
+    fireEvent.change(inputElement, { target: { value: 'New Project Name' } });
+  
+
+    await waitFor(() => {
+      // Check if the input value has been updated
+      expect(getByDisplayValue('New Project Name')).toBeInTheDocument();
+      
+    });
+  
+  });
+
+  it('toggles project active status on button click', () => {
+    const sampleProject = {
+      projectId: 1,
+      index: 0,
+      name: 'Sample Project',
+      category: 'Unspecified',
+      active: true,
+      onUpdateProjectName: jest.fn(),
+      onClickActive: jest.fn(),
+      onClickDelete: jest.fn(),
     };
 
     const { getByTestId } = renderProject(sampleProject);
 
-    // Find the td element using getByTestId
-    const tdElement = getByTestId('projects__name--input');
+    // Find the active status button and click it
+    const activeButton = getByTestId('project-active');
+    fireEvent.click(activeButton);
 
-    // Verify if the td element is found
-    expect(tdElement).toBeInTheDocument();
-
-    
-      // Change the name of original project
-      tdElement.textContent = 'New Project Name';
-
-      // Wait for the value to be updated
-      await waitFor(() => {
-        // Check if the input value has been updated
-        expect(tdElement.textContent).toBe('New Project Name');
-      });
-  
+    // Check if the onClickActive function has been called
+    expect(sampleProject.onClickActive).toHaveBeenCalledTimes(1);
   });
 
-  // it('toggles project active status on button click', () => {
-  //   const sampleProject = {
-  //     projectId: 1,
-  //     index: 0,
-  //     name: 'Sample Project',
-  //     category: 'Unspecified',
-  //     active: true,
-  //     onUpdateProjectName: jest.fn(),
-  //     onClickActive: jest.fn(),
-  //     onClickDelete: jest.fn(),
-  //     hasPermission: true,
-  //   };
+  it('triggers delete action on button click', () => {
+    const sampleProject = {
+      projectId: 1,
+      index: 0,
+      name: 'Sample Project',
+      category: 'Unspecified',
+      active: true,
+      onUpdateProjectName: jest.fn(),
+      onClickActive: jest.fn(),
+      onClickDelete: jest.fn(),
+    };
 
-  //   const { getByTestId } = renderProject(sampleProject);
+    const { getByTestId } = renderProject(sampleProject);
 
-  //   // Find the active status button and click it
-  //   const activeButton = getByTestId('project-active');
-  //   fireEvent.click(activeButton);
+    // Find the delete button and click it
+    const deleteButton = getByTestId('delete-button');
+    fireEvent.click(deleteButton);
 
-  //   // Check if the onClickActive function has been called
-  //   expect(sampleProject.onClickActive).toHaveBeenCalledTimes(1);
-  // });
-
-  // it('triggers delete action on button click', () => {
-  //   const sampleProject = {
-  //     projectId: 1,
-  //     index: 0,
-  //     name: 'Sample Project',
-  //     category: 'Unspecified',
-  //     active: true,
-  //     onUpdateProjectName: jest.fn(),
-  //     onClickActive: jest.fn(),
-  //     onClickDelete: jest.fn(),
-  //     hasPermission: true,
-  //   };
-
-  //   const { getByTestId } = renderProject(sampleProject);
-
-  //   // Find the delete button and click it
-  //   const deleteButton = getByTestId('delete-button');
-  //   fireEvent.click(deleteButton);
-
-  //   // Check if the onClickDelete function has been called
-  //   expect(sampleProject.onClickDelete).toHaveBeenCalledTimes(1);
-  // });
+    // Check if the onClickDelete function has been called
+    expect(sampleProject.onClickDelete).toHaveBeenCalledTimes(1);
+  });
 
 });
