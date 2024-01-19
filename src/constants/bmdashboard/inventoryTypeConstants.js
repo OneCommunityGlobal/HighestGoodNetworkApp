@@ -1,2 +1,3 @@
 const GET_MATERIAL_TYPES = 'GET_MATERIAL_TYPES';
+export const GET_INV_BY_TYPE = 'GET_INV_BY_TYPE';
 export default GET_MATERIAL_TYPES;
