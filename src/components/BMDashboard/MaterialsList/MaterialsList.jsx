@@ -20,16 +20,18 @@ export function MaterialsList(props) {
   // dispatch materials fetch action : on load and update
   // // response is mapped to materials or errors in redux store
   useEffect(() => {
-    if (postMaterialUpdateResult.result == null) dispatch(fetchAllMaterials());
-  }, [postMaterialUpdateResult.result]); // To refresh with new materials after update
+    if (!postMaterialUpdateResult || postMaterialUpdateResult?.result == null)
+      dispatch(fetchAllMaterials());
+  }, [postMaterialUpdateResult?.result]); // To refresh with new materials after update
 
   useEffect(() => {
-    setFilteredMaterials([...materials]);
+    if (materials) setFilteredMaterials([...materials]);
   }, [materials]);
 
   // filter materials data by project
   useEffect(() => {
     let filterMaterials;
+    if (!materials) return;
     if (selectedProject === 'all' && selectedMaterial === 'all') {
       setFilteredMaterials([...materials]);
     } else if (selectedProject !== 'all' && selectedMaterial === 'all') {
@@ -68,19 +70,23 @@ export function MaterialsList(props) {
       <h3>Materials</h3>
       <section>
         <span style={{ display: 'flex', margin: '5px' }}>
-          <SelectForm
-            materials={materials}
-            setSelectedProject={setSelectedProject}
-            setSelectedMaterial={setSelectedMaterial}
-          />
-          <SelectMaterial
-            materials={materials}
-            selectedProject={selectedProject}
-            selectedMaterial={selectedMaterial}
-            setSelectedMaterial={setSelectedMaterial}
-          />
+          {materials && (
+            <>
+              <SelectForm
+                materials={materials}
+                setSelectedProject={setSelectedProject}
+                setSelectedMaterial={setSelectedMaterial}
+              />
+              <SelectMaterial
+                materials={materials}
+                selectedProject={selectedProject}
+                selectedMaterial={selectedMaterial}
+                setSelectedMaterial={setSelectedMaterial}
+              />
+            </>
+          )}
         </span>
-        <MaterialsTable filteredMaterials={filteredMaterials} />
+        {filteredMaterials && <MaterialsTable filteredMaterials={filteredMaterials} />}
       </section>
     </main>
   );
