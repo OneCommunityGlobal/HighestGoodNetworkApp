@@ -1221,6 +1221,10 @@ export const rolesMock = {
           'editTeamCode',
         ],
       },
+      {
+        roleName: 'Fake Test Role',
+        permissions: [],
+      },
     ]
   }
 }
