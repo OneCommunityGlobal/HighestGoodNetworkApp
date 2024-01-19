@@ -10,7 +10,7 @@ import hasPermission from 'utils/permissions';
 import './style.css';
 import { boxStyle } from 'styles';
 import ReviewButton from './ReviewButton';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import moment from 'moment-timezone';
 
@@ -205,8 +205,7 @@ const TeamMemberTask = React.memo(
                           <div>
                             <ReviewButton
                               user={user}
-                              myUserId={userId}
-                              myRole={userRole}
+                              userId={userId}
                               task={task}
                               updateTask={updateTaskStatus}
                               style={boxStyle}

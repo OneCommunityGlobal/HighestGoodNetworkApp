@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import permissionLabel from './PermissionsConst';
 import PermissionList from './PermissionList';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
@@ -27,6 +28,7 @@ function RolePermissions(props) {
   const [disabled, setDisabled] = useState(true);
   const history = useHistory();
   const [showPresetModal, setShowPresetModal] = useState(false);
+  const userProfile = useSelector(state => state.userProfile);
 
   const isEditableRole = props.role === 'Owner' ? props.hasPermission('addDeleteEditOwners') : props.auth.user.role !== props.role;
   const canEditRole = isEditableRole && props.hasPermission('putRole');
@@ -88,7 +90,8 @@ function RolePermissions(props) {
       roleId: id,
     };
     try {
-      await props.updateRole(id, updatedRole);
+      delete userProfile.permissions  // prevent overriding 'permissions' key-value pair
+      await props.updateRole(id, {...updatedRole, ...userProfile});
       history.push('/permissionsmanagement');
       toast.success('Role updated successfully');
       setChanged(false);
