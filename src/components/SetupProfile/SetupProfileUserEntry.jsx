@@ -28,10 +28,11 @@ import { useDispatch } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
-import RequirementModal from './requirementModal';
 import HomeCountryModal from './homeCountryModal';
 import ProfilePictureModal from './profilePictureModal';
+import DeleteHoumeCountryModal from './deleteHomeCountryModal';
 import Image from 'react-bootstrap/Image';
+import 'react-phone-input-2/lib/style.css';
 import './SetupProfileUserEntry.css';
 
 const SetupProfileUserEntry = ({ token, userEmail }) => {
@@ -54,14 +55,14 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     weeklyCommittedHours: '10',
     collaborationPreference: 'Zoom',
     jobTitle: '',
-    timeZone: '',
+    timeZone: 'America/Los_Angeles',
     location: {
       userProvided: '',
       coords: { lat: '', lng: '' },
       country: '',
       city: '',
     },
-    timeZoneFilter: '',
+    timeZoneFilter: 'America/Los_Angeles',
     token,
     profilePicture: '',
   });
@@ -78,9 +79,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     location: '',
     timeZoneFilterClicked: 'false',
   });
-  const [requirementModalOpen, setRequirementModalOpen] = useState(false);
-  const [requirementModalError, setrequirementModalError] = useState('');
-  const [requirementsBoxChecked, setrequirementsBoxChecked] = useState(false);
   const [homecountryModalOpen, sethomecountryModalOpen] = useState(false);
   const [homecountryLocation, setHomecountryLocation] = useState({
     userProvided: '',
@@ -93,33 +91,94 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     message: '',
     type: '',
   });
+  const [totalCountryCount, setTotalCountryCount] = useState('');
+  const [deleteHoumeCountryModal, setDeleteHoumeCountryModal] = useState(false);
+
   const pictureInputRef = useRef(null);
+
+  const numberToWords = n => {
+    if (n < 0) return false;
+    const single_digit = [
+      '',
+      'One',
+      'Two',
+      'Three',
+      'Four',
+      'Five',
+      'Six',
+      'Seven',
+      'Eight',
+      'Nine',
+    ];
+    const double_digit = [
+      'Ten',
+      'Eleven',
+      'Twelve',
+      'Thirteen',
+      'Fourteen',
+      'Fifteen',
+      'Sixteen',
+      'Seventeen',
+      'Eighteen',
+      'Nineteen',
+    ];
+    const below_hundred = [
+      'Twenty',
+      'Thirty',
+      'Forty',
+      'Fifty',
+      'Sixty',
+      'Seventy',
+      'Eighty',
+      'Ninety',
+    ];
+    if (n === 0) return 'Zero';
+    function translate(n) {
+      let word = '';
+      if (n < 10) {
+        word = single_digit[n] + ' ';
+      } else if (n < 20) {
+        word = double_digit[n - 10] + ' ';
+      } else if (n < 100) {
+        let rem = translate(n % 10);
+        word = below_hundred[(n - (n % 10)) / 10 - 2] + ' ' + rem;
+      } else if (n < 1000) {
+        word = single_digit[Math.trunc(n / 100)] + ' Hundred ' + translate(n % 100);
+      } else if (n < 1000000) {
+        word = translate(parseInt(n / 1000)).trim() + ' Thousand ' + translate(n % 1000);
+      } else if (n < 1000000000) {
+        word = translate(parseInt(n / 1000000)).trim() + ' Million ' + translate(n % 1000000);
+      } else {
+        word = translate(parseInt(n / 1000000000)).trim() + ' Billion ' + translate(n % 1000000000);
+      }
+      return word;
+    }
+    const result = translate(n);
+    return result.trim();
+  };
 
   //  get the timezone API key using the setup token
   useEffect(() => {
     httpService.post(ENDPOINTS.TIMEZONE_KEY_BY_TOKEN(), { token }).then(response => {
       setAPIkey(response.data.userAPIKey);
     });
+    httpService.get(ENDPOINTS.GET_TOTAL_COUNTRY_COUNT()).then(response => {
+      const total = numberToWords(Number(response.data.CountryCount));
+      setTotalCountryCount(total);
+    });
   }, []);
 
-  const toggleRequirementModal = () => {
-    setrequirementModalError('');
-    setRequirementModalOpen(prev => !prev);
+  const toggleHomecountryModal = () => {
+    sethomecountryModalOpen(prev => !prev);
   };
 
-  const toggleHomecountryModal = () => {
-    if (requirementsBoxChecked) {
-      sethomecountryModalOpen(prev => !prev);
-    } else {
-      setrequirementModalError('You need to read and accept the requirements first');
-    }
-  };
+  const toggleDeleteHoumeCountryModal = () =>{
+    setDeleteHoumeCountryModal(prev=>!prev)
+  }
 
   const toggleProfilePictureModal = () => {
     setprofilePictureModalOpen(prev => !prev);
   };
-
-  const handleRequirementsBoxChecked = () => setrequirementsBoxChecked(!requirementsBoxChecked);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -153,7 +212,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
   };
 
   const handleProfilePictureUpload = e => {
-    
     const pictureFile = e.target.files[0];
     if (typeof pictureFile !== 'undefined') {
       const PictureSizeInKB = pictureFile.size / 1024;
@@ -166,7 +224,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
           type: 'fileType',
         }));
         setprofilePictureModalOpen(true);
-        pictureInputRef.current.value = null
+        pictureInputRef.current.value = null;
         return;
       }
 
@@ -178,7 +236,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
           type: 'size',
         }));
         setprofilePictureModalOpen(true);
-        pictureInputRef.current.value = null
+        pictureInputRef.current.value = null;
         return;
       }
 
@@ -205,9 +263,17 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       ...prevErrors,
       timeZoneFilterClicked: '',
     }));
+    setFormErrors(prevErrors => ({
+      ...prevErrors,
+      location: '',
+    }));
+    
     const location = userProfile.location.userProvided;
     if (!location) {
-      alert('Please enter valid location');
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        location: 'Please enter valid location',
+      }));
       return;
     }
     if (!APIkey) {
@@ -238,7 +304,10 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
             location: currentLocation,
           }));
         } else {
-          alert('Invalid location or ' + response.data.status.message);
+          setFormErrors(prevErrors => ({
+            ...prevErrors,
+            location: 'Invalid location',
+          }));
         }
       })
       .catch(err => console.log(err));
@@ -415,7 +484,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
   const areAllHomecountryValuesFilled = () => {
     for (const key in homecountryLocation) {
       if (key === 'city') {
-        continue; 
+        continue;
       }
       if (typeof homecountryLocation[key] === 'string' && homecountryLocation[key].trim() === '') {
         return false;
@@ -449,8 +518,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         homeCountry: homeCoutryDataExists ? homecountryLocation : userProfile.location,
         profilePicture: userProfile.profilePicture,
       };
-
-
 
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER_PROFILE(), data)
@@ -486,389 +553,376 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         Welcome to the One Community Highest Good Network! To create your account, please provide
         all the requested information below.
       </div>
-      <Container fluid className="profile-setup-user-entry-form-container">
-        <Row>
-          <Col md="12">
-            <Form>
-              <Row>
-                <Col md="2" className="text-md-right my-2 pb-1">
-                  <Image
-                    src={userProfile.profilePicture || '/Portrait_Placeholder.png'}
-                    alt=""
-                    id="profile-picture"
-                  />
-                </Col>
-                <Col md="3" id="add-profile-picture-col">
-                  <input
-                    style={{ display: 'none' }}
-                    type="file"
-                    name="profilePicture"
-                    id="profilePicture"
-                    ref={pictureInputRef}
-                    onChange={handleProfilePictureUpload}
-                    accept="image/png,image/jpeg, image/jpg"
-                  />
-                  <Button
-                    className="btn btn-secondary btn-md btn-block"
-                    id="add-profile-picture-btn"
-                    onClick={handleProfilePictureClick}
+      <Container id="profile-setup-user-entry-form-container">
+        <Form id="profile-setup-user-entry-form">
+          <Row>
+            <Col md="3" className="text-md-right pb-3">
+              <Image
+                src={userProfile.profilePicture || '/Portrait_Placeholder.png'}
+                alt=""
+                id="profile-picture"
+              />
+            </Col>
+            <Col md="8" id="add-profile-picture-col">
+              <input
+                style={{ display: 'none' }}
+                type="file"
+                name="profilePicture"
+                id="profilePicture"
+                ref={pictureInputRef}
+                onChange={handleProfilePictureUpload}
+                accept="image/png,image/jpeg, image/jpg"
+              />
+              <Button
+                className="btn btn-secondary btn-md btn-block"
+                id="add-profile-picture-btn"
+                onClick={handleProfilePictureClick}
+              >
+                add profile picture
+              </Button>
+              <ProfilePictureModal
+                isOpen={profilePictureModalOpen}
+                toggle={toggleProfilePictureModal}
+                error={profilePictureModalError}
+              />
+            </Col>
+            <Col md="4"></Col>
+          </Row>
+          <Row>
+            <Col md="3" className="text-md-right">
+              <Label>
+                Name<span style={{ color: 'red' }}>*</span>
+              </Label>
+            </Col>
+            <Col md="4">
+              <FormGroup>
+                <Input
+                  type="text"
+                  name="firstName"
+                  id="firstName"
+                  placeholder="First Name"
+                  value={userProfile.firstName}
+                  onChange={e => {
+                    handleChange(e);
+                  }}
+                  invalid={formErrors.firstName !== ''}
+                />
+                <FormFeedback>{formErrors.firstName}</FormFeedback>
+              </FormGroup>
+            </Col>
+            <Col md="4">
+              <FormGroup>
+                <Input
+                  type="text"
+                  name="lastName"
+                  id="lastName"
+                  placeholder="Last Name"
+                  value={userProfile.lastName}
+                  onChange={e => {
+                    handleChange(e);
+                  }}
+                  invalid={formErrors.lastName !== ''}
+                />
+                <FormFeedback>{formErrors.lastName}</FormFeedback>
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="3" className="text-md-right">
+              <Label>
+                Password<span style={{ color: 'red' }}>*</span>
+              </Label>
+            </Col>
+            <Col md="4">
+              <InputGroup id="password-input-group">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={userProfile.password}
+                  onChange={e => {
+                    handleChange(e);
+                  }}
+                  placeholder="Enter your password"
+                  invalid={formErrors.password !== ''}
+                />
+
+                <InputGroupAddon addonType="append">
+                  <InputGroupText
+                    id="showPassword"
+                    onClick={togglePasswordVisibility}
+                    style={{ backgroundColor: '#f5f5f5' }}
                   >
-                    add profile picture
-                  </Button>
-                  <ProfilePictureModal
-                    isOpen={profilePictureModalOpen}
-                    toggle={toggleProfilePictureModal}
-                    error={profilePictureModalError}
-                  />
-                </Col>
-                <Col md="3"></Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>
-                    Name<span style={{ color: 'red' }}>*</span>
-                  </Label>
-                </Col>
-                <Col md="3">
-                  <FormGroup>
-                    <Input
-                      type="text"
-                      name="firstName"
-                      id="firstName"
-                      placeholder="First Name"
-                      value={userProfile.firstName}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      invalid={formErrors.firstName !== ''}
-                    />
-                    <FormFeedback>{formErrors.firstName}</FormFeedback>
-                  </FormGroup>
-                </Col>
-                <Col md="3">
-                  <FormGroup>
-                    <Input
-                      type="text"
-                      name="lastName"
-                      id="lastName"
-                      placeholder="Last Name"
-                      value={userProfile.lastName}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      invalid={formErrors.lastName !== ''}
-                    />
-                    <FormFeedback>{formErrors.lastName}</FormFeedback>
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>
-                    Password<span style={{ color: 'red' }}>*</span>
-                  </Label>
-                </Col>
-                <Col md="3">
-                  <InputGroup>
-                    <Input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      value={userProfile.password}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      placeholder="Enter your password"
-                      invalid={formErrors.password !== ''}
-                    />
+                    {showPassword ? (
+                      <FontAwesomeIcon icon={faEyeSlash} />
+                    ) : (
+                      <FontAwesomeIcon icon={faEye} />
+                    )}
+                  </InputGroupText>
+                </InputGroupAddon>
+                <FormFeedback>{formErrors.password}</FormFeedback>
+              </InputGroup>
+            </Col>
+            <Col md="4">
+              <InputGroup>
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={userProfile.confirmPassword}
+                  onChange={e => {
+                    handleChange(e);
+                  }}
+                  placeholder="Confirm your password"
+                  invalid={formErrors.confirmPassword !== ''}
+                />
 
-                    <InputGroupAddon addonType="append">
-                      <InputGroupText
-                        id="showPassword"
-                        onClick={togglePasswordVisibility}
-                        style={{ backgroundColor: '#f5f5f5' }}
-                      >
-                        {showPassword ? (
-                          <FontAwesomeIcon icon={faEyeSlash} />
-                        ) : (
-                          <FontAwesomeIcon icon={faEye} />
-                        )}
-                      </InputGroupText>
-                    </InputGroupAddon>
-                    <FormFeedback>{formErrors.password}</FormFeedback>
-                  </InputGroup>
-                </Col>
-                <Col md="3">
-                  <InputGroup>
-                    <Input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={userProfile.confirmPassword}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      placeholder="Confirm your password"
-                      invalid={formErrors.confirmPassword !== ''}
-                    />
+                <InputGroupAddon addonType="append">
+                  <InputGroupText
+                    id="showConfirmPassword"
+                    onClick={toggleConfirmPasswordVisibility}
+                    style={{ backgroundColor: '#f5f5f5' }}
+                  >
+                    {showConfirmPassword ? (
+                      <FontAwesomeIcon icon={faEyeSlash} />
+                    ) : (
+                      <FontAwesomeIcon icon={faEye} />
+                    )}
+                  </InputGroupText>
+                </InputGroupAddon>
+                <FormFeedback>{formErrors.confirmPassword}</FormFeedback>
+              </InputGroup>
+            </Col>
+          </Row>
+          <Row className="mt-3">
+            <Col md="3" className="text-md-right">
+              <Label>
+                Job Title<span style={{ color: 'red' }}>*</span>
+              </Label>
+            </Col>
+            <Col md="8">
+              <FormGroup>
+                <Input
+                  type="text"
+                  name="jobTitle"
+                  id="jobTitle"
+                  placeholder="Job Title"
+                  value={userProfile.jobTitle}
+                  onChange={e => {
+                    handleChange(e);
+                  }}
+                  invalid={formErrors.jobTitle !== ''}
+                />
+                <FormFeedback>{formErrors.jobTitle}</FormFeedback>
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="3" className="text-md-right">
+              <Label>
+                Email/Phone<span style={{ color: 'red' }}>*</span>
+              </Label>
+            </Col>
+            <Col md="4">
+              <FormGroup>
+                <Input
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="Email"
+                  value={userProfile.email}
+                  readOnly={true}
+                  invalid={formErrors.email !== ''}
+                />
+                <FormFeedback>{formErrors.email}</FormFeedback>
+              </FormGroup>
+            </Col>
+            <Col md="4">
+              <FormGroup>
+                <PhoneInput
+                  country="US"
+                  regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+                  limitMaxLength="true"
+                  value={userProfile.phoneNumber}
+                  onChange={phone => phoneChange(phone)}
+                  inputStyle={{ height: 'auto', width: '100%', fontSize: 'inherit' }}
+                />
+                <Input
+                  style={{
+                    display: 'none',
+                  }}
+                  invalid={formErrors.phoneNumber !== ''}
+                />
+                <FormFeedback>{formErrors.phoneNumber}</FormFeedback>
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="3" className="text-md-right">
+              <Label>
+                Video Call Preference<span style={{ color: 'red' }}>*</span>
+              </Label>
+            </Col>
+            <Col md="8">
+              <FormGroup>
+                <Input
+                  type="text"
+                  name="collaborationPreference"
+                  id="collaborationPreference"
+                  placeholder="Skype, Zoom, etc."
+                  value={userProfile.collaborationPreference}
+                  onChange={e => {
+                    handleChange(e);
+                  }}
+                  invalid={formErrors.collaborationPreference !== ''}
+                />
+                <FormFeedback>{formErrors.collaborationPreference}</FormFeedback>
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="3" className="text-md-right">
+              <Label className="w-100  text-wrap">
+                Home Country Option
+                <i className="fa fa-info-circle ml-1" id="countryRep" />
+                <UncontrolledTooltip placement="right" target="countryRep" id="coutry-rep-tooltip">
+                  <p className="alert alert-info" id="country-rep-info">
+                    One Community is a global effort and international team that has had volunteers
+                    volunteering from and/or representing <b>{totalCountryCount}</b> different
+                    countries around the world. Complete this field if you are currently residing in
+                    a country other than your own and wish to be represented on our global
+                    contributors map with your birth country instead of your current city and/or
+                    country.
+                  </p>
+                </UncontrolledTooltip>
+              </Label>
+            </Col>
 
-                    <InputGroupAddon addonType="append">
-                      <InputGroupText
-                        id="showConfirmPassword"
-                        onClick={toggleConfirmPasswordVisibility}
-                        style={{ backgroundColor: '#f5f5f5' }}
-                      >
-                        {showConfirmPassword ? (
-                          <FontAwesomeIcon icon={faEyeSlash} />
-                        ) : (
-                          <FontAwesomeIcon icon={faEye} />
-                        )}
-                      </InputGroupText>
-                    </InputGroupAddon>
-                    <FormFeedback>{formErrors.confirmPassword}</FormFeedback>
-                  </InputGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>
-                    Job Title<span style={{ color: 'red' }}>*</span>
-                  </Label>
-                </Col>
-                <Col md={{ size: 6 }}>
-                  <FormGroup>
-                    <Input
-                      type="text"
-                      name="jobTitle"
-                      id="jobTitle"
-                      placeholder="Job Title"
-                      value={userProfile.jobTitle}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      invalid={formErrors.jobTitle !== ''}
-                    />
-                    <FormFeedback>{formErrors.jobTitle}</FormFeedback>
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>
-                    Email/Phone<span style={{ color: 'red' }}>*</span>
-                  </Label>
-                </Col>
-                <Col md="3">
-                  <FormGroup>
-                    <Input
-                      type="email"
-                      name="email"
-                      id="email"
-                      placeholder="Email"
-                      value={userProfile.email}
-                      readOnly={true}
-                      invalid={formErrors.email !== ''}
-                    />
-                    <FormFeedback>{formErrors.email}</FormFeedback>
-                  </FormGroup>
-                </Col>
-                <Col md="3">
-                  <FormGroup>
-                    <PhoneInput
-                      country="US"
-                      regions={['america', 'europe', 'asia', 'oceania', 'africa']}
-                      limitMaxLength="true"
-                      value={userProfile.phoneNumber}
-                      onChange={phone => phoneChange(phone)}
-                      inputStyle={{ width: '100%' }}
-                    />
-                    <Input
-                      style={{
-                        display: 'none',
-                      }}
-                      invalid={formErrors.phoneNumber !== ''}
-                    />
-                    <FormFeedback>{formErrors.phoneNumber}</FormFeedback>
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>
-                    Video Call Preference<span style={{ color: 'red' }}>*</span>
-                  </Label>
-                </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <Input
-                      type="text"
-                      name="collaborationPreference"
-                      id="collaborationPreference"
-                      placeholder="Skype, Zoom, etc."
-                      value={userProfile.collaborationPreference}
-                      onChange={e => {
-                        handleChange(e);
-                      }}
-                      invalid={formErrors.collaborationPreference !== ''}
-                    />
-                    <FormFeedback>{formErrors.collaborationPreference}</FormFeedback>
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>
-                    Location<span style={{ color: 'red' }}>*</span>
-                  </Label>
-                </Col>
+            <Col md="8">
+              <Button
+                color="secondary "
+                block
+                size="md"
+                id="setup-rofile-entry-hc-btn"
+                onClick={toggleHomecountryModal}
+              >
+                Enter and Represent a Country Other Than Your Current Residence
+              </Button>
+              <HomeCountryModal
+                isOpen={homecountryModalOpen}
+                toggle={toggleHomecountryModal}
+                apiKey={APIkey}
+                setLocation={setHomecountryLocation}
+              />
+            </Col>
+          </Row>
+          <Row className="mt-3">
+            <Col md="3" className="text-md-right">
+              <Label>
+                Location<span style={{ color: 'red' }}>*</span>
+              </Label>
+            </Col>
+            <Col md="4">
+              <FormGroup>
+                <Input
+                  type="text"
+                  name="location"
+                  id="location"
+                  placeholder="Location"
+                  value={userProfile.location.userProvided}
+                  onChange={e => {
+                    handleLocation(e);
+                  }}
+                  invalid={formErrors.location !== ''}
+                />
+                <FormFeedback>{formErrors.location}</FormFeedback>
+              </FormGroup>
+            </Col>
+            <Col md="4">
+              <Button
+                color="secondary "
+                block
+                size="md"
+                onClick={getTimeZone}
+                id="setup-rofile-entry-tz-btn"
+              >
+                Get Time Zone
+              </Button>
+              <Input
+                style={{
+                  display: 'none',
+                }}
+                invalid={formErrors.timeZoneFilter !== ''}
+              />
+              <FormFeedback>{formErrors.timeZoneFilter}</FormFeedback>
+            </Col>
+          </Row>
+          <Row>
+            <Col md="3" className="text-md-right">
+              <Label>
+                Time Zone<span style={{ color: 'red' }}>*</span>
+              </Label>
+            </Col>
+            <Col md="8">
+              <FormGroup>
+                <TimeZoneDropDown
+                  id="timeZone"
+                  onChange={e => handleChange(e)}
+                  filter={userProfile.timeZoneFilter}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+          {homecountryLocation?.country && (
+            <Row>
+              <Col md={{ size: 8, offset: 3 }}>
+                <div className="alert alert-info alert-dismissible fade show" role="alert">
+                  <p style={{ textAlign: 'center', margin: '0px' }}>
+                    Thank you for choosing to represent your home country, you’ll be shown (with
+                    just your first name and last initial) on our world map as representing
+                    <b>
+                      {homecountryLocation?.city ? ` ${homecountryLocation?.city}, ` : ' '}
+                      {homecountryLocation?.country}
+                    </b>
+                    .
+                  </p>
+                  <button
+                    type="button"
+                    className="close"
+                    onClick={toggleDeleteHoumeCountryModal}
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                   
+                </div>
+               
+              </Col>
+            </Row>
+          )}
+          <DeleteHoumeCountryModal
+                  isOpen={deleteHoumeCountryModal}
+                  toggle={toggleDeleteHoumeCountryModal}
+                  setLocation={setHomecountryLocation}
+                />
+          <Row>
+            <Col md={{ size: 8, offset: 3 }}>
+              <div className="alert alert-info text-center">
+                Clicking the Submit button redirects you to your personalized profile dashboard.
+              </div>
+            </Col>
+          </Row>
 
-                <Col md="6 pr-0">
-                  <Row>
-                    <Col md="6">
-                      <FormGroup>
-                        <Input
-                          type="text"
-                          name="location"
-                          id="location"
-                          placeholder="Location"
-                          value={userProfile.location.userProvided}
-                          onChange={e => {
-                            handleLocation(e);
-                          }}
-                          invalid={formErrors.location !== ''}
-                        />
-                        <FormFeedback>{formErrors.location}</FormFeedback>
-                      </FormGroup>
-                    </Col>
-                    <Col md="6 pr-0">
-                      <Button
-                        color="secondary "
-                        block
-                        size="md"
-                        onClick={getTimeZone}
-                        id="setup-rofile-entry-tz-btn"
-                      >
-                        Get Time Zone
-                      </Button>
-                      <Input
-                        style={{
-                          display: 'none',
-                        }}
-                        invalid={formErrors.timeZoneFilter !== ''}
-                      />
-                      <FormFeedback>{formErrors.timeZoneFilter}</FormFeedback>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right">
-                  <Label className="w-100  text-wrap">
-                    Do you represent a country other than your current residence?
-                    <i className="fa fa-info-circle ml-1" id="countryRep" />
-                    <UncontrolledTooltip
-                      placement="right"
-                      target="countryRep"
-                      id="coutry-rep-tooltip"
-                    >
-                      <p className="alert alert-info" id="country-rep-info">
-                        One Community is a global effort and international team that has had
-                        volunteers volunteering from and/or representing 60 countries around the
-                        world. Complete this field if you are currently residing in a country other
-                        than your own and wish to be represented on our global contributors map with
-                        your birth country instead of your current country or residence.
-                      </p>
-                    </UncontrolledTooltip>
-                  </Label>
-                </Col>
-
-                <Col md="6 pr-0">
-                  <Row>
-                    <Col md="6">
-                      <Button
-                        color="secondary "
-                        block
-                        size="md"
-                        id="setup-rofile-entry-rr-btn"
-                        onClick={toggleRequirementModal}
-                      >
-                        Read The Requirements
-                      </Button>
-                      <Input
-                        style={{
-                          display: 'none',
-                        }}
-                        invalid={requirementModalError !== ''}
-                      />
-                      <FormFeedback>{requirementModalError}</FormFeedback>
-                      <RequirementModal
-                        isOpen={requirementModalOpen}
-                        toggle={toggleRequirementModal}
-                        handleCheckbox={handleRequirementsBoxChecked}
-                        isChecked={requirementsBoxChecked}
-                      />
-                    </Col>
-                    <Col md="6 pr-0">
-                      <Button
-                        color="secondary "
-                        block
-                        size="md"
-                        id="setup-rofile-entry-hc-btn"
-                        onClick={toggleHomecountryModal}
-                      >
-                        Set Home Country
-                      </Button>
-                      <HomeCountryModal
-                        isOpen={homecountryModalOpen}
-                        toggle={toggleHomecountryModal}
-                        apiKey={APIkey}
-                        setLocation={setHomecountryLocation}
-                      />
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              <Row>
-                <Col md="2" className="text-md-right my-2">
-                  <Label>
-                    Time Zone<span style={{ color: 'red' }}>*</span>
-                  </Label>
-                </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <TimeZoneDropDown
-                      selected={'America/Los_Angeles'}
-                      id="timeZone"
-                      onChange={e => handleChange(e)}
-                      filter={userProfile.timeZoneFilter}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={{ size: 6, offset: 2 }}>
-                  <div className="alert alert-info text-center">
-                    Clicking the Submit button redirects you to your personalized profile dashboard.
-                  </div>
-                </Col>
-              </Row>
-              <Row className="mt-1 mb-3">
-                <Col md="12">
-                  <Row>
-                    <Col md="4" className="pl-4">
-                      <Button
-                        type="submit"
-                        className="btn btn-content p-2 pl-4 pr-4"
-                        color="primary"
-                        onClick={e => handleFormSubmit(e)}
-                      >
-                        Submit
-                      </Button>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Form>
-          </Col>
-        </Row>
+          <Row className="mt-1 mb-3">
+            <Col md={{ size: 2, offset: 3 }}>
+              <Button
+                type="submit"
+                className="btn btn-content p-2 pl-4 pr-4"
+                color="primary"
+                onClick={e => handleFormSubmit(e)}
+              >
+                Submit
+              </Button>
+            </Col>
+          </Row>
+        </Form>
       </Container>
     </div>
   );
