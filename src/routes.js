@@ -86,148 +86,146 @@ export default (
       {/* <BMHeader /> */}
       <AutoUpdate />
       <ToastContainer />
-      <div style={{ paddingTop: '90px' }}>
-        <Switch>
-          <ProtectedRoute path="/dashboard" exact component={Dashboard} />
-          <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
-          <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
-          <ProtectedRoute path="/popupmanagement" component={Admin} />
-          <ProtectedRoute path="/timelog/" exact component={Timelog} />
-          <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
-          <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
-          <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
-          <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
-          <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
-          
-            <ProtectedRoute
-              path="/inventory/:projectId"
-              component={Inventory}
-              routePermissions={RoutePermissions.inventoryProject}
-            />
-            <ProtectedRoute
-              path="/inventory/:projectId/wbs/:wbsId"
-              component={Inventory}
-              routePermissions={RoutePermissions.inventoryProjectWbs}
-            />
+      <Switch>
+        <ProtectedRoute path="/dashboard" exact component={Dashboard} />
+        <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
+        <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
+        <ProtectedRoute path="/popupmanagement" component={Admin} />
+        <ProtectedRoute path="/timelog/" exact component={Timelog} />
+        <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
+        <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
+        <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
+        <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
+        <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
 
-          <ProtectedRoute
-            path="/weeklysummariesreport"
-            exact
-            component={WeeklySummariesReport}
-            fallback
-            allowedRoles={[
-              UserRole.Administrator,
-              UserRole.Manager,
-              UserRole.CoreTeam,
-              UserRole.Owner,
-              UserRole.Mentor,
-            ]}
-            routePermissions={[RoutePermissions.weeklySummariesReport]}
-          />
-          <ProtectedRoute
-            path="/reports"
-            exact
-            component={Reports}
-            fallback
-            routePermissions={RoutePermissions.reports}
-          />
-          <ProtectedRoute
-            path="/teamlocations"
-            exact
-            component={TeamLocations}
-          />
-          <ProtectedRoute
-            path="/projects"
-            exact
-            component={Projects}
-            fallback
-            allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-            routePermissions={[
-              RoutePermissions.projects,
-              RoutePermissions.projectManagement_fullFunctionality,
-              RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
-            ]}
-          />
-          <ProtectedRoute
-            path="/projects"
-            exact
-            component={Projects}
-            fallback
-            routePermissions={RoutePermissions.projects}
-          />
-          <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} fallback />
-          <ProtectedRoute path="/project/wbs/:projectId" component={WBS} fallback />
-          <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} fallback />
-          <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} fallback />
-          <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} fallback />
-          <ProtectedRoute
-            path="/usermanagement"
-            exact
-            component={UserManagement}
-            fallback
-            routePermissions={RoutePermissions.userManagement}
-          />
-          <ProtectedRoute
-            path="/badgemanagement"
-            exact
-            component={BadgeManagement}
-            fallback
-            routePermissions={RoutePermissions.badgeManagement}
-          />
-          <ProtectedRoute
-            path="/permissionsmanagement"
-            exact
-            component={PermissionsManagement}
-            fallback
-            routePermissions={[
-              RoutePermissions.permissionsManagement,
-              RoutePermissions.userPermissionsManagement,
-            ]}
-          />
-          <ProtectedRoute
-            path="/permissionsmanagement/:userRole"
-            exact
-            component={UserRoleTab}
-            fallback
-            routePermissions={RoutePermissions.permissionsManagementRole}
-          />
-          <ProtectedRoute
-            path="/teams"
-            exact
-            component={Teams}
-            fallback
-            allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-            routePermissions={RoutePermissions.teams}
-          />
+        <ProtectedRoute
+          path="/inventory/:projectId"
+          component={Inventory}
+          routePermissions={RoutePermissions.inventoryProject}
+        />
+        <ProtectedRoute
+          path="/inventory/:projectId/wbs/:wbsId"
+          component={Inventory}
+          routePermissions={RoutePermissions.inventoryProjectWbs}
+        />
 
-            {/* ----- BEGIN BM Dashboard Routing ----- */}
+        <ProtectedRoute
+          path="/weeklysummariesreport"
+          exact
+          component={WeeklySummariesReport}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          routePermissions={[RoutePermissions.weeklySummariesReport]}
+        />
+        <ProtectedRoute
+          path="/reports"
+          exact
+          component={Reports}
+          fallback
+          routePermissions={RoutePermissions.reports}
+        />
+        <ProtectedRoute
+          path="/teamlocations"
+          exact
+          component={TeamLocations}
+        />
+        <ProtectedRoute
+          path="/projects"
+          exact
+          component={Projects}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={[
+            RoutePermissions.projects,
+            RoutePermissions.projectManagement_fullFunctionality,
+            RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
+          ]}
+        />
+        <ProtectedRoute
+          path="/projects"
+          exact
+          component={Projects}
+          fallback
+          routePermissions={RoutePermissions.projects}
+        />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} fallback />
+        <ProtectedRoute path="/project/wbs/:projectId" component={WBS} fallback />
+        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} fallback />
+        <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} fallback />
+        <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} fallback />
+        <ProtectedRoute
+          path="/usermanagement"
+          exact
+          component={UserManagement}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <ProtectedRoute
+          path="/badgemanagement"
+          exact
+          component={BadgeManagement}
+          fallback
+          routePermissions={RoutePermissions.badgeManagement}
+        />
+        <ProtectedRoute
+          path="/permissionsmanagement"
+          exact
+          component={PermissionsManagement}
+          fallback
+          routePermissions={[
+            RoutePermissions.permissionsManagement,
+            RoutePermissions.userPermissionsManagement,
+          ]}
+        />
+        <ProtectedRoute
+          path="/permissionsmanagement/:userRole"
+          exact
+          component={UserRoleTab}
+          fallback
+          routePermissions={RoutePermissions.permissionsManagementRole}
+        />
+        <ProtectedRoute
+          path="/teams"
+          exact
+          component={Teams}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.teams}
+        />
 
-          <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
-          <Route path="/bmdashboard/login" component={BMLogin} />
-          <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
-          <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
-          <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
-          <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
-          <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
-          {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-          <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+        {/* ----- BEGIN BM Dashboard Routing ----- */}
 
-          {/* ----- END BM Dashboard Routing ----- */}
+        <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
+        <Route path="/bmdashboard/login" component={BMLogin} />
+        <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
+        <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
+        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
+        <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
+        <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
+        {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
+        <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
-          <Route path="/login" component={Login} />
-          <Route path="/forgotpassword" component={ForgotPassword} />
-          <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
-          <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
-          <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
-          <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
-          <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
-          <Route path="/Logout" component={Logout} />
-          <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-          <ProtectedRoute path="/" exact component={Dashboard} />
+        {/* ----- END BM Dashboard Routing ----- */}
+
+        <Route path="/login" component={Login} />
+        <Route path="/forgotpassword" component={ForgotPassword} />
+        <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
+        <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
+        <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
+        <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
+        <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <Route path="/Logout" component={Logout} />
+        <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        <ProtectedRoute path="/" exact component={Dashboard} />
 
 
-        </Switch>
-      </div>
+      </Switch>
     </>
   </Switch>
 );

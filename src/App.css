@@ -120,25 +120,3 @@ nav ul.navbar-nav li:last-child > div {
 tr {
   content-visibility: auto;
 }
-
-.floating-header {
-  position: fixed; /* Keeps the button in the same position on the screen */
-  top: 95px; /* Distance from the bottom of the viewport */
-  left: 0px;
-  right: 0px; /* Distance from the right of the viewport */
-  z-index: 900; /* Ensures the button stays above other content */
-}
-
-.close-button {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px; /* Add some padding for easier clicking */
-}
-
-.card-content {
-  padding: 5px; /* Add padding around the card content */
-  padding-left: 40px;
-  color: white;
-  font-size: medium;
-}

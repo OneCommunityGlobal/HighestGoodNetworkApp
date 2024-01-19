@@ -1,12 +1,22 @@
 .header-wrapper {
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
-  padding-top: 0px;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  z-index: 1000;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 12px; /* Add some padding for easier clicking */
+}
+
+.card-content {
+  padding: 5px; /* Add padding around the card content */
+  padding-left: 40px;
+  padding-right: 40px;
+  white-space: pre-line;
+  color: white;
+  font-size: medium;
 }
 
 .navbar {
