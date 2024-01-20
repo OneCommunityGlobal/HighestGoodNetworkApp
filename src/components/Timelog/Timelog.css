@@ -98,3 +98,12 @@
   min-height: 150px;
   resize: vertical;
 }
+
+.activeUser {
+  color: lawngreen;
+}
+
+.notActiveUser {
+  color: #dee2e6;
+>>>>>>> development
+}
