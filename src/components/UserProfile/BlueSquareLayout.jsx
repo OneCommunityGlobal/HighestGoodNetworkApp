@@ -78,8 +78,7 @@ const BlueSquareLayout = props => {
   }, []);
 
   
-  const handleSubmit = async event => {
-    event.preventDefault();
+  const handleSubmit = async () => {
     if (fetchState.isSet && IsReasonUpdated) { //if reason already exists and if it is changed by the user
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await patchReason(userProfile._id, { date: date, message: reason });
