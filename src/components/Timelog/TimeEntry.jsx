@@ -77,6 +77,8 @@ const TimeEntry = (props) => {
     // Administrator/Owner can add time entries for any dates.
     (role === 'Owner' || role === 'Administrator');
 
+  const canEditTimeEntryDescription = dispatch(hasPermission('editTimeEntryDescription'))
+
   const toggleTangibility = () => {
     //Update intangible hours property in userprofile
     const formattedHours = parseFloat(data.hours) + parseFloat(data.minutes) / 60;
@@ -165,7 +167,7 @@ const TimeEntry = (props) => {
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(data.notes)}
             <div className="buttons">
-              {canEdit && !fromTaskTab && (
+              {(canEdit && !fromTaskTab || canEditTimeEntryDescription) && (
               <button className="mr-3 text-primary">
                 <FontAwesomeIcon
                   icon={faEdit}

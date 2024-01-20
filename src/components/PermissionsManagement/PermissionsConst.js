@@ -229,7 +229,7 @@ export const permissionLabels = [
               },
               {
                 label: 'Edit Timelog Description',
-                key: 'editTimeEntry',
+                key: 'editTimeEntryDescription',
                 description: 'Gives the user permission to edit the description of any time log entry.',
               },
               {
