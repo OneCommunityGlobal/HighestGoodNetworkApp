@@ -8,6 +8,7 @@ import { formatDateFromDescriptionString } from 'utils/formatDateFromDescription
 const BlueSquare = (props) => {
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canDeleteBuleSquare = props.hasPermission('deleteInfringements');
   const { blueSquares, handleBlueSquare } = props;
 
   return (
@@ -32,9 +33,27 @@ const BlueSquare = (props) => {
                       'modBlueSquare',
                       blueSquare._id,
                     );
+                    } else if (isInfringementAuthorizer && canDeleteBuleSquare){
+                      handleBlueSquare(
+                        isInfringementAuthorizer,
+                        'handleBlueSquare',
+                        blueSquare._id,
+                      );
+                    } else if (isInfringementAuthorizer) {
+                      handleBlueSquare(
+                        isInfringementAuthorizer,
+                        'editBlueSquare',
+                        blueSquare._id,
+                      );
+                    } else if (canDeleteBuleSquare) {
+                      handleBlueSquare(
+                        canDeleteBuleSquare,
+                        'deleteBlueSquare',
+                        blueSquare._id,
+                      );
                   } else {
                     handleBlueSquare(
-                      !canPutUserProfileImportantInfo,
+                      !isInfringementAuthorizer,
                       'viewBlueSquare',
                       blueSquare._id,
                     );
