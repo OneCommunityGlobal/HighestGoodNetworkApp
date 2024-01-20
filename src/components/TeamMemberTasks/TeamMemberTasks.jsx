@@ -38,7 +38,7 @@ const TeamMemberTasks = React.memo(props => {
   const [taskModalOption, setTaskModalOption] = useState('');
 
   const dispatch = useDispatch();
-  
+
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
     setMarkAsDoneModal(false);
@@ -191,7 +191,7 @@ const TeamMemberTasks = React.memo(props => {
     getTimeEntriesForPeriod(selectedPeriod);
   }, [selectedPeriod, usersWithTimeEntries]);
 
-  
+
 
   return (
     <div className="container team-member-tasks">
