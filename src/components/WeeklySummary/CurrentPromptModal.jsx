@@ -4,7 +4,11 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'react
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
-import { updateDashboardData, getDashboardDataAI } from '../../actions/weeklySummariesAIPrompt';
+import {
+  updateDashboardData,
+  getDashboardDataAI,
+  updateCopiedPromtDate,
+} from '../../actions/weeklySummariesAIPrompt';
 
 function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);
@@ -13,7 +17,7 @@ function CurrentPromptModal(props) {
   const [prompt, setPrompt] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { userRole } = props;
+  const { userRole, userId } = props;
   const toggle = () => setModal(!modal);
 
   const fallbackPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.
@@ -48,8 +52,9 @@ function CurrentPromptModal(props) {
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(prompt);
-    toast.success('Prompt Copied!');
-  };
+    // eslint-disable-next-line prettier/prettier
+    dispatch(updateCopiedPromtDate(userId))
+    .then(() => {toast.success('Prompt Copied!')})};
 
   const handleSavePrompt = () => {
     setLoading(true);
@@ -80,7 +85,6 @@ function CurrentPromptModal(props) {
     }
     return <div>{prompt}</div>;
   };
-
   return (
     <div>
       <Button color="info" onClick={toggle} style={boxStyle}>

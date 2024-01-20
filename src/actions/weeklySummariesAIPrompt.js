@@ -3,7 +3,9 @@ import axios from 'axios';
 import {
   getAIPrompt as getAIPrompt,
   updateAIPrompt as updateAIPrompt,
+  updateCopiedPrompt as updateCopiedPrompt,
 } from '../constants/weeklySummariesAIPrompt';
+import { dispatch } from 'd3';
 
 export const getDashboardDataAI = () => {
   const DashboardDataAIPromise = axios.get(ENDPOINTS.AI_PROMPT());
@@ -29,3 +31,10 @@ export const updateDashboardData = textPrompt => {
       .then(dispatch(updateAIPrompt(textPrompt)));
   };
 };
+
+export const updateCopiedPromtDate = (userId) => {
+ return async dispatch => {
+  await axios.put(ENDPOINTS.COPIED_AI_PROMPT(),userId)
+  .then(dispatch(updateCopiedPrompt(userId)));
+ }
+}
