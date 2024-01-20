@@ -12,7 +12,7 @@ import './PurchaseForm.css';
 
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
-  const tools = useSelector(state => state.bmInvTypes.filter(item => item.category === 'Tool'));
+  const tools = useSelector(state => state.bmInvTypes.list);
   const history = useHistory();
 
   const [projectId, setProjectId] = useState('');
