@@ -13,6 +13,7 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
+import ToolsList from 'components/BMDashboard/ToolsList';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 // import Reports from './components/Reports';
@@ -50,7 +51,6 @@ import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
 import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesList/ConsumablesView';
-
 import EquipmentList from './components/BMDashboard/Equipment/List';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 // import MaterialsList from './components/BMDashboard/MaterialsList';
@@ -62,6 +62,7 @@ const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPu
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
 // const EquipmentList = lazy(() => import('./components/BMDashboard/EquipmentList'))
+// const ToolsList = lazy(() => import('./components/BMDashboard/ToolsList'))
 
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
@@ -217,6 +218,7 @@ export default (
 
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
+        <BMProtectedRoute path="/bmdashboard/tools" fallback component={ToolsList} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />

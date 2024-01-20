@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
 // import { fetchAllTools } from 'actions/bmdashboard/toolsActions';
 import BMError from '../shared/BMError';
@@ -10,18 +10,18 @@ import './ToolsList.css';
 
 export function ToolsList(props) {
   // props & state
-  const { tools, errors, dispatch } = props;
+  const { tools, errors } = props;
   const [filteredTools, setFilteredTools] = useState(tools);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedTool, setSelectedTool] = useState('all');
   const [isError, setIsError] = useState(false);
-  const postToolUpdateResult = useSelector(state => state.tools.updateTools);
+  // const postToolUpdateResult = useSelector(state => state.tools.updateTools);
 
   // dispatch tools fetch action : on load and update
   // response is mapped to tools or errors in redux store
-  useEffect(() => {
-    if (postToolUpdateResult.result == null) dispatch(fetchAllTools());
-  }, [postToolUpdateResult.result]); // To refresh with new tools after update
+  // useEffect(() => {
+  //   if (postToolUpdateResult.result == null) dispatch(fetchAllTools());
+  // }, [postToolUpdateResult.result]); // To refresh with new tools after update
 
   useEffect(() => {
     setFilteredTools([...tools]);

@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Table, Button } from 'reactstrap';
-import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
+// import { BiPencil } from 'react-icons/bi';
 
-import { resetToolUpdate } from 'actions/bmdashboard/toolsActions';
-import { useDispatch } from 'react-redux';
+// import { resetToolUpdate } from 'actions/bmdashboard/toolsActions';
+// import { useDispatch } from 'react-redux';
+// import UpdateToolModal from '../UpdateTools/UpdateToolModal';
 import RecordsModal from './RecordsModal';
-import UpdateToolModal from '../UpdateTools/UpdateToolModal';
 
 export default function ToolsTable({ filteredTools }) {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [sortedData, setData] = useState(null);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
@@ -25,16 +25,16 @@ export default function ToolsTable({ filteredTools }) {
   }, [filteredTools]);
 
   // Update Tool Form
-  const [updateModal, setUpdateModal] = useState(false);
-  const [updateRecord, setUpdateRecord] = useState(null);
+  // const [updateModal, setUpdateModal] = useState(false);
+  // const [updateRecord, setUpdateRecord] = useState(null);
 
-  const handleEditRecordsClick = (selectedTool, type) => {
-    if (type === 'Update') {
-      dispatch(resetToolUpdate());
-      setUpdateModal(true);
-      setUpdateRecord(selectedTool);
-    }
-  };
+  // const handleEditRecordsClick = (selectedTool, type) => {
+  //   if (type === 'Update') {
+  //     dispatch(resetToolUpdate());
+  //     setUpdateModal(true);
+  //     setUpdateRecord(selectedTool);
+  //   }
+  // };
 
   const handleViewRecordsClick = (data, type) => {
     setModal(true);
@@ -109,7 +109,7 @@ export default function ToolsTable({ filteredTools }) {
         setRecord={setRecord}
         recordType={recordType}
       />
-      <UpdateToolModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+      {/* <UpdateToolModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} /> */}
       <div className="tools_table_container">
         <Table>
           <thead>
@@ -144,9 +144,9 @@ export default function ToolsTable({ filteredTools }) {
                     <td>{mat.stockWasted}</td>
 
                     <td className="tools_cell">
-                      <button type="button" onClick={() => handleEditRecordsClick(mat, 'Update')}>
+                      {/* <button type="button" onClick={() => handleEditRecordsClick(mat, 'Update')}>
                         <BiPencil />
-                      </button>
+                      </button> */}
                       <Button
                         color="primary"
                         outline
