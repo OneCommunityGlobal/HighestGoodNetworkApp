@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { fetchMaterialTypes } from 'actions/bmdashboard/invTypeActions';
+import { fetchInvTypeByType } from 'actions/bmdashboard/invTypeActions';
 import { Accordion, Card } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -9,19 +9,26 @@ import 'react-datepicker/dist/react-datepicker.css';
 import BMError from '../shared/BMError';
 import TypesTable from './TypesTable';
 import './TypesList.css';
-import { equipmentTypes, consumableTypes, toolTypes, reusableTypes } from './mockData';
 import AccordionToggle from './AccordionToggle';
 
 export function InventoryTypesList(props) {
-  const { materialTypes, errors, dispatch } = props;
+  const { invTypes, errors, dispatch } = props;
+
+  // NOTE: depend on redux action implementation
+  const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
 
   const [isError, setIsError] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // dispatch inventory type fetch action on load
-  // NOTE: only materials for now
   useEffect(() => {
-    dispatch(fetchMaterialTypes());
+    // NOTE: depend on redux action implementation
+    // dispatch(fetchInvTypeByType('All'));
+    dispatch(fetchInvTypeByType('Materials'));
+    dispatch(fetchInvTypeByType('Consumables'));
+    dispatch(fetchInvTypeByType('Equipments'));
+    dispatch(fetchInvTypeByType('Reusables'));
+    dispatch(fetchInvTypeByType('Tools'));
   }, []);
 
   // trigger error state if an error object is added to props
@@ -57,60 +64,20 @@ export function InventoryTypesList(props) {
       </div>
 
       <Accordion>
-        <Card>
-          <AccordionToggle as={Card.Header} eventKey="0">
-            Material
-          </AccordionToggle>
-          <Accordion.Collapse eventKey="0">
-            <Card.Body>
-              <TypesTable itemTypes={materialTypes} category="Material" />
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-
-        <Card>
-          <AccordionToggle as={Card.Header} eventKey="1">
-            Tool
-          </AccordionToggle>
-          <Accordion.Collapse eventKey="1">
-            <Card.Body>
-              <TypesTable itemTypes={toolTypes} category="Tool" />
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-
-        <Card>
-          <AccordionToggle as={Card.Header} eventKey="2">
-            Equipment
-          </AccordionToggle>
-          <Accordion.Collapse eventKey="2">
-            <Card.Body>
-              <TypesTable itemTypes={equipmentTypes} category="Equipment" />
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-
-        <Card>
-          <AccordionToggle as={Card.Header} eventKey="3">
-            Consumable
-          </AccordionToggle>
-          <Accordion.Collapse eventKey="3">
-            <Card.Body>
-              <TypesTable itemTypes={consumableTypes} category="Consumable" />
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-
-        <Card>
-          <AccordionToggle as={Card.Header} eventKey="4">
-            Reusable
-          </AccordionToggle>
-          <Accordion.Collapse eventKey="4">
-            <Card.Body>
-              <TypesTable itemTypes={reusableTypes} category="Reusable" />
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
+        {categories?.map((category, index) => {
+          return (
+            <Card key={category}>
+              <AccordionToggle as={Card.Header} eventKey={index + 1}>
+                {category}
+              </AccordionToggle>
+              <Accordion.Collapse eventKey={index + 1}>
+                <Card.Body>
+                  <TypesTable itemTypes={invTypes[category]} category={category} />
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
+          );
+        })}
       </Accordion>
 
       <div className="button-container">
@@ -124,8 +91,7 @@ export function InventoryTypesList(props) {
 }
 
 const mapStateToProps = state => ({
-  // invTypes: state.bmInvTypes,
-  materialTypes: state.bmInvTypes,
+  invTypes: state.bmInvTypes.invTypeList,
   errors: state.errors,
 });
 
