@@ -13,9 +13,10 @@ import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const [userProfile, setUserProfile] = useState(undefined);
-  const { match, auth } = props;
-  const userId = match.params.userId || auth.user.userid;
+  const { match, authUser } = props;
+  const displayUserId = match.params.userId || authUser.userid;
+
+  const isAuthUser = displayUserId === authUser.userid;
 
   const toggle = () => {
     setPopup(!popup);
@@ -32,25 +33,13 @@ export function Dashboard(props) {
     props.getTimeZoneAPIKey();
   }, []);
 
-  useEffect(() => {
-    const {
-      match: { params },
-      getUserProfile,
-    } = props;
-    if (params && params.userId && userId !== params.userId) {
-      getUserProfile(params.userId);
-    }
-  }, [props]);
-
   return (
     <Container fluid>
-      {match.params.userId && auth.user.userid !== match.params.userId ? <PopUpBar /> : ''}
+      {!isAuthUser ? <PopUpBar component="dashboard" /> : ''}
       <SummaryBar
-        userProfile={userProfile}
-        setUserProfile={setUserProfile}
-        asUser={userId}
+        displayUserId={displayUserId}
         toggleSubmitForm={toggle}
-        role={auth.user.role}
+        role={authUser.role}
         summaryBarData={summaryBarData}
       />
 
@@ -65,27 +54,36 @@ export function Dashboard(props) {
               onKeyDown={toggle}
               tabIndex="0"
             >
-              <WeeklySummary isDashboard isPopup={popup} asUser={userId} />
+              <WeeklySummary
+                isDashboard
+                isPopup={popup}
+                userRole={authUser.role}
+                displayUserId={displayUserId}
+              />
             </div>
           </div>
         </Col>
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard asUser={userId} />
+          <Leaderboard displayUserId={displayUserId} />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary asUser={userId} setPopup={setPopup} />
+                <WeeklySummary
+                  displayUserId={displayUserId}
+                  setPopup={setPopup}
+                  userRole={authUser.role}
+                />
               </div>
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            <Timelog isDashboard asUser={userId} passSummaryBarData={setSummaryBarData} />
+            <Timelog isDashboard passSummaryBarData={setSummaryBarData} match={match} />
           </div>
-          <Badge userId={userId} role={auth.user.role} />
+          <Badge userId={displayUserId} role={authUser.role} />
         </Col>
       </Row>
     </Container>
@@ -93,7 +91,7 @@ export function Dashboard(props) {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth,
+  authUser: state.auth.user,
 });
 
 export default connect(mapStateToProps, {
