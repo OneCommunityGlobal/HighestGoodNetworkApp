@@ -4,7 +4,8 @@ import './LessonForm.css';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllRoles } from '../../../actions/role';
-import { fetchAllProjects } from '../../../actions/projects';
+import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+// import { fetchAllProjects } from '../../../actions/projects';
 import Noimg from './images/Noimg3.jpg';
 
 const style = {
@@ -13,7 +14,8 @@ const style = {
 function LessonForm() {
   const dispatch = useDispatch();
   const roles = useSelector(state => state.role.roles); // grab all roles from store
-  const projects = useSelector(state => state.allProjects.projects); // grab all projects from store
+  // const projects = useSelector(state => state.allProjects.projects); // grab all projects from store
+  const projects = useSelector(state => state.bmProjects); // grab all BM projects from store
   const [LessonFormtags, setLessonFormTags] = useState([]); // save all tags user inputs
   const [tagInput, setTagInput] = useState(''); // track user input in tag input
   const [selectedFile, setSelectedFile] = useState(null); // track file that was selected or droped in upload appendix
@@ -55,7 +57,7 @@ function LessonForm() {
   };
   // Dispatch the action to fetch roles and projects when the component mounts
   useEffect(() => {
-    dispatch(fetchAllProjects());
+    dispatch(fetchBMProjects());
     dispatch(getAllRoles());
   }, [dispatch]);
   // logic if there is a projectId passed in params(on project specific from) to add the project tag automatically
@@ -213,8 +215,8 @@ function LessonForm() {
                   {!selectedProject && !projectId && <option>Select Project</option>}
                   {projectId && <option>Project {projectId}</option>}
                   {projects.map(project => (
-                    <option key={project._id} value={project.projectName}>
-                      {project.projectName}
+                    <option key={project._id} value={project.name}>
+                      {project.name}
                     </option>
                   ))}
                 </FormControl>
