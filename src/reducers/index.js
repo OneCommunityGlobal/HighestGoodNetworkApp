@@ -35,6 +35,7 @@ import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
+import { toolReducer } from './bmdashboard/toolReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -64,6 +65,7 @@ const localReducers = {
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
+  bmTools: toolReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer
 };
