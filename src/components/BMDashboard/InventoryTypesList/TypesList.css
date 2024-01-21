@@ -61,3 +61,8 @@
   width: 20px;
   height: auto;
 }
+
+.accordion-collapse {
+  max-height: 50vh;
+  overflow: auto;
+}
