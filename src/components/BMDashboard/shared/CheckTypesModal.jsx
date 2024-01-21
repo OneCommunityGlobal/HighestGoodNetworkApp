@@ -25,7 +25,7 @@ function CheckTypesModal({ modal, setModal, type }) {
       <ModalFooter>
         <Button onClick={toggle}>Close</Button>
       </ModalFooter>
-    </Modal >
+    </Modal>
   );
 }
 
