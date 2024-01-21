@@ -1,15 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './SubscribePage.module.css'; // Import the CSS module
-import { addNonHgnUserEmailSubscription } from '../../actions/sendEmails';
+import {
+  addNonHgnUserEmailSubscription,
+  confirmNonHgnUserEmailSubscription,
+} from '../../actions/sendEmails';
+import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import ConfirmationMessage from './ConfirmationMessage';
+import { set } from 'lodash';
 
 const SubscribePage = () => {
   const dispatch = useDispatch();
+  const query = new URLSearchParams(useLocation().search);
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [confirmationMessage, setConfirmationMessage] = useState('');
+  const [confirmationStatus, setConfirmationStatus] = useState(false);
+  useEffect(() => {
+    const token = query.get('token');
+    if (token) {
+      confirmNonHgnUserEmailSubscription(token).then(result => {
+        if (result.success) {
+          // Handle success
+          setConfirmationStatus(true);
+          setConfirmationMessage('Successfully confirmed email subscription');
+        } else {
+          // Handle failure
+          setConfirmationStatus(false);
+          setConfirmationMessage('Failed to confirm email subscription');
+        }
+      });
+    }
+  }, [query]);
 
   const validateEmail = email => {
     return /\S+@\S+\.\S+/.test(email);
+  };
+
+  const confirmationMessageCallback = () => {
+    setConfirmationMessage('');
   };
 
   const handleSubmit = event => {
@@ -24,6 +53,18 @@ const SubscribePage = () => {
     }
   };
 
+  if (confirmationMessage) {
+    return (
+      <>
+        <ConfirmationMessage
+          message={confirmationMessage}
+          isSuccess={confirmationStatus}
+          confirmationMessageCallback={confirmationMessageCallback}
+        />
+      </>
+    );
+  }
+
   return (
     <div className={styles.subscribeContainer}>
       <h1 className={styles.header}>Subscribe for Weekly Updates</h1>
@@ -31,14 +72,13 @@ const SubscribePage = () => {
       <p className={styles.description}>
         Join our mailing list for updates. We'll send a confirmation to ensure you're the owner of
         the email provided. Once confirmed, we promise only a single email per week. Don't forget to
-        check your spam to stay informed!
+        check your spam folder if you didn't receive the confirmation!
       </p>
       <p className={styles.note}>
         Want to opt out later? No problem, every email has an unsubscribe link at the bottom.
       </p>
       <form onSubmit={handleSubmit}>
         <input
-          type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="Enter your email"

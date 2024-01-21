@@ -108,6 +108,7 @@ export const ENDPOINTS = {
   BROADCAST_EMAILS: `${APIEndpoint}/broadcast-emails`,
   UPDATE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/update-email-subsriptions`,
   NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
+  CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
 
   //reasons endpoints
   CREATEREASON: () => {
