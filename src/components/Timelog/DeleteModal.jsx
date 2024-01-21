@@ -39,7 +39,7 @@ const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassificati
       totalcommittedHours: parseInt(newHour, 10),
     };
 
-    dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
+    dispatch(updateUserProfile(updatedUserProfile));
   };
   return (
     <span>

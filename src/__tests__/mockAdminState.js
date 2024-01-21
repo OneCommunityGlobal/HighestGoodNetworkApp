@@ -1619,6 +1619,7 @@ export default {
             'deleteTeam',
             'putTeam',
             'assignTeamToUsers',
+            'editTeamCode',
             // Time Entries
             'editTimeEntry',
             'deleteTimeEntry',
@@ -1793,6 +1794,7 @@ export default {
             'getWeeklySummaries',
             'getTimeZoneAPIKey',
             'checkLeadTeamOfXplus',
+            'editTeamCode',
           ],
         },
       ]

@@ -30,6 +30,7 @@ import { connect } from 'react-redux';
 import Loading from '../common/Loading';
 import { PROJECT_DELETE_POPUP_ID } from './../../constants/popupId';
 import hasPermission from '../../utils/permissions';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 export class Projects extends Component {
   constructor(props) {
@@ -42,6 +43,7 @@ export class Projects extends Component {
         projectName: '',
         projectId: -1,
         active: false,
+        category: '',
       },
       projectInfoModal: false,
     };
@@ -60,7 +62,6 @@ export class Projects extends Component {
   };
 
   onUpdateProjectName = (projectId, projectName, category, isActive) => {
-    console.log('updateName', projectId, projectName, category, isActive);
     this.props.modifyProject('updateName', projectId, projectName, category, isActive);
   };
 
@@ -68,13 +69,14 @@ export class Projects extends Component {
    * Changes the number of projects
    * Also update the number of active project
    */
-  onClickDelete = (projectId, active, projectName) => {
+  onClickDelete = (projectId, active, projectName, category) => {
     this.setState({
       showModalDelete: true,
       projectTarget: {
         projectId,
         projectName,
         active,
+        category,
       },
     });
   };
@@ -89,8 +91,8 @@ export class Projects extends Component {
   };
 
   setInactiveProject = () => {
-    let { projectId, projectName } = this.state.projectTarget;
-    this.props.modifyProject('setActive', projectId, projectName, true);
+    let { projectId, projectName, category } = this.state.projectTarget;
+    this.props.modifyProject('setActive', projectId, projectName, category, true);
     // disable modal
     this.setState({ showModalDelete: false });
   };
@@ -115,7 +117,10 @@ export class Projects extends Component {
 
     let showModalMsg = false;
 
-    const canPostProject = this.props.hasPermission('postProject');
+
+    const role = this.props.state.userProfile.role;
+
+    const canPostProject = this.props.hasPermission('postProject') || this.props.hasPermission('seeProjectManagement');
 
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
@@ -142,19 +147,19 @@ export class Projects extends Component {
 
     return (
       <React.Fragment>
-        <ProjectInfoModal isOpen={projectInfoModal} toggle={this.toggleProjectInfoModal} />
         <div className="container mt-3">
           {fetching || !fetched ? <Loading /> : null}
+          <div className="d-flex align-items-center">
           <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <i
-            data-toggle="tooltip"
-            data-placement="right"
-            title="Click for more information"
-            style={{ fontSize: 24, cursor: 'pointer' }}
-            aria-hidden="true"
-            className="fa fa-info-circle"
-            onClick={this.toggleProjectInfoModal}
+          <EditableInfoModal
+            areaName="projectsInfoModal"
+            areaTitle="Projects"
+            fontSize={30}
+            isPermissionPage={true}
+            role={role}
           />
+        </div>
+
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
 

@@ -44,7 +44,9 @@ export const getTimeEntriesForWeek = (userId, offset) => {
 };
 
 export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
-  toDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss');
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DDTHH:mm:ss');
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
@@ -74,7 +76,9 @@ export const postTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry));
+      if(timeEntry.entryType == 'default'){
+        dispatch(updateTimeEntries(timeEntry));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -87,7 +91,9 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   return async dispatch => {
     try {
       const res = await axios.put(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      if (timeEntry.entryType == 'default') {
+        dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -100,7 +106,9 @@ export const deleteTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.delete(url);
-      dispatch(updateTimeEntries(timeEntry));
+      if (timeEntry.entryType == 'default') {
+        dispatch(updateTimeEntries(timeEntry));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;

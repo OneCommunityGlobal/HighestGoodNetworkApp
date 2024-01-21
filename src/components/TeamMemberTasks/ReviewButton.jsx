@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from 'reactstrap';
 import './style.css';
 import './reviewButton.css';
 import { boxStyle } from 'styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import httpService from '../../services/httpService';
+import { ApiEndpoint } from 'utils/URL';
 
 const ReviewButton = ({
   user,
-  myUserId,
-  myRole,
   task,
   updateTask
 }) => {
-
+  const myUserId = useSelector(state => state.auth.user.userid);
+  const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {
@@ -34,8 +36,7 @@ const ReviewButton = ({
   const updReviewStat = (newStatus) => {
     const resources = [...task.resources];
     const newResources = resources.map(resource => {
-      const newResource = { ...resource };
-      newResource.reviewStatus = newStatus;
+      const newResource = { ...resource, reviewStatus: newStatus };
       newResource.completedTask = newStatus === "Reviewed";
       return newResource;
     });
@@ -70,8 +71,8 @@ const ReviewButton = ({
           </UncontrolledDropdown>
         );
       } else if (user.personId == myUserId) {
-        return <Button className='reviewBtn' color='success' onClick={() => {updReviewStat("Unsubmitted");}}>
-          More work needed, reset this button
+        return <Button className='reviewBtn' color='info' disabled>
+          Work Submitted and Awaiting Review
         </Button>;
       } else {
         return <Button className='reviewBtn' color='success' disabled>
@@ -81,6 +82,16 @@ const ReviewButton = ({
      } else {
       return <></>;
      }
+    };
+  
+  const sendReviewReq = event => {
+    event.preventDefault();
+    var data = {};
+    data['myUserId'] = myUserId;
+    data['name'] = user.name;
+    data['taskName'] = task.taskName;
+
+    httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
   return (
@@ -96,9 +107,10 @@ const ReviewButton = ({
         </ModalBody>
         <ModalFooter>
           <Button
-            onClick={() => {
+            onClick={(e) => {
               reviewStatus == "Unsubmitted"
-              ? updReviewStat("Submitted")
+              ? (updReviewStat("Submitted"),
+                sendReviewReq(e))
               : updReviewStat("Reviewed");
             }}
             color="primary"

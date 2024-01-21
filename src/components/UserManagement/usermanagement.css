@@ -2,8 +2,18 @@ thead {
   background: aliceblue;
 }
 
+/* This background color on hover property below is taking precedence over reactstrap and affecting multiple components. */
+/* .btn:hover {
+  background-color: #0f8292;
+} */
+
 #new_usermanagement {
   margin-bottom: 10px;
+  box-sizing: border-box;
+  width: calc(100vw - 45px);
+}
+#user-management-table {
+  width: calc(100vw - 45px);
 }
 
 #usermanagement_order {
@@ -37,17 +47,44 @@ thead {
 }
 
 #card_project {
-  background: #1d62f0;
+  /* background: #1d62f0; */
+  background: linear-gradient(to right bottom,  rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
+  background-color: #1d62f0;
+  border-radius: 8px;
+  border:#08397e;
   color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#card_team{
+  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
+  background-color: dodgerblue;
+  border-radius: 8px;
+  border:#08397e;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 #card_active {
-  background: #fbad4c;
+  /* background: #fbad4c; */
+  background: linear-gradient(to right bottom, #ffdb56 5%, #ff9145 100%);
+  background-color: #fac17b;
+  border-radius: 8px;
+  border:#ff9145;
   color: white;
+  align-items: center; 
+  justify-content: center;
+  text-align: center;
+
 }
 
 .email_cell {
   position: relative;
+ 
 }
 
 .copy_icon {
@@ -76,6 +113,10 @@ thead {
 }
 
 .isActive i {
+  color: lawngreen;
+}
+
+.fa-circle-isActive {
   color: lawngreen;
 }
 
@@ -127,6 +168,46 @@ tr:hover {
 
 .noWrap {
   white-space: nowrap;
+}
+.setup-new-user-popup-section {
+  display: grid;
+  width: 80%;
+  margin: 0 auto;
+  gap: 10px;
+}
+
+.setup-new-user-popup-label {
+  margin: 0px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #212529;
+}
+.setup-new-user-popup-input {
+  height: 36px;
+}
+#setup-new-user-popup-btn {
+  width: fit-content;
+}
+.setup-new-user-popup-success {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  background-color: #d4edda;
+  color: #5c8f68;
+  height: 36px;
+  padding: 5px;
+}
+.setup-new-user-popup-error {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  background-color: #f8d7da;
+  color: #7f2a36;
+  height: 36px;
+  padding: 5px;
 }
 
 #usermanagement-footer {

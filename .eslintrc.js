@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ['**/*.css'],
   env: {
     browser: true,
     es6: true,
@@ -50,6 +51,9 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'import/no-duplicates': 'off',
     'import/no-named-as-default': 'off',
+    'no-alert': 'error',
+    'no-console': 'error',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
   },
   overrides: [
     {

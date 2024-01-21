@@ -47,22 +47,23 @@
 
 /* This is just only for displaying 'Personal Max hours' badge hours position */
 .badge_featured_count_personalmax {
-  padding-top: 5px;
-  border-radius: 50%;
-  width: 29px;
-  height: 29px;
-  background: #007bff;
+  padding-top: 7px;
+  border-radius: 55%;
+  width: 38px;
+  height: 26px;
+  background: #800080;
   color: #fff;
   text-align: center;
-  font: 15px Arial, sans-serif;
+  font: 11px Arial, sans-serif;
   position: absolute;
-  right: 44px;
-  bottom: 10px;
+  transform: translate(-50%, 75%);
+  top: 50%;
+  left: 50%;
   z-index: 0;
 }
 
 .badge_featured_count_3_digit {
-  padding-top: 3px;
+  padding-top: 6px;
   border-radius: 50%;
   width: 40px;
   height: 30px;
@@ -135,11 +136,11 @@
 }
 
 /*Aligns the title and the buttons*/
-.badge-header {
+/* .badge-header {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-}
+} */
 
 /*Title to occupy more width than buttons*/
 .badge-header-title {
@@ -157,8 +158,23 @@
   }
 }
 
+/* @media (max-width: 1024px) {
+  .badge-header {
+    flex-direction: column;
+  }
+} */
+
+.badge-header {
+  display: flex;
+  justify-content: space-between; /* This will push the buttons to the right */
+  align-items: center; /* This will ensure vertical centering */
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
 @media (max-width: 1024px) {
   .badge-header {
     flex-direction: column;
+    align-items: center; /* This will center the buttons below the title */
   }
 }

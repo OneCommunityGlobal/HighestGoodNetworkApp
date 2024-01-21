@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
-import { useHistory } from 'react-router-dom';
 import ActiveCell from './ActiveCell';
 import hasPermission from 'utils/permissions';
-import Table from 'react-bootstrap/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
@@ -18,7 +16,6 @@ import { formatDate } from 'utils/formatDate';
  */
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
-  const history = useHistory();
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   /**
@@ -43,11 +40,27 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
       </td>
-      <td>
-        <a href={`/userprofile/${props.user._id}`}>{props.user.firstName}</a>
+      <td className="email_cell">
+      <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
+        <FontAwesomeIcon
+          className="copy_icon"
+          icon={faCopy}
+          onClick={() => {
+            navigator.clipboard.writeText(props.user.firstName);
+            toast.success('First Name Copied!');
+          }}
+        />
       </td>
-      <td>
-        <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+       <td className="email_cell">
+       <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+        <FontAwesomeIcon
+          className="copy_icon"
+          icon={faCopy}
+          onClick={() => {
+            navigator.clipboard.writeText(props.user.lastName);
+            toast.success('Last Name Copied!');
+          }}
+        />
       </td>
       <td>{props.user.role}</td>
       <td className="email_cell">
@@ -98,7 +111,19 @@ const UserTableData = React.memo(props => {
           ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
-      <td>{props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}</td>
+      <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
+      
+       <td className="email_cell">
+      {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
+        <FontAwesomeIcon
+          className="copy_icon"
+          icon={faCopy}
+          onClick={() => {
+            navigator.clipboard.writeText(props.user.endDate ? formatDate(props.user.endDate) : 'N/A');
+            toast.success('End Date Copied!');
+          }}
+        />
+      </td>
       {checkPermissionsOnOwner() ? null : (
         <td>
           <span className="usermanagement-actions-cell">
