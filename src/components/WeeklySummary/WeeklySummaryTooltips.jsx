@@ -9,7 +9,7 @@ function WeeklySummaryContentTooltip({ tabId }) {
   const toggle = () => setTooltipOpen(!tooltipOpen);
   return (
     <>
-      <span id="summaryContentTooltip">
+      <span id="summaryContentTooltip" data-testid="summary-content-tooltip-icon">
         <FontAwesomeIcon icon={faInfoCircle} data-testid={`summary-content-tooltip-${tabId}`} />
       </span>
       <Tooltip
@@ -20,6 +20,7 @@ function WeeklySummaryContentTooltip({ tabId }) {
         innerClassName="summaryContentTooltip"
         target="summaryContentTooltip"
         toggle={toggle}
+        data-testid={`summary-content-tooltip-comp-${tabId}`}
       >
         Weekly summaries are due by Saturday night at midnight Pacific Time. The countdown timer on
         the Dashboard is counting down the time to each week’s closing. To avoid receiving a blue
@@ -54,7 +55,7 @@ function MediaURLTooltip() {
   const toggle = () => setTooltipOpen(!tooltipOpen);
   return (
     <>
-      <span id="mediaURLTooltip">
+      <span id="mediaURLTooltip" data-testid="mediaurl-tooltip-icon">
         <FontAwesomeIcon icon={faInfoCircle} data-testid="mediaurl-tooltip" />
       </span>
       <Tooltip
@@ -65,6 +66,7 @@ function MediaURLTooltip() {
         innerClassName="mediaURLTooltip"
         target="mediaURLTooltip"
         toggle={toggle}
+        data-testid="mediaurl-tooltip-comp"
       >
         You are required to submit screenshots of your work completed each week. You need to submit
         a minimum of 4 pictures (6-10 are better) either at the bottom of your Google Doc or in your
