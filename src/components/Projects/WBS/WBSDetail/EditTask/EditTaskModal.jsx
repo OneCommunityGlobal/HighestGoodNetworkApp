@@ -437,17 +437,21 @@ function EditTaskModal(props) {
                     <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
                       Best-case
                     </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursBest}
-                      onChange={e => setHoursBest(e.target.value)}
-                      onBlur={() => calHoursEstimate()}
-                      id="bestCase"
-                      className="w-25"
-                      disabled={!editable}
-                    />
+                    {ReadOnlySectionWrapper(
+                      <input
+                        type="number"
+                        min="0"
+                        max="500"
+                        value={hoursBest}
+                        onChange={e => setHoursBest(e.target.value)}
+                        onBlur={() => calHoursEstimate()}
+                        id="bestCase"
+                        className="w-25"
+                      />,
+                      editable,
+                      hoursBest,
+                      {componentOnly:true}
+                    )}
                     <div className="warning">
                       {hoursWarning
                         ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
@@ -458,16 +462,20 @@ function EditTaskModal(props) {
                     <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
                       Worst-case
                     </label>
-                    <input
-                      type="number"
-                      min={hoursBest}
-                      max="500"
-                      value={hoursWorst}
-                      onChange={e => setHoursWorst(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursWorst')}
-                      className="w-25"
-                      disabled={!editable}
-                    />
+                    {ReadOnlySectionWrapper(
+                      <input
+                        type="number"
+                        min={hoursBest}
+                        max="500"
+                        value={hoursWorst}
+                        onChange={e => setHoursWorst(e.target.value)}
+                        onBlur={() => calHoursEstimate('hoursWorst')}
+                        className="w-25"
+                      />,
+                      editable,
+                      hoursWorst,
+                      {componentOnly:true}
+                    )}
                     <div className="warning">
                       {hoursWarning
                         ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
@@ -478,16 +486,20 @@ function EditTaskModal(props) {
                     <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
                       Most-case
                     </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursMost}
-                      onChange={e => setHoursMost(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursMost')}
-                      className="w-25"
-                      disabled={!editable}
-                    />
+                    {ReadOnlySectionWrapper(
+                      <input
+                        type="number"
+                        min="0"
+                        max="500"
+                        value={hoursMost}
+                        onChange={e => setHoursMost(e.target.value)}
+                        onBlur={() => calHoursEstimate('hoursMost')}
+                        className="w-25"
+                      />,
+                      editable,
+                      hoursMost,
+                      {componentOnly:true}
+                    )}
                     <div className="warning">
                       {hoursWarning
                         ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
@@ -498,15 +510,19 @@ function EditTaskModal(props) {
                     <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
                       Estimated
                     </label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="500"
-                      value={hoursEstimate}
-                      onChange={e => setHoursEstimate(e.target.value)}
-                      className="w-25"
-                      disabled={!editable}
-                    />
+                    {ReadOnlySectionWrapper(
+                      <input
+                        type="number"
+                        min="0"
+                        max="500"
+                        value={hoursEstimate}
+                        onChange={e => setHoursEstimate(e.target.value)}
+                        className="w-25"
+                      />,
+                      editable,
+                      hoursEstimate,
+                      {componentOnly:true}
+                    )}
                   </div>
                 </td>
               </tr>

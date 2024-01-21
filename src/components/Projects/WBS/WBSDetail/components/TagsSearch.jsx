@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TagSent from './TagSent';
 import './TagsSearch.css';
+import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 
 function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems, disableInput }) {
   const [isHidden, setIsHidden] = useState(false);
@@ -63,13 +64,17 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     <div className="d-flex flex-column px-0">
       <div className="d-flex flex-column mb-1 px-0">
         <div className="align-items-start justify-content-start w-100 px-0 position-relative">
-          <input
-            type="text"
-            placeholder={placeholder}
-            className="border border-dark rounded form-control px-2"
-            onChange={handleFilter}
-            disabled={disableInput}
-          />
+          {ReadOnlySectionWrapper(
+            <input
+              type="text"
+              placeholder={placeholder}
+              className="border border-dark rounded form-control px-2"
+              onChange={handleFilter}
+            />,
+            !disableInput,
+            null,
+            {componentOnly:true}
+          )}
           {filteredData.length !== 0 ? (
             <ul
               className={`my-element ${
