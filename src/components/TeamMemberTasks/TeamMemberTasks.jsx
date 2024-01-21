@@ -19,6 +19,8 @@ import TeamMemberTask from './TeamMemberTask';
 import FilteredTimeEntries from './FilteredTimeEntries';
 import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
 import { toast } from 'react-toastify';
+import { boxStyle } from 'styles';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 // import InfiniteScroll from 'react-infinite-scroller';
 
 const TeamMemberTasks = React.memo(props => {
@@ -40,6 +42,11 @@ const TeamMemberTasks = React.memo(props => {
   const [seventyTwoHoursTimeEntries, setSeventyTwoHoursTimeEntries] = useState([]);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
+  const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true); // Ensure this line is inside the component
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState(); // contain Team name and ID
+  const [selectedTeamId, setSelectedTeamId] = useState();
   // const [displayData, setDisplayData] = useState([]);
   // const [hasMore, setHasMore] = useState(true);
 
@@ -73,6 +80,7 @@ const TeamMemberTasks = React.memo(props => {
       //if it's not differente, it'll attribute the current authenticated user's role.
       //also, the userId is different from the authenticated user, it will call the fetchTeamMmbersTask with the currently authenticated user id
       if (userId !== props.auth.user.userid) {
+        console.log("run here [1]");
         await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
         const currentUserRole = getUserRole(userId)
           .then(resp => resp)
@@ -80,6 +88,7 @@ const TeamMemberTasks = React.memo(props => {
             setUserRole(user.data.role);
           });
       } else {
+        console.log("run here [2]");
         await dispatch(fetchTeamMembersTask(userId, null));
         setUserRole(props.auth.user.role);
       }
@@ -239,10 +248,22 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
-  const renderTeamsList = async () => {
-    if (usersWithTasks && usersWithTasks.length > 0) {
-      // give different users different views
-      let filteredMembers = usersWithTasks.filter(member => {
+  useEffect(() => {
+    console.log('Updated timeEntriesList:', timeEntriesList);
+  }, [timeEntriesList]);
+  
+
+  const renderTeamsList = async (selectedTeamMembers = null) => {
+    
+    let membersToDisplay = selectedTeamMembers || usersWithTasks;
+    console.log('usersWithTasks:', usersWithTasks);
+    console.log('membersToDisplay:', selectedTeamMembers);
+
+    if (!membersToDisplay || membersToDisplay.length === 0) return;
+  
+    if (membersToDisplay && membersToDisplay.length > 0) {
+      // Give different users different views
+      let filteredMembers = membersToDisplay.filter(member => {
         if (userRole === 'Volunteer' || userRole === 'Core Team') {
           return member.role === 'Volunteer' || member.role === 'Core Team';
         } else if (userRole === 'Manager' || userRole === 'Mentor') {
@@ -256,12 +277,12 @@ const TeamMemberTasks = React.memo(props => {
           return member;
         }
       });
-
-      //sort all users by their name
+  
+      // Sort all users by their name
       filteredMembers.sort((a, b) => {
-        let filteredMembersA = a.name.toLowerCase();
-        let filteredMembersB = b.name.toLowerCase();
-
+        let filteredMembersA = a.name ? a.name.toLowerCase() : '';
+        let filteredMembersB = b.name ? b.name.toLowerCase() : '';
+  
         if (filteredMembersA < filteredMembersB) {
           return -1;
         }
@@ -270,36 +291,37 @@ const TeamMemberTasks = React.memo(props => {
         }
         return 0;
       });
-
-      //find currentUser
+  
+      // Find currentUser
       const currentUser = filteredMembers.find(user => user.personId === userId);
-      // if current user doesn't have any task, the currentUser cannot be found
-
+  
+      // Conditional variable for moving current user up front
+      let moveCurrentUserFront = false;
+  
+      // Check if the user has at least one task with project Id and task id assigned
       if (currentUser) {
-        //conditional variable for moving current user up front.
-        let moveCurrentUserFront = false;
-
-        //Does the user has at least one task with project Id and task id assigned. Then set the current user up front.
         for (const task of currentUser.tasks) {
           if (task.wbsId && task.projectId) {
             moveCurrentUserFront = true;
             break;
           }
         }
-        //if needs to move current user up front, first remove current user from filterMembers. Then put the current user on top of the list.
-        if (moveCurrentUserFront) {
-          //removed currentUser
-          filteredMembers = filteredMembers.filter(user => user.personId !== userId);
-          //push currentUser on top of the array.
-          filteredMembers.unshift(currentUser);
-        }
       }
-
+  
+      // If needed, move current user up front
+      if (moveCurrentUserFront) {
+        filteredMembers = filteredMembers.filter(user => user.personId !== userId);
+        filteredMembers.unshift(currentUser);
+      }
+  
       getTimeEntriesForPeriod(filteredMembers);
+      console.log('Updating team list with:', filteredMembers);
       setTeamList([...filteredMembers]);
+      console.log('Rendering with team list:', teamList);
     }
   };
-
+  
+  
   // const loadFunc = useCallback(pageNum => {
   //   if (teamList.length <= displayData.length) {
   //     setHasMore(false);
@@ -315,10 +337,114 @@ const TeamMemberTasks = React.memo(props => {
   //   loadFunc();
   // }, [teamList]);
 
+  // State to manage the toggle button text
+  const [toggleButtonText, setToggleButtonText] = useState('My Team');
+
+  // Event handler for toggle button click
+  const handleToggleButtonClick = () => {
+    setToggleButtonText(prevText => prevText === 'My Team' ? 'View All' : 'My Team');
+    // Add any other logic for the button click here
+  }
+
+
+  useEffect(() => {
+    const fetchUserTeams = async () => {
+      try {
+        const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+        setTeams(response.data.teams);
+      } catch (error) {
+        console.error('Error fetching user teams:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserTeams();
+  }, [userId]);
+
+  const updateTeamMembers = async (teamId) => {
+    try {
+      const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(teamId));
+      console.log('Fetched team members:', response.data);
+      // renderTeamsList(response.data);
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+    }
+  };
+  
+
+  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
+
+  const handleSelectTeam = async (team) => {
+    setSelectedTeam(team.teamName); // Update the selected team state
+    setSelectedTeamId(team._id); // Update the selected team ID
+    //TODO: Add additional logic needed when a team is selected
+    updateTeamMembers(team._id);
+  };
+
+  useEffect(() => {
+    if (selectedTeamId) {
+      updateTeamMembers(selectedTeamId);
+    }
+  }, [selectedTeamId]);
+  
+
+  useEffect(() => {
+    console.log('Selected Team ID:', selectedTeamId);
+    console.log('Selected Team Name:', selectedTeam);
+    console.log('Team List:', teamList);
+  }, [selectedTeamId, selectedTeam, teamList]);
+
+  useEffect(() => {
+    console.log('Team List updated:', teamList);
+    // additional logic that needs to run after teamList is updated
+  }, [teamList]);
+  
+
+
+  useEffect(() => {
+    const ids = new Set(timeEntriesList.map(entry => entry._id));
+    if (ids.size !== timeEntriesList.length) {
+      console.warn('Duplicate keys found in timeEntriesList');
+    }
+  }, [timeEntriesList]);
+
+
+  useEffect(() => {
+    console.log('timeEntriesList:', timeEntriesList);
+  }, [timeEntriesList]);
+
+
   return (
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
+        {/* Dropdown for selecting a team */}
+        {loading ? (
+          <p>Loading teams...</p>
+          ) : (
+            <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+            <DropdownToggle caret>
+              {selectedTeam || 'Select a Team'} {/* Display selected team or default text */}
+            </DropdownToggle>
+            <DropdownMenu>
+              {teams.map((team, index) => (
+                <DropdownItem key={index} onClick={() => handleSelectTeam(team)}>
+                  {team.teamName}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+        )}
+        {<button
+              type="button"
+              color="primary"
+              className="task-button"
+              onClick={handleToggleButtonClick}
+              style={boxStyle}
+            >
+              {toggleButtonText}
+          </button> }
         {finishLoading ? (
           <div className="hours-btn-container">
             <button
@@ -476,15 +602,14 @@ const TeamMemberTasks = React.memo(props => {
                         userId={userId}
                       />
                       {timeEntriesList.length > 0 &&
-                        timeEntriesList
-                          .filter(timeEntry => timeEntry.personId === user.personId)
-                          .map(timeEntry => (
-                            <tr className="table-row" key={timeEntry._id}>
-                              <td colSpan={3} style={{ padding: 0 }}>
-                                <FilteredTimeEntries data={timeEntry} key={timeEntry._id} />
-                              </td>
-                            </tr>
-                          ))}
+                        timeEntriesList.map((timeEntry, index) => (
+                          <tr className="table-row" key={timeEntry._id || `entry-${index}`}>
+                            <td colSpan={3} style={{ padding: 0 }}>
+                              <FilteredTimeEntries data={timeEntry} />
+                            </td>
+                          </tr>
+                        ))
+                      }
                     </ Fragment>
                   );
                 }

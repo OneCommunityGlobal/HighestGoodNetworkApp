@@ -231,3 +231,18 @@
   align-items: center; /* Vertically center-align children */
   gap: 8px; /* Space between children */
 }
+
+.task-button {
+  background-color: #007bff; /* Beautiful blue background */
+  color: white; /* White text color for better visibility */
+  border: none; /* No border */
+  padding: 8px 15px; /* Adjust padding as needed */
+  border-radius: 10px; /* More rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+}
+
+.task-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  color: white; /* Keeping text color white on hover for consistency */
+}
