@@ -16,10 +16,6 @@ import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById} from '../../../actions/information';
 import { boxStyle } from 'styles';
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 // New RichTextEditor component
 const RichTextEditor = ({ disabled, value, onEditorChange }) => (
   <Editor
@@ -59,12 +55,8 @@ export class FAQModal extends Component {
     visibility: '',
     fontSize: 24,
   };
-<<<<<<< Updated upstream
-
-=======
   
   
->>>>>>> Stashed changes
   async componentDidMount() {
     await this.props.getInfoCollections();
     const {infoCollections, role, areaTitle, areaName, fontSize, isPermissionPage} = this.props;
@@ -79,11 +71,7 @@ export class FAQModal extends Component {
         }
       });
     } 
-<<<<<<< Updated upstream
-
-=======
     
->>>>>>> Stashed changes
     content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
     let CanRead = (visible === '0') || 
                     (visible === '1' && (role ==='Owner' || role ==='Administrator')) ||
@@ -134,19 +122,12 @@ export class FAQModal extends Component {
       autoClose: 3000,
     });
   }
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
   handleInputChange = (content, editor) => {
     const infoContent = this.state.infoContent;
     this.setState({infoContent:content});
   }
 
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
   handleChangeInInfos =  () => {
 
     let newInfoElements = [...this.state.infoElements]
@@ -173,14 +154,9 @@ export class FAQModal extends Component {
   handleSelectChange = (selectedOption) => {
     this.setState({visibility:selectedOption.value});
   };
-<<<<<<< Updated upstream
-
-  // Updates user profile and weekly summaries 
-=======
   
   
     // Updates user profile and weekly summaries 
->>>>>>> Stashed changes
   updateUserData = async () => {
     try {
       await this.props.getInfoCollections();
@@ -219,10 +195,7 @@ export class FAQModal extends Component {
     this.handleEdit(false);
 
   }
-<<<<<<< Updated upstream
-=======
   
->>>>>>> Stashed changes
 
   handleSave = async event => {
     this.handleEdit(false);
@@ -231,10 +204,6 @@ export class FAQModal extends Component {
     }
     await this.mainSaveHandler();
   };
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
   render() {
     const { 
       infoContent,
@@ -245,118 +214,20 @@ export class FAQModal extends Component {
       isPermissionPage,
      } = this.state;
 
-<<<<<<< Updated upstream
-
-     return (
-      (CanRead)&&(
-        <div>
-=======
     return (
     (CanRead)&&(
       <div>
->>>>>>> Stashed changes
-          <span
+        <span
             style={{ cursor: 'pointer', color: 'white', textAlign: 'center'}}
             onClick={() => this.setState({ FAQModalOpen: true })}
             title="Click for user class information"
           >
             FAQ
           </span>
-<<<<<<< Updated upstream
           {FAQModalOpen && (
             <Modal isOpen={FAQModalOpen} toggle={this.toggleFAQModal} size="lg">
             <ModalHeader>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
             <ModalBody>
-            {this.state.editing
-                  ? <RichTextEditor
-                      disabled={!this.state.editing}
-                      value={infoContent}
-                      onEditorChange={this.handleInputChange}
-                    />
-                  : <div 
-                  style={{ paddingLeft: '20px' }} 
-                  dangerouslySetInnerHTML={{ __html: infoContent }}
-                  onClick={() => this.handleEdit(true)} />
-                }
-            {isPermissionPage && CanEdit&&
-              (
-                <div style={{ paddingLeft: '20px' }}> 
-                  <p>Click above to edit this content. (Note: Only works on Permissions Management Page)</p>
-                </div>
-                
-              )
-            }
-            </ModalBody>
-            <ModalFooter>
-            <Row>
-              <Col md={{ size: 5, offset:4}}>
-              {(this.state.editing)&&
-              (
-                  <Select 
-                    options={options} 
-                    onChange={this.handleSelectChange}
-                    value={options.find(option => option.value === this.state.visibility)} 
-                    />
-              )
-              }
-               </Col>
-              {(CanEdit&&this.state.editing)&&
-              (
-                <Col md={{ size: 1}} style={{paddingLeft:'5px'}}>
-                  <Button
-                    className='saveBtn' 
-                    onClick={this.handleSave}
-                    style={boxStyle}>Save</Button>
-                </Col>)
-              }
-            <Col 
-              md={{ size: 1}}
-              >
-              <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
-            </Col>
-            </Row>
-            </ModalFooter>
-            </Modal>
-          )}
-      </div>)   
-      )
-      };
-    }
-  
-  FAQModal.propTypes = {
-    fetchError: PropTypes.any,
-    getInfoCollections:PropTypes.func.isRequired,
-    addInfoCollection:PropTypes.func.isRequired,
-    updateInfoCollection:PropTypes.func.isRequired,
-    deleteInfoCollectionById: PropTypes.func.isRequired,
-    loading: PropTypes.bool.isRequired,
-  
-  };
-  
-    
-  const mapStateToProps = ({infoCollections }) => ({
-    loading: infoCollections?.loading,
-    fetchError: infoCollections?.error,
-    infoCollections: infoCollections?.infos,
-  });
-    
-  const mapDispatchToProps = dispatch => {
-    return {
-      getInfoCollections: () => dispatch(getInfoCollections()),
-      updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
-      addInfoCollection: (newInfo) => dispatch(addInfoCollection(newInfo)),
-      deleteInfoCollectionById: (infoId) => dispatch(deleteInfoCollectionById(infoId)), 
-    };
-  };
-  
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(FAQModal);
-  
-=======
-        {FAQModalOpen && (
-          <Modal isOpen={FAQModalOpen} toggle={this.toggleFAQModal} size="lg">
-          <ModalHeader>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
-          <ModalBody>
           {this.state.editing
                 ? <RichTextEditor
                     disabled={!this.state.editing}
@@ -442,4 +313,3 @@ const mapDispatchToProps = dispatch => {
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(FAQModal);
->>>>>>> Stashed changes
