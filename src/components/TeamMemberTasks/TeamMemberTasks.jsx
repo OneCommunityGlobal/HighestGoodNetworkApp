@@ -38,7 +38,7 @@ const TeamMemberTasks = React.memo(props => {
   const [taskModalOption, setTaskModalOption] = useState('');
 
   const dispatch = useDispatch();
-  
+
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
     setMarkAsDoneModal(false);
@@ -155,16 +155,13 @@ const TeamMemberTasks = React.memo(props => {
     if (usersWithTasks.length > 0) {
       //sort all users by their name
       usersWithTasks.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
-
       //find currentUser
       const currentUserIndex = usersWithTasks.findIndex(user => user.personId === displayUser._id);
-
       // if current user doesn't have any task, the currentUser cannot be found
       if (usersWithTasks[currentUserIndex]?.tasks.length) {
         //conditional variable for moving current user up front.
         usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
       }
-
       setTeamList([...usersWithTasks]);
     }
   };
@@ -194,7 +191,7 @@ const TeamMemberTasks = React.memo(props => {
     getTimeEntriesForPeriod(selectedPeriod);
   }, [selectedPeriod, usersWithTimeEntries]);
 
-  
+
 
   return (
     <div className="container team-member-tasks">
@@ -359,8 +356,9 @@ const TeamMemberTasks = React.memo(props => {
                             <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={3} style={{ padding: 0 }}>
                                 <TimeEntry 
-                                  fromTaskTab
+                                  from='TaskTab'
                                   data={timeEntry}
+                                  displayYear
                                   key={timeEntry._id}
                                   timeEntryUserProfile={timeEntry.userProfile}
                                 />
