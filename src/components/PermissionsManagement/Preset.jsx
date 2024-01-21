@@ -34,19 +34,34 @@ const Preset = (props) => {
     setEditing(false);
   };
 
-  const applyPreset = async (preset) => {
-    try {
-      const updatedRole = {
-        roleId: props.roleId,
-        roleName: props.roleName,
-        permissions: preset.permissions
-      };
-      props.updateRole(props.roleId, updatedRole);
-      props.onApply(preset.permissions);
-    } catch (error) {
-      console.log(error.message);
+  const handleApplyPreset = async (e) => {
+    e.stopPropagation();
+
+    const updatedRole = {
+      roleId: props.roleId,
+      roleName: props.roleName,
+      permissions: props.preset.permissions
+    };
+
+    const status = await props.updateRole(props.roleId, updatedRole);
+    if (status === 0) {
+      props.onApply(props.preset.permissions);
+      toast.success(`Preset applied successfully.`)
+    } else {
+      toast.error(`Error applying preset`);
     }
   };
+
+  const handleDeletePreset = async (e) => {
+    e.stopPropagation();
+
+    const status = await props.deletePreset(props.preset._id);
+    if (status === 0) {
+      toast.success(`Preset deleted successfully`);
+    } else {
+      toast.error(`Error deleting preset`);
+    }
+  }
 
   return (
     <>
@@ -88,12 +103,12 @@ const Preset = (props) => {
             display: 'flex',
             gap: '10px'
           }}>
-          <Button color='danger' onClick={(event)=>{event.stopPropagation(); props.deletePreset(props.preset._id);}}>
+          <Button color='danger' onClick={handleDeletePreset}>
             Delete
           </Button>
           <Button
             color='primary'
-            onClick={(event)=>{event.stopPropagation(); applyPreset(props.preset);}}>
+            onClick={handleApplyPreset}>
             Apply
           </Button>
         </div>
