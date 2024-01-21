@@ -503,7 +503,6 @@ export class WeeklySummary extends Component {
     for (let i = 0; i < summaries.length; i++) {
       updateSummary(summaries[i], uploadDates[i], dueDates[i]);
     }
-
     // eslint-disable-next-line no-shadow
     const { updateWeeklySummaries, displayUserId, currentUser } = this.props;
 
@@ -661,7 +660,7 @@ export class WeeklySummary extends Component {
       return <DueDateTime isShow={isPopup} dueDate={moment(dueDate)} />;
     }
 
-    const { userRole, asUser, displayUserId } = this.props;
+    const { userRole, displayUserId, currentUser } = this.props;
 
     return (
       <Container fluid={!!isModal} className="bg--white-smoke py-3 mb-5">
@@ -745,7 +744,11 @@ export class WeeklySummary extends Component {
                               </DropdownItem>
                             </DropdownMenu>
                           </UncontrolledDropdown>
-                          <CurrentPromptModal userRole={userRole} userId={displayUserId} />
+                          <CurrentPromptModal
+                            userRole={userRole}
+                            userId={displayUserId}
+                            currentUser={currentUser}
+                          />
                         </Label>
                         <Editor
                           init={{

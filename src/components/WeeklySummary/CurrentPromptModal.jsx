@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
@@ -9,12 +10,16 @@ import {
   getDashboardDataAI,
   updateCopiedPromtDate,
 } from '../../actions/weeklySummariesAIPrompt';
+import { getUserProfile } from '../../actions/userProfile';
+import image from '../../assets/images/New-HGN-Icon-11kb-200x160px.png';
 
 function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);
 
   const dispatch = useDispatch();
   const [prompt, setPrompt] = useState('');
+  const [promptModifiedDate, setPromptModifiedDate] = useState('');
+  const [copiedDate, setCopiedDate] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const { userRole, userId } = props;
@@ -34,6 +39,7 @@ function CurrentPromptModal(props) {
           if (response) {
             // console.log('response: ', response.aIPromptText);
             setPrompt(response.aIPromptText);
+            setPromptModifiedDate(response.modifiedDatetime);
           } else {
             setPrompt(fallbackPrompt); // Fallback to hardcoded prompt if fetched prompt is empty
           }
@@ -47,14 +53,29 @@ function CurrentPromptModal(props) {
         });
     }
   }, [modal]);
+  useEffect(() => {
+    if (modal) {
+      dispatch(getUserProfile(userId))
+        .then(response => {
+          if (response) {
+            setCopiedDate(response.copiedAiPrompt);
+          }
+        })
+        .catch(error => {
+          toast.error('There was an error');
+        });
+    }
+  }, [modal]);
 
   // console.log('props.userRole: ', props.userRole);
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(prompt);
     // eslint-disable-next-line prettier/prettier
-    dispatch(updateCopiedPromtDate(userId))
-    .then(() => {toast.success('Prompt Copied!')})};
+    dispatch(updateCopiedPromtDate(userId)).then(() => {
+      toast.success('Prompt Copied!');
+    });
+  };
 
   const handleSavePrompt = () => {
     setLoading(true);
@@ -87,18 +108,34 @@ function CurrentPromptModal(props) {
   };
   return (
     <div>
-      <Button color="info" onClick={toggle} style={boxStyle}>
-        View and Copy Current AI Prompt
-        <i
-          className="fa fa-info-circle"
-          data-tip
-          data-for="timeEntryTip"
-          data-delay-hide="1000"
-          aria-hidden="true"
-          title=""
-          style={{ paddingLeft: '.32rem' }}
-        />
-      </Button>
+      {promptModifiedDate > copiedDate ? (
+        <Button color="info" onClick={toggle} style={boxStyle}>
+          View and Copy Current <img src={image} alt="" /> AI Prompt
+          <i
+            className="fa fa-info-circle"
+            data-tip
+            data-for="timeEntryTip"
+            data-delay-hide="1000"
+            aria-hidden="true"
+            title=""
+            style={{ paddingLeft: '.32rem' }}
+          />
+        </Button>
+      ) : (
+        <Button color="info" onClick={toggle} style={boxStyle}>
+          View and Copy Current AI Prompt
+          <i
+            className="fa fa-info-circle"
+            data-tip
+            data-for="timeEntryTip"
+            data-delay-hide="1000"
+            aria-hidden="true"
+            title=""
+            style={{ paddingLeft: '.32rem' }}
+          />
+        </Button>
+      )}
+
       <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
         Click this button to see and copy the most current AI prompt
         <br />
