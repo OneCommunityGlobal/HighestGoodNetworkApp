@@ -61,7 +61,7 @@ function CurrentPromptModal(props) {
             setCopiedDate(response.copiedAiPrompt);
           }
         })
-        .catch(error => {
+        .catch(() => {
           toast.error('There was an error');
         });
     }
