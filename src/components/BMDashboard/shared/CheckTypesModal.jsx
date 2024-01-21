@@ -11,10 +11,10 @@ function CheckTypesModal({ modal, setModal, type }) {
         {type === 'Equipments' ? 'Equipment' : type}
         <br />
         <i style={{ fontSize: '11px' }}>
-          <sm className="text-secondary">
+          <span className="text-secondary">
             This page displays the existing {type === 'Equipments' ? 'Equipment' : type} in the
             inventory.{' '}
-          </sm>
+          </span>
         </i>
       </ModalHeader>
       <ModalBody>
@@ -25,7 +25,7 @@ function CheckTypesModal({ modal, setModal, type }) {
       <ModalFooter>
         <Button onClick={toggle}>Close</Button>
       </ModalFooter>
-    </Modal>
+    </Modal >
   );
 }
 
