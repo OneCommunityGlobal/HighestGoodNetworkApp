@@ -19,15 +19,16 @@ function TotalProjectReport(props) {
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
 
-  const { startDate, endDate, userProfiles } = props;
+  const { startDate, endDate, userProfiles, projects } = props;
 
   const fromDate = startDate.toLocaleDateString('en-CA');
   const toDate = endDate.toLocaleDateString('en-CA');
 
   const userList = userProfiles.map(user => user._id);
+  const projectList = projects.map(proj => proj._id);
 
   const loadTimeEntriesForPeriod = async () => {
-    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
@@ -46,7 +47,23 @@ function TotalProjectReport(props) {
         // eslint-disable-next-line no-console
         console.log(err.message);
       });
-    setAllTimeEntries(timeEntries);
+
+    url = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+    const projTimeEntries = await axios
+      .post(url, { projects: projectList, fromDate, toDate })
+      .then(res => {
+        return res.data.map(entry => {
+          return {
+            projectId: entry.projectId,
+            projectName: entry.projectName,
+            hours: entry.hours,
+            minutes: entry.minutes,
+            isTangible: entry.isTangible,
+            date: entry.dateOfWork,
+          };
+        });
+      });
+    setAllTimeEntries([...timeEntries, ...projTimeEntries]);
   };
 
   const sumByProject = (objectArray, property) => {

@@ -11,7 +11,7 @@ import './PurchaseForm.css';
 
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
-  const matTypes = useSelector(state => state.bmInvTypes);
+  const matTypes = useSelector(state => state.bmInvTypes.list);
   const history = useHistory();
 
   const [projectId, setProjectId] = useState('');
