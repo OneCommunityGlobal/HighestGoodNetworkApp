@@ -6,12 +6,12 @@ import { faImage } from '@fortawesome/free-solid-svg-icons';
 const DragAndDrop = ({onFilesSelected, updateUploadedFiles}) => {
 
   const [dragActive, setDragActive] = useState(false);
-  const [files, setFiles] = useState([]);
-
+  const [files, setFiles] = useState([]); 
+//try useRef
   const memoizedOnFilesSelected = useCallback((files) => {
     onFilesSelected(files);
   }, [onFilesSelected]);
-  
+
   const memoizedUpdateUploadedFiles = useCallback((newFiles) => {
     updateUploadedFiles((prevUploadedFiles) => [...prevUploadedFiles, ...newFiles]);
   }, [updateUploadedFiles]);
@@ -78,22 +78,6 @@ const DragAndDrop = ({onFilesSelected, updateUploadedFiles}) => {
       </label>
       {/* invisible element to cover the entire form when dragActive is true so that dragleave event is not triggeredwhen drag goes over other elements in the form. */}
       {dragActive && <div id="drag-file-element" onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}></div>}
-      {/* Display file previews */}
-      {/* {files.length > 0 && (
-        <div className="file-preview-container">
-                {files.map((file, index) => (
-                  <div key={index} className="file-preview">
-                    <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
-                    <Button color="danger" onClick={() => handleRemoveFile(index)}>
-                      Remove
-                    </Button>
-                  </div>
-                ))}
-              </div>
-      )} */}
-     
-
-  
     </div>
   )
 }

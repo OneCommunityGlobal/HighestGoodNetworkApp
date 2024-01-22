@@ -4,11 +4,10 @@ import DragAndDrop from 'components/common/DragAndDrop/DragAndDrop';
 import { PhoneInput } from 'components/common/PhoneInput/PhoneInput';
 
 import { boxStyle } from 'styles';
-import 'react-phone-input-2/lib/style.css';
 import './AddToolForm.css';
 
 
-//TO DO: fix orderTotal to be displayed in console
+//TO DO: 
 //drag and drop pass the data to formData in parent
 //drag and drop remove image on cancel click
 
@@ -89,14 +88,7 @@ export default function AddToolForm() {
 
   const handleSubmit = event => {
     event.preventDefault();
-    //TO DO: fix orderTotal to be displayed in console
-    // const orderTotal = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
-    // setFormData(prevData => ({
-    //   ...prevData,
-    //   orderTotal: totalPriceWithShipping,
-    // }));
     console.log('Data', formData);
-    //TO DO: post request to submit the data
   };
 
   const handleCancelClick = () => {
@@ -104,8 +96,7 @@ export default function AddToolForm() {
   };
 
   const handleFilesSelected = selectedFiles => {
-    console.log('Files received', selectedFiles);
-    
+    console.log('Files received', selectedFiles);    
   };
 
   const handleRemoveFile = index => {
