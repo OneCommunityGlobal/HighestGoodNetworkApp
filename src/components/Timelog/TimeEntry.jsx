@@ -72,6 +72,8 @@ const TimeEntry = (props) => {
     dispatch(hasPermission('editTimelogInfo')) ||
     //permission to edit any time entry on their own time logs tab
     dispatch(hasPermission('editTimeEntry')) ||
+    //permission to toggle tangible
+    dispatch(hasPermission('editTimeEntryToggleTangible')) ||
     //default permission: edit own sameday timelog entry
     (isAuthUser && isSameDay) ||
     // Administrator/Owner can add time entries for any dates.
