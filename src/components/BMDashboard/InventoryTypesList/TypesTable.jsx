@@ -27,7 +27,7 @@ export default function TypesTable(props) {
           ))}
         </tbody>
       </Table>
-      <Button className="btn-types" onClick={handleAdd}>
+      <Button size="sm" className="btn-types" onClick={handleAdd}>
         Add
       </Button>
     </div>
