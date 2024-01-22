@@ -12,7 +12,6 @@ import { RoutePermissions } from 'utils/routePermissions';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
-
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
@@ -231,6 +230,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
