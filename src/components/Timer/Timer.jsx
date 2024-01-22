@@ -358,7 +358,7 @@ export default function Timer() {
       )}
       {logTimeEntryModal && (
         <TimeEntryForm
-          fromTimer
+          from="Timer"
           edit={false}
           toggle={toggleLogTimeModal}
           isOpen={logTimeEntryModal}
