@@ -88,9 +88,10 @@ if(tasksWithLoggedHours.length > displayedTasksCount){
     });
   }else{
     // when the number of tasks is greater than 5, the hours get summed up and added to the chart as "Other Tasks"
-    let totalOtherHours = tasksWithLoggedHours.slice(displayedTasksCount).reduce((acc, val)=> acc + val.hoursLogged, 0)    
+    let totalOtherHours = tasksWithLoggedHours.slice(displayedTasksCount).reduce((acc, val)=> acc + val.hoursLogged, 0)  
+    let numberOtherTasks = tasksWithLoggedHours.length - displayedTasksCount; 
     displayedTasksWithLoggedHoursById["otherTasksTotalHours"] = totalOtherHours;
-    displayedTasksLegend["otherTasksTotalHours"] = ["Other tasks", totalOtherHours]
+    displayedTasksLegend["otherTasksTotalHours"] = [`${numberOtherTasks} other tasks`, totalOtherHours]
   }
   }
   
