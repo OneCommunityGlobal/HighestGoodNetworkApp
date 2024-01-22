@@ -1,4 +1,4 @@
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Container } from 'react-bootstrap';
 
 export default function UnitsTable(props) {
   const { invUnits } = props;
@@ -35,9 +35,12 @@ export default function UnitsTable(props) {
           ))}
         </tbody>
       </Table>
-      <Button className="btn-types" onClick={handleAdd}>
-        Add
-      </Button>
+      <div>
+        <input id="input-measurement" type="text" placeholder="Enter a new measurement" />
+        <Button size="sm" className="btn-types" onClick={handleAdd}>
+          Add
+        </Button>
+      </div>
     </div>
   );
 }

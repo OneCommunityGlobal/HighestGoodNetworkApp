@@ -66,3 +66,10 @@
   max-height: 50vh;
   overflow: auto;
 }
+
+#input-measurement {
+  padding: 0 5px;
+  border: 1px solid var(--color-h50);
+  border-radius: 5px;
+  margin-right: 5px;
+}
