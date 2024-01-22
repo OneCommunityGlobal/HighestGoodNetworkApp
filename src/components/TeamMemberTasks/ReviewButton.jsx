@@ -12,7 +12,8 @@ import { ApiEndpoint } from 'utils/URL';
 const ReviewButton = ({
   user,
   task,
-  updateTask
+  updateTask,
+  userPermission
 }) => {
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
@@ -51,7 +52,7 @@ const ReviewButton = ({
         Submit for Review
       </Button>;
      } else if (reviewStatus == "Submitted")  {
-      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") {
+      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || userPermission) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={boxStyle}>
