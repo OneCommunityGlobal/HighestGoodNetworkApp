@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from 'reactstrap';
 import './style.css';
 import './reviewButton.css';
@@ -10,12 +11,12 @@ import { ApiEndpoint } from 'utils/URL';
 
 const ReviewButton = ({
   user,
-  myUserId,
-  myRole,
   task,
-  updateTask
+  updateTask,
+  userPermission
 }) => {
-
+  const myUserId = useSelector(state => state.auth.user.userid);
+  const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {
@@ -51,7 +52,7 @@ const ReviewButton = ({
         Submit for Review
       </Button>;
      } else if (reviewStatus == "Submitted")  {
-      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") {
+      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || userPermission) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={boxStyle}>
@@ -71,8 +72,8 @@ const ReviewButton = ({
           </UncontrolledDropdown>
         );
       } else if (user.personId == myUserId) {
-        return <Button className='reviewBtn' color='success' onClick={() => {updReviewStat("Unsubmitted");}}>
-          More work needed, reset this button
+        return <Button className='reviewBtn' color='info' disabled>
+          Work Submitted and Awaiting Review
         </Button>;
       } else {
         return <Button className='reviewBtn' color='success' disabled>

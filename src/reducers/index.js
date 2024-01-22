@@ -25,6 +25,7 @@ import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
+import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 
@@ -35,32 +36,27 @@ import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { lessonsReducer } from './bmdashboard/lessonsReducer';
 import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 
+import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
+import { consumablesReducer } from './bmdashboard/consumablesReducer';
+import { toolReducer } from './bmdashboard/toolReducer';
 
-export default combineReducers({
+const localReducers = {
   auth: authReducer,
-  userProfile: userProfileByIdReducer,
-  userTask: userTaskByIdReducer,
   allUserProfiles: allUserProfilesReducer,
-  leaderBoardData: leaderboardDataReducer,
-  orgData: orgDataReducer,
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
   allProjects: allProjectsReducer,
   projectReport: projectReportReducer,
-  userProjects: userProjectsReducer,
   projectMembers: projectMembershipReducer,
   managingTeams: managingTeamsReducer,
   allTeamsData: allUserTeamsReducer,
-  teamsTeamMembers: teamUsersReducer,
   team: teamByIdReducer,
   wbs: wbsReducer,
   tasks: taskReducer,
   errors: errorsReducer,
-  timeEntries: timeEntriesReducer,
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
   timeZoneAPI: timeZoneAPIReducer,
-  teamMemberTasks: teamMemberTasksReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
   rolePreset: rolePresetReducer,
@@ -73,5 +69,21 @@ export default combineReducers({
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
   lessons: lessonsReducer,
-  project: bmProjectByIdReducer
-});
+  project: bmProjectByIdReducer,
+  bmTools: toolReducer,
+  bmInvUnits: bmInvUnitReducer,
+  bmConsumables: consumablesReducer
+};
+
+const sessionReducers = {
+  userProfile: userProfileByIdReducer,
+  userTask: userTaskByIdReducer,
+  leaderBoardData: leaderboardDataReducer,
+  orgData: orgDataReducer,
+  userProjects: userProjectsReducer,
+  teamsTeamMembers: teamUsersReducer,
+  timeEntries: timeEntriesReducer,
+  teamMemberTasks: teamMemberTasksReducer,
+};
+
+export { localReducers, sessionReducers };
