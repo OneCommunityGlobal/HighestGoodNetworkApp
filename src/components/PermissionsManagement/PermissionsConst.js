@@ -158,6 +158,11 @@ export const permissionLabels = [
                 key: 'suggestTask',
                 description: 'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
               },
+              {
+                label: 'Interact with Task "Ready for Review"',
+                key: 'putReviewStatus',
+                description: 'Give the user permission to interact with any "Ready for Review" task button to either mark it as complete or reset it with "More work needed, reset this button" ',
+              }
             ],
           },
         ],

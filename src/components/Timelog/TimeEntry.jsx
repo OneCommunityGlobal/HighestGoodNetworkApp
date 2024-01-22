@@ -13,8 +13,7 @@ import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries'
 import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
-import { ENDPOINTS } from 'utils/URL';
-import axios from 'axios';
+
 
 import checkNegativeNumber from 'utils/checkNegativeHours';
 
@@ -27,12 +26,12 @@ import checkNegativeNumber from 'utils/checkNegativeHours';
  *  2. In TimeLog - Tasks tab:
  *    time entry data and user profile are both from state.teamMemberTasks.usersWithTimeEntries
  * 
- *  check boolean value of fromTaskTab to decide which state to change upon time entry edit
+ *  check string value of from to decide which state to change upon time entry edit
  */
 
 const TimeEntry = (props) => {
   // props from parent
-  const { fromTaskTab, data, displayYear, timeEntryUserProfile } = props
+  const { from, data, displayYear, timeEntryUserProfile, displayUserProjects, displayUserTasks, tab } = props
   // props from store
   const { authUser } = props;
 
@@ -43,25 +42,45 @@ const TimeEntry = (props) => {
 
   const { 
     dateOfWork, 
-    personId, 
     isTangible, 
-    projectName, 
-    projectCategory,
-    taskName,
-    taskClassification,
+    hours,
+    minutes,
+    projectId,
+    taskId,
+    notes,
   } = data;
 
+  let projectName, projectCategory, taskName, taskClassification;
+
+  if (from === 'TaskTab') {
+    // Time Entry rendered under Tasks tab
+    ({ projectName, projectCategory, taskName, taskClassification } = data)
+  } else {
+    // Time Entry rendered under weekly tabs
+    const timeEntryProject = displayUserProjects.find(project => project.projectId === projectId);
+    ({ projectName, projectCategory } = timeEntryProject);
+    if (taskId) {
+      const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
+      ({ taskName, taskClassification = '' } = timeEntryTask);
+    }
+  }
+  
   const toggle = () => setTimeEntryFormModal(modal => !modal);
 
-  const timeEntryDate = moment(dateOfWork);
-
-  const isAuthUser = personId === authUser.userid;
+  const isAuthUser = timeEntryUserId === authUser.userid;
   const isSameDay = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === dateOfWork;
-  const role = authUser.role;
+      
+  //default permission: auth use can edit own sameday timelog entry, but not tangibility
+  const isAuthUserAndSameDayEntry = isAuthUser && isSameDay;
 
-  const canDelete =
-    //permission to Delete time entry from other user's Dashboard
-    dispatch(hasPermission('deleteTimeEntryOthers')) ||
+  //permission to edit any time log entry (from other user's Dashboard
+    // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
+  const canEdit = dispatch(hasPermission('editTimelogInfo')) 
+    //permission to edit any time entry on their own time logs tab
+    || dispatch(hasPermission('editTimeEntry')) 
+
+  //permission to Delete time entry from other user's Dashboard
+  const canDelete = dispatch(hasPermission('deleteTimeEntryOthers')) ||
     //permission to delete any time entry on their own time logs tab
     dispatch(hasPermission('deleteTimeEntry')) ||
     //default permission: delete own sameday tangible entry
@@ -79,14 +98,16 @@ const TimeEntry = (props) => {
     // Administrator/Owner can add time entries for any dates.
     (role === 'Owner' || role === 'Administrator');
 
+    isAuthUserAndSameDayEntry;
+
   const toggleTangibility = () => {
     //Update intangible hours property in userprofile
-    const formattedHours = parseFloat(data.hours) + parseFloat(data.minutes) / 60;
+    const formattedHours = parseFloat(hours) + parseFloat(minutes) / 60;
     const { hoursByCategory } = timeEntryUserProfile;
-    if (data.projectName) {
+    if (projectName) {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
       //change tangible to intangible
-      if (data.isTangible) {
+      if (isTangible) {
         timeEntryUserProfile.totalIntangibleHrs += formattedHours;
         isFindCategory
           ? (hoursByCategory[projectCategory] -= formattedHours)
@@ -101,7 +122,7 @@ const TimeEntry = (props) => {
     } else {
       const isFindCategory = Object.keys(hoursByCategory).find(key => key === taskClassification);
       //change tangible to intangible
-      if (data.isTangible) {
+      if (isTangible) {
         timeEntryUserProfile.totalIntangibleHrs += formattedHours;
         isFindCategory
           ? (hoursByCategory[taskClassification] -= formattedHours)
@@ -118,35 +139,35 @@ const TimeEntry = (props) => {
 
     const newData = {
       ...data,
-      isTangible: !data.isTangible,
+      isTangible: !isTangible,
     };
 
-    if (fromTaskTab) {
+    if (from === 'TaskTab') {
       dispatch(editTeamMemberTimeEntry(newData));
-    } else {
-      dispatch(editTimeEntry(data._id, newData));
+    } else if (from === 'WeeklyTab') {
+      dispatch(editTimeEntry(timeEntryUserId, newData));
       dispatch(updateUserProfile(timeEntryUserProfile));
-      dispatch(getTimeEntriesForWeek(timeEntryUserId, 0));
+      dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
     }
   };
 
 
   return (
     <>
-      <Card className="mb-1 p-2" style={{ backgroundColor: data.isTangible ? '#CCFFCC' : '#CCFFFF' }}>
+      <Card className="mb-1 p-2" style={{ backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF' }}>
         <Row className="mx-0">
           <Col md={3} className="date-block px-0">
             <div className="date-div">
               <div>
-                <h4>{timeEntryDate.format('MMM D')}</h4>
-                {displayYear && <h5>{timeEntryDate.format('YYYY')}</h5>}
-                <h5 className="text-info">{timeEntryDate.format('dddd')}</h5>
+                <h4>{moment(dateOfWork).format('MMM D')}</h4>
+                {displayYear && <h5>{moment(dateOfWork).format('YYYY')}</h5>}
+                <h5 className="text-info">{moment(dateOfWork).format('dddd')}</h5>
               </div>
             </div>
           </Col>
           <Col md={4} className="px-0">
             <h4 className="text-success">
-              {data.hours}h {data.minutes}m
+              {hours}h {minutes}m
             </h4>
             <div className="text-muted">Project/Task:</div>
             <p> 
@@ -154,29 +175,37 @@ const TimeEntry = (props) => {
               <br />
               {taskName && `\u2003 ↳ ${taskName}`} 
             </p>
-            <span className="text-muted">Tangible:&nbsp;</span>
-            <input
-              type="checkbox"
-              name="isTangible"
-              checked={data.isTangible}
-              disabled={!canEdit}
-              onChange={toggleTangibility}
-              />
+            <div className='mb-3'>
+            {
+              canEdit 
+                ? ( 
+                    <>
+                      <span className="text-muted">Tangible:&nbsp;</span>
+                      <input
+                          type="checkbox"
+                          name="isTangible"
+                          checked={isTangible}
+                          disabled={!canEdit}
+                          onChange={toggleTangibility}
+                      />
+                    </>
+                  )
+                : <span className="font-italic">{isTangible ? 'Tangible' : 'Intangible'}</span> 
+            }
+            </div>
           </Col>
           <Col md={5} className="pl-2 pr-0">
             <div className="text-muted">Notes:</div>
-            {ReactHtmlParser(data.notes)}
+            {ReactHtmlParser(notes)}
             <div className="buttons">
-              {canEdit && !fromTaskTab && (
-              <button className="mr-3 text-primary">
-                <FontAwesomeIcon
-                  icon={faEdit}
-                  size="lg"
-                  onClick={toggle}
-                />
-              </button>
+              {(canEdit || isAuthUserAndSameDayEntry) 
+                && from === 'WeeklyTab' 
+                && (
+                  <button className="mr-3 text-primary">
+                    <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
+                  </button>
               )}
-              {canDelete && !fromTaskTab && (
+              {canDelete && from === 'WeeklyTab' && (
                 <button className='text-primary'>
                   <DeleteModal
                     timeEntry={data}
@@ -190,11 +219,14 @@ const TimeEntry = (props) => {
           </Col>
         </Row>
       </Card>
+      {/* this TimeEntryForm could be rendered from either weekly tab or task tab */}
       <TimeEntryForm
+        from={from}
         edit={true}
         data={data}
         toggle={toggle}
         isOpen={timeEntryFormModal}
+        tab={tab}
       />
     </>
   );
@@ -202,9 +234,8 @@ const TimeEntry = (props) => {
 
 const mapStateToProps = (state) => ({
   authUser: state.auth.user,
-  displayUserId: state.userProfile._id,
-  displayUserProjects: state.userProjects.projects,
-  displayUserTasks: state.userTask,
+  // displayUserProjects: state.userProjects.projects,
+  // displayUserTasks: state.userTask,
 })
 
 export default connect(mapStateToProps, null)(TimeEntry);
