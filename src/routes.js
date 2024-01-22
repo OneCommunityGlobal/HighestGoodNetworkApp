@@ -217,15 +217,12 @@ export default (
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/lessonlist/" component={LessonList} />
-        <BMProtectedRoute path="/bmdashboard/lessonform/" fallback component={LessonForm} />
-        <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
 
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
-        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />

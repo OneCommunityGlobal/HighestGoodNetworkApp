@@ -37,7 +37,6 @@ import { lessonsReducer } from './bmdashboard/lessonsReducer';
 import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
-import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 
 
@@ -70,7 +69,6 @@ const localReducers = {
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
   lessons: lessonsReducer,
-  project: bmProjectByIdReducer,
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
   bmInvUnits: bmInvUnitReducer,
