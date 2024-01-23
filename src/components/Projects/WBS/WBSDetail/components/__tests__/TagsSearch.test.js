@@ -112,6 +112,33 @@ describe('Tags Search component', () => {
       allMembers[3].firstName,
       allMembers[3].lastName,
     );
+    expect(addResources).not.toHaveBeenCalledWith(
+      allMembers[1]._id,
+      allMembers[1].firstName,
+      allMembers[1].lastName,
+    );
+    expect(addResources).not.toHaveBeenCalledWith(
+      allMembers[2]._id,
+      allMembers[2].firstName,
+      allMembers[2].lastName,
+    );
+  });
+  it('check filtered text click: add resources not called when the user does not click on the name', async () => {
+    const resourceItems = [];
+    const { addResources, removeResources } = mockFunctions(resourceItems);
+    const { container } = render(
+      <TagsSearch
+        placeholder="Add resources"
+        members={allMembers.filter(user => user.isActive)}
+        resourceItems={resourceItems}
+        addResources={addResources}
+        removeResource={removeResources}
+      />,
+    );
+    const searchInputElement = screen.getByPlaceholderText('Add resources');
+    fireEvent.change(searchInputElement, { target: { value: 'aaa' } });
+
+    expect(addResources).not.toHaveBeenCalled();
   });
   it('check filtered text click: remove resources', async () => {
     let resourceItems;
