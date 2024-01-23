@@ -6,30 +6,38 @@ import { BrowserRouter as Router } from 'react-router-dom'; // Import BrowserRou
 import thunk from 'redux-thunk'; // Import Redux Thunk
 import '@testing-library/jest-dom';
 import Members from './Members';
+import { authMock, rolesMock } from '../../../__tests__/mockStates';
+
+const mockStore = configureStore([thunk]);
+
+const renderProject= props => 
+  { 
+  const store = mockStore({
+  auth: authMock,
+  role: rolesMock.role,
+  projectMembers: {
+    members: [], // Provide a default value for members in the mock store
+    foundUsers: [{ _id: 'member123', firstName: 'John', lastName: 'Doe', assigned: true },
+    { _id: 'user2', firstName: 'Jane', lastName: 'Smith', assigned: false },],
+  },
+});
+return render(
+  <Provider store={store}>
+    <Router> {/* Wrap the component in a Router */}
+      <Members {...props} />
+    </Router>
+  </Provider>
+);
+
+
+};
+
 
 describe('Members component', () => {
-  const mockStore = configureStore([thunk]);
+  
 
   it('renders without crashing', async () => {
-    const initialState = {
-      projectMembers: {
-        members: [],
-        foundUsers: [],
-      },
-      role: {
-        roles: [], // Initialize roles in the state
-      },
-      auth: {
-        user: {
-          role: 'userRole', // Provide a mock user role
-          permissions: {
-            frontPermissions: ['permission1', 'permission2'], // Provide mock permissions if needed
-          },
-        },
-      },
-    };
-
-    const store = mockStore(initialState);
+    
 
     const props = {
       match: {
@@ -40,25 +48,20 @@ describe('Members component', () => {
       state: {
         projectMembers: {
           members: [],
-          foundUsers: [],
+          foundUsers: [{ _id: 'member123', firstName: 'John', lastName: 'Doe', assigned: true },
+          { _id: 'user2', firstName: 'Jane', lastName: 'Smith', assigned: false },],
         },
       },
       fetchAllMembers: jest.fn(),
       findUserProfiles: jest.fn(),
       getAllUserProfiles: jest.fn(),
       assignProject: jest.fn(),
-      hasPermission: jest.fn(() => true),
     };
 
-    const { getByTestId, container } = render(
-      <Provider store={store}>
-        <Router> {/* Wrap the component in a Router */}
-          <Members {...props} />
-        </Router>
-      </Provider>
-    );
+    const { getByTestId, queryByText } = renderProject(props);
     
     await waitFor(() => {
+
       // Use getByTestId to specifically target the element with data-testid="projectId"
       const projectElement = getByTestId('projectId');
   
@@ -68,37 +71,99 @@ describe('Members component', () => {
       // Check if the text content includes both "PROJECTS"
       expect(projectTextContent).toContain('PROJECTS');
       expect(projectTextContent).toContain('exampleProjectId');
+
+      // Check if the "All" button is rendered
+      const allButton = queryByText('All');
+      expect(allButton).toBeInTheDocument();
+
+      // Check if the "Cancel" button is rendered
+      const cancelButton = queryByText('Cancel');
+      expect(cancelButton).toBeInTheDocument();
+
     });
+
 
   });
 
-  it('renders member list ', async () => {
-    const initialState = {
-      projectMembers: {
-        members: [
-          {
-            _id: 'member-1',
-            firstName: 'John',
-            lastName: 'Doe',
-          },
-          // Add more members as needed for your test cases
-        ],
-        foundUsers: [],
-      },
-      role: {
-        roles: [],
-      },
-      auth: {
-        user: {
-          role: 'userRole',
-          permissions: {
-            frontPermissions: ['permission1', 'permission2'],
-          },
+  it('renders "All" button for all found users when clicked', async () => {
+  
+    const props = {
+      match: {
+        params: {
+          projectId: 'exampleProjectId',
         },
       },
+      state: {
+        projectMembers: {
+          members: [],
+          foundUsers: [
+            { _id: 'member123', firstName: 'John', lastName: 'Doe', assigned: true },
+            { _id: 'user2', firstName: 'Jane', lastName: 'Smith', assigned: false },
+          ],
+        },
+      },
+      fetchAllMembers: jest.fn(),
+      findUserProfiles: jest.fn(),
+      getAllUserProfiles: jest.fn(),
+      assignProject: jest.fn(),
     };
+  
+    const { getByText } = renderProject(props);
+  
+  
+    // Check if the "All" button is rendered
+    const allButton = getByText('All');
+    expect(allButton).toBeInTheDocument();
+    
+    // Simulate a click on the "All" button
+    fireEvent.click(allButton);
 
-    const store = mockStore(initialState);
+    // Wait for asynchronous actions triggered by the button click
+    await waitFor(() => {
+      const johnDoeElement = getByText('John Doe');
+      expect(johnDoeElement).toBeInTheDocument();
+
+      const janeElement = getByText('Jane Smith');
+      expect(janeElement).toBeInTheDocument();
+
+
+      
+    });
+  });
+
+  it('hides find user list when "Cancel" button is clicked', async () => {
+    const props = {
+      match: {
+        params: {
+          projectId: 'exampleProjectId',
+        },
+      },
+      state: {
+        projectMembers: {
+          members: [],
+          foundUsers: [
+            { _id: 'user1', firstName: 'John', lastName: 'Doe', assigned: true },
+            { _id: 'user2', firstName: 'Jane', lastName: 'Smith', assigned: false },
+          ],
+        },
+      },
+      fetchAllMembers: jest.fn(),
+      findUserProfiles: jest.fn(),
+      getAllUserProfiles: jest.fn(),
+      assignProject: jest.fn(),
+    };
+  
+    const { getByText, queryByText } = renderProject(props);
+  
+    // Click the "Cancel" button
+    fireEvent.click(getByText('Cancel'));
+  
+    // Check if the find user list is hidden
+    const foundUserList = queryByText('John Doe');
+    expect(foundUserList).toBeNull();
+  });
+
+  it('triggers assignProject for all found users when "Assign All" button is clicked', async () => {
 
     const props = {
       match: {
@@ -116,35 +181,21 @@ describe('Members component', () => {
       findUserProfiles: jest.fn(),
       getAllUserProfiles: jest.fn(),
       assignProject: jest.fn(),
-      hasPermission: jest.fn(() => true),
     };
+  
+    const { getByText } = renderProject(props);
+  
+    // Click the "Assign All" button
+  
+    
+    fireEvent.click(getByText('All'));
+    fireEvent.click(getByText('+All'));
 
-    const { getByText } = render(
-      <Provider store={store}>
-        <Router>
-          <Members {...props} />
-        </Router>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      // // Use a test id or other selectors to target the members in the rendered component
-      // const memberJohn = getByTestId('member-member-1');
-      // const memberNameJohn = getByTestId('member-name-member-1');
-   
-
-      // // Add assertions based on your component structure and test requirements
-      // expect(memberJohn).toBeInTheDocument();
-      // expect(memberNameJohn).toHaveTextContent('John Doe');
-
-      // Use querySelector to find the element by class name and content
-      const memberNameJohn = getByText('John Doe', { selector: 'td.members__name' });
-
-      // Add assertions based on your component structure and test requirements
-      expect(memberNameJohn).toBeInTheDocument();
+    await waitFor(()=>{
+      expect(props.assignProject).toBeCalled();
+    })
 
 
-    });
   });
 
 });
