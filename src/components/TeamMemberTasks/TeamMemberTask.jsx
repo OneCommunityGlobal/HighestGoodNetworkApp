@@ -26,7 +26,6 @@ const TeamMemberTask = React.memo(
     userRole,
     userId,
     updateTaskStatus,
-    userPermission
   }) => {
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
@@ -90,15 +89,26 @@ const TeamMemberTask = React.memo(
         <tr ref={ref} className="table-row" key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
           <td>
-            <div className="committed-hours-circle">
-              <FontAwesomeIcon
-                style={{
-                  color: user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
-                }}
-                icon={faCircle}
-                data-testid="icon"
-              />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="committed-hours-circle">
+                <FontAwesomeIcon
+                  style={{
+                    color: user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
+                  }}
+                  icon={faCircle}
+                  data-testid="icon"
+                />
+              </div>
+              <Link to={`/timelog/${user.personId}`}>
+                <i
+                  className="fa fa-clock-o"
+                  aria-hidden="true"
+                  style={{ fontSize: 24, cursor: 'pointer', color: 'black' }}
+                  title="Click to see user's timelog"
+                />
+              </Link>
             </div>
+
           </td>
           <td>
             <Table borderless className="team-member-tasks-subtable">
@@ -112,7 +122,7 @@ const TeamMemberTask = React.memo(
                           currentDate.isSameOrAfter(
                             moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                           ) &&
-                          currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                            currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                             ? 'rgba(128, 128, 128, 0.5)'
                             : undefined,
                       }}
@@ -149,11 +159,11 @@ const TeamMemberTask = React.memo(
                           </div>
                           <div className="team-member-tasks-icons">
                             {task.taskNotifications.length > 0 &&
-                            task.taskNotifications.some(
-                              notification =>
-                                notification.hasOwnProperty('userId') &&
-                                notification.userId === user.personId,
-                            ) ? (
+                              task.taskNotifications.some(
+                                notification =>
+                                  notification.hasOwnProperty('userId') &&
+                                  notification.userId === user.personId,
+                              ) ? (
                               <>
                                 <FontAwesomeIcon
                                   className="team-member-tasks-bell"
@@ -206,7 +216,6 @@ const TeamMemberTask = React.memo(
                           <div>
                             <ReviewButton
                               user={user}
-                              userPermission={userPermission}
                               userId={userId}
                               task={task}
                               updateTask={updateTaskStatus}
