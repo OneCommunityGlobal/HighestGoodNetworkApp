@@ -5,12 +5,10 @@ export default function TypeRow(props) {
 
   const handleEdit = () => {
     // TODO:
-    console.log('Editd item with id:', itemType._id);
   };
 
   const handleDelete = () => {
     // TODO:
-    console.log('Deleted item with id:', itemType._id);
   };
 
   return (
