@@ -6,10 +6,9 @@ import { PhoneInput } from 'components/common/PhoneInput/PhoneInput';
 import { boxStyle } from 'styles';
 import './AddToolForm.css';
 
-
-//TO DO: 
-//drag and drop pass the data to formData in parent
-//drag and drop remove image on cancel click
+// TO DO:
+// drag and drop pass the data to formData in parent
+// drag and drop remove image on cancel click
 
 const initialFormState = {
   project: 'Project1',
@@ -29,7 +28,7 @@ const initialFormState = {
   phoneNumber: '',
   images: [],
   link: '',
-  description: ''
+  description: '',
 };
 
 export default function AddToolForm() {
@@ -37,7 +36,7 @@ export default function AddToolForm() {
   const [selectedCategory, setSelectedCategory] = useState(formData.category);
   const [selectedName, setSelectedName] = useState(formData.name);
   const [isPurchased, setIsPurchased] = useState(true);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
 
   const handleInputChange = (name, value) => {
     setFormData(prevData => ({
@@ -88,16 +87,22 @@ export default function AddToolForm() {
 
   const handleSubmit = event => {
     event.preventDefault();
-    console.log('Data', formData);
+    const updatedFormData = {
+      ...formData,
+      images: uploadedFiles,
+    };
+    console.log('Data', updatedFormData);
+    // TODO: validate form data
+    // TODO: submit data to API
   };
 
   const handleCancelClick = () => {
     setFormData(initialFormState);
   };
 
-  const handleFilesSelected = selectedFiles => {
-    console.log('Files received', selectedFiles);    
-  };
+  // const handleFilesSelected = selectedFiles => {
+  //   console.log('Files received', selectedFiles);
+  // };
 
   const handleRemoveFile = index => {
     setUploadedFiles(prevUploadedFiles => prevUploadedFiles.filter((file, i) => i !== index));
@@ -287,7 +292,7 @@ export default function AddToolForm() {
           id="imageUpload"
           name="image"
           value={formData.images}
-          onFilesSelected={handleFilesSelected}
+          // onFilesSelected={handleFilesSelected}
           updateUploadedFiles={setUploadedFiles}
         />
         {uploadedFiles.length > 0 && (
