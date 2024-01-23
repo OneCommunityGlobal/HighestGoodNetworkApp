@@ -9,9 +9,11 @@ import {
   deleteWarningsById,
 } from '../../actions/warnings';
 
+//yellow colro #ffc107
 import WarningItem from './WarningItem';
-import { Button } from 'react-bootstrap';
+import { Button, Alert } from 'react-bootstrap';
 import './Warnings.css';
+import { set } from 'lodash';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
 // Log Time as You Go (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
@@ -21,38 +23,43 @@ import './Warnings.css';
 //admins and owners should see it by default using userRole
 // the wanring button is only visiable to owners and admins
 
-export default function Warning({ personId }) {
+export default function Warning({ personId, username, userRole }) {
   const dispatch = useDispatch();
-
-  // const { userid } = useSelector(state => state.auth.user);
 
   const [usersWarnings, setUsersWarnings] = useState([]);
 
-  console.log('users warnins', usersWarnings);
   const [toggle, setToggle] = useState(false);
-
-  const [warningOptions, setWarningOptions] = useState([
-    'Better Descriptions',
-    'Log Time to Tasks',
-    'Log Time as You Go',
-    'Log Time to Action Items',
-    'Intangible Time Log w/o Reason',
-  ]);
+  const [error, setError] = useState(null);
 
   const handleToggle = () => {
     setToggle(prev => !prev);
-    //when fetch its an array of objects
     dispatch(getWarningsByUserId(personId)).then(res => {
+      if (res.error) {
+        setError(res);
+        setUsersWarnings([]);
+        return;
+      }
       setUsersWarnings(res);
     });
   };
 
-  const handleDeleteWarnings = async () => {
-    console.log('hgandle delete called');
-    dispatch(deleteWarningsById(personId));
-    // setCurWarnings([]);
+  const handleDeleteWarning = async warningId => {
+    dispatch(deleteWarningsById(warningId, personId)).then(res => {
+      if (res.error) {
+        setError(res);
+        setUsersWarnings([]);
+        return;
+      }
+      setUsersWarnings(res);
+    });
   };
-  const handlePostWarningDetails = async (id, color, dateAssigned, warningText) => {
+  const handlePostWarningDetails = async ({
+    id,
+    colorAssigned: color,
+    todaysDate: dateAssigned,
+    username,
+    warningText,
+  }) => {
     const data = {
       userId: personId,
       iconId: id,
@@ -62,14 +69,14 @@ export default function Warning({ personId }) {
     };
 
     dispatch(postWarningByUserId(data)).then(res => {
-      console.log('res after posting', res);
-      // being posted as a single an array with all the objects inside
-      setUsersWarnings(res.warnings);
+      if (res.error) {
+        setError(res);
+        setUsersWarnings([]);
+        return;
+      }
+      setUsersWarnings(res);
     });
   };
-  // each warnign will have 8 circles
-  // store warnings in an array
-  //looop through each wanring rendering 8 circles and the text below inside of warnings component
 
   const warnings = !toggle
     ? null
@@ -78,82 +85,81 @@ export default function Warning({ personId }) {
           warnings={warning.warnings}
           warningText={warning.title}
           handlePostWarningDetails={handlePostWarningDetails}
+          username={username}
+          submitWarning={handlePostWarningDetails}
+          handleDeleteWarning={handleDeleteWarning}
         />
       ));
 
-  // const warnings = !toggle ? null : (
-  //   <WarningItem
-  //     // warningText={warning}
-  //     handleDeleteWarnings={handleDeleteWarnings}
-  //     handlePostWarningDetails={handlePostWarningDetails}
-  //     warningOptions={warningOptions}
-  //     // curWarnings={curWarnings}
-  //   />
-  // );
-
   return (
-    <div className="warnings-container">
-      <Button className="btn btn-warning warning-btn" size="sm" onClick={handleToggle}>
-        {toggle ? 'Hide' : 'Tracking'}
-      </Button>
-      <Button onClick={handleDeleteWarnings}>Delete</Button>
+    (userRole === 'Administrator' || userRole === 'Owner') && (
+      <div className="warnings-container">
+        <Button className="btn btn-warning warning-btn" size="sm" onClick={handleToggle}>
+          {toggle ? 'Hide' : 'Tracking'}
+        </Button>
 
-      <div className="warning-wrapper"> {warnings}</div>
-    </div>
+        <div className="warning-wrapper"> {warnings}</div>
+        <div className="error-container">
+          {error && (
+            <Alert key="warning" variant="warning">
+              {error.error}
+            </Alert>
+          )}
+        </div>
+      </div>
+    )
   );
 }
 
-//   <FontAwesomeIcon
-//     style={{
-//       color: 'white',
-//       border: '1px solid black',
-//       borderRadius: '50%',
-//     }}
-//     icon={faCircle}
-//     data-testid="icon"
-//   />
-// </div>
-// <div className="committed-hours-circle">
-//   <FontAwesomeIcon
-//     style={{
-//       color: 'green',
-//     }}
-//     icon={faCircle}
-//     data-testid="icon"
-//   />
-// </div>
-// <div className="committed-hours-circle">
-//   <FontAwesomeIcon
-//     style={{
-//       color: 'green',
-//     }}
-//     icon={faCircle}
-//     data-testid="icon"
-//   />
-// </div>
-// <div className="committed-hours-circle">
-//   <FontAwesomeIcon
-//     style={{
-//       color: 'green',
-//     }}
-//     icon={faCircle}
-//     data-testid="icon"
-//   />
-// </div>
-// <div className="committed-hours-circle">
-//   <FontAwesomeIcon
-//     style={{
-//       color: 'green',
-//     }}
-//     icon={faCircle}
-//     data-testid="icon"
-//   />
+//log warning will be blue
+//issue warning will be yellow email can be sent
+//issue blue square will be red
 
-{
-  /* <Radio name="warning" value="warning" />
-      <Radio name="warning" value="warning" />
-      <Radio name="warning" value="warning" />
-      <Radio name="warning" value="warning" />
-      <Radio name="warning" value="warning" />
-      <Dropdown value="warning" name="warning" options={options} /> */
-}
+//issuing a warning or blue square color should change
+//issuing a warnig will be yellow
+//issuing a blue square will be red
+//log a warning will be blue
+
+/*
+
+3rd warning issue warnign will be yellow should appear as an option 
+
+at 4th warning if blue square issue red 
+after 4th issue warning will appear
+
+after 3rd warning it should be issue warning or log warning or blue square
+
+after 4th warning it should be issue wanring or issue blue sqaure or cancel
+issue blue square will be red
+issue warning will be yellow
+
+//sort by dates isntead of color
+
+
+//wants yellow to tell him they've been warned 3 times and an emial will be sent
+//unlikely for them to not get an email after the 3rd warning but just in case
+*/
+
+// so to clarify a bit when issuing the 3rd warning, you’ll have the option of
+// log warning or issue warning. log warning will be blue normal warning.
+//  When selecting issue warning, it will be yellow.
+// // After their 3rd warning, it will be issue blue square or cancel as the options?
+// And it will always bed red when issuing a warning after 3 warnings.
+// // I can have another color but seems a bit much if its only for a specific case.
+// Maybe issue warning will  still be blue but send an email? For a future PR?
+// // Since if you do log the warning it’ll be blue, then by the 4th one it will be red and issue a blue square.
+// // Let me know.
+
+//at 3 log warning issuing warning will appear
+// jae can issue a warning => will be yellow
+//or log the warning which will simply be blue
+//or issue blue square
+
+//at 4th can be issuing warning ,or log as an otpion or issue blue square
+
+//at 5th choice of yellow or red for blue square
+//
+
+//for yellow color see if it needs to be a darker color, than reguar yellow
+//can change the css for a daker yellow but pass yellwo to the backend
+//since the enum is expecting yellow as teh value

@@ -105,6 +105,8 @@ const TeamMemberTask = React.memo(
                 <td className="team-member-tasks-user-name">
                   <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
                   <Warning
+                    username={user.name}
+                    // userName={user}
                     userId={userId}
                     user={user}
                     userRole={userRole}
