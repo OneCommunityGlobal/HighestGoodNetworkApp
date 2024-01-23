@@ -2,8 +2,8 @@ import axios from 'axios';
 import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
 import {
-  getUserProfile as getUserProfileActionCreator,
-} from '../constants/userProfile';
+  getUserProfileActionCreator,
+} from '../actions/userProfile';
 
 /**
  * Action to set the 'loading' flag to true.

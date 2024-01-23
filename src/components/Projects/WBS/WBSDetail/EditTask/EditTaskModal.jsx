@@ -264,13 +264,16 @@ const EditTaskModal = props => {
               <tr>
                 <td scope="col">Task Name</td>
                 <td scope="col">
-                  <input
+                  {/* change by Sucheta */}
+                  <textarea
+                    rows="2"
                     type="text"
-                    className="task-name"
+                    className="task-name border border-dark rounded"
                     onChange={e => setTaskName(e.target.value)}
                     onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
                   />
+                 
                 </td>
               </tr>
               <tr>

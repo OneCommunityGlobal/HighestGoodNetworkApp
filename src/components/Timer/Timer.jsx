@@ -12,7 +12,6 @@ import {
   FaStopCircle,
   FaUndoAlt,
 } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
 import css from './Timer.module.css';
@@ -74,9 +73,6 @@ export default function Timer() {
   const MAX_HOURS = 5;
   const MIN_MINS = 1;
 
-  const userId = useSelector(state => state.auth.user.userid);
-  const curruserProfile = useSelector(state => state.userProfile);
-
   const [message, setMessage] = useState(defaultMessage);
   const { time, paused, started, goal, startAt } = message;
 
@@ -87,13 +83,9 @@ export default function Timer() {
   const [showTimer, setShowTimer] = useState(false);
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
-  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
+  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0, isTangible: true });
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
-
-  const data = {
-    isTangible: true,
-  };
 
   const timeToLog = moment.duration(goal - remaining);
   const logHours = timeToLog.hours();
@@ -253,7 +245,7 @@ export default function Timer() {
 
   useEffect(() => {
     checkRemainingTime();
-    setLogTimer({ hours: logHours, minutes: logMinutes });
+    setLogTimer({ hours: logHours, minutes: logMinutes, isTangible: true });
   }, [remaining]);
 
   useEffect(() => {
@@ -378,15 +370,12 @@ export default function Timer() {
       )}
       {logTimeEntryModal && (
         <TimeEntryForm
+          from="Timer"
           edit={false}
-          userId={userId}
           toggle={toggleLogTimeModal}
           isOpen={logTimeEntryModal}
-          timer={logTimer}
-          data={data}
+          data={logTimer}
           sendStop={sendStop}
-          LoggedInuserId={userId}
-          curruserId={curruserProfile._id}
         />
       )}
       <audio ref={timeIsOverAudioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />

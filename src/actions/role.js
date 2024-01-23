@@ -48,8 +48,11 @@ export const updateRole = (roleId, updatedRole) => {
     try {
       const res = await axios.patch(ENDPOINTS.ROLES_BY_ID(roleId), updatedRole);
       dispatch(modifyRole(updatedRole));
+      return 0;
     } catch (err) {
       dispatch(setRoleError());
+      console.log(err);
+      return 1;
     }
     dispatch(modifyRole(updatedRole));
   };
