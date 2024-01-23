@@ -1,16 +1,14 @@
-import { Table, Button, Container } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 
 export default function UnitsTable(props) {
   const { invUnits } = props;
 
   const handleDelete = () => {
     // TODO:
-    console.log('Deleted unit:');
   };
 
   const handleAdd = () => {
     // TODO:
-    console.log('Added unit:');
   };
 
   return (

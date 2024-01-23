@@ -25,7 +25,6 @@ export function InventoryTypesList(props) {
   // dispatch inventory type fetch action on load
   useEffect(() => {
     // NOTE: depend on redux action implementation
-    // dispatch(fetchInvTypeByType('All'));
     dispatch(fetchInvTypeByType('Materials'));
     dispatch(fetchInvTypeByType('Consumables'));
     dispatch(fetchInvTypeByType('Equipments'));
@@ -75,7 +74,7 @@ export function InventoryTypesList(props) {
               </AccordionToggle>
               <Accordion.Collapse eventKey={index + 1}>
                 <Card.Body className="accordion-collapse">
-                  <TypesTable itemTypes={invTypes[category]} category={category} />
+                  <TypesTable itemTypes={invTypes[category]} />
                 </Card.Body>
               </Accordion.Collapse>
             </Card>
@@ -95,7 +94,7 @@ export function InventoryTypesList(props) {
       </Accordion>
 
       <div className="button-container">
-        {/* TODO: should redirect to the Equipment/Tool List Page, which is not implemented yet */}
+        {/* NOTE: should redirect to the Equipment/Tool List Page, which is not implemented yet */}
         <a href="#back-to-previous" target="_blank" id="back-to-previous" role="button">
           Back to previous list page
         </a>
