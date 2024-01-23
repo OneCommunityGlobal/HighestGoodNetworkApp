@@ -17,6 +17,7 @@ function LessonList(props) {
   useEffect(() => {
     dispatch(fetchBMLessons());
   }, []);
+
   const getWeekNumber = date => {
     const currentDate = new Date(date);
     currentDate.setHours(0, 0, 0, 0);
@@ -203,14 +204,19 @@ function LessonList(props) {
           <Form.Group controlId="tagInput">
             <Form.Label>Tags:</Form.Label>
             <InputGroup className="mb-3">
-              {tags.map((tag, index) => (
-                <div key={tag} className="tag">
-                  <span>{tag}</span>
-                  <Button variant="light" className="close-button" onClick={() => removeTag(index)}>
-                    &times;
-                  </Button>
-                </div>
-              ))}
+              {tags.length > 0 &&
+                tags.map((tag, index) => (
+                  <div key={tag} className="tag">
+                    <span>{tag}</span>
+                    <Button
+                      variant="light"
+                      className="close-button"
+                      onClick={() => removeTag(index)}
+                    >
+                      &times;
+                    </Button>
+                  </div>
+                ))}
               <FormControl
                 placeholder="Add tags"
                 value={inputValue}

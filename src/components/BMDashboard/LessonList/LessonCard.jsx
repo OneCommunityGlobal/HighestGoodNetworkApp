@@ -78,11 +78,13 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
             </div>
             <div>
               <Nav.Item className="card-tag">
-                {lesson.tag.map(tag => (
-                  <span key={`${lesson._id} + ${tag}`} className="text-muted tag-item">
-                    {`#${tag}`}
-                  </span>
-                ))}
+                {lesson.tags &&
+                  lesson.tags.length > 0 &&
+                  lesson.tags.map(tag => (
+                    <span key={`${lesson._id} + ${tag}`} className="text-muted tag-item">
+                      {`#${tag}`}
+                    </span>
+                  ))}
               </Nav.Item>
             </div>
           </Nav>
@@ -92,11 +94,13 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
             <Card.Body className="scrollable-card-body">
               <Card.Text className="card-tag-and-file">
                 Tags:{' '}
-                {lesson.tag.map(tag => (
-                  <span key={`${lesson._id} + ${tag}`} className="tag-item">
-                    {`#${tag}`}
-                  </span>
-                ))}
+                {lesson.tags &&
+                  lesson.tags.length > 0 &&
+                  lesson.tags.map(tag => (
+                    <span key={`${lesson._id} + ${tag}`} className="text-muted tag-item">
+                      {`#${tag}`}
+                    </span>
+                  ))}
               </Card.Text>
               <Card.Text className="lesson-summary">
                 {editableLessonId === lesson._id ? (
