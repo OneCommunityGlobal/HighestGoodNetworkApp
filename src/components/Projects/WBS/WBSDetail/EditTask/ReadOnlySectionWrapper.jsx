@@ -9,17 +9,29 @@
  * @returns {ReactNode}
 */
 export default function ReadOnlySectionWrapper(WrappedComponent, editable, value, option) {
+  //Need to remove HTML tags from Editor field
+  function stripHtml(html) {
+    if (html === null || html === undefined) {
+      return ''
+    }
+    let doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+  }
+
   if (editable){
     return WrappedComponent
   } 
+
+  let displayValue = stripHtml(value)
+
   if(option){
     if (option.componentOnly){
-      return value
+      return displayValue
     }
   }
   return (
     <td style={{backgroundColor: '#e9ecef'}}>
-      <span>{value}</span>
+      <span>{displayValue}</span>
     </td>
   )
 }

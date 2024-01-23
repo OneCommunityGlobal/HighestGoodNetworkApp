@@ -585,7 +585,8 @@ function EditTaskModal(props) {
 
               <tr>
                 <td scope="col" colSpan="2">
-                  Why this Task is Important
+                  Why this Task is Important:
+                  {ReadOnlySectionWrapper (
                   <Editor
                     disabled={!editable}
                     init={EditorInit}
@@ -593,12 +594,17 @@ function EditTaskModal(props) {
                     className="why-info form-control"
                     value={whyInfo}
                     onEditorChange={content => setWhyInfo(content)}
-                  />
+                  />,
+                  editable,
+                  whyInfo,
+                  {componentOnly: true}
+                  )}
                 </td>
               </tr>
               <tr>
                 <td scope="col" colSpan="2">
-                  Design Intent
+                  Design Intent:
+                  {ReadOnlySectionWrapper (
                   <Editor
                     disabled={!editable}
                     init={EditorInit}
@@ -606,12 +612,17 @@ function EditTaskModal(props) {
                     className="intent-info form-control"
                     value={intentInfo}
                     onEditorChange={content => setIntentInfo(content)}
-                  />
+                  />,
+                  editable,
+                  intentInfo,
+                  {componentOnly: true}
+                  )}
                 </td>
               </tr>
               <tr>
                 <td scope="col" colSpan="2">
-                  Endstate
+                  Endstate:
+                  {ReadOnlySectionWrapper (
                   <Editor
                     disabled={!editable}
                     init={EditorInit}
@@ -619,7 +630,11 @@ function EditTaskModal(props) {
                     className="endstate-info form-control"
                     value={endstateInfo}
                     onEditorChange={content => setEndstateInfo(content)}
-                  />
+                  />,
+                  editable,
+                  endstateInfo,
+                  {componentOnly: true}
+                  )}
                 </td>
               </tr>
               <tr>
