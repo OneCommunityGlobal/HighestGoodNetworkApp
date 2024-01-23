@@ -86,7 +86,7 @@ const Timelog = props => {
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
-
+  const canAddTimeEntry = props.hasPermission('postTimeEntry');
   // access the store states
   const {
     authUser,
@@ -530,7 +530,7 @@ const Timelog = props => {
                           </div>
                         </div>
                       ) : (
-                        canPutUserProfileImportantInfo && (
+                        (canPutUserProfileImportantInfo || canAddTimeEntry) && (
                           <div className="float-right">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>

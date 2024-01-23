@@ -119,7 +119,7 @@ const TimeEntryForm = props => {
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const canEditTimeEntry = props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
+  const canEditTimeEntry = props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry') || props.hasPermission('postTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   // const 
 
