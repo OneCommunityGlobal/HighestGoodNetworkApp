@@ -585,7 +585,7 @@ function EditTaskModal(props) {
 
               <tr>
                 <td scope="col" colSpan="2">
-                  Why this Task is Important:
+                  <div>Why this Task is Important:</div>
                   {ReadOnlySectionWrapper (
                   <Editor
                     disabled={!editable}
@@ -603,7 +603,7 @@ function EditTaskModal(props) {
               </tr>
               <tr>
                 <td scope="col" colSpan="2">
-                  Design Intent:
+                  <div>Design Intent:</div>
                   {ReadOnlySectionWrapper (
                   <Editor
                     disabled={!editable}
@@ -621,7 +621,7 @@ function EditTaskModal(props) {
               </tr>
               <tr>
                 <td scope="col" colSpan="2">
-                  Endstate:
+                  <div>Endstate:</div>
                   {ReadOnlySectionWrapper (
                   <Editor
                     disabled={!editable}
