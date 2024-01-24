@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Form, FormGroup, FormText, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
 
 import { boxStyle } from 'styles';
@@ -19,7 +19,9 @@ export default function PurchaseForm() {
   const [toolId, setToolId] = useState('');
   const [quantity, setQty] = useState('');
   const [priority, setPriority] = useState('Low');
-  const [brand, setBrand] = useState('');
+  const [makeModel, setMakeModel] = useState('');
+  const [estTime, setEstTime] = useState('');
+  const [desc, setDesc] = useState('');
   const [validationError, setValidationError] = useState('');
 
   const schema = Joi.object({
@@ -31,7 +33,11 @@ export default function PurchaseForm() {
       .integer()
       .required(),
     priority: Joi.string().required(),
-    brand: Joi.string().allow(''),
+    estTime: Joi.string().required(),
+    desc: Joi.string()
+      .required()
+      .max(150),
+    makeModel: Joi.string().allow(''),
   });
 
   const handleSubmit = async e => {
@@ -41,8 +47,11 @@ export default function PurchaseForm() {
       toolId,
       quantity,
       priority,
-      brand,
+      estTime,
+      desc,
+      makeModel,
     });
+    // TODO: provide specific validation info to the user
     if (validate.error) {
       return setValidationError('Invalid form data. Please try again.');
     }
@@ -51,19 +60,26 @@ export default function PurchaseForm() {
       toolId,
       quantity,
       priority,
-      brand,
+      estTime,
+      desc,
+      makeModel,
     };
     const response = await purchaseTools(body);
     setProjectId('');
     setToolId('');
     setQty('');
     setPriority('Low');
-    setBrand('');
+    setMakeModel('');
+    setEstTime('');
+    setDesc('');
+
     if (response.status === 201) {
-      return toast.success('Success: your purchase request has been logged.');
-    }
-    return toast.error(`${response.status} - ${response.statusText}`);
+      toast.success('Success: your purchase request has been logged.');
+    } else if (response.status >= 400) {
+      toast.error(`Error: ${response.status} ${response.statusText}.`);
+    } else toast.warning(`Warning: unexpected status ${response.status}.`);
   };
+
   const handleCancel = e => {
     e.preventDefault();
     history.goBack();
@@ -148,13 +164,41 @@ export default function PurchaseForm() {
         </FormGroup>
       </div>
       <FormGroup>
-        <Label for="input-brand">Preferred Brand (optional)</Label>
+        <Label htmlFor="input-estimated-time">Est. Time of Use</Label>
         <Input
+          id="input-estimated-time"
           type="text"
-          value={brand}
+          value={estTime}
           onChange={({ currentTarget }) => {
             setValidationError('');
-            setBrand(currentTarget.value);
+            setEstTime(currentTarget.value);
+          }}
+        />
+        <FormText>
+          Ex: <q>10 days</q>, <q>2 weeks</q>, etc.
+        </FormText>
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="input-usage-description">Usage Description</Label>
+        <Input
+          id="input-usage-description"
+          type="textarea"
+          value={desc}
+          onChange={({ currentTarget }) => {
+            setValidationError('');
+            setDesc(currentTarget.value);
+          }}
+        />
+        <FormText>Max 150 characters</FormText>
+      </FormGroup>
+      <FormGroup>
+        <Label for="input-brand">Preferred Make &amp; Model (optional)</Label>
+        <Input
+          type="text"
+          value={makeModel}
+          onChange={({ currentTarget }) => {
+            setValidationError('');
+            setMakeModel(currentTarget.value);
           }}
         />
       </FormGroup>
@@ -173,7 +217,15 @@ export default function PurchaseForm() {
           id="submit-button"
           color="primary"
           style={boxStyle}
-          disabled={!projectId || !toolId || !quantity || !priority || !!validationError}
+          disabled={
+            !projectId ||
+            !toolId ||
+            !quantity ||
+            !priority ||
+            !estTime ||
+            !desc ||
+            !!validationError
+          }
         >
           Submit
         </Button>

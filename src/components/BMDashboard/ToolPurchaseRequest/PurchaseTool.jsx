@@ -1,6 +1,8 @@
 /* eslint-disable import/no-unresolved */
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { BsInfoCircle } from 'react-icons/bs';
+
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
 import { fetchToolTypes } from 'actions/bmdashboard/invTypeActions';
 import BMError from '../shared/BMError';
@@ -38,9 +40,10 @@ export default function PurchaseTool() {
     <main className="purchase-tool-container">
       <header className="purchase-tool-header">
         <h2>Purchase Request: Tools</h2>
-        <p>
-          Important: This form initiates a purchase request for approval/action by project admins.
-        </p>
+        <div className="inv-form-info">
+          <BsInfoCircle />
+          Initiate a purchase request for approval/action by project admins.
+        </div>
       </header>
       <PurchaseForm />
     </main>
