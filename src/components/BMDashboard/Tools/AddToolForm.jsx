@@ -6,10 +6,6 @@ import { PhoneInput } from 'components/common/PhoneInput/PhoneInput';
 import { boxStyle } from 'styles';
 import './AddToolForm.css';
 
-// TO DO:
-// drag and drop pass the data to formData in parent
-// drag and drop remove image on cancel click
-
 const initialFormState = {
   project: 'Project1',
   category: 'Tool',
@@ -98,11 +94,8 @@ export default function AddToolForm() {
 
   const handleCancelClick = () => {
     setFormData(initialFormState);
+    setUploadedFiles([]);
   };
-
-  // const handleFilesSelected = selectedFiles => {
-  //   console.log('Files received', selectedFiles);
-  // };
 
   const handleRemoveFile = index => {
     setUploadedFiles(prevUploadedFiles => prevUploadedFiles.filter((file, i) => i !== index));

@@ -3,18 +3,9 @@ import './DragAndDrop.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 
-const DragAndDrop = ({onFilesSelected, updateUploadedFiles}) => {
+const DragAndDrop = ({updateUploadedFiles}) => {
 
   const [dragActive, setDragActive] = useState(false);
-  // const [files, setFiles] = useState([]); 
-
-  // const memoizedOnFilesSelected = useCallback((files) => {
-  //   onFilesSelected(files);
-  // }, [onFilesSelected]);
-
-  // const memoizedUpdateUploadedFiles = useCallback((newFiles) => {
-  //   updateUploadedFiles((prevUploadedFiles) => [...prevUploadedFiles, ...newFiles]);
-  // }, [updateUploadedFiles]);
 
   const handleDrag = function (e) {
     e.preventDefault();
@@ -33,31 +24,18 @@ const DragAndDrop = ({onFilesSelected, updateUploadedFiles}) => {
     const droppedFiles = e.dataTransfer.files;
     if (droppedFiles && droppedFiles[0]) {
       const newFiles = Array.from(droppedFiles);
-      // setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-      // console.log("DROPPED", files); // Note: don't log here (logs previous state, so will not be accurate)
-      // memoizedUpdateUploadedFiles(newFiles);
       updateUploadedFiles(prev => [...prev, ...newFiles]);
     }
   };
   
-  // const handleChange = function (e) {
-  //   e.preventDefault();
-  //   const selectedFiles = e.target.files;
-  //   if (selectedFiles && selectedFiles[0]) {
-  //     const newFiles = Array.from(selectedFiles);
-  //     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-  //     console.log('INPUT CHANGED', files)
-  //   }
-  // }
-
-  // const handleRemoveFile = function (index) {
-  //   setFiles((prevFiles) => prevFiles.filter((file, i) => i !== index));
-  //   updateUploadedFiles((prevUploadedFiles) => prevUploadedFiles.filter((file, i) => i !== index))
-  // }
-
-  // useEffect(() => {
-  //   memoizedOnFilesSelected(files)
-  // }, [files, memoizedOnFilesSelected])
+  const handleChange = function (e) {
+    e.preventDefault();
+    const selectedFiles = e.target.files;
+    if (selectedFiles && selectedFiles[0]) {
+      const newFiles = Array.from(selectedFiles);
+      updateUploadedFiles(prev => [...prev, ...newFiles]);
+    }
+  }
 
   return (
     <div id="file-upload-form" onDragEnter={handleDrag} onSubmit={(e) => e.preventDefault()}>
@@ -67,7 +45,7 @@ const DragAndDrop = ({onFilesSelected, updateUploadedFiles}) => {
         name="file-upload-input"
         multiple={false}
         accept="image/jpeg, image/jpg, image/png"
-        // onChange={handleChange}
+        onChange={handleChange}
       />
       <label
         htmlFor="file-upload-input"
