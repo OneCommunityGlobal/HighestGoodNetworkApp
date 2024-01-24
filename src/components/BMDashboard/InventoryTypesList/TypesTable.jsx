@@ -1,7 +1,8 @@
 import { Table, Button } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import TypeRow from './TypeRow';
 
-export default function TypesTable(props) {
+export function TypesTable(props) {
   const { itemTypes } = props;
 
   const handleAdd = () => {
@@ -32,3 +33,8 @@ export default function TypesTable(props) {
     </div>
   );
 }
+
+const mapStateToProps = (state, ownProps) => ({
+  itemTypes: state.bmInvTypes.invTypeList[ownProps?.category],
+});
+export default connect(mapStateToProps)(TypesTable);
