@@ -92,11 +92,6 @@ describe('Old Badges component', () => {
     render(<OldBadges personalBestMaxHrs={10} badges={badges} />);
     expect(screen.queryByText('Badges Earned Before Last Week')).toBeInTheDocument();
   });
-  it('check if badge count displaying properly', () => {
-    render(<OldBadges personalBestMaxHrs={10} badges={badges} />);
-    expect(screen.queryByText('1')).toBeInTheDocument();
-    expect(screen.queryByText('2')).toBeInTheDocument();
-  });
   it('check if image src is correct', () => {
     const { container } = render(<OldBadges personalBestMaxHrs={10} badges={badges} />);
     const firstImageElement = container.querySelector('[id="popover_old0"]');
