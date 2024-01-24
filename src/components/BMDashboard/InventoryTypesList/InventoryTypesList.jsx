@@ -10,11 +10,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import BMError from '../shared/BMError';
 import TypesTable from './TypesTable';
 import UnitsTable from './invUnitsTable';
-import './TypesList.css';
 import AccordionToggle from './AccordionToggle';
+import './TypesList.css';
 
 export function InventoryTypesList(props) {
-  const { invTypes, invUnits, errors, dispatch } = props;
+  const { invUnits, errors, dispatch } = props;
 
   // NOTE: depend on redux action implementation
   const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
@@ -74,7 +74,7 @@ export function InventoryTypesList(props) {
               </AccordionToggle>
               <Accordion.Collapse eventKey={index + 1}>
                 <Card.Body className="accordion-collapse">
-                  <TypesTable itemTypes={invTypes[category]} />
+                  <TypesTable category={category} />
                 </Card.Body>
               </Accordion.Collapse>
             </Card>
@@ -82,10 +82,10 @@ export function InventoryTypesList(props) {
         })}
 
         <Card>
-          <AccordionToggle as={Card.Header} eventKey={6}>
+          <AccordionToggle as={Card.Header} eventKey={categories.length + 1}>
             Unit of Measurement
           </AccordionToggle>
-          <Accordion.Collapse eventKey={6}>
+          <Accordion.Collapse eventKey={categories.length + 1}>
             <Card.Body className="accordion-collapse">
               <UnitsTable invUnits={invUnits} />
             </Card.Body>
@@ -104,7 +104,6 @@ export function InventoryTypesList(props) {
 }
 
 const mapStateToProps = state => ({
-  invTypes: state.bmInvTypes.invTypeList,
   errors: state.errors,
   invUnits: state.bmInvUnits.list,
 });
