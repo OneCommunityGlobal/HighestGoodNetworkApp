@@ -52,7 +52,7 @@ const BlueSquare = (props) => {
           : null}
       </div>
       {/* Check for userRole, infringements and scheduled reasons to render + button - Sucheta*/}
-      {userRole === "Owner" || userRole === "Adminnistrator"? <div
+      {userRole === "Owner" || userRole === "Administrator" ? (<div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');
           }}
@@ -61,7 +61,7 @@ const BlueSquare = (props) => {
           data-testid="addBlueSquare"
         >
           +
-        </div> : isInfringementAuthorizer && !(infringementsNum >=5 || numberOfReasons >= 5 || (numberOfReasons + infringementsNum >= 5) ) &&(
+        </div>) : ( isInfringementAuthorizer && !(infringementsNum >=5 || numberOfReasons >= 5 || (numberOfReasons + infringementsNum >= 5) ) &&(
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');
@@ -71,7 +71,7 @@ const BlueSquare = (props) => {
           data-testid="addBlueSquare"
         >
           +
-        </div>
+        </div>)
       )}
       <br />
     </div>
