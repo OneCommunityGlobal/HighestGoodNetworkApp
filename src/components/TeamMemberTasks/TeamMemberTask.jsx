@@ -26,6 +26,7 @@ const TeamMemberTask = React.memo(
     userRole,
     userId,
     updateTaskStatus,
+    userPermission
   }) => {
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
@@ -205,6 +206,7 @@ const TeamMemberTask = React.memo(
                           <div>
                             <ReviewButton
                               user={user}
+                              userPermission={userPermission}
                               userId={userId}
                               task={task}
                               updateTask={updateTaskStatus}
