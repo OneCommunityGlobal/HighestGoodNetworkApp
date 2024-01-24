@@ -23,15 +23,6 @@ function WarningIcon(props) {
 
   const btnColor = color ? colors[color] : 'white';
 
-  // display modal when warnings is greater than 2
-  //data needs to be passed to the modal to be displayed
-  //users name and the warning text being issued
-
-  //if cancel occurs nothing happens
-  //no request is being sent
-  //if issue warning is clicked the warning will be posted and sipatched to the backened
-  //if issue blue square is clicked the warning will be posted and dispatched to the backend and a blue square will be issued
-
   const handleIssueWarning = id => {
     const today = moment().format('MM/DD/YYYY HH:mm:ss a');
     const [todaysDate, todaysTime, todaysTimeOfDay] = today.split(' ');

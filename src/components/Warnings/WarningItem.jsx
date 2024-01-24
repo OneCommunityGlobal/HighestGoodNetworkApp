@@ -1,13 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle } from '@fortawesome/free-solid-svg-icons';
-import { v4 as uuidv4 } from 'uuid';
-import WarningIcon from './WarningIcon';
+import React, { useState } from 'react';
+
 import './Warnings.css';
 import WarningIcons from './WarningIcons';
-import OverlayExample from './OverlayExample';
-import { Button } from 'react-bootstrap';
 import WarningsModal from './WarningsModal';
 
 function WarningItem({
@@ -45,7 +39,6 @@ function WarningItem({
           deleteWarning={deleteWarning}
           deleteWarningTriggered={deleteWarningTriggered}
           warning={warning}
-          numberOfWarnings={warnings.length}
           handleIssueWarning={handleIssueWarning}
         />
       )}

@@ -20,6 +20,7 @@ function WarningIcons({
         if (warning) {
           return (
             <WarningIcon
+              key={warning._id}
               id={warning._id}
               handleWarningIconClicked={handleWarningIconClicked}
               {...warning}
@@ -32,6 +33,7 @@ function WarningIcons({
         return (
           <WarningIcon
             id={uuidv4()}
+            key={uuidv4()}
             handleWarningIconClicked={handleWarningIconClicked}
             warningText={warningText}
             handleModalTriggered={handleModalTriggered}
