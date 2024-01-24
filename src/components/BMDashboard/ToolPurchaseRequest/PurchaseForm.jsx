@@ -53,7 +53,8 @@ export default function PurchaseForm() {
     });
     // TODO: provide specific validation info to the user
     if (validate.error) {
-      return setValidationError('Invalid form data. Please try again.');
+      setValidationError('Invalid form data. Please try again.');
+      return;
     }
     const body = {
       projectId,
