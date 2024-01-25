@@ -37,8 +37,11 @@ const Members = props => {
     const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
     
     // Wait for all members to be assigned
-    await Promise.all(allUsers.map(user => 
+    await Promise.all(allUsers.map(user => {
+      console.log('successfully assigned', user.firstName)
       props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName)
+      
+    }
     ));
   
     props.fetchAllMembers(projectId);
