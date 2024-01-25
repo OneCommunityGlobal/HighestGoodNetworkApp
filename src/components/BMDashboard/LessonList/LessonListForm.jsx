@@ -148,7 +148,7 @@ function LessonList(props) {
     } else {
       // Filter lessons based on tags
       setFilteredLessons(
-        lessons.filter(lesson => lesson.tag && tags.some(tag => lesson.tag.includes(tag))),
+        lessons.filter(lesson => lesson.tags && tags.some(tag => lesson.tags.includes(tag))),
       );
     }
   };
