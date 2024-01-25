@@ -81,9 +81,9 @@ const ScheduleReasonModal = ({
     return date.format('MM/DD/YYYY');
   };
 
-  const filterSunday = date => {
-    const losAngelesDate = moment(date).tz('America/Los_Angeles');
-    return losAngelesDate.day() === 6; // Sunday
+  const filterSunday = (date) => {
+    const day = date.getDay();
+    return day === 0;
   };
 
   const handleSaveReason = e => {
@@ -134,7 +134,6 @@ const ScheduleReasonModal = ({
                   .endOf('week')
                   .toISOString()
                   .split('T')[0];
-                console.log(dateSelectedTz);
                 setDate(dateSelectedTz);
               }}
               filterDate={filterSunday}
