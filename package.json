@@ -18,6 +18,7 @@
     "d3": "^7.3.0",
     "date-fns": "^2.14.0",
     "diff": "^5.0.0",
+    "dompurify": "^3.0.6",
     "font-awesome": "^4.7.0",
     "history": "^4.10.1",
     "html-react-parser": "^1.4.14",

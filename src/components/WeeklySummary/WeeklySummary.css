@@ -116,6 +116,20 @@
   margin-right: 0;
 }
 
+.edit-button {
+  background-color: #007bff; /* Blue color for the button */
+  color: #fff; /* White text color */
+  border: none; /* Remove the border */
+  padding: 8px 16px; /* Adjust padding as needed */
+  cursor: pointer;
+  border-radius: 4px; /* Rounded corners */
+  margin-right: 10px; /* Add margin for spacing */
+}
+
+.edit-button:hover {
+  background-color: #0056b3; /* Darker blue color on hover */
+}
+
 @media screen and (min-width: 992px) {
   .left-col-dashboard {
     margin-top: -200px;

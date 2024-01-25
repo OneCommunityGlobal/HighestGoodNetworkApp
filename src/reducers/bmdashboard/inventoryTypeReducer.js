@@ -18,7 +18,7 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
   switch (action.type) {
     case GET_MATERIAL_TYPES:
       state.list = action.payload;
-      return { 
+      return {
         ...state
       };
     case POST_BUILDING_MATERIAL_INVENTORY_TYPE:
@@ -48,10 +48,10 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
           error: null
         }
       };
-      case GET_INV_BY_TYPE: {
-        types.invTypeList[action.payload.type] = [...action.payload.data]
-        return { ...state }
-      }
+    case GET_INV_BY_TYPE: {
+      state.invTypeList[action.payload.type] = [...action.payload.data]
+      return { ...state }
+    }
     default: {
       return state;
     }
