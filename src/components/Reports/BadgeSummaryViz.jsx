@@ -78,13 +78,13 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                             {' '}
                             <img
                               src={value.badge.imageUrl}
-                              id={`popover_${value.badge.badgeId}`}
+                              id={`popover_${value.badge._id}`}
                               alt="badge"
                             />
                           </td>
                           <UncontrolledPopover
                             trigger="hover"
-                            target={`popover_${value.badge.badgeId}`}
+                            target={`popover_${value.badge._id}`}
                           >
                             <Card className="text-center">
                               <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
@@ -116,9 +116,12 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                 Dates
                               </DropdownToggle>
                               <DropdownMenu>
-                                {value.earnedDate.map(date => {
-                                  return <DropdownItem key={date}>{date}</DropdownItem>;
-                                })}
+                                {value.earnedDate.map((date, index) => (
+                                  // eslint-disable-next-line react/no-array-index-key
+                                  <DropdownItem key={`date-${value._id}-${index}`}>
+                                    {date}
+                                  </DropdownItem>
+                                ))}
                               </DropdownMenu>
                             </UncontrolledDropdown>
                           </td>
@@ -152,16 +155,16 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                     {badges && badges.length ? (
                       sortedBadges &&
                       sortedBadges.map(value => (
-                        <tr key={value.badge._id}>
+                        <tr key={value._id}>
                           <td className="badge_image_sm">
                             {' '}
                             <img
                               src={value.badge.imageUrl}
-                              id={`popover_${value.id}`}
+                              id={`popover_${value._id}`}
                               alt="badge"
                             />
                           </td>
-                          <UncontrolledPopover trigger="hover" target={`popover_${value.id}`}>
+                          <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                             <Card className="text-center">
                               <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
                               <CardBody>

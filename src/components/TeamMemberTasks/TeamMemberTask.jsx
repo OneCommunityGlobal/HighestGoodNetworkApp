@@ -8,11 +8,18 @@ import { Link } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
 import './style.css';
 import { boxStyle } from 'styles';
-import { useDispatch } from 'react-redux';
+// <<<<<<< HEAD
+// import { useDispatch } from 'react-redux';
+import Warning from 'components/Warnings/Warnings';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment-timezone';
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+// import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
+// =======
+// import ReviewButton from './ReviewButton';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
-import Warning from 'components/Warnings/Warnings';
+// >>>>>>> development
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -26,8 +33,10 @@ const TeamMemberTask = React.memo(
     userRole,
     userId,
     updateTaskStatus,
+    userPermission,
   }) => {
     const ref = useRef(null);
+    const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
     // console.log('user user inside team memebr task', user);
     const [totalHoursRemaining, activeTasks] = useMemo(() => {
@@ -103,7 +112,19 @@ const TeamMemberTask = React.memo(
             <tbody>
               <tr>
                 <td className="team-member-tasks-user-name">
-                  <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
+                  <Link
+                    to={`/userprofile/${user.personId}`}
+                    style={{
+                      color:
+                        currentDate.isSameOrAfter(
+                          moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                        ) &&
+                        currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                          ? 'rgba(128, 128, 128, 0.5)'
+                          : undefined,
+                    }}
+                  >{`${user.name}`}</Link>
+
                   <Warning
                     username={user.name}
                     // userName={user}
@@ -113,7 +134,6 @@ const TeamMemberTask = React.memo(
                     personId={user.personId}
                   />
                 </td>
-
                 <td data-label="Time" className="team-clocks">
                   <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                   <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
@@ -200,8 +220,8 @@ const TeamMemberTask = React.memo(
                         <div>
                           <ReviewButton
                             user={user}
-                            myUserId={userId}
-                            myRole={userRole}
+                            userPermission={userPermission}
+                            userId={userId}
                             task={task}
                             updateTask={updateTaskStatus}
                             style={boxStyle}
