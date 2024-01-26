@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Row, Col, Container } from 'reactstrap';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
@@ -9,10 +11,15 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
+import { getDashboardDataAI } from '../../actions/weeklySummariesAIPrompt';
+import { getUserProfile } from '../../actions/userProfile';
 
 export function Dashboard(props) {
+  const dispatch = useDispatch();
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
+  const [copiedDate, setCopiedDate] = useState('');
+  const [promptModifiedDate, setPromptModifiedDate] = useState('');
   const { match, authUser } = props;
   const displayUserId = match.params.userId || authUser.userid;
 
@@ -33,6 +40,31 @@ export function Dashboard(props) {
     props.getTimeZoneAPIKey();
   }, []);
 
+  // =================================================================
+  // This useEffect will fetch the modified date and time of AI prompt - Sucheta
+  useEffect(() => {
+    dispatch(getDashboardDataAI())
+      .then(response => {
+        if (response) {
+          setPromptModifiedDate(response.modifiedDatetime);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // This useEffect will fetch the copied prompt date and time from userProfile - Sucheta
+  useEffect(() => {
+    dispatch(getUserProfile(displayUserId))
+      .then(response => {
+        if (response) {
+          setCopiedDate(response.copiedAiPrompt);
+        }
+      })
+      .catch(() => {
+        toast.error('There was an error');
+      });
+  }, []);
+  // =================================================================
   return (
     <Container fluid>
       {!isAuthUser ? <PopUpBar component="dashboard" /> : ''}
@@ -59,6 +91,8 @@ export function Dashboard(props) {
                 isPopup={popup}
                 userRole={authUser.role}
                 displayUserId={displayUserId}
+                promptModifiedDate={promptModifiedDate}
+                copiedDate={copiedDate}
               />
             </div>
           </div>
@@ -76,6 +110,8 @@ export function Dashboard(props) {
                   displayUserId={displayUserId}
                   setPopup={setPopup}
                   userRole={authUser.role}
+                  promptModifiedDate={promptModifiedDate}
+                  copiedDate={copiedDate}
                 />
               </div>
             </div>

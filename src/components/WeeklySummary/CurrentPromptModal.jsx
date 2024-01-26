@@ -4,16 +4,22 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'react
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
-import { updateDashboardData, getDashboardDataAI } from '../../actions/weeklySummariesAIPrompt';
+import {
+  updateDashboardData,
+  updateCopiedPromtDate,
+  getDashboardDataAI,
+} from '../../actions/weeklySummariesAIPrompt';
+import iconNew from '../../assets/images/New-HGN-Icon-11kb-200x160px.png';
 
 function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);
 
   const dispatch = useDispatch();
   const [prompt, setPrompt] = useState('');
+  // const [promptModifiedDate, setPromptModifiedDate] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { userRole } = props;
+  const { userRole, userId, promptModifiedDate, copiedDate } = props;
   const toggle = () => setModal(!modal);
 
   const fallbackPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.
@@ -28,7 +34,6 @@ function CurrentPromptModal(props) {
       dispatch(getDashboardDataAI())
         .then(response => {
           if (response) {
-            // console.log('response: ', response.aIPromptText);
             setPrompt(response.aIPromptText);
           } else {
             setPrompt(fallbackPrompt); // Fallback to hardcoded prompt if fetched prompt is empty
@@ -48,7 +53,10 @@ function CurrentPromptModal(props) {
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(prompt);
-    toast.success('Prompt Copied!');
+    // toast.success('Prompt Copied!');
+    dispatch(updateCopiedPromtDate(userId)).then(() => {
+      toast.success('Prompt Copied!');
+    });
   };
 
   const handleSavePrompt = () => {
@@ -83,18 +91,33 @@ function CurrentPromptModal(props) {
 
   return (
     <div>
-      <Button color="info" onClick={toggle} style={boxStyle}>
-        View and Copy Current AI Prompt
-        <i
-          className="fa fa-info-circle"
-          data-tip
-          data-for="timeEntryTip"
-          data-delay-hide="1000"
-          aria-hidden="true"
-          title=""
-          style={{ paddingLeft: '.32rem' }}
-        />
-      </Button>
+      {new Date(`${promptModifiedDate}`) > new Date(`${copiedDate}`) ? (
+        <Button color="info" onClick={toggle} style={boxStyle}>
+          View and Copy <img src={iconNew} alt="new" /> AI Prompt
+          <i
+            className="fa fa-info-circle"
+            data-tip
+            data-for="timeEntryTip"
+            data-delay-hide="1000"
+            aria-hidden="true"
+            title=""
+            style={{ paddingLeft: '.32rem' }}
+          />
+        </Button>
+      ) : (
+        <Button color="info" onClick={toggle} style={boxStyle}>
+          View and Copy Current AI Prompt
+          <i
+            className="fa fa-info-circle"
+            data-tip
+            data-for="timeEntryTip"
+            data-delay-hide="1000"
+            aria-hidden="true"
+            title=""
+            style={{ paddingLeft: '.32rem' }}
+          />
+        </Button>
+      )}
       <ReactTooltip id="timeEntryTip" place="bottom" effect="solid">
         Click this button to see and copy the most current AI prompt
         <br />
