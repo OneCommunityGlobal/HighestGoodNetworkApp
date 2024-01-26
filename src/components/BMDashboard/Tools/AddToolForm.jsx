@@ -36,6 +36,8 @@ export default function AddToolForm() {
   const [selectedCategory, setSelectedCategory] = useState(formData.category);
   const [selectedName, setSelectedName] = useState(formData.name);
   const [isPurchased, setIsPurchased] = useState(true);
+  const [areaCode, setAreaCode] = useState('1');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
 
   const handleInputChange = (name, value) => {
@@ -68,13 +70,13 @@ export default function AddToolForm() {
     handleInputChange('purchaseRental', selectedOption);
   };
 
-  const handlePhoneNumberChange = ({ areaCode, phoneNumber }) => {
-    setFormData(prevData => ({
-      ...prevData,
-      areaCode,
-      phoneNumber,
-    }));
-  };
+  // const handlePhoneNumberChange = ({ areaCode, phoneNumber }) => {
+  //   setFormData(prevData => ({
+  //     ...prevData,
+  //     areaCode,
+  //     phoneNumber,
+  //   }));
+  // };
 
   const { unitPrice, quantity, taxes, shippingFee } = formData;
 
@@ -98,6 +100,8 @@ export default function AddToolForm() {
 
   const handleCancelClick = () => {
     setFormData(initialFormState);
+    setAreaCode(1);
+    setPhoneNumber('');
   };
 
   // const handleFilesSelected = selectedFiles => {
@@ -284,7 +288,14 @@ export default function AddToolForm() {
         </FormGroup>
       </div>
 
-      <PhoneInput onPhoneNumberChange={handlePhoneNumberChange} />
+      {/* <PhoneInput onPhoneNumberChange={handlePhoneNumberChange} /> */}
+
+      <PhoneInput
+        areaCode={areaCode}
+        setAreaCode={setAreaCode}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
+      />
 
       <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
