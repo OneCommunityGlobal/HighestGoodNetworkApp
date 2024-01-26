@@ -215,9 +215,7 @@ const TeamMemberTask = React.memo(
                             <div>
                               <span data-testid={`times-${task.taskName}`}>
                                 {
-                                  `${parseFloat(task.hoursLogged.toFixed(2))}
-                                  of
-                                  ${parseFloat(task.estimatedHours.toFixed(2))}`
+                                  `${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(task.estimatedHours.toFixed(2))}`
                                 }
                               </span>
                               <Progress
