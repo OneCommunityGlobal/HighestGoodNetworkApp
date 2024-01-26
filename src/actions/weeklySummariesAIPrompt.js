@@ -29,3 +29,12 @@ export const updateDashboardData = textPrompt => {
       .then(dispatch(updateAIPrompt(textPrompt)));
   };
 };
+// ===========================================================================
+// This function is executed each time the user copies the AI prompt form the modal and updates the copied Date in the userProfile - Sucheta
+
+export const updateCopiedPromtDate = (userId) => {
+  return async dispatch => {
+   await axios.put(ENDPOINTS.COPIED_AI_PROMPT(),userId)
+   .then(dispatch(updateCopiedPrompt(userId)));
+  }
+ }
