@@ -7,6 +7,7 @@ import moment from 'moment';
 import { fetchAllMaterials, postMaterialUpdateBulk } from 'actions/bmdashboard/materialsActions';
 import UpdateMaterial from '../../UpdateMaterials/UpdateMaterial';
 
+//TODO: reference to ConsumablesView.jsx
 function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials.materialslist);

@@ -2,8 +2,8 @@ import './UpdateConsumablesBulk.css';
 import { Container } from 'reactstrap';
 import { useState } from 'react';
 import moment from 'moment';
-import UpdateMaterialsBulkTable from './UpdateConsumablesBulkTable';
-import UpdateMaterialsBulkInputs from './UpdateConsumablesBulkInputs';
+import UpdateConsumablesBulkTable from './UpdateConsumablesBulkTable';
+import UpdateConsumablesBulkInputs from './UpdateConsumablesBulkInputs';
 
 function UpdateConsumablesBulk() {
   const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
@@ -12,14 +12,14 @@ function UpdateConsumablesBulk() {
     <Container fluid className="logMaterialContainer">
       <div className="logMaterialPage">
         <div className="logMaterial">
-          <div className="logMaterialTitle">UpdateConsumables Bulk DAILY ACTIVITIES UPDATE FORM</div>
-          <UpdateMaterialsBulkInputs
+          <div className="logMaterialTitle">CONSUMABLES BULK UPDATE FORM</div>
+          <UpdateConsumablesBulkInputs
             project={project}
             setProject={setProject}
             date={date}
             setDate={setDate}
           />
-          <UpdateMaterialsBulkTable
+          <UpdateConsumablesBulkTable
             project={project}
             setDate={setDate}
             setProject={setProject}
