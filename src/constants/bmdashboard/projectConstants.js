@@ -1,3 +1,2 @@
 const GET_BM_PROJECTS = 'GET_BM_PROJECTS';
-export const GET_BM_PROJECT_BY_ID = 'GET_BM_PROJECT_BY_ID';
 export default GET_BM_PROJECTS;

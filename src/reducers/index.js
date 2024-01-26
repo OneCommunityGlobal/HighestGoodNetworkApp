@@ -33,12 +33,9 @@ import { mouseoverTextReducer } from './mouseoverTextReducer';
 import { materialsReducer } from './bmdashboard/materialsReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
-import { lessonsReducer } from './bmdashboard/lessonsReducer';
-import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
-
 
 const localReducers = {
   auth: authReducer,
@@ -68,8 +65,6 @@ const localReducers = {
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
-  lessons: lessonsReducer,
-  project: bmProjectByIdReducer,
   bmTools: toolReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer
@@ -87,4 +82,3 @@ const sessionReducers = {
 };
 
 export { localReducers, sessionReducers };
-
