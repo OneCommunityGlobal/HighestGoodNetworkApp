@@ -31,33 +31,20 @@ const TeamMemberTask = React.memo(
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
-    const [totalHoursRemaining, activeTasks] = useMemo(() => {
-      let totalHoursRemaining = 0;
-
-      if (user.tasks) {
-        totalHoursRemaining = user.tasks.reduce((total, task) => {
-          task.hoursLogged = task.hoursLogged || 0;
-          task.estimatedHours = task.estimatedHours || 0;
-
-          if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-            return total + (task.estimatedHours - task.hoursLogged);
-          }
-          return total;
-        }, 0);
+    const totalHoursRemaining = user.tasks.reduce((total, task) => {
+      task.hoursLogged = task.hoursLogged || 0;
+      task.estimatedHours = task.estimatedHours || 0;
+      if (task.status !== 'Complete' && task.isAssigned !== 'false') {
+        return total + Math.max(0, task.estimatedHours - task.hoursLogged);
       }
+      return total;
+    }, 0);
 
-      const activeTasks = user.tasks.filter(
-        task =>
-          task.wbsId &&
-          task.projectId &&
-          !task.resources?.some(
-            resource => resource.userID === user.personId && resource.completedTask,
-          ),
-      );
-
-      return [totalHoursRemaining, activeTasks];
-    }, [user]);
-
+    const activeTasks = user.tasks.filter(task => !task.resources?.some(
+        resource => resource.userID === user.personId && resource.completedTask,
+      ),
+    );
+    
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
 
@@ -123,7 +110,7 @@ const TeamMemberTask = React.memo(
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                     <font color="red">
                       {' '}
-                      {totalHoursRemaining ? totalHoursRemaining.toFixed(1) : 0}
+                      {totalHoursRemaining.toFixed(1)}
                     </font>
                   </td>
                 </tr>
@@ -227,9 +214,11 @@ const TeamMemberTask = React.memo(
                             )}
                             <div>
                               <span data-testid={`times-${task.taskName}`}>
-                                {`${parseFloat(task.hoursLogged.toFixed(2))}
-                            of
-                          ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                                {
+                                  `${parseFloat(task.hoursLogged.toFixed(2))}
+                                  of
+                                  ${parseFloat(task.estimatedHours.toFixed(2))}`
+                                }
                               </span>
                               <Progress
                                 color={getProgressColor(
