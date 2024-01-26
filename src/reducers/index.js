@@ -66,7 +66,7 @@ const localReducers = {
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
-  timeOffRequests: timeOffRequestsReducer,,
+  timeOffRequests: timeOffRequestsReducer,
   bmTools: toolReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer

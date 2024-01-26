@@ -20,18 +20,17 @@ import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
 const TeamMemberTask = React.memo(
-  
   ({
-      user,
-      handleMarkAsDoneModal,
-      handleRemoveFromTaskModal,
-      handleOpenTaskNotificationModal,
-      handleTaskModalOption,
-      userRole,
-      userId,
-      updateTaskStatus,
-    userPermission
-      showWhoHasTimeOff,
+    user,
+    handleMarkAsDoneModal,
+    handleRemoveFromTaskModal,
+    handleOpenTaskNotificationModal,
+    handleTaskModalOption,
+    userRole,
+    userId,
+    updateTaskStatus,
+    userPermission,
+    showWhoHasTimeOff,
     onTimeOff,
     goingOnTimeOff,
   }) => {
@@ -62,11 +61,11 @@ const TeamMemberTask = React.memo(
           ),
       );
 
-        return [totalHoursRemaining, activeTasks];
-      }, [user]);
+      return [totalHoursRemaining, activeTasks];
+    }, [user]);
     const dispatch = useDispatch();
-      const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
-      const [isTruncated, setIsTruncated] = useState(canTruncate);
+    const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
+    const [isTruncated, setIsTruncated] = useState(canTruncate);
     const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
 
     const thisWeekHours = user.totaltangibletime_hrs;

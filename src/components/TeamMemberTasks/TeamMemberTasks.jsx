@@ -37,13 +37,15 @@ const TeamMemberTasks = React.memo(props => {
   const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
-
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
 
-
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllTimeOffRequests());
+  }, []);
 
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
@@ -116,11 +118,11 @@ const TeamMemberTasks = React.memo(props => {
     handleOpenTaskNotificationModal();
   };
 
-  const getTimeEntriesForPeriod = async (selectedPeriod) => {
+  const getTimeEntriesForPeriod = async selectedPeriod => {
     const threeDaysAgo = moment()
-        .tz('America/Los_Angeles')
-        .subtract(72, 'hours')
-        .format('YYYY-MM-DD');
+      .tz('America/Los_Angeles')
+      .subtract(72, 'hours')
+      .format('YYYY-MM-DD');
 
     const twoDaysAgo = moment()
       .tz('America/Los_Angeles')
@@ -129,11 +131,15 @@ const TeamMemberTasks = React.memo(props => {
 
     switch (selectedPeriod) {
       case 24:
-        const twentyFourList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
+        const twentyFourList = usersWithTimeEntries.filter(entry =>
+          moment(entry.dateOfWork).isAfter(twoDaysAgo),
+        );
         setTimeEntriesList(twentyFourList);
         break;
       case 48:
-        const fortyEightList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(threeDaysAgo));
+        const fortyEightList = usersWithTimeEntries.filter(entry =>
+          moment(entry.dateOfWork).isAfter(threeDaysAgo),
+        );
         setTimeEntriesList(fortyEightList);
         break;
       case 72:
@@ -160,7 +166,7 @@ const TeamMemberTasks = React.memo(props => {
   const renderTeamsList = async () => {
     if (usersWithTasks.length > 0) {
       //sort all users by their name
-      usersWithTasks.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
+      usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
       //find currentUser
       const currentUserIndex = usersWithTasks.findIndex(user => user.personId === displayUser._id);
       // if current user doesn't have any task, the currentUser cannot be found
@@ -197,7 +203,9 @@ const TeamMemberTasks = React.memo(props => {
     getTimeEntriesForPeriod(selectedPeriod);
   }, [selectedPeriod, usersWithTimeEntries]);
 
-
+  const handleshowWhoHasTimeOff = () => {
+    setShowWhoHasTimeOff(prev => !prev);
+  };
 
   return (
     <div className="container team-member-tasks">
@@ -366,7 +374,9 @@ const TeamMemberTasks = React.memo(props => {
                   return (
                     <TeamMemberTask
                       user={user}
-                      userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes('putReviewStatus')}
+                      userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
+                        'putReviewStatus',
+                      )}
                       key={user.personId}
                       handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                       handleMarkAsDoneModal={handleMarkAsDoneModal}
@@ -403,8 +413,8 @@ const TeamMemberTasks = React.memo(props => {
                           .map(timeEntry => (
                             <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={3} style={{ padding: 0 }}>
-                                <TimeEntry 
-                                  from='TaskTab'
+                                <TimeEntry
+                                  from="TaskTab"
                                   data={timeEntry}
                                   displayYear
                                   key={timeEntry._id}
@@ -413,7 +423,7 @@ const TeamMemberTasks = React.memo(props => {
                               </td>
                             </tr>
                           ))}
-                    </ Fragment>
+                    </Fragment>
                   );
                 }
               })
