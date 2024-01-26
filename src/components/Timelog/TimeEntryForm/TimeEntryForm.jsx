@@ -633,7 +633,7 @@ const TimeEntryForm = props => {
                     placeholder="Hours"
                     value={formValues.hours}
                     onChange={handleInputChange}
-                    disabled={from === 'Timer' || !canEditTimeEntry}
+                    disabled={from === 'Timer' || from === 'TimeLog' || !canEditTimeEntry}
                   />
                 </Col>
                 <Col>
@@ -646,7 +646,7 @@ const TimeEntryForm = props => {
                     placeholder="Minutes"
                     value={formValues.minutes}
                     onChange={handleInputChange}
-                    disabled={from === 'Timer' || !canEditTimeEntry}
+                    disabled={from === 'Timer' || from === 'TimeLog' || !canEditTimeEntry}
                   />
                 </Col>
               </Row>
