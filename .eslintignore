@@ -20,10 +20,7 @@ src/components/Badge/**
 src/components/common/**
 src/components/Header/**
 src/components/BMDashboard/BMHeader/**
-src/components/Inventory/**
-src/components/Memberships/**
 src/components/MonthlyEffort/**
-src/components/NewProfileLink/**
 
 src/components/PermissionsManagement/**
 # src/components/PopUpBar/**

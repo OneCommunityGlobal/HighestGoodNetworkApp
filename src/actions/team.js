@@ -5,10 +5,6 @@ import httpService from '../services/httpService';
 import { FETCH_TEAMS_START, RECEIVE_TEAMS, FETCH_TEAMS_ERROR } from '../constants/teams';
 import { ENDPOINTS } from '../utils/URL';
 import { GET_TEAM_BY_ID } from '../constants/team';
-import {
-  GET_USER_PROFILE,
-  getUserProfile as getUserProfileActionCreator,
-} from '../constants/userProfile';
 
 export function getUserTeamMembers1(userId) {
   const request = httpService.get(ENDPOINTS.USER_TEAM(userId));

@@ -13,6 +13,7 @@ import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import moment from 'moment-timezone';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -40,16 +41,18 @@ function LeaderBoard({
   organizationData,
   timeEntries,
   isVisible,
-  asUser,
+  displayUserId,
   totalTimeMouseoverText,
   userOnTimeOff,
   userGoingOnTimeOff,
   showTimeOffRequestModal,
 }) {
-  const userId = asUser || loggedInUser.userId;
+  const userId = displayUserId || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
 
   useEffect(() => {
@@ -293,8 +296,39 @@ function LeaderBoard({
                   {/* </Link> */}
                 </td>
                 <th scope="row">
-                  <Link to={`/userprofile/${item.personId}`} title="View Profile">
+                  <Link
+                    to={`/userprofile/${item.personId}`}
+                    title="View Profile"
+                    style={{
+                      color:
+                        currentDate.isSameOrAfter(
+                          moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                        ) &&
+                        currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                          ? 'rgba(128, 128, 128, 0.5)'
+                          : undefined,
+                    }}
+                  >
                     {item.name}
+                    {currentDate.isSameOrAfter(
+                      moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                    ) &&
+                    currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+                    Math.floor(
+                      moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+                        .subtract(1, 'day')
+                        .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+                    ) > 0 ? (
+                      <sup>
+                        {' '}
+                        +
+                        {Math.floor(
+                          moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+                            .subtract(1, 'day')
+                            .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+                        )}
+                      </sup>
+                    ) : null}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
                   {hasVisibilityIconPermission && !item.isVisible && (

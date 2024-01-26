@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_USER_PROJECTS } from '../constants/userProjects';
+import { GET_USER_PROJECTS, GET_USER_WBS } from '../constants/userProjects';
 import { ENDPOINTS } from '../utils/URL';
 
 export const getUserProjects = userId => {
@@ -16,7 +16,29 @@ export const getUserProjects = userId => {
   };
 };
 
+export const getUserWBSs = userId => {
+  const url = ENDPOINTS.WBS_USER(userId);
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+      if (res.status === 200) {
+        await dispatch(setUserWBSs(res.data));
+      } else {
+        console.log(`Get user WBS request status is not 200, status message: ${res.statusText}`)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  };
+};
+
+
 export const setUserProjects = data => ({
   type: GET_USER_PROJECTS,
+  payload: data,
+});
+
+export const setUserWBSs = data => ({
+  type: GET_USER_WBS,
   payload: data,
 });

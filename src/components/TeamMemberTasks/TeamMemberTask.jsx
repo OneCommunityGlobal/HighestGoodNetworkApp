@@ -10,8 +10,9 @@ import hasPermission from 'utils/permissions';
 import './style.css';
 import { boxStyle } from 'styles';
 import ReviewButton from './ReviewButton';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
+import moment from 'moment-timezone';
 import moment from 'moment';
 import 'moment-timezone';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
@@ -29,11 +30,13 @@ const TeamMemberTask = React.memo(
       userRole,
       userId,
       updateTaskStatus,
+    userPermission
       showWhoHasTimeOff,
     onTimeOff,
     goingOnTimeOff,
   }) => {
-      const ref = useRef(null);
+    const ref = useRef(null);
+    const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
     const [totalHoursRemaining, activeTasks] = useMemo(() => {
       let totalHoursRemaining = 0;
@@ -113,7 +116,18 @@ const TeamMemberTask = React.memo(
               <tbody>
                 <tr>
                   <td className="team-member-tasks-user-name">
-                    <Link to={`/userprofile/${user.personId}`}>{`${user.name}`}</Link>
+                    <Link
+                      to={`/userprofile/${user.personId}`}
+                      style={{
+                        color:
+                          currentDate.isSameOrAfter(
+                            moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                          ) &&
+                          currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                            ? 'rgba(128, 128, 128, 0.5)'
+                            : undefined,
+                      }}
+                    >{`${user.name}`}</Link>
                   </td>
                   <td data-label="Time" className="team-clocks">
                     <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
@@ -203,8 +217,8 @@ const TeamMemberTask = React.memo(
                           <div>
                             <ReviewButton
                               user={user}
-                              myUserId={userId}
-                              myRole={userRole}
+                              userPermission={userPermission}
+                              userId={userId}
                               task={task}
                               updateTask={updateTaskStatus}
                               style={boxStyle}
