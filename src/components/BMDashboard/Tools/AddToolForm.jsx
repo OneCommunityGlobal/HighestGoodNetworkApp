@@ -89,11 +89,11 @@ export default function AddToolForm() {
 
   const handleSubmit = event => {
     event.preventDefault();
-    const updatedFormData = {
-      ...formData,
-      images: uploadedFiles,
-    };
-    console.log('Data', updatedFormData);
+    // const updatedFormData = {
+    //   ...formData,
+    //   images: uploadedFiles,
+    // };
+    // console.log('Data', updatedFormData);
     // TODO: validate form data
     // TODO: submit data to API
   };
@@ -309,7 +309,7 @@ export default function AddToolForm() {
         {uploadedFiles.length > 0 && (
           <div className="file-preview-container">
             {uploadedFiles.map((file, index) => (
-              <div key={index} className="file-preview">
+              <div key={`${file.name} - ${file.lastModified}`} className="file-preview">
                 <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
                 <Button color="danger" onClick={() => handleRemoveFile(index)}>
                   X
