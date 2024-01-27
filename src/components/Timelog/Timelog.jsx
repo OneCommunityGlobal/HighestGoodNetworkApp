@@ -327,9 +327,13 @@ const Timelog = props => {
       projectsObject[projectId].WBSObject[wbsId] = WBS;
     })
     disPlayUserTasks.forEach(task => {
-      const { projectId, wbsId, _id: taskId } = task;
-      projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
+      const { projectId, wbsId, _id: taskId, resources } = task;
+      const isTaskCompletedForTimeEntryUser = resources.find(resource => resource.userID === displayUserProfile._id).completedTask;
+      if (!isTaskCompletedForTimeEntryUser) {
+        projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
+      }
     });
+    
     for (const [projectId, project] of Object.entries(projectsObject)) {
       const { projectName, WBSObject } = project;
       options.push(
