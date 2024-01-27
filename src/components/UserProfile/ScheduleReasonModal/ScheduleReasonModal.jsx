@@ -27,6 +27,8 @@ const ScheduleReasonModal = ({
   userId,
   IsReasonUpdated,
   setIsReasonUpdated,
+  numberOfReasons,
+  infringementsNum
 }) => {
   useEffect(() => {
     const initialFetching = async () => {
@@ -49,6 +51,19 @@ const ScheduleReasonModal = ({
     };
     initialFetching();
   }, [date]);
+
+// ===============================================================
+  // This useEffect will make sure to close the modal that allows for users to schedule reasons - Sucheta
+  useEffect(()=>{
+    if(user.role === "Owner" || user.role === "Administrator"){
+      return
+    }else{
+      if (infringementsNum >= 5 || numberOfReasons >= 5 || (infringementsNum + numberOfReasons >= 5)){
+        handleClose();
+      }
+    }
+  },[numberOfReasons,infringementsNum])
+// ===============================================================
 
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [offTimeWeeks, setOffTimeWeeks] = useState([]);
