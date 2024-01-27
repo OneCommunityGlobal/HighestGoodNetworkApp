@@ -34,6 +34,7 @@ const TeamMemberTask = React.memo(
   }) => {
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+    const dispatch = useDispatch()
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
