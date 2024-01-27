@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Button, Alert } from 'react-bootstrap';
 import {
   getWarningsByUserId,
   postWarningByUserId,
@@ -7,7 +8,6 @@ import {
 } from '../../actions/warnings';
 
 import WarningItem from './WarningItem';
-import { Button, Alert } from 'react-bootstrap';
 import './Warnings.css';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )

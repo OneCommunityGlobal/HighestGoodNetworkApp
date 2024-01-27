@@ -1,5 +1,7 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
@@ -23,9 +25,11 @@ function WarningIcon(props) {
 
   const btnColor = color ? colors[color] : 'white';
 
+  // eslint-disable-next-line no-shadow
   const handleIssueWarning = id => {
     const today = moment().format('MM/DD/YYYY HH:mm:ss a');
     const [todaysDate, todaysTime, todaysTimeOfDay] = today.split(' ');
+
     const colorAssigned = 'blue';
     const warningDetails = { todaysDate, id, colorAssigned, warningText };
 

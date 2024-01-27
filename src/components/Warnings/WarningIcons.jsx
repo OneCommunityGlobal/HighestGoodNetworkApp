@@ -1,11 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
 import WarningIcon from './WarningIcon';
 
 function WarningIcons({
-  userId,
   handleWarningIconClicked,
   warnings,
   warningText,

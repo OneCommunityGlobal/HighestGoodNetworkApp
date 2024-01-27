@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable no-shadow */
+import { useState } from 'react';
 
 import './Warnings.css';
 import WarningIcons from './WarningIcons';

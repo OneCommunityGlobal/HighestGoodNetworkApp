@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable spaced-comment */
+/* eslint-disable no-alert */
 /* eslint-disable no-undef */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/destructuring-assignment */
