@@ -70,6 +70,7 @@ function LessonForm() {
       if (foundProject) {
         // Set the project name as a tag
         setProjectName(foundProject.name);
+        setSelectedProject(projectId);
         setLessonFormTags([projectname]);
       }
     }
