@@ -137,22 +137,20 @@ const TimeEntry = (props) => {
       dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
     }
   };
-
-  const hoursPast = moment().diff(dateOfWork, 'hours');
-
   let filteredColor;
+  const daysPast = moment().diff(dateOfWork, 'days');
   switch (true) {
-    case hoursPast <= 24:
-      filteredColor = hrsFilterBtnColorMap[24];
+    case daysPast < 2:
+      filteredColor = hrsFilterBtnColorMap[2];
       break;
-    case hoursPast <= 48:
-      filteredColor = hrsFilterBtnColorMap[48];
+    case daysPast === 2:
+      filteredColor = hrsFilterBtnColorMap[3];
       break;
-    case hoursPast <= 72:
-      filteredColor = hrsFilterBtnColorMap[72];
+    case daysPast === 3:
+      filteredColor = hrsFilterBtnColorMap[4];
       break;
     default:
-      filteredColor = '#6a6a6a'; // grey
+      filteredColor = hrsFilterBtnColorMap[7];
   }
 
   return (
