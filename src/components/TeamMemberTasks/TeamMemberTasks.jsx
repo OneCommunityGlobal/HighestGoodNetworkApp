@@ -14,7 +14,7 @@ import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import TimeEntry from '../Timelog/TimeEntry';
-import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
+import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
@@ -248,47 +248,23 @@ const TeamMemberTasks = React.memo(props => {
                 </svg>
               </i>
             </button>
-            <button
-              type="button"
-              className="circle-border 24h"
-              title="Timelogs submitted in the past 24 hours"
-              style={{
-                color: selectedPeriod === 24 && isTimeFilterActive ? 'white' : hrsFilterBtnRed,
-                backgroundColor:
-                  selectedPeriod === 24 && isTimeFilterActive ? hrsFilterBtnRed : 'white',
-                border: '1px solid #DC143C',
-              }}
-              onClick={() => selectPeriod(24)}
-            >
-              24h
-            </button>
-            <button
-              type="button"
-              className="circle-border 48h"
-              title="Timelogs submitted in the past 48 hours"
-              style={{
-                color: selectedPeriod === 48 && isTimeFilterActive ? 'white' : hrsFilterBtnBlue,
-                backgroundColor:
-                  selectedPeriod === 48 && isTimeFilterActive ? hrsFilterBtnBlue : 'white',
-                border: '1px solid #6495ED',
-              }}
-              onClick={() => selectPeriod(48)}
-            >
-              48h
-            </button>
-            <button
-              type="button"
-              className="circle-border 72h"
-              title="Timelogs submitted in the past 72 hours"
-              style={{
-                color: selectedPeriod === 72 && isTimeFilterActive ? 'white' : '#228B22',
-                backgroundColor: selectedPeriod === 72 && isTimeFilterActive ? '#228B22' : 'white',
-                border: '1px solid #228B22',
-              }}
-              onClick={() => selectPeriod(72)}
-            >
-              72h
-            </button>
+            {[24, 48, 72].map((hours, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className={`circle-border ${hours}h`}
+                title={`Timelogs submitted in the past ${hours} hours`}
+                style={{
+                  color: selectedPeriod === hours && isTimeFilterActive ? 'white' : hrsFilterBtnColorMap[hours],
+                  backgroundColor:
+                    selectedPeriod === hours && isTimeFilterActive ? hrsFilterBtnColorMap[hours] : 'white',
+                  border: '1px solid' + hrsFilterBtnColorMap[hours],
+                }}
+                onClick={() => selectPeriod(hours)}
+              >
+                {hours}h
+              </button>
+            ))}
           </div>
         ) : (
           <SkeletonLoading template="TimelogFilter" />

@@ -8,7 +8,7 @@ import { formatDateFromDescriptionString,formatTimeOffRequests } from 'utils/for
 const BlueSquare = (props) => {
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare } = props;
+  const { blueSquares, handleBlueSquare, numberOfReasons, infringementsNum, userRole } = props;
 
   return (
     <div className="blueSquareContainer">
@@ -67,8 +67,17 @@ const BlueSquare = (props) => {
               ))
           : null}
       </div>
-
-      {isInfringementAuthorizer && (
+      {/* Check for userRole, infringements and scheduled reasons to render + button - Sucheta*/}
+      {userRole === "Owner" || userRole === "Administrator" ? (<div
+          onClick={() => {
+            handleBlueSquare(true, 'addBlueSquare', '');
+          }}
+          className="blueSquareButton"
+          color="primary"
+          data-testid="addBlueSquare"
+        >
+          +
+        </div>) : ( isInfringementAuthorizer && !(infringementsNum >=5 || numberOfReasons >= 5 || (numberOfReasons + infringementsNum >= 5) ) &&(
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');
@@ -78,7 +87,7 @@ const BlueSquare = (props) => {
           data-testid="addBlueSquare"
         >
           +
-        </div>
+        </div>)
       )}
       <br />
     </div>
