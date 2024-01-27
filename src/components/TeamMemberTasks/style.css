@@ -198,6 +198,8 @@
   font-family: Arial, Helvetica, sans-serif;
   color: white;
   box-shadow: 2px 2px 4px 1px lightgray;
+  box-sizing: border-box;
+  
 }
 
 .show-time-off-btn-selected {
@@ -209,7 +211,8 @@
   width: 22px;
   height: 20px;
   position: relative;
-  left: 6px;
+  top: 11px;
+  left: -2px;
 }
 .show-time-off-calender-svg-selected {
   fill: white;
@@ -218,14 +221,15 @@
   width: 16px;
   height: 16px;
   position: relative;
-  top: -2px;
-  left: -4px;
+  top: -16px;
+  left: 7px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   background-color: white;
 }
+
 
 .show-time-off-icon-selected {
   background-color: #17a2b8;

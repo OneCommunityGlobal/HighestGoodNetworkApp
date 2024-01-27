@@ -13,8 +13,6 @@ import ReviewButton from './ReviewButton';
 import { useDispatch, useSelector } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import moment from 'moment-timezone';
-import moment from 'moment';
-import 'moment-timezone';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
