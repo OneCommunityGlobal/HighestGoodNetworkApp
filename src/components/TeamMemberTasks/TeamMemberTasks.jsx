@@ -9,6 +9,7 @@ import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import './style.css';
 import TaskCompletedModal from './components/TaskCompletedModal';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import moment from 'moment';
@@ -111,26 +112,35 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const getTimeEntriesForPeriod = async (selectedPeriod) => {
-    const threeDaysAgo = moment()
-        .tz('America/Los_Angeles')
-        .subtract(72, 'hours')
-        .format('YYYY-MM-DD');
-
     const twoDaysAgo = moment()
       .tz('America/Los_Angeles')
-      .subtract(48, 'hours')
+      .subtract(2, 'days')
+      .format('YYYY-MM-DD');
+    
+    const threeDaysAgo = moment()
+      .tz('America/Los_Angeles')
+      .subtract(3, 'days')
+      .format('YYYY-MM-DD');
+
+    const fourDaysAgo = moment()
+      .tz('America/Los_Angeles')
+      .subtract(4, 'days')
       .format('YYYY-MM-DD');
 
     switch (selectedPeriod) {
-      case 24:
-        const twentyFourList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
-        setTimeEntriesList(twentyFourList);
+      case '2':
+        const twoDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
+        setTimeEntriesList(twoDaysList);
         break;
-      case 48:
-        const fortyEightList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(threeDaysAgo));
-        setTimeEntriesList(fortyEightList);
+      case '3':
+        const threeDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(threeDaysAgo));
+        setTimeEntriesList(threeDaysList);
         break;
-      case 72:
+      case '4':
+        const fourDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(fourDaysAgo));
+        setTimeEntriesList(fourDaysList);
+        break;
+      case '7':
         setTimeEntriesList(usersWithTimeEntries);
         break;
       default:
@@ -199,23 +209,29 @@ const TeamMemberTasks = React.memo(props => {
         <h1>Team Member Tasks</h1>
         {finishLoading ? (
           <div className="hours-btn-container">
-            {[24, 48, 72].map((hours, idx) => (
+            {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
               <button
                 key={idx}
                 type="button"
-                className={`circle-border ${hours}h`}
-                title={`Timelogs submitted in the past ${hours} hours`}
+                className={`circle-border ${days} days`}
+                title={`Timelogs submitted in the past ${days} days`}
                 style={{
-                  color: selectedPeriod === hours && isTimeFilterActive ? 'white' : hrsFilterBtnColorMap[hours],
-                  backgroundColor:
-                    selectedPeriod === hours && isTimeFilterActive ? hrsFilterBtnColorMap[hours] : 'white',
-                  border: '1px solid' + hrsFilterBtnColorMap[hours],
+                  color: selectedPeriod === days && isTimeFilterActive ? 'white' : color,
+                  backgroundColor: selectedPeriod === days && isTimeFilterActive ? color : 'white',
+                  border: `1px solid ${color}`,
                 }}
-                onClick={() => selectPeriod(hours)}
+                onClick={() => selectPeriod(days)}
               >
-                {hours}h
+                {days} days
               </button>
             ))}
+            <EditableInfoModal
+              areaName="TeamMemberTasksTimeFilterInfoPoint"
+              areaTitle="TeamMemberTask Time Filter"
+              fontSize={22}
+              isPermissionPage={true}
+              role={authUser.role} 
+            />
           </div>
         ) : (
           <SkeletonLoading template="TimelogFilter" />
@@ -355,7 +371,7 @@ const TeamMemberTasks = React.memo(props => {
 });
 
 const mapStateToProps = state => ({
-  authUser: state.auth.user.userid,
+  authUser: state.auth.user,
   displayUser: state.userProfile,
   isLoading: state.teamMemberTasks.isLoading,
   usersWithTasks: state.teamMemberTasks.usersWithTasks,
