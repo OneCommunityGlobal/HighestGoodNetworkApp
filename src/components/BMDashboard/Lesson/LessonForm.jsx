@@ -3,9 +3,11 @@ import { Form, FormControl, Button } from 'react-bootstrap';
 import './LessonForm.css';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import postNewLesson from '../../../actions/bmdashboard/lessonActions';
 import { getAllRoles } from '../../../actions/role';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
-// import { fetchAllProjects } from '../../../actions/projects';
+// import { fetchAllProjects } from '../../../actions/projects'; // fetch all projects (not bmprojects)
 import Noimg from './images/Noimg3.jpg';
 
 const style = {
@@ -13,22 +15,21 @@ const style = {
 };
 function LessonForm() {
   const dispatch = useDispatch();
+  const user = useSelector(state => state.auth.user); // grab user from store
+  const userId = user ? user.userid : null; // get userID from user object
   const roles = useSelector(state => state.role.roles); // grab all roles from store
-  // const projects = useSelector(state => state.allProjects.projects); // grab all projects from store
+  // const projects = useSelector(state => state.allProjects.projects); // grab all projects from store(not BM projects)
   const projects = useSelector(state => state.bmProjects); // grab all BM projects from store
   const [LessonFormtags, setLessonFormTags] = useState([]); // save all tags user inputs
   const [tagInput, setTagInput] = useState(''); // track user input in tag input
   const [selectedFile, setSelectedFile] = useState(null); // track file that was selected or droped in upload appendix
   const [prevselectedProject, setprevSelectedProject] = useState(null); // used to track the previously project selected for deletion in tags when changed
   const [selectedProject, setSelectedProject] = useState(null); // Track selected project in Belongs to dropdown
-  // eslint-disable-next-line no-unused-vars
   const [selectedRole, setSelectedRole] = useState('All'); // track selected role in View by dropdown
-  // eslint-disable-next-line no-unused-vars
   const [LessonText, setLessonText] = useState(null); // track lesson text
-  // eslint-disable-next-line no-unused-vars
   const [LessonTitleText, setLessonTitleText] = useState(null); // track lessontitle text
   const { projectId } = useParams(); // passed project id in parameters
-
+  const [projectname, setProjectName] = useState(null);
   // track user input in the tag input feild
   const handleTagInput = e => {
     e.preventDefault();
@@ -57,16 +58,22 @@ function LessonForm() {
   };
   // Dispatch the action to fetch roles and projects when the component mounts
   useEffect(() => {
-    dispatch(fetchBMProjects());
+    dispatch(fetchBMProjects(projectId));
     dispatch(getAllRoles());
   }, [dispatch]);
   // logic if there is a projectId passed in params(on project specific from) to add the project tag automatically
   useEffect(() => {
     if (projectId) {
-      const projectname = `Project ${projectId}`;
-      setLessonFormTags([projectname]);
+      // Fetch the project with the given projectId
+      const foundProject = projects.find(project => project._id === projectId);
+      // Check if the project is found
+      if (foundProject) {
+        // Set the project name as a tag
+        setProjectName(foundProject.name);
+        setLessonFormTags([projectname]);
+      }
     }
-  }, []);
+  }, [projectId, projects]);
   // when user selects a file updates selectedFile variable
   const handleFileSelection = e => {
     const file = e.target.files[0]; // Get the selected file
@@ -117,22 +124,25 @@ function LessonForm() {
   };
   useEffect(() => {
     if (selectedProject && prevselectedProject !== selectedProject) {
-      // Remove the tag for the previously selected project
-      if (prevselectedProject) {
-        removePreviousProject(prevselectedProject);
-      }
-      setprevSelectedProject(selectedProject);
-      // Check if the selected project is already in tags
-      const hasSelectedProject = LessonFormtags.includes(selectedProject);
-      // If not, add it to the tags array
-      if (!hasSelectedProject) {
-        setLessonFormTags(tags => [...tags, selectedProject]);
+      // Find the project with the selected ID
+      const foundProject = projects.find(project => project._id === selectedProject);
+      // Check if the found project is valid
+      if (foundProject) {
+        setprevSelectedProject(selectedProject);
+        // Remove the tag for the previously selected project
+        if (prevselectedProject) {
+          removePreviousProject(
+            projects.find(project => project._id === prevselectedProject)?.name,
+          );
+        }
+        // Add the project name to the tags array
+        setLessonFormTags(tags => [...tags, foundProject.name]);
       }
     }
-  }, [selectedProject, prevselectedProject]);
+  }, [selectedProject, prevselectedProject, projects]);
 
-  // Lesson submit where all the data from user input is in here
-  const LessonFormSubmit = e => {
+  // Lesson submit. all the data from user input is in here
+  const LessonFormSubmit = async e => {
     e.preventDefault();
     // console.log(LessonFormtags, "Tags")
     // console.log(selectedProject, "selected project")
@@ -140,6 +150,37 @@ function LessonForm() {
     // console.log(selectedFile, "selected file")
     // console.log(LessonText, "lesson text")
     // console.log(LessonTitleText,"lesson title")
+    if (!LessonFormtags.length) {
+      toast.info('Need atleast one tag');
+      return;
+    }
+    if (!selectedProject) {
+      toast.info('Need to select a project');
+      return;
+    }
+    const lessonData = {
+      title: LessonTitleText,
+      content: LessonText,
+      tags: LessonFormtags,
+      author: userId,
+      relatedProject: selectedProject,
+      allowedRoles: selectedRole,
+      files: selectedFile,
+    };
+    try {
+      const response = await dispatch(postNewLesson(lessonData));
+
+      // Check if the response indicates success
+      if (response && response._id) {
+        toast.success('Lesson Added');
+      } else {
+        // Handle unexpected response
+        toast.error('Unexpected Response: Lesson may not have been added');
+      }
+    } catch (error) {
+      // Handle errors, and display the error message
+      toast.error('Error Adding Lesson', error.message || 'Unknown error');
+    }
   };
   return (
     <div className="MasterContainer">
@@ -160,6 +201,7 @@ function LessonForm() {
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
               <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
               <Form.Control
+                required
                 className="LessonPlaceholderText"
                 as="textarea"
                 placeholder="Enter the lesson you learn..."
@@ -213,9 +255,9 @@ function LessonForm() {
                   disabled={!!projectId}
                 >
                   {!selectedProject && !projectId && <option>Select Project</option>}
-                  {projectId && <option>Project {projectId}</option>}
+                  {projectId && <option value={projectId}>Project {projectname}</option>}
                   {projects.map(project => (
-                    <option key={project._id} value={project.name}>
+                    <option key={project._id} value={project._id}>
                       {project.name}
                     </option>
                   ))}
