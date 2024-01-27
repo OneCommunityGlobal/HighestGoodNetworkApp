@@ -265,6 +265,24 @@ tr:hover {
   overflow-x: hidden;
   max-height: 215px;
 }
+
+.Logged-time-off-cards-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.Logged-time-off-cards-container::-webkit-scrollbar-track {
+  border-radius: 4px;
+  background-color: #e7e7e7;
+  border: 1px solid #cacaca;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+}
+
+.Logged-time-off-cards-container::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #007BFF ;
+  box-shadow: inset 0 0 3px #e7e7e7;
+}
+
 .date-of-leave-datepicker {
   display: block;
   height: calc(1.5em + 0.75rem + 2px);
