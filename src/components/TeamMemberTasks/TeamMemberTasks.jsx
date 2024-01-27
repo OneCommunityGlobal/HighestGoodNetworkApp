@@ -9,12 +9,13 @@ import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import './style.css';
 import TaskCompletedModal from './components/TaskCompletedModal';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import TimeEntry from '../Timelog/TimeEntry';
-import { hrsFilterBtnRed, hrsFilterBtnBlue } from 'constants/colors';
+import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 
@@ -111,26 +112,35 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const getTimeEntriesForPeriod = async (selectedPeriod) => {
-    const threeDaysAgo = moment()
-        .tz('America/Los_Angeles')
-        .subtract(72, 'hours')
-        .format('YYYY-MM-DD');
-
     const twoDaysAgo = moment()
       .tz('America/Los_Angeles')
-      .subtract(48, 'hours')
+      .subtract(2, 'days')
+      .format('YYYY-MM-DD');
+    
+    const threeDaysAgo = moment()
+      .tz('America/Los_Angeles')
+      .subtract(3, 'days')
+      .format('YYYY-MM-DD');
+
+    const fourDaysAgo = moment()
+      .tz('America/Los_Angeles')
+      .subtract(4, 'days')
       .format('YYYY-MM-DD');
 
     switch (selectedPeriod) {
-      case 24:
-        const twentyFourList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
-        setTimeEntriesList(twentyFourList);
+      case '2':
+        const twoDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
+        setTimeEntriesList(twoDaysList);
         break;
-      case 48:
-        const fortyEightList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(threeDaysAgo));
-        setTimeEntriesList(fortyEightList);
+      case '3':
+        const threeDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(threeDaysAgo));
+        setTimeEntriesList(threeDaysList);
         break;
-      case 72:
+      case '4':
+        const fourDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(fourDaysAgo));
+        setTimeEntriesList(fourDaysList);
+        break;
+      case '7':
         setTimeEntriesList(usersWithTimeEntries);
         break;
       default:
@@ -199,47 +209,29 @@ const TeamMemberTasks = React.memo(props => {
         <h1>Team Member Tasks</h1>
         {finishLoading ? (
           <div className="hours-btn-container">
-            <button
-              type="button"
-              className="circle-border 24h"
-              title="Timelogs submitted in the past 24 hours"
-              style={{
-                color: selectedPeriod === 24 && isTimeFilterActive ? 'white' : hrsFilterBtnRed,
-                backgroundColor:
-                  selectedPeriod === 24 && isTimeFilterActive ? hrsFilterBtnRed : 'white',
-                border: '1px solid #DC143C',
-              }}
-              onClick={() => selectPeriod(24)}
-            >
-              24h
-            </button>
-            <button
-              type="button"
-              className="circle-border 48h"
-              title="Timelogs submitted in the past 48 hours"
-              style={{
-                color: selectedPeriod === 48 && isTimeFilterActive ? 'white' : hrsFilterBtnBlue,
-                backgroundColor:
-                  selectedPeriod === 48 && isTimeFilterActive ? hrsFilterBtnBlue : 'white',
-                border: '1px solid #6495ED',
-              }}
-              onClick={() => selectPeriod(48)}
-            >
-              48h
-            </button>
-            <button
-              type="button"
-              className="circle-border 72h"
-              title="Timelogs submitted in the past 72 hours"
-              style={{
-                color: selectedPeriod === 72 && isTimeFilterActive ? 'white' : '#228B22',
-                backgroundColor: selectedPeriod === 72 && isTimeFilterActive ? '#228B22' : 'white',
-                border: '1px solid #228B22',
-              }}
-              onClick={() => selectPeriod(72)}
-            >
-              72h
-            </button>
+            {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
+              <button
+                key={idx}
+                type="button"
+                className={`circle-border ${days} days`}
+                title={`Timelogs submitted in the past ${days} days`}
+                style={{
+                  color: selectedPeriod === days && isTimeFilterActive ? 'white' : color,
+                  backgroundColor: selectedPeriod === days && isTimeFilterActive ? color : 'white',
+                  border: `1px solid ${color}`,
+                }}
+                onClick={() => selectPeriod(days)}
+              >
+                {days} days
+              </button>
+            ))}
+            <EditableInfoModal
+              areaName="TeamMemberTasksTimeFilterInfoPoint"
+              areaTitle="TeamMemberTask Time Filter"
+              fontSize={22}
+              isPermissionPage={true}
+              role={authUser.role} 
+            />
           </div>
         ) : (
           <SkeletonLoading template="TimelogFilter" />
@@ -379,7 +371,7 @@ const TeamMemberTasks = React.memo(props => {
 });
 
 const mapStateToProps = state => ({
-  authUser: state.auth.user.userid,
+  authUser: state.auth.user,
   displayUser: state.userProfile,
   isLoading: state.teamMemberTasks.isLoading,
   usersWithTasks: state.teamMemberTasks.usersWithTasks,
