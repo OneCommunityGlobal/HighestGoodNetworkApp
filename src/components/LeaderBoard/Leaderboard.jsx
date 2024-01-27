@@ -295,7 +295,7 @@ function LeaderBoard({
                   </div>
                   {/* </Link> */}
                 </td>
-                <th scope="row">
+                <th scope="row" className="align-middle">
                   <Link
                     to={`/userprofile/${item.personId}`}
                     title="View Profile"

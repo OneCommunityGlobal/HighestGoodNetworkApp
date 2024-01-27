@@ -93,7 +93,6 @@ export const addTimeOffRequestThunk = request => async dispatch => {
   try {
     const response = await httpService.post(ENDPOINTS.ADD_TIME_OFF_REQUEST(), request);
     const AddedRequest = response.data;
-    console.log(response);
     dispatch(addTimeOffRequest(AddedRequest));
   } catch (error) {
     console.log(error);

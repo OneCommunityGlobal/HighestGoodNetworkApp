@@ -211,11 +211,11 @@ const LogTimeOffPopUp = React.memo(props => {
   };
   // checks if date of leave is not before today
   const validateDateIsNotBeforeToday = data => {
-    const isBeforeToday = moment(data.dateOfLeave).isBefore(moment(), 'day');
+    const isBeforeToday = moment(data.dateOfLeave).isBefore(moment().startOf('week'), 'day');
     if (isBeforeToday) {
       setRequestDataErrors(prev => ({
         ...prev,
-        dateOfLeaveError: 'Date of leave can not be before today',
+        dateOfLeaveError: 'Date of leave can not be before the start of current week',
       }));
       return false;
     }
@@ -284,7 +284,6 @@ const LogTimeOffPopUp = React.memo(props => {
         .format('YYYY-MM-DD'),
       duration: requestData.numberOfWeeks,
     };
-    console.log(data);
     dispatch(addTimeOffRequestThunk(data));
   };
 
