@@ -119,7 +119,6 @@ const ScheduleReasonModal = ({
       <Modal.Header closeButton={true}>
         <Modal.Title className="centered-container">
           <div className="centered-text">Choose to Use a Blue Square</div>
-          <div className="centered-text">(function under development)</div>
         </Modal.Title>
       </Modal.Header>
       <Form onSubmit={handleSaveReason}>
