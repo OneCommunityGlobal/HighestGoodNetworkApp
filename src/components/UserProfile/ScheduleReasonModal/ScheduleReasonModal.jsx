@@ -11,6 +11,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { boxStyle } from 'styles';
 import './ScheduleReasonModal.css';
+import FaqButtonModal from 'components/UserProfile/ScheduleReasonModal/FaqButtonModal.jsx';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -64,6 +65,20 @@ const ScheduleReasonModal = ({
     }
   },[numberOfReasons,infringementsNum])
 // ===============================================================
+
+  //use document.getElementById to get the element of role
+  const selectElement = document.getElementById("role");
+
+  // Get the selected value
+  const role = selectElement.value;
+
+  // State to control FAQModal visibility
+  const [isFaqButtonModalOpen, setIsFaqButtonModalOpen] = useState(false);
+
+    // Function to toggle FAQModal
+    const toggleFaqButtonModal = () => {
+      setIsFaqButtonModalOpen(!isFaqButtonModalOpen);
+    };    
 
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [offTimeWeeks, setOffTimeWeeks] = useState([]);
@@ -182,9 +197,15 @@ const ScheduleReasonModal = ({
           ) : null}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" title="Function coming" onClick={handleClose} style={boxStyle}>
-            FAQ
-          </Button>
+        <Button variant="success" title="FAQ" onClick={toggleFaqButtonModal} style={boxStyle}>
+            <FaqButtonModal
+              areaName="blueSquares_FAQ"
+              areaTitle="Blue Squares FAQ"
+              fontSize={24}
+              isPermissionPage={true}
+              role={role}
+              />
+        </Button>
           <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
