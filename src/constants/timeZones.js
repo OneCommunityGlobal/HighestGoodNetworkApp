@@ -12,6 +12,12 @@ export const timeZones = [
     utcDstOffset: '+00:00',
   },
   {
+    countryCode: 'ET',
+    name: 'Africa/Addis_Ababa',
+    utcOffset: '+03:00',
+    utcDstOffset: '+00:00',
+  },
+  {
     countryCode: 'DZ',
     name: 'Africa/Algiers',
     utcOffset: '+01:00',
