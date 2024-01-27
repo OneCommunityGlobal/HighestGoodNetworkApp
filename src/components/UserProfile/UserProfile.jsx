@@ -1026,18 +1026,19 @@ function UserProfile(props) {
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
-                  <BasicInformationTab
-                    role={requestorRole}
-                    userProfile={userProfile}
-                    setUserProfile={setUserProfile}
-                    handleUserProfile={handleUserProfile}
-                    formValid={formValid}
-                    setFormValid={setFormValid}
-                    isUserSelf={isUserSelf}
-                    canEdit={canEdit}
-                    canEditRole={canEdit}
-                    roles={roles}
-                  />
+                <BasicInformationTab
+                  role={requestorRole}
+                  userProfile={userProfile}
+                  setUserProfile={setUserProfile}
+                  loadUserProfile={loadUserProfile}
+                  handleUserProfile={handleUserProfile}
+                  formValid={formValid}
+                  setFormValid={setFormValid}
+                  isUserSelf={isUserSelf}
+                  canEdit={canEdit}
+                  canEditRole={canEditUserProfile}
+                  roles={roles}
+                />
                 </ModalBody>
                 <ModalFooter>
                   <Row>
