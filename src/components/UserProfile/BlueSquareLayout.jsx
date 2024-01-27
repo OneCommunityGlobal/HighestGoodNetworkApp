@@ -13,6 +13,8 @@ import { addReason, patchReason, getAllReasons } from 'actions/reasonsActions';
 import moment from 'moment-timezone';
 import { Modal } from 'react-bootstrap';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+
 
 const BlueSquareLayout = props => {
   const fetchingReducer = (state, action) => {
@@ -189,6 +191,15 @@ useEffect(()=>{
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} isInfringementMoreThanFive={isInfringementMoreThanFive} userRole={userProfile.role} numberOfReasons={numberOfReasons} infringementsNum={infringementsNum}/>
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
+        <div align = "right">
+            <EditableInfoModal
+                  areaName="blueSquares_info"
+                  areaTitle="Blue Squares"
+                  fontSize={24}
+                  isPermissionPage
+                  role={userProfile.role}
+                  />
+          </div> 
           {
               ((isInfringementMoreThanFive || numberOfReasons >= 5 || (infringementsNum + numberOfReasons >= 5 )) && !(userProfile.role === "Administrator" || userProfile.role === "Owner") )?  <>
               <Button
