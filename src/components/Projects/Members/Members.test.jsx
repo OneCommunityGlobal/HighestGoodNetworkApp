@@ -1,14 +1,15 @@
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store'; 
+import configureStore from 'redux-mock-store'; 
 import { BrowserRouter as Router } from 'react-router-dom'; // Import BrowserRouter
 import thunk from 'redux-thunk'; 
 import '@testing-library/jest-dom';
 import Members from './Members';
 import { authMock, rolesMock } from '../../../__tests__/mockStates';
 
-const mockStore = configureMockStore([thunk]);
+
+const mockStore = configureStore([thunk]);
 
 const renderProject= props => { 
   const store = mockStore({
@@ -21,7 +22,8 @@ const renderProject= props => {
   },
   projectMembers: {
     members: [
-      { _id: 'user1', firstName: 'John', lastName: 'Doe', isActive: true },
+      { _id: 'user1', firstName: 'John', lastName: 'Doe', isActive: true, assigned: true },
+      { _id: 'user4', firstName: 'Dave', lastName: 'Goldman', isActive: false, assigned: true },
     ], // Provide a default value 
     foundUsers: [{
       index: 0,
@@ -186,25 +188,27 @@ describe('Members component', () => {
       },
       state: {
         projectMembers: {
-          members: [],
+          members: [{ _id: 'user1', firstName: 'John', lastName: 'Doe', isActive: true, assigned: true },
+          { _id: 'user4', firstName: 'Dave', lastName: 'Goldman', isActive: false, assigned: true },],
           foundUsers: [],
         },
       },
       fetchAllMembers: jest.fn(),
+      assignProject: jest.fn(),
     };
 
-    const { getByTestId } = renderProject(props);
+    const { getByTestId, container } = renderProject(props);
 
     // Find the toggle switch by data-testid
     const toggleSwitch = getByTestId('active-switch');
 
-    // Initial state: showActiveMembersOnly is false
+    console.log(container.innerHTML)
     expect(props.state.projectMembers.members.length).toBe(2); // Both members are displayed initially
     fireEvent.click(toggleSwitch);
 
-    // After clicking the toggle switch, showActiveMembersOnly should be true
+    //After clicking the toggle switch, showActiveMembersOnly should be true
     await waitFor(() => {
-      expect(props.state.projectMembers.members.length).toBe(1); // Only active member (John) should be displayed
+      expect(props.state.projectMembers.members.length).toBe(1); // Only active member should be displayed
       expect(props.fetchAllMembers).toHaveBeenCalled(); // fetchAllMembers should be called after toggling
     });
   });
@@ -227,7 +231,7 @@ describe('Members component', () => {
 
 
     // Click the "Assign All" button
-    //fireEvent.click(getByText('All'))
+    fireEvent.click(getByText('All'))
     fireEvent.click(getByText('+All'))
     
 
