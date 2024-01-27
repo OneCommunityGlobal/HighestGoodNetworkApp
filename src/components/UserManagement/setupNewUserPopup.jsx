@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
@@ -36,11 +36,11 @@ const SetupNewUserPopup = React.memo(props => {
               state: 'success',
             });
             console.log(res.data)
-
+            // props.shouldRefreshInvitationHistory();
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
-
+          // props.handleShouldRefreshInvitationHistory();
         })
         .catch(err => {
           if (err.response.data === 'email already in use') {
@@ -58,9 +58,11 @@ const SetupNewUserPopup = React.memo(props => {
             setAlert({ visibility: 'hidden', message: '', state: 'success' });
             setEmail('')
             setWeeklyCommittedHours(0)
+            props.handleShouldRefreshInvitationHistory();
           },2000)
         })
     }   
+   
   };
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={'modal-dialog modal-lg'}>

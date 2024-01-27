@@ -25,7 +25,7 @@ import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
 import { searchWithAccent } from '../../utils/search'
-
+import SetupHistoryPopup from './SetupHistoryPopup';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
@@ -54,6 +54,8 @@ class UserManagement extends React.PureComponent {
       isPaused: false,
       finalDayDateOpen: false,
       setupNewUserPopupOpen: false,
+      setupHistoryPopupOpen: false,
+      shouldRefreshInvitationHistory: false,
     };
   }
 
@@ -81,6 +83,7 @@ class UserManagement extends React.PureComponent {
               onActiveFiter={this.onActiveFiter}
               onNewUserClick={this.onNewUserClick}
               handleNewUserSetupPopup={this.handleNewUserSetupPopup}
+              handleSetupHistoryPopup={this.handleSetupHistoryPopup}
             />
             <div className="table-responsive" id="user-management-table">
               <Table className="table table-bordered noWrap">
@@ -164,6 +167,13 @@ class UserManagement extends React.PureComponent {
         <SetupNewUserPopup
           open={this.state.setupNewUserPopupOpen}
           onClose={this.handleNewUserSetupPopup}
+          handleShouldRefreshInvitationHistory={this.handleShouldRefreshInvitationHistory}
+        />
+        <SetupHistoryPopup
+          open={this.state.setupHistoryPopupOpen}
+          onClose={this.handleSetupHistoryPopup}
+          shouldRefreshInvitationHistory={this.state.shouldRefreshInvitationHistory}
+          handleShouldRefreshInvitationHistory={this.handleShouldRefreshInvitationHistory}
         />
       </React.Fragment>
     );
@@ -172,7 +182,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements = (userProfiles, rolesPermissions) => {
+userTableElements   = (userProfiles, rolesPermissions) => {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -539,6 +549,23 @@ class UserManagement extends React.PureComponent {
   };
 
   /**
+   * When a new invitation send to user. We should update the state
+   * and re-fecth the invitation history.
+   */
+  handleShouldRefreshInvitationHistory = () => {
+    this.setState(prevState => ({
+      shouldRefreshInvitationHistory: !prevState.shouldRefreshInvitationHistory,
+    }));
+  };
+  /**
+   * Setup invitation history popup modal
+   */
+  handleSetupHistoryPopup = () => {
+    this.setState(prevState => ({
+      setupHistoryPopupOpen: !prevState.setupHistoryPopupOpen,
+    }));
+  };
+  /**
    * New user popup close button click
    */
   onUserPopupClose = () => {
@@ -546,6 +573,7 @@ class UserManagement extends React.PureComponent {
       newUserPopupOpen: false,
     });
   };
+  
 }
 
 const mapStateToProps = state => {

@@ -102,7 +102,7 @@ export const ENDPOINTS = {
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
   MAP_LOCATIONS_BY_TOKEN: () => `${APIEndpoint}/mapLocationsToken`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
-
+  GET_SETUP_INVITATION: () => `${APIEndpoint}/getSetupInvitation`,
 
 
   //reasons endpoints
