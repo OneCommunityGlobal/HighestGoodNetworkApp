@@ -62,6 +62,7 @@ function WarningIcon(props) {
             borderRadius: '50%',
             width: '10px',
             height: '10px',
+            margin: '0em 0.175em',
           }}
           id={id}
           onClick={() => handleIssueWarning(id)}
