@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Button,
   Modal,
@@ -13,7 +13,7 @@ import {
 import ReactHtmlParser from 'react-html-parser';
 import { boxStyle } from 'styles';
 
-const ModalExample = props => {
+function ModalExample(props) {
   const {
     isOpen,
     closeModal,
@@ -25,11 +25,11 @@ const ModalExample = props => {
     linkType,
   } = props;
 
-  const [modal, setModal] = useState(false);
+  // const [modal, setModal] = useState(false);
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
 
-  const toggle = () => setModal(!modal);
+  // const toggle = () => setModal(!modal);
 
   const handleChange = event => {
     event.preventDefault();
@@ -44,6 +44,7 @@ const ModalExample = props => {
   const buttonDisabled = !(linkName && linkURL);
 
   if (type) {
+    // eslint-disable-next-line no-console
     console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled);
   }
 
@@ -102,6 +103,6 @@ const ModalExample = props => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default ModalExample;

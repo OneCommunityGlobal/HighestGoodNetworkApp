@@ -1,6 +1,5 @@
-import React from 'react';
-
-const Image = ({ label, name, error, className, ...rest }) => {
+/* eslint-disable react/jsx-props-no-spreading */
+function Image({ label, name, error, className, ...rest }) {
   return (
     <div className={`form-group ${className}`}>
       <label htmlFor={name}>{label}</label>
@@ -16,6 +15,6 @@ const Image = ({ label, name, error, className, ...rest }) => {
       {error && <div className="alert alert-danger mt-1">{error}</div>}
     </div>
   );
-};
+}
 
 export default Image;

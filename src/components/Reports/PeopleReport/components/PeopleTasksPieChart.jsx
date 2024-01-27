@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportPage } from '../../sharedComponents/ReportPage';
-import { NewModal } from '../../../common/NewModal';
+import NewModal from '../../../common/NewModal';
 import './PeopleTasksPieChart.css';
 
 export const PeopleTasksPieChart = () => {

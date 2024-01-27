@@ -1,4 +1,4 @@
-import { Stub } from '../../common/Stub';
+import Stub from '../../common/Stub';
 import React, { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';

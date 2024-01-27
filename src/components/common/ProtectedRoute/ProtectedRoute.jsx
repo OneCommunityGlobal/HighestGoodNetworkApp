@@ -1,9 +1,9 @@
-import React from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
 import { Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Suspense } from 'react';
 
-const ProtectedRoute = ({
+function ProtectedRoute({
   component: Component,
   render,
   auth,
@@ -11,7 +11,7 @@ const ProtectedRoute = ({
   routePermissions,
   fallback,
   ...rest
-}) => {
+}) {
   const permissions = roles?.find(({ roleName }) => roleName === auth.user.role)?.permissions;
   const userPermissions = auth.user?.permissions?.frontPermissions;
   let hasPermissionToAccess = permissions?.some(perm => perm === routePermissions);
@@ -37,14 +37,30 @@ const ProtectedRoute = ({
         if (!auth.isAuthenticated) {
           return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
         }
-        else if (routePermissions && !hasPermissionToAccess) {
+        if (routePermissions && !hasPermissionToAccess) {
           return <Redirect to={{ pathname: '/dashboard', state: { from: props.location } }} />;
         }
-        return (Component && fallback) ? <Suspense fallback={<div className="d-flex justify-content-center"><i className="fa fa-spinner fa-pulse"></i></div>}> <Component {...props} />  </Suspense> : Component ? <Component {...props} /> : render(props);
+        // eslint-disable-next-line no-nested-ternary
+        return Component && fallback ? (
+          <Suspense
+            fallback={
+              <div className="d-flex justify-content-center">
+                <i className="fa fa-spinner fa-pulse" />
+              </div>
+            }
+          >
+            {' '}
+            <Component {...props} />{' '}
+          </Suspense>
+        ) : Component ? (
+          <Component {...props} />
+        ) : (
+          render(props)
+        );
       }}
     />
   );
-};
+}
 
 const mapStateToProps = state => ({
   auth: state.auth,
