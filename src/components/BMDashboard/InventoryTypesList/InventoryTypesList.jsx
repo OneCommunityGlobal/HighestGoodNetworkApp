@@ -14,7 +14,7 @@ import AccordionToggle from './AccordionToggle';
 import './TypesList.css';
 
 export function InventoryTypesList(props) {
-  const { invUnits, errors, dispatch } = props;
+  const { errors, dispatch } = props;
 
   // NOTE: depend on redux action implementation
   const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
@@ -87,7 +87,7 @@ export function InventoryTypesList(props) {
           </AccordionToggle>
           <Accordion.Collapse eventKey={categories.length + 1}>
             <Card.Body className="accordion-collapse">
-              <UnitsTable invUnits={invUnits} />
+              <UnitsTable />
             </Card.Body>
           </Accordion.Collapse>
         </Card>
@@ -105,7 +105,7 @@ export function InventoryTypesList(props) {
 
 const mapStateToProps = state => ({
   errors: state.errors,
-  invUnits: state.bmInvUnits.list,
+  // invUnits: state.bmInvUnits.list,
 });
 
 export default connect(mapStateToProps)(InventoryTypesList);

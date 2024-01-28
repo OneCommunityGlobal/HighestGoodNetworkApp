@@ -1,14 +1,51 @@
+import { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
+import {
+  postBuildingInventoryUnit,
+  deleteBuildingInventoryUnit,
+  resetPostInvUnitResult,
+  resetDeleteInvUnitResult,
+} from 'actions/bmdashboard/invUnitActions';
+import { toast } from 'react-toastify';
 
-export default function UnitsTable(props) {
-  const { invUnits } = props;
+export function UnitsTable(props) {
+  const { invUnits, postInvUnitsResult, deleteInvUnitsResult, dispatch } = props;
 
-  const handleDelete = () => {
-    // TODO:
+  const [newUnit, setNewUnit] = useState('');
+
+  useEffect(() => {
+    if (postInvUnitsResult.error) {
+      toast.error(`Error creating unit.`);
+      dispatch(resetPostInvUnitResult());
+    } else if (postInvUnitsResult.success) {
+      toast.success(`New unit created.`);
+      dispatch(resetPostInvUnitResult());
+    }
+  }, [postInvUnitsResult]);
+
+  useEffect(() => {
+    if (deleteInvUnitsResult.error) {
+      toast.error(`Error deleting unit.`);
+      dispatch(resetDeleteInvUnitResult());
+    } else if (deleteInvUnitsResult.success) {
+      toast.success(`Unit deleted.`);
+      dispatch(resetDeleteInvUnitResult());
+    }
+  }, [deleteInvUnitsResult]);
+
+  const handleDelete = unit => {
+    dispatch(deleteBuildingInventoryUnit({ unit }));
   };
 
-  const handleAdd = () => {
-    // TODO:
+  const handleAdd = e => {
+    e.preventDefault();
+    dispatch(postBuildingInventoryUnit({ unit: newUnit }));
+    setNewUnit('');
+  };
+
+  const handleChangeInput = e => {
+    setNewUnit(e.target.value);
   };
 
   return (
@@ -25,7 +62,7 @@ export default function UnitsTable(props) {
             <tr key={`invUnit-${unit.unit}`}>
               <td>{unit.unit}</td>
               <td>
-                <Button size="sm" className="btn-types" onClick={handleDelete}>
+                <Button size="sm" className="btn-types" onClick={() => handleDelete(unit.unit)}>
                   Delete
                 </Button>
               </td>
@@ -33,12 +70,27 @@ export default function UnitsTable(props) {
           ))}
         </tbody>
       </Table>
-      <div>
-        <input id="input-measurement" type="text" placeholder="Enter a new measurement" />
-        <Button size="sm" className="btn-types" onClick={handleAdd}>
+      <form>
+        <input
+          id="input-measurement"
+          type="text"
+          required
+          maxLength="50"
+          placeholder="Enter a new measurement"
+          onChange={handleChangeInput}
+          value={newUnit}
+        />
+        <Button size="sm" className="btn-types" type="submit" onClick={handleAdd}>
           Add
         </Button>
-      </div>
+      </form>
     </div>
   );
 }
+
+const mapStateToProps = state => ({
+  invUnits: state.bmInvUnits.list,
+  postInvUnitsResult: state.bmInvUnits.postedResult,
+  deleteInvUnitsResult: state.bmInvUnits.deletedResult,
+});
+export default connect(mapStateToProps)(UnitsTable);
