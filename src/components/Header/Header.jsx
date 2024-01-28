@@ -27,6 +27,7 @@ import {
   LOGOUT,
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
+  SEND_EMAILS,
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -46,7 +47,7 @@ import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
-export const Header = props => {
+export function Header(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
@@ -304,6 +305,11 @@ export const Header = props => {
                         {TEAMS}
                       </DropdownItem>
                     )}
+                    {(canDeleteTeam || canPutTeam) && (
+                      <DropdownItem tag={Link} to="/announcements">
+                        {SEND_EMAILS}
+                      </DropdownItem>
+                    )}
                     {(canPutRole || canManageUser) && (
                       <>
                         <DropdownItem divider />
@@ -360,7 +366,7 @@ export const Header = props => {
         )}
     </div>
   );
-};
+}
 
 const mapStateToProps = state => ({
   auth: state.auth,

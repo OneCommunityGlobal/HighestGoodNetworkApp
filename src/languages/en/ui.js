@@ -72,3 +72,4 @@ export const LOG_MET = 'Log MET';
 export const LOG_TIME = 'Log Time';
 export const LOG_ISSUE = 'Log Issue';
 export const ADD_MEMBER = 'Add Member';
+export const SEND_EMAILS = 'Send Emails';

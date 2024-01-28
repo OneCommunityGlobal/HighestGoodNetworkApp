@@ -13,6 +13,7 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
+import Announcements from 'components/Announcements';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 // import Reports from './components/Reports';
@@ -205,6 +206,14 @@ export default (
           fallback
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.teams}
+        />
+
+        <ProtectedRoute
+          path="/announcements"
+          exact
+          component={Announcements}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}

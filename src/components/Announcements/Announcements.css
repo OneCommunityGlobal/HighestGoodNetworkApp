@@ -1,0 +1,101 @@
+/* EmailUpdateComponent.css */
+
+
+h2,
+h3 {
+  color: #4285f4;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button.send-button {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+button.send-button:hover {
+  background-color: #357ae8;
+}
+
+.ck-editor__editable {
+  min-height: 500px;
+}
+
+.email-update-container {
+  padding: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.editor {
+  flex: 1;
+  /* Editor takes up remaining space */
+  margin-right: 20px;
+  /* Add some spacing between editor and email inputs */
+}
+
+.editor h2 {
+  margin-top: 0;
+  /* Remove top margin for the heading */
+}
+
+.emails {
+  margin-top: 65px;
+  padding: 20px;
+  border: solid 1px #cacaca;
+  border-radius: 20px;
+  width: 300px;
+  /* Set a fixed width for the email inputs container */
+}
+
+.emails h3 {
+  margin-top: 0;
+  /* Remove top margin for the email input headings */
+}
+
+.email-content-preview-section {
+  margin: 2rem;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.email-content-preview {
+  padding: 20px;
+  margin-top: 20px;
+  position: relative;
+}
+
+.email-content-preview-title {
+  background: #fff;
+  color: #000;
+  padding: 0 10px;
+  font-size: 18px;
+}
+
+/* Responsive design: Adjusts the preview section on smaller screens. */
+@media (max-width: 768px) {
+  .email-content-preview {
+    margin-top: 10px;
+    /* Reduce margin top on smaller screens */
+  }
+}
