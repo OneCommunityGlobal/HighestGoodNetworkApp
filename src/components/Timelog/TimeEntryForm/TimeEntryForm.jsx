@@ -119,7 +119,8 @@ const TimeEntryForm = props => {
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const canEditTimeEntry = props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry') || props.hasPermission('editTimelogDate');
+  const canEditTimeEntry = props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
+  const canEditTimelogDate = props.hasPermission('editTimelogDate');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   // const 
 
@@ -198,7 +199,7 @@ const TimeEntryForm = props => {
     const today = moment().tz('America/Los_Angeles');
     const isDateValid = date.isValid();
     // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-    const isUserAuthorized = (canEditTimeEntry && canPutUserProfileImportantInfo) || !edit || today.diff(date, 'days') === 0
+    const isUserAuthorized = (canEditTimeEntry && canPutUserProfileImportantInfo) || !edit || today.diff(date, 'days') === 0 || canEditTimelogDate;
     
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required'; 
     if (!isDateValid) errorObj.dateOfWork = 'Invalid date'; 
@@ -381,7 +382,6 @@ const TimeEntryForm = props => {
   const handleSubmit = async event => {
     event.preventDefault();
     setSubmitting(true);
-
     if (edit && isEqual(formValues, initialFormValues)) {
       toast.info(`Nothing is changed for this time entry`);
       setSubmitting(false);
@@ -612,7 +612,7 @@ const TimeEntryForm = props => {
                   id="dateOfWork"
                   value={formValues.dateOfWork}
                   onChange={handleInputChange}
-                  disabled={from === 'Timer' || !canEditTimeEntry}
+                  disabled={from === 'Timer' || !(canEditTimeEntry || canEditTimelogDate)}
                 />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
