@@ -1,4 +1,15 @@
-.tab-pane {
-  max-height: 400px;
-  overflow-y: auto;
+.grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  grid-template-areas: "content shrink";
+  grid-gap: 20px;
+}
+.tasksandtimelogs {
+  margin-top: -200px;
+  grid-area: content;
+}
+.leaderboard {
+  grid-area: shrink;
+  min-width: 0;
 }

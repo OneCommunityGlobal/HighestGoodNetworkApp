@@ -9,6 +9,7 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
+import './Dashboard.css';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -64,11 +65,8 @@ export function Dashboard(props) {
           </div>
         </Col>
       </Row>
-      <Row>
-        <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard displayUserId={displayUserId} />
-        </Col>
-        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
+      <div className="grid">
+        <div className="tasksandtimelogs">
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -84,8 +82,11 @@ export function Dashboard(props) {
             <Timelog isDashboard passSummaryBarData={setSummaryBarData} match={match} />
           </div>
           <Badge userId={displayUserId} role={authUser.role} />
-        </Col>
-      </Row>
+        </div>
+        <div className="leaderboard-sm-12">
+          <Leaderboard displayUserId={displayUserId} />
+        </div>
+      </div>
     </Container>
   );
 }
