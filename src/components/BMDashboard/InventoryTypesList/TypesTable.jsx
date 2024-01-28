@@ -3,10 +3,19 @@ import { connect } from 'react-redux';
 import TypeRow from './TypeRow';
 
 export function TypesTable(props) {
-  const { itemTypes } = props;
+  const { itemTypes, category } = props;
 
-  const handleAdd = () => {
-    // TODO:
+  const getReferenceLink = () => {
+    // NOTE: ideally href should just be /bmdashboard/${category}/add
+    switch (category) {
+      case 'Equipments':
+        return '/bmdashboard/equipment/add';
+      case 'Materials':
+        return '/bmdashboard/Materials/add';
+      default:
+        // other categories not implemented yet
+        return '#';
+    }
   };
 
   return (
@@ -27,7 +36,7 @@ export function TypesTable(props) {
           ))}
         </tbody>
       </Table>
-      <Button size="sm" className="btn-types" onClick={handleAdd}>
+      <Button size="sm" className="btn-types" target="_blank" href={getReferenceLink()}>
         Add
       </Button>
     </div>
