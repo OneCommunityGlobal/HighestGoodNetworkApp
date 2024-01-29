@@ -42,7 +42,7 @@
   justify-content: space-between;
   font-size: small;
   padding: 0.3rem 0.625rem !important;
-  border-top: unset !important;
+  border-top: 1px solid #e8f4f9 !important; 
 }
 .card-footer:last-child {
   border-radius: 0 !important;
@@ -75,7 +75,7 @@
 }
 
 .nav {
-  display: unset !important;
+  display: flex;
   color: white;
   height: 50px;
   flex-direction: column;
