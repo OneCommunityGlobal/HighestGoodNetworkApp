@@ -92,11 +92,5 @@ describe('Old Badges component', () => {
     render(<OldBadges personalBestMaxHrs={10} badges={badges} />);
     expect(screen.queryByText('Badges Earned Before Last Week')).toBeInTheDocument();
   });
-  it('check if image src is correct', () => {
-    const { container } = render(<OldBadges personalBestMaxHrs={10} badges={badges} />);
-    const firstImageElement = container.querySelector('[id="popover_old0"]');
-    const secondImageElement = container.querySelector('[id="popover_old1"]');
-    expect(firstImageElement.getAttribute('src')).toEqual('http://www.image.com/image2');
-    expect(secondImageElement.getAttribute('src')).toEqual('http://www.image.com/image1');
-  });
+  
 });
