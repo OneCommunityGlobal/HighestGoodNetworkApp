@@ -36,6 +36,7 @@ import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import { timeOffRequestsReducer } from "./timeOffRequestReducer"
 
 const localReducers = {
   auth: authReducer,
@@ -65,6 +66,7 @@ const localReducers = {
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
+  timeOffRequests: timeOffRequestsReducer,
   bmTools: toolReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer

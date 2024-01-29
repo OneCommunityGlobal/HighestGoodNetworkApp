@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Table, Progress } from 'reactstrap';
+import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
@@ -13,6 +13,7 @@ import ReviewButton from './ReviewButton';
 import { useDispatch, useSelector } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import moment from 'moment-timezone';
+import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -26,10 +27,14 @@ const TeamMemberTask = React.memo(
     userRole,
     userId,
     updateTaskStatus,
-    userPermission
+    userPermission,
+    showWhoHasTimeOff,
+    onTimeOff,
+    goingOnTimeOff,
   }) => {
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+    const dispatch = useDispatch()
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
@@ -47,6 +52,7 @@ const TeamMemberTask = React.memo(
     
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
+    const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
 
     const thisWeekHours = user.totaltangibletime_hrs;
 
@@ -57,7 +63,6 @@ const TeamMemberTask = React.memo(
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     //^^^
 
-    const dispatch = useDispatch();
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
@@ -70,6 +75,10 @@ const TeamMemberTask = React.memo(
       } else {
         setIsTruncated(!isTruncated);
       }
+    };
+
+    const openDetailModal = request => {
+      dispatch(showTimeOffRequestModal(request));
     };
 
     return (
@@ -244,6 +253,30 @@ const TeamMemberTask = React.memo(
               </tbody>
             </Table>
           </td>
+          {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
+            <td className="taking-time-off-table-column">
+              <div className="taking-time-off-content-div">
+                <p className="taking-time-off-content-text">
+                  {onTimeOff
+                    ? `${user.name} Is Not Available this Week`
+                    : `${user.name} Is Not Available Next Week`}
+                </p>
+                <button
+                  type="button"
+                  className="taking-time-off-content-btn"
+                  onClick={() => {
+                    const request = onTimeOff
+                      ? { ...onTimeOff, onVacation: true, name: user.name }
+                      : { ...goingOnTimeOff, onVacation: false, name: user.name };
+
+                    openDetailModal(request);
+                  }}
+                >
+                  Details ?
+                </button>
+              </div>
+            </td>
+          )}
         </tr>
       </>
     );
