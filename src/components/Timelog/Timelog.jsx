@@ -530,7 +530,7 @@ const Timelog = props => {
                           </div>
                         </div>
                       ) : (
-                        (canPutUserProfileImportantInfo || canAddTimeEntry) && (
+                        canAddTimeEntry && (
                           <div className="float-right">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>

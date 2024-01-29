@@ -119,7 +119,8 @@ const TimeEntryForm = props => {
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const canEditTimeEntry = props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry') || props.hasPermission('postTimeEntry');
+  const canEditTimeEntry = props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
+  const canAddTimeEntry = props.hasPermission('postTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   // const 
 
@@ -198,8 +199,8 @@ const TimeEntryForm = props => {
     const today = moment().tz('America/Los_Angeles');
     const isDateValid = date.isValid();
     // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-    const isUserAuthorized = (canEditTimeEntry && canPutUserProfileImportantInfo) || !edit || today.diff(date, 'days') === 0
-    
+    const isUserAuthorized = (canEditTimeEntry && canPutUserProfileImportantInfo) || !edit || today.diff(date, 'days') === 0 || canAddTimeEntry;
+    console.log({canAddTimeEntry});
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required'; 
     if (!isDateValid) errorObj.dateOfWork = 'Invalid date'; 
     if (!isUserAuthorized) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
@@ -606,14 +607,14 @@ const TimeEntryForm = props => {
           <Form>
             <FormGroup>
               <Label for="dateOfWork">Date</Label>
-                <Input
-                  type="date"
-                  name="dateOfWork"
-                  id="dateOfWork"
-                  value={formValues.dateOfWork}
-                  onChange={handleInputChange}
-                  disabled={from === 'Timer' || !canEditTimeEntry}
-                />
+              <Input
+                type="date"
+                name="dateOfWork"
+                id="dateOfWork"
+                value={formValues.dateOfWork}
+                onChange={handleInputChange}
+                disabled={from === 'Timer' || !(canEditTimeEntry || canAddTimeEntry)}
+              />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
                   <small>{errors.dateOfWork}</small>
@@ -633,7 +634,7 @@ const TimeEntryForm = props => {
                     placeholder="Hours"
                     value={formValues.hours}
                     onChange={handleInputChange}
-                    disabled={from === 'Timer' || !canEditTimeEntry}
+                    disabled={from === 'Timer' || !(canEditTimeEntry || canAddTimeEntry)}
                   />
                 </Col>
                 <Col>
@@ -646,7 +647,7 @@ const TimeEntryForm = props => {
                     placeholder="Minutes"
                     value={formValues.minutes}
                     onChange={handleInputChange}
-                    disabled={from === 'Timer' || !canEditTimeEntry}
+                    disabled={from === 'Timer' || !(canEditTimeEntry || canAddTimeEntry)}
                   />
                 </Col>
               </Row>
@@ -662,7 +663,7 @@ const TimeEntryForm = props => {
                 type="select"
                 name="projectOrTask"
                 id="projectOrTask"
-                value={projectOrTaskId || "title"}
+                value={projectOrTaskId || 'title'}
                 onChange={handleProjectOrTaskChange}
               >
                 {projectsAndTasksOptions}
@@ -711,7 +712,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!canEditTimeEntry}
+                  disabled={!(canEditTimeEntry || canAddTimeEntry)}
                 />
                 Tangible&nbsp;
                 <i
@@ -735,11 +736,7 @@ const TimeEntryForm = props => {
             Clear Form
           </Button>
           <Button color="primary" onClick={handleSubmit} style={boxStyle} disabled={submitting}>
-            {
-              edit 
-                ? (submitting ? 'Saving...' : 'Save')
-                : (submitting ? 'Submitting...' : 'Submit')
-            }
+            {edit ? (submitting ? 'Saving...' : 'Save') : submitting ? 'Submitting...' : 'Submit'}
           </Button>
         </ModalFooter>
       </Modal>
