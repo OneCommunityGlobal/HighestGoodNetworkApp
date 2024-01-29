@@ -34,9 +34,7 @@ const TimeEntry = (props) => {
   const { from, data, displayYear, timeEntryUserProfile, displayUserProjects, displayUserTasks, tab } = props
   // props from store
   const { authUser } = props;
-
   const { _id: timeEntryUserId } = timeEntryUserProfile;
-
   const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
   const dispatch = useDispatch();
 
@@ -73,11 +71,7 @@ const TimeEntry = (props) => {
   //default permission: auth use can edit own sameday timelog entry, but not tangibility
   const isAuthUserAndSameDayEntry = isAuthUser && isSameDay;
 
-  //permission to edit any time log entry (from other user's Dashboard
-    // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-  const canEdit = dispatch(hasPermission('editTimelogInfo')) 
-    //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission('editTimeEntry')) 
+
 
   //permission to Delete time entry from other user's Dashboard
   const canDelete = dispatch(hasPermission('deleteTimeEntryOthers')) ||
@@ -85,18 +79,17 @@ const TimeEntry = (props) => {
     dispatch(hasPermission('deleteTimeEntry')) ||
     //default permission: delete own sameday tangible entry
     (!isTangible && isAuthUser && isSameDay);
-
+  const canEditTimeEntryToggleTangible = dispatch(hasPermission('editTimeEntryToggleTangible')); 
+  
   const canEdit =
     //permission to edit any time log entry (from other user's Dashboard
     dispatch(hasPermission('editTimelogInfo')) ||
     //permission to edit any time entry on their own time logs tab
     dispatch(hasPermission('editTimeEntry')) ||
-    //permission to toggle tangible
-    dispatch(hasPermission('editTimeEntryToggleTangible')) ||
     //default permission: edit own sameday timelog entry
     (isAuthUser && isSameDay) ||
     // Administrator/Owner can add time entries for any dates.
-    (role === 'Owner' || role === 'Administrator');
+    (authUser.role === 'Owner' || authUser.role === 'Administrator');
 
     isAuthUserAndSameDayEntry;
 
@@ -177,7 +170,7 @@ const TimeEntry = (props) => {
             </p>
             <div className='mb-3'>
             {
-              canEdit 
+              (canEdit || canEditTimeEntryToggleTangible)
                 ? ( 
                     <>
                       <span className="text-muted">Tangible:&nbsp;</span>
@@ -185,7 +178,7 @@ const TimeEntry = (props) => {
                           type="checkbox"
                           name="isTangible"
                           checked={isTangible}
-                          disabled={!canEdit}
+                          disabled={!(canEdit || canEditTimeEntryToggleTangible)}
                           onChange={toggleTangibility}
                       />
                     </>
