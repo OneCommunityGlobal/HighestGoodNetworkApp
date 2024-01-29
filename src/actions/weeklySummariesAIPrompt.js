@@ -3,6 +3,7 @@ import axios from 'axios';
 import {
   getAIPrompt as getAIPrompt,
   updateAIPrompt as updateAIPrompt,
+  updateCopiedPrompt as updateCopiedPrompt
 } from '../constants/weeklySummariesAIPrompt';
 
 export const getDashboardDataAI = () => {
