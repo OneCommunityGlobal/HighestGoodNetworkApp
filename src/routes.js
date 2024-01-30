@@ -62,7 +62,7 @@ const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'
 const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
-const UpdateConsumablesBulk = lazy(() => import('./components/BMDashboard/Consumables/UpdateConsumables/UpdateConsumablesBulk'));
+const UpdateConsumablesBulk = lazy(() => import('./components/BMDashboard/Consumables/UpdateConsumables/UpdateConsumablesBulk/UpdateConsumablesBulk'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 // const EquipmentList = lazy(() => import('./components/BMDashboard/EquipmentList'))
 

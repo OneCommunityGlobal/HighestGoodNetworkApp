@@ -5,8 +5,6 @@ import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import { fetchAllMaterials, postMaterialUpdateBulk } from 'actions/bmdashboard/materialsActions';
-import UpdateMaterial from '../../UpdateMaterials/UpdateMaterial';
-
 //TODO: reference to ConsumablesView.jsx
 function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
@@ -118,7 +116,7 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
             </tr>
           ) : (
             materialsState?.map((material, idx) => (
-              <UpdateMaterial
+              <UpdateConsumable
                 key={material._id + material.stockAvailable}
                 cancel={cancel}
                 idx={idx}
