@@ -94,7 +94,8 @@ export const ENDPOINTS = {
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
 
-  COPIED_AI_PROMPT : () => `${APIEndpoint}/dashboard/aiPrompt/copied`, 
+  COPIED_AI_PROMPT : (userId) => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`, 
+  
 
   SETUP_NEW_USER: () =>
     `${APIEndpoint}/getInitialSetuptoken`,

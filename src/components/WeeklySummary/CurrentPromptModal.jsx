@@ -6,8 +6,9 @@ import ReactTooltip from 'react-tooltip';
 import { boxStyle } from 'styles';
 import {
   updateDashboardData,
-  updateCopiedPromtDate,
+  updateCopiedPromptDate,
   getDashboardDataAI,
+  getCopiedDateOfPrompt,
 } from '../../actions/weeklySummariesAIPrompt';
 import iconNew from '../../assets/images/New-HGN-Icon-11kb-200x160px.png';
 
@@ -17,9 +18,14 @@ function CurrentPromptModal(props) {
   const dispatch = useDispatch();
   const [prompt, setPrompt] = useState('');
   // const [promptModifiedDate, setPromptModifiedDate] = useState('');
+  const [updatedPromptDate, setUpdatedPromptDate] = useState('');
+  const [updatedCopiedDate, setUpdatedCopiedDate] = useState('');
+  const [isPromptUpdated, setIsPromptUpdated] = useState(false);
+  const [isPromptCopied, setIsPromptCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { userRole, userId, promptModifiedDate, copiedDate } = props;
+
+  const { userRole, userId } = props;
   const toggle = () => setModal(!modal);
 
   const fallbackPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.
@@ -48,14 +54,39 @@ function CurrentPromptModal(props) {
         });
     }
   }, [modal]);
+  // =================================================================
+  // This useEffect will fetch the modified date and time of AI prompt - Sucheta
+  useEffect(() => {
+    setIsPromptUpdated(false);
+    dispatch(getDashboardDataAI())
+      .then(response => {
+        if (response) {
+          setUpdatedPromptDate(response.modifiedDatetime);
+        }
+      })
+      .catch(() => {});
+  }, [isPromptUpdated]);
 
-  // console.log('props.userRole: ', props.userRole);
+  // This useEffect will fetch the copied prompt date and time from userProfile - Sucheta
+  useEffect(() => {
+    setIsPromptCopied(false);
+    dispatch(getCopiedDateOfPrompt(userId))
+      .then(response => {
+        if (response) {
+          setUpdatedCopiedDate(response);
+        }
+      })
+      .catch(() => {
+        toast.error('There was an error');
+      });
+  }, [isPromptCopied]);
+  // =================================================================
 
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(prompt);
-    // toast.success('Prompt Copied!');
-    dispatch(updateCopiedPromtDate(userId)).then(() => {
+  const handleCopyToClipboard = async () => {
+    await navigator.clipboard.writeText(prompt);
+    dispatch(updateCopiedPromptDate(userId)).then(() => {
       toast.success('Prompt Copied!');
+      setIsPromptCopied(true);
     });
   };
 
@@ -65,6 +96,7 @@ function CurrentPromptModal(props) {
       .then(() => {
         toast.success('Prompt Updated!');
         setIsEditing(false);
+        setIsPromptUpdated(true);
       })
       .catch(() => {
         // console.error('Error updating AI prompt:', error);
@@ -91,7 +123,7 @@ function CurrentPromptModal(props) {
 
   return (
     <div>
-      {new Date(`${promptModifiedDate}`) > new Date(`${copiedDate}`) ? (
+      {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
         <Button color="info" onClick={toggle} style={boxStyle}>
           View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} /> AI
           Prompt
