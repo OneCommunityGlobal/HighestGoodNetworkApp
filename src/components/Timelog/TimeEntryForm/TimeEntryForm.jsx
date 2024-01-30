@@ -613,7 +613,7 @@ const TimeEntryForm = props => {
                     placeholder="Hours"
                     value={formValues.hours}
                     onChange={handleInputChange}
-                    disabled={fromTimer}
+                    disabled={!canEditTimeEntry || fromTimer}
                   />
                 </Col>
                 <Col>
@@ -626,7 +626,7 @@ const TimeEntryForm = props => {
                     placeholder="Minutes"
                     value={formValues.minutes}
                     onChange={handleInputChange}
-                    disabled={fromTimer}
+                    disabled={!canEditTimeEntry || fromTimer}
                   />
                 </Col>
               </Row>
@@ -642,8 +642,9 @@ const TimeEntryForm = props => {
                 type="select"
                 name="projectOrTask"
                 id="projectOrTask"
-                value={projectOrTaskId || "title"}
+                value={projectOrTaskId || 'title'}
                 onChange={handleProjectOrTaskChange}
+                disabled={!canEditTimeEntry}
               >
                 {projectsAndTasksOptions}
               </Input>
@@ -656,6 +657,7 @@ const TimeEntryForm = props => {
             <FormGroup>
               <Label for="notes">Notes</Label>
               <Editor
+                disabled={!(canEditTimeEntry || canEditTimeEntryDescription) }
                 init={{
                   menubar: false,
                   placeholder: 'Description (10-word minimum) and reference link',
@@ -691,7 +693,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!canEditTimeEntry && !initialIsTangible}
+                  disabled={(!canEditTimeEntry && !initialIsTangible || canEditTimeEntryDescription)}
                 />
                 Tangible&nbsp;
                 <i
@@ -715,11 +717,7 @@ const TimeEntryForm = props => {
             Clear Form
           </Button>
           <Button color="primary" onClick={handleSubmit} style={boxStyle} disabled={submitting}>
-            {
-              edit 
-                ? (submitting ? 'Saving...' : 'Save')
-                : (submitting ? 'Submitting...' : 'Submit')
-            }
+            {edit ? (submitting ? 'Saving...' : 'Save') : submitting ? 'Submitting...' : 'Submit'}
           </Button>
         </ModalFooter>
       </Modal>
