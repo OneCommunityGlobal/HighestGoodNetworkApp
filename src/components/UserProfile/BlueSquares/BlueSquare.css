@@ -68,18 +68,24 @@
   background-color: #0061a7;
 }
 
-
 @media (max-width: 1420px) {
-  
- #wrapper .report { 
-    left: 60px;
-    top: -280px; 
-    z-index: 1;
-    overflow: visible;
-  }
-  .summary {
-    min-height: 300px;
+
+  #wrapper .report { 
+     left: 60px;
+     /* left: 25%; */
+     top: -280px; 
+     z-index: 1;
+     overflow: visible;
+   }
+   .summary {
+     min-height: 300px;
+   }
+ }
+
+
+@media screen and (max-width: 450px) and (max-height: 850px) {
+  #wrapper .report {
+    position: fixed;
+      top:10%;
   }
 }
-
-
