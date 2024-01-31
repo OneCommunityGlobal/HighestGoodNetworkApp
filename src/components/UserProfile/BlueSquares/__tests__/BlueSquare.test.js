@@ -6,6 +6,7 @@ import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import hasPermission from 'utils/permissions';
 
 const handleBlueSquare = jest.fn();
 
@@ -139,7 +140,7 @@ describe('BlueSquare component', () => {
     );
     expect(screen.queryByText('+')).toBeInTheDocument();
   });
-  it('check handleBlueSquare is called when user clicks on the button', () => {
+  it('check if handleBlueSquare is called when user clicks on the button', () => {
     const store = mockStore({
       auth: {
         user: {
@@ -169,5 +170,78 @@ describe('BlueSquare component', () => {
     const blueSquareButtonElement = container.querySelector('.blueSquareButton');
     fireEvent.click(blueSquareButtonElement);
     expect(handleBlueSquare).toHaveBeenCalled();
+  });
+  it('check if handleBlueSquare is not called when user does not click on the button', () => {
+    const store = mockStore({
+      auth: {
+        user: {
+          permissions: {
+            frontPermissions: [],
+            backPermissions: [],
+          },
+          role: 'Volunteer',
+        },
+      },
+      userProfile: {
+        infringements: [
+          { _id: '1', date: '2023-12-03', description: 'some reason' },
+          { _id: '2', date: '2023-12-10', description: 'test reason' },
+        ],
+      },
+      role: mockAdminState.role,
+    });
+    render(
+      <Provider store={store}>
+        <BlueSquare
+          blueSquares={store.getState().userProfile?.infringements}
+          handleBlueSquare={handleBlueSquare}
+        />
+      </Provider>,
+    );
+    expect(handleBlueSquare).not.toHaveBeenCalled();
+  });
+  it('check hasPermission function returns false if permission is not present', () => {
+    const store = mockStore({
+      auth: {
+        user: {
+          permissions: {
+            frontPermissions: [],
+            backPermissions: [],
+          },
+          role: 'Volunteer',
+        },
+      },
+      userProfile: {
+        infringements: [
+          { _id: '1', date: '2023-12-03', description: 'some reason' },
+          { _id: '2', date: '2023-12-10', description: 'test reason' },
+        ],
+      },
+      role: mockAdminState.role,
+    });
+    const permissionValue = store.dispatch(hasPermission('infringementAuthorizer'));
+    expect(permissionValue).toBe(false);
+  });
+  it('check hasPermission function returns true if permission is present', () => {
+    const store = mockStore({
+      auth: {
+        user: {
+          permissions: {
+            frontPermissions: ['infringementAuthorizer'],
+            backPermissions: [],
+          },
+          role: 'Volunteer',
+        },
+      },
+      userProfile: {
+        infringements: [
+          { _id: '1', date: '2023-12-03', description: 'some reason' },
+          { _id: '2', date: '2023-12-10', description: 'test reason' },
+        ],
+      },
+      role: mockAdminState.role,
+    });
+    const permissionValue = store.dispatch(hasPermission('infringementAuthorizer'));
+    expect(permissionValue).toBe(true);
   });
 });
