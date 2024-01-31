@@ -72,7 +72,6 @@
 
   #wrapper .report { 
      left: 60px;
-     /* left: 25%; */
      top: -280px; 
      z-index: 1;
      overflow: visible;
@@ -82,10 +81,19 @@
    }
  }
 
+ @media (max-width: 768px) {
+  #wrapper .report { 
+    position: fixed;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%, -50%);
+  }
+ }
 
-@media screen and (max-width: 450px) and (max-height: 850px) {
+
+@media (max-height: 850px) {
   #wrapper .report {
     position: fixed;
-      top:10%;
+      top:35%;
   }
 }
