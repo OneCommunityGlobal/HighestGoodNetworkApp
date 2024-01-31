@@ -46,3 +46,12 @@
   grid-template-columns: 1fr 1fr !important;
   grid-gap: 1em !important;
 }
+
+.button__container {
+  display: flex;
+  margin-top: 0.1em;
+}
+
+.tracking__btn {
+  margin-right: 0.3em;
+}

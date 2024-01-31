@@ -4,6 +4,7 @@ import {
   getWarningByUserId,
   postWarningsByUserId,
   deleteWarningByUserId,
+  getCurrentWarnings,
 } from '../constants/warning';
 
 export const getWarningsByUserId = userId => {
@@ -24,6 +25,27 @@ export const getWarningsByUserId = userId => {
   };
 };
 
+//trace to see if its being caleld on the backend
+// gets called but isnt targetting the backend or calling
+// as no log is being displayed
+export const getAllCurrentWarnings = () => {
+  const url = ENDPOINTS.GET_CURRENT_WARNINGS();
+  console.log('dispatch called', url);
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+      console.log('res', res);
+      const response = await dispatch(getCurrentWarnings(res.data));
+      return response.payload.warnings;
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        return { error: error.response.data.message };
+      } else {
+        return { error: error.message };
+      }
+    }
+  };
+};
 export const postWarningByUserId = warningData => {
   const { userId } = warningData;
 
