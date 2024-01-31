@@ -48,6 +48,10 @@ function LeaderBoard({
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
+  const isAdministrator = ['Administrator'].includes(loggedInUser.role);
+  const isManager = ['Manager'].includes(loggedInUser.role);
+  const isMentor = ['Mentor'].includes(loggedInUser.role);
+  const isCoreTeam = ['Core Team'].includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
@@ -292,6 +296,12 @@ function LeaderBoard({
                     title="View Profile"
                     style={{
                       color:
+                        (isAdministrator ||
+                          isManager ||
+                          isMentor ||
+                          isCoreTeam ||
+                          isOwner ||
+                          item.personId == loggedInUser.userId) &&
                         currentDate.isSameOrAfter(
                           moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                         ) &&
