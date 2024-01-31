@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
