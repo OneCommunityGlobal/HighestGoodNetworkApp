@@ -63,7 +63,7 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
     const tempPostMaterialUpdateData = Object.values(updatedRecordsList).filter(
       d => d.newAvailable !== '',
     ); // In case , user enters and removes data
-    dispatch(postMaterialUpdateBulk({ upadateMaterials: tempPostMaterialUpdateData, date }));
+    dispatch(postMaterialUpdateBulk({ updateMaterials: tempPostMaterialUpdateData, date }));
   };
 
   const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
