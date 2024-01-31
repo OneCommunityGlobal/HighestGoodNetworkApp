@@ -90,8 +90,14 @@
   }
  }
 
+ @media (max-height: 850px) {
+  #wrapper .report {
+    position: fixed;
+      top:5%;
+  }
+}
 
-@media (max-height: 850px) {
+@media (max-width: 768px) and (max-height: 850px) {
   #wrapper .report {
     position: fixed;
       top:35%;
