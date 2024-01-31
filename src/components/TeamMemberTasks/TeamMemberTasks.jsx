@@ -120,6 +120,11 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const getTimeEntriesForPeriod = async (selectedPeriod) => {
+    const oneDayAgo = moment()
+      .tz('America/Los_Angeles')
+      .subtract(1, 'days')
+      .format('YYYY-MM-DD');
+
     const twoDaysAgo = moment()
       .tz('America/Los_Angeles')
       .subtract(2, 'days')
@@ -136,6 +141,10 @@ const TeamMemberTasks = React.memo(props => {
       .format('YYYY-MM-DD');
 
     switch (selectedPeriod) {
+      case '1':
+        const oneDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(oneDayAgo));
+        setTimeEntriesList(oneDaysList);
+        break;
       case '2':
         const twoDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
         setTimeEntriesList(twoDaysList);
@@ -272,7 +281,7 @@ const TeamMemberTasks = React.memo(props => {
             ))}
             <EditableInfoModal
               areaName="TeamMemberTasksTimeFilterInfoPoint"
-              areaTitle="TeamMemberTask Time Filter"
+              areaTitle="Team Member Task Time Filter"
               fontSize={22}
               isPermissionPage={true}
               role={authUser.role} 
