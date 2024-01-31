@@ -469,7 +469,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
 
 function Bio({ bioCanEdit, canRequestBio, ...props }) {
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return bioCanEdit || canRequestBio ? <BioSwitch {...props} /> : <BioLabel {...props} />;
+  return canRequestBio ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
 function BioSwitch({ userId, bioPosted, summary }) {
