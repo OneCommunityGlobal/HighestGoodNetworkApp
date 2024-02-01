@@ -35,12 +35,13 @@ const SetupNewUserPopup = React.memo(props => {
               message: 'The setup link has been successfully sent',
               state: 'success',
             });
-            console.log(res.data)
-            // props.shouldRefreshInvitationHistory();
+            // console.log(res.data)
+            setTimeout(()=>{
+              props.handleShouldRefreshInvitationHistory();
+            }, 800)
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
-          // props.handleShouldRefreshInvitationHistory();
         })
         .catch(err => {
           if (err.response.data === 'email already in use') {
