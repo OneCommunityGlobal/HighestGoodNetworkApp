@@ -77,7 +77,7 @@ describe('BlueSquare component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('Dec-03-23')).toBeInTheDocument();
+    expect(screen.queryByText('Dec-02-23')).toBeInTheDocument();
     expect(screen.queryByText('Dec-09-23')).toBeInTheDocument();
     expect(screen.queryByText('some reason')).toBeInTheDocument();
     expect(screen.queryByText('test reason')).toBeInTheDocument();
