@@ -32,6 +32,8 @@ export default function AddToolForm() {
   const [selectedCategory, setSelectedCategory] = useState(formData.category);
   const [selectedName, setSelectedName] = useState(formData.name);
   const [isPurchased, setIsPurchased] = useState(true);
+  const [areaCode, setAreaCode] = useState('1');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
 
   const handleInputChange = (name, value) => {
@@ -64,13 +66,13 @@ export default function AddToolForm() {
     handleInputChange('purchaseRental', selectedOption);
   };
 
-  const handlePhoneNumberChange = ({ areaCode, phoneNumber }) => {
-    setFormData(prevData => ({
-      ...prevData,
-      areaCode,
-      phoneNumber,
-    }));
-  };
+  // const handlePhoneNumberChange = ({ areaCode, phoneNumber }) => {
+  //   setFormData(prevData => ({
+  //     ...prevData,
+  //     areaCode,
+  //     phoneNumber,
+  //   }));
+  // };
 
   const { unitPrice, quantity, taxes, shippingFee } = formData;
 
@@ -83,11 +85,11 @@ export default function AddToolForm() {
 
   const handleSubmit = event => {
     event.preventDefault();
-    const updatedFormData = {
-      ...formData,
-      images: uploadedFiles,
-    };
-    console.log('Data', updatedFormData);
+    // const updatedFormData = {
+    //   ...formData,
+    //   images: uploadedFiles,
+    // };
+    // console.log('Data', updatedFormData);
     // TODO: validate form data
     // TODO: submit data to API
   };
@@ -95,6 +97,8 @@ export default function AddToolForm() {
   const handleCancelClick = () => {
     setFormData(initialFormState);
     setUploadedFiles([]);
+    setAreaCode(1);
+    setPhoneNumber('');
   };
 
   const handleRemoveFile = index => {
@@ -277,7 +281,14 @@ export default function AddToolForm() {
         </FormGroup>
       </div>
 
-      <PhoneInput onPhoneNumberChange={handlePhoneNumberChange} />
+      {/* <PhoneInput onPhoneNumberChange={handlePhoneNumberChange} /> */}
+
+      <PhoneInput
+        areaCode={areaCode}
+        setAreaCode={setAreaCode}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
+      />
 
       <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
@@ -291,7 +302,7 @@ export default function AddToolForm() {
         {uploadedFiles.length > 0 && (
           <div className="file-preview-container">
             {uploadedFiles.map((file, index) => (
-              <div key={index} className="file-preview">
+              <div key={`${file.name} - ${file.lastModified}`} className="file-preview">
                 <img src={URL.createObjectURL(file)} alt={`preview-${index}`} />
                 <Button color="danger" onClick={() => handleRemoveFile(index)}>
                   X
