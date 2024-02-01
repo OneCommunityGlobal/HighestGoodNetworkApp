@@ -37,16 +37,18 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects }) => {
   const projectsWithLoggedHoursLegend = {};
   const tasksWithLoggedHours = userTask?.filter(({ hoursLogged }) => hoursLogged);
 
-  tasksWithLoggedHours.forEach(({ _id: taskId, hoursLogged, taskName }) => {
-    tasksWithLoggedHoursById[taskId] = hoursLogged;
-    tasksLegend[taskId] = [taskName, getRounded(hoursLogged)];
+  tasksWithLoggedHours
+    .sort((a,b)=>b.hoursLogged - a.hoursLogged)
+    .forEach(({ _id: taskId, hoursLogged, taskName }) => {
+      tasksWithLoggedHoursById[taskId] = hoursLogged;
+      tasksLegend[taskId] = [taskName, getRounded(hoursLogged)];
 
-    const currentTask = userTask?.find(task => task._id === taskId); 
-    if (currentTask) {
-      const currentProjectName = allProjects?.projects?.find(
-        ({ _id }) => _id === currentTask.projectId,
-      )?.projectName;
-      const savedProjectWithLoggedHours = projectsWithLoggedHoursById[currentTask.projectId];
+      const currentTask = userTask?.find(task => task._id === taskId); 
+      if (currentTask) {
+        const currentProjectName = allProjects?.projects?.find(
+          ({ _id }) => _id === currentTask.projectId,
+        )?.projectName;
+        const savedProjectWithLoggedHours = projectsWithLoggedHoursById[currentTask.projectId];
 
       projectsWithLoggedHoursById[currentTask.projectId] = savedProjectWithLoggedHours
         ? savedProjectWithLoggedHours + hoursLogged
@@ -64,9 +66,6 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects }) => {
   });
 
   const displayedTasksCount = Math.max(4, Object.keys(projectsWithLoggedHoursById).length);
-
-  tasksWithLoggedHours
-    .sort((a, b) => new Date(b.modifiedDatetime) - new Date(a.modifiedDatetime))
 
     //create minimized chart
     tasksWithLoggedHours
