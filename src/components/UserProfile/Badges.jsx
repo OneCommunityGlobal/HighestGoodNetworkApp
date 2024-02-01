@@ -23,7 +23,7 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 export const Badges = props => {
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
-  const canAssignBadges = props.hasPermission('assignBadges');
+  const canAssignBadges = props.hasPermission('assignBadges') || props.hasPermission('assignBadgeOthers');
 
   // Added restriction: Jae's badges only editable by Jae or Owner
   const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
