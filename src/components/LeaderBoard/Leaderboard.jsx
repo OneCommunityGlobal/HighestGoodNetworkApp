@@ -311,7 +311,13 @@ function LeaderBoard({
                     }}
                   >
                     {item.name}
-                    {currentDate.isSameOrAfter(
+                    {(isAdministrator ||
+                      isManager ||
+                      isMentor ||
+                      isCoreTeam ||
+                      isOwner ||
+                      item.personId == loggedInUser.userId) &&
+                    currentDate.isSameOrAfter(
                       moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                     ) &&
                     currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
