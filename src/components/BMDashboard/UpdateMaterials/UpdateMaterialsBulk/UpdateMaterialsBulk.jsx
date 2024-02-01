@@ -9,6 +9,7 @@ function UpdateMaterialsBulk() {
   const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [project, setProject] = useState('All Projects');
   return (
+
     <Container fluid className="logMaterialContainer">
       <div className="logMaterialPage">
         <div className="logMaterial">

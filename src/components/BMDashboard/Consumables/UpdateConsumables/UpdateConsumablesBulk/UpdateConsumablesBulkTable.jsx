@@ -4,13 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import { fetchAllMaterials, postMaterialUpdateBulk } from 'actions/bmdashboard/materialsActions';
-//TODO: reference to ConsumablesView.jsx
+import { fetchAllConsumables, postConsumableUpdateBulk } from 'actions/bmdashboard/consumableActions';
+import UpdateConsumable from "../UpdateConsumable"
+
+
 function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials.materialslist);
-  const [materialsState, setMaterialsState] = useState([...materials]);
-  const postMaterialUpdateBulkResult = useSelector(state => state.materials.updateMaterialsBulk);
+  const consumables = useSelector(state => state.bmConsumables.consumableslist);
+  const [consumablesState, setConsumablesState] = useState([...consumables]);
+  const postConsumableUpdateBulkResult = useSelector(state => state.bmConsumables.updateConsumablesBulk);
   const [cancel, setCancel] = useState(1);
   const [updatedRecordsList] = useState({});
   const [validationsList] = useState({});
@@ -18,10 +20,10 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
   const today = moment(new Date()).format('YYYY-MM-DD');
 
   useEffect(() => {
-    setMaterialsState([...materials]);
+    setConsumablesState([...consumables]);
     setProject({ label: 'All Projects', value: '0' });
     setDate(today);
-  }, [materials]);
+  }, [consumables]);
 
   const cancelHandler = () => {
     setCancel(prev => (prev === 1 ? 2 : 1));
@@ -29,40 +31,41 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
 
   // call fetch on load and update(after result)
   useEffect(() => {
-    dispatch(fetchAllMaterials());
-  }, [postMaterialUpdateBulkResult.result]);
+    dispatch(fetchAllConsumables());
+  }, [postConsumableUpdateBulkResult.result]);
 
   useEffect(() => {
     if (project.value !== '0') {
-      const _materials = materials.filter(mat => mat.project?.name === project.label);
-      setMaterialsState(_materials);
+      const _consumables = consumables.filter(el => el.project?.name === project.label);
+      setConsumablesState(_consumables);
     } else {
-      setMaterialsState([...materials]);
+      setConsumablesState([...consumables]);
     }
   }, [project]);
 
   useEffect(() => {
     // Reset must be called if the result is being displayed due to caching of redux store
     if (
-      postMaterialUpdateBulkResult.loading === false &&
-      postMaterialUpdateBulkResult.error === true
+      postConsumableUpdateBulkResult.loading === false &&
+      postConsumableUpdateBulkResult.error === true
     ) {
-      toast.error(`${postMaterialUpdateBulkResult.result}`);
+      toast.error(`${postConsumableUpdateBulkResult.result}`);
     } else if (
-      postMaterialUpdateBulkResult.loading === false &&
-      postMaterialUpdateBulkResult.result !== null
+      postConsumableUpdateBulkResult.loading === false &&
+      postConsumableUpdateBulkResult.result !== null
     ) {
-      toast.success(postMaterialUpdateBulkResult.result);
+      toast.success(postConsumableUpdateBulkResult.result);
     }
-  }, [postMaterialUpdateBulkResult]);
+  }, [postConsumableUpdateBulkResult]);
 
   const submitHandler = e => {
     e.preventDefault();
+
     if (bulkValidationError) return;
-    const tempPostMaterialUpdateData = Object.values(updatedRecordsList).filter(
+    const tempPostConsumableUpdateData = Object.values(updatedRecordsList).filter(
       d => d.newAvailable !== '',
     ); // In case , user enters and removes data
-    dispatch(postMaterialUpdateBulk({ upadateMaterials: tempPostMaterialUpdateData, date }));
+    dispatch(postConsumableUpdateBulk({ updateConsumables: tempPostConsumableUpdateData, date }));
   };
 
   const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
@@ -107,24 +110,26 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
           </tr>
         </thead>
         <tbody>
-          {materialsState.length === 0 ? (
-            <tr align="center">
-              <td colSpan={6}>
-                {' '}
-                <i>Please select a project that has valid material data!</i>
-              </td>
-            </tr>
+          {consumablesState && Array.isArray(consumablesState) && consumablesState.length > 0 ? (
+            consumablesState.map((consumable, idx) => {
+              if (consumable && consumable.itemType && consumable._id) {
+                return (
+                  <UpdateConsumable
+                    key={consumable._id + (consumable.stockAvailable || '')}
+                    cancel={cancel}
+                    idx={idx}
+                    bulk
+                    record={consumable}
+                    sendUpdatedRecord={sendUpdatedRecordHandler}
+                  />
+                );
+              }
+              return null;
+            })
           ) : (
-            materialsState?.map((material, idx) => (
-              <UpdateConsumable
-                key={material._id + material.stockAvailable}
-                cancel={cancel}
-                idx={idx}
-                bulk
-                record={material}
-                sendUpdatedRecord={sendUpdatedRecordHandler}
-              />
-            ))
+            <tr align="center">
+              <td colSpan="6">No data available or invalid project selection</td>
+            </tr>
           )}
         </tbody>
       </Table>
@@ -149,3 +154,5 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
 }
 
 export default UpdateConsumablesBulkTable;
+
+

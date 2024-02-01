@@ -15,7 +15,7 @@ const defaultState = {
     error: undefined
   }
 }
-
+//TODO: should be like bmconsumables.consumableslist
 export const consumablesReducer = (consumables = defaultState, action) => {
   switch (action.type) {
     case SET_CONSUMABLES:

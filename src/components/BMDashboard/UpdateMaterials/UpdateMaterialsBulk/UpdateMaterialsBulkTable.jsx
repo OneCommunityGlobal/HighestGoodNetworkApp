@@ -59,6 +59,7 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
 
   const submitHandler = e => {
     e.preventDefault();
+
     if (bulkValidationError) return;
     const tempPostMaterialUpdateData = Object.values(updatedRecordsList).filter(
       d => d.newAvailable !== '',
@@ -66,6 +67,7 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
     dispatch(postMaterialUpdateBulk({ updateMaterials: tempPostMaterialUpdateData, date }));
   };
 
+  //TODO: modify the material data to consumabel from updatedRecord
   const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
     updatedRecordsList[updatedRecord.material._id] = updatedRecord;
     validationsList[updatedRecord.material._id] = validationRecord;

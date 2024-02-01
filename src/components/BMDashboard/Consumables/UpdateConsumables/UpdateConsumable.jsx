@@ -30,6 +30,7 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal })
     quantityWasted: 0,
     QtyUsedLogUnit: 'unit',
     QtyWastedLogUnit: 'unit',
+    //TODO: fix data to consumable
     material: rest,
     newAvailable: undefined,
   };
