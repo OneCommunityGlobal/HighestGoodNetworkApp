@@ -211,6 +211,14 @@ function LeaderBoard({
                 </span>
               </td>
             </tr>
+            <tr>
+              <td />
+              <th scope="row">0 hrs Totals: XXX Members</th>
+              <td className="align-middle" />
+              <td className="align-middle" />
+              <td className="align-middle" />
+              <td className="align-middle" />
+            </tr>
             {leaderBoardData.map(item => (
               <tr key={item.personId}>
                 <td className="align-middle">
