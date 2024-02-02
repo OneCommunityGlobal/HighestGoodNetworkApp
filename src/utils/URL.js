@@ -61,8 +61,9 @@ export const ENDPOINTS = {
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: id => `${APIEndpoint}/backup/popupeditor/${id}`,
 
-  GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
+  POST_NEW_WARNING: () => `${APIEndpoint}/currentWarnings`,
+  GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
 

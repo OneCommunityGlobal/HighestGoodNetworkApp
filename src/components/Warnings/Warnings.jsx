@@ -5,9 +5,10 @@ import {
   getWarningsByUserId,
   postWarningByUserId,
   deleteWarningsById,
-  getAllCurrentWarnings,
+  postNewWarning,
+  getCurrentWarnings,
 } from '../../actions/warnings';
-
+import WarningsModal from './WarningsModal';
 import WarningItem from './WarningItem';
 
 // steps to refactor
@@ -30,7 +31,8 @@ export default function Warning({ personId, username, userRole }) {
   const dispatch = useDispatch();
 
   const [usersWarnings, setUsersWarnings] = useState([]);
-
+  const [warningDescriptions, setWarningDescriptions] = useState([]);
+  const [warningsModal, setWarningsModal] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
 
@@ -87,15 +89,37 @@ export default function Warning({ personId, username, userRole }) {
         setUsersWarnings([]);
         return;
       }
+      //maybe a bug here
       setUsersWarnings(res);
     });
   };
 
   //modal will appear to add or remove descriptions
   // pass the descriptions
+
+  //   'Log Time to Action Items',
+  // 'Intangible Time Log w/o Reason',
   const handleEditDescriptions = () => {
-    dispatch(getAllCurrentWarnings);
-    console.log('edit descriptions');
+    dispatch(getCurrentWarnings()).then(res => {
+      console.log('res', res);
+      if (res?.error) {
+        setError(res);
+        setUsersWarnings([]);
+        return;
+      }
+      console.log('res', res);
+      setWarningDescriptions(res);
+      setWarningsModal(true);
+    });
+    // dispatch(postNewWarning('Log Time to Action Items'));
+  };
+
+  const handleDeleteDescription = warningDescription => {
+    console.log('delete description');
+    const response = confirm('are you sure you want to delte it?');
+    if (response) {
+      console.log('conosle dlete logic will occur');
+    }
   };
 
   const warnings = !toggle
@@ -128,6 +152,16 @@ export default function Warning({ personId, username, userRole }) {
             +/-
           </Button>
         </div>
+
+        {warningsModal && (
+          <WarningsModal
+            warningsModal={warningsModal}
+            warningDescriptions={warningDescriptions}
+            setWarningsModal={setWarningsModal}
+            handleDeleteDescription={handleDeleteDescription}
+          />
+        )}
+
         <div className="warning-wrapper"> {warnings}</div>
         <div className="error-container">
           {error && (

@@ -55,3 +55,20 @@
 .tracking__btn {
   margin-right: 0.3em;
 }
+.warnings__descriptions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8em;
+  text-align: left;
+}
+.warnings__descriptions p {
+  margin: 0 0.5em 0 0;
+  font-weight: bold;
+  font-size: 1em;
+}
+.warnings__descriptions button {
+  padding: 0.1em 0.5em;
+  width: auto;
+  border-radius: 5px;
+  margin: 0;
+}

@@ -19,9 +19,14 @@ function WarningsModal({
   deleteWarningTriggered,
   warning,
   handleIssueWarning,
+  warningsModal,
+  warningDescriptions,
+  setWarningsModal,
+  handleDeleteDescription,
 }) {
-  const { today, id, colorAssigned, warningText, username } = warning;
+  const { today, id, colorAssigned, warningText, username } = warning || {};
 
+  console.log('delete warnings', deleteWarning);
   if (deleteWarning) {
     return (
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
@@ -44,6 +49,40 @@ function WarningsModal({
           >
             Delete Warning
           </Button>
+        </ModalFooter>
+      </Modal>
+    );
+  } else if (warningsModal) {
+    console.log('inside warnifns modal');
+    return (
+      <Modal isOpen={warningsModal} toggle={() => setWarningsModal(false)}>
+        <ModalHeader>Current Warning Descriptions</ModalHeader>
+        <ModalBody>
+          {warningDescriptions.map((warning, index) => (
+            <div className="warnings__descriptions" key={warning}>
+              <p>{warning}</p>
+              <Button color="danger" onClick={handleDeleteDescription}>
+                x
+              </Button>
+            </div>
+          ))}
+
+          <Button>Add new</Button>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button color="danger" onClick={() => setWarningsModal(false)}>
+            Cancel
+          </Button>
+
+          {/* <Button
+            onClick={() => {
+              setToggleModal(false);
+            }}
+            color="primary"
+          >
+            Delete Warning
+          </Button> */}
         </ModalFooter>
       </Modal>
     );
