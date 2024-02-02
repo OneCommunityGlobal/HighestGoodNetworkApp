@@ -71,8 +71,16 @@ const SummaryBar = props => {
       setCategoryDescription(
         'Delete category (Write the suggestion category number from the dropdown to delete it).',
       );
+    } else {
+      setCategoryDescription('');
     }
   };
+
+  const closeSuggestionModal = () => {
+    setShowSuggestionModal(prev => !prev);
+    editRadioButtonSelected('');
+    setExtraFieldForSuggestionForm('');
+  }
 
   const onDragToggleDraggingClass = event => {
     event.currentTarget.classList.toggle('sortable-draggable-dragging');
@@ -779,7 +787,7 @@ const SummaryBar = props => {
                 </Button>{' '}
                 &nbsp;&nbsp;&nbsp;
                 <Button
-                  onClick={() => setShowSuggestionModal(prev => !prev)}
+                  onClick={() => closeSuggestionModal()}
                   color="danger"
                   size="lg"
                 >
