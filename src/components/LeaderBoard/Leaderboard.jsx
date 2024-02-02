@@ -213,12 +213,7 @@ function LeaderBoard({
             </tr>
             <tr>
               <td />
-              <th
-                scope="row"
-                style={{
-                  color: '#007bff',
-                }}
-              >
+              <th scope="row" className="boldClass">
                 0 hrs Totals: XXX Members
               </th>
               <td className="align-middle" />
