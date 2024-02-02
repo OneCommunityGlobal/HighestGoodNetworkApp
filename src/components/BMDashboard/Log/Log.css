@@ -1,7 +1,48 @@
+.page {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.page .row {
+    flex-wrap: nowrap;
+}
+
 .log-form-container {
     margin: 0 auto;
-    max-width: 625px;
+    max-width: 100vw;
+    max-height: 100vh;
     border: 2px solid #ccc;
     border-radius: 10px;
     padding: 50px;
+}   
+
+.title-label {
+    font-size: large;
+    font-weight: bold;
+}
+
+.subtitle-row {
+    background-color: aqua;
+    text-align: center;
+}
+
+.log-form-cancel-button {
+    font-size: 20px;
+    height: 50px;
+    width: 50%;
+    background-color: #ffffff !important;
+    color: #2e5061 !important;
+    border-color: #2e5061 !important; 
+}
+
+.log-form-submit-button {
+    height: 50px;
+    width: 50%;
+    background-color: #2e5061 !important;
+    color: #ffffff !important;
+    border-color: #2e5061 !important;
+    font-size: 20px;
 }
