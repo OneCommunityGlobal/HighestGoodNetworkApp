@@ -121,7 +121,8 @@ const TimeEntryForm = props => {
 
   const canEditTimeEntry = props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  // const 
+
+  const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry);
 
   /*---------------- methods -------------- */
   const toggleRemainder = () =>
@@ -633,7 +634,7 @@ const TimeEntryForm = props => {
                     placeholder="Hours"
                     value={formValues.hours}
                     onChange={handleInputChange}
-                    disabled={from === 'Timer' || !canEditTimeEntry}
+                    disabled={!canChangeTime}
                   />
                 </Col>
                 <Col>
@@ -646,7 +647,7 @@ const TimeEntryForm = props => {
                     placeholder="Minutes"
                     value={formValues.minutes}
                     onChange={handleInputChange}
-                    disabled={from === 'Timer' || !canEditTimeEntry}
+                    disabled={!canChangeTime}
                   />
                 </Col>
               </Row>

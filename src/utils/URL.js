@@ -139,10 +139,17 @@ export const ENDPOINTS = {
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
   BM_TOOLS_PURCHASE: `${APIEndpoint}/bm/tools/purchase`,
+  POST_LESSON: `${APIEndpoint}/bm/lessons/new`,
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
-  BM_INVTYPE_TYPE: (type) => `${APIEndpoint}/bm/invtypes/${type}`
+  BM_INVTYPE_TYPE: (type) => `${APIEndpoint}/bm/invtypes/${type}`,
+  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
+  BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
+  ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
+  UPDATE_TIME_OFF_REQUEST: (id) => `${APIEndpoint}/updateTimeOffRequest/${id}`,
+  DELETE_TIME_OFF_REQUEST: (id) => `${APIEndpoint}/deleteTimeOffRequest/${id}`
 };
 
 export const ApiEndpoint = APIEndpoint;

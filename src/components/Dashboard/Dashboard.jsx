@@ -9,6 +9,7 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
+import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -86,6 +87,7 @@ export function Dashboard(props) {
           <Badge userId={displayUserId} role={authUser.role} />
         </Col>
       </Row>
+      <TimeOffRequestDetailModal />
     </Container>
   );
 }
