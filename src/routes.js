@@ -148,11 +148,12 @@ export default (
           exact
           component={Projects}
           fallback
-          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={[
             RoutePermissions.projects,
             RoutePermissions.projectManagement_fullFunctionality,
             RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
+            RoutePermissions.updateTask
           ]}
         />
         <ProtectedRoute
