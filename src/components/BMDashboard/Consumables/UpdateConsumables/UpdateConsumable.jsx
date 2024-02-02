@@ -8,21 +8,6 @@ import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
-  const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables);
-
-  useEffect(() => {
-    if (postConsumableUpdateResult.loading === false && postConsumableUpdateResult.error === true) {
-      toast.error(`${postConsumableUpdateResult.result}`);
-      setModal(false);
-    } else if (
-      postConsumableUpdateResult.loading === false &&
-      postConsumableUpdateResult.result !== null
-    ) {
-      toast.success(`Updated ${record?.itemType?.name} successfully`);
-      setModal(false);
-    }
-  }, [postConsumableUpdateResult]);
-
   const { purchaseRecord, updateRecord: _, ...rest } = record;
   const recordInitialState = {
     date: moment(new Date()).format('YYYY-MM-DD'),
@@ -30,8 +15,7 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal })
     quantityWasted: 0,
     QtyUsedLogUnit: 'unit',
     QtyWastedLogUnit: 'unit',
-    //TODO: fix data to consumable
-    material: rest,
+    consumable: rest,
     newAvailable: undefined,
   };
   const validationsInitialState = {

@@ -7,7 +7,10 @@ import moment from 'moment';
 import { fetchAllConsumables, postConsumableUpdateBulk } from 'actions/bmdashboard/consumableActions';
 import UpdateConsumable from "../UpdateConsumable"
 
-
+//TODO: Every thing is manually tested to be working by now, will clean up the logic and double check to make it more robust next week.
+//TODO: couple of the thing to consider changing are:
+// 1) sumbmit button should be disabled when no entry is recorded
+// 2) consult what is exactly the "Wasted(Unit)" for?
 function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
   const consumables = useSelector(state => state.bmConsumables.consumableslist);
@@ -69,8 +72,8 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
   };
 
   const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
-    updatedRecordsList[updatedRecord.material._id] = updatedRecord;
-    validationsList[updatedRecord.material._id] = validationRecord;
+    updatedRecordsList[updatedRecord.consumable._id] = updatedRecord;
+    validationsList[updatedRecord.consumable._id] = validationRecord;
     if (
       !(
         validationRecord.quantityUsed === '' &&
