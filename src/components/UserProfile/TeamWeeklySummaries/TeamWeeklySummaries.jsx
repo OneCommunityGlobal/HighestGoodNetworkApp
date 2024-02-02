@@ -33,6 +33,7 @@ function TeamWeeklySummaries({ name, i, data }) {
       </div>
       {data.summary && (
         <div className="team-weekly-summary-container">
+          {/* To be added a pop up */}
           <div className="team-week-summary-text"> {parse(data.summary)}</div>
           <FontAwesomeIcon
             icon={faCopy}
