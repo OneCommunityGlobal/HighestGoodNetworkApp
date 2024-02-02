@@ -3,7 +3,7 @@
  * Author: Henry Ng - 02/03/20
  ******************************************************************************* */
 import axios from 'axios';
-import * as types from "../constants/projectMembership";
+import * as types from '../constants/projectMembership';
 import { searchWithAccent } from 'utils/search';
 import { ENDPOINTS } from '../utils/URL';
 /** *****************************************
@@ -16,13 +16,12 @@ export const getAllUserProfiles = () => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        const {members} = getState().projectMembers;
+        const { members } = getState().projectMembers;
         const users = res.data.map(user => {
           if (!members.find(member => member._id === user._id)) {
             return (user = { ...user, assigned: false });
-          } 
-            return (user = { ...user, assigned: true });
-          
+          }
+          return (user = { ...user, assigned: true });
         });
         // console.log(users);
         dispatch(foundUsers(users));
@@ -39,22 +38,36 @@ export const getAllUserProfiles = () => {
  */
 export const findUserProfiles = keyword => {
   const request = axios.get(ENDPOINTS.USER_PROFILES);
+  // Creates an array containing the first and last name
+  let fullName = keyword.split(' ');
+  // Filters out whitespace so that the first name and last name are the only elements
+  fullName = fullName.filter(name => name !== '');
 
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        if (keyword.trim() !== '') {
-          let users = res.data.filter(user =>
-            searchWithAccent(user.firstName, keyword) || searchWithAccent(user.lastName, keyword)
-          );
-          const {members} = getState().projectMembers;
+        if (keyword !== '') {
+          let users = res.data.filter(user => {
+            // If the the second element is undefined checks if first element matches a first OR last name
+            if (!fullName[1]) {
+              return (
+                searchWithAccent(user.firstName, fullName[0]) ||
+                searchWithAccent(user.lastName, fullName[0])
+              );
+            }
+            // If 2 elements are provided it assumes element 1 is first name and element 2 is last name and requires both to be true
+            return (
+              searchWithAccent(user.firstName, fullName[0]) &&
+              searchWithAccent(user.lastName, fullName[1])
+            );
+          });
+          const { members } = getState().projectMembers;
           users = users.map(user => {
             if (!members.find(member => member._id === user._id)) {
               return (user = { ...user, assigned: false });
-            } 
-              return (user = { ...user, assigned: true });
-            
+            }
+            return (user = { ...user, assigned: true });
           });
           dispatch(foundUsers(users));
         } else {
@@ -95,9 +108,9 @@ export const getProjectActiveUser = () => {
     await dispatch(findUsersStart());
     request
       .then(res => {
-        const {members} = getState().projectMembers;
+        const { members } = getState().projectMembers;
         const users = res.data.filter(user => {
-          return (members.find(member => member._id === user._id) && user.isActive === true) 
+          return members.find(member => member._id === user._id) && user.isActive === true;
         });
         dispatch(foundUsers(users));
       })
@@ -254,4 +267,3 @@ export const addNewMemberError = err => {
     err,
   };
 };
-
