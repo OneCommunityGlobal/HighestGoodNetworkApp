@@ -6,7 +6,7 @@ import { Form, FormGroup, FormText, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
 
 import { boxStyle } from 'styles';
-import { purchaseTools } from 'actions/bmdashboard/toolsActions';
+import { purchaseTools } from 'actions/bmdashboard/toolActions';
 
 import './PurchaseForm.css';
 
