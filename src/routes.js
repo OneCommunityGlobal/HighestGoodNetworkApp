@@ -44,6 +44,7 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 // import BadgeManagement from './components/Badge/BadgeManagement';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
+import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -230,6 +231,7 @@ export default (
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/email-subscribe" component={EmailSubscribeForm} />
+        <Route path="/email-unsubscribe" component={UnsubscribeForm} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
