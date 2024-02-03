@@ -526,7 +526,7 @@ const BasicInformationTab = props => {
                 );
               })}
               {canAddDeleteEditOwners && (
-                <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : ''}>
+                <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
                   Owner
                 </option>
               )}
