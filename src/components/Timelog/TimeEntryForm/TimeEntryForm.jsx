@@ -35,12 +35,13 @@ import { boxStyle } from 'styles';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
- * There are five use cases:
- *  1. Auth user logs new time entry from Timer to auth user: edit is false, fromTimer is true, isTangible is true;
- *  2. Auth user adds time entry from 'Add Intangible Time Entry' button to auth user: edit is false, fromTimer is false, isTangible depends;
- *  3. Auth user with permission adds time entry from 'Add Intangible Time Entry for XXX' button to XXX user: edit is false, fromTimer is false, isTangible depends;
- *  4. Auth user edits existing time entry of auth user: edit is true, fromTimer is false, isTangble depends;
- *  5. Auth user with permission edits existing time entry of other user: edit is true, fromTimer is false, isTangble depends;
+ * There are several use cases:
+ *  1. Auth user logs new time entry from Timer to auth user (from 'Timer')
+ *  2. Auth user adds time entry from 'Add Intangible Time Entry' button to auth user (from 'Timelog')
+ *  3. Auth user with permission adds time entry from 'Add Intangible Time Entry for XXX' button to XXX user (from other's 'Timelog')
+ *  4. Auth user edits existing time entry of auth user (from 'WeeklyTab')
+ *  5. Auth user with permission edits existing time entry of other user (from other's 'WeeklyTab')
+ *  6. TODO: Owner like users edits time entry of other users on Task tab (from 'TaskTab')
  *
  * @param {boolean} props.edit If true, the time entry already exists and is being modified
  * @param {string} props.timeEntryUserId
@@ -55,12 +56,13 @@ const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
   const { 
-    fromTimer, 
+    from, 
     sendStop,
     edit, 
     data, 
     toggle, 
     isOpen, 
+    tab,
   } = props;
 
   // props from store
@@ -80,7 +82,7 @@ const TimeEntryForm = props => {
     entryType: 'default',
   }, data);
 
-  const timeEntryUserId = fromTimer ? authUser.userid : data.personId;
+  const timeEntryUserId = from === 'Timer' ? authUser.userid : data.personId;
   
   const {
     dateOfWork: initialDateOfWork,
@@ -117,8 +119,10 @@ const TimeEntryForm = props => {
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
+  const canEditTimeEntry = props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+
+  const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry);
 
   /*---------------- methods -------------- */
   const toggleRemainder = () =>
@@ -371,6 +375,7 @@ const TimeEntryForm = props => {
     setFormValues(initialFormValues);
     setReminder({ ...initialReminder });
     setErrors({});
+    setProjectOrTaskId('defaultProject')
     if (closed === true && isOpen) toggle();
   };
 
@@ -433,7 +438,7 @@ const TimeEntryForm = props => {
     setFormValues(initialFormValues);
 
     //Clear the form and clean up.
-    if (fromTimer) {
+    if (from === 'Timer') {
       sendStop();
       clearForm();
     } else if (!reminder.editLimitNotification) {
@@ -443,7 +448,24 @@ const TimeEntryForm = props => {
       }));
     }
 
-    await Promise.all([props.getTimeEntriesForWeek(timeEntryUserId, 0), props.getUserProfile(timeEntryUserId)]);
+    if (from === 'TimeLog') {
+      const date = moment(formValues.dateOfWork);
+      const today = moment().tz('America/Los_Angeles');
+      const offset = today.week() - date.week();
+      if (offset < 3) {
+        props.getTimeEntriesForWeek(timeEntryUserId, offset);
+      } else {
+        props.getTimeEntriesForWeek(timeEntryUserId, 3);
+      }
+      clearForm();
+    }
+
+    if (from === 'WeeklyTab') {
+      await Promise.all([
+        props.getUserProfile(timeEntryUserId),
+        props.getTimeEntriesForWeek(timeEntryUserId, tab),
+      ]);
+    }
 
     setReminder(initialReminder);
     if (isOpen) toggle();
@@ -556,6 +578,10 @@ const TimeEntryForm = props => {
     } 
   }, [isOpen]);
 
+  useEffect(() => {
+    setFormValues({ ...formValues, ...data})
+  }, [data])
+
   return (
     <>
       <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
@@ -591,7 +617,7 @@ const TimeEntryForm = props => {
                   id="dateOfWork"
                   value={formValues.dateOfWork}
                   onChange={handleInputChange}
-                  disabled={!canEditTimeEntry || fromTimer}
+                  disabled={from === 'Timer' || !canEditTimeEntry}
                 />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -612,7 +638,7 @@ const TimeEntryForm = props => {
                     placeholder="Hours"
                     value={formValues.hours}
                     onChange={handleInputChange}
-                    disabled={fromTimer}
+                    disabled={!canChangeTime}
                   />
                 </Col>
                 <Col>
@@ -625,7 +651,7 @@ const TimeEntryForm = props => {
                     placeholder="Minutes"
                     value={formValues.minutes}
                     onChange={handleInputChange}
-                    disabled={fromTimer}
+                    disabled={!canChangeTime}
                   />
                 </Col>
               </Row>
@@ -690,7 +716,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!canEditTimeEntry && !initialIsTangible}
+                  disabled={!canEditTimeEntry}
                 />
                 Tangible&nbsp;
                 <i

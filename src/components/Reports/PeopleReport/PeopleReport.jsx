@@ -2,12 +2,12 @@
 import React, { Component, useState } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
-import { formatDate } from 'utils/formatDate';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import { formatDate } from '../../../utils/formatDate';
 import {
   updateUserProfileProperty,
   getUserProfile,
@@ -549,8 +549,8 @@ class PeopleReport extends Component {
 
               <PeopleDataTable />
 
-              <div className="container">
-                <table>
+              <div className="Infringementcontainer">
+                <div className="InfringementcontainerInner">
                   <UserProject userProjects={userProjects} />
                   <Infringements
                     infringements={infringements}
@@ -568,17 +568,19 @@ class PeopleReport extends Component {
                   <div className="visualizationDiv">
                     <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
                   </div>
-                  <div className="visualizationDiv">
-                    <BadgeSummaryViz
-                      authId={auth.user.userid}
-                      userId={match.params.userId}
-                      badges={userProfile.badgeCollection}
-                    />
+                  <div className="visualizationDivRow">
+                    <div className="BadgeSummaryDiv">
+                      <BadgeSummaryViz
+                        authId={auth.user.userid}
+                        userId={match.params.userId}
+                        badges={userProfile.badgeCollection}
+                      />
+                    </div>
+                    <div className="BadgeSummaryPreviewDiv">
+                      <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                    </div>
                   </div>
-                  <div className="visualizationDiv">
-                    <BadgeSummaryPreview badges={userProfile.badgeCollection} />
-                  </div>
-                </table>
+                </div>
               </div>
             </ReportPage.ReportBlock>
           </div>
