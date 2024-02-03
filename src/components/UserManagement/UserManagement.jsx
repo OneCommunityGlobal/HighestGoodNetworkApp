@@ -30,8 +30,11 @@ import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
+import LogTimeOffPopUp from './logTimeOffPopUp';
 import { Table } from 'react-bootstrap';
 import SetupNewUserPopup from './setupNewUserPopup';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { toast } from 'react-toastify';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -54,19 +57,22 @@ class UserManagement extends React.PureComponent {
       isPaused: false,
       finalDayDateOpen: false,
       setupNewUserPopupOpen: false,
+      logTimeOffPopUpOpen: false,
+      userForTimeOff: '',
     };
   }
 
   componentDidMount() {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
+    this.props.getAllTimeOffRequests();
   }
 
   render() {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions);
-
+    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests);
     let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
       <Container fluid>
@@ -125,7 +131,7 @@ class UserManagement extends React.PureComponent {
    * 5. Popup to show the last day selection
    */
   popupElements = () => {
-    let user_name = this.state?.selectedUser?.firstName + '_' + this.state?.selectedUser?.lastName
+    let user_name = this.state?.selectedUser?.firstName + '_' + this.state?.selectedUser?.lastName;
     return (
       <React.Fragment>
         <ActivationDatePopup
@@ -165,6 +171,11 @@ class UserManagement extends React.PureComponent {
           open={this.state.setupNewUserPopupOpen}
           onClose={this.handleNewUserSetupPopup}
         />
+        <LogTimeOffPopUp
+          open={this.state.logTimeOffPopUpOpen}
+          onClose={this.logTimeOffPopUpClose}
+          user={this.state.userForTimeOff}
+        />
       </React.Fragment>
     );
   };
@@ -172,7 +183,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements = (userProfiles, rolesPermissions) => {
+  userTableElements = (userProfiles, rolesPermissions, timeOffRequests) => {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -205,6 +216,7 @@ class UserManagement extends React.PureComponent {
                 this.state.finalDayDateOpen
               }
               onPauseResumeClick={that.onPauseResumeClick}
+              onLogTimeOffClick={that.onLogTimeOffClick}
               onFinalDayClick={that.onFinalDayClick}
               onDeleteClick={that.onDeleteButtonClick}
               onActiveInactiveClick={that.onActiveInactiveClick}
@@ -213,6 +225,7 @@ class UserManagement extends React.PureComponent {
               user={user}
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
+              timeOffRequests={timeOffRequests[user._id] || []}
             />
           );
         });
@@ -275,6 +288,22 @@ class UserManagement extends React.PureComponent {
   };
 
   /**
+   * Call back on log time off button click
+   */
+  onLogTimeOffClick = user => {
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
+    if(canManageTimeOffRequests){
+      this.setState({
+        logTimeOffPopUpOpen: true,
+        userForTimeOff: user,
+      });
+    }else{
+      toast.warn(`You do not have permission to manage time-off requests.`)
+    }
+  
+  };
+
+  /**
    * Call back on Set Final day or Delete final button click to trigger the action to update user endate
    */
 
@@ -304,6 +333,14 @@ class UserManagement extends React.PureComponent {
   setUpFinalDayPopupClose = () => {
     this.setState({
       finalDayDateOpen: false,
+    });
+  };
+  /**
+   * call back function to close log time off popup
+   */
+  logTimeOffPopUpClose = () => {
+    this.setState({
+      logTimeOffPopUpOpen: false,
     });
   };
 
@@ -338,7 +375,7 @@ class UserManagement extends React.PureComponent {
    * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
    */
   onActiveInactiveClick = user => {
-    const authRole = this?.props?.state?.auth?.user.role||user.role
+    const authRole = this?.props?.state?.auth?.user.role || user.role;
     const canChangeUserStatus = hasPermission('changeUserStatus');
     if (!canChangeUserStatus) {
       //permission to change the status of any user on the user profile page or User Management Page.
@@ -557,4 +594,5 @@ export default connect(mapStateToProps, {
   updateUserFinalDayStatusIsSet,
   deleteUser,
   hasPermission,
+  getAllTimeOffRequests,
 })(UserManagement);
