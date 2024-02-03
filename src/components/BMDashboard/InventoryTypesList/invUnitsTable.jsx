@@ -10,7 +10,7 @@ import {
 import { toast } from 'react-toastify';
 
 export function UnitsTable(props) {
-  const { invUnits, postInvUnitsResult, deleteInvUnitsResult, dispatch } = props;
+  const { invUnits, postInvUnitsResult, deleteInvUnitResult, dispatch } = props;
 
   const [newUnit, setNewUnit] = useState('');
 
@@ -25,14 +25,14 @@ export function UnitsTable(props) {
   }, [postInvUnitsResult]);
 
   useEffect(() => {
-    if (deleteInvUnitsResult.error) {
+    if (deleteInvUnitResult.error) {
       toast.error(`Error deleting unit.`);
       dispatch(resetDeleteInvUnitResult());
-    } else if (deleteInvUnitsResult.success) {
+    } else if (deleteInvUnitResult.success) {
       toast.success(`Unit deleted.`);
       dispatch(resetDeleteInvUnitResult());
     }
-  }, [deleteInvUnitsResult]);
+  }, [deleteInvUnitResult]);
 
   const handleDelete = unit => {
     dispatch(deleteBuildingInventoryUnit({ unit }));
@@ -91,6 +91,6 @@ export function UnitsTable(props) {
 const mapStateToProps = state => ({
   invUnits: state.bmInvUnits.list,
   postInvUnitsResult: state.bmInvUnits.postedResult,
-  deleteInvUnitsResult: state.bmInvUnits.deletedResult,
+  deleteInvUnitResult: state.bmInvUnits.deletedResult,
 });
 export default connect(mapStateToProps)(UnitsTable);

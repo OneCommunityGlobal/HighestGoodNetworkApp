@@ -36,7 +36,7 @@ export function TypesTable(props) {
           ))}
         </tbody>
       </Table>
-      <Button size="sm" className="btn-types" target="_blank" href={getReferenceLink()}>
+      <Button size="sm" className="btn-types" href={getReferenceLink()}>
         Add
       </Button>
     </div>
