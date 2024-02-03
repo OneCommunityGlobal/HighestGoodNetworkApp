@@ -140,7 +140,10 @@ const TimeEntry = (props) => {
   let filteredColor;
   const daysPast = moment().diff(dateOfWork, 'days');
   switch (true) {
-    case daysPast < 2:
+    case daysPast === 0:
+      filteredColor = hrsFilterBtnColorMap[1];
+      break;
+    case daysPast === 1:
       filteredColor = hrsFilterBtnColorMap[2];
       break;
     case daysPast === 2:
