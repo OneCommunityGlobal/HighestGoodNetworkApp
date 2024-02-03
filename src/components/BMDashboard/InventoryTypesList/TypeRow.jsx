@@ -1,14 +1,16 @@
+import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
+import { deleteBuildingInventoryType } from 'actions/bmdashboard/invTypeActions';
 
-export default function TypeRow(props) {
-  const { itemType, id } = props;
+export function TypeRow(props) {
+  const { itemType, id, dispatch } = props;
 
   const handleEdit = () => {
     // TODO:
   };
 
   const handleDelete = () => {
-    // TODO:
+    dispatch(deleteBuildingInventoryType({ category: itemType.category, id: itemType._id }));
   };
 
   return (
@@ -29,3 +31,5 @@ export default function TypeRow(props) {
     </tr>
   );
 }
+
+export default connect()(TypeRow);

@@ -7,6 +7,8 @@ import { Accordion, Card } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import { resetDeleteInvTypeResult } from 'actions/bmdashboard/invTypeActions';
+import { toast } from 'react-toastify';
 import BMError from '../shared/BMError';
 import TypesTable from './TypesTable';
 import UnitsTable from './invUnitsTable';
@@ -14,7 +16,7 @@ import AccordionToggle from './AccordionToggle';
 import './TypesList.css';
 
 export function InventoryTypesList(props) {
-  const { errors, dispatch } = props;
+  const { deleteInvTypeResult, errors, dispatch } = props;
 
   // NOTE: depend on redux action implementation
   const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
@@ -32,6 +34,16 @@ export function InventoryTypesList(props) {
     dispatch(fetchInvTypeByType('Tools'));
     dispatch(fetchInvUnits());
   }, []);
+
+  useEffect(() => {
+    if (deleteInvTypeResult.error) {
+      toast.error(`Error deleting type.`);
+      dispatch(resetDeleteInvTypeResult());
+    } else if (deleteInvTypeResult.success) {
+      toast.success(`Type deleted.`);
+      dispatch(resetDeleteInvTypeResult());
+    }
+  }, [deleteInvTypeResult]);
 
   // trigger error state if an error object is added to props
   useEffect(() => {
@@ -105,7 +117,7 @@ export function InventoryTypesList(props) {
 
 const mapStateToProps = state => ({
   errors: state.errors,
-  // invUnits: state.bmInvUnits.list,
+  deleteInvTypeResult: state.bmInvTypes.deletedResult,
 });
 
 export default connect(mapStateToProps)(InventoryTypesList);

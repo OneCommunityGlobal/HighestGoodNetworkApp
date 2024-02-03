@@ -1,4 +1,12 @@
-import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE } from "constants/bmdashboard/inventoryTypeConstants";
+import GET_MATERIAL_TYPES, {
+  POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
+  RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  GET_INV_BY_TYPE,
+  DELETE_BUILDING_INVENTORY_TYPE,
+  RESET_DELETE_BUILDING_INVENTORY_TYPE,
+  DELETE_ERROR_BUILDING_INVENTORY_TYPE
+} from "constants/bmdashboard/inventoryTypeConstants";
 
 const defaultState = {
   list: [],
@@ -10,6 +18,11 @@ const defaultState = {
     result: null,
     error: null,
     success: null
+  },
+  deletedResult: {
+    result: null,
+    success: null,
+    error: null
   }
 }
 
@@ -52,6 +65,34 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
         state.invTypeList[action.payload.type] = [...action.payload.data]
         return { ...state }
       }
+
+      case DELETE_BUILDING_INVENTORY_TYPE:
+        return {
+          ...state,
+          deletedResult: {
+            result: action.payload,
+            success: true,
+            error: false
+          }
+        };
+      case DELETE_ERROR_BUILDING_INVENTORY_TYPE:
+        return {
+          ...state,
+          deletedResult: {
+            result: action.payload,
+            success: false,
+            error: true
+          }
+        }
+      case RESET_DELETE_BUILDING_INVENTORY_TYPE:
+        return {
+          ...state,
+          deletedResult: {
+            result: null,
+            success: null,
+            error: null
+          }
+        }
     default: {
       return state;
     }

@@ -1,7 +1,15 @@
 import axios from "axios";
 
 import { ENDPOINTS } from "utils/URL";
-import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE } from "constants/bmdashboard/inventoryTypeConstants";
+import GET_MATERIAL_TYPES, {
+  POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
+  RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  GET_INV_BY_TYPE,
+  DELETE_BUILDING_INVENTORY_TYPE,
+  RESET_DELETE_BUILDING_INVENTORY_TYPE,
+  DELETE_ERROR_BUILDING_INVENTORY_TYPE
+ } from "constants/bmdashboard/inventoryTypeConstants";
 import { GET_ERRORS } from "constants/errors";
 
 export const fetchMaterialTypes = () => {
@@ -41,6 +49,23 @@ export const postBuildingInventoryType = (payload) => {
   }
 }
 
+export const deleteBuildingInventoryType = (payload) => {
+  const {category, id} = payload
+  return async dispatch => {
+    axios.delete(`${ENDPOINTS.BM_INVTYPE_ROOT}/${category}/${id}`)
+      .then(res => {
+        dispatch(setDeleteInvTypeResult(res.data))
+
+        // update invTypes with updated list received from DELETE request
+        // NOTE: categories are plural in redux reducer, while singular in backend, i.e. "Material" vs. "Materials"
+        dispatch(setInvTypesByType({ type: category + 's', data: res.data }))
+      })
+      .catch(err => {
+        dispatch(setDeleteInvTypeError(err))
+      })
+  }
+}
+
 export const setPostBuildingInventoryTypeResult = (payload) => {
   return {
     type: POST_BUILDING_MATERIAL_INVENTORY_TYPE,
@@ -61,6 +86,25 @@ export const resetPostBuildingInventoryTypeResult = () => {
   }
 }
 
+export const setDeleteInvTypeResult = (payload) => {
+  return {
+    type: DELETE_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const setDeleteInvTypeError = (payload) => {
+  return {
+    type: DELETE_ERROR_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const resetDeleteInvTypeResult = () => {
+  return {
+    type: RESET_DELETE_BUILDING_INVENTORY_TYPE
+  }
+}
 
 export const setInvTypes = payload => {
   return {
@@ -70,7 +114,6 @@ export const setInvTypes = payload => {
 }
 
 export const setInvTypesByType = payload => {
-
   return {
     type: GET_INV_BY_TYPE,
     payload
