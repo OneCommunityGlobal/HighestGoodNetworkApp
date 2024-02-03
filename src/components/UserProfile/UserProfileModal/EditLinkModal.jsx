@@ -43,8 +43,8 @@ const EditLinkModal = props => {
   const [adminLinks, setAdminLinks] = useState(
     userProfile.adminLinks
       ? userProfile.adminLinks
-          .filter(link => link.Name !== 'Google Doc')
-          .filter(link => link.Name !== 'Media Folder')
+        .filter(link => link.Name !== 'Google Doc')
+        .filter(link => link.Name !== 'Media Folder')
       : [],
   );
   const [personalLinks, setPersonalLinks] = useState(
@@ -57,6 +57,18 @@ const EditLinkModal = props => {
   const [isWarningPopupOpen, setIsWarningPopupOpen] = useState(false);
   const [isMediaFolderLinkChanged, setIsMediaFolderLinkChanged] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
+
+  const isValidGoogleDocsUrl = (url) => {
+    const pattern = /^https:\/\/docs\.google\.com\/document\/d\/[a-zA-Z0-9-_]+/;
+    return pattern.test(url);
+  };
+
+  const isValidMediaUrl = (url) => {
+    // This is a placeholder. You should define what constitutes a valid media URL for your application.
+    const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
+    return pattern.test(url);
+  };
+
 
   const handleNameChanges = (e, links, index, setLinks) => {
     const updateLinks = [...links];
@@ -72,18 +84,18 @@ const EditLinkModal = props => {
   };
 
   const handleMediaFolderLinkChanges = (e) => {
-    if (!mediaFolderLink.Link){
+    if (!mediaFolderLink.Link) {
       // Prevent warning popup appear if empty media folder link
       setIsMediaFolderLinkChanged(true);
       setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
       setIsChanged(true);
-    } 
+    }
     else {
       setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
       setIsChanged(true);
-      if (!isMediaFolderLinkChanged && !isWarningPopupOpen){ // Fisrt time media folder link is changed
-          setIsMediaFolderLinkChanged(true);
-          setIsWarningPopupOpen(true);
+      if (!isMediaFolderLinkChanged && !isWarningPopupOpen) { // Fisrt time media folder link is changed
+        setIsMediaFolderLinkChanged(true);
+        setIsWarningPopupOpen(true);
       }
     }
   }
@@ -114,7 +126,7 @@ const EditLinkModal = props => {
   const isDifferentMediaUrl = () => {
     //* This is to compare the mediaUrl with Media Folder link when editing in the input area.
     //* Because mediaUrl is a differnt object, but the link should be the same as Media Folder's link.
-    if (userProfile.mediaUrl !== mediaFolderLink.Link  && userProfile.mediaUrl !== '') {
+    if (userProfile.mediaUrl !== mediaFolderLink.Link && userProfile.mediaUrl !== '') {
       setMediaFolderDiffWarning(true);
     } else {
       setMediaFolderDiffWarning(false);
@@ -145,36 +157,24 @@ const EditLinkModal = props => {
   };
 
   const handleUpdate = async () => {
-    const isGoogleDocsValid = isValidUrl(googleLink.Link);
-    const isDropboxValid = isValidUrl(mediaFolderLink.Link);
-    const updatable =
-      (isGoogleDocsValid && isDropboxValid) ||
-      (googleLink.Link === '' && mediaFolderLink.Link === '') ||
-      (isGoogleDocsValid && mediaFolderLink.Link === '') ||
-      (isDropboxValid && googleLink.Link === '');
-    if (updatable) {
-      // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
-      // Media Folder link should update the mediaUrl in userProfile
-      if (mediaFolderLink.Link) {
-        await updateLink(
-          personalLinks,
-          [googleLink, mediaFolderLink, ...adminLinks],
-          mediaFolderLink.Link,
-        );
-        // Update ref to reflect updated original Media Folder Link
-          originalMediaFolderLink.current = mediaFolderLink.Link;
-      } else {
-        await updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
-      }
-      handleSubmit();
+    // Validate the Google Doc and Media Folder links
+    const isGoogleDocsValid = googleLink.Link === '' || isValidGoogleDocsUrl(googleLink.Link);
+    const isMediaFolderValid = mediaFolderLink.Link === '' || isValidMediaUrl(mediaFolderLink.Link);
+
+    if (isGoogleDocsValid && isMediaFolderValid) {
+      // If both URLs are valid, proceed with the update logic
+      const linksToUpdate = [googleLink, mediaFolderLink, ...adminLinks];
+      await updateLink(personalLinks, linksToUpdate, mediaFolderLink.Link);
+      handleSubmit(); // If you have additional logic to handle after submitting the form
       setIsValidLink(true);
       setIsChanged(false);
       closeModal();
-      setIsMediaFolderLinkChanged(false);
     } else {
+      // If any URL is invalid, set an error state
       setIsValidLink(false);
     }
   };
+
 
   useEffect(() => {
     isDifferentMediaUrl();
@@ -220,7 +220,7 @@ const EditLinkModal = props => {
                         id="media-folder-link"
                         placeholder="Enter Dropbox link"
                         value={mediaFolderLink.Link}
-                        onChange={e => {handleMediaFolderLinkChanges(e)}}
+                        onChange={e => { handleMediaFolderLinkChanges(e) }}
                       />
                     </div>
                     {adminLinks?.map((link, index) => {
@@ -396,37 +396,37 @@ const EditLinkModal = props => {
           >
             Update
           </Button>
-          <Button 
-            color="primary" 
-            onClick={()=>{
-              setIsMediaFolderLinkChanged(false); 
-              setMediaFolderLink({ ...mediaFolderLink, Link:originalMediaFolderLink.current });
+          <Button
+            color="primary"
+            onClick={() => {
+              setIsMediaFolderLinkChanged(false);
+              setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
               closeModal();
-              }
-            } 
+            }
+            }
             style={boxStyle}>
-              Cancel
+            Cancel
           </Button>
         </ModalFooter>
 
-        <Modal data-testid='popup-warning' isOpen={isWarningPopupOpen} toggle={()=> setIsWarningPopupOpen(!isWarningPopupOpen)}  >
+        <Modal data-testid='popup-warning' isOpen={isWarningPopupOpen} toggle={() => setIsWarningPopupOpen(!isWarningPopupOpen)}  >
           <ModalHeader>Warning!</ModalHeader>
           <ModalBody>
             Whoa Tiger, don’t do this! This link was added by an Admin when you were set up in the system. It is used by the Admin Team and your Manager(s) for reviewing your work. You should only change it if you are ABSOLUTELY SURE the one you are changing it to is more correct than the one here already.
           </ModalBody>
           <ModalFooter>
-            <Button color='primary'  onClick={() =>{setIsWarningPopupOpen(!isWarningPopupOpen)}}>Confirm</Button>
+            <Button color='primary' onClick={() => { setIsWarningPopupOpen(!isWarningPopupOpen) }}>Confirm</Button>
             {/* Cancel button put original Media Folder link into the input */}
             <Button onClick={() => {
-                setIsWarningPopupOpen(!isWarningPopupOpen); 
-                setIsMediaFolderLinkChanged(false); 
-                setMediaFolderLink({ ...mediaFolderLink, Link:originalMediaFolderLink.current });
-              }}
+              setIsWarningPopupOpen(!isWarningPopupOpen);
+              setIsMediaFolderLinkChanged(false);
+              setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
+            }}
             >
               Cancel
             </Button>
           </ModalFooter>
-        </Modal> 
+        </Modal>
 
       </Modal>
     </React.Fragment>
