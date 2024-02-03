@@ -10,6 +10,8 @@ export const ENDPOINTS = {
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
+  USER_PROFILE_BY_SINGLE_NAME: singleName => `${APIEndpoint}/userProfile/singleName/${singleName}`,
+  USER_PROFILE_BY_FULL_NAME: fullName => `${APIEndpoint}/userProfile/fullName/${fullName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
   LOGIN: `${APIEndpoint}/login`,
