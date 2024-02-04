@@ -59,6 +59,11 @@ export const permissionLabels = [
         key: 'putUserProfileImportantInfo',
         description: 'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
+      {
+        label: 'Toggle Invisibility Permission Self and Others',
+        key: 'toggleInvisibility',
+        description: 'Gives the user permission to change the invisibility toggle for themselves and others',
+      },
     ]
   },
   {

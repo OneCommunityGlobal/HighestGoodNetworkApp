@@ -108,7 +108,9 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
-
+  const canToggleInvisibility = props.auth.user.permissions.frontPermissions.includes(
+    'toggleInvisibility',
+  );
   /* useEffect functions */
   useEffect(() => {
     loadUserProfile();
@@ -1194,7 +1196,7 @@ function UserProfile(props) {
                 <ModalFooter>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canEdit && (activeTab == '1' || canPutUserProfile) && (
+                      {(canEdit || canToggleInvisibility) && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
@@ -1371,7 +1373,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && (activeTab === '1' || activeTab === '3' || canPutUserProfile) && (
+              {(canEdit || canToggleInvisibility) && (activeTab === '1' || activeTab === '3' || canPutUserProfile) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
