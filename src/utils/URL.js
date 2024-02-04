@@ -103,8 +103,8 @@ export const ENDPOINTS = {
   MAP_LOCATIONS_BY_TOKEN: () => `${APIEndpoint}/mapLocationsToken`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
   GET_SETUP_INVITATION: () => `${APIEndpoint}/getSetupInvitation`,
-
-
+  REFRESH_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/refreshSetupInvitationToken`,
+  CANCEL_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/cancelSetupInvitationToken`,
   //reasons endpoints
   CREATEREASON: () => {
     return `${APIEndpoint}/reason/`
