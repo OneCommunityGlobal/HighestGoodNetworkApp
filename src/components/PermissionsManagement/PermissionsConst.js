@@ -62,7 +62,11 @@ export const permissionLabels = [
       {
         label: 'Toggle Invisibility Permission Self and Others',
         key: 'toggleInvisibility',
-        description: 'Gives the user permission to change the invisibility toggle for themselves and others',
+        description: 'Gives the user permission to change the invisibility toggle for themselves and others'
+      },
+        label: 'Manage Time Off Requests',
+        key: 'manageTimeOffRequests',
+        description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
       },
     ]
   },
@@ -168,6 +172,11 @@ export const permissionLabels = [
                 key: 'suggestTask',
                 description: 'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
               },
+              {
+                label: 'Interact with Task "Ready for Review"',
+                key: 'putReviewStatus',
+                description: 'Give the user permission to interact with any "Ready for Review" task button to either mark it as complete or reset it with "More work needed, reset this button" ',
+              }
             ],
           },
         ],
