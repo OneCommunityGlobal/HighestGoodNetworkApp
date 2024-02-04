@@ -1,0 +1,42 @@
+.wbs-and-members-blocks-wrapper {
+  display: grid;
+  grid-auto-flow: row;
+  row-gap: 40px;
+}
+
+.wbs-and-members-blocks {
+  height: 450px;
+}
+
+@media (min-width: 1180px) {
+  .wbs-and-members-blocks-wrapper {
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+  }
+}
+
+@media (max-width: 321px) {
+  .tasks-block {
+    width: 50rem;
+    margin-left: 30rem;
+  }
+}
+@media (min-width: 322px) and ( max-width: 366px) {
+  .tasks-block {
+    width: 50rem;
+    margin-left: 26rem;
+  }
+}
+@media (min-width: 367px) and ( max-width: 426px) {
+  .tasks-block {
+    width: 50rem;
+    margin-left: 25rem;
+  }
+}
+@media (min-width: 427px) and ( max-width: 769px) {
+  .tasks-block {
+    width: 50rem;
+    margin-left: 23rem;
+  }
+}

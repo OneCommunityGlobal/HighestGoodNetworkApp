@@ -1,0 +1,44 @@
+/* Small devices (landscape phones, 544px and up) */
+@media (max-width: 544px) {
+  .leaderboard {
+    font-size: 0.7rem;
+  } /*1rem = 16px*/
+
+  .my-custom-scrollbar {
+    height: 300px;
+    overflow: scroll;
+    margin-bottom: 1rem;
+  }
+
+  .table-wrapper-scroll-y {
+    display: relative;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background-color: aliceblue;
+    border-top: 1px solid #dee2e6;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: rgb(222, 226, 230);
+  }
+}
+
+.boldClass {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.animation {
+  animation: l-animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+@keyframes l-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

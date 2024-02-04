@@ -1,0 +1,2 @@
+export const SET_CURRENT_USER = 'SET_CURRENT_USER';
+export const SET_HEADER_DATA = 'SET_HEADER_DATA';

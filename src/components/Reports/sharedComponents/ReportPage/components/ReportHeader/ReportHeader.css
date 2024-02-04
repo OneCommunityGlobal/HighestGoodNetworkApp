@@ -1,0 +1,55 @@
+.report-header {
+  min-height: 35vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-header-details {
+  width: 100%;
+  text-align: center;
+}
+
+.report-header-profile-pic {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #a780d9;
+  border: 3px solid #e5daf0;
+}
+
+.report-header-profile-pic svg {
+  width: 50px;
+  height: 50px;
+  color: #faf7fd;
+}
+
+.report-header-profile-pic-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.report-header-entity-name {
+  font-weight: 400;
+  font-size: 1.3rem;
+  margin: 1rem 0;
+}
+
+.report-header-activity {
+  position: absolute;
+  right: -6px;
+  bottom: -1px;
+  width: 20px;
+  height: 20px;
+  background-color: #c6c6c6;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.report-header-activity.active {
+  background-color: #2affa1;
+}

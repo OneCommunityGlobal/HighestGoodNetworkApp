@@ -1,0 +1,44 @@
+.team-weekly-summaries {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  padding: 10px;
+  margin-top: 8px;
+  border: 1px solid #007bff;
+  border-radius: 3px;
+  background-color: #f7fbfe;
+}
+
+.team-weekly-header {
+  display: flex;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.team-weekly-header-date {
+  color: #007bff;
+  padding-right: 10px;
+}
+
+.weekly-date-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 0.8;
+}
+
+.copy-icon {
+  cursor: pointer;
+  margin: 2px 2px;
+}
+.team-weekly-summary-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.team-week-summary-text {
+  max-width: 100%;
+  margin-right: 20px;
+}

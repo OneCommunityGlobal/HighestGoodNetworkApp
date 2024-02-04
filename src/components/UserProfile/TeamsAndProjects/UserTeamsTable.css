@@ -1,0 +1,27 @@
+.tablet {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .desktop {
+    display: none;
+  }
+
+  .tablet {
+    display: block;
+  }
+}
+
+.centered-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.div-addteam {
+  display: inline-block;
+}
+
+.div-addteam .btn-addteam[disabled] {
+  pointer-events: none;
+}

@@ -1,0 +1,1 @@
+export { TasksDetail } from './TasksDetail';

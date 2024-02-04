@@ -1,0 +1,178 @@
+.container-tasks {
+  margin: 20px;
+  width: calc(100% - 40px);
+}
+
+/*
+.container {
+  overflow: auto;
+}
+*/
+
+.level-space-1 {
+  margin-left: 0px;
+}
+
+.level-space-2 {
+  margin-left: 15px;
+}
+
+.level-space-3 {
+  margin-left: 25px;
+}
+
+.level-space-4 {
+  margin-left: 35px;
+}
+
+.loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loading-task {
+  position: relative;
+  z-index: -50;
+  opacity: 0.1;
+}
+.load {
+  position: relative;
+}
+
+.dot {
+  height: 24px;
+  width: 24px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 4px 0;
+  margin-top: 3px;
+}
+
+.img-circle {
+  border-radius: 50%;
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+}
+
+.task-hour {
+  width: 35px;
+}
+
+.task-resouces-input {
+  width: 90%;
+}
+
+.task-resouces-btn {
+  width: 10%;
+}
+
+.task-reousces-list {
+  margin-top: 3px;
+  float: left;
+  width: 100%;
+}
+
+.wbsTaskController {
+  display: contents;
+}
+
+.wbsTask {
+  line-height: 14px;
+}
+
+.controlBtn {
+  float: left;
+  margin-left: 10px;
+}
+
+.controlTd {
+  background-color: #effff2;
+}
+
+.controlBtn_remove {
+  float: right;
+}
+
+.newTask {
+  background-color: #effff2;
+}
+
+.table td {
+  padding: 0.45rem;
+}
+
+.taskNum {
+  width: 80px;
+}
+
+.taskName {
+  width: 300px;
+}
+
+.taskDrop {
+  width: 100%;
+  background: #effff2;
+  display: none;
+}
+
+.name {
+  margin-right: 2px;
+}
+
+.resourceMoreToggle {
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+}
+
+.resourceMore {
+  display: none;
+}
+
+.warning {
+  color: red;
+  font-size: 10px;
+}
+
+.toggle-all {
+  float: right;
+}
+
+.tasks-table {
+  overflow-x: scroll;
+  width: 100% !important;
+}
+
+.action-edit-btn {
+  padding-right: 5px;
+}
+
+@media only screen and (max-width: 600px) {
+  .desktop-view {
+    display: none;
+  }
+
+  .table td {
+    padding: 5px !important;
+  }
+}
+
+@media (min-width: 200px) and (max-width: 1496px) {
+  table.responsive {
+    table-layout: fixed;
+  }
+
+  .flex-responsive {
+    display: flex;
+    flex-direction: row;
+    column-gap: 2vw;
+  }
+}

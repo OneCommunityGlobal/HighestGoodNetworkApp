@@ -1,0 +1,99 @@
+thead {
+  background: aliceblue;
+}
+
+#new_project {
+  margin-bottom: 10px;
+}
+
+#projects__order {
+  width: 5px;
+}
+
+#projects__active {
+  width: 10px;
+}
+
+#projects__category {
+  width: 15px;
+}
+
+#projects__members {
+  width: 15px;
+}
+
+#projects__inv {
+  width: 15px;
+}
+
+#projects__wbs {
+  width: 15px;
+}
+
+#projects__delete {
+  width: 20px;
+}
+
+.projects__tr {
+  text-align: center;
+}
+
+.projects__overview--top {
+  background: gray;
+}
+
+.projects__overview--top .card {
+  width: 200px;
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+#card_project {
+  background: #1d62f0;
+  color: white;
+}
+
+#card_active {
+  background: #fbad4c;
+  color: white;
+}
+
+.projects__order--input div {
+  margin-top: 7px;
+}
+
+.projects__active--input i {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.projects__name--input input {
+  border: 1px solid white;
+}
+
+.projects__name--input input:hover {
+  border: 1px solid #dee2e6;
+}
+
+.isActive i {
+  color: lawngreen;
+}
+
+.isNotActive {
+  color: #dee2e6;
+}
+
+.isDisabled {
+  opacity: 0;
+  transition: opacity 10ms;
+  display: none;
+}
+
+.project_info_modal_ol {
+  padding-left: 20px;
+}
+
+tr:hover {
+  background: #e9f6ff;
+}

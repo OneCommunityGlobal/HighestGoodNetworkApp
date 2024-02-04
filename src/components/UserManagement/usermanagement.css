@@ -1,0 +1,305 @@
+thead {
+  background: aliceblue;
+}
+
+/* This background color on hover property below is taking precedence over reactstrap and affecting multiple components. */
+/* .btn:hover {
+  background-color: #0f8292;
+} */
+
+#new_usermanagement {
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  width: calc(100vw - 45px);
+}
+#user-management-table {
+  width: calc(100vw - 45px);
+}
+
+#usermanagement_order {
+  width: 5px;
+}
+
+#usermanagement_active {
+  width: 10px;
+}
+
+#usermanagement__delete {
+  width: 20px;
+}
+
+#usermanagement_resume_date {
+  min-width: 125px;
+}
+.usermanagement__tr {
+  text-align: center;
+}
+
+.usermanagement_overview--top {
+  background: gray;
+}
+
+.usermanagement_overview--top .card {
+  width: 200px;
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+#card_project {
+  /* background: #1d62f0; */
+  background: linear-gradient(to right bottom,  rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
+  background-color: #1d62f0;
+  border-radius: 8px;
+  border:#08397e;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#card_team{
+  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
+  background-color: dodgerblue;
+  border-radius: 8px;
+  border:#08397e;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#card_active {
+  /* background: #fbad4c; */
+  background: linear-gradient(to right bottom, #ffdb56 5%, #ff9145 100%);
+  background-color: #fac17b;
+  border-radius: 8px;
+  border:#ff9145;
+  color: white;
+  align-items: center; 
+  justify-content: center;
+  text-align: center;
+
+}
+
+.email_cell {
+  position: relative;
+ 
+}
+
+.copy_icon {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 2px 2px;
+}
+
+.usermanagement__order--input div {
+  margin-top: 7px;
+}
+
+.usermanagement__active--input i {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.usermanagement__name--input input {
+  border: 1px solid white;
+}
+
+.usermanagement__name--input input:hover {
+  border: 1px solid #dee2e6;
+}
+
+.isActive i {
+  color: lawngreen;
+}
+
+.fa-circle-isActive {
+  color: lawngreen;
+}
+
+.isNotActive {
+  color: #dee2e6;
+}
+
+.isDisabled {
+  opacity: 0;
+  transition: opacity 10ms;
+  display: none;
+}
+
+.page-no-link {
+  margin-left: 10px;
+  text-align: center;
+  margin-top: 7px;
+}
+
+.usermanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
+}
+
+tr:hover {
+  background: #e9f6ff;
+}
+
+.link-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
+  margin: 0;
+  padding: 5px;
+  color: #1d62f0;
+}
+
+.link-button:hover,
+.link-button:focus {
+  text-decoration: none;
+}
+
+.add-user-modal {
+  min-width: 50vw; /* Occupy the 90% of the screen width */
+  max-width: 90vw !important;
+}
+
+.noWrap {
+  white-space: nowrap;
+}
+.setup-new-user-popup-section {
+  display: grid;
+  width: 80%;
+  margin: 0 auto;
+  gap: 10px;
+}
+
+.setup-new-user-popup-label {
+  margin: 0px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #212529;
+}
+.setup-new-user-popup-input {
+  height: 36px;
+}
+#setup-new-user-popup-btn {
+  width: fit-content;
+}
+.setup-new-user-popup-success {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  background-color: #d4edda;
+  color: #5c8f68;
+  height: 36px;
+  padding: 5px;
+}
+.setup-new-user-popup-error {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  background-color: #f8d7da;
+  color: #7f2a36;
+  height: 36px;
+  padding: 5px;
+}
+
+#usermanagement-footer {
+  margin-bottom: 50px;
+}
+
+.centered-td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#requested-time-off-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.time-off-request-btn-moved {
+  position: relative;
+  right: -9px;
+}
+
+#requested-time-off-btn:hover {
+  background-color: #95c0fe;
+}
+.requested-time-off-calender-svg {
+  fill: #0d6efd;
+}
+
+.requested-time-off-clock-icon {
+  position: relative;
+  top: -8px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.requested-time-off-clock-icon-svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+.requested-time-off-clock-icon-svg path {
+  fill: #0d6efd;
+}
+.Logged-time-off-cards-container {
+  overflow: scroll;
+  overflow-x: hidden;
+  max-height: 215px;
+}
+
+.Logged-time-off-cards-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.Logged-time-off-cards-container::-webkit-scrollbar-track {
+  border-radius: 4px;
+  background-color: #e7e7e7;
+  border: 1px solid #cacaca;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+}
+
+.Logged-time-off-cards-container::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #007BFF ;
+  box-shadow: inset 0 0 3px #e7e7e7;
+}
+
+.date-of-leave-datepicker {
+  display: block;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+.date-of-leave-datepicker:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}

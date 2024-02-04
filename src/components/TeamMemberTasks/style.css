@@ -1,0 +1,365 @@
+.team-member-tasks {
+  background-color: white;
+}
+
+.team-member-tasks h1 {
+  color: black;
+  font-size: 20px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.team-member-tasks-bell {
+  margin-right: 10px;
+  color: red;
+  cursor: pointer;
+}
+
+.team-member-tasks-done {
+  /* margin-left: 10px; */
+  color: green;
+  cursor: pointer;
+}
+
+.team-member-task-remove {
+  margin-left: 10px;
+  margin-right: 10px;
+  color: red;
+  cursor: pointer;
+}
+
+.team-member-task-info {
+  cursor: pointer;
+}
+
+.task-info-modal-backdrop {
+  background-color: grey;
+  opacity: 0.5;
+}
+
+.committed-hours-circle {
+  padding: 0.75rem;
+}
+
+.team-member-tasks .team-member-tasks-headers {
+  vertical-align: middle;
+}
+
+.team-member-tasks .team-member-tasks-subtable {
+  margin: 0;
+  text-align: center;
+}
+
+.team-task-progress {
+  position: relative;
+  width:120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+@media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
+  .team-task-progress {
+    width: 100%; /* or any other value that fits your design */
+    min-width: auto;
+    max-width: none;
+  }
+}
+
+.task-break {
+  border-bottom: 1px solid lightgray;
+}
+
+.task-break:last-of-type {
+  border-bottom: none;
+}
+
+.task-align {
+  text-align: left;
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  gap: 8px; /* Space bet*/
+}
+
+.team-member-tasks-user-name {
+  width: 70%;
+}
+
+.deadlineCount {
+  position: absolute;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 50%;
+  color: #fff;
+  height: 25px;
+  font-size: 15px;
+  width: 25px;
+  top: 3px;
+  right: -10px;
+}
+
+.team-clocks {
+  display: flex;
+  justify-content: space-around;
+}
+
+.team-clocks-header {
+  height: 73.5px;
+  align-items: center;
+}
+
+.hours-btn-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 1rem;
+}
+
+.circle-border {
+  border-radius: 6px;
+  width: 42px;
+  height: 42px;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+
+.header-box {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  justify-content: space-between;
+}
+
+.complete-task-button {
+  background-color: lightgreen;
+}
+
+.uncomplete-task-button {
+  background-color: lightcoral;
+}
+
+.markAsDoneButton:hover {
+  cursor: pointer;
+}
+
+.right-padding-temp-fix {
+  padding-right: 0px !important;
+}
+.table-row {
+  position: relative;
+}
+
+.taking-time-off-table-column {
+  z-index: 2;
+  position: absolute;
+  top: 1px;
+  left: 0;
+  height: calc(100% - 2px);
+  width: 100%;
+  background-color: rgba(0, 0, 25, 0.7);
+  display: grid;
+  align-items: center;
+  justify-items: center;
+}
+.taking-time-off-table-column:hover {
+  background-color: rgba(0, 0, 25, 0.6);
+}
+
+.taking-time-off-content-div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.taking-time-off-content-text {
+  font-size: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  color: white;
+  margin: 0;
+  flex: 1;
+  box-sizing: border-box;
+  padding-right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.show-time-off-btn {
+  border-radius: 6px;
+  height: 42px;
+  width: 42px;
+  border: 1px solid #17a2b8;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  box-shadow: 2px 2px 4px 1px lightgray;
+  box-sizing: border-box;
+  
+}
+
+.show-time-off-btn-selected {
+  background-color: #17a2b8;
+}
+
+.show-time-off-calender-svg {
+  fill: #17a2b8;
+  width: 22px;
+  height: 20px;
+  position: relative;
+  top: 11px;
+  left: -2px;
+}
+.show-time-off-calender-svg-selected {
+  fill: white;
+}
+.show-time-off-icon {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  top: -16px;
+  left: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: white;
+}
+
+
+.show-time-off-icon-selected {
+  background-color: #17a2b8;
+}
+
+.show-time-off-icon path {
+  fill: #17a2b8;
+}
+
+.show-time-off-icon-selected path {
+  fill: white;
+}
+
+.taking-time-off-content-btn {
+  background-color: none;
+  color: white;
+  box-sizing: border-box;
+  border: 1px solid white;
+  padding: 7px;
+  border-radius: 6px;
+}
+.taking-time-off-content-btn:hover {
+  background-color: rgba(0, 0, 25, 0.8);
+}
+
+.time-off-detail-modal {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.time-off-detail-modal-title {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.time-off-detail-modal-sub-heading {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.time-off-detail-modal-sub-section {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.time-off-detail-modal-section {
+  margin-bottom: 10px;
+}
+
+@media only screen and (max-width: 768px) {
+  .pc-component {
+    display: none;
+  }
+
+  .team-member-tasks h1 {
+    color: black;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .hours-btn-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 165px;
+    padding: 0 15%;
+  }
+
+  .card-body {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .card-body .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .team-member-tasks .table,
+  .team-member-tasks .table tbody,
+  .team-member-tasks .table tr,
+  .team-member-tasks .table td {
+    display: block;
+    width: 100%;
+    text-align: left !important;
+  }
+
+  .team-member-tasks .table td::before {
+    content: attr(data-label);
+    font-size: 17px;
+    font-weight: 500;
+
+    display: block;
+    text-align: left !important;
+  }
+
+  .table-row {
+    border: solid #e9ecef 2px;
+    background: #faf7fc;
+  }
+
+  .spacer {
+    height: 20px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .team-member-tasks h1 {
+    font-size: 24px;
+  }
+
+  .header-box {
+    flex-direction: unset;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .team-member-tasks h1 {
+    font-size: 28px;
+  }
+}
+
+.team-member-tasks-icons {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px; /* Adjust the gap as needed */
+}
+
+.team-member-tasks-content {
+  align-items: center; /* Vertically center-align children */
+  gap: 8px; /* Space between children */
+}

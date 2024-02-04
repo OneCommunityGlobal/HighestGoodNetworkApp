@@ -1,0 +1,14 @@
+.checkbox-wrapper {
+  background-color: #f8f7f8;
+}
+
+.checkbox-input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  margin: 0 4px;
+  cursor: pointer;
+}

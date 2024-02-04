@@ -1,0 +1,51 @@
+.tasks-table-header {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.tasks-table-filters-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tasks-table-filters {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.tasks-table-filter-item {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 4px 10px;
+  height: 30px;
+  margin-right: 8px;
+  margin-bottom: 12px;
+}
+
+.tasks-table-filter-input {
+  width: 140px;
+  border: 2px solid #d1cfd4;
+}
+
+.tasks-table-clear-filter-button {
+  display: block;
+  background-color: white;
+  border: 2px solid #e7b1ef;
+  outline-color: #e7b1ef;
+  color: #ca50db;
+  border-radius: 4px;
+  margin-left: 40px;
+  width: 100px;
+  min-width: 100px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.tasks-table-clear-filter-button:hover,
+.tasks-table-clear-filter-button:focus,
+.tasks-table-clear-filter-button:active {
+  border-color: #ca50db;
+  outline-color: #ca50db;
+}

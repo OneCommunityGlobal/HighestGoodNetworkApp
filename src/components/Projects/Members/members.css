@@ -1,0 +1,34 @@
+#member_project__name {
+  padding: 5px;
+}
+
+#members__order {
+  width: 10px;
+}
+
+.members__name {
+  text-align: left;
+  width: 100%;
+}
+
+.members__assign {
+  width: 20px;
+  text-align: center;
+}
+
+#foundUsers__order {
+  width: 10px;
+}
+
+.foundUsers__name {
+  text-align: left;
+}
+
+.foundUsers__email {
+  text-align: left;
+}
+
+.foundUsers__assign {
+  width: 20px;
+  text-align: center;
+}

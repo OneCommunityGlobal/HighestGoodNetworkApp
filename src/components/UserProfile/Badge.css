@@ -1,0 +1,180 @@
+.btn--dark-sea-green {
+  background-color: #c9d6c6 !important;
+  border-color: #285739 !important;
+  color: #285739 !important;
+  /*Spacing between buttons*/
+  margin-right: 10px;
+}
+
+.badge_image_sm > img {
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  margin: 5px;
+}
+
+.badge_image_md > img {
+  height: 115px;
+  width: 115px;
+  margin: 2px;
+}
+
+.badge_image_lg > img {
+  border-radius: 50%;
+  height: 200px;
+  width: 200px;
+}
+
+.badge_image_mini > img {
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+.badge_featured_count {
+  padding-top: 4px;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 14px Arial, sans-serif;
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  z-index: 0;
+}
+
+/* This is just only for displaying 'Personal Max hours' badge hours position */
+.badge_featured_count_personalmax {
+  padding-top: 7px;
+  border-radius: 55%;
+  width: 38px;
+  height: 26px;
+  background: #800080;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
+  position: absolute;
+  transform: translate(-50%, 75%);
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+}
+
+.badge_featured_count_3_digit {
+  padding-top: 6px;
+  border-radius: 50%;
+  width: 40px;
+  height: 30px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 16px Arial, sans-serif;
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 10;
+}
+
+.new_badges {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  height: 70px;
+}
+
+.old_badges {
+  height: 220px;
+}
+
+.badge_featured_container {
+  display: flex;
+  /*Wrap on overflow*/
+  flex-wrap: wrap;
+  overflow-y: hidden;
+  /*center align content*/
+  justify-content: space-around;
+}
+
+.badge_md_image_container {
+  position: relative;
+  height: 117px;
+}
+
+.badgemanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
+}
+
+.assign-badge-margin-top {
+  margin-top: 15px;
+}
+
+.badge-message-background-success {
+  background-color: #d4edda;
+}
+
+.badge-message-background-danger {
+  background-color: #f8d7da;
+}
+
+.badge-message-text-success {
+  color: #092b00;
+}
+
+.badge-message-text-danger {
+  color: #a8071a;
+}
+
+.assign_badge_search_box {
+  margin-bottom: 15px;
+}
+
+.badge_info_icon_text {
+  text-align: left;
+}
+
+/*Aligns the title and the buttons*/
+/* .badge-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+} */
+
+/*Title to occupy more width than buttons*/
+.badge-header-title {
+  flex: 3;
+}
+
+/*To match width of iphone 12 Pro*/
+#badgeCard {
+  min-width: 390px;
+}
+
+@media screen and (max-width: 1199px) {
+  .badge_featured_container {
+    overflow-x: scroll;
+  }
+}
+
+/* @media (max-width: 1024px) {
+  .badge-header {
+    flex-direction: column;
+  }
+} */
+
+.badge-header {
+  display: flex;
+  justify-content: space-between; /* This will push the buttons to the right */
+  align-items: center; /* This will ensure vertical centering */
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+@media (max-width: 1024px) {
+  .badge-header {
+    flex-direction: column;
+    align-items: center; /* This will center the buttons below the title */
+  }
+}

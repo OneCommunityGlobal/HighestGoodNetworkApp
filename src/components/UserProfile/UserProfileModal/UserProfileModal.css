@@ -1,0 +1,87 @@
+.customInput {
+  display: block;
+  width: 100%;
+  padding: 2px;
+  margin: 2px;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.25em 0.4em;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+
+  -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.closeButton {
+  display: block;
+  padding: 2px;
+  margin: 2px;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: white;
+  background-color: firebrick;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+
+  -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.customEdit {
+  display: 'flex';
+  margin: 2px;
+  padding: 0.25em 0.4em;
+  height: calc(1.5em + 0.75rem + 2px);
+  width: 100%;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+}
+
+.customTitle {
+  display: flex;
+  padding: 0.25em 0.4em;
+  margin: 2px;
+  width: 100%;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  color: #fff;
+  background-color: #6c757d;
+}
+
+.addButton {
+  display: block;
+  padding: 2px;
+  margin: 2px;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: white;
+  background-color: dodgerblue;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+
+  -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}

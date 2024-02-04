@@ -1,0 +1,151 @@
+/*
+ * BEM CSS naming convention is used where possible as per
+ * "Codebase Rules & Conventions" document recommendations
+ */
+
+.btn--dark-sea-green {
+  background-color: #c9d6c6 !important;
+  border-color: #225163 !important;
+  color: #225163 !important;
+}
+
+.btn--white-smoke {
+  background-color: #f6f6f3 !important;
+  border-color: #225163 !important;
+  color: #225163 !important;
+}
+
+.btn--dark-sea-green:hover:not([disabled]) {
+  background-color: #225163 !important;
+  border-color: #225163 !important;
+  color: #fff !important;
+}
+
+.btn--white-smoke:hover:not([disabled]) {
+  background-color: #ffffff !important;
+}
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+.bg--white-smoke {
+  background-color: #f6f6f3;
+}
+
+.bg--cadet-blue {
+  background-color: #509999;
+}
+
+.bg--dark-sea-green {
+  background-color: #c9d6c6;
+}
+
+.text--silver {
+  color: #acacac;
+}
+
+.media-url {
+  line-height: 2.3;
+}
+
+.due-section {
+  border: solid 2px #225163;
+  color: #2c2c2c;
+  border-radius: 6px;
+  width: 260px;
+}
+
+.due-section__date {
+  background-color: #225163;
+  padding: 14px;
+}
+
+.due-section__time {
+  padding: 7px;
+}
+
+.countdown {
+  margin: 10px auto;
+}
+
+.countdown__col {
+  display: inline-block;
+}
+
+.countdown__col__element {
+  display: inline-block;
+  margin: 0 9px;
+  display: flex;
+  flex-direction: column;
+}
+
+.countdown__col__element strong,
+.countdown__times-up {
+  font-size: 28px;
+  width: 41px;
+}
+
+.countdown__col__element span {
+  font-size: 12px;
+}
+
+#summaryTabsTooltip {
+  margin-left: 5px;
+  padding-top: 5px;
+}
+.summaryContentTooltip,
+.summaryTabsTooltip,
+.mediaURLTooltip {
+  max-width: 300px !important;
+  padding: 10px !important;
+}
+
+.nav-tabs .nav-link {
+  cursor: pointer;
+}
+
+.tab-content {
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-color: #fff #dee2e6 #dee2e6;
+}
+
+.summary-instructions-row {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 0;
+}
+
+.edit-button {
+  background-color: #007bff; /* Blue color for the button */
+  color: #fff; /* White text color */
+  border: none; /* Remove the border */
+  padding: 8px 16px; /* Adjust padding as needed */
+  cursor: pointer;
+  border-radius: 4px; /* Rounded corners */
+  margin-right: 10px; /* Add margin for spacing */
+}
+
+.edit-button:hover {
+  background-color: #0056b3; /* Darker blue color on hover */
+}
+
+@media screen and (min-width: 992px) {
+  .left-col-dashboard {
+    margin-top: -200px;
+  }
+}
+
+@media screen and (min-width: 576px) and (max-width: 992px) {
+  .modal-dialog.weekly-summary-modal {
+    max-width: 85%;
+  }
+}
+
+/* Small devices (landscape phones, 544px and up) */
+@media (max-width: 544px) {
+  .weeklysummarypane {
+    max-height: 350px;
+    overflow: auto;
+  }
+}

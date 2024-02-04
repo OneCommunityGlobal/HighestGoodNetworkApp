@@ -1,0 +1,80 @@
+.header-wrapper {
+  height: fit-content;
+  width: clamp(100vw, 0.1rem + 1vw, 100%);
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 12px; /* Add some padding for easier clicking */
+}
+
+.card-content {
+  padding: 5px; /* Add padding around the card content */
+  padding-left: 40px;
+  padding-right: 40px;
+  white-space: pre-line;
+  color: white;
+  font-size: medium;
+}
+
+.navbar {
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.timer-message-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+}
+
+.nav-links {
+  align-items: center;
+}
+
+.redBackGroupHeader {
+  z-index: 10;
+  bottom: 0;
+  right: 0;
+  position: relative;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 40px;
+  color: #fff;
+  padding: 3px 6px;
+  max-width: 39px;
+  font-size: 1rem;
+  min-width: 29px;
+}
+
+.owner-message {
+  margin-right: 3rem;
+}
+
+@media (max-width: 1500px) {
+  .dashboard-text-link {
+    font-size: 14px;
+  }
+
+  .owner-message {
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 1400px) {
+  .timer-message-section {
+    display: flex;
+    width: 0;
+    margin-right: 0;
+  }
+
+  .owner-message {
+    display: none;
+  }
+}

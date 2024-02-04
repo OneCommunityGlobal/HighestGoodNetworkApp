@@ -1,0 +1,141 @@
+.permissions-management {
+  padding: 1.5rem 3rem;
+  width: 40%;
+  min-width: 400px;
+  margin: 1.5rem auto;
+  box-shadow: 1px 1px 8px rgb(158, 158, 158);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 8px;
+}
+
+.permissions-management__header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.permissions-management__title {
+  font-size: 1.8rem;
+}
+
+.createRole__alert {
+  margin-top: 0.4rem;
+}
+
+#modal-content__new-role {
+  width: 100%;
+  max-width: 700px;
+}
+
+#modal-body_new-role--padding {
+  padding: 1.5rem 3rem;
+}
+
+.dropdown__user-perms {
+  max-height: 420px;
+  width: '100%';
+  overflow-y: auto;
+}
+
+.user__auto-complete {
+  cursor: pointer;
+  padding: 5px;
+}
+.user__auto-complete:hover {
+  background: #1d62f0;
+}
+
+.user-permissions-pop-up__title {
+  padding-top: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.user-role-tab__permission {
+  border-bottom: solid 1px #ced4da;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+#info-icon__permissions {
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.permissions-management--flex {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.role-name-container {
+  display: flex;
+  flex-direction: column;
+  border: solid 1px lightgrey;
+  border-radius: 8px;
+  min-width: 300px;
+  height: 450px;
+  max-height: 480px;
+  overflow: auto;
+}
+
+.role-name-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.role-name-container::-webkit-scrollbar-track {
+  background: rgb(0, 0, 0, 0);
+}
+
+.role-name-container::-webkit-scrollbar-thumb {
+  background: rgb(206, 212, 218);
+  border-radius: 8px;
+}
+
+.role-name{
+  margin: 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer; 
+  display: flex;
+  align-items: center;
+}
+
+.role-btn {
+  text-align: center;
+  flex-grow: 1;
+}
+
+.infos{
+  margin-left: auto;
+  text-align: center;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+
+.role-name:hover {
+  background-color: lightgrey;
+}
+
+.loading-message {
+  font-size: 30px;
+}
+
+@media only screen and (max-width: 1199px) {
+  .permissions-management__header {
+    flex-direction: column;
+  }
+}

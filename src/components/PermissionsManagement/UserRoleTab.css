@@ -1,0 +1,144 @@
+.userRoleTab__container {
+  padding: 0.5rem 1rem;
+  width: 40%;
+  min-width: 400px;
+  margin: 0 auto;
+}
+
+.userRoleTab__backBtn {
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
+  text-decoration: none;
+  color: white;
+  background-color: rgb(0, 123, 255);
+  padding: 0.3rem 2rem;
+  border-radius: 0.5rem;
+}
+
+.user-role-tab__permissionList {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+}
+
+.user-role-tab__name-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.name-container__role-name {
+  display: grid;
+  align-items: center;
+}
+
+.name-container__btn_columns {
+  display: flex;
+  flex-direction: row;
+  column-gap: 1rem;
+}
+
+.name-container__editable {
+  display: flex;
+  row-gap: 1rem;
+}
+
+.name-container__btns {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.name-container__btns > button {
+  min-width: 80px;
+  border-radius: 4px;
+}
+
+.user-role-tab__alert {
+  margin: 1rem 0;
+}
+
+.user-role-tab__h1 {
+  font-size: 1.8rem;
+  margin-right: 1rem;
+  margin-bottom: 0;
+}
+
+.user-role-tab__h2 {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.user-role-tab__permissions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid lightgrey;
+}
+
+.user-role-tab__permissions > button {
+  padding: 0 0.5rem;
+  min-width: 80px;
+}
+
+.user-role-tab__permissions > p {
+  margin: 0;
+}
+
+.user-role-tab__icon {
+  padding-top: 5px;
+  color: grey;
+  cursor: pointer;
+}
+
+.warning-icon {
+  color: red;
+  margin-right: 0.6rem;
+}
+
+.icon-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.icon-button-container i {
+  display: flex;
+  align-items: center; /* This ensures vertical alignment with the button */
+  margin-right: 10px; /* Optional: Adds some spacing between the icon and the button */
+}
+
+.icon-button { /* This is the new class */
+  height: 40px; /* You can adjust this value */
+  line-height: 40px; /* This should be the same as the height */
+  min-width: 80px; /* Optional: Sets a minimum width for the button */
+  padding: 0px 10px; /* Optional: Adds some padding inside the button */
+}
+
+.infos-name-container{
+  display: flex; 
+  margin-left: auto;
+  text-align: center;
+  align-items: center;
+}
+
+.info-button {
+  height: 40px;
+  width: 80px;
+  padding: 0px;
+}
+
+.btn_preset{
+  height: 4rem;
+  width: 8rem;
+}
+
+.btn_save_delete{
+  height: 4rem;
+}

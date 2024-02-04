@@ -1,0 +1,44 @@
+td > input,
+select {
+  width: 100%;
+}
+
+.table-filter-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.table-filter-datePicker {
+  width: 100%;
+  position: relative;
+}
+
+.table-filter-item {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 4px 10px;
+  height: 30px;
+  margin-right: 8px;
+  margin-bottom: 12px;
+}
+
+.table-filter-input {
+  width: 140px;
+  border: 2px solid #d1cfd4;
+}
+
+.table-filter-input:focus,
+.table-filter-input:active {
+  outline: none;
+  box-shadow: 0px 0px 3px 1px #ca50db;
+}
+
+.date-picker-icon {
+  position: absolute;
+  top: 7px;
+  right: 14px;
+  color: #c6c6c6;
+}

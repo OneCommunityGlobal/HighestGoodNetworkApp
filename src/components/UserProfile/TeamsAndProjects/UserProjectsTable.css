@@ -1,0 +1,27 @@
+.tablet {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .desktop {
+    display: none;
+  }
+
+  .tablet {
+    display: block;
+  }
+}
+
+.centered-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.div-addproject {
+  display: inline-block;
+}
+
+.div-addproject .btn-addproject[disabled] {
+  pointer-events: none;
+}

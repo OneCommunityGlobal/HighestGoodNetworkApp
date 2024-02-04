@@ -1,0 +1,50 @@
+.has_children {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.task-link {
+  word-break: break-all;
+}
+
+.remove-link {
+  margin-right: 5px;
+  color: red;
+  cursor: pointer;
+}
+
+.disable-div {
+  pointer-events: none;
+}
+
+@media only screen and (max-width: 600px) {
+  .container-tasks tbody tr:nth-child(8n + 0) {
+    background-color: rgb(255, 212, 212);
+  }
+
+  .container-tasks tbody tr:nth-child(8n + 1) {
+    background-color: rgb(255, 252, 213);
+  }
+
+  .container-tasks tbody tr:nth-child(8n + 2) {
+    background-color: rgb(222, 255, 254);
+  }
+  .container-tasks tbody tr:nth-child(8n + 3) {
+    background-color: rgb(230, 227, 255);
+  }
+
+  .container-tasks tbody tr:nth-child(8n + 4) {
+    background-color: rgb(255, 235, 255);
+  }
+
+  .container-tasks tbody tr:nth-child(8n + 5) {
+    background-color: rgb(245, 255, 228);
+  }
+
+  .container-tasks tbody tr:nth-child(8n + 6) {
+    background-color: rgb(228, 255, 236);
+  }
+  .container-tasks tbody tr:nth-child(8n + 7) {
+    background-color: rgb(228, 255, 255);
+  }
+}

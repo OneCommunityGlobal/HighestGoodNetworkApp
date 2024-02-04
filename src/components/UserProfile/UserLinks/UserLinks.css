@@ -1,0 +1,33 @@
+.editButton {
+  width: auto;
+  height: auto;
+  display: flex;
+}
+
+.linkAddButton {
+  display: flex;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+  background-color: dodgerblue;
+  border-radius: 4px;
+
+  cursor: pointer;
+  color: #ffffff;
+  font-family: Arial;
+  margin: 5px;
+  width: 20px;
+  height: 20px;
+}
+
+.link {
+  display: flex;
+  width: 'auto';
+  height: 25px;
+  margin: 2px;
+  overflow: 'hidden';
+  text-overflow: ellipsis;
+  background-color: mediumseagreen;
+}

@@ -1,0 +1,81 @@
+.popup-modal-wrapper {
+  position: relative;
+  height: 100%;
+  padding: 0 0 0 22px;
+}
+
+.popup-content-wrapper {
+  height: calc(100% - 40px - 60px);
+  overflow-y: scroll;
+  padding: 14px 14px 0 4px;
+}
+
+.popup-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  background-color: white;
+  border-bottom: 1px solid #ececec;
+  margin: 0 -5px 0 -27px;
+  padding: 0 5px 0 27px;
+}
+
+.popup-modal-footer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  background-color: white;
+  border-top: 1px solid #ececec;
+  margin: 0 -5px 0 -27px;
+  padding: 0 5px 0 27px;
+}
+
+.popup-content-wrapper::-webkit-scrollbar {
+  width: 10px; /* width of the entire scrollbar */
+}
+
+.popup-content-wrapper::-webkit-scrollbar-thumb {
+  background-color: #c6c6c6; /* color of the scroll thumb */
+  border-radius: 20px; /* roundness of the scroll thumb */
+  border: 3px solid white; /* creates padding around scroll thumb */
+}
+
+.popup-close-button {
+  display: block;
+  background-color: white;
+  border: 2px solid #c6c6c6;
+  border-radius: 4px;
+  width: 80px;
+  cursor: pointer;
+}
+
+.popup-close-button:hover,
+.popup-close-button:focus {
+  border-color: #e7b1ef;
+  outline-color: #e7b1ef;
+}
+
+.popup-close-button:active {
+  border-color: #ca50db;
+  box-shadow: 0px 0px 3px 0 #ca50db;
+}
+
+.close-icon {
+  margin-right: 8px;
+  color: #9b9b9b;
+  cursor: pointer;
+}
+
+.close-icon:hover,
+.close-icon:focus {
+  color: #e7b1ef;
+}
+
+.close-icon:active {
+  color: #ca50db;
+}

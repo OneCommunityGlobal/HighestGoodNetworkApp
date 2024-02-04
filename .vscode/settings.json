@@ -1,0 +1,26 @@
+{
+  // other settings
+  // formatting using eslint
+  // let editor format using prettier for all other files
+  "editor.formatOnSave": true,
+  // disable editor formatting, so eslint can handle it
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  //"eslint.enable": true,
+  // available through eslint plugin in vscode
+  "eslint.alwaysShowStatus": true,
+  "editor.tabSize": 2,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+  "files.associations": {
+    "limits": "cpp"
+  }
+}

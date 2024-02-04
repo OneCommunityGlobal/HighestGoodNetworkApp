@@ -1,0 +1,91 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.team-report-main-info-wrapper {
+  margin-top: 24px;
+  height: 60px;
+}
+
+.team-report-main-info-id {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.team-report-main-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 100%;
+  width: 100%;
+}
+
+.team-report-main-info-title {
+  margin: 0;
+}
+
+.team-report-star {
+  color: #996cd3;
+}
+
+.update-date {
+  color: #a1a1a1;
+}
+
+.team-report-blocks {
+  grid-template-rows: 60px 1fr;
+}
+
+.team-chart-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 32px;
+}
+
+.team-chart-container {
+  width: 100%;
+  text-align: left;
+}
+
+.tableHeader {
+  background-color: #eee7f7;
+}
+
+.table-row {
+  background: white;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.input-wrapper + .input-wrapper {
+  margin-left: 1rem;
+}
+
+.active-inactive-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: .5rem;
+}
+
+.active-inactive-container-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-picker-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
+}

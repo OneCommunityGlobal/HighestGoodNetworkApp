@@ -1,0 +1,12 @@
+.popup_container {
+  position: sticky;
+  width: 100%;
+  top: 0;
+  left: 0%;
+  margin: 0;
+  text-align: center;
+  background-color: #ffcc00;
+  color: #fff;
+  z-index: 2;
+  opacity: 0.8;
+}

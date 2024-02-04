@@ -1,0 +1,54 @@
+.toggle {
+  height: 21px;
+  width: 36px;
+  border-radius: 16px;
+  display: inline-block;
+  position: relative;
+  margin: 5px;
+  background: dodgerblue;
+  transition: all 0.5s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  &:focus {
+    outline: 0;
+  }
+  &:after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: dodgerblue;
+    background: white;
+    box-shadow: 0 1px 2px rgba(44, 44, 44, 0.2);
+    transition: all 0.2s cubic-bezier(0.5, 0.1, 0.75, 1.35);
+  }
+  &:checked {
+    background: darkslategrey;
+    &:after {
+      transform: translatex(15px);
+    }
+  }
+}
+
+.switchSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  color: #0062cc;
+  font-weight: bold;
+  margin: 5px;
+}
+
+.switchContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}

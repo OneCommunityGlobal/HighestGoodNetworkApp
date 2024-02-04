@@ -1,0 +1,158 @@
+.btn--dark-sea-green {
+  background-color: #c9d6c6 !important;
+  border-color: #285739 !important;
+  color: #285739 !important;
+}
+
+.badge_image_sm > img {
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  margin: 5px;
+  overflow: inherit;
+}
+
+.badge_image_md > img {
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+  overflow: inherit;
+}
+
+.badge_image_lg > img {
+  border-radius: 50%;
+  height: 200px;
+  width: 200px;
+  overflow: inherit;
+}
+
+.badge_image_mini > img {
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+  overflow: inherit;
+}
+
+.badge_count {
+  padding-top: 4px;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 12px Arial, sans-serif;
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+/* This is just only for displaying 'Personal Max hours' badge hours position */
+.badge_count_personalmax {
+  padding-top: 4px;
+  border-radius: 45%;
+  width: 20px;
+  height: 22px;
+  background: #800080;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
+  position: absolute;
+  right: 20px;
+  bottom: 1px;
+  z-index: 10;
+}
+
+.badge_count_3_digit {
+  border-radius: 50%;
+  width: 20px;
+  height: 15px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+.new_badges {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  height: 70px;
+}
+
+.old_badges {
+  height: 220px;
+  overflow-y: auto;
+}
+
+.badge_history_container {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+}
+
+.badge_image_container {
+  position: relative;
+  height: 60px;
+}
+
+.badgemanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
+}
+
+.assign-badge-margin-top {
+  margin-top: 15px;
+}
+
+.badge-message-background-success {
+  background-color: #d4edda;
+}
+
+.badge-message-background-danger {
+  background-color: #f8d7da;
+}
+
+.badge-message-text-success {
+  color: #092b00;
+}
+
+.badge-message-text-danger {
+  color: #a8071a;
+}
+
+.assign_badge_search_box {
+  margin-bottom: 15px;
+}
+
+.badge_info_icon_text {
+  text-align: left;
+}
+
+.widett {
+  width: 500px;
+}
+
+#badgeEdit .form-group i {
+  margin-left: 5px;
+}
+
+.badgeTooltip .tooltip-inner {
+  background-color: #666;
+}
+
+.popover img {
+  width: 100%;
+  height: 100%;
+  max-width: 120px;
+  margin: 0 auto;
+}
+
+.badge_check {
+  margin-left: 30px;
+}

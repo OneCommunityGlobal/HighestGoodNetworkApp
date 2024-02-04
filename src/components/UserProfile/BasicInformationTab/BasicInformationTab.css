@@ -1,0 +1,27 @@
+.basic-info-tab-tablet {
+  display: none;
+}
+.phone-input-style.phone-input-style {
+  width: 100%; 
+  max-width: 300px; 
+}
+
+@media (max-width: 1024px) {
+  .basic-info-tab-desktop {
+    display: none;
+    
+  }
+
+  .basic-info-tab-tablet {
+    display: block;
+  }
+
+  .cols {
+    margin-bottom: 10px;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+}

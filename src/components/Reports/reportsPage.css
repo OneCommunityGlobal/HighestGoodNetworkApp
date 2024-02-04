@@ -1,0 +1,227 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.container-component-wrapper {
+  min-height: 100%;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  justify-content: center;
+  align-content: start;
+  background-color: #faf7fc;
+  margin: 0px;
+}
+
+.container-component-category {
+  width: 720px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0 0 16px 16px;
+  padding: 32px;
+}
+
+.category-container > .card-category-item.selected {
+  background-color: #d7cdda;
+  box-shadow: 0px 8px 16px rgba(78, 32, 125, 0.2);
+  transform: scale(1.05);
+}
+
+.table-data-container {
+  width: 600px;
+}
+
+.category-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.card-category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 200px;
+  padding: 24px;
+  border: 0;
+  background-color: #f1ebf7;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.card-category-item:hover {
+  background-color: #f1ebf7;
+  box-shadow: 0px 8px 16px rgba(78, 32, 125, 0.2);
+  transform: scale(1.05);
+}
+
+.card-category-item:focus-visible {
+  outline: none;
+}
+
+.card-category-item img {
+  width: 100px;
+  height: 100px;
+}
+
+.card-category-item-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.card-category-item-number {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+.search-field-container {
+  max-width: 100%;
+}
+
+.date-picker-container {
+  display: flex;
+  justify-content: flex-start;
+  padding: 16px 0;
+}
+
+.date-picker-item {
+  display: flex;
+  flex-direction: column;
+  margin: 8px 0;
+}
+
+.date-picker-label {
+  text-align: left;
+  margin: 8px 0;
+}
+
+.total-report-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: 8px 0px 8px 0px;
+}
+
+.total-report-item {
+  display: flex;
+  flex-direction: row;
+  margin: 0px 25px 0px 0px;
+}
+
+.lost-time-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 8px 0px 8px 0px;
+}
+
+.lost-time-item {
+  display: flex;
+  flex-direction: row;
+  margin: 0px 25px 0px 0px;
+}
+
+.type-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.type-item {
+  padding-left: 30px;
+}
+
+@media screen and (max-width: 1350px) {
+  .container-component-wrapper {
+    padding: 16px;
+  }
+
+  .container-component-category {
+    width: 500px;
+    padding: 16px;
+  }
+
+  .card-category-item {
+    width: calc(100% / 3 - 16px);
+    padding: 16px;
+    margin: 4px;
+  }
+  .card-category-item img {
+    width: 72px;
+    height: 72px;
+  }
+  .card-category-item-number {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 8px 0;
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .container-component-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .table-data-container {
+    width: 100%;
+    max-width: 600px;
+  }
+  .table-data-container {
+    overflow-x: scroll;
+  }
+  .table-data-container::-webkit-scrollbar {
+    display: none;
+  }  
+  .category-container {
+    display: flex;
+    flex-direction: column;    
+  }  
+  .card-category-item {
+    width: 100%;
+    padding: 16px;
+    margin: 4px;
+  }
+  .total-report-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 1rem;
+  }
+  .lost-time-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 1rem;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .container-component-wrapper {
+    padding: 16px;
+  }
+  .container-component-category {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0 0 16px 16px;
+    padding: 16px;
+  }
+  .card-category-item img {
+    width: 72px;
+    height: 72px;
+  }
+  .card-category-item-number {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 8px 0;
+  }
+}

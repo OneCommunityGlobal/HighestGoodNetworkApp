@@ -1,0 +1,125 @@
+thead {
+  background: aliceblue;
+}
+
+#new_team {
+  margin-bottom: 10px;
+}
+
+#teams__order {
+  width: 5px;
+}
+
+#teams__active {
+  width: 10px;
+}
+
+.centered-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+#teams__members {
+  width: 15px;
+}
+
+#teams__wbs {
+  width: 15px;
+}
+
+#teams__delete {
+  width: 20px;
+}
+
+.teams__tr {
+  text-align: start;
+}
+
+.teams__overview--top {
+  background: gray;
+}
+
+.teams__overview--top .card {
+  width: 200px;
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+#card_team {
+  background: #1d62f0;
+  color: white;
+}
+
+#card_active {
+  background: #fbad4c;
+  color: white;
+}
+
+.teams__order--input div {
+  margin-top: 7px;
+}
+
+.teams__active--input i {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.teams__name--input input {
+  border: 1px solid white;
+}
+
+.teams__name--input input:hover {
+  border: 1px solid #dee2e6;
+}
+
+.isActive {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.isActive i {
+  color: lawngreen;
+  margin-top: 10px;
+}
+
+.isNotActive i {
+  color: #dee2e6;
+  margin-top: 10px;
+
+}
+
+.isNotActive {
+  color: #dee2e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.isDisabled {
+  opacity: 0;
+  transition: opacity 10ms;
+  display: none;
+}
+
+tr:hover {
+  background: #e9f6ff;
+}
+
+.user-auto-cpmplete {
+  cursor: pointer;
+  padding: 5px;
+}
+
+.user-auto-cpmplete:hover {
+  background: #1d62f0;
+}
+
+.usermanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
+}
