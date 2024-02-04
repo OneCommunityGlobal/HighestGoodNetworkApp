@@ -9,7 +9,7 @@
   --color-h500: #0d5675;
   --color-n0: #ffffff;
   --color-text: #1c8bcc;
-  --font-clickable: Roboto;
+  --color-shadow: rgba(0, 0, 0, 0.125);
 }
 
 .timestamp-container {
@@ -68,9 +68,14 @@
 }
 
 #input-measurement {
-  padding: 0 5px;
-  border: 1px solid var(--color-h50);
+  padding: 3px 10px;
+  border: 1px solid var(--color-shadow);
   border-radius: 5px;
   margin-right: 5px;
-  min-width: 200px;
+  min-width: 210px;
+}
+
+.inventory-types-input {
+  border-radius: 5px;
+  border: 2px solid var(--color-shadow);
 }
