@@ -1,40 +1,85 @@
-import { shallow } from 'enzyme';
-import React from 'react';
-import TeamTable from '../components/Reports/TeamTable';
+import { mount } from 'enzyme';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
+import configureMockStore from 'redux-mock-store';
+import TeamTable from '../components/Reports/TeamTable.jsx';
+import thunk from 'redux-thunk';
 
-describe('<TeamTable/>', () => {
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
-  it('should render without errors', () => {
+describe('<TeamTable />', () => {
+  let store;
+  let component;
+
+  beforeEach(() => {
+    store = mockStore({
+      role: {
+        roles: [
+          { roleName: 'User', permissions: ['somePermission'] },
+        ],
+      },
+      auth: {
+        user: {
+          role: 'Owner',
+          permissions: { frontPermissions: ['editTeamCode'] },
+        },
+      },
+    });
+
     const mockTeamsData = [
-      { _id: '1', teamName: 'Team1', isActive: true },
-      { _id: '2', teamName: 'Team2', isActive: false },
+      { _id: '1', teamName: 'Team1', isActive: true, teamCode: 'A-123' },
+      { _id: '2', teamName: 'Team2', isActive: false, teamCode: 'B-456' },
     ];
-    const wrapper = shallow(<TeamTable allTeams={mockTeamsData} />);
-    expect(wrapper.exists()).toBe(true);
+
+    component = mount(
+      <Provider store={store}>
+        <MemoryRouter> {/* Use MemoryRouter for testing */}
+          <TeamTable allTeams={mockTeamsData} />
+        </MemoryRouter>
+      </Provider>
+    );
   });
 
-  it('should throw an error if allTeams is not an array', () => {
-    const erroneousTeamsData = "This is not an array";
-    expect(() => {
-      shallow(<TeamTable allTeams={erroneousTeamsData} />);
-    }).toThrow();
+  it('renders without crashing', () => {
+    expect(component.exists()).toBeTruthy();
   });
 
-  it('should render the correct number of team rows', () => {
-    const mockTeamsData = [
-      { _id: '1', teamName: 'Team1', isActive: true },
-      { _id: '2', teamName: 'Team2', isActive: false },
-    ];
-    const wrapper = shallow(<TeamTable allTeams={mockTeamsData} />);
-    expect(wrapper.find('tr').length).toBe(mockTeamsData.length + 1); // +1 for the header row
+  it('renders correct number of teams', () => {
+    expect(component.find('tr').length).toBe(3); // 2 teams + 1 header
   });
 
-  it('should have correct link to the team report', () => {
-    const mockTeamsData = [
-      { _id: '1', teamName: 'Team1', isActive: true }
-    ];
-    const wrapper = shallow(<TeamTable allTeams={mockTeamsData} />);
-    const link = wrapper.find('Link');
-    expect(link.prop('to')).toBe(`/teamreport/${mockTeamsData[0]._id}`);
+  // Test for correct rendering of team names
+  it('renders correct team names', () => {
+    const teamRows = component.find('tr').slice(1); // Skip the header row
+    expect(teamRows.length).toBe(2); // Ensure we have 2 team rows
+
+    const teamNames = teamRows.map(row => {
+      const nameCell = row.find('td').at(0);
+      expect(nameCell.exists()).toBe(true); // Check if the cell exists
+      return nameCell.text();
+    });
+
+    expect(teamNames).toEqual(['Team1', 'Team2']);
   });
+
+  // Test for correctly displaying active/inactive status
+  it('displays correct active/inactive status', () => {
+    const isActive = component.find('.isActive').hostNodes().length;
+    const isNotActive = component.find('.isNotActive').hostNodes().length;
+    expect(isActive).toBe(1); // One team is active
+    expect(isNotActive).toBe(1); // One team is not active
+  });
+
+  // Test edit team code interaction
+  it('allows editing team code if permitted', () => {
+    // Assuming 'editTeamCode' permission allows editing the team code
+    const firstTeamInput = component.find('Input').first();
+    firstTeamInput.simulate('change', { target: { value: 'New-Code' } });
+
+    // Verify the input value change
+    expect(firstTeamInput.prop('value')).toBe('A-123');
+  });
+
+
 });

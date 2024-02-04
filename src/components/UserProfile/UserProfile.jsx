@@ -58,7 +58,6 @@ import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import SelectProfilePicPopup from 'components/UserManagement/SelectProfilePicPopup';
 
-
 function UserProfile(props) {
   /* Constant values */
   const initialFormValid = {
@@ -209,7 +208,8 @@ function UserProfile(props) {
   };
 
   const loadSummaryIntroDetails = async (teamId, user) => {
-    const { firstName, lastName } = user;
+    const currentManager = user;
+
     const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
     const { data } = res;
 
@@ -217,20 +217,25 @@ function UserProfile(props) {
     const memberNotSubmitted = [];
 
     data.forEach(member => {
-      member.weeklySummaries[0].summary !== ''
-        ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
-        : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+      if (member._id !== currentManager._id) {
+        if (member.weeklySummaries[0].summary !== '') {
+          memberSubmitted.push(`${member.firstName} ${member.lastName}`);
+        } else {
+          memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+        }
+      }
     });
+
     const memberSubmittedString =
       memberSubmitted.length !== 0
         ? memberSubmitted.join(', ')
-        : '<list all team members names included in the summary>.';
+        : '<list all team members names included in the summary>';
     const memberDidntSubmitString =
       memberNotSubmitted.length !== 0
-        ? memberSubmitted.join(', ')
+        ? memberNotSubmitted.join(', ')
         : '<list all team members names NOT included in the summary>';
 
-    const summaryIntroString = `This week’s summary was managed by ${firstName} ${lastName} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+    const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
 
     setSummaryIntro(summaryIntroString);
   };
@@ -245,6 +250,38 @@ function UserProfile(props) {
       })
       .catch(err => console.log(err));
   };
+
+  // const loadSummaryIntroDetails = async teamId => {
+  //   const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+  //   const { data } = res;
+
+  //   const memberSubmitted = [];
+  //   const memberNotSubmitted = [];
+  //   let manager = '';
+
+  //   data.forEach(member => {
+  //     if (member.role === 'Manager') {
+  //       manager = `${member.firstName} ${member.lastName}`;
+  //     }
+  //     member.weeklySummaries[0].summary !== ''
+  //       ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
+  //       : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
+  //   });
+
+  //   manager = manager === '' ? '<Your Name>' : manager;
+  //   const memberSubmittedString =
+  //     memberSubmitted.length !== 0
+  //       ? memberSubmitted.join(', ')
+  //       : '<list all team members names included in the summary>.';
+  //   const memberDidntSubmitString =
+  //     memberNotSubmitted.length !== 0
+  //       ? memberSubmitted.join(', ')
+  //       : '<list all team members names NOT included in the summary>';
+
+  //   const summaryIntroString = `This week’s summary was managed by ${manager} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+
+  //   setSummaryIntro(summaryIntroString);
+  // };
 
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
@@ -437,10 +474,10 @@ function UserProfile(props) {
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares !== []) {
+      if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
-      if (summary != null && currentBlueSquares !== []) {
+      if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
@@ -448,7 +485,7 @@ function UserProfile(props) {
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
-      if (newInfringements !== []) {
+      if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
@@ -465,7 +502,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
+      await props.updateUserProfile(userProfileRef.current);
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -789,6 +826,7 @@ function UserProfile(props) {
                   color="primary"
                   size="sm"
                   title="Generates the summary intro for your team and copies it to your clipboard for easy use."
+                  style={boxStyle}
                 >
                   Generate Summary Intro
                 </Button>
@@ -964,7 +1002,7 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
-                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole === 'Owner' || requestorRole === 'Administrator'}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
@@ -1007,24 +1045,26 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Basic Information')}
                 color="primary"
+                style={boxStyle}
               >
                 Basic Information
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
-                  <BasicInformationTab
-                    role={requestorRole}
-                    userProfile={userProfile}
-                    setUserProfile={setUserProfile}
-                    handleUserProfile={handleUserProfile}
-                    formValid={formValid}
-                    setFormValid={setFormValid}
-                    isUserSelf={isUserSelf}
-                    canEdit={canEdit}
-                    canEditRole={canEdit}
-                    roles={roles}
-                  />
+                <BasicInformationTab
+                  role={requestorRole}
+                  userProfile={userProfile}
+                  setUserProfile={setUserProfile}
+                  loadUserProfile={loadUserProfile}
+                  handleUserProfile={handleUserProfile}
+                  formValid={formValid}
+                  setFormValid={setFormValid}
+                  isUserSelf={isUserSelf}
+                  canEdit={canEdit}
+                  canEditRole={canEditUserProfile}
+                  roles={roles}
+                />
                 </ModalBody>
                 <ModalFooter>
                   <Row>
@@ -1093,6 +1133,7 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Volunteering Times')}
                 color="secondary"
+                style={boxStyle}
               >
                 Volunteering Times
               </Button>
@@ -1145,7 +1186,7 @@ function UserProfile(props) {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary">
+              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary" style={boxStyle}>
                 Teams
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle}>
@@ -1169,7 +1210,7 @@ function UserProfile(props) {
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     canEditTeamCode={
-                      props.hasPermission('editTeamCode') || requestorRole == 'Owner'
+                      props.hasPermission('editTeamCode') || requestorRole === 'Owner' ||requestorRole === 'Administrator'
                     }
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
@@ -1213,7 +1254,7 @@ function UserProfile(props) {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary">
+              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary" style={boxStyle}>
                 Projects
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle}>
@@ -1278,6 +1319,7 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Edit History')}
                 color="secondary"
+                style={boxStyle}
               >
                 Edit History
               </Button>

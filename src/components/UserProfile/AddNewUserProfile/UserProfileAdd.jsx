@@ -25,7 +25,7 @@ import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
 import { assign, get } from 'lodash';
-import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
+import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
   updateTeam,
@@ -37,7 +37,6 @@ import { fetchAllProjects } from 'actions/projects';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
@@ -51,7 +50,7 @@ import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 const nextDay = new Date();
-nextDay.setDate(nextDay.getDate()+1);
+nextDay.setDate(nextDay.getDate() + 1);
 
 class AddUserProfile extends Component {
   constructor(props) {
@@ -75,10 +74,17 @@ class AddUserProfile extends Component {
         googleDoc: '',
         dropboxDoc: '',
         timeZone: '',
-        location: '',
+        location: {
+          userProvided: '',
+          coords: { lat: '', lng: '' },
+          country: '',
+          city: '',
+        },
         showphone: true,
         weeklySummaryOption: 'Required',
         createdDate: nextDay,
+        actualEmail: '',
+        actualPassword: '',
       },
       formValid: {},
       formErrors: {
@@ -86,17 +92,17 @@ class AddUserProfile extends Component {
         lastName: 'Last Name is required',
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
+        actualEmail: 'Actual Email is required',
+        actualPassword: 'Actual Password is required',
       },
-      location: '',
       timeZoneFilter: '',
       formSubmitted: false,
       teamCode: '',
       codeValid: false,
     };
 
-    
     const { user } = this.props.auth;
-    this.canAddDeleteEditOwners = user && user.role === 'Owner'
+    this.canAddDeleteEditOwners = user && user.role === 'Owner';
   }
 
   popupClose = () => {
@@ -115,10 +121,18 @@ class AddUserProfile extends Component {
     this.state.showphone = true;
     this.onCreateNewUser();
   }
-  
-  
+
   render() {
-    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
+    const {
+      firstName,
+      email,
+      lastName,
+      phoneNumber,
+      role,
+      actualEmail,
+      actualPassword,
+      jobTitle,
+    } = this.state.userProfile;
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
@@ -130,7 +144,7 @@ class AddUserProfile extends Component {
           onClose={this.props.closePopup}
           createUserProfile={this.createUserProfile}
         />
-        <Container className="emp-profile">
+        <Container className="emp-profile add-new-user">
           <Row>
             <Col md="12">
               <Form>
@@ -147,7 +161,7 @@ class AddUserProfile extends Component {
                         value={firstName}
                         onChange={this.handleUserProfile}
                         placeholder="First Name"
-                        invalid={this.state.formErrors.firstName}
+                        invalid={!!this.state.formErrors.firstName}
                       />
                       <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
                     </FormGroup>
@@ -161,7 +175,7 @@ class AddUserProfile extends Component {
                         value={lastName}
                         onChange={this.handleUserProfile}
                         placeholder="Last Name"
-                        invalid={this.state.formErrors.lastName}
+                        invalid={!!this.state.formErrors.lastName}
                       />
                       <FormFeedback>{this.state.formErrors.lastName}</FormFeedback>
                     </FormGroup>
@@ -197,7 +211,7 @@ class AddUserProfile extends Component {
                         value={email}
                         onChange={this.handleUserProfile}
                         placeholder="Email"
-                        invalid={this.state.formErrors.email}
+                        invalid={!!this.state.formErrors.email}
                       />
                       <FormFeedback>{this.state.formErrors.email}</FormFeedback>
                       <ToggleSwitch
@@ -243,10 +257,29 @@ class AddUserProfile extends Component {
                       <Input
                         type="number"
                         name="weeklyCommittedHours"
+                        min={0}
+                        max={168}
                         id="weeklyCommittedHours"
                         value={this.state.userProfile.weeklyCommittedHours}
                         onChange={this.handleUserProfile}
-                        onFocus={this.handleUserProfile}
+                        onKeyDown={event => {
+                          if (event.key === 'Backspace' || event.key === 'Delete') {
+                            this.setState({
+                              userProfile: {
+                                ...this.state.userProfile,
+                                [event.target.id]: "",
+                              },
+                              formValid: {
+                                ...this.state.formValid,
+                                [event.target.id]: false,
+                              },
+                              formErrors: {
+                                ...this.state.formErrors,
+                                weeklyCommittedHours: 'Committed hours can not be empty',
+                              },
+                            });
+                          }
+                        }}
                         placeholder="Weekly Committed Hours"
                         invalid={
                           this.state.formValid.weeklyCommittedHours === undefined
@@ -271,15 +304,61 @@ class AddUserProfile extends Component {
                         defaultValue="Volunteer"
                         onChange={this.handleUserProfile}
                       >
-                        {this.props.role.roles.map(({ roleName }) => {
+                        {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
-                          return <option value={roleName}>{roleName}</option>;
+                          return (
+                            <option value={roleName} key={index}>
+                              {roleName}
+                            </option>
+                          );
                         })}
                         {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>
                 </Row>
+                {(role === 'Administrator' || role === 'Owner') && (
+                  <>
+                    <Row className="user-add-row">
+                      <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                        <Label>Actual Email</Label>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <Input
+                            type="actualEmail"
+                            name="actualEmail"
+                            id="actualEmail"
+                            value={actualEmail}
+                            onChange={this.handleUserProfile}
+                            placeholder="Actual Email"
+                            invalid={!!this.state.formErrors.actualEmail}
+                          />
+                          <FormFeedback>{this.state.formErrors.actualEmail}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row className="user-add-row">
+                      <Col md={{ size: 4 }} className="text-md-right my-2">
+                        <Label>Actual Password</Label>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <Input
+                            type="password"
+                            name="actualPassword"
+                            id="actualPassword"
+                            value={actualPassword}
+                            onChange={this.handleUserProfile}
+                            placeholder="Actual Password"
+                            invalid={!!this.state.formErrors.actualPassword}
+                          />
+                          <FormFeedback>{this.state.formErrors.actualPassword}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  </>
+                )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
                     <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
@@ -385,16 +464,20 @@ class AddUserProfile extends Component {
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                    <div className="date-picker-item">                        
-                      <DatePicker
-                        selected={this.state.userProfile.createdDate}
-                        minDate={new Date(DATE_PICKER_MIN_DATE)}
-                        onChange={date => this.setState({ userProfile: {
-                          ...this.state.userProfile,
-                          createdDate: date,
-                        }})}
-                        className="form-control"
-                      />
+                      <div className="date-picker-item">
+                        <DatePicker
+                          selected={this.state.userProfile.createdDate}
+                          minDate={new Date(DATE_PICKER_MIN_DATE)}
+                          onChange={date =>
+                            this.setState({
+                              userProfile: {
+                                ...this.state.userProfile,
+                                createdDate: date,
+                              },
+                            })
+                          }
+                          className="form-control"
+                        />
                       </div>
                     </FormGroup>
                   </Col>
@@ -509,7 +592,7 @@ class AddUserProfile extends Component {
 
   // Function to call TimeZoneService with location and key
   onClickGetTimeZone = () => {
-    const location = this.state.location;
+    const location = this.state.userProfile.location.userProvided;
     const key = this.props.timeZoneKey;
     if (!location) {
       alert('Please enter valid location');
@@ -524,16 +607,30 @@ class AddUserProfile extends Component {
             response.data.results.length
           ) {
             let timezone = response.data.results[0].annotations.timezone.name;
+
+            let currentLocation = {
+              userProvided: location,
+              coords: {
+                lat: response.data.results[0].geometry.lat,
+                lng: response.data.results[0].geometry.lng,
+              },
+              country: response.data.results[0].components.country,
+              city: response.data.results[0].components.city,
+            };
+            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
+
             this.setState({
               ...this.state,
               timeZoneFilter: timezone,
               userProfile: {
                 ...this.state.userProfile,
+                location: currentLocation,
                 timeZone: timezone,
               },
             });
           } else {
-            alert('Invalid location or ' + response.data.status.message);
+            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
+            `);
           }
         })
         .catch(err => console.log(err));
@@ -587,6 +684,8 @@ class AddUserProfile extends Component {
       location,
       weeklySummaryOption,
       createdDate,
+      actualEmail,
+      actualPassword,
     } = that.state.userProfile;
 
     const userData = {
@@ -611,6 +710,8 @@ class AddUserProfile extends Component {
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
+      actualEmail: actualEmail,
+      actualPassword: actualPassword,
     };
 
     this.setState({ formSubmitted: true });
@@ -618,7 +719,7 @@ class AddUserProfile extends Component {
     if (googleDoc) {
       if (isValidGoogleDocsUrl(googleDoc)) {
         userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
-      } else{
+      } else {
         toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
         this.setState({
           formValid: {
@@ -635,21 +736,21 @@ class AddUserProfile extends Component {
     }
     if (dropboxDoc) {
       if (isValidMediaUrl(dropboxDoc)) {
-          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
-        } else {
-          toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
-          this.setState({
-            formValid: {
-              ...that.state.formValid,
-              dropboxDoc: false,
-            },
-            formErrors: {
-              ...that.state.formErrors,
-              dropboxDoc: 'Invalid Dropbox Link URL',
-            },
-          });
-          return;
-        }
+        userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
+      } else {
+        toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+        this.setState({
+          formValid: {
+            ...that.state.formValid,
+            dropboxDoc: false,
+          },
+          formErrors: {
+            ...that.state.formErrors,
+            dropboxDoc: 'Invalid Dropbox Link URL',
+          },
+        });
+        return;
+      }
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
@@ -671,10 +772,15 @@ class AddUserProfile extends Component {
             } else {
               toast.success('User profile created.');
               this.state.userProfile._id = res.data._id;
-              if(this.state.teams.length > 0){
-                this.state.teams.forEach((team) => {
-                  this.props.addTeamMember(team._id, res.data._id, res.data.firstName, res.data.lastName)
-                })
+              if (this.state.teams.length > 0) {
+                this.state.teams.forEach(team => {
+                  this.props.addTeamMember(
+                    team._id,
+                    res.data._id,
+                    res.data.firstName,
+                    res.data.lastName,
+                  );
+                });
               }
             }
             this.props.userCreated();
@@ -716,6 +822,19 @@ class AddUserProfile extends Component {
                       popupOpen: true,
                     });
                   }
+                  break;
+                case 'credentials':
+                  this.setState({
+                    formValid: {
+                      ...that.state.formValid,
+                      email: false,
+                    },
+                    formErrors: {
+                      ...that.state.formErrors,
+                      actualEmail: 'Actual email or password may be incorrect',
+                      actualPassword: 'Actual email or password may be incorrect',
+                    },
+                  });
                   break;
               }
             }
@@ -801,7 +920,13 @@ class AddUserProfile extends Component {
   };
 
   handleLocation = e => {
-    this.setState({ ...this.state, location: e.target.value });
+    this.setState({
+      ...this.state,
+      userProfile: {
+        ...this.state.userProfile,
+        location: { ...this.state.location, userProvided: e.target.value },
+      },
+    });
     this.handleUserProfile(e);
   };
 
@@ -846,7 +971,9 @@ class AddUserProfile extends Component {
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim(),
+            [event.target.id]: event.target.value
+              .trim()
+              .replace(/[A-Z]/g, char => char.toLowerCase()),
           },
           formValid: {
             ...formValid,
@@ -862,7 +989,7 @@ class AddUserProfile extends Component {
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim(),
+            [event.target.id]: { ...userProfile.location, userProvided: event.target.value.trim() },
           },
           formValid: {
             ...formValid,
@@ -892,18 +1019,24 @@ class AddUserProfile extends Component {
         });
         break;
       case 'weeklyCommittedHours':
+        let val = Number(event.target.value);
+        if (val > 168) {
+          val = 168
+        } else if (val < 0) {
+          val = 0
+        } 
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim(),
+            [event.target.id]: val.toString(),
           },
           formValid: {
             ...formValid,
-            [event.target.id]: !!event.target.value,
+            [event.target.id]: true,
           },
           formErrors: {
             ...formErrors,
-            weeklyCommittedHours: !!event.target.value ? '' : 'Committed hours can not be empty',
+            weeklyCommittedHours: '',
           },
         });
         break;
@@ -981,6 +1114,30 @@ class AddUserProfile extends Component {
           },
         });
         break;
+      case 'actualEmail':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            actualEmail: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            actualEmail: event.target.value.match(patt) ? '' : 'Actual Email is not valid',
+          },
+        });
+        break;
+      case 'actualPassword':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            actualPassword: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            actualPassword: event.target.value.length > 0 ? '' : 'Actual Password is required',
+          },
+        });
+        break;
       default:
         this.setState({
           ...userProfile,
@@ -1002,7 +1159,6 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   getUserProfile,
   clearUserProfile,
-  updateUserProfile,
   getAllUserTeams,
   updateTeam,
   deleteTeamMember,

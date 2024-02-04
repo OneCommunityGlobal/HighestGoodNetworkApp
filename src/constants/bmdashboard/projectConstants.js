@@ -1,0 +1,2 @@
+const GET_BM_PROJECTS = 'GET_BM_PROJECTS';
+export default GET_BM_PROJECTS;

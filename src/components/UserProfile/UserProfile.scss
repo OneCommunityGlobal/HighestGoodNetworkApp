@@ -74,6 +74,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  flex-wrap: wrap;
   gap: 4px;
 }
 .profile-edit-btn {
@@ -206,7 +207,23 @@
 .profile-functions-tablet {
   display: none;
 }
+// Changed hover, focus and active class for the Stop Scheduler Button
+#stopSchedulerButton{
+  background-color:#ffc107;
+  border:#ffc107;
 
+  &:hover{
+    // background-color: #fff3cd;
+    // border: #fff3cd ;
+    background-color: #ffcd39;
+    border:  #ffcd39;
+  }
+  &:active, &:focus{
+    background-color: #997404;
+    border: #997404;
+  }
+
+}
 @media only screen and (max-width: 1024px) {
   .profileContainer {
     justify-content: space-around;

@@ -24,13 +24,18 @@ import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
+import { searchWithAccent } from '../../utils/search'
+
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
+import LogTimeOffPopUp from './logTimeOffPopUp';
 import { Table } from 'react-bootstrap';
 import SelectProfilePicPopup from './SelectProfilePicPopup';
 import SetupNewUserPopup from './setupNewUserPopup';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { toast } from 'react-toastify';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -54,19 +59,22 @@ class UserManagement extends React.PureComponent {
       finalDayDateOpen: false,
       profilePicOpen: false,
       setupNewUserPopupOpen: false,
+      logTimeOffPopUpOpen: false,
+      userForTimeOff: '',
     };
   }
 
   componentDidMount() {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
+    this.props.getAllTimeOffRequests();
   }
 
   render() {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions);
-
+    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests);
     let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
       <Container fluid>
@@ -126,7 +134,7 @@ class UserManagement extends React.PureComponent {
    * 6. Popup to show and select the profile pictures matched
    */
   popupElements = () => {
-    let user_name = this.state?.selectedUser?.firstName + '_' + this.state?.selectedUser?.lastName
+    let user_name = this.state?.selectedUser?.firstName + '_' + this.state?.selectedUser?.lastName;
     return (
       <React.Fragment>
         <ActivationDatePopup
@@ -166,6 +174,11 @@ class UserManagement extends React.PureComponent {
           open={this.state.setupNewUserPopupOpen}
           onClose={this.handleNewUserSetupPopup}
         />
+        <LogTimeOffPopUp
+          open={this.state.logTimeOffPopUpOpen}
+          onClose={this.logTimeOffPopUpClose}
+          user={this.state.userForTimeOff}
+        />
         <SelectProfilePicPopup
           open={this.state.profilePicOpen}
           onClose={this.profilePicPopupClose}
@@ -178,7 +191,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements = (userProfiles, rolesPermissions) => {
+  userTableElements = (userProfiles, rolesPermissions, timeOffRequests) => {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -211,6 +224,7 @@ class UserManagement extends React.PureComponent {
                 this.state.finalDayDateOpen
               }
               onPauseResumeClick={that.onPauseResumeClick}
+              onLogTimeOffClick={that.onLogTimeOffClick}
               onFinalDayClick={that.onFinalDayClick}
               onDeleteClick={that.onDeleteButtonClick}
               onActiveInactiveClick={that.onActiveInactiveClick}
@@ -219,6 +233,7 @@ class UserManagement extends React.PureComponent {
               user={user}
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
+              timeOffRequests={timeOffRequests[user._id] || []}
               hasProfilePic={user.profilePic ? [user.profilePic].flat().length : 0}
               onSelectProfilePicClick={that.onSelectProfilePicClick}
             />
@@ -242,8 +257,8 @@ class UserManagement extends React.PureComponent {
           this.state.wildCardSearchText === '') ||
         //the wild card serach, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          (user.firstName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.lastName.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+          (searchWithAccent(user.firstName,this.state.wildCardSearchText) ||
+          searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
             user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
             user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
             user.weeklycommittedHours === Number(this.state.wildCardSearchText)))
@@ -280,6 +295,22 @@ class UserManagement extends React.PureComponent {
         selectedUser: user,
       });
     }
+  };
+
+  /**
+   * Call back on log time off button click
+   */
+  onLogTimeOffClick = user => {
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
+    if(canManageTimeOffRequests){
+      this.setState({
+        logTimeOffPopUpOpen: true,
+        userForTimeOff: user,
+      });
+    }else{
+      toast.warn(`You do not have permission to manage time-off requests.`)
+    }
+  
   };
 
   /**
@@ -322,6 +353,14 @@ class UserManagement extends React.PureComponent {
   setUpFinalDayPopupClose = () => {
     this.setState({
       finalDayDateOpen: false,
+    });
+  };
+  /**
+   * call back function to close log time off popup
+   */
+  logTimeOffPopUpClose = () => {
+    this.setState({
+      logTimeOffPopUpOpen: false,
     });
   };
 
@@ -584,4 +623,5 @@ export default connect(mapStateToProps, {
   updateUserFinalDayStatusIsSet,
   deleteUser,
   hasPermission,
+  getAllTimeOffRequests,
 })(UserManagement);
