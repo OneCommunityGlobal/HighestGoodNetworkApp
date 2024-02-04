@@ -17,6 +17,7 @@ import './Badge.css';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
 import BadgeSummaryViz from 'components/Reports/BadgeSummaryViz';
+import { WEEK_DIFF } from '../../constants/badge';
 import { getUserProfile } from '../../actions/userProfile';
 import { boxStyle } from 'styles';
 
@@ -49,9 +50,13 @@ const Badge = props => {
 
   const generateBadgeText = (totalBadge, badgeCollection, personalBestMaxHrs) => {
     if (!totalBadge) return 'You have no badges. ';
+    
+    const newBadges = badgeCollection.filter(
+      value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
+    );
 
     const roundedHours = Math.floor(personalBestMaxHrs);
-    const personalMaxText = badgeCollection.find(badgeObj => badgeObj.badge.type === 'Personal Max')
+    const personalMaxText = newBadges.find(badgeObj => badgeObj.badge.type === 'Personal Max')
       ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
       : '';
 

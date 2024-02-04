@@ -40,3 +40,4 @@ src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/Announcements/**
 src/components/EmailSubscribeForm/**
+src/components/Dashboard/**

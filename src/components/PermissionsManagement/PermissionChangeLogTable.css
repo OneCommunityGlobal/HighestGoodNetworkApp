@@ -1,0 +1,27 @@
+.permission-change-log-table {
+  border-collapse: 'collapse';
+  width: 100%;
+}
+
+.permission-change-log-table--header {
+  background-color: #e3f0fb;
+}
+
+.permission-change-log-table--header,
+.permission-change-log-table--cell {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+tr:hover {
+  background-color: #e3f0fb;
+}
+
+.permission-change-log-table--button {
+  padding: 5px 10px;
+  margin: 0 5px;
+  color: #FFFFFF;
+  border: 'none';
+  border-radius: 5px;
+  cursor: 'pointer'
+}

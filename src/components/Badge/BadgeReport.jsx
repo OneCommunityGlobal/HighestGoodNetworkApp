@@ -338,7 +338,7 @@ const BadgeReport = props => {
                         <DropdownToggle caret color="primary" style={boxStyle}>
                           Dates
                         </DropdownToggle>
-                        <DropdownMenu>
+                        <DropdownMenu className='badge_dropdown'>
                           {value.earnedDate.map((date, i) => {
                             return <DropdownItem key={i}>{date}</DropdownItem>;
                           })}
@@ -502,7 +502,7 @@ const BadgeReport = props => {
                             Options
                           </DropdownToggle>
 
-                          <DropdownMenu>
+                          <DropdownMenu >
                             <DropdownItem
                               style={{
                                 display: 'flex',
