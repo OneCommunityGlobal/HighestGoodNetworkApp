@@ -276,7 +276,7 @@ describe('Team Member Task Component', () => {
     modifiedProps.tasks.forEach(task => {
       const timeElement = screen.getAllByTestId(`times-${task.taskName}`);
       expect(timeElement[0].textContent).toBe(
-        `${task.hoursLogged}\n                            of\n                          ${task.estimatedHours}`,
+        `${task.hoursLogged} of ${task.estimatedHours}`,
       );
     });
   });

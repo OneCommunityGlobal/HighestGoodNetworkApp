@@ -13,6 +13,7 @@ import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries'
 import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
+import { hrsFilterBtnColorMap } from 'constants/colors';
 
 
 import checkNegativeNumber from 'utils/checkNegativeHours';
@@ -136,11 +137,36 @@ const TimeEntry = (props) => {
       dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
     }
   };
-
+  let filteredColor;
+  const daysPast = moment().diff(dateOfWork, 'days');
+  switch (true) {
+    case daysPast === 0:
+      filteredColor = hrsFilterBtnColorMap[1];
+      break;
+    case daysPast === 1:
+      filteredColor = hrsFilterBtnColorMap[2];
+      break;
+    case daysPast === 2:
+      filteredColor = hrsFilterBtnColorMap[3];
+      break;
+    case daysPast === 3:
+      filteredColor = hrsFilterBtnColorMap[4];
+      break;
+    default:
+      filteredColor = hrsFilterBtnColorMap[7];
+  }
 
   return (
-    <>
-      <Card className="mb-1 p-2" style={{ backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF' }}>
+    <div style={{ display: "flex" }}>
+      <div
+        style={{
+          width: '12px',
+          marginBottom: '4px',
+          border: `5px solid ${filteredColor}` ,
+          backgroundColor: taskId ? filteredColor : 'white',
+        }}
+      ></div>
+      <Card className="mb-1 p-2" style={{ backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF', flexGrow: 1 }}>
         <Row className="mx-0">
           <Col md={3} className="date-block px-0">
             <div className="date-div">
@@ -214,7 +240,7 @@ const TimeEntry = (props) => {
         isOpen={timeEntryFormModal}
         tab={tab}
       />
-    </>
+    </div>
   );
 };
 

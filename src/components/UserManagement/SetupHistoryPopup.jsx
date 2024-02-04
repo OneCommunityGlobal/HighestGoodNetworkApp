@@ -5,7 +5,8 @@ import { ENDPOINTS } from 'utils/URL';
 import { formatDate } from 'utils/formatDate';
 import Table from 'react-bootstrap/Table';
 import { toast } from 'react-toastify';
-
+import UserTableFooter from './UserTableFooter';
+import { set } from 'lodash';
 
 // Define Table Header
 const TABLE_HEADER = ['Email', 'Weekly Committed Hours', 'Created Date', 'Expired Date', 'Status', 'Refresh', 'Cancel'];
@@ -77,6 +78,8 @@ const TableFilter = ({
   );
 }
 
+
+
 const SetupHistoryPopup = React.memo(props => {
   // const [alert, setAlert] = useState({ visibility: 'hidden', message: '', state: 'success' });
   // const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
@@ -90,7 +93,8 @@ const SetupHistoryPopup = React.memo(props => {
   const [ selectedPage, setSelectedPage ] = useState(1);
   const [ pageSize, setPageSize ] = useState(10);
   const [ loading, setLoading ] = useState(true);
-  
+  const [ filteredUserDataCount, setFilteredUserDataCount ] = useState(0);
+
   const closePopup = e => {
     props.onClose();
   };
@@ -99,9 +103,11 @@ const SetupHistoryPopup = React.memo(props => {
     httpService
         .get(ENDPOINTS.GET_SETUP_INVITATION())
         .then(res => {
-           setSetupInvitationData(res.data);
+          //  setSetupInvitationData(res.data);
            setSetupInvitationData(prevData => {
-            setFilteredSetupInvitationData(transformedTableData(res.data));
+            const transformedData = transformedTableData(res.data)
+            setFilteredSetupInvitationData(transformedData);
+            setFilteredUserDataCount(transformedData.length && transformedData.length > 0 ? transformedData.length : 0);
             return res.data;
            });
         })
@@ -121,9 +127,11 @@ const SetupHistoryPopup = React.memo(props => {
       httpService
       .get(ENDPOINTS.GET_SETUP_INVITATION())
       .then(res => {
-         setSetupInvitationData(res.data);
+        //  setSetupInvitationData(res.data);
          setSetupInvitationData(prevData => {
-          setFilteredSetupInvitationData(transformedTableData(res.data));
+          const transformedData = transformedTableData(res.data)
+          setFilteredSetupInvitationData(transformedData);
+          setFilteredUserDataCount(transformedData.length && transformedData.length > 0 ? transformedData.length : 0);
           return res.data;
          });
       })
@@ -169,7 +177,6 @@ const SetupHistoryPopup = React.memo(props => {
     /**
      * Sort data list by created date and expired date
      */
-    debugger;
     if (sortByCreationDateDesc && sortByExpiredDateDesc) {
       filteredList.sort((a, b) => {
         const createdDateComparison = compareByCreationDate(b, a);
@@ -203,12 +210,24 @@ const SetupHistoryPopup = React.memo(props => {
         return compareByExpirationDate(b, a);
       });
     }
-
+    setFilteredUserDataCount(filteredList.length);
     // pagination
     return filteredList.slice((selectedPage - 1) * pageSize, selectedPage * pageSize);
   }
 
-  console.log(sortByCreationDateDesc, "sortByCreationDateDesc");
+  const onPageSelect = (page) => {
+    setSelectedPage(page);
+    // const transformedData = transformedTableData(setupInvitationData)
+    // setFilteredSetupInvitationData(transformedData);
+    // setFilteredUserDataCount(transformedData.length && transformedData.length > 0 ? transformedData.length : 0);
+  }
+
+  const onSelectPageSize = (size) => {
+    setPageSize(size);
+    // const transformedData = transformedTableData(setupInvitationData)
+    // setFilteredSetupInvitationData(transformedData);
+    // setFilteredUserDataCount(transformedData.length && transformedData.length > 0 ? transformedData.length : 0);
+  }
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} size={'xl'}>
@@ -222,59 +241,68 @@ const SetupHistoryPopup = React.memo(props => {
         <div className="setup-new-user-popup-section">
         {loading ? <div>Data Loading...</div> : 
         setupInvitationData && setupInvitationData.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                {TABLE_HEADER.map((key, index) => (
-                  <th key={index}> {key} </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <TableFilter 
-                emailFilter={emailFilter}
-                statusFilter={statusFilter}
-                sortByCreationDateDesc={sortByCreationDateDesc}
-                sortByExpiredDateDesc={sortByExpiredDateDesc}
-                setEmailFilter={setEmailFilter} 
-                setStatusFilter={setStatusFilter}
-                setSortByCreationDateDesc={setSortByCreationDateDesc}
-                setSortByExpiredDateDesc={setSortByExpiredDateDesc} 
-              />
-              {filteredSetupInvitationData.map((record, index) => {
-                return <tr key={index}>
-                    <td>{record.email}</td>
-                    <td>{record.weeklyCommittedHours}</td>
-                    <td>{formatDate(record.createdDate)}</td>
-                    <td>{formatDate(record.expiration)}</td>
-                    <td>{new Date(record.expiration) > Date.now() && !record.isCancelled ? INV_STATUS.ACITVE :
-                          record.isCancelled ? INV_STATUS.CANCELLED :
-                          new Date(record.expiration) < Date.now() ? INV_STATUS.EXPIRED : null}</td>
-                    <td>
-                    <Button 
-                        key={index}
-                        color='primary'
-                        onClick={(e) => {
-                          toast.success('Invitation Refreshed!');
-                        }}>
-                          Refresh
-                      </Button>
-                    </td>
-                    <td>
+          <>
+            <Table responsive>
+              <thead>
+                <tr>
+                  {TABLE_HEADER.map((key, index) => (
+                    <th key={index}> {key} </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <TableFilter 
+                  emailFilter={emailFilter}
+                  statusFilter={statusFilter}
+                  sortByCreationDateDesc={sortByCreationDateDesc}
+                  sortByExpiredDateDesc={sortByExpiredDateDesc}
+                  setEmailFilter={setEmailFilter} 
+                  setStatusFilter={setStatusFilter}
+                  setSortByCreationDateDesc={setSortByCreationDateDesc}
+                  setSortByExpiredDateDesc={setSortByExpiredDateDesc} 
+                />
+                {filteredSetupInvitationData.map((record, index) => {
+                  return <tr key={index}>
+                      <td>{record.email}</td>
+                      <td>{record.weeklyCommittedHours}</td>
+                      <td>{formatDate(record.createdDate)}</td>
+                      <td>{formatDate(record.expiration)}</td>
+                      <td>{new Date(record.expiration) > Date.now() && !record.isCancelled ? INV_STATUS.ACITVE :
+                            record.isCancelled ? INV_STATUS.CANCELLED :
+                            new Date(record.expiration) < Date.now() ? INV_STATUS.EXPIRED : null}</td>
+                      <td>
                       <Button 
-                        key={index}
-                        color="danger"
-                        onClick={() => {
-                          toast.success('Invitation Cancelled!');
-                        }}>
-                          Cancel
-                      </Button>
-                    </td>
-                    
-                  </tr>;
-              })}
-            </tbody>
-          </Table>
+                          key={index}
+                          color='primary'
+                          onClick={(e) => {
+                            toast.success('Invitation Refreshed!');
+                          }}>
+                            Refresh
+                        </Button>
+                      </td>
+                      <td>
+                        <Button 
+                          key={index}
+                          color="danger"
+                          onClick={() => {
+                            toast.success('Invitation Cancelled!');
+                          }}>
+                            Cancel
+                        </Button>
+                      </td>
+                      
+                    </tr>;
+                })}
+              </tbody>
+            </Table>
+            <UserTableFooter
+               datacount={filteredUserDataCount}
+               selectedPage={selectedPage}
+               onPageSelect={onPageSelect}
+               onSelectPageSize={onSelectPageSize}
+               pageSize={pageSize}
+            />
+          </>
         ) : (
           <div>No Data</div>
         )}

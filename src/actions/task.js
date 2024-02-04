@@ -44,7 +44,7 @@ export const fetchTeamMembersTimeEntries = () => async (dispatch, getState) => {
     const { teamMemberTasks } = getState();
     const fromDate = moment()
       .tz('America/Los_Angeles')
-      .subtract(72, 'hours')
+      .subtract(6, 'days')
       .format('YYYY-MM-DD');
     const toDate = moment()
       .tz('America/Los_Angeles')
