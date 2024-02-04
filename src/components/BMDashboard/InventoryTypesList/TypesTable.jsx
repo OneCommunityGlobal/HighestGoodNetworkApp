@@ -32,7 +32,7 @@ export function TypesTable(props) {
         </thead>
         <tbody>
           {itemTypes?.map((type, index) => (
-            <TypeRow key={type._id} itemType={type} id={index + 1} />
+            <TypeRow key={type._id} itemType={type} rowID={index + 1} />
           ))}
         </tbody>
       </Table>

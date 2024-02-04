@@ -8,7 +8,10 @@ import GET_MATERIAL_TYPES, {
   GET_INV_BY_TYPE,
   DELETE_BUILDING_INVENTORY_TYPE,
   RESET_DELETE_BUILDING_INVENTORY_TYPE,
-  DELETE_ERROR_BUILDING_INVENTORY_TYPE
+  DELETE_ERROR_BUILDING_INVENTORY_TYPE,
+  UPDATE_BUILDING_INVENTORY_TYPE,
+  RESET_UPDATE_BUILDING_INVENTORY_TYPE,
+  UPDATE_ERROR_BUILDING_INVENTORY_TYPE
  } from "constants/bmdashboard/inventoryTypeConstants";
 import { GET_ERRORS } from "constants/errors";
 
@@ -58,10 +61,23 @@ export const deleteBuildingInventoryType = (payload) => {
 
         // update invTypes with updated list received from DELETE request
         // NOTE: categories are plural in redux reducer, while singular in backend, i.e. "Material" vs. "Materials"
-        dispatch(setInvTypesByType({ type: category + 's', data: res.data }))
+        // dispatch(setInvTypesByType({ type: category + 's', data: res.data }))
       })
       .catch(err => {
         dispatch(setDeleteInvTypeError(err))
+      })
+  }
+}
+
+export const updateBuildingInventoryType = (payload) => {
+  const {category, id, name, description} = payload
+  return async dispatch => {
+    axios.put(`${ENDPOINTS.BM_INVTYPE_ROOT}/${category}/${id}`, {name, description})
+      .then(res => {
+        dispatch(setUpdateInvTypeResult(res.data))
+      })
+      .catch(err => {
+        dispatch(setUpdateInvTypeError(err))
       })
   }
 }
@@ -103,6 +119,26 @@ export const setDeleteInvTypeError = (payload) => {
 export const resetDeleteInvTypeResult = () => {
   return {
     type: RESET_DELETE_BUILDING_INVENTORY_TYPE
+  }
+}
+
+export const setUpdateInvTypeResult = (payload) => {
+  return {
+    type: UPDATE_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const setUpdateInvTypeError = (payload) => {
+  return {
+    type: UPDATE_ERROR_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const resetUpdateInvTypeResult = () => {
+  return {
+    type: RESET_UPDATE_BUILDING_INVENTORY_TYPE
   }
 }
 

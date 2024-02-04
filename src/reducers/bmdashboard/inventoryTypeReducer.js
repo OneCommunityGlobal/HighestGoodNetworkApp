@@ -5,7 +5,10 @@ import GET_MATERIAL_TYPES, {
   GET_INV_BY_TYPE,
   DELETE_BUILDING_INVENTORY_TYPE,
   RESET_DELETE_BUILDING_INVENTORY_TYPE,
-  DELETE_ERROR_BUILDING_INVENTORY_TYPE
+  DELETE_ERROR_BUILDING_INVENTORY_TYPE,
+  UPDATE_BUILDING_INVENTORY_TYPE,
+  RESET_UPDATE_BUILDING_INVENTORY_TYPE,
+  UPDATE_ERROR_BUILDING_INVENTORY_TYPE
 } from "constants/bmdashboard/inventoryTypeConstants";
 
 const defaultState = {
@@ -20,6 +23,11 @@ const defaultState = {
     success: null
   },
   deletedResult: {
+    result: null,
+    success: null,
+    error: null
+  },
+  updatedResult: {
     result: null,
     success: null,
     error: null
@@ -88,6 +96,33 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
         return {
           ...state,
           deletedResult: {
+            result: null,
+            success: null,
+            error: null
+          }
+        }
+        case UPDATE_BUILDING_INVENTORY_TYPE:
+        return {
+          ...state,
+          updatedResult: {
+            result: action.payload,
+            success: true,
+            error: false
+          }
+        };
+      case UPDATE_ERROR_BUILDING_INVENTORY_TYPE:
+        return {
+          ...state,
+          updatedResult: {
+            result: action.payload,
+            success: false,
+            error: true
+          }
+        }
+      case RESET_UPDATE_BUILDING_INVENTORY_TYPE:
+        return {
+          ...state,
+          updatedResult: {
             result: null,
             success: null,
             error: null

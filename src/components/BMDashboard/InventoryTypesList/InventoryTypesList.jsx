@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-
-import { fetchInvTypeByType } from 'actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
+import {
+  fetchInvTypeByType,
+  resetDeleteInvTypeResult,
+  resetUpdateInvTypeResult,
+} from 'actions/bmdashboard/invTypeActions';
+
 import { Accordion, Card } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
-import { resetDeleteInvTypeResult } from 'actions/bmdashboard/invTypeActions';
 import { toast } from 'react-toastify';
+
 import BMError from '../shared/BMError';
 import TypesTable from './TypesTable';
 import UnitsTable from './invUnitsTable';
@@ -16,7 +19,7 @@ import AccordionToggle from './AccordionToggle';
 import './TypesList.css';
 
 export function InventoryTypesList(props) {
-  const { deleteInvTypeResult, errors, dispatch } = props;
+  const { updateInvTypeResult, deleteInvTypeResult, errors, dispatch } = props;
 
   // NOTE: depend on redux action implementation
   const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
@@ -44,6 +47,16 @@ export function InventoryTypesList(props) {
       dispatch(resetDeleteInvTypeResult());
     }
   }, [deleteInvTypeResult]);
+
+  useEffect(() => {
+    if (updateInvTypeResult.error) {
+      toast.error(`Error updating type.`);
+      dispatch(resetUpdateInvTypeResult());
+    } else if (updateInvTypeResult.success) {
+      toast.success(`Type updated.`);
+      dispatch(resetUpdateInvTypeResult());
+    }
+  }, [updateInvTypeResult]);
 
   // trigger error state if an error object is added to props
   useEffect(() => {
@@ -118,6 +131,7 @@ export function InventoryTypesList(props) {
 const mapStateToProps = state => ({
   errors: state.errors,
   deleteInvTypeResult: state.bmInvTypes.deletedResult,
+  updateInvTypeResult: state.bmInvTypes.updatedResult,
 });
 
 export default connect(mapStateToProps)(InventoryTypesList);

@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
-import { deleteBuildingInventoryType } from 'actions/bmdashboard/invTypeActions';
+import {
+  fetchInvTypeByType,
+  deleteBuildingInventoryType,
+  updateBuildingInventoryType,
+} from 'actions/bmdashboard/invTypeActions';
 
 export function TypeRow(props) {
-  const { itemType, id, dispatch } = props;
+  const { itemType, rowID, dispatch } = props;
 
   const [editMode, setEditMode] = useState(false);
   const [updatedType, setUpdatedType] = useState({
@@ -12,13 +16,19 @@ export function TypeRow(props) {
     description: itemType.description,
   });
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     // TODO:
+    const { category, _id: id } = itemType;
+    const { name, description } = updatedType;
+    await dispatch(updateBuildingInventoryType({ category, id, name, description }));
     setEditMode(false);
+    dispatch(fetchInvTypeByType(`${category}s`));
   };
 
-  const handleDelete = () => {
-    dispatch(deleteBuildingInventoryType({ category: itemType.category, id: itemType._id }));
+  const handleDelete = async () => {
+    const { category, _id: id } = itemType;
+    await dispatch(deleteBuildingInventoryType({ category, id }));
+    dispatch(fetchInvTypeByType(`${category}s`));
   };
 
   const handleChangeInput = e => {
@@ -31,7 +41,7 @@ export function TypeRow(props) {
   if (editMode) {
     return (
       <tr>
-        <td>{id}</td>
+        <td>{rowID}</td>
         <td>
           <input
             className="inventory-types-input"
@@ -70,7 +80,7 @@ export function TypeRow(props) {
 
   return (
     <tr>
-      <td>{id}</td>
+      <td>{rowID}</td>
       <td>{itemType.name}</td>
       <td>{itemType.description}</td>
       <td>
