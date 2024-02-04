@@ -10,7 +10,7 @@ function MaterialCard() {
       </div>
       <div className="single-card__body">
         <h3>Card title</h3>
-        <div className="single-card__info">Term ends in __ hours.</div>
+        <div className="single-card__info">Less than ___% left</div>
       </div>
     </div>
   );

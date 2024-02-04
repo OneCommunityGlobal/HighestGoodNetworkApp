@@ -13,7 +13,7 @@ export default function SelectForm({
     else
       materialSet = [
         ...new Set(
-          materials.filter(mat => mat.project.name === selectedProject).map(m => m.itemType?.name),
+          materials.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
         ),
       ];
   }

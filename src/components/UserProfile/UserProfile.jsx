@@ -460,7 +460,7 @@ function UserProfile(props) {
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
-      const newBlueSquare = { date: dateStamp, description: summary };
+      const newBlueSquare = { date: dateStamp, description: summary , createdDate: moment.tz('America/Los_Angeles').toISOString().split('T')[0]};
       setOriginalUserProfile({
         ...originalUserProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
@@ -472,10 +472,10 @@ function UserProfile(props) {
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares !== []) {
+      if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
-      if (summary != null && currentBlueSquares !== []) {
+      if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
@@ -483,7 +483,7 @@ function UserProfile(props) {
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
-      if (newInfringements !== []) {
+      if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
@@ -500,7 +500,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(props.match.params.userId, userProfileRef.current);
+      await props.updateUserProfile(userProfileRef.current);
 
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -976,7 +976,7 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
-                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner'}
+                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole === 'Owner' || requestorRole === 'Administrator'}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
@@ -1026,18 +1026,19 @@ function UserProfile(props) {
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
-                  <BasicInformationTab
-                    role={requestorRole}
-                    userProfile={userProfile}
-                    setUserProfile={setUserProfile}
-                    handleUserProfile={handleUserProfile}
-                    formValid={formValid}
-                    setFormValid={setFormValid}
-                    isUserSelf={isUserSelf}
-                    canEdit={canEdit}
-                    canEditRole={canEdit}
-                    roles={roles}
-                  />
+                <BasicInformationTab
+                  role={requestorRole}
+                  userProfile={userProfile}
+                  setUserProfile={setUserProfile}
+                  loadUserProfile={loadUserProfile}
+                  handleUserProfile={handleUserProfile}
+                  formValid={formValid}
+                  setFormValid={setFormValid}
+                  isUserSelf={isUserSelf}
+                  canEdit={canEdit}
+                  canEditRole={canEditUserProfile}
+                  roles={roles}
+                />
                 </ModalBody>
                 <ModalFooter>
                   <Row>
@@ -1183,7 +1184,7 @@ function UserProfile(props) {
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     canEditTeamCode={
-                      props.hasPermission('editTeamCode') || requestorRole == 'Owner'
+                      props.hasPermission('editTeamCode') || requestorRole === 'Owner' ||requestorRole === 'Administrator'
                     }
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}

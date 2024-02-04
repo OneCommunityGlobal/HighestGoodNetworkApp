@@ -12,6 +12,7 @@ import {
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 import moment from 'moment';
+import { formatDate } from 'utils/formatDate';
 
 const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
@@ -120,28 +121,15 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       }, 6000);
       return;
     }
+   
     const {badgeCollection} = res.data[0];
-    const UserToBeAssigned = res.data[0]._id;
-    selectedBadges.forEach(badgeId => {
-      let included = false;
-
-      if(badgeId.includes("assign-badge-")) badgeId = badgeId.replace("assign-badge-", "");
-
-      badgeCollection.forEach(badgeObj => {
-        if (badgeId === badgeObj.badge) {
-          badgeObj.count++;
-          badgeObj.lastModified = Date.now();
-          included = true;
-        }
-      });
-      if (!included) {
-        badgeCollection.push({ badge: badgeId, count: 1, lastModified: Date.now() });
-      }
-    });
-
-    const url = ENDPOINTS.BADGE_ASSIGN(UserToBeAssigned);
+    const userToBeAssignedBadge = res.data[0]._id;
+    // return a new badgeCollection for udpate
+    const newBadgeCollection = returnUpdatedBadgesCollection(badgeCollection, selectedBadges);
+    
+    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
     try {
-      await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
+      await axios.put(url, { badgeCollection: newBadgeCollection, newBadges: selectedBadges.length });
       dispatch(
         getMessage(
           "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
@@ -195,6 +183,10 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
     // badgeCollection is an array, it doesn't contain the earnedDate field
     // const earnedDate = res.data.badgeCollection.earnedDate;
 
+
+    const {badgeCollection} = res.data;
+    // Update the badgeCollection.badge object to badge._id string for backend
+
     for (let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
     }
@@ -239,16 +231,70 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       });
       if (!included) {
         unique_badges.push({ badge: badgeId, count: 1, earnedDate: [formatedDate], lastModified: Date.now() });
+
+    const userToBeAssignedBadge = res.data._id;
+    // return a new badgeCollection for udpate
+    const newBadgeCollection = returnUpdatedBadgesCollection(badgeCollection, selectedBadges);
+    // send updated badgeCollection to backend
+    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
+    try {
+      await axios.put(url, { badgeCollection: newBadgeCollection, newBadges: selectedBadges.length });
+      dispatch(
+        getMessage(
+          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
+          'success',
+        ),
+      );
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    } catch (e) {
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    }
+  };
+};
+
+// Return updated badgeCollection
+export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) =>{
+  let newBadgeCollection = Array.from(badgeCollection);
+  
+  selectedBadgesId.forEach(badgeId => {
+    let included = false;
+    // Remove "assign-badge-" from badgeId
+    if(badgeId.includes("assign-badge-")) badgeId = badgeId.replace("assign-badge-", "");
+    // Change format of date to MMM-DD-YYYY
+    let currentTs = Date.now();
+    let currentDate = formatDate();
+    // Update record in badgeCollection if exist
+    newBadgeCollection.forEach(badgeObj => {
+      if (badgeId === badgeObj.badge) {
+        badgeObj.count++;
+        badgeObj.lastModified = currentTs;
+        badgeObj.earnedDate.push(currentDate);
+        included = true;
+        return; // find match and break
       }
     });
+    // Add the new badge record to badgeCollection
+    if (!included) {
+      newBadgeCollection.push({ badge: badgeId, count: 1, lastModified: currentTs, earnedDate: new Array(currentDate)});
+    }
+  });
+  return newBadgeCollection;
+}
 
     for (let i = 0; i < unique_badges.length; i++)
       if (personal_max_badge_ids.includes(unique_badges[i].badge))
         unique_badges[i].count = parseInt(res.data.personalBestMaxHrs)
     
     const userToBeAssignedBadge = res.data._id;
-    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
 
+// Make API call to update badgeCollection
+export const sendUpdatedBadgeCollectionReq = async (badgeCollection, selectedBadges, userToBeAssignedBadge) => {
+    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
     try {
       await axios.put(url, { badgeCollection: unique_badges, newBadges: selectedBadges.length });
       dispatch(
@@ -266,7 +312,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
         dispatch(closeAlert());
       }, 6000);
     }
-  };
+    return;
 };
 
 export const changeBadgesByUserID = (userId, badgeCollection) => {

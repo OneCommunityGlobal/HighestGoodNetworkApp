@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { boxStyle } from 'styles';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { permissionLabel } from './UserRoleTab';
+import PermissionList from './PermissionList';
 
 function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
@@ -67,16 +67,6 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     return duplicateFound;
   };
 
-  const handleChange = e => {
-    const actualValue = e.target.value;
-
-    setPermissionsChecked(previous => {
-      const isAlreadyChecked = previous.some(perm => perm === actualValue);
-      const unCheckPermission = previous.filter(perm => perm !== actualValue);
-      return isAlreadyChecked ? unCheckPermission : [...previous, actualValue];
-    });
-  };
-
   return (
     <Form id="createRole" onSubmit={handleSubmit}>
       <FormGroup>
@@ -97,17 +87,11 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
 
       <FormGroup>
         <Label>Permissions:</Label>
-        {Object.entries(permissionLabel).map(([key, value]) => {
-          return (
-            <FormCheck
-              onChange={e => handleChange(e)}
-              value={key}
-              key={key}
-              label={value}
-              id={value}
-            />
-          );
-        })}
+        <PermissionList
+          rolePermissions={permissionsChecked}
+          editable={true}
+          setPermissions={setPermissionsChecked}
+        />
       </FormGroup>
       <Button type="submit" id="createRole" color="primary" size="lg" block style={boxStyle}>
         Create
