@@ -578,6 +578,10 @@ const TimeEntryForm = props => {
     } 
   }, [isOpen]);
 
+  useEffect(() => {
+    setFormValues({ ...formValues, ...data})
+  }, [data])
+
   return (
     <>
       <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
