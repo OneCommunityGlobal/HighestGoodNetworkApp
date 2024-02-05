@@ -18,6 +18,7 @@ import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
 
+
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
   const { firstName, lastName } = userProfile;
