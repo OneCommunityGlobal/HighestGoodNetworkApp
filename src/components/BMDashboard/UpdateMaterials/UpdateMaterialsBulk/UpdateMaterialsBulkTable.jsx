@@ -142,6 +142,7 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
           size="md"
           className="logMButtonBg"
           disabled={bulkValidationError}
+          type='sumbit'
           onClick={e => submitHandler(e)}
         >
           Submit

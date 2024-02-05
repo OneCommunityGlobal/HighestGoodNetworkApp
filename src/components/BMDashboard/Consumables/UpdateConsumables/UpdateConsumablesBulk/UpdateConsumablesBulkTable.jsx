@@ -7,20 +7,20 @@ import moment from 'moment';
 import { fetchAllConsumables, postConsumableUpdateBulk } from 'actions/bmdashboard/consumableActions';
 import UpdateConsumable from "../UpdateConsumable"
 
-//TODO: Every thing is manually tested to be working by now, will clean up the logic and double check to make it more robust next week.
-//TODO: couple of the thing to consider changing are:
-// 1) sumbmit button should be disabled when no entry is recorded
-// 2) consult what is exactly the "Wasted(Unit)" for?
 function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
   const consumables = useSelector(state => state.bmConsumables.consumableslist);
-  const [consumablesState, setConsumablesState] = useState([...consumables]);
+  const [consumablesState, setConsumablesState] = useState(consumables);
   const postConsumableUpdateBulkResult = useSelector(state => state.bmConsumables.updateConsumablesBulk);
   const [cancel, setCancel] = useState(1);
-  const [updatedRecordsList] = useState({});
-  const [validationsList] = useState({});
-  const [bulkValidationError, setbulkValidationError] = useState(false);
+  const [updatedRecordsList, setUpdatedRecordsList] = useState({});
+  const [isReadyToSubmit, setIsReadyToSubmit] = useState(false)
+  const [bulkValidationError, setBulkValidationError] = useState(false);
   const today = moment(new Date()).format('YYYY-MM-DD');
+
+  const filterUpdatedRecords = (records) => {
+    return Object.values(records).filter(record => record.newAvailable !== '');
+  };
 
   useEffect(() => {
     setConsumablesState([...consumables]);
@@ -63,29 +63,33 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
 
   const submitHandler = e => {
     e.preventDefault();
-
     if (bulkValidationError) return;
-    const tempPostConsumableUpdateData = Object.values(updatedRecordsList).filter(
-      d => d.newAvailable !== '',
-    ); // In case , user enters and removes data
+    const tempPostConsumableUpdateData = filterUpdatedRecords(updatedRecordsList);
     dispatch(postConsumableUpdateBulk({ updateConsumables: tempPostConsumableUpdateData, date }));
+    //reset submit btn to disabled
+    setIsReadyToSubmit(false)
   };
 
   const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
-    updatedRecordsList[updatedRecord.consumable._id] = updatedRecord;
-    validationsList[updatedRecord.consumable._id] = validationRecord;
-    if (
-      !(
-        validationRecord.quantityUsed === '' &&
-        validationRecord.quantityWasted === '' &&
-        validationRecord.quantityTogether === ''
-      )
-    ) {
-      setbulkValidationError(true);
-    } else {
-      setbulkValidationError(false);
-    }
+    setUpdatedRecordsList(prevState => ({
+      ...prevState,
+      [updatedRecord.consumable._id]: updatedRecord
+    }));
+
+    const hasValidationError = validationRecord.quantityUsed !== '' ||
+      validationRecord.quantityWasted !== '' ||
+      validationRecord.quantityTogether !== '';
+    setBulkValidationError(hasValidationError);
   };
+
+  useEffect(() => {
+    const tempPostConsumableUpdateData = filterUpdatedRecords(updatedRecordsList);
+    if (tempPostConsumableUpdateData.length > 0) {
+      setIsReadyToSubmit(true);
+    } else {
+      setIsReadyToSubmit(false);
+    }
+  }, [updatedRecordsList]);
 
   return (
     <div>
@@ -146,7 +150,8 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
         <Button
           size="md"
           className="logMButtonBg"
-          disabled={bulkValidationError}
+          disabled={!isReadyToSubmit || bulkValidationError}
+          type='sumbit'
           onClick={e => submitHandler(e)}
         >
           Submit

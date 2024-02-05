@@ -88,7 +88,17 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal })
           return;
         }
       }
-      if (Number(value) < 0) return;
+      // if (Number(value) < 0) return;
+      if (Number(value) < 0) {
+        if (e.target.name === 'quantityWasted') {
+          updateRecord.quantityWasted = ''
+          return
+        }
+        else {
+          updateRecord.quantityUsed = ''
+          return
+        }
+      }
     }
 
     updateRecord[e.target.name] = value;

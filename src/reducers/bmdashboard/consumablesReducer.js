@@ -29,26 +29,26 @@ export const consumablesReducer = (consumables = defaultState, action) => {
     case POST_UPDATE_CONSUMABLE_START_BULK:
       {
         const obj = { loading: true }
-        consumables.upadateConsumables = obj;
+        consumables.updateConsumablesBulk = obj;
         return { ...consumables }
       }
     case POST_UPDATE_CONSUMABLE_END_BULK:
       {
         const obj = { result: action.payload, loading: false, error: false }
-        consumables.upadateConsumables = obj;
+        consumables.updateConsumablesBulk = obj;
         return { ...consumables }
       }
 
     case POST_UPDATE_CONSUMABLE_ERROR_BULK:
       {
         const obj = { result: action.payload, loading: false, error: true }
-        consumables.upadateConsumables = obj;
+        consumables.updateConsumablesBulk = obj;
         return { ...consumables }
       }
     case RESET_UPDATE_CONSUMABLE_BULK:
       {
         const obj = { loading: false, result: null, error: undefined }
-        consumables.upadateConsumables = obj;
+        consumables.updateConsumablesBulk = obj;
         return { ...consumables }
       }
     default:
