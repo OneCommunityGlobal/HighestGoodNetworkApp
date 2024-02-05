@@ -206,6 +206,7 @@ const ScheduleReasonModal = ({
               role={role}
               />
         </Button>
+        
           <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
