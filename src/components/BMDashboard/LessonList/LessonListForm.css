@@ -64,10 +64,10 @@
 }
 
 .tag .close {
-  margin-left: 5px;
+  margin-left: 10px;
   cursor: pointer;
 } 
-.close-button {
+.lesson-form-close-button {
   border: none !important;
   background-color: transparent !important;
 } 

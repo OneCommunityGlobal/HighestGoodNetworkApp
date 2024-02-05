@@ -13,7 +13,6 @@ function LessonList(props) {
   const [filteredLessons, setFilteredLessons] = useState(lessons);
   const [filterOption, setFilterOption] = useState('1');
   const [sortOption, setSortOption] = useState('1');
-
   useEffect(() => {
     dispatch(fetchBMLessons());
   }, []);
@@ -206,11 +205,11 @@ function LessonList(props) {
             <InputGroup className="mb-3">
               {tags.length > 0 &&
                 tags.map((tag, index) => (
-                  <div key={tag} className="tag">
+                  <div key={`${tag}`} className="tag">
                     <span>{tag}</span>
                     <Button
                       variant="light"
-                      className="close-button"
+                      className="lesson-form-close-button"
                       onClick={() => removeTag(index)}
                     >
                       &times;

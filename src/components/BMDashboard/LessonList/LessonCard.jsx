@@ -69,19 +69,28 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
 
   const lessonCards = filteredLessons.map(lesson => {
     return (
-      <Card key={lesson._id}>
-        <Card.Header onClick={() => toggleCardExpansion(lesson._id)} style={{ cursor: 'pointer' }}>
-          <Nav className="nav">
+      <Card key={`${lesson._id} + ${lesson.title} `} className="lesson-card">
+        <Card.Header
+          onClick={() => toggleCardExpansion(lesson._id)}
+          style={{ cursor: 'pointer' }}
+          className="lesson-card-header"
+        >
+          <Nav className="lesson-card-nav">
             <div className="nav-title-and-date">
-              <Nav.Item className="nav-item-title">{lesson.title}</Nav.Item>
-              <Nav.Item className="nav-item-date">Date: {formatDateAndTime(lesson.date)}</Nav.Item>
+              <Nav.Item className="lesson-card-nav-item nav-item-title">{lesson.title}</Nav.Item>
+              <Nav.Item className=" lesson-card-nav-item nav-item-date">
+                Date: {formatDateAndTime(lesson.date)}
+              </Nav.Item>
             </div>
             <div>
-              <Nav.Item className="card-tag">
+              <Nav.Item className="lesson-card-tag">
                 {lesson.tags &&
                   lesson.tags.length > 0 &&
                   lesson.tags.map(tag => (
-                    <span key={`${lesson._id} + ${tag}`} className="text-muted tag-item">
+                    <span
+                      key={`tag-in-header-${tag}-${lesson._id}`}
+                      className="text-muted tag-item"
+                    >
                       {`#${tag}`}
                     </span>
                   ))}
@@ -97,7 +106,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                 {lesson.tags &&
                   lesson.tags.length > 0 &&
                   lesson.tags.map(tag => (
-                    <span key={`${lesson._id} + ${tag}`} className="text-muted tag-item">
+                    <span key={`tag-in-body-${tag}-${lesson._id}`} className="text-muted tag-item">
                       {`#${tag}`}
                     </span>
                   ))}
@@ -133,14 +142,14 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                 File: <span className="lesson-file">file</span>
               </Card.Text>
             </Card.Body>
-            <Card.Footer className="text-muted">
+            <Card.Footer className=" lesson-card-footer text-muted">
               <div>
                 <span className="footer-items-author-and-from">Author: {lesson.author.name}</span>
                 <span className="footer-items-author-and-from">
                   From: {lesson.relatedProject.name}
                 </span>
               </div>
-              <div className="footer-items">
+              <div className="lesson-card-footer-items">
                 {currentUserId === lesson.author.id && (
                   <div>
                     <button
