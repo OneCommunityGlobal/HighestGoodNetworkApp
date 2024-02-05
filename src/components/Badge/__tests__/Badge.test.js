@@ -86,9 +86,34 @@ describe('Badge Component', () => {
         store = mockStore({
           auth: authMock,
           userProfile: {
-            ...userProfileMock, badgeCollection: [
-              { badge: { badgeName: 'Personal Max', type: 'Personal Max' }, count: 1 },
-              { badge: { badgeName: 'Test', type: 'Test' }, count: 12 }
+            ...userProfileMock,
+            badgeCollection: [
+              {
+                badge: {
+                  badgeName: 'Personal Max',
+                  type: 'Personal Max',
+                  imageUrl: 'url-to-personal-max-badge',
+                  ranking: 1,
+                  _id: 101,
+                  description: 'Achieved personal maximum',
+                },
+                count: 1,
+                lastModified: new Date().toISOString(),
+                earnedDate: [],
+              },
+              {
+                badge: {
+                  badgeName: 'Test',
+                  type: 'Test',
+                  imageUrl: 'url-to-test-badge',
+                  ranking: 2,
+                  _id: 102,
+                  description: 'Test badge description',
+                },
+                count: 12,
+                lastModified: new Date().toISOString(),
+                earnedDate: [],
+              }
             ]
           },
           role: rolesMock.role
@@ -98,6 +123,7 @@ describe('Badge Component', () => {
         expect(titleElement).toHaveTextContent('Bravo! You have earned 13 badges and a personal best of 50 hours in a week!');
       });
     });
+
 
     describe('Test UI changes in response to store updates', () => {
       it('should reflect UI changes when the store state changes', async () => {
@@ -121,7 +147,19 @@ describe('Badge Component', () => {
           ...userProfileMock,
           badgeCollection: [
             ...userProfileMock.badgeCollection,
-            { badge: { badgeName: 'Test2', type: 'Test2' }, count: 1 }
+            {
+              badge: {
+                badgeName: 'Test2',
+                type: 'Test2',
+                imageUrl: 'url-to-test2-badge',
+                ranking: 3,
+                _id: 103,
+                description: 'Test2 badge description'
+              },
+              count: 1,
+              lastModified: new Date().toISOString(),
+              earnedDate: []
+            }
           ]
         };
 
@@ -141,5 +179,6 @@ describe('Badge Component', () => {
         expect(updatedTitleElement).toHaveTextContent('Bravo! You have earned 1 badge!');
       });
     });
+
   });
 });
