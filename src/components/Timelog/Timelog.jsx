@@ -415,7 +415,6 @@ const Timelog = props => {
     };
   },[]);
 
-
   return (
     <div>
       {!props.isDashboard ? (
