@@ -402,7 +402,7 @@ const SummaryBar = props => {
                   <div className="redBackgroup">
                     <span>{tasks}</span>
                   </div>
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
                   ) : (
                     <img className="sum_img" src={task_icon} alt=""></img>
@@ -410,7 +410,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
                   ) : (
                     <img className="sum_img" src={badges_icon} alt="" />
@@ -421,7 +421,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
                       <img className="sum_img" src={bluesquare_icon} alt="" />
                       <div className="redBackgroup">
@@ -439,7 +439,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
                   ) : (
                     <img className="sum_img" src={report_icon} alt="" />
@@ -447,7 +447,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img
                       className="sum_img"
                       src={suggestions_icon}
