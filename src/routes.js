@@ -52,6 +52,7 @@ import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
 import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesList/ConsumablesView';
 import EquipmentList from './components/BMDashboard/Equipment/List';
+import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 // import MaterialsList from './components/BMDashboard/MaterialsList';
 // import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
@@ -61,6 +62,7 @@ const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'
 const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
+const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 // const EquipmentList = lazy(() => import('./components/BMDashboard/EquipmentList'))
 // const ToolsList = lazy(() => import('./components/BMDashboard/ToolsList'))
 
@@ -147,11 +149,12 @@ export default (
           exact
           component={Projects}
           fallback
-          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={[
             RoutePermissions.projects,
             RoutePermissions.projectManagement_fullFunctionality,
             RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
+            RoutePermissions.updateTask
           ]}
         />
         <ProtectedRoute
@@ -213,6 +216,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
+        <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
 
@@ -220,6 +224,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/tools" fallback component={ToolsList} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
+        <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
 
