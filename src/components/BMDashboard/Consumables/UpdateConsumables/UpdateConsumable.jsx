@@ -1,11 +1,8 @@
 import './UpdateConsumable.css';
-import { Container } from 'reactstrap';
 import * as moment from 'moment';
-import { FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
+import { Input } from 'reactstrap';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { toast } from 'react-toastify';
 
 function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const { purchaseRecord, updateRecord: _, ...rest } = record;
@@ -142,7 +139,7 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal })
         <td> {record.stockAvailable} </td>
         <td>
           <Input
-            id="updateMaterialQuantityUsed"
+            id="updateConsumableQuantityUsed"
             name="quantityUsed"
             placeholder="Used"
             type="number"
@@ -151,12 +148,12 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal })
             min={0}
           />
           {validations.quantityUsed !== '' && (
-            <div className="materialFormTableError">{validations.quantityUsed}</div>
+            <div className="consumablesFormError">{validations.quantityUsed}</div>
           )}
         </td>
         <td>
           <Input
-            id="updateMaterialQtyUsedLogUnitSelect"
+            id="updateConsumableQtyUsedLogUnitSelect"
             name="QtyUsedLogUnit"
             type="select"
             value={updateRecord.QtyUsedLogUnit}
@@ -168,7 +165,7 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal })
         </td>
         <td>
           <Input
-            id="updateMaterialquantityWasted"
+            id="updateConsumablequantityWasted"
             name="quantityWasted"
             type="number"
             placeholder="Wasted"
@@ -177,12 +174,12 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal })
             min={0}
           />
           {validations.quantityWasted !== '' && (
-            <div className="materialFormTableError">{validations.quantityWasted}</div>
+            <div className="consumablesFormTableError">{validations.quantityWasted}</div>
           )}
         </td>
         <td>
           <Input
-            id="updateMaterialQtyWastedLogUnitSelect"
+            id="updateConsumableQtyWastedLogUnitSelect"
             name="QtyWastedLogUnit"
             type="select"
             value={updateRecord.QtyWastedLogUnit}
@@ -193,13 +190,13 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal })
           </Input>
         </td>
         <td>
-          <span className={updateRecord.newAvailable < 0 ? 'materialFormErrorClr' : undefined}>
+          <span className={updateRecord.newAvailable < 0 ? 'consumablesFormErrorClr' : undefined}>
             {updateRecord.newAvailable}
           </span>
         </td>
       </tr>
       <tr>
-        <td colSpan={7} className="materialFormTableError">
+        <td colSpan={7} className="consumablesFormTableError">
           {validations.quantityTogether}
         </td>
       </tr>

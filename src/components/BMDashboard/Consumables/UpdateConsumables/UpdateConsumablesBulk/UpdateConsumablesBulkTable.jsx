@@ -93,27 +93,27 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
 
   return (
     <div>
-      <Table borderless className="logMaterialTable" responsive>
-        <thead className="logMTableHeaderLine">
-          <tr className="">
+      <Table borderless className="logConsumablesTable" responsive>
+        <thead className="logCTableHeaderLine">
+          <tr>
             <th colSpan={2}> Item </th>
             <th colSpan={1}>Quantity</th>
-            <th colSpan={5} className="logMTableHead">
+            <th colSpan={5} className="logCTableHead">
               {' '}
               Daily Log Input{' '}
             </th>
           </tr>
         </thead>
-        <thead className="logMTableHeaderLine">
+        <thead className="logCTableHeaderLine">
           <tr className="table-light">
             <th> Project </th>
             <th>Name</th>
             <th>Available</th>
-            <th className="logMTableHead">Used</th>
-            <th className="logMTableHead">Used(Unit)</th>
-            <th className="logMTableHead">Wasted</th>
-            <th className="logMTableHead">Wasted(Unit) </th>
-            <th className="logMTableHead">New Available </th>
+            <th className="logCTableHead">Used</th>
+            <th className="logCTableHead">Used(Unit)</th>
+            <th className="logCTableHead">Wasted</th>
+            <th className="logCTableHead">Wasted(Unit) </th>
+            <th className="logCTableHead">New Available </th>
           </tr>
         </thead>
         <tbody>
@@ -144,12 +144,12 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
         style={{ marginRight: '0px', marginLeft: '0px' }}
         className="row justify-content-between "
       >
-        <Button size="md" className="logMButtons" outline onClick={cancelHandler}>
+        <Button size="md" outline onClick={cancelHandler}>
           Cancel
         </Button>
         <Button
           size="md"
-          className="logMButtonBg"
+          className="logCButtonBg"
           disabled={!isReadyToSubmit || bulkValidationError}
           type='sumbit'
           onClick={e => submitHandler(e)}

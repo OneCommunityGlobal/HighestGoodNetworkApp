@@ -37,8 +37,8 @@ function UpdateConsumablesBulkInputs({ date, setDate, project, setProject }) {
   return (
     <div className="container">
       <Form>
-        <Row className="align-items-center logMaterialInputRow">
-          <Col lg={6} md={12} className="logMaterialInputCol">
+        <Row className="align-items-center logConsumablesInputRow">
+          <Col lg={6} md={12} className="logConsumablesInputCol">
             <Row className="justify-content-start align-items-center">
               <Label for="selectdate" lg={2} md={3}>
                 Date:
@@ -56,7 +56,7 @@ function UpdateConsumablesBulkInputs({ date, setDate, project, setProject }) {
             </Row>
           </Col>
 
-          <Col lg={6} md={12} className="logMaterialInputCol">
+          <Col lg={6} md={12} className="logConsumablesInputCol">
             <Row className="justify-content-start align-items-center">
               <Label lg={3} md={3} for="selectproject">
                 Project:

@@ -1,9 +1,8 @@
-.updateMaterialContainer {
+.updateConsumablesContainer {
   padding: 0% !important;
-
 }
 
-.updateMaterialPage {
+.updateConsumablesPage {
   background-color: #E8F4F9;
   width: 100%;
   height: auto;
@@ -12,24 +11,24 @@
   font-size: 15px;
 }
 
-.updateMaterial {
+.updateConsumablesContent {
   background-color: white;
   border-radius: 1rem;
   padding: 1.5rem;
   height: auto;
 }
 
-.materialImage {
+.consumablesImage {
   height: 10rem;
   width: 10rem;
   margin-bottom: 1rem;
 }
 
-.materialFormField {
+.consumablesFormField {
   margin-bottom: .5rem;
 }
 
-.materialFormLabel {
+.consumablesFormLabel {
   font-weight: 500;
   font-size: 15px;
   color: #1C8BCC;
@@ -37,7 +36,7 @@
   justify-content: flex-start;
 }
 
-.materialFormError {
+.consumablesFormError {
   font-weight: 500;
   font-size: 11px !important;
   color: red;
@@ -45,54 +44,42 @@
   justify-content: flex-start;
 }
 
-.materialFormTableError {
+.consumablesFormTableError {
   font-weight: 500;
   font-size: 11px !important;
   color: red;
 }
 
-.materialFormErrorClr {
+.consumablesFormErrorClr {
   color: red;
 }
 
-.materialFormValue {
+.consumablesFormValue {
   font-weight: 400;
   font-size: 15px;
   display: flex;
   justify-content: flex-start;
 }
 
-.materialButtonOutline {
+.consumablesButtonOutline {
   color: #2E5061 !important;
 }
 
-.materialButtonOutline:hover {
+.consumablesButtonOutline:hover {
   background-color: #2E5061 !important;
-  color: white !important
+  color: white !important;
 }
 
-.materialButtonBg {
-  background-color: #2E5061 !important
+.consumablesButtonBg {
+  background-color: #2E5061 !important;
 }
 
-.materialButtonBg:hover {
+.consumablesButtonBg:hover {
   background-color: white !important;
   color: #2E5061 !important;
 }
 
-/* .modal-open {
-  padding-right: 0 !important;
-}
-
-.modal-open .modal {
-  overflow-y: hidden !important;
-}
-
-.modal-body {
-  padding: 0 !important;
-} */
-
-.updateModalContainer {
+.updateConsumablesModalContainer {
   overflow-y: scroll;
   height: 75vh;
 }

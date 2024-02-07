@@ -9,10 +9,10 @@ function UpdateConsumablesBulk() {
   const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [project, setProject] = useState('All Projects');
   return (
-    <Container fluid className="logMaterialContainer">
-      <div className="logMaterialPage">
-        <div className="logMaterial">
-          <div className="logMaterialTitle">CONSUMABLES BULK UPDATE FORM</div>
+    <Container fluid className="logConsumablesContainer">
+      <div className="logConsumablesPage">
+        <div className="logConsumablesContent">
+          <div className="logConsumablesTitle">CONSUMABLES BULK UPDATE FORM</div>
           <UpdateConsumablesBulkInputs
             project={project}
             setProject={setProject}
