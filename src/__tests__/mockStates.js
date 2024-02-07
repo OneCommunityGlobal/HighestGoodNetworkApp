@@ -489,6 +489,7 @@ export const userProfileMock = {
   _id: '5edf141c78f1380017b829a6',
   emailPubliclyAccessible: true,
   phoneNumberPubliclyAccessible: true,
+  personalBestMaxHrs: 50,
   badgeCollection: [],
   infringements: [
     {
@@ -627,7 +628,7 @@ export const timeEntryMock = {
       {
         _id: '5f2e1c7ab0186f202baf9d20',
         notes:
-        '<p>d g g sg sd gs dg ag dg c jh&nbsp;</p>\n<p><a href="https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit">https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit#</a></p>\n<p>&nbsp;</p>',
+          '<p>d g g sg sd gs dg ag dg c jh&nbsp;</p>\n<p><a href="https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit">https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit#</a></p>\n<p>&nbsp;</p>',
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5e606e4f37477100173680ac',
@@ -1276,5 +1277,5 @@ export const rolesMock = {
 }
 
 describe('Stop Error', () => {
-  it('should not error out due to no tests (mockStates.js)', () => {});
+  it('should not error out due to no tests (mockStates.js)', () => { });
 });
