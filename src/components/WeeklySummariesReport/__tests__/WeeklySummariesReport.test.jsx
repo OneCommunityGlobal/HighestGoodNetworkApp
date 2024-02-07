@@ -53,12 +53,13 @@ describe('WeeklySummariesReport page', () => {
       renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
       expect(screen.getByTestId('loading')).toBeInTheDocument();
     });
+    
     it('displays section title', () => {
       const props = {
         hasPermission: hasPermission,
         getWeeklySummariesReport: jest.fn(),
         fetchAllBadges: jest.fn(),
-        loading: false,
+        loading: true,
         summaries: [],
         authUser: { role: '' },
         roles: [],
