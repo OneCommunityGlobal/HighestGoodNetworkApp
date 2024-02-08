@@ -67,10 +67,12 @@ const ScheduleReasonModal = ({
 // ===============================================================
 
   //use document.getElementById to get the element of role
-  const selectElement = document.getElementById("role");
+  //const selectElement = document.getElementById("role");
 
   // Get the selected value
-  const role = selectElement.value;
+  //const role = selectElement.value;
+
+  console.log(role, "user.role")
 
   // State to control FAQModal visibility
   const [isFaqButtonModalOpen, setIsFaqButtonModalOpen] = useState(false);
@@ -203,7 +205,7 @@ const ScheduleReasonModal = ({
               areaTitle="Blue Squares FAQ"
               fontSize={24}
               isPermissionPage={true}
-              role={role}
+              role={user.role}
               />
         </Button>
         
