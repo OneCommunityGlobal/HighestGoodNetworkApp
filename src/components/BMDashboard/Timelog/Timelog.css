@@ -1,0 +1,148 @@
+.BMTimelogContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.BMTimelogWrapper {
+  max-width: 1140px;
+  width: 100%;
+  margin-top: 5rem;
+  padding: 0rem 1rem;
+}
+
+.BMTimelogHeader {
+  font-weight: bold;
+  font-size: 1.15rem;
+}
+
+.BMTimelogRow1 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 3rem;
+}
+
+.BMTimelogDate {
+}
+
+.BMTimelogProjectSelection {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.BMProjectSelect {
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.25rem;
+  width: 15rem;
+  border-color: #bdbdbd;
+  cursor: pointer;
+}
+
+.BMTaskSelect {
+    padding: 0.5rem 0.5rem;
+    border-radius: 0.25rem;
+    width: 100%;
+    border-color: #bdbdbd;
+    cursor: pointer;
+}
+
+.BMTimelogBody {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3rem;
+  gap: 3rem;
+  flex-wrap: wrap;
+  width: 100%;
+  padding-bottom: 10rem;
+}
+
+.MemberTimelogContainer {
+  width: 20rem;
+  position: relative;
+  height: 25rem;
+  border: 2px solid #78bdda;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 0rem 2rem;
+}
+
+.MemberTimelogName {
+  border-radius: 0.25rem 0.25rem 0 0;
+  background-color: #78bdda;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 0rem;
+  position: absolute;
+}
+
+.MemberTimelogTime {
+  background-color: #4b5055;
+  color: white;
+  font-size: 2.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  padding: 1rem;
+  margin-top: 4rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.MemberTimelogButtonRow {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.MemberTimelogBtn {
+  font-weight: 600;
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  width: 5rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+.bmTLStart {
+  background-color: #01987a;
+}
+
+.bmTLStop {
+  background-color: #980101;
+}
+
+.bmTLClear {
+  background-color: #869aa3;
+}
+
+.MemberTimelogStartTime {
+    width: 100%;
+    display: flex;
+    position: relative;
+}
+
+.MemberTimelogTaskContainer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+}
+
+.MemberTimelogStartTimeValue {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
