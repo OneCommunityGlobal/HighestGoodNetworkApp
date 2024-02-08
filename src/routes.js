@@ -11,9 +11,8 @@ import { RoutePermissions } from 'utils/routePermissions';
 // import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
-
+// import ToolsList from 'components/BMDashboard/ToolsList/ToolsList';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
-import ToolsList from 'components/BMDashboard/ToolsList';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 // import Reports from './components/Reports';
@@ -64,7 +63,7 @@ const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/Proj
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 // const EquipmentList = lazy(() => import('./components/BMDashboard/EquipmentList'))
-// const ToolsList = lazy(() => import('./components/BMDashboard/ToolsList'))
+const ToolsList = lazy(() => import('./components/BMDashboard/ToolsList'))
 
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));

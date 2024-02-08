@@ -1,11 +1,10 @@
 import axios from "axios";
-
 import { ENDPOINTS } from "utils/URL";
 import {
   SET_TOOLS, POST_UPDATE_TOOL_START, POST_UPDATE_TOOL_END, RESET_UPDATE_TOOL,
   POST_UPDATE_TOOL_ERROR, POST_UPDATE_TOOL_START_BULK, POST_UPDATE_TOOL_END_BULK,
   RESET_UPDATE_TOOL_BULK, POST_UPDATE_TOOL_ERROR_BULK
-} from "constants/bmdashboard/toolsConstants";
+} from "constants/bmdashboard/toolConstants";
 import { GET_ERRORS } from "constants/errors";
 
 export const setTools = payload => {
