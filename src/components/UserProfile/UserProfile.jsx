@@ -98,6 +98,7 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [savedTeams, setSavedTeams] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
 
   const userProfileRef = useRef();
@@ -982,6 +983,7 @@ function UserProfile(props) {
                   codeValid={codeValid}
                   setCodeValid={setCodeValid}
                   saved={saved}
+                  savedTeams={(isSaved) => setSavedTeams(isSaved)}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -1383,7 +1385,8 @@ function UserProfile(props) {
                       !formValid.email ||
                       !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
-                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
+                      savedTeams
                     }
                     userProfile={userProfile}
                     setSaved={() => setSaved(true)}

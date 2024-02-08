@@ -23,6 +23,7 @@ const TeamsTab = props => {
     codeValid,
     setCodeValid,
     saved,
+    savedTeams,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -47,11 +48,13 @@ const TeamsTab = props => {
   const onSelectDeleteTeam = teamId => {
     setRemovedTeams([...removedTeams, teamId]);
     onDeleteTeam(teamId);
+    if(savedTeams)savedTeams(false);
   };
 
   const onSelectAssignTeam = team => {
     if(userProfile._id){
-      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName)
+      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
+      if (savedTeams)savedTeams(true);
     }
     onAssignTeam(team);
     setRenderedOn(Date.now());
