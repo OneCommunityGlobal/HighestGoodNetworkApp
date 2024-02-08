@@ -66,14 +66,6 @@ const ScheduleReasonModal = ({
   },[numberOfReasons,infringementsNum])
 // ===============================================================
 
-  //use document.getElementById to get the element of role
-  //const selectElement = document.getElementById("role");
-
-  // Get the selected value
-  //const role = selectElement.value;
-
-  //console.log(role, "user.role")
-
   // State to control FAQModal visibility
   const [isFaqButtonModalOpen, setIsFaqButtonModalOpen] = useState(false);
 
