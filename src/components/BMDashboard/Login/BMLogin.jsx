@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi';
 
@@ -13,16 +13,17 @@ function BMLogin(props) {
   const [enterPassword, setEnteredPassword] = useState('');
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
+  const prevLocation = useLocation();
 
   // push to dashboard if user is authenticated
   useEffect(() => {
     if (auth.user.access && auth.user.access.canAccessBMPortal) {
-      history.push('/bmdashboard');
+      history.push(`/login?redirectTo=${prevLocation}`);
     }
   }, []);
   useEffect(() => {
     if (hasAccess) {
-      history.push('/bmdashboard');
+      history.push(`/login?redirectTo=${prevLocation}`);
     }
   }, [hasAccess]);
 
