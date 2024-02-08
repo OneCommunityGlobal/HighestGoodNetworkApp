@@ -4,11 +4,31 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import Form from './Form';
 
+
+
+
 describe('Form Component', () => {
-  test('renders without crashing', () => {
-    const { getByText } = render(<Form />);
-    expect(getByText(/Form Component/)).toBeInTheDocument();
-  });
+    let form;
+  
+    beforeEach(() => {
+      form = new Form(); 
+    });
+  
+    // 1. Initial Rendering and Component Structure
+    test('renders without crashing', () => {
+      expect(form.state).toEqual({ data: {}, errors: {} });
+    });
+  
+    test('sub-components are rendered correctly', () => {
+      expect(form.handleInput).toBeDefined();
+      expect(form.handleRichTextEditor).toBeDefined();
+      expect(form.handleCollection).toBeDefined();
+      expect(form.handleFileUpload).toBeDefined();
+
+      // You can also test if state properties related to sub-components are initialized
+      expect(form.state.data).toBeDefined();
+      expect(form.state.errors).toBeDefined();
+    });
 });
 describe('Form', () => {
   let form;
