@@ -72,7 +72,7 @@ const ScheduleReasonModal = ({
   // Get the selected value
   //const role = selectElement.value;
 
-  console.log(role, "user.role")
+  //console.log(role, "user.role")
 
   // State to control FAQModal visibility
   const [isFaqButtonModalOpen, setIsFaqButtonModalOpen] = useState(false);
