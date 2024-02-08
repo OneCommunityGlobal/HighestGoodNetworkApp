@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable spaced-comment */
-/* eslint-disable no-alert */
 /* eslint-disable no-undef */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Row } from 'reactstrap';
 
+import { useState } from 'react';
 /**
  * Modal displaying information about how time entry works
  * @param {*} props
@@ -23,10 +24,12 @@ function WarningsModal({
   warningDescriptions,
   setWarningsModal,
   handleDeleteDescription,
+  handleAddNewWarning,
 }) {
   const { today, id, colorAssigned, warningText, username } = warning || {};
+  const [toggeleWarningInput, setToggeleWarningInput] = useState(false);
+  const [newWarning, setNewWarning] = useState('');
 
-  console.log('delete warnings', deleteWarning);
   if (deleteWarning) {
     return (
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
@@ -53,26 +56,73 @@ function WarningsModal({
       </Modal>
     );
   } else if (warningsModal) {
-    console.log('inside warnifns modal');
     return (
       <Modal isOpen={warningsModal} toggle={() => setWarningsModal(false)}>
         <ModalHeader>Current Warning Descriptions</ModalHeader>
         <ModalBody>
-          {warningDescriptions.map((warning, index) => (
-            <div className="warnings__descriptions" key={warning}>
-              <p>{warning}</p>
-              <Button color="danger" onClick={handleDeleteDescription}>
+          {warningDescriptions.map(warning => (
+            <div className="warnings__descriptions" key={warning._id}>
+              <p>{warning.warningTitle}</p>
+              <Button color="danger" onClick={() => handleDeleteDescription(warning._id)}>
                 x
               </Button>
             </div>
           ))}
+          <div className="btn__container">
+            {!toggeleWarningInput && (
+              <Button
+                className="add__btn"
+                color="primary"
+                onClick={() => setToggeleWarningInput(true)}
+              >
+                +
+              </Button>
+            )}
 
-          <Button>Add new</Button>
+            {toggeleWarningInput && (
+              <form
+                className="warning__form"
+                onSubmit={e => {
+                  handleAddNewWarning(e, newWarning);
+                  setNewWarning('');
+                }}
+              >
+                <label htmlFor="warning" className="warning__title">
+                  Warning Title
+                </label>
+                <input
+                  type="text"
+                  id="warning"
+                  required
+                  className="warning__input"
+                  value={newWarning}
+                  onChange={e => {
+                    setNewWarning(e.target.value);
+                  }}
+                />
+                <div>
+                  <Button color="primary" type="submit">
+                    Add
+                  </Button>
+                  <Button
+                    color="danger"
+                    className="cancel__btn"
+                    onClick={() => {
+                      setNewWarning(null);
+                      setWarningsModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
         </ModalBody>
 
         <ModalFooter>
           <Button color="danger" onClick={() => setWarningsModal(false)}>
-            Cancel
+            Close
           </Button>
 
           {/* <Button

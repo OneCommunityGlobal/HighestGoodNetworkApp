@@ -7,6 +7,7 @@ import {
   deleteWarningsById,
   postNewWarning,
   getCurrentWarnings,
+  deleteWarningDescription,
 } from '../../actions/warnings';
 import WarningsModal from './WarningsModal';
 import WarningItem from './WarningItem';
@@ -21,6 +22,7 @@ import WarningItem from './WarningItem';
 //fetch the descriptions array the display the warnings for the user.
 
 import './Warnings.css';
+import { set } from 'lodash';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
 // Log Time as You Go (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
@@ -48,16 +50,16 @@ export default function Warning({ personId, username, userRole }) {
     });
   };
 
-  useEffect(() => {
-    // dispatch(getWarningsByUserId(personId)).then(res => {
-    //   if (res.error) {
-    //     setError(res);
-    //     setUsersWarnings([]);
-    //     return;
-    //   }
-    //   setUsersWarnings(res);
-    // });
-  }, []);
+  // useEffect(() => {
+  //   // dispatch(getWarningsByUserId(personId)).then(res => {
+  //   //   if (res.error) {
+  //   //     setError(res);
+  //   //     setUsersWarnings([]);
+  //   //     return;
+  //   //   }
+  //   //   setUsersWarnings(res);
+  //   // });
+  // }, []);
 
   const handleDeleteWarning = async warningId => {
     dispatch(deleteWarningsById(warningId, personId)).then(res => {
@@ -97,28 +99,40 @@ export default function Warning({ personId, username, userRole }) {
   //modal will appear to add or remove descriptions
   // pass the descriptions
 
-  //   'Log Time to Action Items',
+  //   'Log Time to Action Items', b
   // 'Intangible Time Log w/o Reason',
   const handleEditDescriptions = () => {
     dispatch(getCurrentWarnings()).then(res => {
-      console.log('res', res);
       if (res?.error) {
         setError(res);
         setUsersWarnings([]);
         return;
       }
-      console.log('res', res);
       setWarningDescriptions(res);
       setWarningsModal(true);
     });
     // dispatch(postNewWarning('Log Time to Action Items'));
   };
 
-  const handleDeleteDescription = warningDescription => {
-    console.log('delete description');
+  const handleAddNewWarning = (e, newWarning) => {
+    e.preventDefault();
+
+    if (newWarning === '') return;
+    dispatch(postNewWarning(newWarning.trim())).then(res => {
+      setWarningDescriptions(res);
+    });
+  };
+
+  const handleDeleteDescription = warningId => {
     const response = confirm('are you sure you want to delte it?');
     if (response) {
-      console.log('conosle dlete logic will occur');
+      dispatch(deleteWarningDescription(warningId)).then(res => {
+        // setWarningDescriptions(res);
+        console.log('res', res);
+        setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
+      });
+      //compelte delete logic if canceld then nothing will happen
+      // console.log('conosle dlete logic will occur');
     }
   };
 
@@ -159,6 +173,7 @@ export default function Warning({ personId, username, userRole }) {
             warningDescriptions={warningDescriptions}
             setWarningsModal={setWarningsModal}
             handleDeleteDescription={handleDeleteDescription}
+            handleAddNewWarning={handleAddNewWarning}
           />
         )}
 

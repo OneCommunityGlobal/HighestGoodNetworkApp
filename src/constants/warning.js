@@ -18,6 +18,11 @@ export const postNewWarning = data => ({
   payload: data,
 });
 
+export const deleteWarningDescription = data => ({
+  type: DELETE_WARNINGS_BY_USER_ID,
+  payload: data,
+});
+
 export const postWarningsByUserId = data => ({
   type: POST_WARNINGS_BY_USER_ID,
   payload: data,

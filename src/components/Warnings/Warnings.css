@@ -72,3 +72,33 @@
   border-radius: 5px;
   margin: 0;
 }
+
+.btn__container {
+  display: flex;
+  justify-content: center;
+}
+
+.add__btn {
+  margin-top: 0.5em;
+  width: 10%;
+  font-size: 2rem;
+  padding: 0.5em 0;
+}
+.cancel__btn {
+  margin-left: 0.5em;
+}
+
+.warning__form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.warning__title {
+  margin: 0;
+}
+
+.warning__input {
+  border-radius: 5px;
+  border: 1px solid #000;
+  margin: 0.3em 0 0.5em 0;
+}

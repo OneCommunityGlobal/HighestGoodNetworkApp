@@ -6,6 +6,7 @@ import {
   deleteWarningByUserId,
   getCurrentWarnings as getCurrentWarningsAction,
   postNewWarning as postNewWarningAction,
+  deleteWarningDescription as deleteWarningDescriptionAction,
 } from '../constants/warning';
 
 export const getWarningsByUserId = userId => {
@@ -28,16 +29,13 @@ export const getWarningsByUserId = userId => {
 
 export const getCurrentWarnings = () => {
   const url = ENDPOINTS.GET_CURRENT_WARNINGS();
-  // console.log('dispatch called', url);
+
   return async dispatch => {
     try {
       const res = await axios.get(url);
-      console.log('res', res);
+
       const response = await dispatch(getCurrentWarningsAction(res.data));
-      console.log(
-        'response from getting current warnings',
-        response.payload.currentWarningDescriptions,
-      );
+
       return response.payload.currentWarningDescriptions;
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -48,20 +46,37 @@ export const getCurrentWarnings = () => {
     }
   };
 };
-export const postNewWarning = warningData => {
+export const postNewWarning = newWarning => {
   const url = ENDPOINTS.POST_NEW_WARNING();
-  console.log('warnign data', warningData);
 
   return async dispatch => {
     try {
-      const res = await axios.post(url, warningData);
+      // post needs to send an object with a key of newWarning
+      const res = await axios.post(url, { newWarning });
       const response = await dispatch(postNewWarningAction(res.data));
-      return response.payload.warnings;
+
+      return response.payload.newWarnings;
     } catch (error) {
       console.log('error', error);
     }
   };
 };
+export const deleteWarningDescription = warningDescriptionId => {
+  const url = ENDPOINTS.DELETE_WARNING_DESCRIPTION(warningDescriptionId);
+
+  return async dispatch => {
+    try {
+      const res = await axios.delete(url, { data: { warningDescriptionId } });
+      const response = await dispatch(deleteWarningDescriptionAction(res.data));
+
+      console.log('response', response);
+      return response.payload;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
 export const postWarningByUserId = warningData => {
   const { userId } = warningData;
 
