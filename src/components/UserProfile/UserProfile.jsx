@@ -98,7 +98,7 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [savedTeams, setSavedTeams] = useState(false);
+  const [isTeamSaved, setIsTeamSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
 
   const userProfileRef = useRef();
@@ -724,7 +724,7 @@ function UserProfile(props) {
             </div>
           </Col>
           <Col md="8">
-            {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
+            {!isProfileEqual || !isTasksEqual || (!isTeamsEqual && !isTeamSaved) || !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
@@ -975,7 +975,8 @@ function UserProfile(props) {
                     !formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
+                    !isTeamSaved
                   }
                   canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole === 'Owner' || requestorRole === 'Administrator'}
                   setUserProfile={setUserProfile}
@@ -983,7 +984,7 @@ function UserProfile(props) {
                   codeValid={codeValid}
                   setCodeValid={setCodeValid}
                   saved={saved}
-                  savedTeams={(isSaved) => setSavedTeams(isSaved)}
+                  isTeamSaved={(isSaved) => setIsTeamSaved(isSaved)}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -1386,7 +1387,7 @@ function UserProfile(props) {
                       !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
-                      savedTeams
+                      isTeamSaved
                     }
                     userProfile={userProfile}
                     setSaved={() => setSaved(true)}
