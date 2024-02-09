@@ -217,13 +217,21 @@
 .sortable-content {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 2.5%;
+}
+
+.sortable-content p {
+  outline: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
 .sortable-draggable {
   padding: 1rem;
   background-color: white;
   border: 1px solid black;
-  cursor: move;
+  cursor: grab;
   word-break: break-word;
   white-space: normal;
 }

@@ -77,10 +77,9 @@ const SummaryBar = props => {
   };
 
   const closeSuggestionModal = () => {
-    setShowSuggestionModal(prev => !prev);
     editRadioButtonSelected('');
     setExtraFieldForSuggestionForm('');
-  }
+  };
 
   const onDragToggleDraggingClass = event => {
     event.currentTarget.classList.toggle('sortable-draggable-dragging');
@@ -127,24 +126,29 @@ const SummaryBar = props => {
     let currentTarget = event.currentTarget;
 
     if (currentTarget) {
-      const parentEditableBool = currentTarget.parentNode.contentEditable === 'true';
-      currentTarget.parentNode.contentEditable = !parentEditableBool;
-      currentTarget.contentEditable = false;
-      currentTarget.parentNode.style.cursor = 'grab';
+      const textNode = currentTarget.parentNode.querySelector('p');
 
-      if (!parentEditableBool) {
-        // Assuming the text node is the first child
-        const textNode = currentTarget.parentNode.childNodes[0];
+      if (currentTarget.classList.contains('fa-edit') && textNode) {
+        // Going to edit mode
+        textNode.contentEditable = true;
+        currentTarget.parentNode.draggable = false;
+        currentTarget.parentNode.style.cursor = 'default';
+
         const range = document.createRange();
         const selection = window.getSelection();
 
-        range.setStart(textNode, textNode.length);
-        range.collapse(true);
+        range.selectNodeContents(textNode);
+        range.collapse(false);
         selection.removeAllRanges();
         selection.addRange(range);
 
-        event.currentTarget.parentNode.style.cursor = 'text';
-        currentTarget.parentNode.focus();
+        textNode.style.cursor = 'text';
+        textNode.focus();
+      } else if (textNode) {
+        // Going to draggable mode
+        textNode.style.cursor = 'grab';
+        currentTarget.parentNode.draggable = true;
+        currentTarget.parentNode.style.cursor = 'grab';
       }
 
       currentTarget.classList.toggle('fa-edit');
@@ -589,7 +593,11 @@ const SummaryBar = props => {
           </div>
         </Col>
 
-        <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal}>
+        <Modal
+          isOpen={showSuggestionModal}
+          onClosed={() => closeSuggestionModal()}
+          toggle={openSuggestionModal}
+        >
           <ModalHeader>User Suggestion</ModalHeader>
           <ModalBody>
             {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
@@ -691,19 +699,20 @@ const SummaryBar = props => {
                         onDragOver={e => onSortableDragOver(e)}
                       >
                         {suggestionCategory.map((value, index) => (
-                          <p
-                            key={index}
+                          <div
                             className="sortable-content sortable-draggable"
+                            key={index}
                             draggable="true"
                             onDragStart={event => onDragToggleDraggingClass(event)}
                             onDragEnd={event => onDragToggleDraggingClass(event)}
                           >
-                            {value}
-                            <span
+                            <p>{value}</p>
+                            <button
+                              type="button"
                               className="edit-icon fa fa-edit"
                               onClick={event => handleEditClick(event)}
-                            ></span>
-                          </p>
+                            />
+                          </div>
                         ))}
                       </div>
                     )}
@@ -787,7 +796,7 @@ const SummaryBar = props => {
                 </Button>{' '}
                 &nbsp;&nbsp;&nbsp;
                 <Button
-                  onClick={() => closeSuggestionModal()}
+                  onClick={() => setShowSuggestionModal(prev => !prev)}
                   color="danger"
                   size="lg"
                 >
