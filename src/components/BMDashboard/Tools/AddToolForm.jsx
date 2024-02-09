@@ -61,13 +61,13 @@ export default function AddToolForm() {
 
   const handleSubmit = event => {
     event.preventDefault();
-    const updatedFormData = {
-      ...formData,
-      images: uploadedFiles,
-      areaCode,
-      phoneNumber,
-    };
-    console.log('Data', updatedFormData);
+    // const updatedFormData = {
+    //   ...formData,
+    //   images: uploadedFiles,
+    //   areaCode,
+    //   phoneNumber,
+    // };
+    // console.log('Data', updatedFormData);
     // TODO: validate form data
     // TODO: submit data to API
   };
