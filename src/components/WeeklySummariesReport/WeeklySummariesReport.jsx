@@ -62,6 +62,8 @@ export class WeeklySummariesReport extends Component {
       teamCodes: [],
       colorOptions: [],
       auth: [],
+      selectedOverTime: false,
+      selectedBioStatus: false,
     };
   }
 
@@ -258,22 +260,48 @@ export class WeeklySummariesReport extends Component {
   toggleTab = tab => {
     const { activeTab } = this.state;
     if (activeTab !== tab) {
-      this.setState({ activeTab: tab });
+      this.setState({ activeTab: tab }, () => this.filterWeeklySummaries());
       sessionStorage.setItem('tabSelection', tab);
     }
   };
 
   filterWeeklySummaries = () => {
-    const { selectedCodes, selectedColors, summaries } = this.state;
+    const {
+      selectedCodes,
+      selectedColors,
+      summaries,
+      selectedOverTime,
+      selectedBioStatus,
+    } = this.state;
 
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
-    const temp = summaries.filter(
-      summary =>
+
+    const temp = summaries.filter(summary => {
+      const { activeTab } = this.state;
+      const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+      const isMeetCriteria =
+        this.canSeeBioHighlight &&
+        summary.totalTangibleHrs > 80 &&
+        summary.daysInTeam > 60 &&
+        summary.bioPosted !== 'posted';
+
+      const isBio = !selectedBioStatus || isMeetCriteria;
+
+      const isOverHours =
+        !selectedOverTime ||
+        (hoursLogged > 0 &&
+          hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+
+      return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
-          selectedColorsArray.includes(summary.weeklySummaryOption)),
-    );
+          selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+        isOverHours &&
+        isBio
+      );
+    });
     this.setState({ filteredSummaries: temp });
   };
 
@@ -283,6 +311,28 @@ export class WeeklySummariesReport extends Component {
 
   handleSelectColorChange = event => {
     this.setState({ selectedColors: event }, () => this.filterWeeklySummaries());
+  };
+
+  handleOverHoursToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedOverTime: !prevState.selectedOverTime,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
+  };
+
+  handleBioStatusToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedBioStatus: !prevState.selectedBioStatus,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
   };
 
   render() {
@@ -302,7 +352,6 @@ export class WeeklySummariesReport extends Component {
       auth,
     } = this.state;
     const { error } = this.props;
-
     if (error) {
       return (
         <Container>
@@ -367,6 +416,57 @@ export class WeeklySummariesReport extends Component {
             />
           </Col>
         </Row>
+        {(role === 'Owner' || role === 'Administrator') && (
+          <Row style={{ marginBottom: '10px' }}>
+            <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div
+                  style={{
+                    marginRight: '20px',
+                    fontSize: '0.8em',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span>Filter by Over Hours</span>
+                  <div className="custom-control custom-switch custom-control-smaller">
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="over-hours-toggle"
+                      onChange={this.handleOverHoursToggleChange}
+                    />
+                    <label
+                      className="custom-control-label"
+                      htmlFor="over-hours-toggle"
+                      style={{ marginLeft: '8px' }}
+                    >
+                      {}
+                    </label>
+                  </div>
+                </div>
+                <div style={{ fontSize: '0.8em', display: 'flex', alignItems: 'center' }}>
+                  <span>Filter by Bio Status</span>
+                  <div className="custom-control custom-switch custom-control-smaller">
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="bio-status-toggle"
+                      onChange={this.handleBioStatusToggleChange}
+                    />
+                    <label
+                      className="custom-control-label"
+                      htmlFor="bio-status-toggle"
+                      style={{ marginLeft: '8px' }}
+                    >
+                      {}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        )}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
