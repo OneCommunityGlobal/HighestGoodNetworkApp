@@ -73,7 +73,7 @@ function FormattedReport({
   return (
     <>
       <ListGroup flush>
-        {summaries.slice(0, 10).map(summary => (
+        {summaries.map(summary => (
           <ReportDetails
             key={summary._id}
             summary={summary}
