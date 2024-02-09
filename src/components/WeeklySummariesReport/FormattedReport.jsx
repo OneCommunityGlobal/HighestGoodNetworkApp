@@ -198,7 +198,7 @@ function ReportDetails({
     <li className="list-group-item px-0" ref={ref}>
       <ListGroup className="px-0" flush>
         <ListGroupItem>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} auth={auth} />
+          <Index summary={summary} weekIndex={weekIndex} auth={auth} />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
@@ -590,7 +590,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo, auth }) {
+function Index({ summary, weekIndex, auth }) {
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
     if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
