@@ -8,8 +8,7 @@ import './AddToolForm.css';
 
 const initialFormState = {
   project: 'Project1',
-  category: 'Tool',
-  name: 'Tool1',
+  name: '',
   invoice: '',
   unitPrice: '',
   currency: 'USD',
@@ -29,8 +28,6 @@ const initialFormState = {
 
 export default function AddToolForm() {
   const [formData, setFormData] = useState(initialFormState);
-  const [selectedCategory, setSelectedCategory] = useState(formData.category);
-  const [selectedName, setSelectedName] = useState(formData.name);
   const [isPurchased, setIsPurchased] = useState(true);
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -43,19 +40,6 @@ export default function AddToolForm() {
     }));
   };
 
-  const handleCategoryChange = event => {
-    const category = event.target.value;
-    setSelectedCategory(category);
-    setSelectedName('');
-    handleInputChange('category', category);
-  };
-
-  const handleNameChange = event => {
-    const name = event.target.value;
-    setSelectedName(name);
-    handleInputChange('name', name);
-  };
-
   const handlePurchaseRentalChange = event => {
     const selectedOption = event.target.value;
     if (selectedOption === 'purchase') {
@@ -65,14 +49,6 @@ export default function AddToolForm() {
     }
     handleInputChange('purchaseRental', selectedOption);
   };
-
-  // const handlePhoneNumberChange = ({ areaCode, phoneNumber }) => {
-  //   setFormData(prevData => ({
-  //     ...prevData,
-  //     areaCode,
-  //     phoneNumber,
-  //   }));
-  // };
 
   const { unitPrice, quantity, taxes, shippingFee } = formData;
 
@@ -85,11 +61,13 @@ export default function AddToolForm() {
 
   const handleSubmit = event => {
     event.preventDefault();
-    // const updatedFormData = {
-    //   ...formData,
-    //   images: uploadedFiles,
-    // };
-    // console.log('Data', updatedFormData);
+    const updatedFormData = {
+      ...formData,
+      images: uploadedFiles,
+      areaCode,
+      phoneNumber,
+    };
+    console.log('Data', updatedFormData);
     // TODO: validate form data
     // TODO: submit data to API
   };
@@ -120,44 +98,17 @@ export default function AddToolForm() {
           <option value="Project2">Project 2</option>
         </Input>
       </FormGroup>
-      <div className="add-tool-flex-group">
-        <FormGroup>
-          <Label for="select-category">Tool or Equipment</Label>
-          <Input
-            id="select-category"
-            name="category"
-            type="select"
-            value={selectedCategory}
-            onChange={handleCategoryChange}
-          >
-            <option value="Tool">Tool</option>
-            <option value="Equipment">Equipment</option>
-          </Input>
-        </FormGroup>
-
-        <FormGroup>
-          <Label for="select-name">Name</Label>
-          <Input
-            id="select-name"
-            name="name"
-            type="select"
-            value={selectedName}
-            onChange={handleNameChange}
-          >
-            {selectedCategory === 'Tool' ? (
-              <>
-                <option value="Tool 1">Tool 1</option>
-                <option value="Tool 2">Tool 2</option>
-              </>
-            ) : (
-              <>
-                <option value="Equipment 1">Equipment 1</option>
-                <option value="Equipment 2">Equipment 2</option>
-              </>
-            )}
-          </Input>
-        </FormGroup>
-      </div>
+      <FormGroup>
+        <Label for="tool">Tool name</Label>
+        <Input
+          id="tool"
+          type="text"
+          name="tool"
+          placeholder="Enter tool name."
+          value={formData.name}
+          onChange={event => handleInputChange('name', event.target.value)}
+        />
+      </FormGroup>
       <FormGroup>
         <Label for="invoice-number">Invoice Number or ID</Label>
         <Input
