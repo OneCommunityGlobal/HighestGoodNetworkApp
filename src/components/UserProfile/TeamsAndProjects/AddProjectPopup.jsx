@@ -33,7 +33,7 @@ const AddProjectPopup = React.memo(props => {
   }, [props.open]);
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
+    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
       <ModalHeader toggle={closePopup}>Add Project </ModalHeader>
       <ModalBody style={{ textAlign: 'center' }}>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>

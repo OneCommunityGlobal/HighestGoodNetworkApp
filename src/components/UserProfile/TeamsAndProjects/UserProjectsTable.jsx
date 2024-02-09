@@ -114,7 +114,7 @@ const UserProjectsTable = React.memo(props => {
               >
                 <span className="projects-span">Projects</span>
               </Col>
-              {props.edit && props.role && (
+              {props.edit && props.role && canAssignProjectToUsers && (
                 <Col md="5" style={{padding: '0'}}>
                       <Button
                         className="btn-addproject"
@@ -123,6 +123,7 @@ const UserProjectsTable = React.memo(props => {
                           props.onButtonClick();
                         }}
                         style={boxStyle}
+                        disabled={props.disabled ? true : false}
                       >
                         Assign Project
                       </Button> 
@@ -293,31 +294,25 @@ const UserProjectsTable = React.memo(props => {
                 md="12"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                {canAssignProjectToUsers ? (
-                  props.disabled ? (
+                {canAssignProjectToUsers && (
                     <div
                       className="div-addproject"
                       title="Please save changes before assign project"
+                      display={props.disabled ? "none" : "block"}
                     >
-                      <Button className="btn-addproject" color="primary" disabled>
+                      <Button 
+                        className="btn-addproject" 
+                        color="primary" 
+                        disabled={props.disabled ? true : false}
+                        onClick={() => {
+                          props.onButtonClick();
+                        }}
+                        style={boxStyle}
+                        >
                         Assign Project
                       </Button>
                     </div>
-                  ) : (
-                    <Button
-                      className="btn-addproject"
-                      color="primary"
-                      onClick={() => {
-                        props.onButtonClick();
-                      }}
-                      style={boxStyle}
-                    >
-                      Assign Project
-                    </Button>
-                  )
-                ) : (
-                  <></>
-                )}
+                  )}
               </Col>
             )}
           </div>
