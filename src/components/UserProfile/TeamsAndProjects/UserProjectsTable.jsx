@@ -116,6 +116,9 @@ const UserProjectsTable = React.memo(props => {
               </Col>
               {props.edit && props.role && canAssignProjectToUsers && (
                 <Col md="5" style={{padding: '0'}}>
+                  <div
+                      title={props.disabled ? "Please save changes before assign project" : ""}
+                      display={props.disabled ? "none" : "block"}>
                       <Button
                         className="btn-addproject"
                         color="primary"
@@ -127,6 +130,7 @@ const UserProjectsTable = React.memo(props => {
                       >
                         Assign Project
                       </Button> 
+                  </div>
                 </Col>
               )}
             </div>
