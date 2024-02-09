@@ -22,11 +22,6 @@ function Timelog() {
     return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
   }
 
-  async function getMemberData(userID) {
-    const response = await axios.get(ENDPOINTS.USER_PROFILE(userID));
-    return response.data;
-  }
-
   function getCurrentDate() {
     const currentDate = new Date();
     const day = currentDate.getDate();
@@ -40,6 +35,11 @@ function Timelog() {
     const formattedMonth = month < 10 ? `0${month}` : month;
 
     return `${formattedDay}/${formattedMonth}/${year}`;
+  }
+
+  async function getMemberData(userID) {
+    const response = await axios.get(ENDPOINTS.USER_PROFILE(userID));
+    return response.data;
   }
 
   async function handleProjectChange(event) {
