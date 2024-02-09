@@ -54,7 +54,6 @@
 
 .BMTimelogBody {
   display: flex;
-  justify-content: space-between;
   margin-top: 3rem;
   gap: 3rem;
   flex-wrap: wrap;
@@ -114,6 +113,11 @@
   width: 5rem;
   text-align: center;
   cursor: pointer;
+  transition: all .3s ease-in-out;
+}
+
+.MemberTimelogBtn:hover {
+    filter: brightness(90%);
 }
 
 .bmTLStart {
