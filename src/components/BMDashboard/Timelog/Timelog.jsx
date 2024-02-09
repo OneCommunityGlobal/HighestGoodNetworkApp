@@ -62,6 +62,7 @@ function Timelog() {
       setLoading(false);
     }
   }
+
   return (
     <div className="BMTimelogContainer">
       <div className="BMTimelogWrapper">
@@ -81,9 +82,8 @@ function Timelog() {
           </div>
         </div>
         <div className="BMTimelogBody">
-          {!membersData || loading ? (
-            <div>Loading</div>
-          ) : (
+          {loading && <div>Loading</div>}
+          {membersData &&
             membersData.map(member => (
               <div key={member._id} className="MemberTimelogContainer">
                 <div className="MemberTimelogName">{`${member.firstName} ${member.lastName}`}</div>
@@ -104,8 +104,7 @@ function Timelog() {
                 </div>
                 <div className="MemberTimelogBtn bmTLClear">CLEAR</div>
               </div>
-            ))
-          )}
+            ))}
         </div>
       </div>
     </div>
