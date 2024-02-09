@@ -82,11 +82,13 @@ function Timelog() {
           </div>
         </div>
         <div className="BMTimelogBody">
-          {loading && <div>Loading</div>}
+          {loading && <div className="LoadingContainer">Loading</div>}
           {membersData &&
             membersData.map(member => (
-              <div key={member._id} className="MemberTimelogContainer">
-                <div className="MemberTimelogName">{`${member.firstName} ${member.lastName}`}</div>
+              <div key={member._id} className={`MemberTimelogContainer ${member.role}Container`}>
+                <div
+                  className={`MemberTimelogName ${member.role}Name`}
+                >{`${member.firstName} ${member.lastName}`}</div>
                 <div className="MemberTimelogTime">{formatHours(member.totalTangibleHrs)}</div>
                 <div className="MemberTimelogButtonRow">
                   <div className="MemberTimelogBtn bmTLStart">START</div>
