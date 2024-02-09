@@ -14,7 +14,6 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
-import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import {
   Input,
   ListGroup,
@@ -650,9 +649,7 @@ function Index({ summary, weekIndex, auth }) {
         <span>
           <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
         </span>
-        {/* {summary.role !== 'Volunteer' && (
-        <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)} />
-      )} */}
+
         <EditableInfoModal
           areaName="Core TeamInfo"
           areaTitle="Core TeamInfo"
