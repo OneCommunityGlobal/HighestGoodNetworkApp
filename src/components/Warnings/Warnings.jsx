@@ -118,7 +118,7 @@ export default function Warning({ personId, username, userRole }) {
     e.preventDefault();
 
     if (newWarning === '') return;
-    dispatch(postNewWarning(newWarning.trim())).then(res => {
+    dispatch(postNewWarning({ newWarning, activeWarning: true })).then(res => {
       setWarningDescriptions(res);
     });
   };
@@ -128,7 +128,7 @@ export default function Warning({ personId, username, userRole }) {
     if (response) {
       dispatch(deleteWarningDescription(warningId)).then(res => {
         // setWarningDescriptions(res);
-        console.log('res', res);
+        // console.log('res', res);
         setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
       });
       //compelte delete logic if canceld then nothing will happen

@@ -48,11 +48,12 @@ export const getCurrentWarnings = () => {
 };
 export const postNewWarning = newWarning => {
   const url = ENDPOINTS.POST_NEW_WARNING();
+  console.log('newWarning', newWarning);
 
   return async dispatch => {
     try {
       // post needs to send an object with a key of newWarning
-      const res = await axios.post(url, { newWarning });
+      const res = await axios.post(url, newWarning);
       const response = await dispatch(postNewWarningAction(res.data));
 
       return response.payload.newWarnings;
