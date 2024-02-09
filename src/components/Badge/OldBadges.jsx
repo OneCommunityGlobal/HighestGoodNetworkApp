@@ -29,11 +29,6 @@ const OldBadges = props => {
             }}
           >
             Badges Earned Before Last Week <i className="fa fa-info-circle" id="OldBadgeInfo" />
-            {/* <Button className="btn--dark-sea-green float-right" onClick={toggle}>Full View</Button>
-            <Modal isOpen={isOpen} toggle={toggle}>
-              <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-              <ModalBody><BadgeHistory badges={props.badges} /></ModalBody>
-            </Modal> */}
           </CardTitle>
           <div className="old_badges">
             <BadgeHistory personalBestMaxHrs={props.personalBestMaxHrs} badges={props.badges} />

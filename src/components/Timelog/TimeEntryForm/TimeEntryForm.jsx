@@ -30,6 +30,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import checkNegativeNumber from 'utils/checkNegativeHours';
+import { assignBadgesByUserID } from '../../../actions/badgeManagement';
 import fixDiscrepancy from 'utils/fixDiscrepancy';
 import { boxStyle } from 'styles';
 
@@ -270,8 +271,27 @@ const TimeEntryForm = props => {
         }
       }
 
+    // if sum of reported tangible hours + volunteer time is greater than the previous personal best max hours
+    // we update the personal best max hours
+    let should_update_badge = false
+    if (parseFloat(userProfile.tangibleHoursReportedThisWeek) + volunteerTime > userProfile.personalBestMaxHrs) {
+      userProfile.personalBestMaxHrs = parseFloat(userProfile.tangibleHoursReportedThisWeek) + volunteerTime;
+      should_update_badge = true;
+    }
+
     //update database
+    try {
+      let url = ENDPOINTS.USER_PROFILE(personId)
+
       await axios.put(url, userProfile);
+
+      if (should_update_badge) {
+        let badge_fetch_url = ENDPOINTS.BADGE(),
+            { data: batches } = await axios.get(badge_fetch_url),
+            personal_max_batches = batches.filter(d => d.type == 'Personal Max').map(d => d._id)
+
+        await assignBadgesByUserID(personId, personal_max_batches)(dispatch)
+      }
     } catch (error) {
       console.log(error);
     }

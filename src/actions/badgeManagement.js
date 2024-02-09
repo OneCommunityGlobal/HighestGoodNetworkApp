@@ -176,11 +176,61 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       }, 6000);
       return;
     }
+    
+    const badgeCollection = res.data.badgeCollection;
+    const personal_max_badge_ids = badgeCollection.filter(({ badge: { type }}) => type == 'Personal Max').map(({ badge: { _id }}) => _id)
+    
+    // badgeCollection is an array, it doesn't contain the earnedDate field
+    // const earnedDate = res.data.badgeCollection.earnedDate;
+
+
     const {badgeCollection} = res.data;
     // Update the badgeCollection.badge object to badge._id string for backend
+
     for (let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
     }
+
+    // remove duplicate badge count
+    let included_badges = [],
+        unique_badges = []
+    for (let i = 0; i < badgeCollection.length; i++) {
+      if (included_badges.includes(badgeCollection[i].badge)) {
+        unique_badges.forEach(badgeObj => {
+          if (badgeCollection[i].badge === badgeObj.badge) {
+            badgeObj.count++;
+            if (badgeCollection[i].lastModified > badgeObj.lastModified)
+              badgeObj.lastModified = badgeCollection[i].lastModified
+          }
+        });
+      } else {
+        unique_badges.push(badgeCollection[i])
+        included_badges.push(badgeCollection[i].badge)
+      }
+    }
+
+    selectedBadges.forEach((badgeId) => {
+      let included = false;
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      // Add 1 beacuse the month start at zero
+      let mm = today.getMonth() + 1;
+      let dd = today.getDate();
+
+      mm < 10 ? (mm = '0' + mm) : mm;
+      dd < 10 ? (dd = '0' + dd) : dd;
+      const formatedDate = yyyy + '-' + mm + '-' + dd;
+      unique_badges.forEach((badgeObj) => {
+        if (badgeId === badgeObj.badge) {
+          badgeObj.count++;
+          badgeObj.lastModified = Date.now();
+          badgeObj.earnedDate = [...(badgeObj.earnedDate), formatedDate];
+          included = true;
+        }
+      });
+      if (!included) {
+        unique_badges.push({ badge: badgeId, count: 1, earnedDate: [formatedDate], lastModified: Date.now() });
 
     const userToBeAssignedBadge = res.data._id;
     // return a new badgeCollection for udpate
@@ -236,11 +286,17 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
   return newBadgeCollection;
 }
 
+    for (let i = 0; i < unique_badges.length; i++)
+      if (personal_max_badge_ids.includes(unique_badges[i].badge))
+        unique_badges[i].count = parseInt(res.data.personalBestMaxHrs)
+    
+    const userToBeAssignedBadge = res.data._id;
+
 // Make API call to update badgeCollection
 export const sendUpdatedBadgeCollectionReq = async (badgeCollection, selectedBadges, userToBeAssignedBadge) => {
     const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
     try {
-      await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
+      await axios.put(url, { badgeCollection: unique_badges, newBadges: selectedBadges.length });
       dispatch(
         getMessage(
           "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
