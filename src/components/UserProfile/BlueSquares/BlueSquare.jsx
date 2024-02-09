@@ -2,7 +2,7 @@ import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
+import { formatCreatedDate, formatDate } from 'utils/formatDate';
 import { formatDateFromDescriptionString,formatTimeOffRequests } from 'utils/formatDateFromDescriptionString';
 
 const BlueSquare = (props) => {
@@ -50,15 +50,18 @@ const BlueSquare = (props) => {
                 
                         if (formattedDescription.length > 0) {
                           return (
+                            <>
+                            <span>{blueSquare.createdDate !== undefined ? formatCreatedDate(BlueSquare.createdDate)+":"  : null}</span>
                             <span>
                               {formattedDescription[0]}
                               <br />
                               <span style={{ fontWeight: 'bold' }}>Notice :</span>
                               <span style={{ fontStyle: "italic", textDecoration: "underline" }}>{`${formattedDescription[1]}`}</span>
                             </span>
+                            </>
                           );
                         } else {
-                          return dateFormattedDescription;
+                          return blueSquare.createdDate !== undefined ? formatCreatedDate(BlueSquare.createdDate)+": "+dateFormattedDescription  : dateFormattedDescription
                         }
                       })()}</div>
                     }
