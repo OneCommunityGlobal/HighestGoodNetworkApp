@@ -39,6 +39,7 @@ export const getAllUserProfiles = () => {
 export const findUserProfiles = keyword => {
   // Creates an array containing the first and last name and filters out whitespace
   const fullName = keyword.split(' ').filter(name => name !== '');
+  console.log(fullName)
 
   let request;
   if (fullName[0] && fullName[1]) {

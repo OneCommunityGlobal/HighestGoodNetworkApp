@@ -70,17 +70,17 @@ const Members = props => {
     await props.fetchAllMembers(projectId);
     setMembersList(props.state.projectMembers.members);
   };
-  const [inputValue, setInputValue] = useState("")
+
   // Waits for user to finsh typing before calling API
   const handleInputChange = event => {
-    setInputValue(event.target.value);
-    console.log(inputValue)
+    const currentValue = event.target.value;
+
     if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
 
     const timeoutId = setTimeout(() => {
-      props.findUserProfiles(inputValue);
+      props.findUserProfiles(currentValue);
       setShowFindUserList(true);
-    }, 200);
+    }, 500);
 
     setLastTimeoutId(timeoutId);
   };
