@@ -14,7 +14,6 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
-import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import {
   Input,
   ListGroup,
@@ -33,6 +32,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
@@ -84,6 +84,7 @@ function FormattedReport({
             badges={badges}
             loadBadges={loadBadges}
             canSeeBioHighlight={canSeeBioHighlight}
+            auth={auth}
           />
         ))}
       </ListGroup>
@@ -182,6 +183,7 @@ function ReportDetails({
   loadBadges,
   canEditTeamCode,
   canSeeBioHighlight,
+  auth,
 }) {
   const ref = useRef(null);
 
@@ -196,7 +198,7 @@ function ReportDetails({
     <li className="list-group-item px-0" ref={ref}>
       <ListGroup className="px-0" flush>
         <ListGroupItem>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
+          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} auth={auth} />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
@@ -588,7 +590,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo }) {
+function Index({ summary, weekIndex, allRoleInfo, auth }) {
   const handleGoogleDocClick = googleDocLink => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
     if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
@@ -621,34 +623,43 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   // Determine whether to use grayscale or color icon based on googleDocLink
   const googleDocIcon =
     googleDocLink && googleDocLink.Link.trim() !== '' ? googleDocIconPng : googleDocIconGray;
-
   return (
     <>
-      <b>Name: </b>
-      <Link
-        className="ml-2"
-        to={`/userProfile/${summary._id}`}
-        style={{
-          color:
-            currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
-              ? 'rgba(128, 128, 128, 0.5)'
-              : undefined,
-        }}
-        title="View Profile"
-      >
-        {summary.firstName} {summary.lastName}
-      </Link>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <b>Name: </b>
+        <Link
+          className="ml-2"
+          to={`/userProfile/${summary._id}`}
+          style={{
+            color:
+              currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+              currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                ? 'rgba(128, 128, 128, 0.5)'
+                : undefined,
+          }}
+          title="View Profile"
+        >
+          {summary.firstName} {summary.lastName}
+        </Link>
 
-      <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-        <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
-      </span>
-      <span>
-        <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
-      </span>
-      {summary.role !== 'Volunteer' && (
+        <span onClick={() => handleGoogleDocClick(googleDocLink)}>
+          <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
+        </span>
+        <span>
+          <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+        </span>
+        {/* {summary.role !== 'Volunteer' && (
         <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)} />
-      )}
+      )} */}
+        <EditableInfoModal
+          areaName="Core TeamInfo"
+          areaTitle="Core TeamInfo"
+          role={auth?.user?.role}
+          fontSize={24}
+          isPermissionPage
+          className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+        />
+      </div>
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"
