@@ -80,7 +80,7 @@ const Members = props => {
     const timeoutId = setTimeout(() => {
       props.findUserProfiles(currentValue);
       setShowFindUserList(true);
-    }, 500);
+    }, 250);
 
     setLastTimeoutId(timeoutId);
   };
