@@ -199,7 +199,6 @@
   color: white;
   box-shadow: 2px 2px 4px 1px lightgray;
   box-sizing: border-box;
-  
 }
 
 .show-time-off-btn-selected {
@@ -362,4 +361,14 @@
 .team-member-tasks-content {
   align-items: center; /* Vertically center-align children */
   gap: 8px; /* Space between children */
+}
+
+.google-doc-icon {
+  font-size: 18px;
+  margin: 0 0 2px 5px;
+  cursor: pointer;
+}
+
+.google-doc-icon.inactive {
+  filter: grayscale(100%);
 }

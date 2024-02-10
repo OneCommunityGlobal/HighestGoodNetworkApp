@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { FcGoogle } from "react-icons/fc";
 
 import { Link } from 'react-router-dom';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
@@ -14,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import moment from 'moment-timezone';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
+import { toast } from 'react-toastify';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -49,7 +51,7 @@ const TeamMemberTask = React.memo(
         resource => resource.userID === user.personId && resource.completedTask,
       ),
     );
-    
+
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
     const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
@@ -80,6 +82,31 @@ const TeamMemberTask = React.memo(
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
     };
+
+    const userGoogleDocLink = user.adminLinks?.reduce((targetLink, currentElement) => {
+      if (currentElement.Name === 'Google Doc') {
+        targetLink = currentElement.Link
+      }
+      return targetLink;
+    }, undefined);
+
+
+    const handleGoogleDocClick = () => {
+      const toastGoogleLinkDoesNotExist = 'toast-on-click';
+      if (userGoogleDocLink) {
+        window.open(userGoogleDocLink);
+      } else {
+        toast.error(
+          'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
+          {
+            toastId: toastGoogleLinkDoesNotExist,
+            pauseOnFocusLoss: false,
+            autoClose: 3000,
+          },
+        );
+      }
+    };
+
 
     return (
       <>
@@ -124,6 +151,11 @@ const TeamMemberTask = React.memo(
                             : undefined,
                       }}
                     >{`${user.name}`}</Link>
+                     {/* TODO: add permission restriction */}
+                    <FcGoogle
+                      className={`google-doc-icon ${userGoogleDocLink ? "" : "inactive"}`}
+                      onClick={handleGoogleDocClick}/>
+
                   </td>
                   <td data-label="Time" className="team-clocks">
                     <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
