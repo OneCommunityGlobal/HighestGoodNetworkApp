@@ -215,6 +215,19 @@ class Form extends Component {
     errors: {},
   };
 
+  schema = {
+    test: Joi.string().required(),
+    testEditor: Joi.string().required(),
+    testDropdown: Joi.string().required(),
+    testRadio: Joi.string().required(),
+    testCheckbox: Joi.boolean(),
+    testCollection: Joi.array().items(Joi.string()).min(1).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).required(),
+    someField: Joi.string().required(),
+    
+  };
+
   resetForm = () => this.setState(cloneDeep(this.initialState));
 
   handleInput = ({ currentTarget: input }) => {
@@ -303,6 +316,12 @@ class Form extends Component {
       errors[key] = messages[key].map(item => item.message).join('. ');
     });
     return errors;
+  };
+
+  doSubmit = () => {
+    // Implement your form submission logic here
+    // For example, you can send the form data to a server or perform any other action
+    console.log('Form submitted successfully');
   };
   handleSubmit = e => {
     e.preventDefault();
