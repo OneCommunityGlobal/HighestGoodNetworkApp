@@ -93,6 +93,10 @@ export const ENDPOINTS = {
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
+
+  COPIED_AI_PROMPT : (userId) => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`, 
+  
+
   SETUP_NEW_USER: () =>
     `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () =>
