@@ -11,7 +11,6 @@ const handleSubmitMock = jest.fn();
 const projectsMock = [{ _id: 'proj1', projectName: 'Project 1' }];
 const userProjectsByIdMock = [];
 
-  
 
 const props = {
     open: true,
@@ -34,7 +33,7 @@ const props = {
 
 describe('AddProjectPopup component Unit test case', () => {
   
-  it(' Test 1 : Expected  UI elements are present', () => {
+  it('Test 1 : Expected  UI elements are present', () => {
     const { getByText }=renderComponent(props);
     const closeBtn = getByText('Close');
     const confirmBtn = getByText('Confirm');
@@ -54,7 +53,7 @@ describe('AddProjectPopup component Unit test case', () => {
 
 
 
-  it(' Test  3 : calls onSelectAssignProject and resets selectedProject when Confirm button is clicked', async () => {
+  it('Test 3 : Calls onSelectAssignProject and resets selectedProject when Confirm button is clicked', async () => {
     const { getByText } = renderComponent(props);
     const confirmButton = getByText('Confirm');
     fireEvent.click(confirmButton);
