@@ -40,35 +40,35 @@ export const findUserProfiles = keyword => {
   // Creates an array containing the first and last name and filters out whitespace
   const fullName = keyword.split(' ').filter(name => name !== '');
 
-  let request;
-  if (fullName[0] && fullName[1]) {
-    request = axios.get(ENDPOINTS.USER_PROFILE_BY_FULL_NAME(`${fullName[0]} ${fullName[1]}`));
-  } else {
-    request = axios.get(ENDPOINTS.USER_PROFILE_BY_SINGLE_NAME(fullName[0]));
-  }
-
   return async (dispatch, getState) => {
-    await dispatch(findUsersStart());
-    request
-      .then(res => {
-        if (keyword !== '') {
-          let users = res.data;
-          const { members } = getState().projectMembers;
-          users = users.map(user => {
-            if (!members.find(member => member._id === user._id)) {
-              return (user = { ...user, assigned: false });
-            }
-            return (user = { ...user, assigned: true });
-          });
-          dispatch(foundUsers(users));
-        } else {
-          dispatch(foundUsers([]));
-        }
-      })
-      .catch(err => {
+    try {
+      let response;
+      if (fullName[0] && fullName[1]) {
+        response = await axios.get(
+          ENDPOINTS.USER_PROFILE_BY_FULL_NAME(`${fullName[0]} ${fullName[1]}`),
+        );
+      } else {
+        response = await axios.get(ENDPOINTS.USER_PROFILE_BY_SINGLE_NAME(fullName[0]));
+        console.log(response);
+      }
+      await dispatch(findUsersStart());
+      if (keyword !== '') {
+        let users = response.data;
+        const { members } = getState().projectMembers;
+        users = users.map(user => {
+          if (!members.find(member => member._id === user._id)) {
+            return (user = { ...user, assigned: false });
+          }
+          return (user = { ...user, assigned: true });
+        });
+        dispatch(foundUsers(users));
+      } else {
         dispatch(foundUsers([]));
-        dispatch(findUsersError(err));
-      });
+      }
+    } catch (error) {
+      dispatch(foundUsers([]));
+      dispatch(findUsersError(error));
+    }
   };
 };
 
