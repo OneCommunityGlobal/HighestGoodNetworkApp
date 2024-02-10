@@ -319,10 +319,9 @@ class Form extends Component {
   };
 
   doSubmit = () => {
-    // Implement your form submission logic here
-    // For example, you can send the form data to a server or perform any other action
-    console.log('Form submitted successfully');
-  };
+    // Here you would typically handle the form submission.
+    //console.log("Form submitted with data");
+};
   handleSubmit = e => {
     e.preventDefault();
     e.stopPropagation();
