@@ -155,7 +155,7 @@ export default (
             RoutePermissions.projectManagement_fullFunctionality,
             RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
             RoutePermissions.updateTask
-          ]}
+          ].flat()}
         />
         <ProtectedRoute
           path="/projects"
