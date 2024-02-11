@@ -62,6 +62,7 @@ const SummaryBar = props => {
   const [report, setBugReport] = useState(initialInfo);
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const weeklySummaryNotReq = displayUserProfile?.role === "Mentor" || displayUserProfile?.weeklySummaryOption === "Not Required";
 
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop
@@ -88,7 +89,7 @@ const SummaryBar = props => {
       console.log('User Tasks not loaded.');
     }
   };
-    
+
   //Get infringement count from userProfile
   const getInfringements = () => {
     return displayUserProfile && displayUserProfile.infringements ? displayUserProfile.infringements.length : 0;
@@ -238,6 +239,7 @@ const SummaryBar = props => {
       : '';
   };
 
+
   useEffect(() => {
     setUserProfile(userProfile);
   }, [userProfile]);
@@ -263,7 +265,7 @@ const SummaryBar = props => {
   }, [displayUserProfile, summaryBarData]);
 
   return (
-    displayUserProfile !== undefined && summaryBarData !== undefined 
+    displayUserProfile !== undefined && summaryBarData !== undefined
       ? <Container
           fluid
           className={
@@ -330,7 +332,14 @@ const SummaryBar = props => {
 
             <Col className="d-flex col-lg-3 col-12 no-gutters">
               <Row className="no-gutters w-100">
-                {!weeklySummary ? (
+                {!weeklySummary ? weeklySummaryNotReq ? (
+                <div className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
+                  align="center">
+                  <font className="text-center text--black" size="3">
+                    SUMMARY
+                  </font>
+                </div>
+              ) : (
                   <div className="border-red col-4 bg--white-smoke no-gutters">
                     <div className="py-1"> </div>
                     {isAuthUser || canPutUserProfileImportantInfo ? (
@@ -378,9 +387,11 @@ const SummaryBar = props => {
                     <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
                       {weeklySummary || props.submittedSummary ? (
                         'You have submitted your weekly summary.'
-                      ) : isAuthUser ? (
-                        <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                          You still need to complete the weekly summary. Click here to submit it.
+                        ) : isAuthUser ? (
+                          <span className="summary-toggle" onClick={props.toggleSubmitForm}>
+                          {weeklySummaryNotReq
+                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
+                        : "You still need to complete the weekly summary. Click here to submit it."}
                         </span>
                       ) : (
                         <span className="summary-toggle">
