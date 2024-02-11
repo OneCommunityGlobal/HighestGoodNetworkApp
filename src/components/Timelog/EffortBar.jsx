@@ -13,7 +13,7 @@ const EffortBar = ({ activeTab, projectsSelected }) => {
         (projectsSelected.includes('all') || projectsSelected.includes(entry.projectId)),
     );
 
-    const reducer = (total, entry) => Number((total + parseInt(entry.hours) + parseInt(entry.minutes) / 60).toFixed(2));
+    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   };
 

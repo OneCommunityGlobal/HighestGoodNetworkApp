@@ -85,7 +85,7 @@ const TeamMemberTask = React.memo(
       <>
         <tr ref={ref} className="table-row" key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
-          <td colSpan={1}>
+          <td>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div className="committed-hours-circle">
                 <FontAwesomeIcon
@@ -107,7 +107,7 @@ const TeamMemberTask = React.memo(
             </div>
 
           </td>
-          <td colSpan={2}>
+          <td>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
                 <tr>
@@ -137,7 +137,7 @@ const TeamMemberTask = React.memo(
               </tbody>
             </Table>
           </td>
-          <td colSpan={3}>
+          <td>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
                 {user.tasks &&
@@ -262,13 +262,15 @@ const TeamMemberTask = React.memo(
                 )}
               </tbody>
             </Table>
-            {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
-              <div className="taking-time-off-content-div" >
-                <span className="taking-time-off-content-text">
+          </td>
+          {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
+            <td className="taking-time-off-table-column">
+              <div className="taking-time-off-content-div">
+                <p className="taking-time-off-content-text">
                   {onTimeOff
                     ? `${user.name} Is Not Available this Week`
                     : `${user.name} Is Not Available Next Week`}
-                </span>
+                </p>
                 <button
                   type="button"
                   className="taking-time-off-content-btn"
@@ -276,15 +278,15 @@ const TeamMemberTask = React.memo(
                     const request = onTimeOff
                       ? { ...onTimeOff, onVacation: true, name: user.name }
                       : { ...goingOnTimeOff, onVacation: false, name: user.name };
-      
+
                     openDetailModal(request);
                   }}
                 >
                   Details ?
                 </button>
               </div>
-            )}
-          </td>
+            </td>
+          )}
         </tr>
       </>
     );
