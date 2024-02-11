@@ -63,6 +63,7 @@ const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPu
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
+const PurchaseTools = lazy(() => import ('./components/BMDashboard/ToolPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 // const EquipmentList = lazy(() => import('./components/BMDashboard/EquipmentList'))
 
@@ -149,11 +150,12 @@ export default (
           exact
           component={Projects}
           fallback
-          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={[
             RoutePermissions.projects,
             RoutePermissions.projectManagement_fullFunctionality,
             RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
+            RoutePermissions.updateTask
           ]}
         />
         <ProtectedRoute
@@ -213,6 +215,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
         <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
+        <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />

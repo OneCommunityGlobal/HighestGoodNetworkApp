@@ -98,6 +98,7 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [isTeamSaved, setIsTeamSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
 
   const userProfileRef = useRef();
@@ -290,6 +291,8 @@ function UserProfile(props) {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
 
+      newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
+
       const teamId = newUserProfile?.teams[0]?._id;
       if (teamId) {
         await loadSummaryIntroDetails(teamId, response.data);
@@ -460,7 +463,7 @@ function UserProfile(props) {
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
-      const newBlueSquare = { date: dateStamp, description: summary };
+      const newBlueSquare = { date: dateStamp, description: summary , createdDate: moment.tz('America/Los_Angeles').toISOString().split('T')[0]};
       setOriginalUserProfile({
         ...originalUserProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
@@ -472,10 +475,10 @@ function UserProfile(props) {
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares !== []) {
+      if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
-      if (summary != null && currentBlueSquares !== []) {
+      if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
 
@@ -483,7 +486,7 @@ function UserProfile(props) {
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
-      if (newInfringements !== []) {
+      if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
@@ -723,7 +726,7 @@ function UserProfile(props) {
             </div>
           </Col>
           <Col md="8">
-            {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
+            {!isProfileEqual || !isTasksEqual || (!isTeamsEqual && !isTeamSaved) || !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
@@ -974,7 +977,8 @@ function UserProfile(props) {
                     !formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
+                    !isTeamSaved
                   }
                   canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole === 'Owner' || requestorRole === 'Administrator'}
                   setUserProfile={setUserProfile}
@@ -982,6 +986,7 @@ function UserProfile(props) {
                   codeValid={codeValid}
                   setCodeValid={setCodeValid}
                   saved={saved}
+                  isTeamSaved={(isSaved) => setIsTeamSaved(isSaved)}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -1026,18 +1031,19 @@ function UserProfile(props) {
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
-                  <BasicInformationTab
-                    role={requestorRole}
-                    userProfile={userProfile}
-                    setUserProfile={setUserProfile}
-                    handleUserProfile={handleUserProfile}
-                    formValid={formValid}
-                    setFormValid={setFormValid}
-                    isUserSelf={isUserSelf}
-                    canEdit={canEdit}
-                    canEditRole={canEdit}
-                    roles={roles}
-                  />
+                <BasicInformationTab
+                  role={requestorRole}
+                  userProfile={userProfile}
+                  setUserProfile={setUserProfile}
+                  loadUserProfile={loadUserProfile}
+                  handleUserProfile={handleUserProfile}
+                  formValid={formValid}
+                  setFormValid={setFormValid}
+                  isUserSelf={isUserSelf}
+                  canEdit={canEdit}
+                  canEditRole={canEditUserProfile}
+                  roles={roles}
+                />
                 </ModalBody>
                 <ModalFooter>
                   <Row>
@@ -1382,7 +1388,8 @@ function UserProfile(props) {
                       !formValid.email ||
                       !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
-                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
+                      isTeamSaved
                     }
                     userProfile={userProfile}
                     setSaved={() => setSaved(true)}
