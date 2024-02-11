@@ -80,7 +80,7 @@ const AddTeamPopup = React.memo(props => {
   }, [newTeamName, newTeamIsActive, dispatch]);
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
+    <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Add Team</ModalHeader>
       <ModalBody style={{ textAlign: 'center' }}>
         <label style={{textAlign: 'left'}}>Add to Team</label>

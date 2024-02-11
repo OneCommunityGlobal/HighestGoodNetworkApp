@@ -166,7 +166,7 @@ const TimeEntry = (props) => {
           backgroundColor: taskId ? filteredColor : 'white',
         }}
       ></div>
-      <Card className="mb-1 p-2" style={{ backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF', flexGrow: 1, maxWidth: "calc(100% - 12px)" }}>
+      <Card className="mb-1 p-2" style={{ backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF', flexGrow: 1 }}>
         <Row className="mx-0">
           <Col md={3} className="date-block px-0">
             <div className="date-div">
