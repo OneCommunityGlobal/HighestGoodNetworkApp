@@ -11,3 +11,30 @@ export const addEquipmentType = async (body) => {
       return err.message
     })
 }
+
+export const setEquipments = payload => {
+  return {
+    type: SET_EQUIPMENTS,
+    payload
+  }
+}
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload
+  }
+}
+
+export const fetchAllEquipments = () => {
+  return async dispatch => {
+    axios.get(ENDPOINTS.BM_EQUIPMENTS)
+      .then(res => {
+        dispatch(setEquipments(res.data))
+        console.log("Equipment is", res);
+      })
+      .catch(err => {
+        dispatch(setErrors(err))
+      })
+  }
+}
