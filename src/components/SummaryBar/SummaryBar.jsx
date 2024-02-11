@@ -53,6 +53,7 @@ const SummaryBar = props => {
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState(null);
   const [WeeklySummaryNotReq, setWeeklySummaryNotReq] = useState(false);
+  const [WeeklySummaryNotReq, setWeeklySummaryNotReq] = useState(false);
 
   const [tasks, setTasks] = useState(undefined);
   const [suggestionCategory, setSuggestionCategory] = useState([]);
