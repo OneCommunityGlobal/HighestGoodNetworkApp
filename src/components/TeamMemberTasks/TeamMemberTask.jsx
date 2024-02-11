@@ -65,6 +65,7 @@ const TeamMemberTask = React.memo(
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     //^^^
 
+    const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
@@ -151,10 +152,11 @@ const TeamMemberTask = React.memo(
                             : undefined,
                       }}
                     >{`${user.name}`}</Link>
-                     {/* TODO: add permission restriction */}
-                    <FcGoogle
+                    {canGetWeeklySummaries && (
+                      <FcGoogle
                       className={`google-doc-icon ${userGoogleDocLink ? "" : "inactive"}`}
                       onClick={handleGoogleDocClick}/>
+                      )}
 
                   </td>
                   <td data-label="Time" className="team-clocks">
