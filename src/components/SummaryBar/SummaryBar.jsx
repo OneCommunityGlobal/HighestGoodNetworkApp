@@ -395,7 +395,9 @@ const SummaryBar = props => {
                         </span>
                       ) : (
                         <span className="summary-toggle">
-                          You still need to complete the weekly summary. Click here to submit it.
+                        {weeklySummaryNotReq
+                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
+                        : "You still need to complete the weekly summary. Click here to submit it."}
                         </span>
                       )}
                     </font>
