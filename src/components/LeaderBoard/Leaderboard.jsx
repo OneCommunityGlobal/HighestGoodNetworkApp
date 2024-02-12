@@ -180,7 +180,7 @@ function LeaderBoard({
                   <div style={{ textAlign: 'left' }}>
                     <span className="d-sm-none">Tot. Time</span>
                     <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>
-                      Total Time{' '}
+                      Total Time
                     </span>
                   </div>
                   {isOwner && (
@@ -242,7 +242,7 @@ function LeaderBoard({
                       role="button"
                       tabIndex={0}
                       onClick={() => {
-                        dashboardToggle(item);
+                        loggedInUser.role === 'Manager' ? dashboardToggle(item) : null;
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter') {
