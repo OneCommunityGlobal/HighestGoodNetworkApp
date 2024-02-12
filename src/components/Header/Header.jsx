@@ -65,8 +65,10 @@ export const Header = props => {
   const canSeeProjectManagementTab =
     props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
   const canPostProject = props.hasPermission('postProject');
+  // WBS
+  const canPostWBS = props.hasPermission('postWbs');
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask');
+  const canUpdateTask = props.hasPermission('updateTask') || props.auth.user?.permissions?.frontPermissions.includes('updateTask');
   // Teams
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
@@ -267,6 +269,8 @@ export const Header = props => {
                 canPutUserProfileImportantInfo ||
                 canCreateBadges ||
                 canPostProject ||
+                canUpdateTask ||
+                canPostWBS ||
                 canSeeProjectManagementTab ||
                 canDeleteTeam ||
                 canPutTeam ||
@@ -294,7 +298,7 @@ export const Header = props => {
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {(canPostProject || canSeeProjectManagementTab) && (
+                    {(canPostProject || canUpdateTask || canPostWBS|| canSeeProjectManagementTab) && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
                       </DropdownItem>
