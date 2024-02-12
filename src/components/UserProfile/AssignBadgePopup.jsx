@@ -112,11 +112,8 @@ function AssignBadgePopup(props) {
         className="btn--dark-sea-green float-right"
         style={{ ...boxStyle, margin: 5 }}
         onClick={assignBadges}
-<<<<<<< HEAD
         disabled={shouldConfirmButtonDisable}
-=======
         data-testid="test-button"
->>>>>>> 18501334e11a0ad2c6a79a7ea0db263f9fa865f8
       >
         {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'} 
       </Button>
