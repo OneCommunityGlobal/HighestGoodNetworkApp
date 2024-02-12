@@ -33,6 +33,7 @@ import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import { Table } from 'react-bootstrap';
 import SetupNewUserPopup from './setupNewUserPopup';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { toast } from 'react-toastify';
 
@@ -180,6 +181,7 @@ class UserManagement extends React.PureComponent {
     );
   };
 
+
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
@@ -308,6 +310,10 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
+    if(cantUpdateDevAdminDetails(user.email , this.props.state.userProfile.email)) {
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     if (status === FinalDay.NotSetFinalDay) {
       this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
     } else {
@@ -377,12 +383,6 @@ class UserManagement extends React.PureComponent {
   onActiveInactiveClick = user => {
     const authRole = this?.props?.state?.auth?.user.role || user.role;
     const canChangeUserStatus = hasPermission('changeUserStatus');
-    if (!canChangeUserStatus) {
-      //permission to change the status of any user on the user profile page or User Management Page.
-      //By default only Admin and Owner can access the user management page and they have this permission.
-      alert('You are not authorized to change the active status.');
-      return;
-    }
     if (cantDeactivateOwner(user, authRole)) {
       //Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');
