@@ -64,7 +64,6 @@ const EditLinkModal = props => {
   };
 
   const isValidMediaUrl = (url) => {
-    // This is a placeholder. You should define what constitutes a valid media URL for your application.
     const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
     return pattern.test(url);
   };
