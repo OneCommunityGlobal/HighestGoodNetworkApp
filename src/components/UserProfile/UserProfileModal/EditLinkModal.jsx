@@ -92,7 +92,7 @@ const EditLinkModal = props => {
     else {
       setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
       setIsChanged(true);
-      if (!isMediaFolderLinkChanged && !isWarningPopupOpen) { // Fisrt time media folder link is changed
+      if (!isMediaFolderLinkChanged && !isWarningPopupOpen) { // First time media folder link is changed
         setIsMediaFolderLinkChanged(true);
         setIsWarningPopupOpen(true);
       }
@@ -161,15 +161,13 @@ const EditLinkModal = props => {
     const isMediaFolderValid = mediaFolderLink.Link === '' || isValidMediaUrl(mediaFolderLink.Link);
 
     if (isGoogleDocsValid && isMediaFolderValid) {
-      // If both URLs are valid, proceed with the update logic
       const linksToUpdate = [googleLink, mediaFolderLink, ...adminLinks];
       await updateLink(personalLinks, linksToUpdate, mediaFolderLink.Link);
-      handleSubmit(); // If you have additional logic to handle after submitting the form
+      handleSubmit(); 
       setIsValidLink(true);
       setIsChanged(false);
       closeModal();
     } else {
-      // If any URL is invalid, set an error state
       setIsValidLink(false);
     }
   };
