@@ -242,7 +242,10 @@ function LeaderBoard({
                       role="button"
                       tabIndex={0}
                       onClick={() => {
-                        loggedInUser.role === 'Manager' ? dashboardToggle(item) : null;
+                        if (loggedInUser.role === 'Manager') {
+                          return dashboardToggle(item);
+                        }
+                        return null;
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter') {
