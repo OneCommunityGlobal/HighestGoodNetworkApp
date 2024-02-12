@@ -4,7 +4,7 @@ const defaultState = {
   list: [],
   invTypeList: {
     "All": null, "Materials": null, "Consumables": null, "Equipments": null,
-    "Reusables": null, "Tools:": null
+    "Reusables": null, "Tools": null
   },
   postedResult: {
     result: null,
@@ -53,10 +53,10 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
           error: null
         }
       };
-    case GET_INV_BY_TYPE: {
-      state.invTypeList[action.payload.type] = [...action.payload.data]
-      return { ...state }
-    }
+      case GET_INV_BY_TYPE: {
+        state.invTypeList[action.payload.type] = [...action.payload.data]
+        return { ...state }
+      }
     default: {
       return state;
     }
