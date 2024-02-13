@@ -11,7 +11,7 @@ import hasPermission from 'utils/permissions';
 const AddWBS = props => {
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
-  const canPostWBS = props.hasPermission('postWbs');
+  const canPostWBS = props.hasPermission('postWbs') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
 
   const changeNewName = newName => {
     if (newName.length !== 0) {
