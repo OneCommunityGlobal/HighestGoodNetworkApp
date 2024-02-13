@@ -112,6 +112,32 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
+  const handleDashboardAccess = item => {
+    // check the logged in user is manager and if the dashboard are admin and owner
+    if (loggedInUser.role === 'Manager' && ['Administrator', 'Owner'].includes(item.role)) {
+      // check the logged in user is admin and if dashboard is owner
+      toast.error("you don't have the permission to access this painel");
+    } else if (loggedInUser.role === 'Administrator' && ['Owner'].includes(item.role)) {
+      toast.error("you don't have the permission to access this painel");
+    }
+    // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
+    else if (
+      loggedInUser.role !== 'Manager' &&
+      loggedInUser.role !== 'Administrator' &&
+      loggedInUser.role !== 'Owner'
+    ) {
+      if (['Manager', 'Administrator', 'Owner'].includes(item.role)) {
+        // prevent access
+        toast.error("you don't have the permission to access this painel");
+      } else {
+        // allow access to the painel
+        dashboardToggle(item);
+      }
+    } else {
+      // allow access to the painel
+      dashboardToggle(item);
+    }
+  };
   return (
     <div>
       <h3>
@@ -242,14 +268,11 @@ function LeaderBoard({
                       role="button"
                       tabIndex={0}
                       onClick={() => {
-                        if (loggedInUser.role === 'Manager') {
-                          return dashboardToggle(item);
-                        }
-                        return null;
+                        handleDashboardAccess(item);
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter') {
-                          dashboardToggle(item);
+                          handleDashboardAccess(item);
                         }
                       }}
                     >
