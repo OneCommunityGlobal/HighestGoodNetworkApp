@@ -294,7 +294,8 @@ class UserManagement extends React.PureComponent {
    */
   onLogTimeOffClick = user => {
     const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
-    if(canManageTimeOffRequests){
+    const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
+    if(canManageTimeOffRequests || hasRolePermission){
       this.setState({
         logTimeOffPopUpOpen: true,
         userForTimeOff: user,
