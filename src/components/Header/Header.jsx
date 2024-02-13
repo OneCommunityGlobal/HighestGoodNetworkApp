@@ -55,30 +55,39 @@ export const Header = props => {
   const canGetReports = props.hasPermission('getReports');
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
-
-  const canPostUserProfile = props.hasPermission('postUserProfile');
-  const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canAccessUserManagement = props.hasPermission('postUserProfile')
+    || props.hasPermission('deleteUserProfile')
+    || props.hasPermission('putUserProfileImportantInfo');
   // Badges
-  const canCreateBadges = props.hasPermission('createBadges');
+  const canAccessBadgeManagement = props.hasPermission('createBadges');
   // Projects
-  const canSeeProjectManagementTab =
-    props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
-  const canPostProject = props.hasPermission('postProject');
-  // WBS
-  const canPostWBS = props.hasPermission('postWbs');
+  const canAccessProjects = props.hasPermission('postProject')
+    || props.hasPermission('deleteProject')
+    || props.hasPermission('putProject')
+    || props.hasPermission('getProjectMembers')
+    || props.hasPermission('assignProjectToUsers')
+    || props.hasPermission('category/non-permission')
+    || props.hasPermission('postWbs')
+    || props.hasPermission('deleteWbs')
+    || props.hasPermission('category/non-permission')
+    || props.hasPermission('postTask')
+    || props.hasPermission('updateTask')
+    || props.hasPermission('deleteTask');
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask') || props.auth.user?.permissions?.frontPermissions.includes('updateTask');
+  const canUpdateTask = props.hasPermission('updateTask');
   // Teams
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canAccessTeams = props.hasPermission('postTeam')
+    || props.hasPermission('putTeam')
+    || props.hasPermission('deleteTeam')
+    || props.hasPermission('assignTeamToUsers');
   // Popups
-  const canCreatePopup = props.hasPermission('createPopup');
-  const canUpdatePopup = props.hasPermission('updatePopup');
-  // Roles
-  const canPutRole = props.hasPermission('putRole');
+  const canAccessPopups = props.hasPermission('createPopup')
+    || props.hasPermission('updatePopup');
   // Permissions
-  const canManageUser = props.hasPermission('putUserProfilePermissions');
+  const canAccessPermissionsManagement = props.hasPermission('postRole')
+    || props.hasPermission('putRole')
+    || props.hasPermission('deleteRole')
+    || props.hasPermission('putUserProfilePermissions')
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -264,27 +273,18 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
-              {(canPostUserProfile ||
-                canDeleteUserProfile ||
-                canPutUserProfileImportantInfo ||
-                canCreateBadges ||
-                canPostProject ||
-                canUpdateTask ||
-                canPostWBS ||
-                canSeeProjectManagementTab ||
-                canDeleteTeam ||
-                canPutTeam ||
-                canCreatePopup ||
-                canUpdatePopup ||
-                canManageUser) && (
+              {(canAccessUserManagement ||
+                canAccessBadgeManagement ||
+                canAccessProjects ||
+                canAccessTeams ||
+                canAccessPopups ||
+                canAccessPermissionsManagement) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    {canPostUserProfile ||
-                    canDeleteUserProfile ||
-                    canPutUserProfileImportantInfo ? (
+                    {canAccessUserManagement ? (
                       <DropdownItem tag={Link} to="/usermanagement">
                         {USER_MANAGEMENT}
                       </DropdownItem>
@@ -298,17 +298,17 @@ export const Header = props => {
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {(canPostProject || canUpdateTask || canPostWBS|| canSeeProjectManagementTab) && (
+                    {(canAccessProjects) && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
                       </DropdownItem>
                     )}
-                    {(canDeleteTeam || canPutTeam) && (
+                    {(canAccessTeams) && (
                       <DropdownItem tag={Link} to="/teams">
                         {TEAMS}
                       </DropdownItem>
                     )}
-                    {(canPutRole || canManageUser) && (
+                    {(canAccessPermissionsManagement) && (
                       <>
                         <DropdownItem divider />
                         <DropdownItem tag={Link} to="/permissionsmanagement">
