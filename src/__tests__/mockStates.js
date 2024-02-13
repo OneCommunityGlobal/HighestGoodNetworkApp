@@ -591,6 +591,9 @@ export const userProfileMock = {
   },
   mediaUrl: 'http://dropbox.com',
   weeklySummariesCount: 0,
+  savedTangibleHrs:[
+    0,0,0,0,0,0,0,0
+  ],
 };
 
 export const timeEntryMock = {

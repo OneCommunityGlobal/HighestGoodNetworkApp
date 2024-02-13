@@ -93,6 +93,10 @@ export const ENDPOINTS = {
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
+
+  COPIED_AI_PROMPT : (userId) => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`, 
+  
+
   SETUP_NEW_USER: () =>
     `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () =>
@@ -137,6 +141,8 @@ export const ENDPOINTS = {
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
+  BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
+  BM_TOOLS_PURCHASE: `${APIEndpoint}/bm/tools/purchase`,
   POST_LESSON: `${APIEndpoint}/bm/lessons/new`,
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
