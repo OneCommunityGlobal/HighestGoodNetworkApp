@@ -25,9 +25,9 @@ const Members = props => {
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
 
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+  const canGetProjectMembers = props.hasPermission('getProjectMembers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canUnassignUserInProject = props.hasPermission('unassignUserInProject') || props.hasPermission('seeProjectManagement');
 
   useEffect(() => {
     props.fetchAllMembers(projectId);

@@ -12,8 +12,8 @@ import PropTypes from 'prop-types';
 
 const Member = props => {
   const canGetUserProfiles = props.hasPermission('getUserProfiles');
-  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canUnassignUserInProject = props.hasPermission('unassignUserInProject') || props.hasPermission('seeProjectManagement');
   return (
     <React.Fragment>
       <tr className="members__tr">
