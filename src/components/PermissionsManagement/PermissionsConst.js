@@ -14,7 +14,6 @@ export const permissionLabels = [
         description:
           'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible.',
       },
-
       {
         label: 'Edit Total Valid Weekly Summaries',
         key: 'totalValidWeeklySummaries',
