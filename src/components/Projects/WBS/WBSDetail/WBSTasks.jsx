@@ -44,7 +44,7 @@ function WBSTasks(props) {
   const myRef = useRef(null);
 
   // permissions
-  const canPostTask = props.hasPermission('postTask') || props.hasPermission('seeProjectManagement');
+  const canPostTask = props.hasPermission('postTask');
 
   /*
   * -------------------------------- functions --------------------------------
