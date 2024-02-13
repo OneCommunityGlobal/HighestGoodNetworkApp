@@ -3,9 +3,13 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import AssignBadge from 'components/Badge/AssignBadge';
+  import AssignBadge from 'components/Badge/AssignBadge';
 import Autosuggest from 'react-autosuggest';
 import { Provider } from 'react-redux';
+import { badgeReducer } from 'reducers/badgeReducer';
+import { GET_FIRST_NAME, GET_LAST_NAME } from 'constants/badge';
+import { getFirstName } from 'actions/badgeManagement';
+import { createStore, applyMiddleware } from 'redux';
 
 // Create a mock Redux store that doesn't actually update any state when actions are dispatched. Pass in array of middlewares. 'thunk' is a Redux middleware that performs asynchronous logic at a later time -- perfect for testing asynchronous function calls.
 const mockStore = configureStore([thunk]);
@@ -25,12 +29,7 @@ const mockUserProfilesData = [
     permissions: {
       frontPermissions: [
         'getWeeklySummaries',
-        'seeUserManagement',
-        'seeBadgeManagement',
-        'addTask',
-        'seeVisibilityIcon',
-        'putUserProfileImportantInfo',
-        'editTimelogDate'
+        'seeUserManagement'
       ],
       backPermissions: []
     },
@@ -63,6 +62,8 @@ const mockUserProfilesData = [
   }
 ];
 
+
+
 const renderComponent = () => {
   // Added mock data. Only mock the parts of Redux store that the component to be tested will directly update. In this case, firstName and lastName, and maybe allUserProfiles.userProfiles (but maybe never used).
   const store = mockStore({
@@ -74,7 +75,7 @@ const renderComponent = () => {
       userProfiles: mockUserProfilesData,
     }
   });
-
+  
   return render(
     <Provider store={store}>
       <AssignBadge 
@@ -85,10 +86,10 @@ const renderComponent = () => {
 };
 
 describe('AssignBadge component', () => {
-  it.skip('Renders without crashing', () => {
+  it('Renders without crashing', () => {
     renderComponent();
   });
-  it.skip('Renders the Label element', () => {
+  it('Renders the Label element', () => {
     renderComponent();
 
     const searchInput = screen.getByText('Search by Name');
@@ -102,7 +103,7 @@ describe('AssignBadge component', () => {
     expect(inputFirstNameElement).toBeInTheDocument();
     expect(inputLastNameElement).toBeInTheDocument();
   });
-  it.skip('Renders the suggestions', async () => {
+  it('Renders the suggestions', async () => {
     // Mock the necessary functions and state.
     const firstSuggestions = ["Jerry Admin", "Jerry Volunteer", "Jerry Owner"]; // Replace with mock data
     const onFirstSuggestionsFetchRequested = jest.fn();
@@ -142,5 +143,73 @@ describe('AssignBadge component', () => {
     // Assertions
     expect(suggestionList[1] instanceof HTMLUListElement).toBe(true);
     expect(optionList.length).toBe(3); // Assert that there are 3 options, as there are 3 items in array set to firstSuggestions.
+  });
+  it('Manually apply reducer to mock store and dispatched action', () => {
+    const initialState = {
+      firstName: "",
+      lastName: "",
+    }
+    let newState = badgeReducer(initialState, { type: GET_FIRST_NAME, firstName: "NewFirstName" })
+    newState = badgeReducer(newState, { type: GET_LAST_NAME, lastName: "NewLastName" })
+    console.log("🚀 ~ it ~ newState:", newState)
+    expect(newState.firstName).toEqual("NewFirstName");
+    expect(newState.lastName).toEqual("NewLastName");
+  });
+  it('Render the Assign Badge button', () => {
+    renderComponent();
+
+    const buttonElement = screen.getByText('Assign Badge')
+    expect(buttonElement).toBeInTheDocument();
+  });
+  it('Render the tool tip hover message', async () => {
+    renderComponent();
+
+    const tooltip = screen.getByTestId('NameInfo');
+    fireEvent.mouseEnter(tooltip);
+
+    const tip1 = "Really, you're not sure what \"name\" means? Start typing a first or last name and a list of the active members (matching what you type) will be auto generated. Then you........ CHOOSE ONE!"
+    const tip2 = "Yep, that's it. Next you click \"Assign Badge\" and.... choose one or multiple badges! Click \"confirm\" then \"submit\" and those badges will show up as part of that person's earned badges. You can even assign a person multiple of the same badge(s) by repeating this process and choosing the same badge as many times as you want them to earn it."
+    const message1 = await screen.findByText(tip1);
+    const message2 = await screen.findByText(tip2);
+    expect(message1).toBeInTheDocument();
+    expect(message2).toBeInTheDocument();
+  });
+  it('Dispatches action when badges are assigned', async () => {
+    const store = mockStore({
+      badge: {
+        firstName: "",
+        lastName: "",
+      },
+      allUserProfiles: {
+        userProfiles: mockUserProfilesData,
+      }
+    });
+
+    render(
+      <Provider store={store}>
+        <AssignBadge 
+          allBadgeData={mockallBadgeData}
+        />
+      </Provider>
+    )  
+    // renderComponent();
+
+    const numOfBadges = screen.getByText("0 badges selected");
+    expect(numOfBadges).toBeInTheDocument();
+
+    // select badges
+    const buttonElement = screen.getByText('Assign Badge')
+    expect(buttonElement).toBeInTheDocument();
+    fireEvent.click(buttonElement)
+
+    // confirm that action is dispatched from store
+    console.log("🚀 ~ file: AssignBadge.test.js:243 ~ it ~ store.getActions():", store.getActions())
+    expect(store.getActions()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'GET_MESSAGE'
+        })
+      ])
+    )
   });
 });
