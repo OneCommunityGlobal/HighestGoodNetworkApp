@@ -2,16 +2,16 @@
 import React, { Component, useState } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
-import { formatDate } from 'utils/formatDate';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import { formatDate } from '../../../utils/formatDate';
 import {
   updateUserProfileProperty,
   getUserProfile,
-  getUserTask,
+  getUserTasks,
 } from '../../../actions/userProfile';
 
 import { getUserProjects } from '../../../actions/userProjects';
@@ -91,11 +91,13 @@ class PeopleReport extends Component {
 
     if (match) {
       const { userId } = match.params;
-      await getUserProfile(userId);
-      await getUserTask(userId);
-      await getUserProjects(userId);
-      await getWeeklySummaries(userId);
-      await getTimeEntriesForPeriod(userId, fromDate, toDate);
+      await this.props.getUserProfile(userId);
+      await this.props.getUserTasks(userId);
+      await this.props.getUserProjects(userId);
+      await this.props.getWeeklySummaries(userId);
+      await this.props.getTimeEntriesForPeriod(userId, fromDate, toDate);
+
+      const { userProfile, userTask, userProjects, timeEntries, auth } = this.props;
 
       this.setState({
         // eslint-disable-next-line react/no-unused-state
@@ -547,8 +549,8 @@ class PeopleReport extends Component {
 
               <PeopleDataTable />
 
-              <div className="container">
-                <table>
+              <div className="Infringementcontainer">
+                <div className="InfringementcontainerInner">
                   <UserProject userProjects={userProjects} />
                   <Infringements
                     infringements={infringements}
@@ -566,17 +568,19 @@ class PeopleReport extends Component {
                   <div className="visualizationDiv">
                     <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
                   </div>
-                  <div className="visualizationDiv">
-                    <BadgeSummaryViz
-                      authId={auth.user.userid}
-                      userId={match.params.userId}
-                      badges={userProfile.badgeCollection}
-                    />
+                  <div className="visualizationDivRow">
+                    <div className="BadgeSummaryDiv">
+                      <BadgeSummaryViz
+                        authId={auth.user.userid}
+                        userId={match.params.userId}
+                        badges={userProfile.badgeCollection}
+                      />
+                    </div>
+                    <div className="BadgeSummaryPreviewDiv">
+                      <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                    </div>
                   </div>
-                  <div className="visualizationDiv">
-                    <BadgeSummaryPreview badges={userProfile.badgeCollection} />
-                  </div>
-                </table>
+                </div>
               </div>
             </ReportPage.ReportBlock>
           </div>
@@ -590,7 +594,7 @@ export default connect(getPeopleReportData, {
   updateUserProfileProperty,
   getWeeklySummaries,
   updateWeeklySummaries,
-  getUserTask,
+  getUserTasks,
   getUserProjects,
   getTimeEntriesForPeriod,
 })(PeopleReport);

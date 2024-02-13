@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ['**/*.css'],
   env: {
     browser: true,
     es6: true,
@@ -52,6 +53,7 @@ module.exports = {
     'import/no-named-as-default': 'off',
     'no-alert': 'error',
     'no-console': 'error',
+    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
   },
   overrides: [
     {

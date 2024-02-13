@@ -1,7 +1,9 @@
 import { ReadyState } from 'react-use-websocket';
-import { timerStatus } from './Countdown.module.css';
+import { BsXLg } from 'react-icons/bs';
+import cs from 'classnames';
+import css from './Countdown.module.css';
 
-export default function TimerStatus({ readyState }) {
+export default function TimerStatus({ readyState, toggleTimer }) {
   /*
   This is the status of the connection with the timer service
   We just use the readyState of the websocket connection to show the status
@@ -22,5 +24,10 @@ export default function TimerStatus({ readyState }) {
   This component will be shown when the the connection is not open or there is an error
   or when there is no message from the server
   */
-  return <div className={timerStatus}>{connectionStatus}</div>;
+  return (
+    <>
+      <BsXLg className={cs(css.transitionColor, css.crossIcon)} onClick={toggleTimer} />
+      <div className={css.timerStatus}>{connectionStatus}</div>
+    </>
+  );
 }
