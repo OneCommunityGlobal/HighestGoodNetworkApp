@@ -28,25 +28,33 @@ describe('PauseAndResumeButton', () => {
     });
 
     it('should change pause button to resume button after user clicks on pause button', async() => {
+      //Select one Pause button
       const pausebutton = screen.getAllByRole('button', { name: PAUSE })[0]
+
+      //Click on the selected Pause button
       await fireEvent.click(pausebutton);
+
+      //Select a future date and click Pause the User button.
       const date = screen.getByTestId('date-input');
-      waitFor(async ()=>await fireEvent.change(date, {target: {value: '2100-05-24'}}));
+      await userEvent.type(date, '2100-08-30', { allAtOnce: false });
       await fireEvent.click(screen.getByRole('button', { name: /pause the user/i }));
+
       await expect(pausebutton).toHaveTextContent(RESUME);
     });
 
 
     it('should change resume button to pause button after user clicks on resume button', async() => {
+      ////Select one Pause button
       const button = screen.getAllByRole('button', { name: PAUSE })[0]
 
-      //Click on Pause button
+      //Click on the selected Pause button
       await fireEvent.click(button);
+
+      //Select a future date and click Pause the User button.
       const date = screen.getByTestId('date-input');
-      waitFor(async ()=>await fireEvent.change(date, {target: {value: '2100-05-24'}}));
+      await userEvent.type(date, '2100-08-30', { allAtOnce: false });
       await fireEvent.click(screen.getByRole('button', { name: /pause the user/i }));
 
-      //Now the pause button is changed to resume button. 
       //Click on Resume button
       await fireEvent.click(button);
       await expect(button).toHaveTextContent(PAUSE);
