@@ -69,6 +69,7 @@ function FormattedReport({
   canSeeBioHighlight,
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
+
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
