@@ -440,6 +440,7 @@ export const authMock = {
 export const timerMock = {
   seconds: 0,
 };
+
 export const userProfileMock = {
   hoursByCategory: {
     housing: 0,
@@ -488,6 +489,7 @@ export const userProfileMock = {
   _id: '5edf141c78f1380017b829a6',
   emailPubliclyAccessible: true,
   phoneNumberPubliclyAccessible: true,
+  personalBestMaxHrs: 50,
   badgeCollection: [],
   infringements: [
     {
@@ -601,6 +603,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5a849055592ca46b43db2729',
+        wbsId: null,
+        taskId: null,
         projectName: 'Mock Project 4',
         dateOfWork: '2020-08-12',
         hours: '1',
@@ -614,6 +618,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5e606e4f37477100173680ac',
+        wbsId: '5a849055592ca46b43db2731',
+        taskId: '6477b9d6173fbc0818ac5062',
         projectName: 'Mock Project 2',
         dateOfWork: '2020-08-07',
         hours: '3',
@@ -626,6 +632,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5e606e4f37477100173680ac',
+        wbsId: '5a849055592ca46b43db2732',
+        taskId: '6477b9d6173fbc0818ac5062',
         projectName: 'Mock Project 2',
         dateOfWork: '2020-08-07',
         hours: '1',
@@ -640,6 +648,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5a849055592ca46b43db2729',
+        wbsId: null,
+        taskId: null,
         projectName: 'Mock Project 4',
         dateOfWork: '2020-08-01',
         hours: '1',
@@ -652,6 +662,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5f2f7353dc35a608720d5ca4',
+        wbsId: '5a849055592ca46b43db2732',
+        taskId: '6477b9d6173fbc0818ac5063',
         projectName: 'Mock Project 3',
         dateOfWork: '2020-08-01',
         hours: '2',
@@ -664,6 +676,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5a849055592ca46b43db2729',
+        wbsId: null,
+        taskId: null,
         projectName: 'Mock Project 4',
         dateOfWork: '2020-08-01',
         hours: '1',
@@ -693,7 +707,46 @@ export const userProjectMock = {
       projectName: 'Mock Project 4',
     },
   ],
+  wbs: [
+    {
+      _id: '5a849055592ca46b43db2730',
+      wbsName: 'Mock WBS 1',
+      projectId: "5f2f7490dc35a608720d5ca6",
+    },
+    {
+      _id: '5a849055592ca46b43db2731',
+      wbsName: 'Mock WBS 2',
+      projectId: '5e606e4f37477100173680ac'
+    },
+    {
+      _id: '5a849055592ca46b43db2732',
+      wbsName: 'Mock WBS 3',
+      projectId: '5f2f7353dc35a608720d5ca4'
+    },
+  ],
 };
+
+export const userTaskMock = [
+  {
+    _id: "6477b9d6173fbc0818ac5061",
+    wbsId: "5a849055592ca46b43db2730",
+    projectId: '5f2f7490dc35a608720d5ca6',
+    taskName: "Mock Task 1",
+  },
+  {
+    _id: "6477b9d6173fbc0818ac5062",
+    wbsId: "5a849055592ca46b43db2731",
+    projectId: '5e606e4f37477100173680ac',
+    taskName: "Mock Task 2",
+  },
+  {
+    _id: "6477b9d6173fbc0818ac5063",
+    wbsId: "5a849055592ca46b43db2732",
+    projectId: '5f2f7353dc35a608720d5ca4',
+    taskName: "Mock Task 3",
+  },
+];
+
 export const allUserProfilesMock = {
   fetching: false,
   fetched: true,
@@ -1038,6 +1091,7 @@ export const rolesMock = {
           'deleteTeam',
           'putTeam',
           'assignTeamToUsers',
+          'editTeamCode',
           // Time Entries
           'editTimeEntry',
           'deleteTimeEntry',
@@ -1223,5 +1277,5 @@ export const rolesMock = {
 }
 
 describe('Stop Error', () => {
-  it('should not error out due to no tests (mockStates.js)', () => {});
+  it('should not error out due to no tests (mockStates.js)', () => { });
 });
