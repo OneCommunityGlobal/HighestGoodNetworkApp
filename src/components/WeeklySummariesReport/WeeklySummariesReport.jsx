@@ -96,7 +96,9 @@ export class WeeklySummariesReport extends Component {
     } = this.props;
     // 1. fetch report
     const res = await getWeeklySummariesReport();
-    await this.props.getSummaryRecipients();
+    const recipientsRes = await this.props.getSummaryRecipients();
+    console.log('This is the recipientsRes', recipientsRes);
+    console.log('recepientsArr in componentDidNount:', this.props.recepientsArr);
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
