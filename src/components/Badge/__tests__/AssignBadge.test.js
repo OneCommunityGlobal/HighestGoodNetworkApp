@@ -8,13 +8,9 @@ import Autosuggest from 'react-autosuggest';
 import { Provider } from 'react-redux';
 import { badgeReducer } from 'reducers/badgeReducer';
 import { GET_FIRST_NAME, GET_LAST_NAME } from 'constants/badge';
-import { getFirstName } from 'actions/badgeManagement';
-import { createStore, applyMiddleware } from 'redux';
 
-// Create a mock Redux store that doesn't actually update any state when actions are dispatched. Pass in array of middlewares. 'thunk' is a Redux middleware that performs asynchronous logic at a later time -- perfect for testing asynchronous function calls.
 const mockStore = configureStore([thunk]);
 
-// Mock badge data
 const mockallBadgeData = [
   { _id: '1', badgeName: '30 HOURS 3-WEEK STREAK' },
   { _id: '2', badgeName: 'LEAD A TEAM OF 40+ (Trailblazer) ' },
@@ -62,20 +58,17 @@ const mockUserProfilesData = [
   }
 ];
 
-
+const store = mockStore({
+  badge: {
+    firstName: "",
+    lastName: "",
+  },
+  allUserProfiles: {
+    userProfiles: mockUserProfilesData,
+  }
+});
 
 const renderComponent = () => {
-  // Added mock data. Only mock the parts of Redux store that the component to be tested will directly update. In this case, firstName and lastName, and maybe allUserProfiles.userProfiles (but maybe never used).
-  const store = mockStore({
-    badge: {
-      firstName: "",
-      lastName: "",
-    },
-    allUserProfiles: {
-      userProfiles: mockUserProfilesData,
-    }
-  });
-  
   return render(
     <Provider store={store}>
       <AssignBadge 
@@ -104,8 +97,7 @@ describe('AssignBadge component', () => {
     expect(inputLastNameElement).toBeInTheDocument();
   });
   it('Renders the suggestions', async () => {
-    // Mock the necessary functions and state.
-    const firstSuggestions = ["Jerry Admin", "Jerry Volunteer", "Jerry Owner"]; // Replace with mock data
+    const firstSuggestions = ["Jerry Admin", "Jerry Volunteer", "Jerry Owner"];
     const onFirstSuggestionsFetchRequested = jest.fn();
     const onFirstSuggestionsClearRequested = jest.fn();
     const onFirstSuggestionSelected = jest.fn();
@@ -120,7 +112,6 @@ describe('AssignBadge component', () => {
       autoFocus: true,
     };
 
-    // Render the AutoSuggest component
     render(
       <div style={{ marginRight: '5px' }} id='this-div'>
         <Autosuggest
@@ -140,9 +131,8 @@ describe('AssignBadge component', () => {
     const suggestionList = screen.getAllByRole('listbox');
     const optionList = screen.getAllByRole('option');
 
-    // Assertions
     expect(suggestionList[1] instanceof HTMLUListElement).toBe(true);
-    expect(optionList.length).toBe(3); // Assert that there are 3 options, as there are 3 items in array set to firstSuggestions.
+    expect(optionList.length).toBe(3);
   });
   it('Manually apply reducer to mock store and dispatched action', () => {
     const initialState = {
@@ -151,7 +141,7 @@ describe('AssignBadge component', () => {
     }
     let newState = badgeReducer(initialState, { type: GET_FIRST_NAME, firstName: "NewFirstName" })
     newState = badgeReducer(newState, { type: GET_LAST_NAME, lastName: "NewLastName" })
-    console.log("🚀 ~ it ~ newState:", newState)
+
     expect(newState.firstName).toEqual("NewFirstName");
     expect(newState.lastName).toEqual("NewLastName");
   });
@@ -175,35 +165,15 @@ describe('AssignBadge component', () => {
     expect(message2).toBeInTheDocument();
   });
   it('Dispatches action when badges are assigned', async () => {
-    const store = mockStore({
-      badge: {
-        firstName: "",
-        lastName: "",
-      },
-      allUserProfiles: {
-        userProfiles: mockUserProfilesData,
-      }
-    });
-
-    render(
-      <Provider store={store}>
-        <AssignBadge 
-          allBadgeData={mockallBadgeData}
-        />
-      </Provider>
-    )  
-    // renderComponent();
+    renderComponent();
 
     const numOfBadges = screen.getByText("0 badges selected");
     expect(numOfBadges).toBeInTheDocument();
 
-    // select badges
     const buttonElement = screen.getByText('Assign Badge')
     expect(buttonElement).toBeInTheDocument();
     fireEvent.click(buttonElement)
 
-    // confirm that action is dispatched from store
-    console.log("🚀 ~ file: AssignBadge.test.js:243 ~ it ~ store.getActions():", store.getActions())
     expect(store.getActions()).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
