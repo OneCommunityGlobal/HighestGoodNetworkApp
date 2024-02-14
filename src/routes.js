@@ -187,7 +187,7 @@ export default (
           routePermissions={[
             RoutePermissions.permissionsManagement,
             RoutePermissions.userPermissionsManagement,
-          ]}
+          ].flat()}
         />
         <ProtectedRoute
           path="/permissionsmanagement/:userRole"

@@ -3,7 +3,12 @@
 export const RoutePermissions = {
   reports: 'getReports',
   weeklySummariesReport: 'getWeeklySummaries',
-  userManagement: 'postUserProfile',
+  userManagement: [
+    'getUserProfiles',
+    'postUserProfile',
+    'deleteUserProfile',
+    'changeUserStatus'
+  ],
   badgeManagement: [
     'seeBadges',
     'createBadges',
@@ -16,10 +21,8 @@ export const RoutePermissions = {
     'putProject',
     'getProjectMembers',
     'assignProjectToUsers',
-    'category/non-permission',
     'postWbs',
     'deleteWbs',
-    'category/non-permission',
     'postTask',
     'updateTask',
     'deleteTask'
@@ -30,7 +33,11 @@ export const RoutePermissions = {
     'deleteTeam',
     'assignTeamToUsers'
   ],
-  permissionsManagement: 'putRole',
+  permissionsManagement: [
+    'postRole',
+    'putRole',
+    'deleteRole'
+  ],
   userPermissionsManagement: 'putUserProfilePermissions',
   inventoryProject: '',
   inventoryProjectWbs: '',
