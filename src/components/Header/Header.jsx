@@ -66,10 +66,8 @@ export const Header = props => {
     || props.hasPermission('putProject')
     || props.hasPermission('getProjectMembers')
     || props.hasPermission('assignProjectToUsers')
-    || props.hasPermission('category/non-permission')
     || props.hasPermission('postWbs')
     || props.hasPermission('deleteWbs')
-    || props.hasPermission('category/non-permission')
     || props.hasPermission('postTask')
     || props.hasPermission('updateTask')
     || props.hasPermission('deleteTask');
