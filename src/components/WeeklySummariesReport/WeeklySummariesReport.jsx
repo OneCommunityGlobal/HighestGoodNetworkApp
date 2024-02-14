@@ -282,10 +282,7 @@ export class WeeklySummariesReport extends Component {
       const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
 
       const isMeetCriteria =
-        this.canSeeBioHighlight &&
-        summary.totalTangibleHrs > 80 &&
-        summary.daysInTeam > 60 &&
-        summary.bioPosted !== 'posted';
+        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
 
       const isBio = !selectedBioStatus || isMeetCriteria;
 
@@ -352,6 +349,8 @@ export class WeeklySummariesReport extends Component {
       auth,
     } = this.state;
     const { error } = this.props;
+    const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+
     if (error) {
       return (
         <Container>
@@ -416,36 +415,11 @@ export class WeeklySummariesReport extends Component {
             />
           </Col>
         </Row>
-        {(role === 'Owner' || role === 'Administrator') && (
-          <Row style={{ marginBottom: '10px' }}>
-            <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <div
-                  style={{
-                    marginRight: '20px',
-                    fontSize: '0.8em',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                  <span>Filter by Over Hours</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input"
-                      id="over-hours-toggle"
-                      onChange={this.handleOverHoursToggleChange}
-                    />
-                    <label
-                      className="custom-control-label"
-                      htmlFor="over-hours-toggle"
-                      style={{ marginLeft: '8px' }}
-                    >
-                      {}
-                    </label>
-                  </div>
-                </div>
-                <div style={{ fontSize: '0.8em', display: 'flex', alignItems: 'center' }}>
+        <Row style={{ marginBottom: '10px' }}>
+          <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+            <div className="filter-container">
+              {(hasPermissionToFilter || this.canSeeBioHighlight) && (
+                <div className="filter-style margin-right">
                   <span>Filter by Bio Status</span>
                   <div className="custom-control custom-switch custom-control-smaller">
                     <input
@@ -454,19 +428,31 @@ export class WeeklySummariesReport extends Component {
                       id="bio-status-toggle"
                       onChange={this.handleBioStatusToggleChange}
                     />
-                    <label
-                      className="custom-control-label"
-                      htmlFor="bio-status-toggle"
-                      style={{ marginLeft: '8px' }}
-                    >
+                    <label className="custom-control-label" htmlFor="bio-status-toggle">
                       {}
                     </label>
                   </div>
                 </div>
-              </div>
-            </Col>
-          </Row>
-        )}
+              )}
+              {hasPermissionToFilter && (
+                <div className="filter-style">
+                  <span>Filter by Over Hours</span>
+                  <div className="custom-control custom-switch custom-control-smaller">
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="over-hours-toggle"
+                      onChange={this.handleOverHoursToggleChange}
+                    />
+                    <label className="custom-control-label" htmlFor="over-hours-toggle">
+                      {}
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Col>
+        </Row>
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
