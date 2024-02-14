@@ -55,11 +55,12 @@ export const Header = props => {
   const canGetReports = props.hasPermission('getReports');
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
-  const canAccessUserManagement = props.hasPermission('postUserProfile')
-    || props.hasPermission('deleteUserProfile')
-    || props.hasPermission('putUserProfileImportantInfo');
+
+  const canPostUserProfile = props.hasPermission('postUserProfile');
+  const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   // Badges
-  const canAccessBadgeManagement = props.hasPermission('createBadges');
+  const canCreateBadges = props.hasPermission('createBadges');
   // Projects
   const canAccessProjects = props.hasPermission('postProject')
     || props.hasPermission('deleteProject')
@@ -72,20 +73,17 @@ export const Header = props => {
     || props.hasPermission('updateTask')
     || props.hasPermission('deleteTask');
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask');
+  const canUpdateTask = props.hasPermission('updateTask') || props.auth.user?.permissions?.frontPermissions.includes('updateTask');
   // Teams
-  const canAccessTeams = props.hasPermission('postTeam')
-    || props.hasPermission('putTeam')
-    || props.hasPermission('deleteTeam')
-    || props.hasPermission('assignTeamToUsers');
+  const canDeleteTeam = props.hasPermission('deleteTeam');
+  const canPutTeam = props.hasPermission('putTeam');
   // Popups
-  const canAccessPopups = props.hasPermission('createPopup')
-    || props.hasPermission('updatePopup');
+  const canCreatePopup = props.hasPermission('createPopup');
+  const canUpdatePopup = props.hasPermission('updatePopup');
+  // Roles
+  const canPutRole = props.hasPermission('putRole');
   // Permissions
-  const canAccessPermissionsManagement = props.hasPermission('postRole')
-    || props.hasPermission('putRole')
-    || props.hasPermission('deleteRole')
-    || props.hasPermission('putUserProfilePermissions')
+  const canManageUser = props.hasPermission('putUserProfilePermissions');
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -271,18 +269,27 @@ export const Header = props => {
                   </i>
                 </NavLink>
               </NavItem>
-              {(canAccessUserManagement ||
-                canAccessBadgeManagement ||
-                canAccessProjects ||
-                canAccessTeams ||
-                canAccessPopups ||
-                canAccessPermissionsManagement) && (
+              {(canPostUserProfile ||
+                canDeleteUserProfile ||
+                canPutUserProfileImportantInfo ||
+                canCreateBadges ||
+                canPostProject ||
+                canUpdateTask ||
+                canPostWBS ||
+                canSeeProjectManagementTab ||
+                canDeleteTeam ||
+                canPutTeam ||
+                canCreatePopup ||
+                canUpdatePopup ||
+                canManageUser) && (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    {canAccessUserManagement ? (
+                    {canPostUserProfile ||
+                    canDeleteUserProfile ||
+                    canPutUserProfileImportantInfo ? (
                       <DropdownItem tag={Link} to="/usermanagement">
                         {USER_MANAGEMENT}
                       </DropdownItem>
@@ -296,17 +303,17 @@ export const Header = props => {
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {(canAccessProjects) && (
+                    {(canPostProject || canUpdateTask || canPostWBS|| canSeeProjectManagementTab) && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
                       </DropdownItem>
                     )}
-                    {(canAccessTeams) && (
+                    {(canDeleteTeam || canPutTeam) && (
                       <DropdownItem tag={Link} to="/teams">
                         {TEAMS}
                       </DropdownItem>
                     )}
-                    {(canAccessPermissionsManagement) && (
+                    {(canPutRole || canManageUser) && (
                       <>
                         <DropdownItem divider />
                         <DropdownItem tag={Link} to="/permissionsmanagement">
