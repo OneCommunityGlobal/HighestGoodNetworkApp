@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-  import AssignBadge from 'components/Badge/AssignBadge';
+import AssignBadge from 'components/Badge/AssignBadge';
 import Autosuggest from 'react-autosuggest';
 import { Provider } from 'react-redux';
 import { badgeReducer } from 'reducers/badgeReducer';
