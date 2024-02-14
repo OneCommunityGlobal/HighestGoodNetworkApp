@@ -1,5 +1,5 @@
 import { useState } from 'react';
-// import ReusablesTable from './ReusablesTable';
+import ReusablesTable from './ReusablesTable';
 import ReusablesInputs from './ReusablesInputs';
 import './ReusablesViewStyle.css';
 
@@ -18,12 +18,12 @@ function ReusablesView() {
             project={project}
             setProject={setProject}
           />
-          {/* <ReusablesTable
+          <ReusablesTable
             reusable={reusable}
             setReusable={setReusable}
             project={project}
             setProject={setProject}
-          /> */}
+          />
         </div>
       </div>
     </div>
