@@ -31,6 +31,7 @@ import { mouseoverTextReducer } from './mouseoverTextReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
+import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
@@ -69,7 +70,8 @@ const localReducers = {
   timeOffRequests: timeOffRequestsReducer,
   bmTools: toolReducer,
   bmInvUnits: bmInvUnitReducer,
-  bmConsumables: consumablesReducer
+  bmConsumables: consumablesReducer,
+  bmReusables: reusablesReducer
 };
 
 const sessionReducers = {

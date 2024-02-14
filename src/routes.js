@@ -50,6 +50,8 @@ import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
 import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesList/ConsumablesView';
+import ReusablesView from './components/BMDashboard/Reusables/ReusablesView';
+
 
 import EquipmentList from './components/BMDashboard/Equipment/List';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
@@ -58,12 +60,13 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 // import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 // import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
 
+// const ReusablesView = lazy(() => import('./components/BMDashboard/Reusables/ReusablesView'));
 const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
 const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
-const PurchaseTools = lazy(() => import ('./components/BMDashboard/ToolPurchaseRequest'));
+const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 // const EquipmentList = lazy(() => import('./components/BMDashboard/EquipmentList'))
 
@@ -225,6 +228,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
+        <BMProtectedRoute path="/bmdashboard/reusables" component={ReusablesView} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />

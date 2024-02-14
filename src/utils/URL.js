@@ -94,8 +94,8 @@ export const ENDPOINTS = {
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
 
-  COPIED_AI_PROMPT : (userId) => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`, 
-  
+  COPIED_AI_PROMPT: (userId) => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
+
 
   SETUP_NEW_USER: () =>
     `${APIEndpoint}/getInitialSetuptoken`,
@@ -138,7 +138,7 @@ export const ENDPOINTS = {
   BM_MATERIAL_TYPE: `${APIEndpoint}/bm/invtypes/material`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
-  BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
