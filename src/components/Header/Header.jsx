@@ -291,7 +291,7 @@ export const Header = props => {
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {canCreateBadges ? (
+                    {canAccessBadgeManagement ? (
                       <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
