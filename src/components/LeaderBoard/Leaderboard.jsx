@@ -111,24 +111,29 @@ function LeaderBoard({
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
   };
+  //use variable instead of string
+
+  const manager = 'Manager';
+  const adm = 'Administrator';
+  const owner = 'Owner';
 
   const handleDashboardAccess = item => {
-    // check the logged in user is manager and if the dashboard are admin and owner
-    if (loggedInUser.role === 'Manager' && ['Administrator', 'Owner'].includes(item.role)) {
+    // check the logged in user is manager and if the dashboard is admin and owner
+    if (loggedInUser.role === manager && [adm, owner].includes(item.role)) {
       // check the logged in user is admin and if dashboard is owner
-      toast.error("you don't have the permission to access this painel");
-    } else if (loggedInUser.role === 'Administrator' && ['Owner'].includes(item.role)) {
-      toast.error("you don't have the permission to access this painel");
+      toast.error("you don't have the permission to access this user's dashboard");
+    } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
+      toast.error("you don't have the permission to access this user's dashboard");
     }
     // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
     else if (
-      loggedInUser.role !== 'Manager' &&
-      loggedInUser.role !== 'Administrator' &&
-      loggedInUser.role !== 'Owner'
+      loggedInUser.role !== manager &&
+      loggedInUser.role !== adm &&
+      loggedInUser.role !== owner
     ) {
-      if (['Manager', 'Administrator', 'Owner'].includes(item.role)) {
+      if ([manager, adm, owner].includes(item.role)) {
         // prevent access
-        toast.error("you don't have the permission to access this painel");
+        toast.error("you don't have the permission to access this user's dashboard");
       } else {
         // allow access to the painel
         dashboardToggle(item);
@@ -244,7 +249,7 @@ function LeaderBoard({
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
                       <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
                       <ModalBody>
-                        <p>Are you sure you wish to view this {item.name} dashboard?</p>
+                        <p>Are you sure you wish to view the dashboard for {item.name} ?</p>
                       </ModalBody>
                       <ModalFooter>
                         <Button variant="primary" onClick={() => showDashboard(item)}>
