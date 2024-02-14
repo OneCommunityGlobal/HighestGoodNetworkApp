@@ -1,0 +1,75 @@
+.types-list-container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+
+  --color-h50: #e8f4f9;
+  --color-h100: #78bdda;
+  --color-h500: #0d5675;
+  --color-n0: #ffffff;
+  --color-text: #1c8bcc;
+  --font-clickable: Roboto;
+}
+
+.timestamp-container {
+  display: flex;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+#timestamp {
+  padding: 0 5px;
+  border: 1px solid var(--color-h50);
+  border-radius: 5px;
+}
+
+.card-header {
+  background-color: var(--color-h50);
+  color: var(--color-text);
+  font-weight: bold;
+  cursor: pointer;
+  text-align: start;
+}
+
+.button-container {
+  margin-top: 10px;
+  display: flex;
+}
+
+.button-container a {
+  background-color: var(--color-h500);
+  color: var(--color-n0);
+  padding: 10px 16px;
+  border-radius: 12px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn-types {
+  background-color: var(--color-h100);
+  color: var(--color-n0);
+  border: none;
+}
+
+.table-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.arrow-icon {
+  padding-right: 4px;
+  width: 20px;
+  height: auto;
+}
+
+.accordion-collapse {
+  max-height: 50vh;
+  overflow: auto;
+}
+
+#input-measurement {
+  padding: 0 5px;
+  border: 1px solid var(--color-h50);
+  border-radius: 5px;
+  margin-right: 5px;
+}

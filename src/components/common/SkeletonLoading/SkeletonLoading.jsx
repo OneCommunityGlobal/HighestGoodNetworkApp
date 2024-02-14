@@ -23,6 +23,7 @@ const SkeletonLoading = ({ template }) => {
             <div className="skeleton-loading-timelog-filter-item"></div>
             <div className="skeleton-loading-timelog-filter-item"></div>
             <div className="skeleton-loading-timelog-filter-item"></div>
+            <div className="skeleton-loading-timelog-filter-item"></div>
           </div>
         );
       case 'TeamMemberTasks':
