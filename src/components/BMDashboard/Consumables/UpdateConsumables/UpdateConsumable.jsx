@@ -40,7 +40,6 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel }) {
     if (QtyWastedLogUnit === 'percent') {
       valWasted = (+qtyWasted / 100) * available;
     }
-
     valUsed = Number.parseFloat(valUsed.toFixed(4));
     valWasted = Number.parseFloat(valWasted.toFixed(4));
     if (valUsed > available) {
@@ -88,13 +87,11 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel }) {
       // if (Number(value) < 0) return;
       if (Number(value) < 0) {
         if (e.target.name === 'quantityWasted') {
-          updateRecord.quantityWasted = ''
-          return
+          updateRecord.quantityWasted = '';
+          return;
         }
-        else {
-          updateRecord.quantityUsed = ''
-          return
-        }
+        updateRecord.quantityUsed = '';
+        return;
       }
     }
 
@@ -202,8 +199,7 @@ function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel }) {
       </tr>
     </>
   ) : (
-    //TODO update the following fragment for individual consumable update
-    <></>
+    <>Update the following fragment for individual consumable update</>
   );
 }
 

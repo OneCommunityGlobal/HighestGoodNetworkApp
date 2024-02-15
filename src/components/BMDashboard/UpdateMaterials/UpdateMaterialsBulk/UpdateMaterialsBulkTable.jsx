@@ -67,7 +67,7 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
     dispatch(postMaterialUpdateBulk({ updateMaterials: tempPostMaterialUpdateData, date }));
   };
 
-  //TODO: modify the material data to consumabel from updatedRecord
+  // TODO: modify the material data to consumabel from updatedRecord
   const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
     updatedRecordsList[updatedRecord.material._id] = updatedRecord;
     validationsList[updatedRecord.material._id] = validationRecord;
@@ -142,7 +142,7 @@ function UpdateMaterialsBulkTable({ date, setDate, project, setProject }) {
           size="md"
           className="logMButtonBg"
           disabled={bulkValidationError}
-          type='sumbit'
+          type="submit"
           onClick={e => submitHandler(e)}
         >
           Submit

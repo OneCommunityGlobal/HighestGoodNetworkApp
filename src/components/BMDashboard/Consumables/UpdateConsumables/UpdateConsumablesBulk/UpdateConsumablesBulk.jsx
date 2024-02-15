@@ -32,4 +32,3 @@ function UpdateConsumablesBulk() {
 }
 
 export default UpdateConsumablesBulk;
-

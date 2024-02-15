@@ -4,21 +4,26 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, Table } from 'reactstrap';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import { fetchAllConsumables, postConsumableUpdateBulk } from 'actions/bmdashboard/consumableActions';
-import UpdateConsumable from "../UpdateConsumable"
+import {
+  fetchAllConsumables,
+  postConsumableUpdateBulk,
+} from 'actions/bmdashboard/consumableActions';
+import UpdateConsumable from '../UpdateConsumable';
 
 function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
   const dispatch = useDispatch();
   const consumables = useSelector(state => state.bmConsumables.consumableslist);
   const [consumablesState, setConsumablesState] = useState(consumables);
-  const postConsumableUpdateBulkResult = useSelector(state => state.bmConsumables.updateConsumablesBulk);
+  const postConsumableUpdateBulkResult = useSelector(
+    state => state.bmConsumables.updateConsumablesBulk,
+  );
   const [cancel, setCancel] = useState(1);
   const [updatedRecordsList, setUpdatedRecordsList] = useState({});
-  const [isReadyToSubmit, setIsReadyToSubmit] = useState(false)
+  const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
   const [bulkValidationError, setBulkValidationError] = useState(false);
   const today = moment(new Date()).format('YYYY-MM-DD');
 
-  const filterUpdatedRecords = (records) => {
+  const filterUpdatedRecords = records => {
     return Object.values(records).filter(record => record.newAvailable !== '');
   };
 
@@ -66,17 +71,18 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
     if (bulkValidationError) return;
     const tempPostConsumableUpdateData = filterUpdatedRecords(updatedRecordsList);
     dispatch(postConsumableUpdateBulk({ updateConsumables: tempPostConsumableUpdateData, date }));
-    //reset submit btn to disabled
-    setIsReadyToSubmit(false)
+    // reset submit btn to disabled
+    setIsReadyToSubmit(false);
   };
 
   const sendUpdatedRecordHandler = (updatedRecord, validationRecord) => {
     setUpdatedRecordsList(prevState => ({
       ...prevState,
-      [updatedRecord.consumable._id]: updatedRecord
+      [updatedRecord.consumable._id]: updatedRecord,
     }));
 
-    const hasValidationError = validationRecord.quantityUsed !== '' ||
+    const hasValidationError =
+      validationRecord.quantityUsed !== '' ||
       validationRecord.quantityWasted !== '' ||
       validationRecord.quantityTogether !== '';
     setBulkValidationError(hasValidationError);
@@ -151,7 +157,7 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
           size="md"
           className="logCButtonBg"
           disabled={!isReadyToSubmit || bulkValidationError}
-          type='sumbit'
+          type="submit"
           onClick={e => submitHandler(e)}
         >
           Submit
@@ -162,5 +168,3 @@ function UpdateConsumablesBulkTable({ date, setDate, project, setProject }) {
 }
 
 export default UpdateConsumablesBulkTable;
-
-
