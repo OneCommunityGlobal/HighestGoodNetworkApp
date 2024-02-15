@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
-
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 /**
  * The body row of the user table
  */
@@ -25,8 +25,19 @@ const UserTableData = React.memo(props => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
+
+  /**
+   * Checks whether users should be able to change the record of other users.
+   * @returns {boolean} true if the target user record has a owner role, the logged in 
+   * user does not have the addDeleteEditOwners permission, or the target user is only
+   * editable by Jae's account.
+   */
   const checkPermissionsOnOwner = () => {
-    return props.user.role === 'Owner' && !canAddDeleteEditOwners;
+    const recordEmail = props.user.email;
+    const loginUserEmail = props.authEmail;
+    
+    return (props.user.role === 'Owner' && !canAddDeleteEditOwners) 
+      || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
 
   return (
@@ -80,6 +91,10 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
+            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
+              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+              return;
+            }
             onReset(true);
             props.onPauseResumeClick(
               props.user,
@@ -129,6 +144,10 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
+            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
+              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+              return;
+            }
             props.onFinalDayClick(
               props.user,
               props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,

@@ -1,14 +1,16 @@
 import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
 import { formatDateFromDescriptionString,formatTimeOffRequests } from 'utils/formatDateFromDescriptionString';
 
 const BlueSquare = (props) => {
+  const authRole = useSelector(state => state.auth.user.role)
+  
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare, numberOfReasons, infringementsNum, userRole } = props;
+  const { blueSquares, handleBlueSquare, numberOfReasons, infringementsNum } = props;
 
   return (
     <div className="blueSquareContainer">
@@ -71,7 +73,7 @@ const BlueSquare = (props) => {
           : null}
       </div>
       {/* Check for userRole, infringements and scheduled reasons to render + button - Sucheta*/}
-      {userRole === "Owner" || userRole === "Administrator" ? (<div
+      {authRole === "Owner" || authRole === "Administrator" ? (<div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');
           }}
