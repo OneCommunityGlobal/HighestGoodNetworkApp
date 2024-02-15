@@ -4,7 +4,7 @@ import { Input } from 'reactstrap';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
+function UpdateConsumable({ record, bulk, sendUpdatedRecord, cancel }) {
   const { purchaseRecord, updateRecord: _, ...rest } = record;
   const recordInitialState = {
     date: moment(new Date()).format('YYYY-MM-DD'),
