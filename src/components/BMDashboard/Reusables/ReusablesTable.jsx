@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Table, Button } from 'reactstrap';
-import { BiPencil } from 'react-icons/bi';
+import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import './ReusablesViewStyle.css';
@@ -10,18 +9,14 @@ import { fetchAllReusables } from 'actions/bmdashboard/reusableActions';
 
 function ReusablesTable({ reusable, project }) {
   const dispatch = useDispatch();
-
   const reusables = useSelector(state => state.bmReusables.reusablesList);
-  const [recordType, setRecordType] = useState(null);
-  const [modal, setModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
   const [sortOrder, setSortOrder] = useState({ project: 'asc', itemType: 'asc' });
   const [iconToDisplay, setIconToDisplay] = useState({ project: faSortUp, itemType: faSortUp });
   const [reusablesViewData, setReusablesViewData] = useState(null);
 
   useEffect(() => {
     dispatch(fetchAllReusables());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     setReusablesViewData(reusables);
@@ -62,33 +57,16 @@ function ReusablesTable({ reusable, project }) {
     }
   };
 
-
   useEffect(() => {
+    let filteredReusables = reusables;
     if (project.value !== '0') {
-      const filteredReusables = reusables.filter(rec => rec.project?.name === project.label);
-      setReusablesViewData(filteredReusables);
-    } else {
-      setReusablesViewData([...reusables]);
+      filteredReusables = filteredReusables.filter(rec => rec.project?._id === project.value);
     }
-  }, [project]);
-
-  useEffect(() => {
-    let filteredReusables;
-    if (project.value === '0' && reusable.value === '0') {
-      setReusablesViewData([...reusables]);
-    } else if (project.value !== '0' && reusable.value === '0') {
-      filteredReusables = reusables.filter(rec => rec.project?._id === project.value);
-      setReusablesViewData([...filteredReusables]);
-    } else if (project.value === '0' && reusable.value !== '0') {
-      filteredReusables = reusables.filter(rec => rec.itemType?.name === reusable.value);
-      setReusablesViewData([...filteredReusables]);
-    } else {
-      filteredReusables = reusables.filter(
-        rec => rec.project?._id === project.value && rec.itemType?.name === reusable.value,
-      );
-      setReusablesViewData([...filteredReusables]);
+    if (reusable.value !== '0') {
+      filteredReusables = filteredReusables.filter(rec => rec.itemType?.name === reusable.value);
     }
-  }, [project, reusable]);
+    setReusablesViewData([...filteredReusables]);
+  }, [project, reusable, reusables]);
 
   return (
     <div>
@@ -96,14 +74,20 @@ function ReusablesTable({ reusable, project }) {
         <thead className="BuildingTableHeaderLine">
           <tr>
             <th onClick={() => handleSort('project')}>
-              <div data-tip={`Sort project ${sortOrder.project}`} className="d-flex align-items-stretch cursor-pointer">
+              <div
+                data-tip={`Sort project ${sortOrder.project}`}
+                className="d-flex align-items-stretch cursor-pointer"
+              >
                 <div>Project</div>
                 <FontAwesomeIcon icon={iconToDisplay.project} size="lg" />
               </div>
               <ReactTooltip />
             </th>
             <th onClick={() => handleSort('itemType')}>
-              <div data-tip={`Sort name ${sortOrder.itemType}`} className="d-flex align-items-stretch cursor-pointer">
+              <div
+                data-tip={`Sort name ${sortOrder.itemType}`}
+                className="d-flex align-items-stretch cursor-pointer"
+              >
                 <div>Name</div>
                 <FontAwesomeIcon icon={iconToDisplay.itemType} size="lg" />
               </div>
@@ -112,8 +96,6 @@ function ReusablesTable({ reusable, project }) {
             <th>Bought</th>
             <th>Available</th>
             <th>Destroyed</th>
-            {/* <th>Updates</th>
-            <th>Purchases</th> */}
           </tr>
         </thead>
         <tbody>
@@ -125,9 +107,6 @@ function ReusablesTable({ reusable, project }) {
                 <td>{rec.stockBought}</td>
                 <td>{rec.stockAvailable}</td>
                 <td>{rec.stockDestroyed}</td>
-                <td className="materials_cell">
-
-                </td>
               </tr>
             ))
           ) : (

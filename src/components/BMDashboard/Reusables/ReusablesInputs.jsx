@@ -1,10 +1,16 @@
 import { Label, Form, Row, Col } from 'reactstrap';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchAllReusables } from 'actions/bmdashboard/reusableActions';
 import './ReusablesViewStyle.css';
+
+const DEFAULT_PROJECT = { label: 'All Projects', value: '0' };
+const DEFAULT_REUSABLE = { label: 'All Reusables', value: '0' };
+
+function formatDropdownOptions(items, labelKey = 'name', valueKey = '_id') {
+  return items.map(item => ({ label: item[labelKey], value: item[valueKey] }));
+}
 
 function ReusablesInputs({ reusable, setReusable, project, setProject }) {
   const dispatch = useDispatch();
@@ -13,52 +19,40 @@ function ReusablesInputs({ reusable, setReusable, project, setProject }) {
   const [formattedReusables, setFormattedReusables] = useState([]);
   const reusables = useSelector(state => state.bmReusables.reusablesList);
 
-  useEffect(() => {
-    dispatch(fetchBMProjects());
-    dispatch(fetchAllReusables());
-  }, []);
-
-  useEffect(() => {
-    let _formattedProjects = [{ label: 'All Projects', value: '0' }];
-    const tempProjs = projects.map(proj => {
-      return { label: proj.name, value: proj._id };
-    });
-    _formattedProjects = _formattedProjects.concat(tempProjs);
-    setFormattedProjects(_formattedProjects);
+  const formatProjects = useCallback(() => {
+    const projectOptions = formatDropdownOptions(projects);
+    setFormattedProjects([DEFAULT_PROJECT, ...projectOptions]);
   }, [projects]);
 
-  useEffect(() => {
-    let reusablesSet = [];
-    let _formattedReusables = [{ label: 'All Reusables', value: '0' }]; // Changed to _formattedReusables and label text
-
-    if (reusables.length) {
-      if (project.value === '0')
-        reusablesSet = [...new Set(reusables.map(rec => rec.itemType?.name))];
-      else
-        reusablesSet = [
-          ...new Set(
-            reusables
-              .filter(rec => rec.project?.name === project.label)
-              .map(rec => rec.itemType?.name),
-          ),
-        ];
-    }
-
-    const temp = reusablesSet.map(reusable => {
-      return { label: reusable, value: reusable };
-    });
-    _formattedReusables = _formattedReusables.concat(temp);
-    setFormattedReusables(_formattedReusables);
+  const formatReusables = useCallback(() => {
+    const filteredReusables =
+      project.value === '0'
+        ? reusables
+        : reusables.filter(rec => rec.project?.name === project.label);
+    const uniqueReusables = [...new Set(filteredReusables.map(rec => rec.itemType?.name))];
+    const reusableOptions = uniqueReusables.map(name => ({ label: name, value: name }));
+    setFormattedReusables([DEFAULT_REUSABLE, ...reusableOptions]);
   }, [reusables, project]);
 
+  useEffect(() => {
+    dispatch(fetchBMProjects());
+  }, [dispatch]);
 
-  const projectHandler = selected => {
-    setProject(selected);
-    setReusable({ label: 'All Reusables', value: '0' });
+  useEffect(() => {
+    formatProjects();
+  }, [formatProjects]);
+
+  useEffect(() => {
+    formatReusables();
+  }, [formatReusables]);
+
+  const projectHandler = selectedOption => {
+    setProject(selectedOption);
+    setReusable(DEFAULT_REUSABLE);
   };
 
-  const reusablesHandler = selected => {
-    setReusable(selected);
+  const reusablesHandler = selectedOption => {
+    setReusable(selectedOption);
   };
 
   return (
@@ -75,7 +69,7 @@ function ReusablesInputs({ reusable, setReusable, project, setProject }) {
                   onChange={projectHandler}
                   options={formattedProjects}
                   value={project}
-                  defaultValue={{ label: 'All Projects', value: '0' }}
+                  defaultValue={DEFAULT_PROJECT}
                 />
               </Col>
             </Row>
@@ -91,7 +85,7 @@ function ReusablesInputs({ reusable, setReusable, project, setProject }) {
                   onChange={reusablesHandler}
                   options={formattedReusables}
                   value={reusable}
-                  defaultValue={{ label: 'All Reusables', value: '0' }}
+                  defaultValue={DEFAULT_REUSABLE}
                 />
               </Col>
             </Row>
