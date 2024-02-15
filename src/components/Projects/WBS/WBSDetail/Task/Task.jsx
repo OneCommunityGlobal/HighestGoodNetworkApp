@@ -81,10 +81,10 @@ function Task(props) {
   //Color change based on initials 
   function getBackgroundColor(initials) {
     if (existingInitials.has(initials)) {
-      return '#bbb'; // No background color if the initials already exist
+      return getRandomColor(); // Return a random color if initials already exist
     } else {
-      setExistingInitials(prevSet => new Set(prevSet.add(initials))); // Add initials to the set of existing initials
-      return getRandomColor(); // Return a random color for the new initials
+      existingInitials.add(initials);
+      return '#bbb'; // No background color
     }
   }
 
@@ -187,9 +187,7 @@ function Task(props) {
                     .filter((n, index) => index===0 || index===elm.name.split(' ').length - 1)
                     .map(n=>n[0])
                     .join('').toUpperCase();
-                    
                     const backgroundColor = getBackgroundColor(initials);
-                    
                     return (
                       <a
                         key={`res_${i}`}
