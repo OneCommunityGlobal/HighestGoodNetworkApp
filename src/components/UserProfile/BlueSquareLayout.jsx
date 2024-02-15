@@ -78,9 +78,9 @@ const BlueSquareLayout = props => {
   //   isSet: false,
   // });
 
-  const handleOpen = useCallback(() => {
+  const handleOpen = () => {
     setShow(true);
-  }, []);
+  }
 
   const handleClose = useCallback(() => {
     setShow(false);
