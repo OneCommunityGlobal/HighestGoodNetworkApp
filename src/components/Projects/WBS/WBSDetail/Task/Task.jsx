@@ -40,6 +40,10 @@ function Task(props) {
   const [showMoreResources, setShowMoreResources] = useState(false);
   const tableRowRef = useRef();
 
+  const [assignedColors, setAssignedColors] = useState({});
+  const [existingInitials, setExistingInitials] = useState(new Set());
+
+
   /*
   * -------------------------------- functions --------------------------------
   */
@@ -68,6 +72,21 @@ function Task(props) {
   const deleteOneTask = (taskId, mother) => {
     props.deleteWBSTask(taskId, mother);
   };
+
+  function getRandomColor() {
+    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16); // Random color
+    return randomColor + '33'; // Adding opacity (33 in hexadecimal) for lighter color
+  }
+
+  //Color change based on initials 
+  function getBackgroundColor(initials) {
+    if (existingInitials.has(initials)) {
+      return '#bbb'; // No background color if the initials already exist
+    } else {
+      setExistingInitials(prevSet => new Set(prevSet.add(initials))); // Add initials to the set of existing initials
+      return getRandomColor(); // Return a random color for the new initials
+    }
+  }
 
   /*
   * -------------------------------- useEffects --------------------------------
@@ -164,6 +183,13 @@ function Task(props) {
                 ? props.resources
                   .filter((elm, i) => i < 2 || showMoreResources)
                   .map((elm, i) => {
+                    const initials = elm.name.split(' ')
+                    .filter((n, index) => index===0 || index===elm.name.split(' ').length - 1)
+                    .map(n=>n[0])
+                    .join('').toUpperCase();
+                    
+                    const backgroundColor = getBackgroundColor(initials);
+                    
                     return (
                       <a
                         key={`res_${i}`}
@@ -173,8 +199,10 @@ function Task(props) {
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {!elm.profilePic || elm.profilePic === "/defaultprofilepic.png"
-                          ? <span className="dot">{elm.name.split(' ').map(n => n[0]).join('').toUpperCase()}</span>
+                        {!elm.profilePic || elm.profilePic === "/defaultprofilepic.png" ?
+                        <span className="dot" style={{ backgroundColor }}>{initials} </span>
+                          // ? <span className="dot">{elm.name.split(' ').map(n => n[0]).join('').toUpperCase()}</span>
+                          // ? <span className="dot" style={{ backgroundColor }}>{elm.name.split(' ').filter((n, index) => index === 0 || index === elm.name.split(' ').length - 1).map(n => n[0]).join('').toUpperCase()}</span>
                           : <img className="img-circle" src={elm.profilePic} />}
                       </a>
                     );
