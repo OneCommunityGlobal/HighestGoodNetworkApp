@@ -10,7 +10,7 @@ const BlueSquare = (props) => {
   
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare, numberOfReasons, infringementsNum } = props;
+  const { blueSquares, handleBlueSquare} = props;
 
   return (
     <div className="blueSquareContainer">
@@ -72,17 +72,7 @@ const BlueSquare = (props) => {
               ))
           : null}
       </div>
-      {/* Check for userRole, infringements and scheduled reasons to render + button - Sucheta*/}
-      {authRole === "Owner" || authRole === "Administrator" ? (<div
-          onClick={() => {
-            handleBlueSquare(true, 'addBlueSquare', '');
-          }}
-          className="blueSquareButton"
-          color="primary"
-          data-testid="addBlueSquare"
-        >
-          +
-        </div>) : ( isInfringementAuthorizer && !(infringementsNum >=5 || numberOfReasons >= 5 || (numberOfReasons + infringementsNum >= 5) ) &&(
+      {isInfringementAuthorizer && ( 
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');
@@ -92,7 +82,7 @@ const BlueSquare = (props) => {
           data-testid="addBlueSquare"
         >
           +
-        </div>)
+        </div>
       )}
       <br />
     </div>
