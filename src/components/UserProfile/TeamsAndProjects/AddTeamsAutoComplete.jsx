@@ -21,6 +21,7 @@ const AddTeamsAutoComplete = React.memo(props => {
       <Input
         type="text"
         value={props.searchText}
+        autoFocus={true}
         onChange={e => {
           props.setSearchText(e.target.value);
           props.setNewTeamName(e.target.value);
