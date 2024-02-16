@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { FcGoogle } from "react-icons/fc";
 
 import { Link } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
@@ -18,7 +17,7 @@ import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
-import { toast } from 'react-toastify';
+import GoogleDocIcon from '../../components/common/GoogleDocIcon'
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -96,24 +95,6 @@ const TeamMemberTask = React.memo(
       return targetLink;
     }, undefined);
 
-
-    const handleGoogleDocClick = () => {
-      const toastGoogleLinkDoesNotExist = 'toast-on-click';
-      if (userGoogleDocLink) {
-        window.open(userGoogleDocLink);
-      } else {
-        toast.error(
-          'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
-          {
-            toastId: toastGoogleLinkDoesNotExist,
-            pauseOnFocusLoss: false,
-            autoClose: 3000,
-          },
-        );
-      }
-    };
-
-
     return (
       <>
         <tr ref={ref} className="table-row" key={user.personId}>
@@ -157,11 +138,7 @@ const TeamMemberTask = React.memo(
                             : undefined,
                       }}
                     >{`${user.name}`}</Link>
-                    {canGetWeeklySummaries && (
-                      <FcGoogle
-                      className={`google-doc-icon ${userGoogleDocLink ? "" : "inactive"}`}
-                      onClick={handleGoogleDocClick}/>
-                      )}
+                    {canGetWeeklySummaries && (<GoogleDocIcon link={userGoogleDocLink}/>)}
 
                     <Warning
                       username={user.name}
