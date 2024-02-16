@@ -111,7 +111,6 @@ function LeaderBoard({
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
   };
-  //use variable instead of string
 
   const manager = 'Manager';
   const adm = 'Administrator';
@@ -121,9 +120,9 @@ function LeaderBoard({
     // check the logged in user is manager and if the dashboard is admin and owner
     if (loggedInUser.role === manager && [adm, owner].includes(item.role)) {
       // check the logged in user is admin and if dashboard is owner
-      toast.error("you don't have the permission to access this user's dashboard");
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
     } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
-      toast.error("you don't have the permission to access this user's dashboard");
+      toast.error("oops! You don't have the permission to access this user's dashboard!");
     }
     // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
     else if (
@@ -133,7 +132,7 @@ function LeaderBoard({
     ) {
       if ([manager, adm, owner].includes(item.role)) {
         // prevent access
-        toast.error("you don't have the permission to access this user's dashboard");
+        toast.error("oops! You don't have the permission to access this user's dashboard!");
       } else {
         // allow access to the painel
         dashboardToggle(item);
@@ -249,7 +248,9 @@ function LeaderBoard({
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
                       <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
                       <ModalBody>
-                        <p>Are you sure you wish to view the dashboard for {item.name} ?</p>
+                        <p className="title-dashboard">
+                          Are you sure you wish to view the dashboard for {item.name}?
+                        </p>
                       </ModalBody>
                       <ModalFooter>
                         <Button variant="primary" onClick={() => showDashboard(item)}>
