@@ -9,23 +9,16 @@ import { Link } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
 import './style.css';
 import { boxStyle } from 'styles';
-// <<<<<<< HEAD
-// import { useDispatch } from 'react-redux';
+
 import Warning from 'components/Warnings/Warnings';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
-// <<<<<<< HEAD
+
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
-// import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
-// =======
-// import ReviewButton from './ReviewButton';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
-// >>>>>>> development
-// =======
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 import { toast } from 'react-toastify';
-// >>>>>>> development
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -48,28 +41,11 @@ const TeamMemberTask = React.memo(
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
 
-    // <<<<<<< HEAD
-    //     // console.log('user user inside team memebr task', user);
-    //     const [totalHoursRemaining, activeTasks] = useMemo(() => {
-    //       let totalHoursRemaining = 0;
-
-    //       if (user.tasks) {
-    //         totalHoursRemaining = user.tasks.reduce((total, task) => {
-    //           task.hoursLogged = task.hoursLogged || 0;
-    //           task.estimatedHours = task.estimatedHours || 0;
-
-    //           if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-    //             return total + (task.estimatedHours - task.hoursLogged);
-    //           }
-    //           return total;
-    //         }, 0);
-    // =======
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
       task.estimatedHours = task.estimatedHours || 0;
       if (task.status !== 'Complete' && task.isAssigned !== 'false') {
         return total + Math.max(0, task.estimatedHours - task.hoursLogged);
-        // >>>>>>> development
       }
       return total;
     }, 0);
