@@ -1,14 +1,9 @@
 .basic-info-tab-tablet {
   display: none;
 }
-/* @media (max-width: 1199px) {
-  .phone-input-style.phone-input-style {
-    width: 265px !important;
-  }
-} */
-
-.phone-input-style {
-  width: 100% !important; /* Adjust the width as needed to match other inputs */
+.phone-input-style.phone-input-style {
+  width: 100%; 
+  max-width: 350px; 
 }
 
 @media (max-width: 1024px) {
@@ -28,6 +23,7 @@
   label {
     font-weight: bold;
   }
+
 }
 
 

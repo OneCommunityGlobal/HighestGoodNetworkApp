@@ -3,52 +3,53 @@ import { ENDPOINTS } from '../utils/URL';
 
 import * as types from "../constants/ownerMessageConstants";
 
-export const getOwnerMessageAction = payload => {
-  return {
-    type: types.GET_OWNER_MESSAGE,
-    payload,
-  };
+// redux thunk functions
+export const getOwnerMessage = () => {
+  const url = ENDPOINTS.OWNERMESSAGE();
+  return async dispatch => {
+    try {
+      const response = await axios.get(url);
+      const { ownerMessage } = response.data;
+      dispatch(updateOwnerMessageAction(ownerMessage));
+      return response;
+    } catch (error) {
+      return error.response.data.error;
+    }
+  }
 }
 
-export const getOwnerMessage = () => async dispatch => {
-  const { data } = await axios.get(ENDPOINTS.OWNERMESSAGE());
-  return dispatch(getOwnerMessageAction(data));
+export const updateOwnerMessage = (newMessage) => {
+  const url = ENDPOINTS.OWNERMESSAGE();
+  return async dispatch => {
+    try {
+      const response = await axios.put(url, newMessage);
+      const { ownerMessage } = response.data;
+      dispatch(updateOwnerMessageAction(ownerMessage));
+      return response;
+    } catch (error) {
+      return error.response.data.error;
+    }
+  }
 }
 
-export const createOwnerMessageAction = payload => {
-  return {
-    type: types.CREATE_OWNER_MESSAGE,
-    payload,
-  };
+export const deleteOwnerMessage = () => {
+  const url = ENDPOINTS.OWNERMESSAGE();
+  return async dispatch => {
+    try {
+      const response = await axios.delete(url);
+      const { ownerMessage } = response.data;
+      dispatch(updateOwnerMessageAction(ownerMessage))
+      return response;
+    } catch (error) {
+      return error.response.data.error;
+    }
+  }
 }
 
-export const createOwnerMessage = ownerMessage => async dispatch => {
-  await axios.post(ENDPOINTS.OWNERMESSAGE(), ownerMessage)
-  return dispatch(createOwnerMessageAction(ownerMessage))
-}
-
+// action creator
 export const updateOwnerMessageAction = payload => {
   return {
     type: types.UPDATE_OWNER_MESSAGE,
     payload,
   };
-}
-
-export const updateOwnerMessage = (ownerMessageId, ownerMessage) => {
-  return async dispatch => {
-    await axios.put(ENDPOINTS.OWNERMESSAGE_BY_ID(ownerMessageId), ownerMessage)
-    .then(dispatch(updateOwnerMessageAction(ownerMessage)));
-  }
-}
-
-export const deleteOwnerMessageAction = payload => {
-  return {
-    type: types.DELETE_OWNER_MESSAGE,
-    payload,
-  };
-}
-
-export const deleteOwnerMessage = () => async dispatch => {
-    await axios.delete(ENDPOINTS.OWNERMESSAGE())
-    .then(dispatch(deleteOwnerMessageAction()));
 }

@@ -5,6 +5,7 @@ select {
 
 .table-filter-wrapper {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 24px;
 }
