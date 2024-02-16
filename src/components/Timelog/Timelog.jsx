@@ -414,7 +414,9 @@ const Timelog = props => {
           <br />
         </Container>
       ) : (
-        <div className="custom-text-alignment">
+      
+        <Container fluid="md" style={{textAlign: 'right'}}>
+       
         <EditableInfoModal
           areaName="DashboardTimelog"
           areaTitle="Timelog"
@@ -422,7 +424,8 @@ const Timelog = props => {
           isPermissionPage={true}
           role={authUser.role}
         />
-        </div>
+        </Container>
+   
       )}
 
       {timeLogState.isTimeEntriesLoading ? (
@@ -455,25 +458,22 @@ const Timelog = props => {
                         />
                       
                         <span className="mr-2" style={{padding: '1px'}}>
-                            <ActiveCell
-                              isActive={displayUserProfile.isActive}
-                              user={displayUserProfile}
-                              onClick={() => {
-                                props.updateUserProfile({
-                                  ...displayUserProfile,
-                                  isActive: !displayUserProfile.isActive,
-                                  endDate:
-                                    !displayUserProfile.isActive === false
-                                      ? moment(new Date()).format('YYYY-MM-DD')
-                                      : undefined,
-                                });
-                              }}
-                            />
-                          </span>
-                        <span>
-                          <ProfileNavDot userId={displayUserId} style={{marginLeft: '2px', padding: '1px'}}/>
+                          <ActiveCell
+                            isActive={displayUserProfile.isActive}
+                            user={displayUserProfile}
+                            onClick={() => {
+                              props.updateUserProfile({
+                                ...displayUserProfile,
+                                isActive: !displayUserProfile.isActive,
+                                endDate:
+                                  !displayUserProfile.isActive === false
+                                    ? moment(new Date()).format('YYYY-MM-DD')
+                                    : undefined,
+                              });
+                            }}
+                          />
                         </span>
-                        
+                        <ProfileNavDot userId={displayUserId} style={{marginLeft: '2px', padding: '1px'}} />
                         </div>
                       </CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
