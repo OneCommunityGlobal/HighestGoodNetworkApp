@@ -31,13 +31,13 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
 
     if (equipments.length) {
       if (project.value === '0')
-        equipmentsSet = [...new Set(equipments.map(rec => rec.itemType.name))];
+        equipmentsSet = [...new Set(equipments.map(rec => rec.itemType?.name))];
       else
         equipmentsSet = [
           ...new Set(
             equipments
               .filter(rec => rec.project?.name === project.label)
-              .map(rec => rec.itemType.name),
+              .map(rec => rec.itemType?.name),
           ),
         ];
     }
@@ -80,7 +80,7 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
           <Col className="InputsMargin">
             <Row className="justify-content-start align-items-center">
               <Label lg={3} md={3} for="selectproject">
-                Equipments:
+                Equipment:
               </Label>
               <Col lg={9} md={9}>
                 <Select

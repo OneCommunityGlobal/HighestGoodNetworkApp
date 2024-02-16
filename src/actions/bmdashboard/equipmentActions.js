@@ -1,6 +1,8 @@
 import axios from "axios";
 
 import { ENDPOINTS } from "utils/URL";
+import { SET_EQUIPMENTS } from "constants/bmdashboard/equipmentsConstants";
+import { GET_ERRORS } from "constants/errors";
 
 export const addEquipmentType = async (body) => {
   return axios.post(`${ENDPOINTS.BM_INVTYPE_ROOT}/equipment`, body)
