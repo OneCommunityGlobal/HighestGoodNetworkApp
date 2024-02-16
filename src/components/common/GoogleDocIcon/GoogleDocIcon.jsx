@@ -22,7 +22,8 @@ export default function GoogleDocIcon({link}) {
 
   return (
     <span onClick={handleGoogleDocClick} >
-        <img className={`google-doc-icon ${link ? "" : "inactive"}`} src={googleDocIconPng} alt="google_doc" />
-      </span>
+      {/* inactive: image will be grey if no Google Doc link present */}
+      <img className={`google-doc-icon ${link ? "" : "inactive"}`} src={googleDocIconPng} alt="google_doc" />
+    </span>
   )
 }

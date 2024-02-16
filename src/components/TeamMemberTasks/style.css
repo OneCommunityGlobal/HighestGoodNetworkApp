@@ -360,13 +360,3 @@
   align-items: center; /* Vertically center-align children */
   gap: 8px; /* Space between children */
 }
-
-.google-doc-icon {
-  font-size: 18px;
-  margin: 0 0 2px 5px;
-  cursor: pointer;
-}
-
-.google-doc-icon.inactive {
-  filter: grayscale(100%);
-}
