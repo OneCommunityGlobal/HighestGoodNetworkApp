@@ -122,7 +122,7 @@ function LeaderBoard({
       // check the logged in user is admin and if dashboard is owner
       toast.error("Oops! You don't have the permission to access this user's dashboard!");
     } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
-      toast.error("oops! You don't have the permission to access this user's dashboard!");
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
     }
     // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
     else if (
@@ -132,7 +132,7 @@ function LeaderBoard({
     ) {
       if ([manager, adm, owner].includes(item.role)) {
         // prevent access
-        toast.error("oops! You don't have the permission to access this user's dashboard!");
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
       } else {
         // allow access to the painel
         dashboardToggle(item);
