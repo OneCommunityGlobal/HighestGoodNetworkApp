@@ -41,7 +41,29 @@ function Task(props) {
   const tableRowRef = useRef();
 
   const initialsSet = new Set();
-  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+  const colors = [
+    "#FF0000", // red
+    "#0000FF", // blue
+    "#00FF00", // green
+    "#FFFF00", // yellow
+    "#FFA500", // orange
+    "#800080", // purple
+    "#FFC0CB", // pink
+    "#00FFFF", // cyan
+    "#FF00FF", // magenta
+    "#008080", // teal
+    "#00FF00", // lime
+    "#A52A2A", // brown
+    "#000000", // black
+    "#FFFFFF", // white
+    
+    "#C0C0C0", // silver
+    "#FFD700", // gold
+    "#000080", // navy
+    "#800000", // maroon
+    "#808000"  // olive
+  ];
+  
 
   /*
   * -------------------------------- functions --------------------------------
@@ -80,7 +102,8 @@ function Task(props) {
     }else{
       initialsSet.add(initials);
     }
-    return color;
+    console.log("Initials set: ", initialsSet)
+    return color + '33';
   }
 
   /*
