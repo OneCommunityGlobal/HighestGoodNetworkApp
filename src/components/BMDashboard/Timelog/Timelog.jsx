@@ -1,13 +1,14 @@
 import './Timelog.css';
 import { useSelector } from 'react-redux';
 import { useState } from 'react';
-import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL';
+import { useDispatch } from 'react-redux';
+import { getUserProfile } from '../../../actions/userProfile';
 
 function Timelog() {
   const projects = useSelector(state => state.bmProjects);
   const [membersData, setMembersData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   function formatHours(hours) {
     const totalSeconds = Math.round(hours * 3600);
@@ -37,30 +38,56 @@ function Timelog() {
     return `${formattedDay}/${formattedMonth}/${year}`;
   }
 
-  async function getMemberData(userID) {
-    const response = await axios.get(ENDPOINTS.USER_PROFILE(userID));
-    return response.data;
+  async function fetchUserProfile(userID) {
+    const userProfile = await dispatch(getUserProfile(userID));
+    const { firstName, lastName, role, totalTangibleHrs, _id } = userProfile;
+    const timerStatus = false;
+
+    const userProfileData = {
+      firstName,
+      lastName,
+      role,
+      totalTangibleHrs,
+      timerStatus,
+      _id,
+    };
+
+    return userProfileData;
   }
 
   async function handleProjectChange(event) {
     setLoading(true);
     const project = projects.find(curr => curr._id === event.target.value);
+    setMembersData([]);
 
     if (!project) {
-      setMembersData(null);
+      setMembersData([]);
       setLoading(false);
       return;
     }
 
     try {
-      const memberPromises = project.members.map(member => getMemberData(member.user));
-      const members = await Promise.all(memberPromises);
+      const members = await Promise.all(
+        project.members.map(member => fetchUserProfile(member.user)),
+      );
       setMembersData(members);
     } catch (error) {
       setMembersData(null);
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleTimerChange(userID, status) {
+    const updatedUsersData = membersData.map(user => {
+      if (user._id === userID) {
+        return { ...user, timerStatus: status === 'START' };
+      }
+
+      return user;
+    });
+
+    setMembersData(updatedUsersData);
   }
 
   return (
@@ -91,7 +118,35 @@ function Timelog() {
                 >{`${member.firstName} ${member.lastName}`}</div>
                 <div className="MemberTimelogTime">{formatHours(member.totalTangibleHrs)}</div>
                 <div className="MemberTimelogButtonRow">
-                  <div className="MemberTimelogBtn bmTLStart">START</div>
+                  {!member.timerStatus ? (
+                    <div
+                      className="MemberTimelogBtn bmTLStart"
+                      onClick={() => handleTimerChange(member._id, 'START')}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          handleTimerChange(member._id, 'START');
+                        }
+                      }}
+                    >
+                      START
+                    </div>
+                  ) : (
+                    <div
+                      className="MemberTimelogBtn bmTLPause"
+                      onClick={() => handleTimerChange(member._id, 'PAUSE')}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          handleTimerChange(member._id, 'PAUSE');
+                        }
+                      }}
+                    >
+                      PAUSE
+                    </div>
+                  )}
                   <div className="MemberTimelogBtn bmTLStop">STOP</div>
                 </div>
                 <div className="MemberTimelogStartTime">
