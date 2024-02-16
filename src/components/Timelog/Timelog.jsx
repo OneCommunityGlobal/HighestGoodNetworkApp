@@ -143,8 +143,9 @@ const Timelog = props => {
     The problem: even after unassigning tasks the array keeps the wbs data.
     That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
-    //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if (role === 'Volunteer' && !userHaveTask) {
+    //if users don't have tasks assigned, then default tab is timelog.
+    console.log(userHaveTask);
+    if (!userHaveTask) {
       tab = 1;
     }
 
