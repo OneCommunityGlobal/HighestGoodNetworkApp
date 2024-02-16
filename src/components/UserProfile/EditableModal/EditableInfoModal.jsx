@@ -230,7 +230,7 @@ export class EditableInfoModal extends Component {
         <i
           data-toggle="tooltip"
           data-placement="right"
-          title="Click for information about this"
+          title="Click for user class information"
           style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '8px'}}
           aria-hidden="true"
           className="fa fa-info-circle"
