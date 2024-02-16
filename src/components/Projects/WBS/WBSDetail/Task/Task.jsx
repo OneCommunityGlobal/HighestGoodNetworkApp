@@ -90,6 +90,7 @@ function Task(props) {
     props.deleteWBSTask(taskId, mother);
   };
 
+  //Function to get background color
   function getBackgroundColor(initials) {
     let color = '#bbb';
     if (initialsSet.has(initials)) {
@@ -126,6 +127,7 @@ function Task(props) {
   }, [props.openAll]);
 
   useEffect(() => {
+    //Clearing the initials set 
     initialsSet.clear();
   });
 
@@ -199,7 +201,7 @@ function Task(props) {
                 ? props.resources
                     .filter((elm, i) => i < 2 || showMoreResources)
                     .map((elm, i) => {
-                      const name = elm.name;
+                      const name = elm.name; //Getting initials and formatting them here
                       const initials = elm.name
                         .split(' ')
                         .filter(
@@ -208,6 +210,7 @@ function Task(props) {
                         .map(n => n[0])
                         .join('')
                         .toUpperCase();
+                        //getting background color here
                       const backgroundColor = getBackgroundColor(initials);
                       return (
                         <a
