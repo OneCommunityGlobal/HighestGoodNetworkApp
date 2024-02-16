@@ -25,8 +25,9 @@ import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
-import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
+import { warningsByUserIdReducer } from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
+import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 
 // bm dashboard
@@ -71,7 +72,7 @@ const localReducers = {
   bmTools: toolReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
-  bmEquipments: equipmentsReducer
+  bmEquipments: equipmentsReducer,
 };
 
 const sessionReducers = {
@@ -83,6 +84,7 @@ const sessionReducers = {
   teamsTeamMembers: teamUsersReducer,
   timeEntries: timeEntriesReducer,
   teamMemberTasks: teamMemberTasksReducer,
+  warning: warningsByUserIdReducer,
 };
 
 export { localReducers, sessionReducers };
