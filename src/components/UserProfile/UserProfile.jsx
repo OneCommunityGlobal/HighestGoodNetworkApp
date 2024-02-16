@@ -81,6 +81,7 @@ function UserProfile(props) {
   const [isProjectsEqual, setIsProjectsEqual] = useState(true);
   const [projects, setProjects] = useState([]);
   const [originalProjects, setOriginalProjects] = useState([]);
+  const [resetProjects, setResetProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   // const [infoModal, setInfoModal] = useState(false);
@@ -300,6 +301,7 @@ function UserProfile(props) {
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
+      setResetProjects(newUserProfile.projects);
       setUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
@@ -1090,6 +1092,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1147,6 +1150,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1215,6 +1219,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1276,6 +1281,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1325,6 +1331,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1395,6 +1402,7 @@ function UserProfile(props) {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
                         setTeams(originalTeams);
+                        setProjects(resetProjects);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
                       style={boxStyle}
