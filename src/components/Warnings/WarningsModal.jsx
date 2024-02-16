@@ -5,7 +5,7 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Row } from 'reactstrap';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 /**
  * Modal displaying information about how time entry works
@@ -25,6 +25,7 @@ function WarningsModal({
   setWarningsModal,
   handleDeleteDescription,
   handleAddNewWarning,
+  handleDeactivate,
 }) {
   const { today, id, colorAssigned, warningText, username } = warning || {};
   const [toggeleWarningInput, setToggeleWarningInput] = useState(false);
@@ -55,17 +56,58 @@ function WarningsModal({
         </ModalFooter>
       </Modal>
     );
-  } else if (warningsModal) {
+  }
+  if (warningsModal) {
     return (
       <Modal isOpen={warningsModal} toggle={() => setWarningsModal(false)}>
-        <ModalHeader>Current Warning Descriptions</ModalHeader>
+        <ModalHeader>
+          Current Warning Descriptions
+          <i
+            data-toggle="tooltip"
+            title="Click to refresh the leaderboard"
+            style={{ fontSize: 24, cursor: 'pointer' }}
+            aria-hidden="true"
+            className="fa fa-info-circle"
+          />
+        </ModalHeader>
         <ModalBody>
           {warningDescriptions.map(warning => (
             <div className="warnings__descriptions" key={warning._id}>
-              <p>{warning.warningTitle}</p>
-              <Button color="danger" onClick={() => handleDeleteDescription(warning._id)}>
+              <Button className="warning__descriptions__btn" color="secondary">
+                adjust
+              </Button>
+              {warning.activeWarning ? (
+                <Button
+                  color="warning"
+                  className="warning__descriptions__btn"
+                  onClick={() => handleDeactivate(warning._id)}
+                >
+                  <i className="fa fa-minus" />
+                </Button>
+              ) : (
+                <Button
+                  color="success"
+                  className="warning__descriptions__btn"
+                  onClick={() => handleDeactivate(warning._id)}
+                >
+                  <i className="fa fa-plus" />
+                </Button>
+              )}
+
+              <Button
+                color="danger"
+                className="warning__descriptions__btn"
+                onClick={() => handleDeleteDescription(warning._id)}
+              >
                 x
               </Button>
+              <p
+                className={`warnings__descriptions__title ${
+                  warning.activeWarning ? '' : 'warnings__descriptions__title--gray'
+                }`}
+              >
+                {warning.warningTitle}
+              </p>
             </div>
           ))}
           <div className="btn__container">
@@ -75,7 +117,7 @@ function WarningsModal({
                 color="primary"
                 onClick={() => setToggeleWarningInput(true)}
               >
-                +
+                <i className="fa fa-plus" />
               </Button>
             )}
 

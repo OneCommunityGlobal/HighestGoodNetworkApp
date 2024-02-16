@@ -8,6 +8,7 @@ import {
   postNewWarning,
   getCurrentWarnings,
   deleteWarningDescription,
+  updateWarningDescription,
 } from '../../actions/warnings';
 import WarningsModal from './WarningsModal';
 import WarningItem from './WarningItem';
@@ -20,6 +21,16 @@ import WarningItem from './WarningItem';
 // if clikcing the dlete it will warn them again saying are you if so if it does it will delte teh warning from the scheema
 //then cron job will run afterwards
 //fetch the descriptions array the display the warnings for the user.
+
+// todo
+//buttons to the left of the warnings
+//deactivate the warning
+//will deactive until it is deleted from the admin
+//decactive data is saved reactivate button will appear to see
+//modal to delete the warning if x is clicked
+//
+//i button at the top right to explain details
+// mouse over on the buttons as well
 
 import './Warnings.css';
 import { set } from 'lodash';
@@ -51,14 +62,14 @@ export default function Warning({ personId, username, userRole }) {
   };
 
   // useEffect(() => {
-  //   // dispatch(getWarningsByUserId(personId)).then(res => {
-  //   //   if (res.error) {
-  //   //     setError(res);
-  //   //     setUsersWarnings([]);
-  //   //     return;
-  //   //   }
-  //   //   setUsersWarnings(res);
-  //   // });
+  //   dispatch(getWarningsByUserId(personId)).then(res => {
+  //     if (res.error) {
+  //       setError(res);
+  //       setUsersWarnings([]);
+  //       return;
+  //     }
+  //     setUsersWarnings(res);
+  //   });
   // }, []);
 
   const handleDeleteWarning = async warningId => {
@@ -133,7 +144,23 @@ export default function Warning({ personId, username, userRole }) {
       });
       //compelte delete logic if canceld then nothing will happen
       // console.log('conosle dlete logic will occur');
+      //Intangible Time Log w/o Reason
     }
+  };
+
+  const handleDeactivate = warningId => {
+    dispatch(updateWarningDescription(warningId)).then(res => {
+      const { _id: updatedWarningId, activeWarning: updatedActiveWarning } = res;
+
+      setWarningDescriptions(prev =>
+        prev.map(warning => {
+          if (warning._id === updatedWarningId) {
+            return { ...warning, activeWarning: updatedActiveWarning };
+          }
+          return warning;
+        }),
+      );
+    });
   };
 
   const warnings = !toggle
@@ -174,6 +201,7 @@ export default function Warning({ personId, username, userRole }) {
             setWarningsModal={setWarningsModal}
             handleDeleteDescription={handleDeleteDescription}
             handleAddNewWarning={handleAddNewWarning}
+            handleDeactivate={handleDeactivate}
           />
         )}
 

@@ -62,15 +62,20 @@
   text-align: left;
 }
 .warnings__descriptions p {
-  margin: 0 0.5em 0 0;
+  margin: 0 0.5em 0 0.5em;
   font-weight: bold;
   font-size: 1em;
 }
-.warnings__descriptions button {
+.warning__descriptions__btn {
   padding: 0.1em 0.5em;
+  margin: 0em 0.2em !important;
   width: auto;
   border-radius: 5px;
   margin: 0;
+}
+
+.warnings__descriptions__title--gray {
+  opacity: 0.6;
 }
 
 .btn__container {
@@ -98,7 +103,9 @@
 }
 
 .warning__input {
-  border-radius: 5px;
+  border-radius: 3px;
   border: 1px solid #000;
   margin: 0.3em 0 0.5em 0;
+  padding: 0.5em 1em;
+  width: 250px;
 }

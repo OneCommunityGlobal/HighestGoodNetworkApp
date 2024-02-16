@@ -7,6 +7,7 @@ import {
   getCurrentWarnings as getCurrentWarningsAction,
   postNewWarning as postNewWarningAction,
   deleteWarningDescription as deleteWarningDescriptionAction,
+  updateWarningDescription as updateWarningDescriptionAction,
 } from '../constants/warning';
 
 export const getWarningsByUserId = userId => {
@@ -23,57 +24,6 @@ export const getWarningsByUserId = userId => {
       } else {
         return { error: error.message };
       }
-    }
-  };
-};
-
-export const getCurrentWarnings = () => {
-  const url = ENDPOINTS.GET_CURRENT_WARNINGS();
-
-  return async dispatch => {
-    try {
-      const res = await axios.get(url);
-
-      const response = await dispatch(getCurrentWarningsAction(res.data));
-
-      return response.payload.currentWarningDescriptions;
-    } catch (error) {
-      if (error.response && error.response.status === 400) {
-        return { error: error.response.data.message };
-      } else {
-        return { error: error.message };
-      }
-    }
-  };
-};
-export const postNewWarning = newWarning => {
-  const url = ENDPOINTS.POST_NEW_WARNING();
-  console.log('newWarning', newWarning);
-
-  return async dispatch => {
-    try {
-      // post needs to send an object with a key of newWarning
-      const res = await axios.post(url, newWarning);
-      const response = await dispatch(postNewWarningAction(res.data));
-
-      return response.payload.newWarnings;
-    } catch (error) {
-      console.log('error', error);
-    }
-  };
-};
-export const deleteWarningDescription = warningDescriptionId => {
-  const url = ENDPOINTS.DELETE_WARNING_DESCRIPTION(warningDescriptionId);
-
-  return async dispatch => {
-    try {
-      const res = await axios.delete(url, { data: { warningDescriptionId } });
-      const response = await dispatch(deleteWarningDescriptionAction(res.data));
-
-      console.log('response', response);
-      return response.payload;
-    } catch (error) {
-      console.log(error);
     }
   };
 };
@@ -112,6 +62,73 @@ export const deleteWarningsById = (warningId, personId) => {
       } else {
         return { error: 'Something else went wrong' };
       }
+    }
+  };
+};
+
+/*warning descriptions routes  */
+
+export const getCurrentWarnings = () => {
+  const url = ENDPOINTS.GET_CURRENT_WARNINGS();
+
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+
+      const response = await dispatch(getCurrentWarningsAction(res.data));
+
+      return response.payload.currentWarningDescriptions;
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        return { error: error.response.data.message };
+      } else {
+        return { error: error.message };
+      }
+    }
+  };
+};
+export const postNewWarning = newWarning => {
+  const url = ENDPOINTS.POST_NEW_WARNING();
+
+  return async dispatch => {
+    try {
+      // post needs to send an object with a key of newWarning
+      const res = await axios.post(url, newWarning);
+      const response = await dispatch(postNewWarningAction(res.data));
+
+      return response.payload.newWarnings;
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+};
+
+export const deleteWarningDescription = warningDescriptionId => {
+  const url = ENDPOINTS.DELETE_WARNING_DESCRIPTION(warningDescriptionId);
+
+  return async dispatch => {
+    try {
+      const res = await axios.delete(url, { data: { warningDescriptionId } });
+      const response = await dispatch(deleteWarningDescriptionAction(res.data));
+
+      return response.payload;
+    } catch (error) {
+      console.log(error, 'Intangible Time Log w/o Reason      ');
+    }
+  };
+};
+
+export const updateWarningDescription = warningDescriptionId => {
+  const url = ENDPOINTS.UPDATE_WARNING_DESCRIPTION(warningDescriptionId);
+
+  return async dispatch => {
+    try {
+      const res = await axios.put(url, { warningDescriptionId });
+      const response = await dispatch(updateWarningDescriptionAction(res.data));
+
+      return response.payload;
+    } catch (error) {
+      console.log(error);
     }
   };
 };

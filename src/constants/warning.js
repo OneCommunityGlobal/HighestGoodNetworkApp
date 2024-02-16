@@ -3,6 +3,7 @@ export const POST_WARNINGS_BY_USER_ID = 'POST_WARNINGS_BY_USER_ID';
 export const DELETE_WARNINGS_BY_USER_ID = 'DELETE_WARNINGS_BY_USER_ID';
 export const CURRENT_WARNINGS = 'CURRENT_WARNINGS';
 export const POST_NEW_WARNING = 'POST_NEW_WARNING';
+export const UPDATE_WARNING_DESCRIPTION = 'UPDATE_WARNING_DESCRIPTION';
 
 export const getWarningByUserId = data => ({
   type: GET_WARNINGS_BY_USER_ID,
@@ -20,6 +21,11 @@ export const postNewWarning = data => ({
 
 export const deleteWarningDescription = data => ({
   type: DELETE_WARNINGS_BY_USER_ID,
+  payload: data,
+});
+
+export const updateWarningDescription = data => ({
+  type: UPDATE_WARNING_DESCRIPTION,
   payload: data,
 });
 
