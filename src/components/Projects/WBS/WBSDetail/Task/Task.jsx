@@ -1,10 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import {
-  Modal,
-  ModalBody,
-  Button,
-} from 'reactstrap';
+import { Modal, ModalBody, Button } from 'reactstrap';
 import { BsFillCaretDownFill, BsFillCaretUpFill, BsFillCaretLeftFill } from 'react-icons/bs';
 import ControllerRow from '../ControllerRow';
 import {
@@ -22,8 +18,8 @@ import { formatDate } from 'utils/formatDate';
 
 function Task(props) {
   /*
-  * -------------------------------- variable declarations --------------------------------
-  */
+   * -------------------------------- variable declarations --------------------------------
+   */
   // props from store
   const { tasks } = props;
 
@@ -42,44 +38,44 @@ function Task(props) {
 
   const initialsSet = new Set();
   const colors = [
-    "#FF0000", // red
-    "#0000FF", // blue
-    "#00FF00", // green
-    "#FFFF00", // yellow
-    "#FFA500", // orange
-    "#800080", // purple
-    "#FFC0CB", // pink
-    "#00FFFF", // cyan
-    "#FF00FF", // magenta
-    "#008080", // teal
-    "#00FF00", // lime
-    "#A52A2A", // brown
-    "#000000", // black
-    "#FFFFFF", // white
-    
-    "#C0C0C0", // silver
-    "#FFD700", // gold
-    "#000080", // navy
-    "#800000", // maroon
-    "#808000"  // olive
+    '#FF0000', // red
+    '#0000FF', // blue
+    '#00FF00', // green
+    '#FFFF00', // yellow
+    '#FFA500', // orange
+    '#800080', // purple
+    '#FFC0CB', // pink
+    '#00FFFF', // cyan
+    '#FF00FF', // magenta
+    '#008080', // teal
+    '#00FF00', // lime
+    '#A52A2A', // brown
+    '#000000', // black
+    '#FFFFFF', // white
+    '#C0C0C0', // silver
+    '#FFD700', // gold
+    '#000080', // navy
+    '#800000', // maroon
+    '#808000', // olive
   ];
-  
 
   /*
-  * -------------------------------- functions --------------------------------
-  */
+   * -------------------------------- functions --------------------------------
+   */
   const toggleModel = () => setModal(!modal);
 
   const openChild = () => {
     setIsOpen(!isOpen);
   };
 
-  const getAncestorNames = (motherId) => {
+  const getAncestorNames = motherId => {
     const motherTask = tasks.find(task => task._id === motherId);
     if (motherTask) {
       const motherTaskName = motherTask.taskName;
       const grandMotherTaskNames = motherTask.mother ? getAncestorNames(motherTask.mother) : '';
-      return grandMotherTaskNames ? grandMotherTaskNames + ' <br /> ' + motherTaskName + ' /' : motherTaskName + ' /';
+      return grandMotherTaskNames
+        ? grandMotherTaskNames + ' <br /> ' + motherTaskName + ' /'
+        : motherTaskName + ' /';
     } else {
       return '';
     }
@@ -88,36 +84,35 @@ function Task(props) {
   const activeController = () => {
     props.setControllerId(props.taskId);
     setControllerRow(!controllerRow);
-  }
+  };
 
   const deleteOneTask = (taskId, mother) => {
     props.deleteWBSTask(taskId, mother);
   };
 
   function getBackgroundColor(initials) {
-    let color = "#bbb";
-    if(initialsSet.has(initials)){
-      const count = Math.floor(Math.random() * colors.length-1)
+    let color = '#bbb';
+    if (initialsSet.has(initials)) {
+      const count = Math.floor(Math.random() * colors.length - 1);
       color = colors[count % colors.length];
-    }else{
+    } else {
       initialsSet.add(initials);
     }
-    console.log("Initials set: ", initialsSet)
     return color + '33';
   }
 
   /*
-  * -------------------------------- useEffects --------------------------------
-  */
+   * -------------------------------- useEffects --------------------------------
+   */
   useEffect(() => {
     if (props.controllerId !== props.taskId) setControllerRow(false);
-  }, [props.controllerId])
+  }, [props.controllerId]);
 
   useEffect(() => {
     const childTasks = tasks.filter(task => task.mother === props.taskId);
     const filteredChildren = props.filterTasks(childTasks, props.filterState);
     setChildren(filteredChildren);
-  }, [props.filterState, tasks])
+  }, [props.filterState, tasks]);
 
   useEffect(() => {
     if (tableRowRef.current) {
@@ -127,13 +122,13 @@ function Task(props) {
   }, []);
 
   useEffect(() => {
-      setIsOpen(props.openAll);
+    setIsOpen(props.openAll);
   }, [props.openAll]);
 
-  useEffect(()=>{
+  useEffect(() => {
     initialsSet.clear();
   });
- 
+
   return (
     <>
       {props.taskId ? (
@@ -154,12 +149,7 @@ function Task(props) {
               } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <Button
-                color="primary"
-                size="sm"
-                onClick={activeController}
-                style={boxStyle}
-              >
+              <Button color="primary" size="sm" onClick={activeController} style={boxStyle}>
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
@@ -173,21 +163,25 @@ function Task(props) {
               {props.num.replaceAll('.0', '')}
             </td>
             <td className="taskName">
-              {<div className={`level-space-${props.level}`} data-tip={`${getAncestorNames(props.mother)}`}>
-                    <span
-                      onClick={openChild}
-                      id={`task_name_${props.taskId}`}
-                      className={props.hasChildren ? 'has_children' : ''}
-                    >
-                      {props.hasChildren ? (
-                        <i
-                          className={`fa fa-folder${isOpen ? '-open' : ''}`}
-                          aria-hidden="true"
-                        ></i>
-                      ) : ''}{' '}
-                      {props.name}
-                    </span>
-              </div>}
+              {
+                <div
+                  className={`level-space-${props.level}`}
+                  data-tip={`${getAncestorNames(props.mother)}`}
+                >
+                  <span
+                    onClick={openChild}
+                    id={`task_name_${props.taskId}`}
+                    className={props.hasChildren ? 'has_children' : ''}
+                  >
+                    {props.hasChildren ? (
+                      <i className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i>
+                    ) : (
+                      ''
+                    )}{' '}
+                    {props.name}
+                  </span>
+                </div>
+              }
             </td>
             <td>
               {props.priority === 'Primary' ? (
@@ -203,38 +197,48 @@ function Task(props) {
             <td className="desktop-view">
               {props.resources.length
                 ? props.resources
-                  .filter((elm, i) => i < 2 || showMoreResources)
-                  .map((elm, i) => {
-                    const name = elm.name;
-                    const initials = elm.name.split(' ')
-                    .filter((n, index) => index===0 || index===elm.name.split(' ').length - 1)
-                    .map(n=>n[0])
-                    .join('').toUpperCase();
-                    const backgroundColor = getBackgroundColor(initials);
-                    return (
-                      <a
-                        key={`res_${i}`}
-                        data-tip={elm.name}
-                        className="name"
-                        href={`/userprofile/${elm.userID}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {!elm.profilePic || elm.profilePic === "/defaultprofilepic.png" ?
-                        <span className="dot" style={{ backgroundColor }}>{initials} </span>
-                          : <img className="img-circle" src={elm.profilePic} />}
-                      </a>
-                    );
-                  })
+                    .filter((elm, i) => i < 2 || showMoreResources)
+                    .map((elm, i) => {
+                      const name = elm.name;
+                      const initials = elm.name
+                        .split(' ')
+                        .filter(
+                          (n, index) => index === 0 || index === elm.name.split(' ').length - 1,
+                        )
+                        .map(n => n[0])
+                        .join('')
+                        .toUpperCase();
+                      const backgroundColor = getBackgroundColor(initials);
+                      return (
+                        <a
+                          key={`res_${i}`}
+                          data-tip={elm.name}
+                          className="name"
+                          href={`/userprofile/${elm.userID}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
+                            <span className="dot" style={{ backgroundColor }}>
+                              {initials}{' '}
+                            </span>
+                          ) : (
+                            <img className="img-circle" src={elm.profilePic} />
+                          )}
+                        </a>
+                      );
+                    })
                 : null}
-              {props.resources.length > 2
-                ? <a
-                    className="resourceMoreToggle"
-                    onClick={() => setShowMoreResources(!showMoreResources)}
-                  >
-                    <span className="dot">{showMoreResources ? <BsFillCaretLeftFill /> : `${props.resources.length - 2}+`}</span>
-                  </a>
-                : null}
+              {props.resources.length > 2 ? (
+                <a
+                  className="resourceMoreToggle"
+                  onClick={() => setShowMoreResources(!showMoreResources)}
+                >
+                  <span className="dot">
+                    {showMoreResources ? <BsFillCaretLeftFill /> : `${props.resources.length - 2}+`}
+                  </span>
+                </a>
+              ) : null}
             </td>
             <td>
               {props.isAssigned ? (
@@ -287,15 +291,11 @@ function Task(props) {
               {parseFloat(props.estimatedHours).toFixed(2)}
             </td>
             <td className="desktop-view">
-              {startedDate.getFullYear() !== 1969
-                ? formatDate(startedDate)
-                : null}
+              {startedDate.getFullYear() !== 1969 ? formatDate(startedDate) : null}
               <br />
             </td>
             <td className="desktop-view">
-              {dueDate.getFullYear() !== 1969
-                ? formatDate(dueDate)
-                : null}
+              {dueDate.getFullYear() !== 1969 ? formatDate(dueDate) : null}
             </td>
             <td className="desktop-view">
               {props.links.map((link, i) =>
@@ -307,7 +307,7 @@ function Task(props) {
               )}
             </td>
             <td className="desktop-view" onClick={toggleModel}>
-              <i className="fa fa-book" aria-hidden="true" data-tip="More info"/>
+              <i className="fa fa-book" aria-hidden="true" data-tip="More info" />
             </td>
             <Modal isOpen={modal} toggle={toggleModel}>
               <ModalBody>
@@ -378,54 +378,56 @@ function Task(props) {
           ) : null}
         </>
       ) : null}
-      {isOpen && children.length ? children.map((task, i) => (
-        <ConnectedTask
-          key={`${task._id}${i}`}
-          taskId={task._id}
-          level={task.level}
-          num={task.num}
-          name={task.taskName}
-          priority={task.priority}
-          resources={task.resources}
-          isAssigned={task.isAssigned}
-          status={task.status}
-          hoursBest={task.hoursBest}
-          hoursMost={task.hoursMost}
-          hoursWorst={task.hoursWorst}
-          estimatedHours={task.estimatedHours}
-          startedDatetime={task.startedDatetime}
-          dueDatetime={task.dueDatetime}
-          links={task.links}
-          projectId={props.projectId}
-          wbsId={props.wbsId}
-          parentId1={task.parentId1}
-          parentId2={task.parentId2}
-          parentId3={task.parentId3}
-          mother={task.mother}
-          openAll={props.openAll}
-          deleteWBSTask={props.deleteWBSTask}
-          hasChildren={task.hasChildren}
-          siblings={children}
-          whyInfo={task.whyInfo}
-          intentInfo={task.intentInfo}
-          endstateInfo={task.endstateInfo}
-          childrenQty={task.childrenQty}
-          filterTasks={props.filterTasks}
-          filterState={props.filterState}
-          controllerId={props.controllerId}
-          setControllerId={props.setControllerId}
-          load={props.load}
-          pageLoadTime={props.pageLoadTime}
-          setIsLoading={props.setIsLoading}
-        />)
-      ) : null}
+      {isOpen && children.length
+        ? children.map((task, i) => (
+            <ConnectedTask
+              key={`${task._id}${i}`}
+              taskId={task._id}
+              level={task.level}
+              num={task.num}
+              name={task.taskName}
+              priority={task.priority}
+              resources={task.resources}
+              isAssigned={task.isAssigned}
+              status={task.status}
+              hoursBest={task.hoursBest}
+              hoursMost={task.hoursMost}
+              hoursWorst={task.hoursWorst}
+              estimatedHours={task.estimatedHours}
+              startedDatetime={task.startedDatetime}
+              dueDatetime={task.dueDatetime}
+              links={task.links}
+              projectId={props.projectId}
+              wbsId={props.wbsId}
+              parentId1={task.parentId1}
+              parentId2={task.parentId2}
+              parentId3={task.parentId3}
+              mother={task.mother}
+              openAll={props.openAll}
+              deleteWBSTask={props.deleteWBSTask}
+              hasChildren={task.hasChildren}
+              siblings={children}
+              whyInfo={task.whyInfo}
+              intentInfo={task.intentInfo}
+              endstateInfo={task.endstateInfo}
+              childrenQty={task.childrenQty}
+              filterTasks={props.filterTasks}
+              filterState={props.filterState}
+              controllerId={props.controllerId}
+              setControllerId={props.setControllerId}
+              load={props.load}
+              pageLoadTime={props.pageLoadTime}
+              setIsLoading={props.setIsLoading}
+            />
+          ))
+        : null}
     </>
   );
 }
 
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
- });
+});
 
 const ConnectedTask = connect(mapStateToProps, {
   moveTasks,
