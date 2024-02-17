@@ -4,7 +4,9 @@ import { ENDPOINTS } from 'utils/URL';
 
 export const getTaskEditSuggestionsHTTP = async () => {
   try {
-    return await axios.get(ENDPOINTS.TASK_EDIT_SUGGESTION());
+    const response =  await axios.get(ENDPOINTS.TASK_EDIT_SUGGESTION());
+    //console.log('Response:', response.data); 
+    return response.data;
   } catch (error) {
     console.log(`Error on create task edit suggestion: ${  error}`);
   }
