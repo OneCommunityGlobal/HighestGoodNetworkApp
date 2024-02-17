@@ -6,6 +6,8 @@ const ConfirmationMessage = ({ message, isSuccess, confirmationMessageCallback }
   const history = useHistory();
   return (
     <div className={styles.confirmationContainer}>
+      {isSuccess && <div className={styles.oneCommunityIcon}></div>}
+      <p></p>
       {isSuccess && (
         <div className={styles.envelope}>
           <div className={styles.iconContainer}>
@@ -13,7 +15,22 @@ const ConfirmationMessage = ({ message, isSuccess, confirmationMessageCallback }
           </div>
         </div>
       )}
-      {!isSuccess ? <h2>{message}</h2> : <h2>Verified Your Email</h2>}
+      {!isSuccess && (
+        <div className={styles.envelope}>
+          <div className={styles.iconContainer}>
+            <div className={styles.crossmark}>✖</div>
+          </div>
+        </div>
+      )}
+      {!isSuccess ? (
+        <h2>
+          {' '}
+          <p></p>
+          {message}
+        </h2>
+      ) : (
+        <h2></h2>
+      )}
       <div className={styles.buttonsContainer}>
         <button
           className={styles.button}

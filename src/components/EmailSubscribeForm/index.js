@@ -27,7 +27,7 @@ const SubscribePage = () => {
         } else {
           // Handle failure
           setConfirmationStatus(false);
-          setConfirmationMessage('Failed to confirm email subscription');
+          setConfirmationMessage('Comfirmation expired, please try again');
         }
       });
     }
@@ -67,6 +67,7 @@ const SubscribePage = () => {
 
   return (
     <div className={styles.subscribeContainer}>
+      <div className={styles.oneCommunityIcon}></div>
       <h1 className={styles.header}>Subscribe for Weekly Updates</h1>
       {/* ... */}
       <p className={styles.description}>

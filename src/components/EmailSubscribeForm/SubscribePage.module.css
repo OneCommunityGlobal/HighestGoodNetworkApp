@@ -61,7 +61,13 @@
   margin-bottom: 20px; /* More spacing to separate from the form */
 }
 
-
+.oneCommunityIcon {
+  width: 700px;
+  height: 100px;
+  border-radius: 5%;
+  background: url('./HD-Horizontal-Logo-640x188.jpg') no-repeat center center;
+  background-size: contain;
+}
 
 /* Add responsive designs and other styles as needed */
 @media (max-width: 768px) {

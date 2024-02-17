@@ -4,7 +4,7 @@
   flex-direction: column;
   text-align: center;
   justify-content: center;
-  max-width: 500px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 50px;
   background-color: #f9f9f9;
@@ -75,6 +75,15 @@
   background-color: #f9f9f9;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.oneCommunityIcon {
+  width: 648px;
+  height: 200px;
+  border-radius: 5px;
+  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.1);
+  background: url('./HGN-Your-Email-Has-Been-Removed-648x200px.jpg') no-repeat center center;
+  background-size: cover;
 }
 
 /* Rest of the styles for text and layout */
