@@ -8,6 +8,7 @@ import {
   hasLeaderboardPermissions,
   assignStarDotColors,
   showStar,
+  viewZeroHouraMembers,
 } from 'utils/leaderboardPermissions';
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
@@ -204,9 +205,11 @@ function LeaderBoard({
                   }}
                 >
                   <span>{organizationData.name}</span>
-                  <span className="boldClass">
-                    0 hrs Totals: {individualsWithZeroHours.length} Members
-                  </span>
+                  {viewZeroHouraMembers(loggedInUser.role) && (
+                    <span className="boldClass">
+                      0 hrs Totals: {individualsWithZeroHours.length} Members
+                    </span>
+                  )}
                 </div>
               </th>
               <td className="align-middle" />
