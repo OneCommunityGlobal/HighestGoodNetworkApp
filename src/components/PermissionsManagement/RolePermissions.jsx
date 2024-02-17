@@ -180,7 +180,7 @@ function RolePermissions(props) {
                   <i
                     data-toggle="tooltip"
                     data-placement="center"
-                    title="Click for more information"
+                    title="Click for information about this"
                     aria-hidden="true"
                     className="fa fa-info-circle"
                     onClick={() => {
@@ -190,7 +190,7 @@ function RolePermissions(props) {
                   <i
                     data-toggle="tooltip"
                     data-placement="center"
-                    title="Click for more information"
+                    title="Click for information about this"
                     aria-hidden="true"
                     className="fa fa-info-circle"
                     onClick={() => {

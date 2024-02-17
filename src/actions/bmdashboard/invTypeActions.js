@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { ENDPOINTS } from "utils/URL";
-import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE } from "constants/bmdashboard/inventoryTypeConstants";
+import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE, GET_TOOL_TYPES } from "constants/bmdashboard/inventoryTypeConstants";
 import { GET_ERRORS } from "constants/errors";
 
 export const fetchMaterialTypes = () => {
@@ -16,6 +16,18 @@ export const fetchMaterialTypes = () => {
   }
 }
 
+export const fetchToolTypes = () => {
+  return async dispatch => {
+    axios
+      .get(ENDPOINTS.BM_TOOL_TYPES)
+      .then(res => {
+        dispatch(setToolTypes(res.data));
+      })
+      .catch(err => {
+        dispatch(setErrors(err));
+      });
+  };
+};
 export const fetchInvTypeByType = (type) => {
   const url = ENDPOINTS.BM_INVTYPE_TYPE(type);
   return async dispatch => {
@@ -69,6 +81,12 @@ export const setInvTypes = payload => {
   }
 }
 
+export const setToolTypes = payload => {
+  return {
+    type: GET_TOOL_TYPES,
+    payload,
+  };
+};
 export const setInvTypesByType = payload => {
 
   return {

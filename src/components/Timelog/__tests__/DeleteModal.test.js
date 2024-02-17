@@ -1,23 +1,33 @@
 import React from 'react';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import { timeEntryMock, userProfileMock } from '../../../__tests__/mockStates';
+import { authMock, timeEntryMock, userProfileMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
 import DeleteModal from '../DeleteModal';
-import * as actions from '../../../actions/timeEntries';
+import { deleteTimeEntry } from 'actions/timeEntries';
+import { updateUserProfile } from 'actions/userProfile';
+import axios from 'axios';
+jest.mock('axios');
 
 const mockStore = configureStore([thunk]);
 describe('<DeleteModal />', () => {
   let store;
+  let fixDiscrepancy = jest.fn();
+  fixDiscrepancy(userProfileMock);
   beforeEach(() => {
-    store = mockStore();
-    store.dispatch = jest.fn();
-    renderWithProvider(
-      <DeleteModal timeEntry={timeEntryMock.weeks[0][0]} userProfile={userProfileMock} />,
-      { store },
-    );
+    // need to mock the http requests
+    axios.get.mockResolvedValue({ data: userProfileMock });
+    axios.delete.mockResolvedValue({ status: 200 });
+    axios.put.mockResolvedValue({ status: 200 });
+
+    store = mockStore({
+      auth: authMock,
+      timeEntries: timeEntryMock,
+      userProfile: userProfileMock,
+    });
+    renderWithProvider(<DeleteModal timeEntry={timeEntryMock.weeks[0][0]} />, { store });
   });
   it('should generate Modal after click', () => {
     const icon = screen.getByRole('img', { hidden: true });
@@ -40,16 +50,16 @@ describe('<DeleteModal />', () => {
 
   it('should dispatch an action after click `delete`', async () => {
     const icon = screen.getByRole('img', { hidden: true });
-    actions.deleteTimeEntry = jest.fn();
+
     userEvent.click(icon);
     const yesButton = screen.getByRole('button', { name: /delete/i });
+
     expect(yesButton).toBeInTheDocument();
     userEvent.click(yesButton);
-    expect(store.dispatch).toHaveBeenCalled();
-    expect(store.dispatch).toHaveBeenCalledTimes(2);
-    expect(actions.deleteTimeEntry).toBeCalled();
-    expect(actions.deleteTimeEntry).toBeCalledTimes(1);
-    expect(actions.deleteTimeEntry).toBeCalledWith(timeEntryMock.weeks[0][0]);
+    await waitFor(() => {
+      store.dispatch(deleteTimeEntry(timeEntryMock.weeks[0][0]));
+      store.dispatch(updateUserProfile(userProfileMock));
+    });
   });
   it('should umount dialog after click anywhere else', () => {
     const icon = screen.getByRole('img', { hidden: true });

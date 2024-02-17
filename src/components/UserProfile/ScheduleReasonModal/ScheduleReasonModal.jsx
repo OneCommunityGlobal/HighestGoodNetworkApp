@@ -27,6 +27,8 @@ const ScheduleReasonModal = ({
   userId,
   IsReasonUpdated,
   setIsReasonUpdated,
+  numberOfReasons,
+  infringementsNum
 }) => {
   useEffect(() => {
     const initialFetching = async () => {
@@ -49,6 +51,19 @@ const ScheduleReasonModal = ({
     };
     initialFetching();
   }, [date]);
+
+// ===============================================================
+  // This useEffect will make sure to close the modal that allows for users to schedule reasons - Sucheta
+  useEffect(()=>{
+    if(user.role === "Owner" || user.role === "Administrator"){
+      return
+    }else{
+      if (infringementsNum >= 5 || numberOfReasons >= 5 || (infringementsNum + numberOfReasons >= 5)){
+        handleClose();
+      }
+    }
+  },[numberOfReasons,infringementsNum])
+// ===============================================================
 
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [offTimeWeeks, setOffTimeWeeks] = useState([]);
@@ -81,9 +96,9 @@ const ScheduleReasonModal = ({
     return date.format('MM/DD/YYYY');
   };
 
-  const filterSunday = date => {
-    const losAngelesDate = moment(date).tz('America/Los_Angeles');
-    return losAngelesDate.day() === 6; // Sunday
+  const filterSunday = (date) => {
+    const day = date.getDay();
+    return day === 0;
   };
 
   const handleSaveReason = e => {
@@ -134,7 +149,6 @@ const ScheduleReasonModal = ({
                   .endOf('week')
                   .toISOString()
                   .split('T')[0];
-                console.log(dateSelectedTz);
                 setDate(dateSelectedTz);
               }}
               filterDate={filterSunday}
@@ -157,7 +171,6 @@ const ScheduleReasonModal = ({
               value={reason}
               onChange={e => {
                 setReason(e.target.value);
-                setIsReasonUpdated(true);
               }}
               disabled={fetchState.isFetching}
             />
@@ -175,10 +188,11 @@ const ScheduleReasonModal = ({
           <Button variant="secondary" onClick={handleClose} style={boxStyle}>
             Close
           </Button>
+          {/* Save button */}
           <Button
             variant="primary"
             type="submit"
-            disabled={fetchState.isFetching || !IsReasonUpdated}
+            disabled={fetchState.isFetching || !reason}
             title="To Save - add a new reason or edit an existing reason. 
           Clicking 'Save' will generate an email to you and One Community as a record of this request."
             style={boxStyle}

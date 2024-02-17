@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
+import { Button, Card } from 'reactstrap';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import { Link } from 'react-router-dom';
@@ -59,10 +62,13 @@ export const Header = props => {
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
   // Projects
-  const canSeeProjectManagementTab = props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
+  const canSeeProjectManagementTab =
+    props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
   const canPostProject = props.hasPermission('postProject');
+  // WBS
+  const canPostWBS = props.hasPermission('postWbs');
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask');
+  const canUpdateTask = props.hasPermission('updateTask') || props.auth.user?.permissions?.frontPermissions.includes('updateTask');
   // Teams
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
@@ -73,6 +79,14 @@ export const Header = props => {
   const canPutRole = props.hasPermission('putRole');
   // Permissions
   const canManageUser = props.hasPermission('putUserProfilePermissions');
+
+  const userId = user.userid;
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+  const [userDashboardProfile, setUserDashboardProfile] = useState(undefined);
+  const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
+  const dismissalKey = `lastDismissed_${userId}`;
+  const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
 
   const dispatch = useDispatch();
 
@@ -99,6 +113,80 @@ export const Header = props => {
   const openModal = () => {
     setLogoutPopup(true);
   };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    const today = new Date();
+    localStorage.setItem(dismissalKey, today);
+    setLastDismissed(today);
+  };
+
+  const getMostRecentThursday = date => {
+    const mostRecentThursday = new Date(date);
+    if (date.getDay() === 4) {
+      // If today is Thursday, return today's date
+      mostRecentThursday.setHours(0, 0, 0, 0);
+      return mostRecentThursday;
+    }
+    // Otherwise, find the previous Thursday
+    mostRecentThursday.setDate(date.getDate() - ((date.getDay() + 3) % 7));
+    mostRecentThursday.setHours(0, 0, 0, 0);
+    return mostRecentThursday;
+  };
+
+  const loadUserDashboardProfile = async () => {
+    if (!userId || hasProfileLoaded) return;
+    try {
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const newUserProfile = response.data;
+      setUserDashboardProfile(newUserProfile);
+      setHasProfileLoaded(true); // Set flag to true after loading the profile
+    } catch (err) {
+      console.log('User Profile not loaded.', err);
+    }
+  };
+
+  useEffect(() => {
+    loadUserDashboardProfile();
+
+    if (
+      user.role === 'Owner' ||
+      user.role === 'Administrator' ||
+      user.role === 'Mentor'
+    ) {
+      setModalVisible(false);
+      return;
+    }
+
+    const today = new Date();
+    const lastDismissedDate = lastDismissed ? new Date(lastDismissed) : null;
+
+    // Check if lastDismissed date is ahead of today
+    if (lastDismissedDate > today) {
+      // Clear lastDismissed in both the state and localStorage
+      setLastDismissed(null);
+      localStorage.removeItem(dismissalKey);
+    }
+
+    // Check if today is Thursday or the stored date is before the most recent Thursday
+    if (!lastDismissed || lastDismissedDate < getMostRecentThursday(today)) {
+      if (userDashboardProfile?.teams?.length > 0) {
+
+        if (user.role === 'Assistant Manager' || user.role === 'Volunteer') {
+          setModalVisible(true);
+          // Assistant Manager or Volunteer message
+          setModalContent(`If you are seeing this, it’s because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team’s work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`);
+        } else if (user.role === 'Manager') {
+          setModalVisible(true);
+          // Manager message
+          setModalContent(`If you are seeing this, it’s because you are a Manager of a team! Remember to turn in your team’s work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
+          `);
+        }
+      }
+    } else {
+      setModalVisible(false);
+    }
+  }, [lastDismissed, userId, userDashboardProfile]);
 
   return (
     <div className="header-wrapper">
@@ -181,6 +269,8 @@ export const Header = props => {
                 canPutUserProfileImportantInfo ||
                 canCreateBadges ||
                 canPostProject ||
+                canUpdateTask ||
+                canPostWBS ||
                 canSeeProjectManagementTab ||
                 canDeleteTeam ||
                 canPutTeam ||
@@ -208,7 +298,7 @@ export const Header = props => {
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {(canPostProject || canSeeProjectManagementTab) && (
+                    {(canPostProject || canUpdateTask || canPostWBS|| canSeeProjectManagementTab) && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
                       </DropdownItem>
@@ -220,10 +310,10 @@ export const Header = props => {
                     )}
                     {(canPutRole || canManageUser) && (
                       <>
-                      <DropdownItem divider />
-                      <DropdownItem tag={Link} to="/permissionsmanagement">
-                        {PERMISSIONS_MANAGEMENT}
-                      </DropdownItem>
+                        <DropdownItem divider />
+                        <DropdownItem tag={Link} to="/permissionsmanagement">
+                          {PERMISSIONS_MANAGEMENT}
+                        </DropdownItem>
                       </>
                     )}
                   </DropdownMenu>
@@ -264,6 +354,14 @@ export const Header = props => {
           </Collapse>
         )}
       </Navbar>
+      {props.auth.isAuthenticated && isModalVisible && (
+          <Card color="primary">
+            <div className="close-button">
+              <Button close onClick={closeModal} />
+            </div>
+            <div className="card-content">{modalContent}</div>
+          </Card>
+        )}
     </div>
   );
 };
