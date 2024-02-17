@@ -193,7 +193,17 @@ function LeaderBoard({
           <tbody className="my-custome-scrollbar">
             <tr>
               <td />
-              <th scope="row">{organizationData.name}</th>
+              <th scope="row">
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <span>{organizationData.name}</span>
+                  <span className="boldClass">0 hrs Totals: XXX Members</span>
+                </div>
+              </th>
               <td className="align-middle" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
@@ -210,16 +220,6 @@ function LeaderBoard({
                   {organizationData.totaltime} of {organizationData.weeklycommittedHours}
                 </span>
               </td>
-            </tr>
-            <tr>
-              <td />
-              <th scope="row" className="boldClass">
-                0 hrs Totals: XXX Members
-              </th>
-              <td className="align-middle" />
-              <td className="align-middle" />
-              <td className="align-middle" />
-              <td className="align-middle" />
             </tr>
             {leaderBoardData.map(item => (
               <tr key={item.personId}>
