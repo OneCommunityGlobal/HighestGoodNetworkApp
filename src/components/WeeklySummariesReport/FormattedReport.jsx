@@ -178,7 +178,6 @@ function ReportDetails({
   weekIndex,
   bioCanEdit,
   canEditSummaryCount,
-  allRoleInfo,
   badges,
   loadBadges,
   canEditTeamCode,

@@ -58,6 +58,7 @@ export class EditableInfoModal extends Component {
   };
   
   _isMounted = false;
+
   
   async componentDidMount() {
     this._isMounted = true;
