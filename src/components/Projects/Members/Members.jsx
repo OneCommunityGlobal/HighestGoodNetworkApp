@@ -37,8 +37,11 @@ const Members = props => {
     const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
     
     // Wait for all members to be assigned
-    await Promise.all(allUsers.map(user => 
+    await Promise.all(allUsers.map(user => {
+      console.log('successfully assigned', user.firstName)
       props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName)
+      
+    }
     ));
   
     props.fetchAllMembers(projectId);
@@ -72,7 +75,7 @@ const Members = props => {
               </button>
             </NavItem>
 
-            <div id="member_project__name">PROJECTS {props.projectId}</div>
+            <div data-testid="projectId" id="member_project__name">PROJECTS {projectId}</div>
           </ol>
         </nav>
         {canGetProjectMembers ? (
@@ -114,7 +117,6 @@ const Members = props => {
             </div>
           </div>
         ) : null}
-
         {showFindUserList && props.state.projectMembers.foundUsers.length > 0 ? (
           <table className="table table-bordered table-responsive-sm">
             <thead>
@@ -180,6 +182,7 @@ const Members = props => {
                 projectId={projectId}
                 uid={member._id}
                 fullName={member.firstName + ' ' + member.lastName}
+                //data-testid={`member-${member._id}`} // Add a test id to each member element
               />
             ))}
           </tbody>
