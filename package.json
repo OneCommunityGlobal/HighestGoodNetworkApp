@@ -10,6 +10,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.12.1",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.19",
+    "@nivo/pie": "^0.84.0",
     "@sentry/browser": "^4.6.6",
     "@tinymce/tinymce-react": "^3.6.0",
     "axios": "^0.21.2",
