@@ -87,6 +87,9 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
+  const invividualsWithZeroHours = leaderBoardData.filter(
+    invividuals => invividuals.totaltime === 0,
+  );
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -201,7 +204,9 @@ function LeaderBoard({
                   }}
                 >
                   <span>{organizationData.name}</span>
-                  <span className="boldClass">0 hrs Totals: XXX Members</span>
+                  <span className="boldClass">
+                    0 hrs Totals: {invividualsWithZeroHours.length} Members
+                  </span>
                 </div>
               </th>
               <td className="align-middle" />
