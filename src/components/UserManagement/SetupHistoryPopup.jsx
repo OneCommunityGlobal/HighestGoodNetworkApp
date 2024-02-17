@@ -81,7 +81,7 @@ const TableFilter = ({
 
 
 
-const SetupHistoryPopup = React.memo(props => {
+const SetupHistoryPopup = props => {
   // const [alert, setAlert] = useState({ visibility: 'hidden', message: '', state: 'success' });
   // const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
   // const baseUrl = window.location.origin;
@@ -96,6 +96,7 @@ const SetupHistoryPopup = React.memo(props => {
   const [ loading, setLoading ] = useState(true);
   const [ filteredUserDataCount, setFilteredUserDataCount ] = useState(0);
   const [ isButtonDisabled, setIsButtonDisabled ] = useState(false);
+  
   const closePopup = e => {
     props.onClose();
   };
@@ -121,10 +122,10 @@ const SetupHistoryPopup = React.memo(props => {
   }, []);
 
   /**
-   * Triggered data fetching when a new user invitation is sent.
+   * Triggered data fetching when a new user invitation is sent or a record is updated.
    */
   useEffect(() => {
-    if(props.shouldRefreshInvitationHistory){
+    if(props.shouldRefreshInvitationHistory && props.open == true){
       httpService
       .get(ENDPOINTS.GET_SETUP_INVITATION())
       .then(res => {
@@ -145,7 +146,7 @@ const SetupHistoryPopup = React.memo(props => {
     });
     }
    
-  }, [props.shouldRefreshInvitationHistory]);
+  }, [props.shouldRefreshInvitationHistory, props.open]);
 
   useEffect(() => {
     setFilteredSetupInvitationData(transformedTableData(setupInvitationData));
@@ -235,22 +236,9 @@ const SetupHistoryPopup = React.memo(props => {
       .then((res) => {
         debugger;
         if (res.status === 200) {
-          // Find the index of the original record in setupInvitationData
-          const originalIndex = setupInvitationData.findIndex(
-            (invitation) =>
-              invitation.token === res.data.token
-          );
-
-          // Update the properties of the original record
-          if (originalIndex !== -1 && originalIndex < setupInvitationData.length) {
-            etupInvitationData[originalIndex] = res.data;
-          } else {
-            throw new Error('Invitation Refresh Failed: Invalid Record Index');
-          }
-
-          // Update the state with the modified setupInvitationData
-          setSetupInvitationData([...setupInvitationData]);
-          setFilteredSetupInvitationData(transformedTableData(setupInvitationData));
+          // Close and reload data from database.
+          props.handleShouldRefreshInvitationHistory()
+          closePopup();
           toast.success('Invitation Refreshed!');
         }
       })
@@ -262,38 +250,25 @@ const SetupHistoryPopup = React.memo(props => {
   };
 
   const onClickCancel = (e, index) => {
+    // debugger;
     setIsButtonDisabled(true);
     httpService
-    .post(ENDPOINTS.CANCEL_SETUP_INVITATION_TOKEN, {
-      token: filteredSetupInvitationData[index].token,
-    })
-    .then((res) => {
-      debugger;
-      if (res.status === 200) {
-        // Find the index of the original record in setupInvitationData
-        const originalIndex = setupInvitationData.findIndex(
-          (invitation) =>
-            invitation.token === res.data.token
-        );
-
-        // Update the properties of the original record
-        if (originalIndex !== -1 && originalIndex < setupInvitationData.length) {
-          setupInvitationData[originalIndex] = res.data;
-        } else {
-          throw new Error('Invitation Cancel Failed: Invalid Record Index');
+      .post(ENDPOINTS.CANCEL_SETUP_INVITATION_TOKEN(), {
+        token: filteredSetupInvitationData[index].token,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          // Close and reload data from database.
+          props.handleShouldRefreshInvitationHistory()
+          closePopup();
+          toast.success('Invitation Cancelled!');
         }
-
-        // Update the state with the modified setupInvitationData
-        setSetupInvitationData([...setupInvitationData]);
-        setFilteredSetupInvitationData(transformedTableData(setupInvitationData));
-        toast.success('Invitation Cancelled!');
-      }
-    })
-    .catch((err) => {
-      toast.error('Invitation Cancel Failed!');
-    }).finally(() => {
-      setIsButtonDisabled(false);
-    });
+      })
+      .catch((err) => {
+        toast.error('Invitation Cancel Failed!');
+      }).finally(() => {
+        setIsButtonDisabled(false);
+      });
   }
 
 
@@ -380,6 +355,6 @@ const SetupHistoryPopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
 
 export default SetupHistoryPopup;
