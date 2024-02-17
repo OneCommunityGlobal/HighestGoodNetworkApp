@@ -38,6 +38,16 @@ const ReviewButton = ({
     setLink(e.target.value);
   };
 
+  const validURL = (url) => {
+    try {
+      const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
+      return pattern.test(url);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  }
+
   const reviewStatus = function() {
     let status = "Unsubmitted";
     for(let resource of task.resources) {
@@ -57,15 +67,19 @@ const ReviewButton = ({
       return newResource;
     });
     let updatedTask = { ...task, resources: newResources };
-
     //Add relatedWorkLinks to existing tasks
     if(!Array.isArray(task.relatedWorkLinks)) {
       task.relatedWorkLinks = [];
     }
   
     if (newStatus === 'Submitted' && link) {
-      updatedTask = {...updatedTask, relatedWorkLinks: [...task.relatedWorkLinks, link] };
-      setLink("");
+      if (validURL(link)) {
+        updatedTask = {...updatedTask, relatedWorkLinks: [...task.relatedWorkLinks, link] };
+        setLink("");
+      } else {
+        alert('Invalid URL. Please enter a valid URL of at least 20 characters');
+        return;
+      }
     }
     updateTask(task._id, updatedTask);
     setModal(false);
