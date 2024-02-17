@@ -49,8 +49,7 @@ export default function Warning({ personId, username, userRole }) {
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleToggle = () => {
-    setToggle(prev => !prev);
+  const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
       if (res.error) {
         setError(res);
@@ -61,6 +60,10 @@ export default function Warning({ personId, username, userRole }) {
     });
   };
 
+  const handleToggle = () => {
+    setToggle(prev => !prev);
+    fetchUsersWarningsById();
+  };
   // useEffect(() => {
   //   dispatch(getWarningsByUserId(personId)).then(res => {
   //     if (res.error) {
@@ -131,6 +134,7 @@ export default function Warning({ personId, username, userRole }) {
     if (newWarning === '') return;
     dispatch(postNewWarning({ newWarning, activeWarning: true })).then(res => {
       setWarningDescriptions(res);
+      fetchUsersWarningsById();
     });
   };
 

@@ -5,8 +5,7 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Row } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 /**
  * Modal displaying information about how time entry works
  * @param {*} props
@@ -166,15 +165,6 @@ function WarningsModal({
           <Button color="danger" onClick={() => setWarningsModal(false)}>
             Close
           </Button>
-
-          {/* <Button
-            onClick={() => {
-              setToggleModal(false);
-            }}
-            color="primary"
-          >
-            Delete Warning
-          </Button> */}
         </ModalFooter>
       </Modal>
     );
