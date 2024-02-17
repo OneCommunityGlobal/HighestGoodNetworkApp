@@ -13,8 +13,8 @@ import { connect } from 'react-redux';
 const TimeEntryEditHistory = props => {
   const editHistory = [...props.userProfile.timeEntryEditHistory].reverse();
 
-  const canDeleteTimeEntry = props.hasPermission('deleteTimeEntry');
-
+  const canDeleteTimeEntry = props.hasPermission('deleteTimeEntry') ;
+ 
   const secondsToHms = seconds => {
     let h = new String(Math.floor(seconds / 3600));
     let m = new String(Math.floor((seconds % 3600) / 60));
@@ -70,7 +70,7 @@ const TimeEntryEditHistory = props => {
                 </td>
                 <td>{secondsToHms(item.initialSeconds)}</td>
                 <td>{secondsToHms(item.newSeconds)}</td>
-                {canDeleteTimeEntry && (
+                {canDeleteTimeEntry && !props.isRecordBelongsToJaeAndUneditable && (
                   <td>
                     <Button variant="danger" onClick={() => deleteEdit(item._id)}>
                       Delete&nbsp;Edit
