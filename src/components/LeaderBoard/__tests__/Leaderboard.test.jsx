@@ -30,8 +30,7 @@ describe('Leaderboard page structure', () => {
     const leaderBoardItems = leaderBoardBody.find('tr');
     let lbData = mockAdminState.leaderBoardData;
     const lBLength = lbData.length;
-    //leaderBoardItems increases by one more due to addition of mentors Technical Analysis Team row
-    expect(leaderBoardItems.length).toBe(lBLength + 2);
+    expect(leaderBoardItems.length).toBe(lBLength + 1);
 
     for (let i = 1; i < lBLength; i++) {
       //find that a link to each user profile exists and test the text of the Link to be the name
