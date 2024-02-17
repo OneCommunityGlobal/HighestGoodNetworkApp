@@ -538,8 +538,8 @@ const BasicInformationTab = props => {
       </Col>
       {desktopDisplay ? (
         <Col md="1">
-          <div style={{ marginTop: topMargin }}>
-            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={30} />
+          <div style={{ marginTop: topMargin, marginLeft: '-20px' }}>
+            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={20}/>
           </div>
         </Col>
       ) : (
@@ -556,7 +556,7 @@ const BasicInformationTab = props => {
             <Label>Location</Label>
           </Col>
           {desktopDisplay ? (
-            <Col>
+            <Col md='6'>
               <Row className="ml-0">
                 <Col className="p-0" style={{ marginRight: '10px' }}>
                   <Input
@@ -564,7 +564,7 @@ const BasicInformationTab = props => {
                     value={locationCheckValue(userProfile.location || '')}
                   />
                 </Col>
-                <Col className="p-0">
+                <Col>
                   <Button
                     color="secondary"
                     block
@@ -724,23 +724,23 @@ const BasicInformationTab = props => {
           <>
             <Row>
               {nameComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>
               {titleComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>
               {emailComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>
               {phoneComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>
               {videoCallPreferenceComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>{roleComponent}</Row>
             <Row>
