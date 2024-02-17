@@ -172,6 +172,18 @@ function EmailsList({ summaries, auth }) {
   return null;
 }
 
+function getTextColorForHoursLogged(hoursLogged, promisedHours) {
+  const percentage = (hoursLogged / promisedHours) * 100;
+
+  if (percentage < 49) {
+    return 'red';
+  } else if (percentage >= 50 && percentage < 100) {
+    return 'lightgreen'; // Bright green color
+  } else {
+    return 'black'; // Default color
+  }
+}
+
 function ReportDetails({
   summary,
   weekIndex,
@@ -220,15 +232,37 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem>
-              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
-                Hours logged:
+              <b
+                style={{
+                  color: getTextColorForHoursLogged(
+                    hoursLogged,
+                    summary.promisedHoursByWeek[weekIndex],
+                  ),
+                }}
+              >
+                Hours logged (test test):
               </b>
               {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
-                <p>
+                <p
+                  style={{
+                    color: getTextColorForHoursLogged(
+                      hoursLogged,
+                      summary.promisedHoursByWeek[weekIndex],
+                    ),
+                  }}
+                >
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </p>
               ) : (
-                <span className="ml-2">
+                <span
+                  className="ml-2"
+                  style={{
+                    color: getTextColorForHoursLogged(
+                      hoursLogged,
+                      summary.promisedHoursByWeek[weekIndex],
+                    ),
+                  }}
+                >
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </span>
               )}
