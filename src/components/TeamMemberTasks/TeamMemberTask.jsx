@@ -5,15 +5,25 @@ import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
-import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
 import { boxStyle } from 'styles';
-import ReviewButton from './ReviewButton';
+// <<<<<<< HEAD
+// import { useDispatch } from 'react-redux';
+import Warning from 'components/Warnings/Warnings';
 import { useDispatch, useSelector } from 'react-redux';
-import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import moment from 'moment-timezone';
+// <<<<<<< HEAD
+import ReviewButton from './ReviewButton';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+// import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
+// =======
+// import ReviewButton from './ReviewButton';
+import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
+// >>>>>>> development
+// =======
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
+// >>>>>>> development
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -34,22 +44,41 @@ const TeamMemberTask = React.memo(
   }) => {
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
+    // <<<<<<< HEAD
+    //     // console.log('user user inside team memebr task', user);
+    //     const [totalHoursRemaining, activeTasks] = useMemo(() => {
+    //       let totalHoursRemaining = 0;
+
+    //       if (user.tasks) {
+    //         totalHoursRemaining = user.tasks.reduce((total, task) => {
+    //           task.hoursLogged = task.hoursLogged || 0;
+    //           task.estimatedHours = task.estimatedHours || 0;
+
+    //           if (task.status !== 'Complete' && task.isAssigned !== 'false') {
+    //             return total + (task.estimatedHours - task.hoursLogged);
+    //           }
+    //           return total;
+    //         }, 0);
+    // =======
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
       task.estimatedHours = task.estimatedHours || 0;
       if (task.status !== 'Complete' && task.isAssigned !== 'false') {
         return total + Math.max(0, task.estimatedHours - task.hoursLogged);
+        // >>>>>>> development
       }
       return total;
     }, 0);
 
-    const activeTasks = user.tasks.filter(task => !task.resources?.some(
-        resource => resource.userID === user.personId && resource.completedTask,
-      ),
+    const activeTasks = user.tasks.filter(
+      task =>
+        !task.resources?.some(
+          resource => resource.userID === user.personId && resource.completedTask,
+        ),
     );
-    
+
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
     const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
@@ -61,7 +90,7 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
-    //^^^
+    // ^^^
 
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
@@ -90,7 +119,8 @@ const TeamMemberTask = React.memo(
               <div className="committed-hours-circle">
                 <FontAwesomeIcon
                   style={{
-                    color: user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
+                    color:
+                      user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
                   }}
                   icon={faCircle}
                   data-testid="icon"
@@ -105,7 +135,6 @@ const TeamMemberTask = React.memo(
                 />
               </Link>
             </div>
-
           </td>
           <td colSpan={2}>
             <Table borderless className="team-member-tasks-subtable">
@@ -119,19 +148,24 @@ const TeamMemberTask = React.memo(
                           currentDate.isSameOrAfter(
                             moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                           ) &&
-                            currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                          currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                             ? 'rgba(128, 128, 128, 0.5)'
                             : undefined,
                       }}
                     >{`${user.name}`}</Link>
+                    <Warning
+                      username={user.name}
+                      userName={user}
+                      userId={userId}
+                      user={user}
+                      userRole={userRole}
+                      personId={user.personId}
+                    />
                   </td>
                   <td data-label="Time" className="team-clocks">
                     <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
-                    <font color="red">
-                      {' '}
-                      {totalHoursRemaining.toFixed(1)}
-                    </font>
+                    <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                   </td>
                 </tr>
               </tbody>
@@ -156,11 +190,11 @@ const TeamMemberTask = React.memo(
                           </div>
                           <div className="team-member-tasks-icons">
                             {task.taskNotifications.length > 0 &&
-                              task.taskNotifications.some(
-                                notification =>
-                                  notification.hasOwnProperty('userId') &&
-                                  notification.userId === user.personId,
-                              ) ? (
+                            task.taskNotifications.some(
+                              notification =>
+                                notification.hasOwnProperty('userId') &&
+                                notification.userId === user.personId,
+                            ) ? (
                               <>
                                 <FontAwesomeIcon
                                   className="team-member-tasks-bell"
@@ -233,9 +267,9 @@ const TeamMemberTask = React.memo(
                             )}
                             <div>
                               <span data-testid={`times-${task.taskName}`}>
-                                {
-                                  `${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(task.estimatedHours.toFixed(2))}`
-                                }
+                                {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
+                                  task.estimatedHours.toFixed(2),
+                                )}`}
                               </span>
                               <Progress
                                 color={getProgressColor(
@@ -263,7 +297,7 @@ const TeamMemberTask = React.memo(
               </tbody>
             </Table>
             {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
-              <div className="taking-time-off-content-div" >
+              <div className="taking-time-off-content-div">
                 <span className="taking-time-off-content-text">
                   {onTimeOff
                     ? `${user.name} Is Not Available this Week`
@@ -276,7 +310,7 @@ const TeamMemberTask = React.memo(
                     const request = onTimeOff
                       ? { ...onTimeOff, onVacation: true, name: user.name }
                       : { ...goingOnTimeOff, onVacation: false, name: user.name };
-      
+
                     openDetailModal(request);
                   }}
                 >
