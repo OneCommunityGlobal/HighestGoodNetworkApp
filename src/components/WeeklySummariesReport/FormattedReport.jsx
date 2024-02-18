@@ -65,6 +65,7 @@ function FormattedReport({
   loadBadges,
   canEditTeamCode,
   auth,
+  canSeeBioHighlight,
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
 
@@ -82,6 +83,7 @@ function FormattedReport({
             canEditTeamCode={canEditTeamCode}
             badges={badges}
             loadBadges={loadBadges}
+            canSeeBioHighlight={canSeeBioHighlight}
           />
         ))}
       </ListGroup>
@@ -110,7 +112,7 @@ function EmailsList({ summaries, auth }) {
         }
         const openEmailClientWithBatchInNewTab = batch => {
           const emailAddresses = batch.join(', ');
-          const mailtoLink = `mailto:${emailAddresses}`;
+          const mailtoLink = `mailto:?bcc=${emailAddresses}`;
           window.open(mailtoLink, '_blank');
         };
         emailChunks.forEach((batch, index) => {
@@ -179,11 +181,17 @@ function ReportDetails({
   badges,
   loadBadges,
   canEditTeamCode,
+  canSeeBioHighlight,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const isMeetCriteria =
+    canSeeBioHighlight &&
+    summary.totalTangibleHrs > 80 &&
+    summary.daysInTeam > 60 &&
+    summary.bioPosted !== 'posted';
 
   useEffect(() => {
     setFilteredBadges(badges.filter(badge => badge.showReport === true));
@@ -201,14 +209,14 @@ function ReportDetails({
               <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
             </ListGroupItem>
             <ListGroupItem>
-              <Bio
-                bioCanEdit={bioCanEdit}
-                userId={summary._id}
-                bioPosted={summary.bioPosted}
-                summary={summary}
-                totalTangibleHrs={summary.totalTangibleHrs}
-                daysInTeam={summary.daysInTeam}
-              />
+              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+                <Bio
+                  bioCanEdit={bioCanEdit}
+                  userId={summary._id}
+                  bioPosted={summary.bioPosted}
+                  summary={summary}
+                />
+              </div>
             </ListGroupItem>
             <ListGroupItem>
               <TotalValidWeeklySummaries
@@ -401,7 +409,7 @@ function MediaUrlLink({ summary }) {
       );
     }
   }
-  return 'Not provided!';
+  return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
 }
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
@@ -465,10 +473,9 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam }) {
+function BioSwitch({ userId, bioPosted, summary }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
-  const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
   // eslint-disable-next-line no-shadow
@@ -480,7 +487,7 @@ function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
   };
 
   return (
-    <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+    <div>
       <div className="bio-toggle">
         <b style={style}>Bio announcement:</b>
       </div>
@@ -505,7 +512,7 @@ function BioLabel({ bioPosted, summary }) {
 
   let text = '';
   if (bioPosted === 'default') {
-    text = ' Not requested/posted';
+    text = 'Not requested/posted';
   } else if (bioPosted === 'posted') {
     text = 'Posted';
   } else {
@@ -513,7 +520,7 @@ function BioLabel({ bioPosted, summary }) {
   }
   return (
     <div>
-      <b style={style}>Bio announcement:</b>
+      <b style={style}>Bio announcement: </b>
       {text}
     </div>
   );
@@ -617,6 +624,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   };
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
   const googleDocLink = getGoogleDocLink(summary);
   // Determine whether to use grayscale or color icon based on googleDocLink
@@ -626,7 +634,18 @@ function Index({ summary, weekIndex, allRoleInfo }) {
   return (
     <>
       <b>Name: </b>
-      <Link className="ml-2" to={`/userProfile/${summary._id}`} title="View Profile">
+      <Link
+        className="ml-2"
+        to={`/userProfile/${summary._id}`}
+        style={{
+          color:
+            currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              ? 'rgba(128, 128, 128, 0.5)'
+              : undefined,
+        }}
+        title="View Profile"
+      >
         {summary.firstName} {summary.lastName}
       </Link>
 

@@ -50,8 +50,7 @@ const UserProjectsTable = React.memo(props => {
       return userProjects?.map(project => {
         const tasks = [];
         sortedTasksByNumber?.forEach(task => {
-          const isCompletedTask = task?.resources?.find(user => user.userID === props.userId)
-            .completedTask;
+          const isCompletedTask = task?.resources?.find(user => user.userID === props.userId)?.completedTask;
           if (task?.projectId?.includes(project._id)) {
             if (situation === 'active' && !isCompletedTask) {
               tasks.push(task);
@@ -233,7 +232,7 @@ const UserProjectsTable = React.memo(props => {
                       project.tasks.map(task => {
                         const isCompletedTask = task.resources.find(
                           ({ userID }) => userID === props.userId,
-                        ).completedTask;
+                        )?.completedTask;
                         return (
                           <tr key={task._id}>
                             <td>{task.num}</td>
@@ -428,7 +427,7 @@ const UserProjectsTable = React.memo(props => {
                       project.tasks.map(task => {
                         const isCompletedTask = task.resources.find(
                           ({ userID }) => userID === props.userId,
-                        ).completedTask;
+                        )?.completedTask;
                         return (
                           <tr key={task._id}>
                             <td>{task.num}</td>
@@ -483,3 +482,4 @@ const UserProjectsTable = React.memo(props => {
 });
 
 export default connect(null, { hasPermission })(UserProjectsTable);
+
