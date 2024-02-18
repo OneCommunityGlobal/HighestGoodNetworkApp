@@ -43,28 +43,6 @@ export function Dashboard(props) {
         role={authUser.role}
         summaryBarData={summaryBarData}
       />
-
-      <Row>
-        <Col lg={{ size: 7 }}>&nbsp;</Col>
-        <Col lg={{ size: 5 }}>
-          <div className="row justify-content-center">
-            <div
-              role="button"
-              className="mt-3 mb-5 text-center"
-              onClick={toggle}
-              onKeyDown={toggle}
-              tabIndex="0"
-            >
-              <WeeklySummary
-                isDashboard
-                isPopup={popup}
-                userRole={authUser.role}
-                displayUserId={displayUserId}
-              />
-            </div>
-          </div>
-        </Col>
-      </Row>
       <div className="grid">
         <div className="tasksandtimelogs">
           {popup ? (
@@ -84,6 +62,22 @@ export function Dashboard(props) {
           <Badge userId={displayUserId} role={authUser.role} />
         </div>
         <div className="leaderboard-sm-12">
+          <div className="row justify-content-center">
+            <div
+              role="button"
+              className="mt-3 mb-5 text-center"
+              onClick={toggle}
+              onKeyDown={toggle}
+              tabIndex="0"
+            >
+              <WeeklySummary
+                isDashboard
+                isPopup={popup}
+                userRole={authUser.role}
+                displayUserId={displayUserId}
+              />
+            </div>
+          </div>
           <Leaderboard displayUserId={displayUserId} />
         </div>
       </div>
