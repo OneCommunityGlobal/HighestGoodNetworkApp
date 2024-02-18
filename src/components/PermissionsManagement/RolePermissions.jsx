@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import permissionLabel from './PermissionsConst';
 import PermissionList from './PermissionList';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
@@ -15,6 +16,7 @@ import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import PermissionsPresetsModal from './PermissionsPresetsModal.jsx';
 import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
+import hasPermission from '../../utils/permissions';
 
 
 function RolePermissions(props) {
@@ -26,6 +28,11 @@ function RolePermissions(props) {
   const [disabled, setDisabled] = useState(true);
   const history = useHistory();
   const [showPresetModal, setShowPresetModal] = useState(false);
+  const userProfile = useSelector(state => state.userProfile);
+
+  const isEditableRole = props.role === 'Owner' ? props.hasPermission('addDeleteEditOwners') : props.auth.user.role !== props.role;
+  const canEditRole = isEditableRole && props.hasPermission('putRole');
+  const canDeleteRole = isEditableRole && props.hasPermission('deleteRole');
 
   useEffect(() => {
     setRoleName(props.role);
@@ -54,7 +61,7 @@ function RolePermissions(props) {
   }, [roleName]);
 
 
-  const saveNewPreset = async () => {
+  const handleSaveNewPreset = async () => {
     let count = 1;
     while (props.presets.some(preset => preset.presetName === 'New Preset ' + count)) {
       count += 1;
@@ -64,7 +71,13 @@ function RolePermissions(props) {
       roleName: props.role,
       permissions: permissions,
     };
-    props.createNewPreset(newPreset);
+
+    const status = await props.createNewPreset(newPreset);
+    if (status === 0) {
+      toast.success(`Preset created successfully`)
+    } else {
+      toast.error(`Error creating preset`)
+    }
   };
 
   const updateInfo = async () => {
@@ -77,7 +90,8 @@ function RolePermissions(props) {
       roleId: id,
     };
     try {
-      await props.updateRole(id, updatedRole);
+      delete userProfile.permissions  // prevent overriding 'permissions' key-value pair
+      await props.updateRole(id, {...updatedRole, ...userProfile});
       history.push('/permissionsmanagement');
       toast.success('Role updated successfully');
       setChanged(false);
@@ -109,7 +123,7 @@ function RolePermissions(props) {
         <div className="user-role-tab__name-container">
           <div className="name-container__role-name">
             <h1 className="user-role-tab__h1">Role Name: {roleName}</h1>
-            {props?.userRole === 'Owner' && (
+            {canEditRole && (
               <FontAwesomeIcon
                 icon={faEdit}
                 size="lg"
@@ -118,16 +132,14 @@ function RolePermissions(props) {
               />
             )}
           </div>
-          {props?.userRole === 'Owner' && (
+          {canEditRole && (
             <div style={{ flexDirection: 'row', display: 'flex' }}>
               <div className="name-container__btn_columns">
                 <div className="name-container__btns">
                   <Button
                     className="btn_save"
                     color="success"
-                    onClick={() => {
-                      saveNewPreset();
-                    }}
+                    onClick={handleSaveNewPreset}
                     style={boxStyle}
                   >
                     Create New Preset
@@ -151,7 +163,7 @@ function RolePermissions(props) {
                   >
                     Save
                   </Button>
-                  <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle}>
+                  <Button color="danger" onClick={toggleDeleteRoleModal} style={boxStyle} disabled={!canDeleteRole}>
                     Delete Role
                   </Button>
                 </div>
@@ -168,7 +180,7 @@ function RolePermissions(props) {
                   <i
                     data-toggle="tooltip"
                     data-placement="center"
-                    title="Click for more information"
+                    title="Click for information about this"
                     aria-hidden="true"
                     className="fa fa-info-circle"
                     onClick={() => {
@@ -178,7 +190,7 @@ function RolePermissions(props) {
                   <i
                     data-toggle="tooltip"
                     data-placement="center"
-                    title="Click for more information"
+                    title="Click for information about this"
                     aria-hidden="true"
                     className="fa fa-info-circle"
                     onClick={() => {
@@ -222,7 +234,7 @@ function RolePermissions(props) {
         <PermissionList
           rolePermissions={permissions}
           permissionsList={permissionLabel}
-          editable={true}
+          editable={canEditRole}
           setPermissions={setPermissions}
           onChange={()=>{setChanged(true)}}
         />
@@ -248,7 +260,7 @@ function RolePermissions(props) {
           </Button>
         </ModalFooter>
       </Modal>
-      
+
       <Modal
         isOpen={showPresetModal}
         toggle={() => {
@@ -276,13 +288,14 @@ function RolePermissions(props) {
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles, presets: state.rolePreset.presets });
+const mapStateToProps = state => ({ roles: state.role.roles, presets: state.rolePreset.presets, auth: state.auth });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
   updateRole: (roleId, updatedRole) => dispatch(updateRole(roleId, updatedRole)),
   getPresets: role => dispatch(getPresetsByRole(role)),
   createNewPreset: newPreset => dispatch(createNewPreset(newPreset)),
+  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RolePermissions);
