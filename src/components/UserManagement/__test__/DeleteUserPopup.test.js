@@ -11,7 +11,7 @@ import {
   USER_DELETE_DATA_INACTIVE,
   USER_DELETE_DATA_ARCHIVE,
   USER_DELETE_OPTION_HEADING
-} from '../../languages/en/messages';
+} from '../../../languages/en/messages';
 
 describe('delete user popup', () => {
   const onClose = jest.fn();
