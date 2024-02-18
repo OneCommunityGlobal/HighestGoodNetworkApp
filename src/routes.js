@@ -50,13 +50,10 @@ import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
 import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesList/ConsumablesView';
-
 import EquipmentList from './components/BMDashboard/Equipment/List';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
-// import MaterialsList from './components/BMDashboard/MaterialsList';
-// import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
-// import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+import AddTool from './components/BMDashboard/Tools/AddTool';
 
 const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
 const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
@@ -65,7 +62,6 @@ const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMa
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
 const PurchaseTools = lazy(() => import ('./components/BMDashboard/ToolPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
-// const EquipmentList = lazy(() => import('./components/BMDashboard/EquipmentList'))
 
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
@@ -221,14 +217,13 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
-
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
+        <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
-
         <BMProtectedRoute path="/bmdashboard/inventorytypes" fallback component={InventoryTypesList} />
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
