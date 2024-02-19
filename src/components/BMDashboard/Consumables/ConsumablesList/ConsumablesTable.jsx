@@ -10,9 +10,7 @@ import { fetchAllConsumables } from 'actions/bmdashboard/consumableActions';
 import ConsumablesViewModal from './ConsumablesViewModal';
 
 function ConsumablesTable({ consumable, project }) {
-  // Data fetched in the parent component : ConsumablesView
   const dispatch = useDispatch();
-
   const consumables = useSelector(state => state.bmConsumables.consumableslist);
   const [recordType, setRecordType] = useState(null);
   const [modal, setModal] = useState(false);
@@ -30,72 +28,72 @@ function ConsumablesTable({ consumable, project }) {
   }, [consumables]);
 
   const handleSort = column => {
-    if (!column || consumables.length === 0) return;
-    switch (column) {
-      case 'project': {
-        setSortOrder({ ...sortOrder, project: sortOrder.project === 'asc' ? 'desc' : 'asc' });
-        setIconToDisplay({
-          ...iconToDisplay,
-          project: iconToDisplay.project === faSortUp ? faSortDown : faSortUp,
-        });
-        const factor = sortOrder.project === 'asc' ? 1 : -1;
-        const _consumablesViewData = [...consumables].sort((a, b) => {
-          return factor * a.project.name.localeCompare(b.project.name);
-        });
-        setConsumablesViewData(_consumablesViewData);
-        break;
-      }
-      case 'itemType': {
-        setSortOrder({ ...sortOrder, itemType: sortOrder.itemType === 'asc' ? 'desc' : 'asc' });
-        setIconToDisplay({
-          ...iconToDisplay,
-          itemType: iconToDisplay.itemType === faSortUp ? faSortDown : faSortUp,
-        });
-        const factor = sortOrder.itemType === 'asc' ? 1 : -1;
-        const _consumablesViewData = [...consumables].sort((a, b) => {
-          return factor * a.itemType.name.localeCompare(b.itemType.name);
-        });
-        setConsumablesViewData(_consumablesViewData);
-        break;
-      }
-      default: {
-        break;
-      }
+    if (!column || consumables.length === 0) {
+      return;
     }
+
+    if (project.value !== '0' && column === 'project') {
+      return;
+    }
+
+    const filteredConsumables =
+      project.value !== '0'
+        ? consumables.filter(rec => rec.project?._id === project.value)
+        : consumables;
+
+    const newSortOrder = sortOrder[column] === 'asc' ? 'desc' : 'asc';
+    setSortOrder(prevOrder => ({ ...prevOrder, [column]: newSortOrder }));
+
+    const newIcon = iconToDisplay[column] === faSortUp ? faSortDown : faSortUp;
+    setIconToDisplay(prevIcons => ({ ...prevIcons, [column]: newIcon }));
+
+    const factor = newSortOrder === 'asc' ? 1 : -1;
+    const sortedConsumables = filteredConsumables.sort((a, b) => {
+      const nameA = a[column]?.name || '';
+      const nameB = b[column]?.name || '';
+      return factor * nameA.localeCompare(nameB);
+    });
+
+    setConsumablesViewData(sortedConsumables);
   };
 
   const handleOpenModal = (row, type) => {
-    setSelectedRow(row); // current row data
-    setRecordType(type); // UpdatesEdit/UpdatesView/PurchasesEdit/PurchasesView
+    setSelectedRow(row);
+    setRecordType(type);
     setModal(true);
   };
 
   useEffect(() => {
+    let filteredConsumables = consumables;
     if (project.value !== '0') {
-      const _consumables = consumables.filter(rec => rec.project?.name === project.label);
-      setConsumablesViewData(_consumables);
-    } else {
-      setConsumablesViewData([...consumables]);
+      filteredConsumables = filteredConsumables.filter(rec => rec.project?._id === project.value);
     }
-  }, [project]);
-
-  useEffect(() => {
-    let _consumables;
-    if (project.value === '0' && consumable.value === '0') {
-      setConsumablesViewData([...consumables]);
-    } else if (project.value !== '0' && consumable.value === '0') {
-      _consumables = consumables.filter(rec => rec.project?._id === project.value);
-      setConsumablesViewData([..._consumables]);
-    } else if (project.value === '0' && consumable.value !== '0') {
-      _consumables = consumables.filter(rec => rec.itemType?.name === consumable.value);
-      setConsumablesViewData([..._consumables]);
-    } else {
-      _consumables = consumables.filter(
-        rec => rec.project?._id === project.value && rec.itemType?.name === consumable.value,
+    if (consumable.value !== '0') {
+      filteredConsumables = filteredConsumables.filter(
+        rec => rec.itemType?.name === consumable.value,
       );
-      setConsumablesViewData([..._consumables]);
     }
-  }, [project, consumable]);
+    setConsumablesViewData([...filteredConsumables]);
+  }, [project, consumable, consumables]);
+
+  function conditionalProjectTableHeaderUI() {
+    const isSortingAllowed = project.value === '0';
+    const sortOrderTooltip = isSortingAllowed
+      ? `Sort project ${sortOrder.project === 'asc' ? 'desc' : 'asc'}`
+      : undefined;
+    return (
+      <th onClick={isSortingAllowed ? () => handleSort('project') : undefined}>
+        <div
+          data-tip={sortOrderTooltip}
+          className={`d-flex align-items-stretch ${isSortingAllowed ? 'cursor-pointer' : ''}`}
+        >
+          <div>Project</div>
+          {isSortingAllowed && <FontAwesomeIcon icon={iconToDisplay.project} size="lg" />}
+        </div>
+        {isSortingAllowed && <ReactTooltip />}
+      </th>
+    );
+  }
 
   return (
     <div>
@@ -109,19 +107,10 @@ function ConsumablesTable({ consumable, project }) {
         <Table responsive>
           <thead className="BuildingTableHeaderLine">
             <tr>
-              <th onClick={() => handleSort('project')}>
-                <div
-                  data-tip={`Sort project ${sortOrder.project}`}
-                  className="d-flex  align-self-stretch cusorpointer"
-                >
-                  <div>Project</div>
-                  <FontAwesomeIcon icon={iconToDisplay.project} size="lg" />
-                </div>
-                <ReactTooltip />
-              </th>
+              {conditionalProjectTableHeaderUI()}
               <th onClick={() => handleSort('itemType')}>
                 <div
-                  data-tip={`Sort name ${sortOrder.itemType}`}
+                  data-tip={`Sort name ${sortOrder.itemType === 'asc' ? 'desc' : 'asc'}`}
                   className="d-flex align-items-stretch cusorpointer"
                 >
                   <div>Name</div>
