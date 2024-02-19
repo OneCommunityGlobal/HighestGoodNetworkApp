@@ -26,8 +26,13 @@ function ConsumablesTable({ consumable, project }) {
   }, []);
 
   useEffect(() => {
+    console.log("consumables changed: ", consumables)
     setConsumablesViewData(consumables);
   }, [consumables]);
+
+  // useEffect(()=>{
+  //   console.log("consumablesViewData changed: ", consumablesViewData)
+  // },[consumablesViewData])
 
   const handleSort = column => {
     if (!column || consumables.length === 0) return;
@@ -65,6 +70,7 @@ function ConsumablesTable({ consumable, project }) {
   };
 
   const handleOpenModal = (row, type) => {
+    console.log("handleOpenModal called. row: ", row, ", type: ", type)
     setSelectedRow(row); // current row data
     setRecordType(type); // UpdatesEdit/UpdatesView/PurchasesEdit/PurchasesView
     setModal(true);
@@ -153,7 +159,7 @@ function ConsumablesTable({ consumable, project }) {
 
                     <td className="materials_cell">
                       <button type="button" onClick={() => handleOpenModal(rec, 'UpdatesEdit')}>
-                        <BiPencil />
+                        <BiPencil />  
                       </button>
                       <Button
                         color="primary"

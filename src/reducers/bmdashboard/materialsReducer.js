@@ -19,6 +19,7 @@ const defaultState = {
 }
 
 export const materialsReducer = (materials = defaultState, action) => {
+  // console.log("materialsReducer. mat'ls: ", materials)
   switch (action.type) {
     case SET_MATERIALS:
       {
@@ -56,6 +57,7 @@ export const materialsReducer = (materials = defaultState, action) => {
       }
     case RESET_UPDATE_MATERIAL:
       {
+        console.log("RESET_UPDATE_MATERIAL in reducer. matl: ", materials)
         const obj = {
           loading: false,
           result: null,

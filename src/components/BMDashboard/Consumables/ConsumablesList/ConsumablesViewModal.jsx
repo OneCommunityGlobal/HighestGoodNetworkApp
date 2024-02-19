@@ -1,8 +1,10 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import './Consumables.css';
 import moment from 'moment';
+import UpdateConsumable from "../../UpdateConsumable/UpdateConsumable";
 
 function ConsumablesViewModal({ modal, setModal, record, recordType }) {
+  // console.log("record: ", record)
   if (record) {
     const toggle = () => {
       setModal(false);
@@ -18,9 +20,9 @@ function ConsumablesViewModal({ modal, setModal, record, recordType }) {
         </ModalHeader>
         <ModalBody>
           <div>
-            <Table>
-              <Record record={record} recordType={recordType} />
-            </Table>
+            {/* <Table> */}
+              <Record record={record} recordType={recordType} setModal={setModal} />
+            {/* </Table> */}
           </div>
         </ModalBody>
         <ModalFooter>
@@ -34,10 +36,10 @@ function ConsumablesViewModal({ modal, setModal, record, recordType }) {
 
 export default ConsumablesViewModal;
 
-function Record({ record, recordType }) {
+function Record({ record, recordType, setModal }) {
   if (recordType === 'UpdatesView') {
     return (
-      <>
+      <Table>
         <thead>
           <tr>
             <th>Date</th>
@@ -62,12 +64,12 @@ function Record({ record, recordType }) {
             );
           })}
         </tbody>
-      </>
+      </Table>
     );
   }
   if (recordType === 'PurchasesView') {
     return (
-      <>
+      <Table>
         <thead>
           <tr>
             <th>Date</th>
@@ -92,9 +94,12 @@ function Record({ record, recordType }) {
             );
           })}
         </tbody>
-      </>
+      </Table>
     );
   }
 
+  if (recordType === 'UpdatesEdit') {
+    return <UpdateConsumable record={record} setModal={setModal} />;
+  }
   return null;
 }

@@ -59,7 +59,7 @@ export const Header = props => {
     || props.hasPermission('deleteUserProfile')
     || props.hasPermission('putUserProfileImportantInfo');
   // Badges
-  const canAccessBadgeManagement = props.hasPermission('createBadges');
+  const canCreateBadges = props.hasPermission('createBadges');
   // Projects
   const canAccessProjects = props.hasPermission('postProject')
     || props.hasPermission('deleteProject')
@@ -88,7 +88,6 @@ export const Header = props => {
     || props.hasPermission('putRole')
     || props.hasPermission('deleteRole')
     || props.hasPermission('putUserProfilePermissions')
-
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
@@ -98,7 +97,7 @@ export const Header = props => {
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
 
   const dispatch = useDispatch();
-
+ 
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);

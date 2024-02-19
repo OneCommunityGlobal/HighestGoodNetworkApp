@@ -23,6 +23,7 @@ export const setErrors = payload => {
 }
 
 export const materialUpdateStart = () => {
+  console.log("materialUpdateStart called in Mat'l actions")
   return {
     type: POST_UPDATE_MATERIAL_START
   }
@@ -84,13 +85,17 @@ export const fetchAllMaterials = () => {
 }
 
 export const postMaterialUpdate = (payload) => {
+  console.log("postMaterialUpdate in Mat'l actions called. payload: ", payload)
+  console.log("will make a post req with the above payload to: ", ENDPOINTS.BM_UPDATE_MATERIAL)
   return async dispatch => {
     dispatch(materialUpdateStart())
     axios.post(ENDPOINTS.BM_UPDATE_MATERIAL, payload)
       .then(res => {
+        console.log("post result: ", res.data);
         dispatch(materialUpdateEnd(res.data))
       })
       .catch((error) => {
+        console.log("post error: ",error);
         if (error.response) {
           dispatch(materialUpdateError(error.response.data));
         } else if (error.request) {

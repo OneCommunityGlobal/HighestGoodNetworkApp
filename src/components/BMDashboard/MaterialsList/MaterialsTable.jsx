@@ -29,6 +29,7 @@ export default function MaterialsTable({ filteredMaterials }) {
   const [updateRecord, setUpdateRecord] = useState(null);
 
   const handleEditRecordsClick = (selectedMaterial, type) => {
+    console.log("handleEditRecordsClick. selectedMaterial: ", selectedMaterial, ", type: ", type)
     if (type === 'Update') {
       dispatch(resetMaterialUpdate());
       setUpdateModal(true);
@@ -89,6 +90,7 @@ export default function MaterialsTable({ filteredMaterials }) {
   // };
 
   const doSorting = columnName => {
+    console.log("doSorting called. columnName: ", columnName, ", order: ", order)
     if (order === 'desc') {
       setData(filteredMaterials);
       setIconToDisplay(faSort);
