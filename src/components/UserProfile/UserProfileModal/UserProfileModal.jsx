@@ -321,7 +321,12 @@ const UserProfileModal = props => {
               <Label for="date">Date</Label>
               <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
             </FormGroup>
-
+            <FormGroup>
+              <Label for="createdDate">
+                Created Date:
+                {blueSquare[0]?.createdDate}
+              </Label>
+            </FormGroup>
             <FormGroup>
               <Label for="report">Summary</Label>
               <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} />
@@ -335,6 +340,12 @@ const UserProfileModal = props => {
               <Label for="date">
                 Date:
                 {blueSquare[0]?.date}
+              </Label>
+            </FormGroup>
+            <FormGroup>
+              <Label for="createdDate">
+                Created Date:
+                {blueSquare[0]?.createdDate}
               </Label>
             </FormGroup>
             <FormGroup>

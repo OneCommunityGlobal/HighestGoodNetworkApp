@@ -11,7 +11,12 @@ export const permissionLabels = [
       {
         label: 'See Weekly Summaries',
         key: 'getWeeklySummaries',
-        description: 'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible. ',
+        description: 'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible.',
+      },
+      {
+        label: 'See Highlight for Bios Eligible to be Posted',
+        key: 'highlightEligibleBios',
+        description: 'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
       },
     ]
   },
@@ -50,10 +55,17 @@ export const permissionLabels = [
         description: 'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
       {
+
         label: 'Manage Admin Links in User Profile',
         key: 'manageAdminLinks',
         description: 'Gives the user permission to edit the links of any user on the user profile page. "User Profile" -> "Links button"',
-      }
+      },
+      { 
+        label: 'Manage Time Off Requests',
+        key: 'manageTimeOffRequests',
+        description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
+      },
+
     ]
   },
   {
@@ -158,6 +170,11 @@ export const permissionLabels = [
                 key: 'suggestTask',
                 description: 'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
               },
+              {
+                label: 'Interact with Task "Ready for Review"',
+                key: 'putReviewStatus',
+                description: 'Give the user permission to interact with any "Ready for Review" task button to either mark it as complete or reset it with "More work needed, reset this button" ',
+              }
             ],
           },
         ],
