@@ -11,7 +11,7 @@ import { RoutePermissions } from 'utils/routePermissions';
 // import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
-
+import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
@@ -43,6 +43,7 @@ import ForgotPassword from './components/Login/ForgotPassword';
 // import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 // import BadgeManagement from './components/Badge/BadgeManagement';
+
 
 
 // BM Dashboard
@@ -210,21 +211,24 @@ export default (
 
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
+          
         <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
+        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
+        <BMProtectedRoute path="/bmdashboard/lessonlist/" component={LessonList} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
-        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/inventorytypes" fallback component={InventoryTypesList} />
+
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />

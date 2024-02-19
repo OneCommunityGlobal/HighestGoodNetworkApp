@@ -13,6 +13,7 @@
     "@sentry/browser": "^4.6.6",
     "@tinymce/tinymce-react": "^3.6.0",
     "axios": "^0.21.2",
+    "axios-mock-adapter": "^1.22.0",
     "bootstrap": "^4.5.3",
     "classnames": "^2.2.6",
     "d3": "^7.8.5",
