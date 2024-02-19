@@ -516,7 +516,7 @@ function UserProfile(props) {
     }
     try {
       await props.updateUserProfile(userProfileRef.current);
-
+      
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -525,6 +525,7 @@ function UserProfile(props) {
       setSaved(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
+      return err.message;
     }
   };
  

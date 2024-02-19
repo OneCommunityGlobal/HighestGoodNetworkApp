@@ -35,17 +35,42 @@ const SaveButton = props => {
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
   const [isLoading,setIsLoading] = useState(false);
+  const [isErr, setIsErr] = useState(false);
 
   const handleSave = async () => {
     setModal(true);
     setIsLoading(true);
-    await handleSubmit();
-    setIsLoading(false);
-    setSaved();
+    try {
+      const getReturnVal = await handleSubmit();
+      if (getReturnVal) throw new Error(getReturnVal); // shouldn't return anything if save was success but should return error if it fails
+
+      setIsLoading(false);
+      setIsErr(false);
+      setSaved();
+    } catch (err) {
+      setIsErr(true);
+      setIsLoading(false);
+    }
   };
 
   const closeModal = () => {
     setModal(false);
+  };
+
+  const getMessage = (type) => {
+    if (type == 'message') {
+      if (!isErr) {
+        return isLoading ? stillSavingMessage : randomMessage;
+      }
+  
+      return 'Sorry an error occured while trying to save. Please try again another time.';
+    } else {
+      if (!isErr){
+        return isLoading ? 'Saving...' : 'Success!';
+      }
+
+      return 'Error occured';
+    }
   };
 
   useEffect(() => {
@@ -66,8 +91,8 @@ const SaveButton = props => {
         isOpen={modal}
         closeModal={closeModal}
         userProfile={userProfile}
-        modalTitle={isLoading ? 'Saving...' : 'Success!'}
-        modalMessage={isLoading ? stillSavingMessage : randomMessage}
+        modalTitle={getMessage('title')}
+        modalMessage={getMessage('message')}
         disabled={isLoading}
       />
       <Button
