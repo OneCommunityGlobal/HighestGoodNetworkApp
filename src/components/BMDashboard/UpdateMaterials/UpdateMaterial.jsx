@@ -376,7 +376,7 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             <FormGroup row className="d-flex justify-content-right">
               <Button
                 disabled={postMaterialUpdateResult.loading || updateRecord.newAvailable < 0}
-                className="materialButtonBg"
+                className="materialButtonBg"  
                 onClick={e => submitHandler(e)}
               >
                 Update Material

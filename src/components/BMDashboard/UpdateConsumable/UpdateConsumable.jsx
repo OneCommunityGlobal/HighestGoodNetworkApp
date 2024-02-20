@@ -14,16 +14,13 @@ function UpdateConsumable({record, setModal}) {
   const dispatch = useDispatch();
   // const postConsumableUpdateResult = useSelector(state => state.consumables.updateConsumables); 
   const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables); 
-  // consumables not in state at all.
-  // state.consumables.updateConsumables needs to be {loading: false, result: null, error: undefined} etc 
-  // console.log("@@@ postConsumableUpdateResult: ", postConsumableUpdateResult)
 
   const { purchaseRecord, stockAvailable, updateRecord: _, ...rest } = record;
   // console.log("purchaseRecord: ", purchaseRecord, ". stockAvailable: ", stockAvailable)
   const recordInitialState = {
     date: moment(new Date()).format('YYYY-MM-DD'),
-    quantityUsed: 0,
-    quantityWasted: 0,
+    quantityUsed: '0',
+    quantityWasted: '0',
     QtyUsedLogUnit: 'unit',
     QtyWastedLogUnit: 'unit',
     consumable: rest,
@@ -36,18 +33,18 @@ function UpdateConsumable({record, setModal}) {
   };
   const [updateRecord, setUpdateRecord] = useState(recordInitialState);
   const [validations, setValidations] = useState(validationsInitialState);
-  const [availableCount, setAvailableCount ] = useState(undefined);
+  const [availableCount, setAvailableCount] = useState(undefined);
+  const [changeOccured, setChangeOccured] = useState(false);
 
   useEffect(() => {
-    // console.log("FIRST LOAD. updateRecord and validations set to emty objects")
     setUpdateRecord({ ...recordInitialState });
     setValidations({ ...validationsInitialState });
-  }, []); //used to be cancel in Matl's
+  }, []); 
 
   useEffect(() => {
     // console.log("useEff, postConsumableUpdateResult changed: ",postConsumableUpdateResult)
     if (postConsumableUpdateResult.loading === false && postConsumableUpdateResult.error === true) {
-      console.log("error in postConsumableUpdateResult")
+      // console.log("error in postConsumableUpdateResult")
       toast.error(`${postConsumableUpdateResult.result}`);
       setModal(false);
     } else if (
@@ -60,104 +57,84 @@ function UpdateConsumable({record, setModal}) {
   }, [postConsumableUpdateResult]);
 
   useEffect(()=>{
-    // console.log("useEff, updateRecord changed: ",updateRecord)
-    // if(updateRecord.quantityUsed || updateRecord.quantityWasted){
-    //   console.log("updateRecord changed with truthy values")
-    
-    // validate(updateRecord.quantityUsed,
-    //   updateRecord.quantityWasted,
-    //       updateRecord.QtyUsedLogUnit,
-    //       updateRecord.QtyWastedLogUnit);
-    
-    // }
-
+    if(updateRecord.quantityUsed !== "0" || updateRecord.quantityWasted !== "0"){
+      setChangeOccured(true); 
+    }else{
+      setChangeOccured(false); 
+    }
   },[updateRecord]);
 
-  const validate = (_qtyUsed, _qtyWasted, QtyUsedLogUnit, QtyWastedLogUnit) => {
-    // console.log("VALIDATE called")
-    // console.log("_qtyUsed: ", _qtyUsed, ", _qtyWasted: ", _qtyWasted, ", QtyUsedLogUnit: ", QtyUsedLogUnit, ", QtyWastedLogUnit: ", QtyWastedLogUnit)
-    const qtyUsed = _qtyUsed === '' ? 0 : _qtyUsed;
-    const qtyWasted = _qtyWasted === '' ? 0 : _qtyWasted;
-    const available = record?.stockAvailable; //replace with stockAvailable 
-    let valUsed = +qtyUsed; //is plus really necessary? test w/ and w/o
-    let valWasted = +qtyWasted; //coercion to number?
-    // console.log("COERCED _qtyUsed: ", _qtyUsed, ", _qtyWasted: ", _qtyWasted, ", valUsed: ", valUsed, ", valWasted: ", valWasted, ", available: ", available)
-    if (QtyUsedLogUnit === 'percent') {
-      valUsed = (+qtyUsed / 100) * available;  //replace with stockAvailable 
-      // console.log("QtyUsedLogUnit is %. valUsed: ", valUsed);
-    }
-    if (QtyWastedLogUnit === 'percent') {
-      valWasted = (+qtyWasted / 100) * available;  //replace with stockAvailable when done testing validation UI
-      // console.log("QtyWastedLogUnit is %. valUsed: ", valWasted);
-    }
-    valUsed = Number.parseFloat(valUsed.toFixed(4));
-    valWasted = Number.parseFloat(valWasted.toFixed(4));
+  // useEffect(()=>{
+  //   console.log("changeOccured: ", changeOccured)
+  // },[changeOccured])
 
+  const validate = (_qtyUsed, _qtyWasted, QtyUsedLogUnit, QtyWastedLogUnit) => {
+  
+    let unitsUsed = _qtyUsed === '' ? 0 : parseFloat(_qtyUsed);
+    let unitsWasted = _qtyWasted === '' ? 0 : parseFloat(_qtyWasted);
+    if(QtyUsedLogUnit === "percent"){
+      unitsUsed = (stockAvailable / 100) * unitsUsed;
+    }
+
+    if(QtyWastedLogUnit === "percent"){
+      unitsWasted = (stockAvailable / 100) * unitsWasted;
+    }
     const tempValidations = { ...validations };
-    
-    if (valUsed > available) {  //replace with stockAvailable  
+
+
+    if (unitsUsed > stockAvailable){
       tempValidations.quantityUsed = 'Quantity Used exceeds the available stock';
     } else {
       tempValidations.quantityUsed = '';
     }
 
-    if (valWasted > available) { //replace with stockAvailable 
+    if (unitsWasted > stockAvailable){
       tempValidations.quantityWasted = 'Quantity Wasted exceeds the available stock';
     } else {
       tempValidations.quantityWasted = '';
     }
 
-    if (valUsed + valWasted > available) { //replace with stockAvailable 
-      tempValidations.quantityTogether = `Sum of Used and Wasted values exceeds available stock with a value of ${valUsed +
-        valWasted}`;
+    if (unitsUsed + unitsWasted > stockAvailable){
+      tempValidations.quantityTogether = `Sum of Used and Wasted values exceeds available stock with a value of ${unitsUsed +
+        unitsWasted}`;
     } else {
       tempValidations.quantityTogether = '';
     }
-    console.log("tempValidations: ", tempValidations)
-    setValidations({ ...tempValidations }); //test to see if this works the same way 
 
-    let newAvailable = available - (valUsed + valWasted);
-    console.log("newAvailable: ", newAvailable)
-
-    if (newAvailable !== available) {
-      newAvailable = Number.parseFloat(newAvailable.toFixed(4));
-      setAvailableCount(newAvailable);
-      // const tempRecord = { ...updateRecord };
-      // tempRecord.newAvailable = newAvailable; //rewrite this to only update on field
-      // console.log("tempRecord that updates newAvailable: ", tempRecord)
-      // setUpdateRecord({ ...tempRecord });
-    } else {
-      setAvailableCount(newAvailable);
-      // const tempRecord = { ...updateRecord };
-      // tempRecord.newAvailable = '';
-      // setUpdateRecord({ ...tempRecord });
-    }
+    setValidations({ ...tempValidations }); 
+    const newAvailable = stockAvailable - (unitsUsed + unitsWasted)
+    setAvailableCount(newAvailable);
   };
 
   const submitHandler = e => {
-    e.preventDefault();
+    // e.preventDefault(); //necessary?
+
     console.log("updateRecord to POST to the backend: ", updateRecord)
-    // dispatch(postConsumableUpdate(updateRecord));
+    if(validations.quantityUsed === '' &&
+        validations.quantityWasted === '' &&
+        validations.quantityTogether === '' &&
+        changeOccured
+        ){
+          const postObject = {
+            quantityUsed: updateRecord.quantityUsed === ''? 0 : parseFloat(updateRecord.quantityUsed),
+            QtyUsedLogUnit: updateRecord.QtyUsedLogUnit,
+            quantityWasted: updateRecord.quantityWasted === '' ? 0 : parseFloat(updateRecord.quantityWasted),
+            QtyWastedLogUnit: updateRecord.QtyWastedLogUnit,
+          };
+          console.log("postObject: ", postObject)
+          dispatch(postConsumableUpdate(postObject));//works fine
+        }else{
+          toast.error("Invalid Data");
+        };  
   };
 
 
   const changeRecordHandler = e => {
-    const { value, name } = e.target; //convert value to Number! 
-    // const name = e.target.name;
-    // const value = Number(e.target.value)
-    if (e.target.name === 'quantityWasted' || e.target.name === 'quantityUsed') {
-      //some decimal check here that I dont think did anything. Is any of this necessary? Selector wont go lover than 0 thanks to Reactstrap
-      if (Number(value) < 0) return;
-    }
-    const tempRecord = { ...updateRecord } //ALL THIS WORKS TOO, perfectly fine JS...
+    const { value, name } = e.target; 
+    const tempRecord = { ...updateRecord } 
     tempRecord[name] = value;
-    // setUpdateRecord(tempRecord)
-//ALSO WORKS
-    // const tempRecord = {[name]: value}
-    // console.log("tempRecord updated: ", tempRecord)
-    // setUpdateRecord((prevValue)=>{return {...prevValue, ...tempRecord}})
 
-    // updateRecord[e.target.name] = value;
+    setUpdateRecord(tempRecord);
 
     validate(
       tempRecord.quantityUsed,
@@ -165,44 +142,6 @@ function UpdateConsumable({record, setModal}) {
       tempRecord.QtyUsedLogUnit,
       tempRecord.QtyWastedLogUnit,
     );
-
-    // setUpdateRecord((prevValue)=>{
-    //   return {...prevValue, ...tempRecord}
-    // })
-    setUpdateRecord(tempRecord);
-
-
-    // if (e.target.name === 'quantityUsed') {
-    //   validate(
-    //     e.target.value,
-    //     updateRecord.quantityWasted,
-    //     updateRecord.QtyUsedLogUnit,
-    //     updateRecord.QtyWastedLogUnit,
-    //   );
-    // } else if (e.target.name === 'quantityWasted') {
-    //   validate(
-    //     updateRecord.quantityUsed,
-    //     e.target.value,
-    //     updateRecord.QtyUsedLogUnit,
-    //     updateRecord.QtyWastedLogUnit,
-    //   );
-    // } // unit change
-    // else if (e.target.name === 'QtyUsedLogUnit') {
-    //   validate(
-    //     updateRecord.quantityUsed,
-    //     updateRecord.quantityWasted,
-    //     e.target.value,
-    //     updateRecord.QtyWastedLogUnit,
-    //   );
-    // } else if (e.target.name === 'QtyWastedLogUnit') {
-    //   validate(
-    //     updateRecord.quantityUsed,
-    //     updateRecord.quantityWasted,
-    //     updateRecord.QtyUsedLogUnit,
-    //     e.target.value,
-    //   );
-    // }
-
   }
 
   return (
@@ -371,14 +310,14 @@ function UpdateConsumable({record, setModal}) {
 
             <FormGroup row className="d-flex justify-content-right">
               <Button
-                disabled={postConsumableUpdateResult.loading || availableCount < 0}
+                disabled={postConsumableUpdateResult.loading || availableCount < 0 || changeOccured === false}
                 className="consumableButtonBg"
                 onClick={e => submitHandler(e)}
               >
                 Update Consumable
               </Button>
             </FormGroup>
-
+           
             </Form>
             </div>
           </div>
