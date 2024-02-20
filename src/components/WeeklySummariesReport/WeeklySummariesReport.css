@@ -106,3 +106,26 @@
   cursor: pointer;
   margin: 2px 2px;
 }
+
+.filter-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter-style {
+  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+}
+
+.custom-control-label:hover {
+  cursor: pointer;
+}
+
+.margin-right {
+  margin-right: 20px;
+}
+
+.custom-control-label {
+  margin-left: 8px;
+}
