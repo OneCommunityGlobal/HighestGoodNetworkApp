@@ -92,7 +92,7 @@ function Task(props) {
     ];
     let colors = {};
     let colorIndex = {};
-    // Calculate initials and map colors
+    
     for (let name of names) {
       const initials = name
         .split(' ')
@@ -104,16 +104,16 @@ function Task(props) {
       if (!colorIndex[initials]) {
         colors[name] = {
           color: '#bbb', // Base color
-          initials: initials, // Store initials for reference
+          initials: initials, 
         };
         colorIndex[initials] = 1;
       } else {
         // If initials have been encountered, assign a new color
         colors[name] = {
-          color: colorsHex[Math.floor(Math.random() * colorsHex.length)] + '33', // Assign color
-          initials: initials, // Store initials for reference
+          color: colorsHex[Math.floor(Math.random() * colorsHex.length)] + '30', 
+          initials: initials, 
         };
-        colorIndex[initials]++; // Increment color index
+        colorIndex[initials]++; 
       }
     }
     return colors;
