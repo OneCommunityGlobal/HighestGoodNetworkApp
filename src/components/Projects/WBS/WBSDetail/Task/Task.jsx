@@ -23,6 +23,9 @@ function Task(props) {
   // props from store
   const { tasks } = props;
 
+  const names = props.resources.map(element => element.name);
+  const colors_objs = assignColorsToInitials(names);
+
   const startedDate = new Date(props.startedDatetime);
   const dueDate = new Date(props.dueDatetime);
 
@@ -35,29 +38,6 @@ function Task(props) {
   const [children, setChildren] = useState([]);
   const [showMoreResources, setShowMoreResources] = useState(false);
   const tableRowRef = useRef();
-
-  const initialsSet = new Set();
-  const colors = [
-    '#FF0000', // red
-    '#0000FF', // blue
-    '#00FF00', // green
-    '#FFFF00', // yellow
-    '#FFA500', // orange
-    '#800080', // purple
-    '#FFC0CB', // pink
-    '#00FFFF', // cyan
-    '#FF00FF', // magenta
-    '#008080', // teal
-    '#00FF00', // lime
-    '#A52A2A', // brown
-    '#000000', // black
-    '#FFFFFF', // white
-    '#C0C0C0', // silver
-    '#FFD700', // gold
-    '#000080', // navy
-    '#800000', // maroon
-    '#808000', // olive
-  ];
 
   /*
    * -------------------------------- functions --------------------------------
@@ -90,16 +70,53 @@ function Task(props) {
     props.deleteWBSTask(taskId, mother);
   };
 
-  //Function to get background color
-  function getBackgroundColor(initials) {
-    let color = '#bbb';
-    if (initialsSet.has(initials)) {
-      const count = Math.floor(Math.random() * colors.length - 1);
-      color = colors[count % colors.length];
-    } else {
-      initialsSet.add(initials);
+  function assignColorsToInitials(names) {
+    const colorsHex = [
+      '#FF0000', // red
+      '#0000FF', // blue
+      '#00FF00', // green
+      '#FFFF00', // yellow
+      '#FFA500', // orange
+      '#800080', // purple
+      '#FFC0CB', // pink
+      '#00FFFF', // cyan
+      '#FF00FF', // magenta
+      '#008080', // teal
+      '#00FF00', // lime
+      '#A52A2A', // brown
+      '#000000', // black
+      '#FFD700', // gold
+      '#000080', // navy
+      '#800000', // maroon
+      '#808000', // olive
+    ];
+    let colors = {};
+    let colorIndex = {};
+    // Calculate initials and map colors
+    for (let name of names) {
+      const initials = name
+        .split(' ')
+        .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
+        .map(n => n[0])
+        .join('')
+        .toUpperCase();
+      // If the initials haven't been encountered yet, assign a base color
+      if (!colorIndex[initials]) {
+        colors[name] = {
+          color: '#bbb', // Base color
+          initials: initials, // Store initials for reference
+        };
+        colorIndex[initials] = 1;
+      } else {
+        // If initials have been encountered, assign a new color
+        colors[name] = {
+          color: colorsHex[Math.floor(Math.random() * colorsHex.length)] + '33', // Assign color
+          initials: initials, // Store initials for reference
+        };
+        colorIndex[initials]++; // Increment color index
+      }
     }
-    return color + '33';
+    return colors;
   }
 
   /*
@@ -125,11 +142,6 @@ function Task(props) {
   useEffect(() => {
     setIsOpen(props.openAll);
   }, [props.openAll]);
-
-  useEffect(() => {
-    //Clearing the initials set 
-    initialsSet.clear();
-  });
 
   return (
     <>
@@ -210,8 +222,8 @@ function Task(props) {
                         .map(n => n[0])
                         .join('')
                         .toUpperCase();
-                        //getting background color here
-                      const backgroundColor = getBackgroundColor(initials);
+                      //getting background color here
+                      const bg = colors_objs[name].color;
                       return (
                         <a
                           key={`res_${i}`}
@@ -222,7 +234,7 @@ function Task(props) {
                           rel="noreferrer"
                         >
                           {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
-                            <span className="dot" style={{ backgroundColor }}>
+                            <span className="dot" style={{ backgroundColor: bg }}>
                               {initials}{' '}
                             </span>
                           ) : (
