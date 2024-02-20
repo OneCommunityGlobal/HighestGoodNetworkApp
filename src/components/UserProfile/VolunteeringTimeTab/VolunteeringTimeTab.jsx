@@ -205,9 +205,10 @@ const TotalIntangibleHours = props => {
       data-testid="totalIntangibleHours"
       value={props.userProfile.totalIntangibleHrs ?? 0}
       onChange={e => {
+        const newValue = Math.max(Number(e.target.value), 0).toFixed(2);
         props.setUserProfile({
           ...props.userProfile,
-          totalIntangibleHrs: Math.max(Number(e.target.value), 0),
+          totalIntangibleHrs: Number(newValue),
         });
       }}
       placeholder="Total Intangible Hours"
@@ -440,41 +441,40 @@ const ViewTab = props => {
             Refresh
           </Button>
         </Col>
-
-        {props?.userProfile?.hoursByCategory
-          ? Object.keys(userProfile.hoursByCategory).map(key => (
-              <React.Fragment key={'hours-by-category-' + key}>
-                <Row className="volunteering-time-row">
-                  <Col md="6">
-                    <Label className="hours-label">
-                      {key !== 'unassigned' ? (
-                        <>Total Tangible {capitalize(key)} Hours</>
-                      ) : (
-                        <>Total Unassigned Category Hours</>
-                      )}
-                    </Label>
-                  </Col>
-                  <Col md="6">
-                    {canEdit ? (
-                      <Input
-                        type="number"
-                        pattern="^\d*\.?\d{0,2}$"
-                        id={`${key}Hours`}
-                        step=".01"
-                        min="0"
-                        value={roundToTwo(userProfile.hoursByCategory[key])}
-                        onChange={e => handleOnChangeHours(e, key)}
-                        placeholder={`Total Tangible ${capitalize(key)} Hours`}
-                      />
-                    ) : (
-                      <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
-                    )}
-                  </Col>
-                </Row>
-              </React.Fragment>
-            ))
-          : []}
       </Row>
+      {props?.userProfile?.hoursByCategory
+        ? Object.keys(userProfile.hoursByCategory).map(key => (
+            <React.Fragment key={'hours-by-category-' + key}>
+              <Row className="volunteering-time-row">
+                <Col md="6">
+                  <Label className="hours-label">
+                    {key !== 'unassigned' ? (
+                      <>Total Tangible {capitalize(key)} Hours</>
+                    ) : (
+                      <>Total Unassigned Category Hours</>
+                    )}
+                  </Label>
+                </Col>
+                <Col md="6">
+                  {canEdit ? (
+                    <Input
+                      type="number"
+                      pattern="^\d*\.?\d{0,2}$"
+                      id={`${key}Hours`}
+                      step=".01"
+                      min="0"
+                      value={roundToTwo(userProfile.hoursByCategory[key])}
+                      onChange={e => handleOnChangeHours(e, key)}
+                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                    />
+                  ) : (
+                    <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
+                  )}
+                </Col>
+              </Row>
+            </React.Fragment>
+          ))
+        : []}
     </div>
   );
 };
