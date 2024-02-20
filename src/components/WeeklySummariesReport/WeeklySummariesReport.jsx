@@ -285,7 +285,6 @@ export class WeeklySummariesReport extends Component {
     const { selectedCodes, selectedColors, summaries, tableData, COLORS} = this.state;
     const data = [];
     let temptotal = 0;
-    console.log('selected_code', selectedCodes)
     const structuredTeamTableData = [];
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
@@ -295,8 +294,8 @@ export class WeeklySummariesReport extends Component {
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)),
     );
-    if (selectedCodes[0]?.value === '' || selectedCodes.length === 52) {
-      if (selectedCodes.length === 52) {
+    if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
+      if (selectedCodes.length >= 52) {
         selectedCodes.forEach(code => {
           if (code.value === '') return;
           data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
@@ -310,7 +309,7 @@ export class WeeklySummariesReport extends Component {
           structuredTeamTableData.push({team: code.value, color, members,})
         })
       }else{
-        data.push({name: 'Select All With NO Code', value: temp.filter(summary => summary.teamCode === '').length})
+        data.push({name: 'All With NO Code', value: temp.filter(summary => summary.teamCode === '').length})
         const team = tableData['noCodeLabel'];
         const index = selectedCodesArray.indexOf('noCodeLabel');
         const color = COLORS[index % COLORS.length]
@@ -322,16 +321,18 @@ export class WeeklySummariesReport extends Component {
       }
     }else{
     selectedCodes.forEach(code => {
-      
       data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
-      const team = tableData[code.value];
+      let team = tableData[code.value];
       const index = selectedCodesArray.indexOf(code.value);
       const color = COLORS[index % COLORS.length]
       const members = [];
-      team.forEach(member => {
-         members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
-       })
-      structuredTeamTableData.push({team: code.value, color, members,})
+      if (team !== undefined){
+        team.forEach(member => {
+          members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
+        })
+       structuredTeamTableData.push({team: code.value, color, members,})
+      }
+      
     
 
      })

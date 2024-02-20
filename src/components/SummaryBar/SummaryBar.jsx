@@ -77,7 +77,7 @@ const SummaryBar = props => {
     try {
       const response = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId));
       const newUserTasks = response.data;
-      setTasks(newUserTasks.length);
+      setTasks(newUserTasks?.length);
     } catch (err) {
       console.log('User Tasks not loaded.');
     }
@@ -90,7 +90,7 @@ const SummaryBar = props => {
       getUserTask();
     } else {
       setUserProfile(gsUserprofile);
-      setTasks(gsUserTasks.length);
+      setTasks(gsUserTasks?.length);
     }
   }, [asUser]);
 
@@ -105,7 +105,7 @@ const SummaryBar = props => {
 
   //Get infringement count from userProfile
   const getInfringements = () => {
-    return userProfile && userProfile.infringements ? userProfile.infringements.length : 0;
+    return userProfile && userProfile.infringements ? userProfile.infringements?.length : 0;
   };
 
   //Get badges count from userProfile
@@ -525,7 +525,7 @@ const SummaryBar = props => {
                           value={'delete'}
                           required
                           disabled={
-                            extraFieldForSuggestionForm === 'field' && inputFiled.length === 0
+                            extraFieldForSuggestionForm === 'field' && inputFiled?.length === 0
                           }
                         />{' '}
                         Delete
@@ -608,7 +608,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                 )}
-                {inputFiled.length > 0 &&
+                {inputFiled?.length > 0 &&
                   inputFiled.map((item, index) => (
                     <FormGroup key={index}>
                       <Label for="title">{item} </Label>
