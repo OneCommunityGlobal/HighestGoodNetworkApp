@@ -83,7 +83,7 @@ export default function Timer() {
   const [showTimer, setShowTimer] = useState(false);
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
-  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0, isTangible: true });
+  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
 
@@ -245,7 +245,7 @@ export default function Timer() {
 
   useEffect(() => {
     checkRemainingTime();
-    setLogTimer({ hours: logHours, minutes: logMinutes, isTangible: true });
+    setLogTimer({ hours: logHours, minutes: logMinutes });
   }, [remaining]);
 
   useEffect(() => {
