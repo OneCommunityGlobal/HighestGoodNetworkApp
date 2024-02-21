@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, FormGroup, FormFeedback, FormText, Label, Input, Button } from 'reactstrap';
+import { Form, FormGroup, FormFeedback, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
@@ -13,6 +13,8 @@ const FuelTypes = {
   natg: 'Natural Gas',
   etha: 'Ethanol',
 };
+
+// const [inputText, setInputText] = useState('');
 
 const schema = Joi.object({
   name: Joi.string().required(),
@@ -29,16 +31,16 @@ export default function AddTypeForm() {
   const [errInput, setErrInput] = useState('');
   const [errType, setErrType] = useState('');
 
-  const handleChange = ({ target }) => {
+  const handleChange = event => {
     setErrInput('');
-    if (target.name === 'name') {
-      setName(target.value);
+    if (event.target.name === 'name') {
+      setName(event.target.value);
     }
-    if (target.name === 'desc') {
-      setDesc(target.value);
+    if (event.target.name === 'desc') {
+      setDesc(event.target.value);
     }
-    if (target.name === 'fuel') {
-      setFuel(target.value);
+    if (event.target.name === 'fuel') {
+      setFuel(event.target.value);
     }
   };
 
@@ -94,7 +96,8 @@ export default function AddTypeForm() {
           invalid={errInput === 'desc'}
           onChange={handleChange}
         />
-        {!errInput && <FormText>Max 150 characters</FormText>}
+        <p style={{ color: desc.length > 150 ? 'red' : 'black' }}>Character {desc.length}/150</p>
+        {/* {!errInput && <FormText>Max 150 characters</FormText>} */}
         <FormFeedback>
           {errType === 'string.max'
             ? 'Exceeds maximum character limit (150).'
