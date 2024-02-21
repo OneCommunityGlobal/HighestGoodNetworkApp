@@ -36,11 +36,6 @@ export default function PasswordInputModal({
     setPasswordField(event.target.value);
   };
 
-  const onSubmit = () => {
-    setPasswordField('');
-    authorizeWeeklySummariesButton(passwordField);
-  };
-
   const authorizeWeeklySummariesButton = async () => {
     const url = ENDPOINTS.AUTHORIZE_WEEKLY_SUMMARY_REPORTS();
     try {
@@ -61,6 +56,11 @@ export default function PasswordInputModal({
       checkForValidPwd(false);
       dispatch(authorizeWeeklySummariesReportError('Incorrect Password! Unauthorised User!'));
     }
+  };
+
+  const onSubmit = () => {
+    setPasswordField('');
+    authorizeWeeklySummariesButton(passwordField);
   };
 
   return (
