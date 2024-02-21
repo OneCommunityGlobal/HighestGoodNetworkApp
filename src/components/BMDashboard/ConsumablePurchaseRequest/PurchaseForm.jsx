@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
@@ -12,10 +11,7 @@ import './PurchaseForm.css';
 
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
-  const consumables = useSelector(state =>
-    state.bmInvTypes.filter(item => item.category === 'Consumable'),
-  );
-  const history = useHistory();
+  const consumables = useSelector(state => state.bmInvTypes.list);
 
   const [projectId, setProjectId] = useState('');
   const [consumableId, setConsumableId] = useState('');
@@ -66,15 +62,18 @@ export default function PurchaseForm() {
     }
     return toast.error(`${response.status} - ${response.statusText}`);
   };
+
   const handleCancel = e => {
     e.preventDefault();
-    history.goBack();
+    window.location.href = '/bmdashboard/consumables';
   };
 
   return (
     <Form className="purchase-consumable-form" onSubmit={handleSubmit}>
       <FormGroup>
-        <Label for="select-project">Project</Label>
+        <Label for="select-project">
+          Project <span className="mandatory">*</span>
+        </Label>
         <Input
           id="select-project"
           type="select"
@@ -96,7 +95,9 @@ export default function PurchaseForm() {
         </Input>
       </FormGroup>
       <FormGroup>
-        <Label for="select-consumable">Consumable</Label>
+        <Label for="select-consumable">
+          Consumable <span className="mandatory">*</span>
+        </Label>
         <Input
           id="select-consumable"
           type="select"
@@ -118,7 +119,9 @@ export default function PurchaseForm() {
       </FormGroup>
       <div className="purchase-consumable-flex-group">
         <FormGroup className="flex-group-qty">
-          <Label for="input-quantity">Quantity</Label>
+          <Label for="input-quantity">
+            Quantity<span className="mandatory">*</span>
+          </Label>
           <div className="flex-group-qty-container">
             <Input
               id="input-quantity"
@@ -133,7 +136,9 @@ export default function PurchaseForm() {
           </div>
         </FormGroup>
         <FormGroup>
-          <Label for="input-priority">Priority</Label>
+          <Label for="input-priority">
+            Priority<span className="mandatory">*</span>
+          </Label>
           <Input
             id="input-priority"
             type="select"

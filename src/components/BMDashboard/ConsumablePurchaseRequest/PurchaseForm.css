@@ -17,7 +17,7 @@
 }
 
 .flex-group-qty {
-    width: 50%;
+    width: 10%;
 }
 
 .flex-group-qty-container {
@@ -50,3 +50,8 @@
         width: auto;
     }
 }
+
+.mandatory {
+    color: red;
+    margin-left: 2px; 
+  }
