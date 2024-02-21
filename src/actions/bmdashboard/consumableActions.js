@@ -68,16 +68,18 @@ export const postConsumableUpdate = (payload) => {
       })
       .catch((error) => {
         console.log("post error: ",error);
-        if (error.response) {
-          console.log("error.response");
-          dispatch(consumableUpdateError(error.response.data));
-        } else if (error.request) {
-          console.log("error.request");
-          dispatch(consumableUpdateError(error.request));
-        } else {
-          console.log("error else");
-          dispatch(consumableUpdateError(error));
-        }
-      })
+        dispatch(consumableUpdateError(error));
+        // if (error.response) {
+        //   console.log("error.response");
+        //   // dispatch(consumableUpdateError(error.response.data));
+        //   dispatch(consumableUpdateError(error));
+        // } else if (error.request) {
+        //   console.log("error.request");
+        //   dispatch(consumableUpdateError(error.request));
+        // } else {
+        //   console.log("error else");
+        //   dispatch(consumableUpdateError(error));
+        // }
+      });
   }
 }

@@ -45,6 +45,7 @@ function UpdateConsumable({record, setModal}) {
     // console.log("useEff, postConsumableUpdateResult changed: ",postConsumableUpdateResult)
     if (postConsumableUpdateResult.loading === false && postConsumableUpdateResult.error === true) {
       // console.log("error in postConsumableUpdateResult")
+      console.log("postConsumableUpdateResult.result (err case): ", postConsumableUpdateResult.result)
       toast.error(`${postConsumableUpdateResult.result}`);
       setModal(false);
     } else if (
@@ -57,6 +58,7 @@ function UpdateConsumable({record, setModal}) {
   }, [postConsumableUpdateResult]);
 
   useEffect(()=>{
+    console.log("updateRecord: ", updateRecord)
     if(updateRecord.quantityUsed !== "0" || updateRecord.quantityWasted !== "0"){
       setChangeOccured(true); 
     }else{
@@ -115,11 +117,15 @@ function UpdateConsumable({record, setModal}) {
         validations.quantityTogether === '' &&
         changeOccured
         ){
-          const postObject = {
+          const postObject = {//might not be wort it, just post updateRecord? do conversion on the backend though
+            date: updateRecord.date,
             quantityUsed: updateRecord.quantityUsed === ''? 0 : parseFloat(updateRecord.quantityUsed),
             QtyUsedLogUnit: updateRecord.QtyUsedLogUnit,
             quantityWasted: updateRecord.quantityWasted === '' ? 0 : parseFloat(updateRecord.quantityWasted),
             QtyWastedLogUnit: updateRecord.QtyWastedLogUnit,
+            stockAvailable: stockAvailable,
+            consumable: updateRecord.consumable,
+
           };
           console.log("postObject: ", postObject)
           dispatch(postConsumableUpdate(postObject));//works fine
