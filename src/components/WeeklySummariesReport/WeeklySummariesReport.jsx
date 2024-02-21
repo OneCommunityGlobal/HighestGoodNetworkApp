@@ -1,3 +1,6 @@
+/* eslint-disable no-dupe-class-members */
+/* eslint-disable react/sort-comp */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
@@ -29,6 +32,13 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
+import PasswordInputModal from './PasswordInputModal';
+import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import {
+  getSummaryRecipients,
+  addSummaryRecipient,
+  deleteSummaryRecipient,
+} from '../../actions/weeklySummariesReportRecepients';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -53,6 +63,11 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: navItems[1],
+      passwordModalOpen: false,
+      summaryRecepientsPopupOpen: false,
+      summaryRecepients: [],
+      tempArr: [],
+      isValidPwd: true,
       badges: [],
       loadBadges: false,
       hasSeeBadgePermission: false,
@@ -81,6 +96,7 @@ export class WeeklySummariesReport extends Component {
     } = this.props;
     // 1. fetch report
     const res = await getWeeklySummariesReport();
+    await this.props.getSummaryRecipients();
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
@@ -157,6 +173,7 @@ export class WeeklySummariesReport extends Component {
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
       badges: allBadgeData,
+      summaryRecepients: this.props.recepientsArr,
       hasSeeBadgePermission: badgeStatusCode === 200,
       filteredSummaries: summariesCopy,
       colorOptions,
@@ -165,6 +182,7 @@ export class WeeklySummariesReport extends Component {
     });
 
     await getInfoCollections();
+
     const role = authUser?.role;
     const roleInfoNames = this.getAllRoles(summariesCopy);
     const allRoleInfo = [];
@@ -182,6 +200,20 @@ export class WeeklySummariesReport extends Component {
       });
     }
     this.setState({ allRoleInfo });
+  }
+
+  getDetails = async () => {
+    const data = await this.props.getSummaryRecipients();
+    this.setState({ summaryRecepients: data });
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.tempArr !== this.state.tempArr) {
+      this.getDetails();
+    }
+    if (prevProps.recepientsArr !== this.props.recepientsArr) {
+      this.setState({ summaryRecepients: this.props.recepientsArr });
+    }
   }
 
   componentDidUpdate(preProps, preState) {
@@ -332,6 +364,69 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
+  onSummaryRecepientsPopupClose = () => {
+    this.setState({ summaryRecepientsPopupOpen: false });
+  };
+
+  onAddUser = async user => {
+    const result = await this.props.addSummaryRecipient(user._id);
+    this.setState(prevState => ({
+      tempArr: [...prevState.tempArr, user],
+    }));
+  };
+
+  // alter memberAutoComplete function
+  // finish delete function for frontend and backend and test cron job
+  onDeleteUser = async userId => {
+    await this.props.deleteSummaryRecipient(userId);
+  };
+
+  setSummaryRecepientsPopup = val => {
+    this.setState({ summaryRecepientsPopupOpen: val });
+  };
+
+  popUpElements = () => {
+    return (
+      <WeeklySummaryRecipientsPopup
+        open={this.state.summaryRecepientsPopupOpen}
+        onClose={this.onSummaryRecepientsPopupClose}
+        summaries={this.props.summaries}
+        onDeleteClick={this.onDeleteUser}
+        onAddUser={this.onAddUser}
+        recipients={this.state.summaryRecepients}
+      />
+    );
+  };
+
+  onpasswordModalClose = () => {
+    this.setState({
+      passwordModalOpen: false,
+    });
+  };
+
+  checkForValidPwd = booleanVal => {
+    this.setState({ isValidPwd: booleanVal });
+  };
+
+  passwordInputModalToggle = () => {
+    return (
+      <PasswordInputModal
+        open={this.state.passwordModalOpen}
+        onClose={this.onpasswordModalClose}
+        checkForValidPwd={this.checkForValidPwd}
+        isValidPwd={this.state.isValidPwd}
+        setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
+      />
+    );
+  };
+
+  onClickRecepients = () => {
+    this.setState({
+      passwordModalOpen: true,
+    });
+    this.checkForValidPwd(true);
+  };
+
   render() {
     const { role } = this.props;
     const {
@@ -374,6 +469,8 @@ export class WeeklySummariesReport extends Component {
     }
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
+        {this.passwordInputModalToggle()}
+        {this.popUpElements()}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <h3 className="mt-3 mb-5">
@@ -390,6 +487,17 @@ export class WeeklySummariesReport extends Component {
               </div>
             </h3>
           </Col>
+        </Row>
+        <Row>
+          <Button
+            color="primary"
+            className="permissions-management__button"
+            type="button"
+            onClick={() => this.onClickRecepients()}
+            style={boxStyle}
+          >
+            Weekly Summary Report Recipients
+          </Button>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
@@ -541,6 +649,7 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
+  recepientsArr: state.weeklySummaryRecipientsReducer.recepientsArr,
   role: state.userProfile.role,
   auth: state.auth,
 });
@@ -556,4 +665,12 @@ function WeeklySummariesReportTab({ tabId, hidden, children }) {
   return <TabPane tabId={tabId}>{!hidden && children}</TabPane>;
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);
+export default connect(mapStateToProps, mapDispatchToProps, {
+  getWeeklySummariesReport,
+  hasPermission,
+  getInfoCollections,
+  fetchAllBadges,
+  getSummaryRecipients,
+  addSummaryRecipient,
+  deleteSummaryRecipient,
+})(WeeklySummariesReport);

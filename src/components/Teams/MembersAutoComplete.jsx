@@ -31,44 +31,86 @@ export const MemberAutoComplete = props => {
         }}
       />
 
-      {props.searchText !== '' &&
-      props.userProfileData &&
-      props.userProfileData.userProfiles.length > 0 ? (
-        <>
-        {console.log('Rendering dropdown')}
-        <div
-          tabIndex="-1"
-          role="menu"
-          aria-hidden="false"
-          className={`dropdown-menu${isOpen ? ' show' : ''}`}
-          style={ dropdownStyle}
-        >
-          {props.userProfileData.userProfiles
-            .filter(user => {
-              if (!user.isActive) {
-                return false;
-              }
-              const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-              return searchWithAccent(fullName, props.searchText);
-            })
-            .map(item => (
-              <div
-                className="user-auto-cpmplete"
-                key={item._id}
-                onClick={() => {
-                  props.setSearchText(`${item.firstName} ${item.lastName}`);
-                  toggle(false);
-                  props.onAddUser(item);
-                }}
-              >
-                {`${item.firstName} ${item.lastName}`}
-              </div>
-            ))}
-        </div>
-        </>
-      ) : (
-        <>{console.log('Not rendering dropdown')}</>
-      )}
+{props.context == "WeeklySummary" ?
+
+<>
+  {props.searchText !== '' &&
+    props.summaries &&
+    props.summaries.length > 0 ? (
+    <div
+      tabIndex="-1"
+      role="menu"
+      aria-hidden="false"
+      className={`dropdown-menu${isOpen ? ' show' : ''}`}
+      style={{ marginTop: '0px', width: '100%' }}
+    >
+      {props.summaries
+        .filter(user => {
+          if (
+            (user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
+              user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1)
+          ) {
+            return user;
+          }
+        })
+        .slice(0, 10)
+        .map(item => (
+          <div key={item._id}
+            className="user-auto-cpmplete"
+            onClick={() => {
+              props.setSearchText(`${item.firstName} ${item.lastName}`);
+              toggle(false);
+              props.onAddUser(item);
+            }}
+          >
+            {`${item.firstName} ${item.lastName}`}
+          </div>
+        ))}
+    </div>
+  ) : (
+    <></>
+  )}
+</> :
+<>
+  {props.searchText !== '' &&
+    props.userProfileData &&
+    props.userProfileData.userProfiles.length > 0 ? (
+    <div
+      tabIndex="-1"
+      role="menu"
+      aria-hidden="false"
+      className={`dropdown-menu${isOpen ? ' show' : ''}`}
+      style={{ marginTop: '0px', width: '100%' }}
+    >
+      {props.userProfileData.userProfiles
+        .filter(user => {
+          if (
+            user.isActive &&
+            (user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
+              user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1)
+          ) {
+            return user;
+          }
+        })
+        .slice(0, 10)
+        .map(item => (
+          <div
+            className="user-auto-cpmplete"
+            onClick={() => {
+              props.setSearchText(`${item.firstName} ${item.lastName}`);
+              toggle(false);
+              props.onAddUser(item);
+            }}
+          >
+            {`${item.firstName} ${item.lastName}`}
+          </div>
+        ))}
+    </div>
+  ) : (
+    <></>
+  )}
+</>
+}
     </Dropdown>
   );
 };

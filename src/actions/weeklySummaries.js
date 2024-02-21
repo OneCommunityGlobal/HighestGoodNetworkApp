@@ -110,7 +110,7 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       }
       return response.status;
     } catch (error) {
-      return error.response.status;
+      return error?.response?.status;
     }
   };
 };
