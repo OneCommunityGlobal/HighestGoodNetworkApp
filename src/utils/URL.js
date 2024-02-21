@@ -7,9 +7,12 @@ export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
+
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
   USER_PROFILE_BY_NAME: userName => `${APIEndpoint}/userProfile/name/${userName}`,
+  USER_PROFILE_BY_SINGLE_NAME: singleName => `${APIEndpoint}/userProfile/singleName/${singleName}`,
+  USER_PROFILE_BY_FULL_NAME: fullName => `${APIEndpoint}/userProfile/fullName/${fullName}`,
   USER_TEAM: userId => `${APIEndpoint}/userprofile/teammembers/${userId}`,
   USER_REFRESH_TOKEN: userId => `${APIEndpoint}/refreshToken/${userId}`,
   LOGIN: `${APIEndpoint}/login`,
@@ -60,6 +63,10 @@ export const ENDPOINTS = {
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: id => `${APIEndpoint}/backup/popupeditor/${id}`,
 
+  GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
@@ -88,43 +95,41 @@ export const ENDPOINTS = {
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
-  PRESETS_BY_ID: (roleNameOrPresetId) => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
+  PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
-  SETUP_NEW_USER: () =>
-    `${APIEndpoint}/getInitialSetuptoken`,
-  VALIDATE_TOKEN: () =>
-    `${APIEndpoint}/validateToken`,
-  SETUP_NEW_USER_PROFILE: () =>
-    `${APIEndpoint}/ProfileInitialSetup`,
+
+  COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
+
+  SETUP_NEW_USER: () => `${APIEndpoint}/getInitialSetuptoken`,
+  VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
+  SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
   TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
   MAP_LOCATIONS_BY_TOKEN: () => `${APIEndpoint}/mapLocationsToken`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
-
-
   //reasons endpoints
   CREATEREASON: () => {
-    return `${APIEndpoint}/reason/`
+    return `${APIEndpoint}/reason/`;
   },
-  GETALLUSERREASONS: (userId) => {
-    return `${APIEndpoint}/reason/${userId}`
+  GETALLUSERREASONS: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
   },
-  GETSINGLEREASONBYID: (userId) => {
-    return `${APIEndpoint}/reason/single/${userId}`
+  GETSINGLEREASONBYID: userId => {
+    return `${APIEndpoint}/reason/single/${userId}`;
   },
-  PATCHUSERREASONBYID: (userId) => {
-    return `${APIEndpoint}/reason/${userId}`
+  PATCHUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
   },
-  DELETEUSERREASONBYID: (userId) => {
-    return `${APIEndpoint}/reason/${userId}`
+  DELETEUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
   },
 
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
-  PERMISSION_CHANGE_LOGS: (userId) => `${APIEndpoint}/permissionChangeLogs/${userId}`,
+  PERMISSION_CHANGE_LOGS: userId => `${APIEndpoint}/permissionChangeLogs/${userId}`,
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
 
@@ -135,12 +140,25 @@ export const ENDPOINTS = {
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
+  BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
+  BM_TOOLS_PURCHASE: `${APIEndpoint}/bm/tools/purchase`,
+  POST_LESSON: `${APIEndpoint}/bm/lessons/new`,
+  BM_LESSONS: `${APIEndpoint}/bm/lessons`,
+  BM_LESSON: `${APIEndpoint}/bm/lesson/`,
+  BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
-  BM_INVTYPE_TYPE: (type) => `${APIEndpoint}/bm/invtypes/${type}`
+  BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
+  BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
+  BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  GET_TIME_OFF_REQUESTS: () => `${APIEndpoint}/getTimeOffRequests`,
+  ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
+  UPDATE_TIME_OFF_REQUEST: id => `${APIEndpoint}/updateTimeOffRequest/${id}`,
+  DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
 };
 
 export const ApiEndpoint = APIEndpoint;

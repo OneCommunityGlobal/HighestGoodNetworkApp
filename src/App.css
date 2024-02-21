@@ -96,8 +96,7 @@ body {
   /*  90%to100%-red */
 }
 
-
-nav ul.navbar-nav li:last-child>div {
+nav ul.navbar-nav li:last-child > div {
   transform: translate3d(-26px, 40px, 0px) !important;
 }
 
@@ -115,7 +114,7 @@ nav ul.navbar-nav li:last-child>div {
   position: sticky;
   right: -30px;
   bottom: 10px;
-  white-space: nowrap
+  white-space: nowrap;
 }
 
 tr {
