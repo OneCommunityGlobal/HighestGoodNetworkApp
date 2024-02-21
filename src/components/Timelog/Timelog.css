@@ -4,7 +4,9 @@
   justify-content: center;
   text-align: center;
 }
-
+.card-body-shadow {
+  box-shadow: 2px 2px 4px 1px rgb(75, 75, 75);
+}
 .buttons {
   right: 0;
   bottom: 0;

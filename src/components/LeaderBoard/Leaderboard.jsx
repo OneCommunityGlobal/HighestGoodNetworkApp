@@ -215,7 +215,11 @@ function LeaderBoard({
               <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
-                    <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
+                    <Modal
+                      isOpen={isDashboardOpen === item.personId}
+                      toggle={dashboardToggle}
+                      className="modal-personal-dashboard"
+                    >
                       <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
                       <ModalBody>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
