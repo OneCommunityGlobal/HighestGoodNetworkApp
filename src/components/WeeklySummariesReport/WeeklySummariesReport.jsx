@@ -490,7 +490,7 @@ export class WeeklySummariesReport extends Component {
             </h3>
           </Col>
         </Row>
-        <Row>
+        <Row className="d-flex justify-content-center">
           <Button
             color="primary"
             className="permissions-management__button"
@@ -656,6 +656,7 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
+// eslint-disable-next-line no-unused-vars
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
@@ -667,7 +668,7 @@ function WeeklySummariesReportTab({ tabId, hidden, children }) {
   return <TabPane tabId={tabId}>{!hidden && children}</TabPane>;
 }
 
-export default connect(mapStateToProps, mapDispatchToProps, {
+export default connect(mapStateToProps, {
   getWeeklySummariesReport,
   hasPermission,
   getInfoCollections,

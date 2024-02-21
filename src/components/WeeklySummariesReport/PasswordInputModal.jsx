@@ -71,7 +71,7 @@ export default function PasswordInputModal({
           {!isValidPwd && state.passwordMatchErr && (
             <Alert color="danger">{state.passwordMatchErr}</Alert>
           )}
-          {isValidPwd && state.passwordMatch != '' && (
+          {isValidPwd && state.passwordMatch !== '' && (
             <Alert color="success">{state.passwordMatch} </Alert>
           )}
           <FormGroup>
