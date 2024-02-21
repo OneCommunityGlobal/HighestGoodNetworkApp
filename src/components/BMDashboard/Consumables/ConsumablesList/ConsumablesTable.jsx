@@ -14,6 +14,7 @@ function ConsumablesTable({ consumable, project }) {
   const dispatch = useDispatch();
 
   const consumables = useSelector(state => state.bmConsumables.consumableslist);
+  const consumablesUpdated = useSelector(state => state.bmConsumables.updateConsumables);
   const [recordType, setRecordType] = useState(null);
   const [modal, setModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -26,13 +27,12 @@ function ConsumablesTable({ consumable, project }) {
   }, []);
 
   useEffect(() => {
-    console.log("consumables changed: ", consumables)
     setConsumablesViewData(consumables);
-  }, [consumables]);
+ }, [consumables]);
 
-  // useEffect(()=>{
-  //   console.log("consumablesViewData changed: ", consumablesViewData)
-  // },[consumablesViewData])
+  useEffect(() => {
+    dispatch(fetchAllConsumables());
+  }, [consumablesUpdated?.result]);
 
   const handleSort = column => {
     if (!column || consumables.length === 0) return;
@@ -70,9 +70,8 @@ function ConsumablesTable({ consumable, project }) {
   };
 
   const handleOpenModal = (row, type) => {
-    console.log("handleOpenModal called. row: ", row, ", type: ", type)
-    setSelectedRow(row); // current row data
-    setRecordType(type); // UpdatesEdit/UpdatesView/PurchasesEdit/PurchasesView
+    setSelectedRow(row);
+    setRecordType(type);
     setModal(true);
   };
 

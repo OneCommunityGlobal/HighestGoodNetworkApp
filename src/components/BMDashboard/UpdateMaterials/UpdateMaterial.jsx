@@ -11,10 +11,6 @@ import { toast } from 'react-toastify';
 function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const dispatch = useDispatch();
   const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
-  console.log("UpdateMaterial record: ", record)
-  console.log("UpdateMaterial bulk: ", bulk, ", sendUpdatedRecord: ", sendUpdatedRecord, ", cancel: ", cancel)
-  
-  console.log("postMaterialUpdateResult from the store: ", postMaterialUpdateResult)
 
   useEffect(() => {
     if (postMaterialUpdateResult.loading === false && postMaterialUpdateResult.error === true) {
@@ -48,14 +44,9 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const [validations, setValidations] = useState(validationsInitialState);
 
   useEffect(() => {
-    console.log("cancel changed: ", cancel)
     setUpdateRecord({ ...recordInitialState });
     setValidations({ ...validationsInitialState });
   }, [cancel]);
-
-  useEffect(() => {
-    console.log("updateRecord changed: ", updateRecord)
-  }, [updateRecord]);
 
   const validate = (_qtyUsed, _qtyWasted, QtyUsedLogUnit, QtyWastedLogUnit) => {
     const qtyUsed = _qtyUsed === '' ? 0 : _qtyUsed;
@@ -106,7 +97,6 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
 
   const submitHandler = e => {
     e.preventDefault();
-    console.log("updateRecord to submit ", updateRecord)
     dispatch(postMaterialUpdate(updateRecord));
   };
 

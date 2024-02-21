@@ -4,7 +4,6 @@
 }
 
 .updateConsumablePage {
-  background-color: #E8F4F9;
   width: 100%;
   height: auto;
   margin: 0px;
@@ -95,4 +94,11 @@
 .updateModalContainer {
   overflow-y: scroll;
   height: 75vh;
+}
+
+
+@media (max-width: 992px) {
+  .modal-body {
+    padding: 0 !important;
+  }   
 }

@@ -1,22 +1,16 @@
 import './UpdateConsumable.css';
 import * as moment from 'moment';
-import { Container, FormGroup, Input, Label, Form, Col, Button, Table } from 'reactstrap';
+import { Container, FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-// import { postMaterialUpdate } from '../../../actions/bmdashboard/consumableActions';
-import { postConsumableUpdate } from '../../../actions/bmdashboard/consumableActions';
 import { toast } from 'react-toastify';
+import { postConsumableUpdate } from '../../../actions/bmdashboard/consumableActions';
 
-function UpdateConsumable({record, setModal}) {
-  // console.log("UPD CONS. record: ", record)
-
+function UpdateConsumable({ record, setModal }) {
   const dispatch = useDispatch();
-  // const postConsumableUpdateResult = useSelector(state => state.consumables.updateConsumables); 
-  const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables); 
-
+  const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables);
   const { purchaseRecord, stockAvailable, updateRecord: _, ...rest } = record;
-  // console.log("purchaseRecord: ", purchaseRecord, ". stockAvailable: ", stockAvailable)
   const recordInitialState = {
     date: moment(new Date()).format('YYYY-MM-DD'),
     quantityUsed: '0',
@@ -39,13 +33,10 @@ function UpdateConsumable({record, setModal}) {
   useEffect(() => {
     setUpdateRecord({ ...recordInitialState });
     setValidations({ ...validationsInitialState });
-  }, []); 
+  }, []);
 
   useEffect(() => {
-    // console.log("useEff, postConsumableUpdateResult changed: ",postConsumableUpdateResult)
     if (postConsumableUpdateResult.loading === false && postConsumableUpdateResult.error === true) {
-      // console.log("error in postConsumableUpdateResult")
-      console.log("postConsumableUpdateResult.result (err case): ", postConsumableUpdateResult.result)
       toast.error(`${postConsumableUpdateResult.result}`);
       setModal(false);
     } else if (
@@ -57,32 +48,25 @@ function UpdateConsumable({record, setModal}) {
     }
   }, [postConsumableUpdateResult]);
 
-  useEffect(()=>{
-    console.log("updateRecord: ", updateRecord)
-    if(updateRecord.quantityUsed !== "0" || updateRecord.quantityWasted !== "0"){
-      setChangeOccured(true); 
-    }else{
-      setChangeOccured(false); 
+  useEffect(() => {
+    if (updateRecord.quantityUsed !== '0' || updateRecord.quantityWasted !== '0') {
+      setChangeOccured(true);
+    } else {
+      setChangeOccured(false);
     }
-  },[updateRecord]);
-
-  // useEffect(()=>{
-  //   console.log("changeOccured: ", changeOccured)
-  // },[changeOccured])
+  }, [updateRecord]);
 
   const validate = (_qtyUsed, _qtyWasted, QtyUsedLogUnit, QtyWastedLogUnit) => {
-  
     let unitsUsed = _qtyUsed === '' ? 0 : parseFloat(_qtyUsed);
     let unitsWasted = _qtyWasted === '' ? 0 : parseFloat(_qtyWasted);
-    if(QtyUsedLogUnit === "percent"){
-      unitsUsed = (stockAvailable / 100) * unitsUsed;
+    if (QtyUsedLogUnit === 'percent') {
+      unitsUsed *= stockAvailable / 100;
     }
 
-    if(QtyWastedLogUnit === "percent"){
-      unitsWasted = (stockAvailable / 100) * unitsWasted;
+    if (QtyWastedLogUnit === 'percent') {
+      unitsWasted *= stockAvailable / 100;
     }
     const tempValidations = { ...validations };
-
 
     if (unitsUsed > stockAvailable){
       tempValidations.quantityUsed = 'Quantity Used exceeds the available stock';
@@ -103,41 +87,41 @@ function UpdateConsumable({record, setModal}) {
       tempValidations.quantityTogether = '';
     }
 
-    setValidations({ ...tempValidations }); 
-    const newAvailable = stockAvailable - (unitsUsed + unitsWasted)
-    setAvailableCount(newAvailable);
+    setValidations({ ...tempValidations });
+    const newAvailable = parseFloat((stockAvailable - (unitsUsed + unitsWasted)).toFixed(4));
+    if (newAvailable !== stockAvailable) {
+      setAvailableCount(newAvailable);
+    } else {
+      setAvailableCount(undefined);
+    }
   };
 
-  const submitHandler = e => {
-    // e.preventDefault(); //necessary?
-
-    console.log("updateRecord to POST to the backend: ", updateRecord)
-    if(validations.quantityUsed === '' &&
-        validations.quantityWasted === '' &&
-        validations.quantityTogether === '' &&
-        changeOccured
-        ){
-          const postObject = {//might not be wort it, just post updateRecord? do conversion on the backend though
-            date: updateRecord.date,
-            quantityUsed: updateRecord.quantityUsed === ''? 0 : parseFloat(updateRecord.quantityUsed),
-            QtyUsedLogUnit: updateRecord.QtyUsedLogUnit,
-            quantityWasted: updateRecord.quantityWasted === '' ? 0 : parseFloat(updateRecord.quantityWasted),
-            QtyWastedLogUnit: updateRecord.QtyWastedLogUnit,
-            stockAvailable: stockAvailable,
-            consumable: updateRecord.consumable,
-
-          };
-          console.log("postObject: ", postObject)
-          dispatch(postConsumableUpdate(postObject));//works fine
-        }else{
-          toast.error("Invalid Data");
-        };  
+  const submitHandler = () => {
+    if (
+      validations.quantityUsed === '' &&
+      validations.quantityWasted === '' &&
+      validations.quantityTogether === '' &&
+      changeOccured
+    ) {
+      const postObject = {
+        date: updateRecord.date,
+        quantityUsed: updateRecord.quantityUsed === '' ? 0 : parseFloat(updateRecord.quantityUsed),
+        QtyUsedLogUnit: updateRecord.QtyUsedLogUnit,
+        quantityWasted:
+          updateRecord.quantityWasted === '' ? 0 : parseFloat(updateRecord.quantityWasted),
+        QtyWastedLogUnit: updateRecord.QtyWastedLogUnit,
+        stockAvailable,
+        consumable: updateRecord.consumable,
+      };
+      dispatch(postConsumableUpdate(postObject));
+    } else {
+      toast.error('Invalid Data');
+    }
   };
-
 
   const changeRecordHandler = e => {
-    const { value, name } = e.target; 
-    const tempRecord = { ...updateRecord } 
+    const { value, name } = e.target;
+    const tempRecord = { ...updateRecord };
     tempRecord[name] = value;
 
     setUpdateRecord(tempRecord);
@@ -148,16 +132,16 @@ function UpdateConsumable({record, setModal}) {
       tempRecord.QtyUsedLogUnit,
       tempRecord.QtyWastedLogUnit,
     );
-  }
+  };
 
   return (
-        <Container fluid className="updateConsumableContainer">
-       <div className="updateConsumablePage">
-          <div className="updateConsumable">
+    <Container fluid className="updateConsumableContainer">
+      <div className="updateConsumablePage">
+        <div className="updateConsumable">
           <Form>
             <FormGroup row className="align-items-center justify-content-start">
               <Label for="updateConsumableName" sm={4} className="consumableFormLabel">
-               Consumable
+                Consumable
               </Label>
               <Col sm={6} className="consumableFormValue">
                 <b>{record?.itemType?.name}</b>
@@ -172,9 +156,6 @@ function UpdateConsumable({record, setModal}) {
                 {record?.project.name}
               </Col>
             </FormGroup>
-
-
-
             <FormGroup row className="align-items-center justify-content-start">
               <Label for="updateConsumableDate" sm={4} className="consumableFormLabel">
                 Date
@@ -199,7 +180,8 @@ function UpdateConsumable({record, setModal}) {
               </Col>
             </FormGroup>
 
-    {availableCount !== undefined &&  <FormGroup row className="align-items-center justify-content-start">
+            {availableCount !== undefined && (
+              <FormGroup row className="align-items-center justify-content-start">
                 <Label for="updateMaterialUnit" sm={4} className="consumableFormLabel">
                   New Available
                 </Label>
@@ -210,23 +192,8 @@ function UpdateConsumable({record, setModal}) {
                     {availableCount}
                   </span>
                 </Col>
-              </FormGroup>}
-            
-            {/* {updateRecord.newAvailable !== undefined && (
-              <FormGroup row className="align-items-center justify-content-start">
-                <Label for="updateMaterialUnit" sm={4} className="materialFormLabel">
-                  New Available
-                </Label>
-                <Col sm={6} className="materialFormValue">
-                  <span
-                    className={updateRecord.newAvailable < 0 ? 'materialFormErrorClr' : undefined}
-                  >
-                    {updateRecord.newAvailable}
-                  </span>
-                </Col>
               </FormGroup>
-            )} */}
-
+            )}
             <FormGroup row>
               <Label for="updateConsumableQuantityUsed" sm={4} className="consumableFormLabel">
                 Quantity Used
@@ -256,7 +223,11 @@ function UpdateConsumable({record, setModal}) {
               </Col>
 
               {validations.quantityUsed !== '' && (
-                <Label for="updateMaterialQuantityUsedError" sm={12} className="consumableFormError">
+                <Label
+                  for="updateMaterialQuantityUsedError"
+                  sm={12}
+                  className="consumableFormError"
+                >
                   {validations.quantityUsed}
                 </Label>
               )}
@@ -299,35 +270,38 @@ function UpdateConsumable({record, setModal}) {
                 </Label>
               )}
             </FormGroup>
-{/* ONLY ENABLE THIS WHEN VALIDATIONS FOR THE INDIVIDUAL FIELDS ARE CLEAR */}
             {validations.quantityTogether !== '' &&
               validations.quantityUsed === '' &&
               validations.quantityWasted === '' && (
-              <FormGroup row>
-                <Label
-                  for="updateConsumableQuantityTogetherError"
-                  sm={12}
-                  className="consumableFormError"
-                >
-                  {validations.quantityTogether}
-                </Label>
-              </FormGroup>
-            )}
+                <FormGroup row>
+                  <Label
+                    for="updateConsumableQuantityTogetherError"
+                    sm={12}
+                    className="consumableFormError"
+                  >
+                    {validations.quantityTogether}
+                  </Label>
+                </FormGroup>
+              )}
 
             <FormGroup row className="d-flex justify-content-right">
               <Button
-                disabled={postConsumableUpdateResult.loading || availableCount < 0 || changeOccured === false}
+                disabled={
+                  postConsumableUpdateResult.loading ||
+                  availableCount < 0 ||
+                  changeOccured === false
+                }
                 className="consumableButtonBg"
-                onClick={e => submitHandler(e)}
+                onClick={submitHandler}
               >
                 Update Consumable
               </Button>
             </FormGroup>
-           
-            </Form>
-            </div>
-          </div>
-          </Container>
-)}
+          </Form>
+        </div>
+      </div>
+    </Container>
+  );
+}
 
 export default UpdateConsumable;

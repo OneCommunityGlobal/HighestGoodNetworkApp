@@ -1,10 +1,9 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import './Consumables.css';
 import moment from 'moment';
-import UpdateConsumable from "../../UpdateConsumable/UpdateConsumable";
+import UpdateConsumable from '../../UpdateConsumable/UpdateConsumable';
 
 function ConsumablesViewModal({ modal, setModal, record, recordType }) {
-  // console.log("record: ", record)
   if (record) {
     const toggle = () => {
       setModal(false);
@@ -20,9 +19,7 @@ function ConsumablesViewModal({ modal, setModal, record, recordType }) {
         </ModalHeader>
         <ModalBody>
           <div>
-            {/* <Table> */}
-              <Record record={record} recordType={recordType} setModal={setModal} />
-            {/* </Table> */}
+            <Record record={record} recordType={recordType} setModal={setModal} />
           </div>
         </ModalBody>
         <ModalFooter>
@@ -83,8 +80,8 @@ function Record({ record, recordType, setModal }) {
             return (
               <tr key={data._id}>
                 <td>{moment.utc(data.date).format('LL')}</td>
-                <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
-                <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
+                <td>{`${data.status}` || '-'}</td>
+                <td>{`${data.quantity} ${record.itemType?.unit}` || '-'}</td>
                 <td>
                   <a href={`/userprofile/${data.requestedBy._id}`}>
                     {`${data.requestedBy.firstName} ${data.requestedBy.lastName}`}
