@@ -2,7 +2,7 @@ import GET_MATERIAL_TYPES, {
   POST_BUILDING_MATERIAL_INVENTORY_TYPE,
   POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
   RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE,
-  GET_INV_BY_TYPE,
+  GET_INV_BY_TYPE, GET_TOOL_TYPES,
   DELETE_BUILDING_INVENTORY_TYPE,
   RESET_DELETE_BUILDING_INVENTORY_TYPE,
   DELETE_ERROR_BUILDING_INVENTORY_TYPE,
@@ -38,6 +38,11 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
 
   switch (action.type) {
     case GET_MATERIAL_TYPES:
+      state.list = action.payload;
+      return {
+        ...state
+      };
+    case GET_TOOL_TYPES:
       state.list = action.payload;
       return {
         ...state
