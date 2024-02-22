@@ -588,19 +588,16 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
 }
 
 function Index({ summary, weekIndex, allRoleInfo }) {
-  // eslint-disable-next-line no-shadow
-  const getGoogleDocLink = summary => {
-    if (!summary.adminLinks) {
-      return undefined;
-    }
-    const googleDocLink = summary.adminLinks.find(link => link.Name === 'Google Doc');
-    return googleDocLink;
-  };
-
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
-  const googleDocLink = getGoogleDocLink(summary);
+  const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
+    if (currentElement.Name === 'Google Doc') {
+      // eslint-disable-next-line no-param-reassign
+      targetLink = currentElement.Link;
+    }
+    return targetLink;
+  }, undefined);
 
   return (
     <>
