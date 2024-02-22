@@ -212,21 +212,26 @@ export default (
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
 
-        <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
-        <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
-        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/lessonlist/" component={LessonList} />
-        <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
-        <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
-        <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
-        <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
-        <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
-        <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
-        <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
-        <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
+
+        <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
+        <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
+        <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
+        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
+
+        <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
+        <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
+
+        <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
+
+        <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
+        <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
+        <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
+
+        <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/inventorytypes" fallback component={InventoryTypesList} />
 
 
