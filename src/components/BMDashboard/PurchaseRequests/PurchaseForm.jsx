@@ -86,12 +86,12 @@ const PurchaseForm = ({
   }
 
   return (
-    <main className="purchase-material-container">
-      <header className="purchase-materials-header">
+    <main className="purchase-request-container">
+      <header className="purchase-header">
         <h2>{formLabels.headerText}</h2>
         <p>{formLabels.headerSubText}</p>
       </header>
-      <Form className="purchase-material-form" onSubmit={handleSubmit}>
+      <Form className="purchase-form" onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="select-project">{formLabels.primarySelectLabel}</Label>
           <Input
@@ -99,7 +99,6 @@ const PurchaseForm = ({
             type="select"
             value={primaryId}
             onChange={({ currentTarget }) => { setPrimaryId(currentTarget.value) }}
-            // onChange={e => setPrimaryId(e.target.value)}
             disabled={!primaryData.length}
           >
             <option value="">{formLabels.primarySelectDefaultOption}</option>
@@ -116,7 +115,6 @@ const PurchaseForm = ({
             type="select"
             value={secondaryId}
             onChange={({ currentTarget }) => { setSecondaryId(currentTarget.value) }}
-          // onChange={e => setSecondaryId(e.target.value)}
           >
             <option value="">{formLabels.secondarySelectDefaultOption}</option>
             {secondaryData.map(item => (
@@ -125,10 +123,10 @@ const PurchaseForm = ({
           </Input>
         </FormGroup>
 
-        <div className="purchase-material-flex-group">
-          <FormGroup className="flex-group-qty">
+        <div className="purchase-flex-group">
+          <FormGroup className="purchase-qty-group">
             <Label for="input-quantity">{formLabels.quantityLabel}</Label>
-            <div className="flex-group-qty-container">
+            <div className="purchase-qty-container">
               <Input
                 id="input-quantity"
                 type="number"
@@ -167,9 +165,9 @@ const PurchaseForm = ({
           />
         </FormGroup>
 
-        {validationError && <div className="purchase-material-error"><p>{validationError}</p></div>}
+        {validationError && <div className="purchase-error-message"><p>{validationError}</p></div>}
 
-        <div className="purchase-material-buttons">
+        <div className="purchase-actions">
           <Button
             type="button"
             id="cancel-button"
@@ -190,6 +188,7 @@ const PurchaseForm = ({
         </div>
       </Form>
     </main>
+
 
   );
 };

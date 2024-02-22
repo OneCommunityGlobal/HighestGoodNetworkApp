@@ -1,4 +1,4 @@
-.purchase-material-container {
+.purchase-request-container {
   width: 100%;
   max-width: 800px;
   margin: 1rem auto;
@@ -7,65 +7,66 @@
   border-radius: 40px;
 }
 
-.purchase-materials-header {
+.purchase-header {
   margin: 1rem auto;
 }
 
 @media screen and (max-width: 800px) {
-  .purchase-material-container {
+  .purchase-request-container {
     width: 95%;
   }
 }
 
-.purchase-material-form {
+.purchase-form {
   margin-top: 2rem;
 }
 
-.purchase-material-form input,
-.purchase-material-form select {
+.purchase-form input,
+.purchase-form select {
   background-color: rgb(249, 249, 249);
 }
 
-.purchase-material-flex-group {
+.purchase-flex-group {
   display: flex;
   gap: 2rem;
 }
 
-.purchase-material-flex-group input {
+.purchase-flex-group input {
   width: 100px;
 }
 
-.flex-group-qty {
+.purchase-qty-group {
   width: 50%;
 }
 
-.flex-group-qty-container {
+.purchase-qty-container {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.purchase-material-buttons {
+.purchase-actions {
   display: flex;
   gap: 1rem;
   margin: 0 auto 2rem;
 }
 
-.purchase-material-buttons button {
+.purchase-actions button {
   width: 50%;
 }
 
-.purchase-material-error {
+.purchase-error-message {
   height: 2.5rem;
   color: red;
 }
 
 @media screen and (max-width: 640px) {
-  .purchase-material-flex-group {
+  .purchase-flex-group {
     display: block;
   }
-  .flex-group-qty {
+  .purchase-qty-group {
     width: auto;
   }
 }
+
 
