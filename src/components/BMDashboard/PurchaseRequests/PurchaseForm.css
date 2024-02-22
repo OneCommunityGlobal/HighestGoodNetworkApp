@@ -1,3 +1,22 @@
+.purchase-material-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 1rem 2rem;
+  border: 1px solid #ccc;
+  border-radius: 40px;
+}
+
+.purchase-materials-header {
+  margin: 1rem auto;
+}
+
+@media screen and (max-width: 800px) {
+  .purchase-material-container {
+    width: 95%;
+  }
+}
+
 .purchase-material-form {
   margin-top: 2rem;
 }
@@ -49,3 +68,4 @@
     width: auto;
   }
 }
+

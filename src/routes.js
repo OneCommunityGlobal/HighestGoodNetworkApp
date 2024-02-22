@@ -59,7 +59,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 
 // const ReusablesView = lazy(() => import('./components/BMDashboard/Reusables/ReusablesView'));
 const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
-const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
+const PurchaseMaterials = lazy(() => import('./components/BMDashboard/PurchaseRequests/MaterialPurchaseRequest'));
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
@@ -213,7 +213,7 @@ export default (
 
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-          
+
         <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
