@@ -17,7 +17,6 @@ import {
   UncontrolledPopover,
   DropdownMenu,
   DropdownItem,
-  UncontrolledTooltip
 } from 'reactstrap';
 import { boxStyle } from '../../styles';
 import '../Badge/BadgeReport.css';
@@ -110,39 +109,21 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                               ? value.lastModified.substring(0, 10)
                               : value.lastModified.toLocaleString().substring(0, 10)}
                           </td>
-                          <td style={{ display: 'flex', alignItems: 'center' }}>
-                            <>
-                              {' '}
-                              <UncontrolledDropdown className="me-2" direction="down">
-                                <DropdownToggle caret color="primary" style={boxStyle}>
-                                  Dates
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                  {value.earnedDate.map((date, index) => (
-                                    // eslint-disable-next-line react/no-array-index-key
-                                    <DropdownItem key={`date-${value._id}-${index}`}>
-                                      {date}
-                                    </DropdownItem>
-                                  ))}
-                                </DropdownMenu>
-                              </UncontrolledDropdown>
-                              {value.hasBadgeDeletionImpact && value.hasBadgeDeletionImpact === true ?
-                              (<>
-                                <span id="mismatchExplainationTooltip" style={{paddingLeft: '3px'}}>
-                                  {'  '} *
-                                </span>
-                                <UncontrolledTooltip
-                                  placement="bottom"
-                                  target="mismatchExplainationTooltip"
-                                  style={{ maxWidth: '300px' }}
-                                >
-                                  This record contains a mismatch in the badge count and associated dates. It indicates that a badge has been deleted. 
-                                  Despite the deletion, we retain the earned date to ensure a record of the badge earned for historical purposes.
-                                </UncontrolledTooltip>
-                              </>)
-                              : null
-                              } 
-                            </>
+                          <td>
+                            {' '}
+                            <UncontrolledDropdown className="me-2" direction="down">
+                              <DropdownToggle caret color="primary" style={boxStyle}>
+                                Dates
+                              </DropdownToggle>
+                              <DropdownMenu>
+                                {value.earnedDate.map((date, index) => (
+                                  // eslint-disable-next-line react/no-array-index-key
+                                  <DropdownItem key={`date-${value._id}-${index}`}>
+                                    {date}
+                                  </DropdownItem>
+                                ))}
+                              </DropdownMenu>
+                            </UncontrolledDropdown>
                           </td>
                           <td>{value.count}</td>
                         </tr>
