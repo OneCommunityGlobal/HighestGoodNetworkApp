@@ -94,3 +94,27 @@ describe('Active Inactive confirmation popup More unit tests', () => {
     });
   });
 });
+
+describe('Active Inactive confirmation popup More unit tests', () => {
+  const onClose = jest.fn();
+  const setActiveInactive = jest.fn();
+  const isActive = true;
+  const fullname = "Test User";
+  beforeEach(() => {
+    render(
+      <ActiveInactiveConfirmationPopup
+        open={false}
+        fullName={fullname}
+        onClose={onClose}
+        setActiveInactive={setActiveInactive}
+        isActive={isActive}
+      />,
+    );
+  });
+  describe('Structure', () => {
+    it('should not render when not opened', () => {
+      expect(screen.queryAllByRole('dialog')).toHaveLength(0);
+      //expect(undefined).toBeDefined();
+    });
+  });
+});
