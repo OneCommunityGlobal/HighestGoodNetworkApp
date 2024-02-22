@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import { ReportBlock } from '../ReportBlock';
 import './ReportHeader.css';
 
-export const ReportHeader = ({ children, isActive, src, avatar, name }) => {
+export const ReportHeader = ({ children, isActive, src, avatar, name, counts }) => {
   return (
     <ReportBlock>
       <header className="report-header">
@@ -20,6 +20,9 @@ export const ReportHeader = ({ children, isActive, src, avatar, name }) => {
             <div className={classnames('report-header-activity', { active: isActive })} />
           </div>
           <div className="report-header-entity-name">{name}</div>
+          <div>Total Contribution: {}</div>
+          <div>Active Members: {counts.activeMemberCount}</div>
+          <div>Total Contributors: {counts.memberCount}</div>
           {children}
         </div>
       </header>

@@ -42,9 +42,15 @@ export const ProjectReport = ({ match }) => {
   return (
     <ReportPage
       renderProfile={() => (
-        <ReportPage.ReportHeader isActive={isActive} avatar={<FiBox />} name={projectName} />
+        <ReportPage.ReportHeader 
+          isActive={isActive} 
+          avatar={<FiBox />} 
+          name={projectName} 
+          counts={{ activeMemberCount: memberCount, memberCount: projectMembers.members.length }} 
+        />
       )}
     >
+      <div className='project-header'>{projectName}</div> 
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
           <Paging totalElementsCount={wbs.WBSItems.length}>
