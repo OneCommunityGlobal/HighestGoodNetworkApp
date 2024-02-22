@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Joi from 'joi';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-import BMError from '../shared/BMError';
 import { boxStyle } from 'styles';
+import BMError from '../shared/BMError';
 import './PurchaseForm.css';
 
-const PurchaseForm = ({
+function PurchaseForm({
   fetchPrimaryDataAction,
   fetchSecondaryDataAction,
   submitFormAction,
@@ -16,7 +16,7 @@ const PurchaseForm = ({
   secondaryDataSelector,
   errorSelector,
   formLabels,
-}) => {
+}) {
   const dispatch = useDispatch();
   const history = useHistory();
   const primaryData = useSelector(primaryDataSelector);
@@ -49,20 +49,27 @@ const PurchaseForm = ({
   }, [secondaryId, secondaryData]);
 
   // Form validation logic
-  const validateForm = () => Joi.object({
-    primaryId: Joi.string().required(),
-    secondaryId: Joi.string().required(),
-    quantity: Joi.number().min(1).max(999).integer().required(),
-    priority: Joi.string().valid('Low', 'Medium', 'High').required(),
-    brand: Joi.string().allow(''),
-  }).validate({ primaryId, secondaryId, quantity, priority, brand });
+  const validateForm = () =>
+    Joi.object({
+      primaryId: Joi.string().required(),
+      secondaryId: Joi.string().required(),
+      quantity: Joi.number()
+        .min(1)
+        .max(999)
+        .integer()
+        .required(),
+      priority: Joi.string()
+        .valid('Low', 'Medium', 'High')
+        .required(),
+      brand: Joi.string().allow(''),
+    }).validate({ primaryId, secondaryId, quantity, priority, brand });
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const { error } = validateForm();
     if (error) {
-      setValidationError(error.details.map(detail => detail.message).join(", "));
+      setValidationError(error.details.map(detail => detail.message).join(', '));
       return;
     }
     setValidationError(''); // Clear previous errors
@@ -104,12 +111,16 @@ const PurchaseForm = ({
             id="select-project"
             type="select"
             value={primaryId}
-            onChange={({ currentTarget }) => { setPrimaryId(currentTarget.value) }}
+            onChange={({ currentTarget }) => {
+              setPrimaryId(currentTarget.value);
+            }}
             disabled={!primaryData.length}
           >
             <option value="">{formLabels.primarySelectDefaultOption}</option>
             {primaryData.map(item => (
-              <option key={item._id} value={item._id}>{item.name}</option>
+              <option key={item._id} value={item._id}>
+                {item.name}
+              </option>
             ))}
           </Input>
         </FormGroup>
@@ -120,11 +131,15 @@ const PurchaseForm = ({
             id="select-material"
             type="select"
             value={secondaryId}
-            onChange={({ currentTarget }) => { setSecondaryId(currentTarget.value) }}
+            onChange={({ currentTarget }) => {
+              setSecondaryId(currentTarget.value);
+            }}
           >
             <option value="">{formLabels.secondarySelectDefaultOption}</option>
             {secondaryData.map(item => (
-              <option key={item._id} value={item._id}>{item.name}</option>
+              <option key={item._id} value={item._id}>
+                {item.name}
+              </option>
             ))}
           </Input>
         </FormGroup>
@@ -171,7 +186,11 @@ const PurchaseForm = ({
           />
         </FormGroup>
 
-        {validationError && <div className="purchase-error-message"><p>{validationError}</p></div>}
+        {validationError && (
+          <div className="purchase-error-message">
+            <p>{validationError}</p>
+          </div>
+        )}
 
         <div className="purchase-actions">
           <Button
@@ -195,9 +214,7 @@ const PurchaseForm = ({
         </div>
       </Form>
     </main>
-
-
   );
-};
+}
 
 export default PurchaseForm;

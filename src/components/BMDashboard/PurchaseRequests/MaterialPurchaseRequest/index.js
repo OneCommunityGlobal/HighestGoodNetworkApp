@@ -1,2 +1,3 @@
-import { default as PurchaseMaterials } from './MaterialPurchaseForm';
-export default PurchaseMaterials;
+import MaterialPurchaseForm from './MaterialPurchaseForm';
+
+export default MaterialPurchaseForm;

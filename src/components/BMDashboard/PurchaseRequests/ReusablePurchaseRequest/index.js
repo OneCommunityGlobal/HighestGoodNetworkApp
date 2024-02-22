@@ -1,2 +1,3 @@
-import { default as PurchaseReusables } from './ReusablePurchaseForm';
-export default PurchaseReusables;
+import ReusablePurchaseForm from './ReusablePurchaseForm';
+
+export default ReusablePurchaseForm;
