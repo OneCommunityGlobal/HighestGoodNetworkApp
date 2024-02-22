@@ -71,6 +71,12 @@ const PurchaseForm = ({
 
     if (response?.status === 201) {
       toast.success('Success: Your request has been processed.');
+      setPrimaryId('');
+      setSecondaryId('');
+      setQuantity('');
+      setUnit('');
+      setPriority('Low');
+      setBrand('');
     } else {
       toast.error(`Error: ${response?.statusText || 'Unknown error'}`);
     }
@@ -175,15 +181,16 @@ const PurchaseForm = ({
             onClick={handleCancel}
             style={boxStyle}
           >
-            {formLabels.cancelButtonText}
+            Cancel
           </Button>
           <Button
             id="submit-button"
+            type="sumbit"
             color="primary"
             style={boxStyle}
             disabled={!primaryId || !secondaryId || !quantity || !priority || !!validationError}
           >
-            {formLabels.submitButtonText}
+            Submit
           </Button>
         </div>
       </Form>
