@@ -96,7 +96,9 @@ export default function AddTypeForm() {
           invalid={errInput === 'desc'}
           onChange={handleChange}
         />
-        <p style={{ color: desc.length > 150 ? 'red' : 'black' }}>Character {desc.length}/150</p>
+        <div class="form-footer" style={{ color: desc.length > 150 ? '#dc3545' : 'black' }}>
+          Character {desc.length}/150
+        </div>
         {/* {!errInput && <FormText>Max 150 characters</FormText>} */}
         <FormFeedback>
           {errType === 'string.max'
