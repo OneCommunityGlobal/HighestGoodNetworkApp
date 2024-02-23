@@ -22,7 +22,7 @@ export function InventoryTypesList(props) {
   const { updateInvTypeResult, deleteInvTypeResult, errors, dispatch } = props;
 
   // NOTE: depend on redux action implementation
-  const categories = ['Materials', 'Consumables', 'Equipment', 'Reusables', 'Tools'];
+  const categories = ['Material', 'Consumable', 'Equipment', 'Reusable', 'Tool'];
 
   const [isError, setIsError] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -30,11 +30,7 @@ export function InventoryTypesList(props) {
   // dispatch inventory type fetch action on load
   useEffect(() => {
     // NOTE: depend on redux action implementation
-    dispatch(fetchInvTypeByType('Materials'));
-    dispatch(fetchInvTypeByType('Consumables'));
-    dispatch(fetchInvTypeByType('Equipment'));
-    dispatch(fetchInvTypeByType('Reusables'));
-    dispatch(fetchInvTypeByType('Tools'));
+    categories.forEach(category => dispatch(fetchInvTypeByType(category)));
     dispatch(fetchInvUnits());
   }, []);
 

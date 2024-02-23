@@ -70,10 +70,8 @@ export const deleteBuildingInventoryType = (payload) => {
     axios.delete(`${ENDPOINTS.BM_INVTYPE_ROOT}/${category}/${id}`)
       .then(res => {
         dispatch(setDeleteInvTypeResult(res.data))
-
-        // update invTypes with updated list received from DELETE request
-        // NOTE: categories are plural in redux reducer, while singular in backend, i.e. "Material" vs. "Materials"
-        // dispatch(setInvTypesByType({ type: category + 's', data: res.data }))
+        // update inventory types with updated list received from the request
+        dispatch(setInvTypesByType({ type: category, data: res.data }))
       })
       .catch(err => {
         dispatch(setDeleteInvTypeError(err))
@@ -87,6 +85,8 @@ export const updateBuildingInventoryType = (payload) => {
     axios.put(`${ENDPOINTS.BM_INVTYPE_ROOT}/${category}/${id}`, {name, description})
       .then(res => {
         dispatch(setUpdateInvTypeResult(res.data))
+        // update inventory types with updated list received from the request
+        dispatch(setInvTypesByType({ type: category, data: res.data }))
       })
       .catch(err => {
         dispatch(setUpdateInvTypeError(err))
