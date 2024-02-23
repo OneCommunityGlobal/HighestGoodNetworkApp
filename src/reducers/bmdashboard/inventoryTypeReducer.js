@@ -14,7 +14,7 @@ import GET_MATERIAL_TYPES, {
 const defaultState = {
   list: [],
   invTypeList: {
-    "All": null, "Materials": null, "Consumables": null, "Equipments": null,
+    "All": null, "Materials": null, "Consumables": null, "Equipment": null,
     "Reusables": null, "Tools": null
   },
   postedResult: {

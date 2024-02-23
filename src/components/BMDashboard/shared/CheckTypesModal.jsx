@@ -8,11 +8,11 @@ function CheckTypesModal({ modal, setModal, type }) {
   return (
     <Modal isOpen={modal} size="xl">
       <ModalHeader>
-        {type === 'Equipments' ? 'Equipment' : type}
+        {type === 'Equipment' ? 'Equipment' : type}
         <br />
         <i style={{ fontSize: '11px' }}>
           <span className="text-secondary">
-            This page displays the existing {type === 'Equipments' ? 'Equipment' : type} in the
+            This page displays the existing {type === 'Equipment' ? 'Equipment' : type} in the
             inventory.{' '}
           </span>
         </i>

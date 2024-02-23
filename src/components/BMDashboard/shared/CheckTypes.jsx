@@ -41,7 +41,7 @@ function CheckTypes({ type }) {
                 <option value="All">All</option>
                 <option value="Materials">Materials</option>
                 <option value="Consumables">Consumables</option>
-                <option value="Equipments">Equipment</option>
+                <option value="Equipment">Equipment</option>
                 <option value="Tools">Tools</option>
                 <option value="Reusables">Reusables</option>
               </Input>
