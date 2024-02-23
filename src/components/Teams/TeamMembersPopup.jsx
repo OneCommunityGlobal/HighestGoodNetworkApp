@@ -146,6 +146,7 @@ export const TeamMembersPopup = React.memo(props => {
 
   // NEW CODE
   useEffect(() => {
+    console.log(props.teamData);
     setTeamVisibility(props.teamData);
   }, [props.teamData]);
 
@@ -157,7 +158,7 @@ export const TeamMembersPopup = React.memo(props => {
   const toggleInfoModal = () => {
     setInfoModal(!infoModal);
   };
-  //
+  // NEW CODE ENDS 
 
   return (
     <Container fluid>
