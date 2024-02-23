@@ -22,15 +22,27 @@ export const ReportHeader = ({ children, isActive, src, avatar, name, counts, ho
           <div className="report-header-entity-name">{name}</div>
           <div className="report-header-entity-other-info">
             <span style={{fontSize: "20px"}}>{hoursContributed}</span> 
-            {hoursContributed === 1 ? <> hour committed</> : <> hours committed</>}
+            {hoursContributed != null && (
+              <>
+                {hoursContributed === 1 ? <> hour committed</> : <> hours committed</>}
+              </>
+            )}
           </div>
           <div className="report-header-entity-other-info">
-            <span style={{fontSize: "20px"}}>{counts.activeMemberCount}</span> 
-            {counts.activeMemberCount === 1 ? <> active member</> : <> active members</>}
+            <span style={{fontSize: "20px"}}>{counts?.activeMemberCount}</span> 
+            {counts?.activeMemberCount != null && (
+              <>
+                {counts.activeMemberCount === 1 ? <> active member</> : <> active members</>}
+              </>
+            )}
           </div>
           <div className="report-header-entity-other-info">
-            <span style={{fontSize: "20px"}}>{counts.memberCount}</span> 
-            {counts.memberCount === 1 ? <> total contributor</> : <> total contributors</>}
+            <span style={{fontSize: "20px"}}>{counts?.memberCount}</span> 
+            {counts?.memberCount != null && (
+              <>
+                {counts.memberCount === 1 ? <> total contributor</> : <> total contributors</>}
+              </>
+            )}
           </div>
           {children}
         </div>
