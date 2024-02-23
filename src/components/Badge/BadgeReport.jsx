@@ -296,8 +296,6 @@ const BadgeReport = props => {
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
     }
-    // Update: we will compare the original count with the new count to detect badge deletion
-
 
     await props.changeBadgesByUserID(props.userId, newBadgeCollection);
     await props.getUserProfile(props.userId);
@@ -365,8 +363,8 @@ const BadgeReport = props => {
                     <td style={{ display: 'flex', alignItems: 'center' }} >
                       <>
                       {' '}
-                      <UncontrolledDropdown className="me-2" direction="down" >
-                        <DropdownToggle caret color="primary" style={boxStyle} >
+                      <UncontrolledDropdown className="me-2" direction="down">
+                        <DropdownToggle caret color="primary" style={boxStyle}>
                           Dates
                         </DropdownToggle>
                         <DropdownMenu className='badge_dropdown'>
@@ -667,7 +665,6 @@ const BadgeReport = props => {
             <span>Export Selected/Featured Badges to PDF</span>
           </Button>
         </div>
-       
         <Modal isOpen={showModal}>
           <ModalBody>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
