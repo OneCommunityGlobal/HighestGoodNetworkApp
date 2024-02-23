@@ -1,65 +1,53 @@
-import { useState, useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
-import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import './ItemListView.css';
 
-export function ItemListView(props) {
-  // props & state
-  const { materials, errors, dispatch } = props;
-  const [filteredMaterials, setFilteredMaterials] = useState(materials);
+export function ItemListView({ items, errors, fetchItems, UpdateItemModal }) {
+  const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
-  const [selectedMaterial, setSelectedMaterial] = useState('all');
+  const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
-  const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
-
-  // dispatch materials fetch action : on load and update
-  // // response is mapped to materials or errors in redux store
-  useEffect(() => {
-    if (!postMaterialUpdateResult || postMaterialUpdateResult?.result == null)
-      dispatch(fetchAllMaterials());
-  }, [postMaterialUpdateResult?.result]); // To refresh with new materials after update
 
   useEffect(() => {
-    if (materials) setFilteredMaterials([...materials]);
-  }, [materials]);
+    fetchItems();
+  }, [fetchItems]);
 
-  // filter materials data by project
   useEffect(() => {
-    let filterMaterials;
-    if (!materials) return;
-    if (selectedProject === 'all' && selectedMaterial === 'all') {
-      setFilteredMaterials([...materials]);
-    } else if (selectedProject !== 'all' && selectedMaterial === 'all') {
-      filterMaterials = materials.filter(mat => mat.project?.name === selectedProject);
-      setFilteredMaterials([...filterMaterials]);
-    } else if (selectedProject === 'all' && selectedMaterial !== 'all') {
-      filterMaterials = materials.filter(mat => mat.itemType?.name === selectedMaterial);
-      setFilteredMaterials([...filterMaterials]);
+    if (items) setFilteredItems([...items]);
+  }, [items]);
+
+  useEffect(() => {
+    let filterItems;
+    if (!items) return;
+    if (selectedProject === 'all' && selectedItem === 'all') {
+      setFilteredItems([...items]);
+    } else if (selectedProject !== 'all' && selectedItem === 'all') {
+      filterItems = items.filter(item => item.project?.name === selectedProject);
+      setFilteredItems([...filterItems]);
+    } else if (selectedProject === 'all' && selectedItem !== 'all') {
+      filterItems = items.filter(item => item.itemType?.name === selectedItem);
+      setFilteredItems([...filterItems]);
     } else {
-      filterMaterials = materials.filter(
-        mat => mat.project?.name === selectedProject && mat.itemType?.name === selectedMaterial,
+      filterItems = items.filter(
+        item => item.project?.name === selectedProject && item.itemType?.name === selectedItem,
       );
-      setFilteredMaterials([...filterMaterials]);
+      setFilteredItems([...filterItems]);
     }
-  }, [selectedProject, selectedMaterial]);
+  }, [selectedProject, selectedItem, items]);
 
-  // trigger error state if an error object is added to props
   useEffect(() => {
-    if (Object.entries(errors).length) {
-      setIsError(true);
-    }
+    setIsError(Object.entries(errors).length > 0);
   }, [errors]);
 
-  // error state
   if (isError) {
     return (
       <main className="materials_list_container">
-        <h2>Materials List</h2>
+        <h2>Items List</h2>
         <BMError errors={errors} />
       </main>
     );
@@ -67,34 +55,39 @@ export function ItemListView(props) {
 
   return (
     <main className="materials_list_container">
-      <h3>Materials</h3>
+      <h3>Items</h3>
       <section>
         <span style={{ display: 'flex', margin: '5px' }}>
-          {materials && (
+          {items && (
             <>
               <SelectForm
-                materials={materials}
+                materials={items}
                 setSelectedProject={setSelectedProject}
-                setSelectedMaterial={setSelectedMaterial}
+                setSelectedMaterial={setSelectedItem}
               />
               <SelectItem
-                materials={materials}
+                materials={items}
                 selectedProject={selectedProject}
-                selectedMaterial={selectedMaterial}
-                setSelectedMaterial={setSelectedMaterial}
+                selectedMaterial={selectedItem}
+                setSelectedMaterial={setSelectedItem}
               />
             </>
           )}
         </span>
-        {filteredMaterials && <ItemsTable filteredMaterials={filteredMaterials} />}
+        {filteredItems && <ItemsTable filteredItems={filteredItems} UpdateItemModal={UpdateItemModal} />}
       </section>
     </main>
   );
 }
 
-const mapStateToProps = state => ({
-  materials: state.materials.materialslist,
-  errors: state.errors,
-});
+ItemListView.propTypes = {
+  items: PropTypes.array.isRequired,
+  errors: PropTypes.object,
+  fetchItems: PropTypes.func.isRequired,
+};
 
-export default connect(mapStateToProps)(ItemListView);
+ItemListView.defaultProps = {
+  errors: {},
+};
+
+export default ItemListView;

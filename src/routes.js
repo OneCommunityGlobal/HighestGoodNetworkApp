@@ -60,7 +60,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 // const ReusablesView = lazy(() => import('./components/BMDashboard/Reusables/ReusablesView'));
 const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
 //TODO(Yan): needs to delete the following line or func after dev
-const ItemListView = lazy(() => import('./components/BMDashboard/ItemList'));
+const ItemListView = lazy(() => import('./components/BMDashboard/ItemList/MaterialList'));
 const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));

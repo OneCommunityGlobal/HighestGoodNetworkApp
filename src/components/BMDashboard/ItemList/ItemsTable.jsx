@@ -7,9 +7,8 @@ import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import { useDispatch } from 'react-redux';
 import RecordsModal from './RecordsModal';
-import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
 
-export default function ItemsTable({ filteredMaterials }) {
+export default function ItemsTable({ filteredItems, UpdateItemModal }) {
   const dispatch = useDispatch();
   const [sortedData, setData] = useState(null);
   const [modal, setModal] = useState(false);
@@ -19,20 +18,20 @@ export default function ItemsTable({ filteredMaterials }) {
   const [iconToDisplay, setIconToDisplay] = useState(faSort);
 
   useEffect(() => {
-    if (filteredMaterials && filteredMaterials.length > 0) {
-      setData(filteredMaterials);
+    if (filteredItems && filteredItems.length > 0) {
+      setData(filteredItems);
     }
-  }, [filteredMaterials]);
+  }, [filteredItems]);
 
   // Update Material Form
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
 
-  const handleEditRecordsClick = (selectedMaterial, type) => {
+  const handleEditRecordsClick = (selectedItem, type) => {
     if (type === 'Update') {
       dispatch(resetMaterialUpdate());
       setUpdateModal(true);
-      setUpdateRecord(selectedMaterial);
+      setUpdateRecord(selectedItem);
     }
   };
 
@@ -45,16 +44,11 @@ export default function ItemsTable({ filteredMaterials }) {
   const sortingAsc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.project?.name >= b.project?.name ? 1 : -1));
+      sorted = sortedData.sort((a, b) => a.project?.name.localeCompare(b.project?.name));
     } else if (columnName === 'InventoryItemType') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.itemType?.name >= b.itemType?.name ? 1 : -1));
+      sorted = sortedData.sort((a, b) => a.itemType?.name.localeCompare(b.itemType?.name));
     }
-
-    setData(sorted);
+    setData([...sorted]);
     setOrder('asc');
     setIconToDisplay(faSortUp);
   };
@@ -62,37 +56,20 @@ export default function ItemsTable({ filteredMaterials }) {
   const sortingDesc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.project?.name <= b.project?.name ? 1 : -1));
+      sorted = sortedData.sort((a, b) => b.project?.name.localeCompare(a.project?.name));
     } else if (columnName === 'InventoryItemType') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.itemType?.name <= b.itemType?.name ? 1 : -1));
+      sorted = sortedData.sort((a, b) => b.itemType?.name.localeCompare(a.itemType?.name));
     }
-
-    setData(sorted);
+    setData([...sorted]);
     setOrder('desc');
     setIconToDisplay(faSortDown);
   };
 
-  // const doSorting = columnName => {
-  //   if (order === '▼') {
-  //     sortingAsc(columnName);
-  //   }
-  //   else if(order === '▲'){
-  //     sortingDesc(columnName);
-  //   }
-  //  else {
-  //     setData(filteredMaterials);
-  //   }
-  // };
-
   const doSorting = columnName => {
     if (order === 'desc') {
-      setData(filteredMaterials);
+      setData(filteredItems);
       setIconToDisplay(faSort);
-      setOrder('normal');
+      setOrder('default');
     } else if (order === 'asc') {
       sortingDesc(columnName);
     } else {
@@ -102,14 +79,8 @@ export default function ItemsTable({ filteredMaterials }) {
 
   return (
     <>
-      <RecordsModal
-        modal={modal}
-        setModal={setModal}
-        record={record}
-        setRecord={setRecord}
-        recordType={recordType}
-      />
-      <UpdateMaterialModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
+      <RecordsModal modal={modal} setModal={setModal} record={record} setRecord={setRecord} recordType={recordType} />
+      <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       <div className="materials_table_container">
         <Table>
           <thead>
@@ -135,14 +106,12 @@ export default function ItemsTable({ filteredMaterials }) {
                 return (
                   <tr key={mat._id}>
                     <td>{mat.project?.name}</td>
-                    {/* Note: optional chaining to prevent crashes while db work ongoing */}
                     <td>{mat.itemType?.name}</td>
                     <td>{mat.itemType?.unit}</td>
                     <td>{mat.stockBought}</td>
                     <td>{mat.stockUsed}</td>
                     <td>{mat.stockAvailable}</td>
                     <td>{mat.stockWasted}</td>
-
                     <td className="materials_cell">
                       <button type="button" onClick={() => handleEditRecordsClick(mat, 'Update')}>
                         <BiPencil />
@@ -172,7 +141,7 @@ export default function ItemsTable({ filteredMaterials }) {
             ) : (
               <tr>
                 <td colSpan={11} style={{ textAlign: 'center' }}>
-                  No materials data
+                  No items data
                 </td>
               </tr>
             )}
