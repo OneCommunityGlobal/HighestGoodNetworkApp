@@ -2,12 +2,12 @@ import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureStore from 'redux-mock-store';
-import { renderWithProvider } from '../../../__tests__/utils';
+import { renderWithProvider } from '../../../__tests__/utils.js';
 import thunk from 'redux-thunk';
 
-import NewUserPopup from '../NewUserPopup';
+import NewUserPopup from '../../../components/UserManagement/NewUserPopup';
 
-jest.mock('../../UserProfile/AddNewUserProfile', () => {
+jest.mock('../../../components/UserProfile/AddNewUserProfile', () => {
   const userprofile = () => (
     <div>
       <h4>User Profile</h4>
