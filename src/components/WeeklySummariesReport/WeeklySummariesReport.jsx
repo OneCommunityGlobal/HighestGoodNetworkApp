@@ -98,7 +98,7 @@ export class WeeklySummariesReport extends Component {
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line no-unused-vars
-    // const recipientsRes = await this.props.getSummaryRecipients();
+    const recipientsRes = await this.props.getSummaryRecipients();
     // console.log('This is the recipientsRes', recipientsRes);
     // console.log('recepientsArr in componentDidNount:', this.props.recepientsArr);
     // eslint-disable-next-line react/destructuring-assignment

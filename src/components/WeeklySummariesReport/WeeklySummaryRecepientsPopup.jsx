@@ -1,22 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { boxStyle } from 'styles';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
+import { useDispatch } from 'react-redux';
 import MembersAutoComplete from '../Teams/MembersAutoComplete';
+import {
+  getSummaryRecipients,
+  addSummaryRecipient,
+  deleteSummaryRecipient,
+} from '../../actions/weeklySummariesReportRecepients';
 
 // const membersList = [{ id: 1, firstName: "onecommunityglobal", lastName: '', email: "onecommunityglobal@gmail.com" },
 // { id: 2, firstName: "onecommunityhospitality", lastName: '', email: "onecommunityhospitality@gmail.com" }]
 
 const WeeklySummaryRecipientsPopup = React.memo(props => {
-  const { open, onClose, summaries, onAddUser, recipients, onDeleteClick } = props;
+  const dispatch = useDispatch();
+  // const { open, onClose, summaries, onAddUser, recipients, onDeleteClick } = props;
+  const { open, onClose, summaries, onAddUser, onDeleteClick } = props;
 
   const [searchText, setSearchText] = useState('');
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
+  // The below states keeps a track of the list of Weekly Summary Report Recipients
+  const [recipients, setRecipients] = useState([]);
+  const [updatedRecipients, setUpdatedRecipients] = useState(false);
+
+  useEffect(() => {
+    const getRecipients = async () => {
+      try {
+        const data = await dispatch(getSummaryRecipients());
+        setRecipients([...data]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getRecipients();
+  }, [updatedRecipients]);
 
   const closePopup = () => {
     onClose();
+    setUpdatedRecipients(false);
   };
 
   const selectUser = user => {
@@ -27,9 +51,11 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
   const addUserFn = () => {
     if (selectedUser && !recipients?.some(x => x._id === selectedUser?._id)) {
       onAddUser(selectedUser, recipients);
+      setUpdatedRecipients(true);
       setSearchText('');
     } else {
       setIsValidUser(false);
+      setUpdatedRecipients(false);
     }
   };
 
@@ -70,7 +96,10 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
                     <td>
                       <Button
                         color="danger"
-                        onClick={() => onDeleteClick(`${user._id}`)}
+                        onClick={() => {
+                          onDeleteClick(`${user._id}`);
+                          setUpdatedRecipients(true);
+                        }}
                         style={boxStyle}
                       >
                         Delete
