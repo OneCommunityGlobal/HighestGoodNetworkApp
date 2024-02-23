@@ -54,7 +54,6 @@ import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesLis
 import EquipmentList from './components/BMDashboard/Equipment/List';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
-import { WbsPieChart } from 'components/Reports/ProjectReport/WbsPiechart/WbsPieChart';
 // import MaterialsList from './components/BMDashboard/MaterialsList';
 // import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
 // import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
@@ -247,10 +246,6 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
-
-
-        <Route path='/mychart' component={WbsPieChart} />
-
 
       </Switch>
     </>

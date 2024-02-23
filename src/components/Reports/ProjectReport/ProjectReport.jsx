@@ -13,6 +13,7 @@ import { WbsTable } from '../WbsTable';
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
+import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
 
 export const ProjectReport = ({ match }) => {
   const [memberCount, setMemberCount] = useState(0);
@@ -20,6 +21,7 @@ export const ProjectReport = ({ match }) => {
   const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(
     projectReportViewData,
   );
+
 
   useEffect(() => {
     if (match) {
@@ -65,6 +67,9 @@ export const ProjectReport = ({ match }) => {
         <TasksTable WbsTasksID={wbsTasksID} />
       </ReportPage.ReportBlock>
       </div>
+      <ReportPage.ReportBlock>
+        <WbsPieChart projectMembers={projectMembers} projectName={projectName}/>
+      </ReportPage.ReportBlock>
     </ReportPage>
   );
 };
