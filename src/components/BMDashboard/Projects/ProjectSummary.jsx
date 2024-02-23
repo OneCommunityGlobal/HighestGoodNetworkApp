@@ -14,10 +14,10 @@ function ProjectSummary({ project }) {
   return (
     <div className="project-summary_content">
       <Row className="project-summary_header mx-auto">
-        <h2>{project.name} summary</h2>
+        <h2>{project.name} Summary</h2>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs="5">
+        <Col xs="4">
           <Label className="project-summary_label">Total hours of work done:</Label>
         </Col>
         <Col xs="7">
@@ -25,7 +25,7 @@ function ProjectSummary({ project }) {
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs="5">
+        <Col xs="4">
           <Label className="project-summary_label">Total cost of materials:</Label>
         </Col>
         <Col xs="7">
@@ -33,7 +33,7 @@ function ProjectSummary({ project }) {
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs="5">
+        <Col xs="4">
           <Label className="project-summary_label">Total cost of equipment:</Label>
         </Col>
         <Col xs="7">
@@ -41,7 +41,7 @@ function ProjectSummary({ project }) {
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs="5">
+        <Col xs="4">
           <Label className="project-summary_label">Waste:</Label>
         </Col>
         <Col xs="7">
@@ -52,7 +52,7 @@ function ProjectSummary({ project }) {
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs="5">
+        <Col xs="4">
           <Label className="project-summary_label">Total members:</Label>
         </Col>
         <Col xs="7">
@@ -60,7 +60,7 @@ function ProjectSummary({ project }) {
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs="5">
+        <Col xs="4">
           <Label className="project-summary_label">Rentals:</Label>
         </Col>
         <Col xs="7">
@@ -68,7 +68,7 @@ function ProjectSummary({ project }) {
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs="5">
+        <Col xs="4">
           <Label className="project-summary_label">Most material bought:</Label>
         </Col>
         <Col xs="7">
@@ -79,10 +79,10 @@ function ProjectSummary({ project }) {
         </Col>
       </Row>
       <Row className="project-summary_item mx-auto">
-        <Col xs="5">
+        <Col xs="4">
           <Label className="project-summary_label">Stock:</Label>
         </Col>
-        <Col xs="7">
+        <Col xs="8">
           <span className="project-summary_span">
             {leastMaterialAvailable?.itemType.name} is nearly out of stock (
             {leastMaterialAvailable?.stockAvailable} {leastMaterialAvailable?.itemType.unit}{' '}
