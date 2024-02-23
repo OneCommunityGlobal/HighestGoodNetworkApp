@@ -440,7 +440,7 @@ const Timelog = props => {
           <Row>
             <Col md={12}>
               <Card>
-                <CardHeader>
+                <CardHeader className='card-header-shadow'>
                   <Row>
                     <Col md={11}>
                       <CardTitle tag="h4">
