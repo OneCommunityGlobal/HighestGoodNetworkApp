@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { boxStyle } from 'styles';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
+import { toast } from 'react-toastify';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
@@ -16,23 +17,24 @@ import {
 
 const WeeklySummaryRecipientsPopup = React.memo(props => {
   const dispatch = useDispatch();
-  // const { open, onClose, summaries, onAddUser, recipients, onDeleteClick } = props;
-  const { open, onClose, summaries, onAddUser, onDeleteClick } = props;
+
+  const { open, onClose, summaries } = props;
 
   const [searchText, setSearchText] = useState('');
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
-  // The below states keeps a track of the list of Weekly Summary Report Recipients
+  // The below states keeps a track of the list of Weekly Summary Report Recipients - sucheta
   const [recipients, setRecipients] = useState([]);
   const [updatedRecipients, setUpdatedRecipients] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line consistent-return
     const getRecipients = async () => {
       try {
         const data = await dispatch(getSummaryRecipients());
         setRecipients([...data]);
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        return err;
       }
     };
     getRecipients();
@@ -48,17 +50,39 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
     setIsValidUser(true);
   };
 
-  const addUserFn = () => {
+  // Adds new recipient of the Weekly Summary Report
+  const addUserFn = async () => {
     if (selectedUser && !recipients?.some(x => x._id === selectedUser?._id)) {
-      onAddUser(selectedUser, recipients);
-      setUpdatedRecipients(true);
-      setSearchText('');
+      try {
+        const result = await dispatch(addSummaryRecipient(selectedUser._id));
+        if (!result === 200) {
+          toast.error('Did not find recipient');
+          return;
+        }
+        toast.success('Added new recipient.');
+        setRecipients(prevState => [...prevState, selectedUser]);
+        setSearchText('');
+      } catch (error) {
+        toast.error('Could not add recipient');
+      }
     } else {
       setIsValidUser(false);
-      setUpdatedRecipients(false);
     }
   };
-
+  // Function to delete recipient
+  const deleteRecipient = async userId => {
+    try {
+      const result = await dispatch(deleteSummaryRecipient(userId));
+      if (!result === 200) {
+        toast.error('Could not delete recipient at this time! Please try again');
+      } else {
+        toast.success('Deleted successful!');
+        setUpdatedRecipients(prevState => !prevState);
+      }
+    } catch (err) {
+      toast.error('Could not delete recipient at this time! Please try again');
+    }
+  };
   return (
     <Container fluid>
       <Modal isOpen={open} toggle={closePopup} autoFocus={false} size="lg">
@@ -97,8 +121,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
                       <Button
                         color="danger"
                         onClick={() => {
-                          onDeleteClick(`${user._id}`);
-                          setUpdatedRecipients(true);
+                          deleteRecipient(`${user._id}`);
                         }}
                         style={boxStyle}
                       >

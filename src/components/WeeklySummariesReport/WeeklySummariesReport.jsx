@@ -35,11 +35,6 @@ import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
-import {
-  getSummaryRecipients,
-  addSummaryRecipient,
-  deleteSummaryRecipient,
-} from '../../actions/weeklySummariesReportRecepients';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -97,10 +92,6 @@ export class WeeklySummariesReport extends Component {
     } = this.props;
     // 1. fetch report
     const res = await getWeeklySummariesReport();
-    // eslint-disable-next-line no-unused-vars
-    const recipientsRes = await this.props.getSummaryRecipients();
-    // console.log('This is the recipientsRes', recipientsRes);
-    // console.log('recepientsArr in componentDidNount:', this.props.recepientsArr);
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
@@ -205,11 +196,6 @@ export class WeeklySummariesReport extends Component {
     }
     this.setState({ allRoleInfo });
   }
-
-  getDetails = async () => {
-    const data = await this.props.getSummaryRecipients();
-    this.setState({ summaryRecepients: data });
-  };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.tempArr !== this.state.tempArr) {
@@ -372,18 +358,9 @@ export class WeeklySummariesReport extends Component {
     this.setState({ summaryRecepientsPopupOpen: false });
   };
 
-  onAddUser = async user => {
-    const result = await this.props.addSummaryRecipient(user._id);
-    this.setState(prevState => ({
-      tempArr: [...prevState.tempArr, user],
-    }));
-  };
-
-  // alter memberAutoComplete function
-  // finish delete function for frontend and backend and test cron job
-  onDeleteUser = async userId => {
-    await this.props.deleteSummaryRecipient(userId);
-  };
+  // onDeleteUser = async userId => {
+  //   await this.props.deleteSummaryRecipient(userId);
+  // };
 
   setSummaryRecepientsPopup = val => {
     this.setState({ summaryRecepientsPopupOpen: val });
@@ -395,9 +372,6 @@ export class WeeklySummariesReport extends Component {
         open={this.state.summaryRecepientsPopupOpen}
         onClose={this.onSummaryRecepientsPopupClose}
         summaries={this.props.summaries}
-        onDeleteClick={this.onDeleteUser}
-        onAddUser={this.onAddUser}
-        recipients={this.state.summaryRecepients}
       />
     );
   };
@@ -675,7 +649,4 @@ export default connect(mapStateToProps, {
   hasPermission,
   getInfoCollections,
   fetchAllBadges,
-  getSummaryRecipients,
-  addSummaryRecipient,
-  deleteSummaryRecipient,
 })(WeeklySummariesReport);

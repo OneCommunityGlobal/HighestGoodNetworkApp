@@ -12,6 +12,7 @@ import {
 } from 'reactstrap';
 import { boxStyle } from 'styles';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../../utils/URL';
 import {
   authorizeWeeklySummaries,
@@ -48,6 +49,7 @@ export default function PasswordInputModal({
         } else {
           dispatch(authorizeWeeklySummaries(response.data.message));
           checkForValidPwd(true);
+          toast.success('Authorization successful! Please wait to see Recipients table!');
           setSummaryRecepientsPopup(true);
         }
       });
@@ -62,7 +64,7 @@ export default function PasswordInputModal({
   const onSubmit = () => {
     setPasswordField('');
     authorizeWeeklySummariesButton(passwordField);
-    
+
     onClose();
   };
 
