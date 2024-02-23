@@ -10,8 +10,8 @@ function Timelog() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
-  function formatHours(hours) {
-    const totalSeconds = Math.round(hours * 3600);
+  function formatHours(seconds) {
+    const totalSeconds = Math.round(seconds);
     const formattedHours = Math.floor(totalSeconds / 3600);
     const formattedMinutes = Math.floor((totalSeconds % 3600) / 60);
     const formattedSeconds = totalSeconds % 60;
@@ -42,6 +42,8 @@ function Timelog() {
     const userProfile = await dispatch(getUserProfile(userID));
     const { firstName, lastName, role, totalTangibleHrs, _id } = userProfile;
     const timerStatus = false;
+    const startTime = '--';
+    const currentTime = 0;
 
     const userProfileData = {
       firstName,
@@ -49,6 +51,8 @@ function Timelog() {
       role,
       totalTangibleHrs,
       timerStatus,
+      startTime,
+      currentTime,
       _id,
     };
 
@@ -78,12 +82,50 @@ function Timelog() {
     }
   }
 
+  function getCurrentTimeInLA() {
+    const date = new Date();
+    const options = {
+      timeZone: 'America/Los_Angeles',
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+    };
+    return date.toLocaleString('en-US', options);
+  }
+
   function handleTimerChange(userID, status) {
     const updatedUsersData = membersData.map(user => {
       if (user._id === userID) {
-        return { ...user, timerStatus: status === 'START' };
-      }
+        const updatedUser = { ...user };
+        if (status === 'START') {
+          updatedUser.timerStatus = true;
 
+          const intervalId = setInterval(() => {
+            updatedUser.currentTime += 1;
+            setMembersData(prevMembersData => {
+              const updatedData = prevMembersData.map(member => {
+                if (member._id === userID) {
+                  return updatedUser;
+                }
+                return member;
+              });
+              return updatedData;
+            });
+          }, 1000);
+
+          updatedUser.intervalId = intervalId;
+        } else if (status === 'PAUSE') {
+          updatedUser.timerStatus = false;
+          clearInterval(updatedUser.intervalId);
+          delete updatedUser.intervalId;
+        }
+
+        if (updatedUser.startTime === '--' && status === 'START') {
+          updatedUser.startTime = getCurrentTimeInLA();
+        }
+        return updatedUser;
+      }
       return user;
     });
 
@@ -116,7 +158,7 @@ function Timelog() {
                 <div
                   className={`MemberTimelogName ${member.role}Name`}
                 >{`${member.firstName} ${member.lastName}`}</div>
-                <div className="MemberTimelogTime">{formatHours(member.totalTangibleHrs)}</div>
+                <div className="MemberTimelogTime">{formatHours(member.currentTime)}</div>
                 <div className="MemberTimelogButtonRow">
                   {!member.timerStatus ? (
                     <div
@@ -151,7 +193,7 @@ function Timelog() {
                 </div>
                 <div className="MemberTimelogStartTime">
                   <div>Start at:</div>
-                  <div className="MemberTimelogStartTimeValue">HH:MM:SS</div>
+                  <div className="MemberTimelogStartTimeValue">{member.startTime}</div>
                 </div>
                 <div className="MemberTimelogTaskContainer">
                   <div>Task:</div>
