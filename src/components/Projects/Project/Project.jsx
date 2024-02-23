@@ -41,11 +41,13 @@ const Project = props => {
   };
 
   return (
+    <table>
+    <tbody>
     <tr className="projects__tr" id={'tr_' + props.projectId}>
       <th className="projects__order--input" scope="row">
         <div>{props.index + 1}</div>
       </th>
-      <td className="projects__name--input">
+      <td data-testid="projects__name--input" className="projects__name--input">
         {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
           <input
             type="text"
@@ -61,6 +63,7 @@ const Project = props => {
       <td className="projects__category--input">
         {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
           <select
+            data-testid="projects__category--input" //added for unit test
             value={props.category}
             onChange={e => {
               setCategory(e.target.value);
@@ -80,7 +83,7 @@ const Project = props => {
           category
         )}
       </td>
-      <td className="projects__active--input" onClick={canPutProject ? updateActive : null}>
+      <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -119,6 +122,7 @@ const Project = props => {
       {(canDeleteProject || canSeeProjectManagementFullFunctionality) ? (
         <td>
           <button
+            data-testid="delete-button"
             type="button"
             className="btn btn-outline-danger"
             onClick={e => props.onClickDelete(props.projectId, props.active, props.name, props.category)}
@@ -129,6 +133,8 @@ const Project = props => {
         </td>
       ) : null}
     </tr>
+    </tbody>
+    </table>
   );
 };
 const mapStateToProps = state => state;
