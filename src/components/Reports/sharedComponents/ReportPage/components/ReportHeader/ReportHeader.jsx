@@ -22,7 +22,7 @@ export const ReportHeader = ({ children, isActive, src, avatar, name, counts, ho
           <div className="report-header-entity-name">{name}</div>
           <div className="report-header-entity-other-info">
             <span style={{fontSize: "20px"}}>{hoursContributed}</span> 
-            {hoursContributed === 1 ? <> hour contributed</> : <> hours contributed</>}
+            {hoursContributed === 1 ? <> hour committed</> : <> hours committed</>}
           </div>
           <div className="report-header-entity-other-info">
             <span style={{fontSize: "20px"}}>{counts.activeMemberCount}</span> 
