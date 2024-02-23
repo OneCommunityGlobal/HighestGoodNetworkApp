@@ -33,7 +33,6 @@ export const fetchAllEquipments = () => {
     axios.get(ENDPOINTS.BM_EQUIPMENTS)
       .then(res => {
         dispatch(setEquipments(res.data))
-        console.log("Equipment is", res);
       })
       .catch(err => {
         dispatch(setErrors(err))
