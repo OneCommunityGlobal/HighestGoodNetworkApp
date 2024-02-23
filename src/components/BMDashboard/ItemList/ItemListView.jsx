@@ -7,7 +7,7 @@ import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import './ItemListView.css';
 
-export function ItemListView({ items, errors, fetchItems, UpdateItemModal }) {
+export function ItemListView({ items, errors, fetchItems, UpdateItemModal, resetItemUpdate, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
@@ -74,7 +74,7 @@ export function ItemListView({ items, errors, fetchItems, UpdateItemModal }) {
             </>
           )}
         </span>
-        {filteredItems && <ItemsTable filteredItems={filteredItems} UpdateItemModal={UpdateItemModal} />}
+        {filteredItems && <ItemsTable filteredItems={filteredItems} UpdateItemModal={UpdateItemModal} resetItemUpdate={resetItemUpdate} dynamicColumns={dynamicColumns} />}
       </section>
     </main>
   );

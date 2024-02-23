@@ -3,12 +3,10 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
-
-import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import { useDispatch } from 'react-redux';
 import RecordsModal from './RecordsModal';
 
-export default function ItemsTable({ filteredItems, UpdateItemModal }) {
+export default function ItemsTable({ filteredItems, UpdateItemModal, resetItemUpdate, dynamicColumns }) {
   const dispatch = useDispatch();
   const [sortedData, setData] = useState(null);
   const [modal, setModal] = useState(false);
@@ -17,19 +15,22 @@ export default function ItemsTable({ filteredItems, UpdateItemModal }) {
   const [order, setOrder] = useState('default');
   const [iconToDisplay, setIconToDisplay] = useState(faSort);
 
+  function getNestedValue(obj, path) {
+    return path.split('.').reduce((acc, part) => acc ? acc[part] : undefined, obj);
+  }
+
   useEffect(() => {
     if (filteredItems && filteredItems.length > 0) {
       setData(filteredItems);
     }
   }, [filteredItems]);
 
-  // Update Material Form
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
 
   const handleEditRecordsClick = (selectedItem, type) => {
     if (type === 'Update') {
-      dispatch(resetMaterialUpdate());
+      dispatch(resetItemUpdate());
       setUpdateModal(true);
       setUpdateRecord(selectedItem);
     }
@@ -44,11 +45,16 @@ export default function ItemsTable({ filteredItems, UpdateItemModal }) {
   const sortingAsc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = sortedData.sort((a, b) => a.project?.name.localeCompare(b.project?.name));
+      sorted = []
+        .concat(...sortedData)
+        .sort((a, b) => (a.project?.name >= b.project?.name ? 1 : -1));
     } else if (columnName === 'InventoryItemType') {
-      sorted = sortedData.sort((a, b) => a.itemType?.name.localeCompare(b.itemType?.name));
+      sorted = []
+        .concat(...sortedData)
+        .sort((a, b) => (a.itemType?.name >= b.itemType?.name ? 1 : -1));
     }
-    setData([...sorted]);
+
+    setData(sorted);
     setOrder('asc');
     setIconToDisplay(faSortUp);
   };
@@ -56,11 +62,16 @@ export default function ItemsTable({ filteredItems, UpdateItemModal }) {
   const sortingDesc = columnName => {
     let sorted = [];
     if (columnName === 'ProjectName') {
-      sorted = sortedData.sort((a, b) => b.project?.name.localeCompare(a.project?.name));
+      sorted = []
+        .concat(...sortedData)
+        .sort((a, b) => (a.project?.name <= b.project?.name ? 1 : -1));
     } else if (columnName === 'InventoryItemType') {
-      sorted = sortedData.sort((a, b) => b.itemType?.name.localeCompare(a.itemType?.name));
+      sorted = []
+        .concat(...sortedData)
+        .sort((a, b) => (a.itemType?.name <= b.itemType?.name ? 1 : -1));
     }
-    setData([...sorted]);
+
+    setData(sorted);
     setOrder('desc');
     setIconToDisplay(faSortDown);
   };
@@ -91,36 +102,32 @@ export default function ItemsTable({ filteredItems, UpdateItemModal }) {
               <th onClick={() => doSorting('InventoryItemType')}>
                 Name <FontAwesomeIcon icon={iconToDisplay} size="lg" />
               </th>
-              <th>Unit</th>
-              <th>Bought</th>
-              <th>Used</th>
-              <th>Available</th>
-              <th>Waste</th>
+              {dynamicColumns.map(({ label }) => (
+                <th key={label}>{label}</th>
+              ))}
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
           </thead>
           <tbody>
             {sortedData && sortedData.length > 0 ? (
-              sortedData.map(mat => {
+              sortedData.map(el => {
                 return (
-                  <tr key={mat._id}>
-                    <td>{mat.project?.name}</td>
-                    <td>{mat.itemType?.name}</td>
-                    <td>{mat.itemType?.unit}</td>
-                    <td>{mat.stockBought}</td>
-                    <td>{mat.stockUsed}</td>
-                    <td>{mat.stockAvailable}</td>
-                    <td>{mat.stockWasted}</td>
+                  <tr key={el._id}>
+                    <td>{el.project?.name}</td>
+                    <td>{el.itemType?.name}</td>
+                    {dynamicColumns.map(({ label, key }) => (
+                      <td key={label}>{getNestedValue(el, key)}</td>
+                    ))}
                     <td className="materials_cell">
-                      <button type="button" onClick={() => handleEditRecordsClick(mat, 'Update')}>
+                      <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>
                         <BiPencil />
                       </button>
                       <Button
                         color="primary"
                         outline
                         size="sm"
-                        onClick={() => handleViewRecordsClick(mat, 'Update')}
+                        onClick={() => handleViewRecordsClick(el, 'Update')}
                       >
                         View
                       </Button>
@@ -130,7 +137,7 @@ export default function ItemsTable({ filteredItems, UpdateItemModal }) {
                         color="primary"
                         outline
                         size="sm"
-                        onClick={() => handleViewRecordsClick(mat.purchaseRecord, 'Purchase')}
+                        onClick={() => handleViewRecordsClick(el.purchaseRecord, 'Purchase')}
                       >
                         View
                       </Button>

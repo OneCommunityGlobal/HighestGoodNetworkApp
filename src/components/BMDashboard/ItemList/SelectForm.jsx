@@ -1,7 +1,6 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
 export default function SelectForm({ materials, setSelectedProject, setSelectedMaterial }) {
-  // create selectable projects
   let projectsSet = [];
   if (materials.length) {
     projectsSet = [...new Set(materials.map(mat => mat.project?.name))];
