@@ -119,6 +119,16 @@ function Timelog() {
           updatedUser.timerStatus = false;
           clearInterval(updatedUser.intervalId);
           delete updatedUser.intervalId;
+        } else if (status === 'CLEAR') {
+          updatedUser.timerStatus = false;
+          clearInterval(updatedUser.intervalId);
+          updatedUser.currentTime = 0;
+          updatedUser.startTime = '--';
+        } else if (status === 'STOP') {
+          updatedUser.timerStatus = false;
+          clearInterval(updatedUser.intervalId);
+          updatedUser.currentTime = 0;
+          updatedUser.startTime = '--';
         }
 
         if (updatedUser.startTime === '--' && status === 'START') {
@@ -189,7 +199,19 @@ function Timelog() {
                       PAUSE
                     </div>
                   )}
-                  <div className="MemberTimelogBtn bmTLStop">STOP</div>
+                  <div
+                    className="MemberTimelogBtn bmTLStop"
+                    onClick={() => handleTimerChange(member._id, 'STOP')}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        handleTimerChange(member._id, 'STOP');
+                      }
+                    }}
+                  >
+                    STOP
+                  </div>
                 </div>
                 <div className="MemberTimelogStartTime">
                   <div>Start at:</div>
@@ -201,7 +223,19 @@ function Timelog() {
                     <option value="">Select a Task</option>
                   </select>
                 </div>
-                <div className="MemberTimelogBtn bmTLClear">CLEAR</div>
+                <div
+                  className="MemberTimelogBtn bmTLClear"
+                  onClick={() => handleTimerChange(member._id, 'CLEAR')}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      handleTimerChange(member._id, 'CLEAR');
+                    }
+                  }}
+                >
+                  CLEAR
+                </div>
               </div>
             ))}
         </div>
