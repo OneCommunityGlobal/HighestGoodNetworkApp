@@ -1,1 +1,3 @@
-export { default } from './UpdatePassword';
+import UpdatePassword from './UpdatePassword';
+
+export default UpdatePassword;
