@@ -17,7 +17,7 @@ import './ProjectReport.css';
 export const ProjectReport = ({ match }) => {
   const [memberCount, setMemberCount] = useState(0);
   const dispatch = useDispatch();
-  const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(
+  const { wbs, projectMembers, tasks, isActive, projectName, wbsTasksID, isLoading } = useSelector(
     projectReportViewData,
   );
 
@@ -47,6 +47,7 @@ export const ProjectReport = ({ match }) => {
           avatar={<FiBox />} 
           name={projectName} 
           counts={{ activeMemberCount: memberCount, memberCount: projectMembers.members.length }} 
+          hoursContributed={tasks.taskItems.reduce((total, task) => total + task.estimatedHours, 0)}
         />
       )}
     >

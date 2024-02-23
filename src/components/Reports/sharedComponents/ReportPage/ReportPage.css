@@ -67,5 +67,11 @@
   text-align: center;
   background-color:white;
   border-radius: 20px;
-  box-shadow: -1px 1px 10px #d2d0d5;
+  box-shadow: 0 0 12px #eae1f6;
+}
+
+@media (max-width: 450px){
+  .project-header{
+    margin-top: 1rem;
+  }
 }
