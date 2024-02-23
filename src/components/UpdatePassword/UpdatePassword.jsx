@@ -55,7 +55,7 @@ class UpdatePassword extends Form {
           string: {
             regex: {
               base:
-                'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+                'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, one number and one special character',
             },
           },
         },
