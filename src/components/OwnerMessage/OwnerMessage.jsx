@@ -127,8 +127,7 @@ function OwnerMessage({
     <div className="message-container">
       {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
-      {(user.role === 'Owner' ||
-        user.permissions.frontPermissions.includes('editHeaderMessage')) && (
+      {(props.hasPermission('editHeaderMessage')) && (
         <div className="icon-wrapper">
           <button type="submit" onClick={toggle}>
             <img src={editIcon} alt="edit icon" title="Edit this header" />
