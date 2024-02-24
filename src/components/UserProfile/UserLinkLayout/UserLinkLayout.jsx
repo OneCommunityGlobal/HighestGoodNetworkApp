@@ -11,7 +11,7 @@ const UserLinkLayout = props => {
   return (
     <div data-testid="user-link">
       <p style={{ display: 'inline-block', marginRight: 10 }}>LINKS </p>
-      {(props.canEdit || props.canManageEditLink) ? (
+      {(props.canEdit) ? (
         <LinkModButton userProfile={userProfile} updateLink={updateLink} role={props.role} handleSubmit={handleSubmit}/>
       ) : null}
       <UserLinks linkSection="user" links={personalLinks} handleLinkModel={handleLinkModel} />

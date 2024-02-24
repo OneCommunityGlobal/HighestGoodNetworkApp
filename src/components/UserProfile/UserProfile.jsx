@@ -867,6 +867,7 @@ function UserProfile(props) {
               setOriginalUserProfile={setOriginalUserProfile}
               role={requestorRole}
               canEdit={canEdit}
+              canManageEditLink={canManageEditLink}
               handleSubmit={handleBadgeSubmit}
               isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} //
             />
@@ -882,7 +883,7 @@ function UserProfile(props) {
                 handleLinkModel={props.handleLinkModel}
                 handleSubmit={handleSubmit}
                 role={requestorRole}
-                canEdit={canEdit}
+                canEdit={canEditLink}
                 canManageEditLink={canManageEditLink}
               />
               <BlueSquareLayout
