@@ -240,7 +240,7 @@ function ReportDetails({
                   ),
                 }}
               >
-                Hours logged (test test):
+                Hours logged:
               </b>
               {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
                 <p
