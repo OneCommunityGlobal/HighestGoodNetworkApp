@@ -753,16 +753,8 @@ function UserProfile(props) {
               <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
             ) : null}
             <div className="profile-head">
-              <h5>{`${firstName} ${lastName}`}</h5>
-              {/* <i
-                data-toggle="tooltip"
-                data-placement="right"
-                title="Click for more information"
-                style={{ fontSize: 24, cursor: 'pointer' }}
-                aria-hidden="true"
-                className="fa fa-info-circle"
-                onClick={toggleInfoModal}
-              />{' '} */}
+              <h5 className="mr-2">{`${firstName} ${lastName}`}</h5>
+              <div style={{marginTop: '6px'}} >
               <EditableInfoModal
                 areaName="UserProfileInfoModal"
                 areaTitle="User Profile"
@@ -770,6 +762,8 @@ function UserProfile(props) {
                 isPermissionPage={true}
                 role={requestorRole} // Pass the 'role' prop to EditableInfoModal
               />
+              </div>
+              <span className="mr-2">
               <ActiveCell
                 isActive={userProfile.isActive}
                 user={userProfile}
@@ -783,12 +777,14 @@ function UserProfile(props) {
                   setActiveInactivePopupOpen(true);
                 }}
               />
+              </span>
               {canEdit && (
+                <span className="mr-2">
                 <i
                   data-toggle="tooltip"
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer' }}
+                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
                   title="Click to see user's timelog"
                   onClick={e => {
                     if (e.metaKey || e.ctrlKey) {
@@ -799,6 +795,7 @@ function UserProfile(props) {
                     }
                   }}
                 />
+                </span>
               )}
               <Button
                 onClick={() => {

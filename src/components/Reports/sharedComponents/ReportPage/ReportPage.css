@@ -48,3 +48,15 @@
     align-items: center;
   }
 }
+
+
+@media (max-width: 435px) {
+
+  .report-page-content {
+    padding: 0px;
+  }
+
+  .report-page-wrapper {
+    padding: 20px;
+  }
+}
