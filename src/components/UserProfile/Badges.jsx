@@ -74,7 +74,7 @@ export const Badges = props => {
               </span>
         
             <div >
-              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator' || canModifyBadgeAmount) && (
+              {(props.canEdit || canModifyBadgeAmount) && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
                     Select Featured
