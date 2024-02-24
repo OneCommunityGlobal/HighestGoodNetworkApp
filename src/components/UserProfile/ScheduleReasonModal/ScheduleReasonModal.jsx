@@ -57,14 +57,14 @@ const ScheduleReasonModal = ({
 // This 'if' statement will be executed when the modal is opened or when the date is changed. 
 //If the text area with the label 'What is your reason for requesting this time off' has been filled out, the 'if' statement will be ignored.
        
-      if (reason === '') { 
-        responseReason.data.reasons.find((item) => {
-          const newDate = item.date.slice(0,-14);
-          if(localStorageGetItemDate === newDate || !localStorageGetItemDate){
-          item.reason === ''?  setIsReasonUpdated(false) : setIsReasonUpdated(true);
-          setReason(item.reason); 
-            
-            }
+if (reason === '') { 
+  responseReason.data.reasons.find((item) => {
+    const newDate = item.date.slice(0,-14);
+    if(localStorageGetItemDate === newDate || !localStorageGetItemDate){
+    item.reason === ''?  setIsReasonUpdated(false) : setIsReasonUpdated(true);
+    setReason(item.reason); 
+      
+      }
             
           });
 

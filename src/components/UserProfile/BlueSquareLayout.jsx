@@ -103,6 +103,7 @@ const BlueSquareLayout = props => {
 
       // The date will be saved in the local storage to be used for recovering the value of the reason.
       localStorage.setItem('date', date);  
+
     } else { //add/create reason
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await addReason(userProfile._id, { date: date, message: reason });
@@ -121,6 +122,7 @@ const BlueSquareLayout = props => {
 
     // The date will be saved in the local storage to be used for recovering the value of the reason.
     localStorage.setItem('date', date);  
+
   };
 
 // ===============================================================
