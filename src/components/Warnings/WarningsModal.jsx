@@ -6,6 +6,20 @@
 /* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Row } from 'reactstrap';
 import { useEffect, useState } from 'react';
+import reorder from './reorder.svg';
+import {
+  postNewWarning,
+  getWarningDescriptions,
+  deleteWarningDescription,
+  updateWarningDescription,
+} from '../../actions/warnings';
+import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faYinYang } from '@fortawesome/free-solid-svg-icons';/
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 /**
  * Modal displaying information about how time entry works
  * @param {*} props
@@ -19,16 +33,115 @@ function WarningsModal({
   deleteWarningTriggered,
   warning,
   handleIssueWarning,
-  warningsModal,
-  warningDescriptions,
   setWarningsModal,
-  handleDeleteDescription,
-  handleAddNewWarning,
-  handleDeactivate,
+  setToggleWarningModal,
+  toggleWarningModal,
+  getUsersWarnings,
+  // handleDeleteDescription,
+  // handleAddNewWarning,
+  // handleDeactivate,
 }) {
   const { today, id, colorAssigned, warningText, username } = warning || {};
   const [toggeleWarningInput, setToggeleWarningInput] = useState(false);
   const [newWarning, setNewWarning] = useState('');
+  const [warningDescriptions, setWarningDescriptions] = useState([]);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchWarningDescriptions = async () => {
+      dispatch(getWarningDescriptions()).then(res => {
+        console.log('respoinse', res);
+        setWarningDescriptions(res);
+      });
+    };
+    fetchWarningDescriptions();
+  }, []);
+
+  // const popover = (
+  //   <Popover id="details">
+  //     <Popover.Title as="h4">Description</Popover.Title>
+  //     <Popover.Content>test</Popover.Content>
+  //   </Popover>
+  // );
+
+  // have the order based on the ids
+  //change the array if moved around
+  //
+
+  const handleOverlayTrigger = title => {
+    console.log('title', title);
+    if (title === 'info') {
+      return (
+        <Popover id="details">
+          <Popover.Title as="h4">Information</Popover.Title>
+          <Popover.Content>
+            <p className="modal__information">
+              Pressing the "+" button will allow you to activate the warning tracker.
+            </p>
+            <p className="modal__information">
+              Pressing the "-" button will allow you to deactivate the warning tracker.
+            </p>
+            <p className="modal__information">
+              Pressing the "x" button will allow you to delete the warning tracker. This will also
+              delete all assoicated warnings for every user (be careful doing this!).
+            </p>
+            <p className="modal__information">
+              Pressing the "Add New Warning Tracker" button will allow you to add a new warning to
+              the list.
+            </p>
+          </Popover.Content>
+        </Popover>
+      );
+    }
+    return (
+      <Popover id="details">
+        <Popover.Title as="h4">Description</Popover.Title>
+        <Popover.Content>
+          This will {title} this warning tracker,{' '}
+          {title === 'activate'
+            ? 'showing all saved warning-tracking data of this type'
+            : 'retaining the data but hiding all warning tracking of this type'}
+        </Popover.Content>
+      </Popover>
+    );
+  };
+
+  const handleDeleteWarningDescription = warningId => {
+    dispatch(deleteWarningDescription(warningId)).then(res => {
+      setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
+      getUsersWarnings();
+    });
+  };
+
+  const handleDeactivate = warningId => {
+    dispatch(updateWarningDescription(warningId)).then(res => {
+      setWarningDescriptions(prev =>
+        prev.map(warning => {
+          if (warning._id === warningId) {
+            return { ...warning, activeWarning: !warning.activeWarning };
+          }
+          return warning;
+        }),
+      );
+      getUsersWarnings();
+    });
+  };
+
+  const handleChange = e => {
+    setNewWarning(e.target.value);
+  };
+
+  const handleAddNewWarning = (e, newWarning) => {
+    e.preventDefault();
+
+    if (newWarning === '') return;
+    dispatch(postNewWarning({ newWarning, activeWarning: true })).then(res => {
+      setWarningDescriptions(res);
+      setNewWarning('');
+      getUsersWarnings();
+    });
+  };
 
   if (deleteWarning) {
     return (
@@ -56,49 +169,69 @@ function WarningsModal({
       </Modal>
     );
   }
-  if (warningsModal) {
+  if (toggleWarningModal) {
     return (
-      <Modal isOpen={warningsModal} toggle={() => setWarningsModal(false)}>
+      <Modal isOpen={toggleWarningModal} toggle={() => setToggleWarningModal(false)}>
         <ModalHeader>
           Current Warning Descriptions
-          <i
-            data-toggle="tooltip"
-            title="Click to refresh the leaderboard"
-            style={{ fontSize: 24, cursor: 'pointer' }}
-            aria-hidden="true"
-            className="fa fa-info-circle"
-          />
+          <OverlayTrigger
+            placement="right"
+            delay={{ show: 100, hide: 250 }}
+            overlay={handleOverlayTrigger('info')}
+          >
+            <i
+              data-toggle="tooltip"
+              style={{
+                fontSize: 24,
+                cursor: 'pointer',
+                marginLeft: '10px',
+                color: 'rgb(0, 204, 255)',
+              }}
+              aria-hidden="true"
+              className="fa fa-info-circle"
+            />
+          </OverlayTrigger>
         </ModalHeader>
         <ModalBody>
           {warningDescriptions.map(warning => (
             <div className="warnings__descriptions" key={warning._id}>
-              <Button className="warning__descriptions__btn" color="secondary">
-                adjust
-              </Button>
+              <img src={reorder} alt="" className="warning__reorder" />
               {warning.activeWarning ? (
-                <Button
-                  color="warning"
-                  className="warning__descriptions__btn"
-                  onClick={() => handleDeactivate(warning._id)}
+                <OverlayTrigger
+                  placement="top"
+                  delay={{ show: 100, hide: 250 }}
+                  overlay={handleOverlayTrigger('deactive')}
                 >
-                  <i className="fa fa-minus" />
-                </Button>
+                  <Button
+                    color="warning"
+                    className="warning__descriptions__btn"
+                    onClick={() => handleDeactivate(warning._id)}
+                  >
+                    <i className="fa fa-minus" />
+                  </Button>
+                </OverlayTrigger>
               ) : (
-                <Button
-                  color="success"
-                  className="warning__descriptions__btn"
-                  onClick={() => handleDeactivate(warning._id)}
+                <OverlayTrigger
+                  placement="top"
+                  delay={{ show: 100, hide: 250 }}
+                  overlay={handleOverlayTrigger('activate')}
                 >
-                  <i className="fa fa-plus" />
-                </Button>
+                  <Button
+                    color="success"
+                    className="warning__descriptions__btn"
+                    onClick={() => handleDeactivate(warning._id)}
+                  >
+                    <i className="fa fa-plus" />
+                  </Button>
+                </OverlayTrigger>
               )}
 
               <Button
                 color="danger"
                 className="warning__descriptions__btn"
-                onClick={() => handleDeleteDescription(warning._id)}
+                onClick={() => handleDeleteWarningDescription(warning._id)}
               >
-                x
+                <FontAwesomeIcon icon={faTimes} />
               </Button>
               <p
                 className={`warnings__descriptions__title ${
@@ -116,20 +249,15 @@ function WarningsModal({
                 color="primary"
                 onClick={() => setToggeleWarningInput(true)}
               >
-                <i className="fa fa-plus" />
+                {/* <i className="fa fa-plus" /> */}
+                Add New Warning Tracker
               </Button>
             )}
 
             {toggeleWarningInput && (
-              <form
-                className="warning__form"
-                onSubmit={e => {
-                  handleAddNewWarning(e, newWarning);
-                  setNewWarning('');
-                }}
-              >
+              <form className="warning__form" onSubmit={e => handleAddNewWarning(e, newWarning)}>
                 <label htmlFor="warning" className="warning__title">
-                  Warning Title
+                  Warning Tracker Title
                 </label>
                 <input
                   type="text"
@@ -138,7 +266,7 @@ function WarningsModal({
                   className="warning__input"
                   value={newWarning}
                   onChange={e => {
-                    setNewWarning(e.target.value);
+                    handleChange(e);
                   }}
                 />
                 <div>
@@ -162,7 +290,7 @@ function WarningsModal({
         </ModalBody>
 
         <ModalFooter>
-          <Button color="danger" onClick={() => setWarningsModal(false)}>
+          <Button color="danger" onClick={() => setToggleWarningModal(false)}>
             Close
           </Button>
         </ModalFooter>

@@ -37,6 +37,7 @@ export const postWarningByUserId = warningData => {
     try {
       const res = await axios.post(url, warningData);
       const response = await dispatch(postWarningsByUserId(res.data));
+      console.log('response', response);
       return response.payload.warnings;
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -68,7 +69,7 @@ export const deleteWarningsById = (warningId, personId) => {
 
 /*warning descriptions routes  */
 
-export const getCurrentWarnings = () => {
+export const getWarningDescriptions = () => {
   const url = ENDPOINTS.GET_CURRENT_WARNINGS();
 
   return async dispatch => {
@@ -77,6 +78,7 @@ export const getCurrentWarnings = () => {
 
       const response = await dispatch(getCurrentWarningsAction(res.data));
 
+      // console.log('response insde of getwarning descriptions', response);
       return response.payload.currentWarningDescriptions;
     } catch (error) {
       if (error.response && error.response.status === 400) {

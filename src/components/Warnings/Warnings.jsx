@@ -44,11 +44,16 @@ export default function Warning({ personId, username, userRole }) {
   const dispatch = useDispatch();
 
   const [usersWarnings, setUsersWarnings] = useState([]);
-  const [warningDescriptions, setWarningDescriptions] = useState([]);
-  const [warningsModal, setWarningsModal] = useState(false);
+  const [toggleWarningModal, setToggleWarningModal] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
 
+  // useffect (
+
+  //   if toggle is true fetch the new data otherwise ignore it
+  //   need to raise the data up here again
+  //   as it will be depended on that data if it updates or not
+  // )
   const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
       if (res.error) {
@@ -64,16 +69,6 @@ export default function Warning({ personId, username, userRole }) {
     setToggle(prev => !prev);
     fetchUsersWarningsById();
   };
-  // useEffect(() => {
-  //   dispatch(getWarningsByUserId(personId)).then(res => {
-  //     if (res.error) {
-  //       setError(res);
-  //       setUsersWarnings([]);
-  //       return;
-  //     }
-  //     setUsersWarnings(res);
-  //   });
-  // }, []);
 
   const handleDeleteWarning = async warningId => {
     dispatch(deleteWarningsById(warningId, personId)).then(res => {
@@ -115,57 +110,42 @@ export default function Warning({ personId, username, userRole }) {
 
   //   'Log Time to Action Items', b
   // 'Intangible Time Log w/o Reason',
-  const handleEditDescriptions = () => {
-    dispatch(getCurrentWarnings()).then(res => {
-      if (res?.error) {
-        setError(res);
-        setUsersWarnings([]);
-        return;
-      }
-      setWarningDescriptions(res);
-      setWarningsModal(true);
-    });
-    // dispatch(postNewWarning('Log Time to Action Items'));
-  };
+  // const handleEditDescriptions = () => {
+  //   dispatch(getCurrentWarnings()).then(res => {
+  //     if (res?.error) {
+  //       setError(res);
+  //       setUsersWarnings([]);
+  //       return;
+  //     }
+  //     setWarningDescriptions(res);
+  //     setWarningsModal(true);
+  //   });
+  //   // dispatch(postNewWarning('Log Time to Action Items'));
+  // };
 
-  const handleAddNewWarning = (e, newWarning) => {
-    e.preventDefault();
+  // const handleAddNewWarning = (e, newWarning) => {
+  //   e.preventDefault();
 
-    if (newWarning === '') return;
-    dispatch(postNewWarning({ newWarning, activeWarning: true })).then(res => {
-      setWarningDescriptions(res);
-      fetchUsersWarningsById();
-    });
-  };
+  //   if (newWarning === '') return;
+  //   dispatch(postNewWarning({ newWarning, activeWarning: true })).then(res => {
+  //     setWarningDescriptions(res);
+  //     fetchUsersWarningsById();
+  //   });
+  // };
 
-  const handleDeleteDescription = warningId => {
-    const response = confirm('are you sure you want to delte it?');
-    if (response) {
-      dispatch(deleteWarningDescription(warningId)).then(res => {
-        // setWarningDescriptions(res);
-        // console.log('res', res);
-        setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
-      });
-      //compelte delete logic if canceld then nothing will happen
-      // console.log('conosle dlete logic will occur');
-      //Intangible Time Log w/o Reason
-    }
-  };
-
-  const handleDeactivate = warningId => {
-    dispatch(updateWarningDescription(warningId)).then(res => {
-      const { _id: updatedWarningId, activeWarning: updatedActiveWarning } = res;
-
-      setWarningDescriptions(prev =>
-        prev.map(warning => {
-          if (warning._id === updatedWarningId) {
-            return { ...warning, activeWarning: updatedActiveWarning };
-          }
-          return warning;
-        }),
-      );
-    });
-  };
+  // const handleDeleteDescription = warningId => {
+  //   const response = confirm('are you sure you want to delte it?');
+  //   if (response) {
+  //     dispatch(deleteWarningDescription(warningId)).then(res => {
+  //       // setWarningDescriptions(res);
+  //       // console.log('res', res);
+  //       setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
+  //     });
+  //     //compelte delete logic if canceld then nothing will happen
+  //     // console.log('conosle dlete logic will occur');
+  //     //Intangible Time Log w/o Reason
+  //   }
+  // };
 
   const warnings = !toggle
     ? null
@@ -193,19 +173,22 @@ export default function Warning({ personId, username, userRole }) {
             {toggle ? 'Hide' : 'Tracking'}
           </Button>
           {/* {userRole === 'Owner' && <Button>+/-</Button>} */}
-          <Button className="btn" size="sm" onClick={handleEditDescriptions}>
+          <Button className="btn" size="sm" onClick={() => setToggleWarningModal(prev => !prev)}>
             +/-
           </Button>
         </div>
 
-        {warningsModal && (
+        {toggleWarningModal && (
           <WarningsModal
-            warningsModal={warningsModal}
-            warningDescriptions={warningDescriptions}
-            setWarningsModal={setWarningsModal}
-            handleDeleteDescription={handleDeleteDescription}
-            handleAddNewWarning={handleAddNewWarning}
-            handleDeactivate={handleDeactivate}
+            toggleWarningModal={toggleWarningModal}
+            personId={personId}
+            setToggleWarningModal={setToggleWarningModal}
+            getUsersWarnings={fetchUsersWarningsById}
+            // setWarningsModal={setWarningsModal}
+            // warningDescriptions={warningDescriptions}
+            // handleDeleteDescription={handleDeleteDescription}
+            // handleAddNewWarning={handleAddNewWarning}
+            // handleDeactivate={handleDeactivate}
           />
         )}
 
