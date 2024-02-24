@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import { ReportBlock } from '../ReportBlock';
 import './ReportHeader.css';
 
-export const ReportHeader = ({ children, isActive, src, avatar, name, counts, hoursContributed }) => {
+export const ReportHeader = ({ children, isActive, src, avatar, name, counts, hoursCommitted }) => {
   return (
     <ReportBlock>
       <header className="report-header">
@@ -21,10 +21,10 @@ export const ReportHeader = ({ children, isActive, src, avatar, name, counts, ho
           </div>
           <div className="report-header-entity-name">{name}</div>
           <div className="report-header-entity-other-info">
-            <span style={{fontSize: "20px"}}>{hoursContributed}</span> 
-            {hoursContributed != null && (
+            <span style={{fontSize: "20px"}}>{hoursCommitted}</span> 
+            {hoursCommitted != null && (
               <>
-                {hoursContributed === 1 ? <> hour committed</> : <> hours committed</>}
+                {hoursCommitted === 1 ? <> hour committed</> : <> hours committed</>}
               </>
             )}
           </div>

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
 import { getProjectDetail } from '../../../actions/project';
 import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
+import { fetchAllTasks } from 'actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -16,11 +17,15 @@ import './ProjectReport.css';
 
 export const ProjectReport = ({ match }) => {
   const [memberCount, setMemberCount] = useState(0);
+  const [activeMemberCount, setActiveMemberCount] = useState(0);
+  const [nonActiveMemberCount, setNonActiveMemberCount] = useState(0);
+  const [hoursCommitted, setHoursCommitted] = useState(0);
   const dispatch = useDispatch();
-  const { wbs, projectMembers, tasks, isActive, projectName, wbsTasksID, isLoading } = useSelector(
+  const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(
     projectReportViewData,
   );
-
+  const tasks = useSelector(state => state.tasks);
+  
   useEffect(() => {
     if (match) {
       dispatch(getProjectDetail(match.params.projectId));
@@ -30,8 +35,27 @@ export const ProjectReport = ({ match }) => {
   }, []);
 
   useEffect(() => {
+    wbs.WBSItems.forEach(wbs => {
+      dispatch(fetchAllTasks(wbs._id));
+    });
+  }, [wbs]);
+  
+  useEffect(() => {
+    if (tasks.taskItems.length > 0) {
+      setHoursCommitted(tasks.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
+    }
+  }, [tasks]);
+
+  useEffect(() => {
     if (projectMembers.members) {
       dispatch(getProjectActiveUser());
+      const { activeCount, nonActiveCount } = projectMembers.members.reduce((counts, member) => {
+        member.isActive ? counts.activeCount++ : counts.nonActiveCount++;
+        return counts;
+       }, { activeCount: 0, nonActiveCount: 0 });
+
+      setActiveMemberCount(activeCount);
+      setNonActiveMemberCount(nonActiveCount);
     }
   }, [projectMembers.members]);
 
@@ -46,8 +70,8 @@ export const ProjectReport = ({ match }) => {
           isActive={isActive} 
           avatar={<FiBox />} 
           name={projectName} 
-          counts={{ activeMemberCount: memberCount, memberCount: projectMembers.members.length }} 
-          hoursContributed={tasks.taskItems.reduce((total, task) => total + task.estimatedHours, 0)}
+          counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }} 
+          hoursCommitted={hoursCommitted.toFixed(0)}
         />
       )}
     >

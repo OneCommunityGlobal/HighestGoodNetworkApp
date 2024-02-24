@@ -85,9 +85,9 @@ export const TasksDetail = props => {
 
       <div className="tasks-detail-center-cells">
         {task.isActive ? (
-          <tasks className="isActive">
+          <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
-          </tasks>
+          </div>
         ) : (
           <div className="isNotActive">
             <i className="fa fa-circle-o" aria-hidden="true"></i>
