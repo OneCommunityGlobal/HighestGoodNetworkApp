@@ -61,8 +61,6 @@ export class WeeklySummariesReport extends Component {
       activeTab: navItems[1],
       passwordModalOpen: false,
       summaryRecepientsPopupOpen: false,
-      summaryRecepients: [],
-      tempArr: [],
       isValidPwd: true,
       badges: [],
       loadBadges: false,
@@ -168,7 +166,7 @@ export class WeeklySummariesReport extends Component {
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
       badges: allBadgeData,
-      summaryRecepients: this.props.recepientsArr,
+      // summaryRecepients: this.props.recepientsArr,
       hasSeeBadgePermission: badgeStatusCode === 200,
       filteredSummaries: summariesCopy,
       colorOptions,
@@ -197,14 +195,14 @@ export class WeeklySummariesReport extends Component {
     this.setState({ allRoleInfo });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.tempArr !== this.state.tempArr) {
-      this.getDetails();
-    }
-    if (prevProps.recepientsArr !== this.props.recepientsArr) {
-      this.setState({ summaryRecepients: this.props.recepientsArr });
-    }
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (prevState.tempArr !== this.state.tempArr) {
+  //     this.getDetails();
+  //   }
+  //   if (prevProps.recepientsArr !== this.props.recepientsArr) {
+  //     this.setState({ summaryRecepients: this.props.recepientsArr });
+  //   }
+  // }
 
   componentDidUpdate(preProps, preState) {
     const { loading } = this.props;
