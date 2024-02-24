@@ -1,7 +1,6 @@
 
 import React, { PureComponent, useEffect, useState} from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
-import { connect } from 'react-redux';
 
 
 export function WbsPieChart ({
@@ -9,13 +8,13 @@ export function WbsPieChart ({
   projectName
 }) {
   const [userData, setUserData] = useState([]);
+  const [isChecked, setIsChecked] = useState(false);
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight
   });
-
   useEffect(() => {
-    const totalUsers = projectMembers.foundUsers;
+    const totalUsers = projectMembers.foundUsers
     const totalHours = totalUsers.reduce((acc, member) => {
       return acc + member.weeklycommittedHours;
     }, 0)
@@ -24,7 +23,8 @@ export function WbsPieChart ({
         name: `${member.firstName} ${member.lastName}`,
         value:  member.weeklycommittedHours,
         projectName,
-        totalHours
+        totalHours,
+        lastName: member.lastName
       }
       return data;
     })
@@ -44,45 +44,45 @@ export function WbsPieChart ({
       height: window.innerHeight
     });
   };
-  console.log(windowSize)
+
+  const handleShowPieChart = () => {
+    setIsChecked(!isChecked);
+  };
     return (
       <div>
-          <h1>{projectName}</h1>  
-        <div style={{ width: '100%', height: '32rem', border:'1px solid red'}}>
+          <div style={{
+            display: 'flex',
+            justifyContent:'space-between',
+            alignItems:'center',
+            backgroundColor:'white'
+          }}>
+            <div><h4>{projectName}</h4></div>
+            <div>
+              <label style={{
+                paddingRight:'1rem'
+              }}>{isChecked ? 'Hide Piechart' :'Show Piechart'}</label>
+              <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={handleShowPieChart}
+              />
+            </div>
+          </div>  
+         {isChecked && ( <div style={{ width: '100%', height: '32rem'}}>
           <Example userData={userData} windowSize={windowSize.width}/>
-        </div>
+        </div>)}
       </div>
     )
 }
-// const mapStateToProps = (state) => {
-//   // console.log("state")
-//   // console.log(state)
-//   let {leaderBoardData, projectReport, projectMembers}= state;
-//   return {
-//     leaderBoardData,
-//     projectReport,
-//     projectMembers
-//   }
-// }
-// export default connect(mapStateToProps)(WbsPieChart);
 
 const generateRandomHexColor = () => {
     // Generate a random hex color code
     const randomColor = Math.floor(Math.random()*16777215).toString(16);
-  
-    // Ensure the color has six digits by padding with zeros if needed
     const hexColor = "#" + "0".repeat(6 - randomColor.length) + randomColor;
   
     return hexColor;
   }
   
-  
-const data = [
-    { name: 'Group A', value: 400 },
-    { name: 'Group B', value: 300 },
-    { name: 'Group C', value: 300 },
-    { name: 'Group D', value: 200 },
-  ];
   
   const renderActiveShape = (props) => {
     const hexColor = generateRandomHexColor()
@@ -97,11 +97,12 @@ const data = [
     const ex = mx + (cos >= 0 ? 1 : -1) * 22;
     const ey = my;
     const textAnchor = cos >= 0 ? 'start' : 'end';
-  
+
+     
     return (
       <g>
         <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-         {payload.name} {payload.value} of {payload.totalHours}hrs
+         {payload.lastName} {payload.value} of {payload.totalHours}hrs
         </text>
         <Sector
           cx={cx}
@@ -145,17 +146,14 @@ const data = [
       }));
     };
 
-    onClickSlice = (_, index) => {
-        this.setState(prevState => ({
-            ...prevState,
-            displayDetails: !this.state.displayDetails,
-          }));
-    }
-
-  
+   
     render() {
         const {userData,windowSize} = this.props;
-        let circleSize = windowSize/10 * 0.5;
+        let circleSize = 30;
+        if (windowSize <= 1280) {
+          circleSize = windowSize/10 * 0.5;
+        }
+
       return (
         <>
            <ResponsiveContainer  maxWidth={640} maxHeight={640} minWidth={350} minHeight={350}>
@@ -171,7 +169,6 @@ const data = [
                 fill= "#8884d8"
                 dataKey="value"
                 onMouseEnter={this.onPieEnter}
-                onClick = {this.onClickSlice}
                 />
             </PieChart>
         </ResponsiveContainer>
@@ -183,54 +180,3 @@ const data = [
 
   
 
-
-
-// export const data = [
-//   ["Language", "Speakers (in millions)"],
-//   ["Assamese", 13],
-//   ["Bengali", 83],
-//   ["Bodo", 1.4],
-//   ["Dogri", 2.3],
-//   ["Gujarati", 46],
-//   ["Hindi", 300],
-//   ["Kannada", 38],
-//   ["Kashmiri", 5.5],
-//   ["Konkani", 5],
-//   ["Maithili", 20],
-//   ["Malayalam", 33],
-//   ["Manipuri", 1.5],
-//   ["Marathi", 72],
-//   ["Nepali", 2.9],
-//   ["Oriya", 33],
-//   ["Punjabi", 29],
-//   ["Sanskrit", 0.01],
-//   ["Santhali", 6.5],
-//   ["Sindhi", 2.5],
-//   ["Tamil", 61],
-//   ["Telugu", 74],
-//   ["Urdu", 52],
-// ];
-
-// export const options = {
-//   title: "Indian Language Use",
-//   legend: "none",
-//   pieSliceText: "label",
-//   slices: {
-//     4: { offset: 0.2 },
-//     12: { offset: 0.3 },
-//     14: { offset: 0.4 },
-//     15: { offset: 0.5 },
-//   },
-// };
-
-// const MyChart = ()  => {
-//   return (
-//     <Chart
-//       chartType="PieChart"
-//       data={data}
-//       options={options}
-//       width={"100%"}
-//       height={"400px"}
-//     />
-//   );
-// }
