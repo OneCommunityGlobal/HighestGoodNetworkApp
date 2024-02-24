@@ -50,9 +50,11 @@ function WBSTasks(props) {
   * -------------------------------- functions --------------------------------
   */
   const load = async () => {
+    setIsLoading(true);
     const levelList = [0, 1, 2, 3, 4];
     await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
     setPageLoadTime(Date.now());
+    setIsLoading(false);
   };
 
   const filterTasks = (tasks, filterState) => {
@@ -147,10 +149,13 @@ function WBSTasks(props) {
   }, []);
   
   useEffect(() => {
-    load();
-    props.fetchAllMembers(projectId);
-    setShowImport(tasks.length === 0);
-    setIsLoading(false);
+    const initialLoad = async () => {
+      await load();
+      props.fetchAllMembers(projectId);
+      setShowImport(tasks.length === 0);
+      setIsLoading(false);
+    };
+    initialLoad();
   }, [wbsId, projectId]);
   
   useEffect(() => {
