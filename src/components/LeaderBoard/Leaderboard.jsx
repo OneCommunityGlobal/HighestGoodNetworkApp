@@ -43,6 +43,9 @@ function LeaderBoard({
   isVisible,
   displayUserId,
   totalTimeMouseoverText,
+  userOnTimeOff,
+  userGoingOnTimeOff,
+  showTimeOffRequestModal,
 }) {
   const userId = displayUserId || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -105,6 +108,10 @@ function LeaderBoard({
     toast.success('Successfuly updated leaderboard');
   };
 
+  const handleTimeOffModalOpen = request => {
+    showTimeOffRequestModal(request);
+  };
+
   return (
     <div>
       <h3>
@@ -161,6 +168,7 @@ function LeaderBoard({
                   />
                 </div>
               </th>
+              <th>Time Off</th>
               <th>
                 <span className="d-sm-none">Tan. Time</span>
                 <span className="d-none d-sm-block">Tangible Time</span>
@@ -186,6 +194,7 @@ function LeaderBoard({
             <tr>
               <td />
               <th scope="row">{organizationData.name}</th>
+              <td className="align-middle" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
@@ -286,7 +295,7 @@ function LeaderBoard({
                   </div>
                   {/* </Link> */}
                 </td>
-                <th scope="row">
+                <th scope="row" className="align-middle">
                   <Link
                     to={`/userprofile/${item.personId}`}
                     title="View Profile"
@@ -301,12 +310,78 @@ function LeaderBoard({
                     }}
                   >
                     {item.name}
+                    {currentDate.isSameOrAfter(
+                      moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                    ) &&
+                    currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+                    Math.floor(
+                      moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+                        .subtract(1, 'day')
+                        .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+                    ) > 0 ? (
+                      <sup>
+                        {' '}
+                        +
+                        {Math.floor(
+                          moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+                            .subtract(1, 'day')
+                            .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+                        )}
+                      </sup>
+                    ) : null}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
                   {hasVisibilityIconPermission && !item.isVisible && (
                     <i className="fa fa-eye-slash" title="User is invisible" />
                   )}
                 </th>
+                <td className="align-middle">
+                  {(userOnTimeOff || userGoingOnTimeOff) &&
+                    (userOnTimeOff[item.personId] || userGoingOnTimeOff[item.personId]) && (
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const request = userOnTimeOff[item.personId]
+                              ? {
+                                  ...userOnTimeOff[item.personId],
+                                  onVacation: true,
+                                  name: item.name,
+                                }
+                              : {
+                                  ...userGoingOnTimeOff[item.personId],
+                                  onVacation: false,
+                                  name: item.name,
+                                };
+
+                            handleTimeOffModalOpen(request);
+                          }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="22"
+                            height="19"
+                            viewBox="0 0 448 512"
+                            className="show-time-off-calender-svg"
+                          >
+                            <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
+                          </svg>
+
+                          <i className="show-time-off-icon">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="18"
+                              height="18"
+                              viewBox="0 0 512 512"
+                              className="show-time-off-icon-svg"
+                            >
+                              <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+                            </svg>
+                          </i>
+                        </button>
+                      </div>
+                    )}
+                </td>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
                 </td>

@@ -55,10 +55,17 @@ export const permissionLabels = [
         description: 'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
       {
+
         label: 'Reset / Change Password (Others)',
         key: 'resetPassword',
         description: 'Gives the user permission to Reset and/or Change the password of any user but Owner/Admin classes. ',
-      }
+      },
+      {
+        label: 'Manage Time Off Requests',
+        key: 'manageTimeOffRequests',
+        description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
+      },
+
     ]
   },
   {
@@ -163,6 +170,11 @@ export const permissionLabels = [
                 key: 'suggestTask',
                 description: 'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
               },
+              {
+                label: 'Interact with Task "Ready for Review"',
+                key: 'putReviewStatus',
+                description: 'Give the user permission to interact with any "Ready for Review" task button to either mark it as complete or reset it with "More work needed, reset this button" ',
+              }
             ],
           },
         ],

@@ -31,8 +31,7 @@ const AddProjectPopup = React.memo(props => {
   useEffect(() => {
     onValidation(true);
   }, [props.open]);
-
-  return (
+   return (
     <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Add Project </ModalHeader>
       <ModalBody style={{ textAlign: 'center' }}>

@@ -1,17 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
-import getUserTimeZone from 'services/timezoneApiService';
-import { useSelector } from 'react-redux';
+import { createLocation, editLocation } from 'services/mapLocationsService';
+import axios from 'axios';
+import CustomInput from './CustomInput.jsx';
+import { ENDPOINTS } from 'utils/URL';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
-import { createLocation, editLocation } from 'services/mapLocationsService';
-import { useEffect } from 'react';
 
 const initialLocationData = {
-  firstName: 'Prior to HGN Data Collection',
-  lastName: 'Prior to HGN Data Collection',
-  jobTitle: 'Prior to HGN Data Collection',
+  firstName: '',
+  lastName: '',
+  jobTitle: '',
   location: {
     userProvided: '',
     coords: {
@@ -30,7 +30,6 @@ function AddOrEditPopup({
   isEdit,
   editProfile,
   submitText,
-  apiKey
 }) {
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
@@ -41,48 +40,29 @@ function AddOrEditPopup({
     location: null,
   });
 
-  const getCoordsHandler = async () => {
+  const getCoordsHandler = () => {
     const location = locationData.location.userProvided;
     if (!location) {
       toast.error('Please enter valid location');
       return;
     }
-    if (!apiKey) {
-      toast.error("Timezone key doesn't exist");
-      return;
-    }
+
     if (errors.location === 'Please get the coordinates of location') {
       setErrors(prev => ({ ...prev, location: null }));
     }
 
-    if (apiKey) {
-      try {
-        const res = await getUserTimeZone(location, apiKey);
-        if (res.data.status.code === 200 && res.data.results && res.data.results.length) {
-          const timezone = res.data.results[0].annotations.timezone.name;
-          const currentLocation = {
-            userProvided: location,
-            coords: {
-              lat: res.data.results[0].geometry.lat,
-              lng: res.data.results[0].geometry.lng,
-            },
-            country: res.data.results[0].components.country || '',
-            city: res.data.results[0].components.city || '',
-          };
-          setLocationData(prev => ({
-            ...prev,
-            location: currentLocation,
-          }));
-          setTimeZone(timezone);
-        } else if (res.data.status.code !== 200) {
-          throw new Error('Something went wrong with a request');
-        } else {
-          throw new Error('Invalid location');
-        }
-      } catch (err) {
-        toast.error(err.message);
+    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
+      if (res.status === 200) {
+        const { timezone, currentLocation } = res.data;
+        setLocationData(prev => ({
+          ...prev,
+          location: currentLocation,
+        }));
+        setTimeZone(timezone);
       }
-    }
+    }).catch(err => {
+      toast.error(`An error occurred : ${err.response.data}`);
+    });
   };
   useEffect(() => {
     if (isEdit) {
@@ -169,10 +149,10 @@ function AddOrEditPopup({
         if (!res) {
           throw new Error();
         }
-        onClose();
         toast.success('A person successfully added to a map!');
         setManuallyUserProfiles(prev => [...prev, { ...res.data, type: 'm_user' }]);
-        setLocationData(newLocationObject);
+        setLocationData(initialLocationData);
+        setFormSubmitted(true);
       } else if (isEdit) {
         const res = await editLocation(newLocationObject);
         if (!res || res.status !== 200) {
@@ -215,6 +195,20 @@ function AddOrEditPopup({
     }
   }
 
+  const firstNameRef = useRef(null);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        if (firstNameRef.current) {
+          firstNameRef.current.focus();
+        }
+      }, 100);
+      setFormSubmitted(false);
+    }
+  }, [open, formSubmitted]);
+
   return (
     <Modal isOpen={open} toggle={onClose} className="modal-dialog modal-lg">
       <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
@@ -222,7 +216,7 @@ function AddOrEditPopup({
       </ModalHeader>
       <ModalBody>
         <Form onSubmit={onSubmitHandler}>
-          <Input
+          <CustomInput
             type="text"
             name="firstName"
             value={locationData.firstName}
@@ -231,6 +225,7 @@ function AddOrEditPopup({
             onChange={locationDataHandler}
             required
             error={errors.firstName}
+            ref={firstNameRef}
           />
           <Input
             type="text"
