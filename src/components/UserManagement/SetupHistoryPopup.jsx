@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import UserTableFooter from './UserTableFooter';
 import moment from 'moment-timezone';
 import { set } from 'lodash';
+const baseUrl = window.location.origin;
 
 // Define Table Header
 const TABLE_HEADER = ['Email', 'Weekly Committed Hours', 'Created Date', 'Expired Date', 'Status', 'Refresh', 'Cancel'];
@@ -232,6 +233,7 @@ const SetupHistoryPopup = props => {
     httpService
       .post(ENDPOINTS.REFRESH_SETUP_INVITATION_TOKEN(), {
         token: filteredSetupInvitationData[index].token,
+        baseUrl: baseUrl,
       })
       .then((res) => {
         debugger;
