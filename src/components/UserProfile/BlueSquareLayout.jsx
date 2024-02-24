@@ -97,9 +97,12 @@ const BlueSquareLayout = props => {
           payload: { message: response.message, errorCode: response.errorCode },
         });
       } else {
-        fetchDispatch({ type: 'SUCCESS' });
-        }
+        fetchDispatch({ type: 'SUCCESS' }); 
+      }
       setShow(true);
+
+      // The date will be saved in the local storage to be used for recovering the value of the reason.
+      localStorage.setItem('date', date);  
     } else { //add/create reason
       fetchDispatch({ type: 'FETCHING_STARTED' });
       const response = await addReason(userProfile._id, { date: date, message: reason });
@@ -115,6 +118,9 @@ const BlueSquareLayout = props => {
     }
     setIsReasonUpdated(false);
     setAddsReason(false);
+
+    // The date will be saved in the local storage to be used for recovering the value of the reason.
+    localStorage.setItem('date', date);  
   };
 
 // ===============================================================

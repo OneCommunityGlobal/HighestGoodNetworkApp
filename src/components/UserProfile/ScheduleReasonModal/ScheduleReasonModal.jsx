@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { Container, Row, Col, Modal as NestedModal, ModalBody, ModalFooter } from 'reactstrap';
 import Form from 'react-bootstrap/Form';
 import moment from 'moment-timezone';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
-import { useEffect, useState } from 'react';
-import { getReasonByDate } from 'actions/reasonsActions';
+
+import { getReasonByDate, getAllReasons} from 'actions/reasonsActions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { boxStyle } from 'styles';
@@ -33,26 +33,55 @@ const ScheduleReasonModal = ({
   useEffect(() => {
     const initialFetching = async () => {
       fetchDispatch({ type: 'FETCHING_STARTED' });
+
+// ================================================================================================================
+// The localStorageGetItemDate will be used to retrieve the reason, if the date has been saved in your local storage using the 'Save' button on the 'Schedule Blue Square Reason' modal.
+      const localStorageGetItemDate = localStorage.getItem('date');
+// ================================================================================================================
+
       const response = await getReasonByDate(userId, date);
-      // console.log(response);
+
+// The responseReason will used to return the values on request getAllReasons used the id on users.
+      const responseReason = await getAllReasons(userId); 
+
       if (response.status !== 200) {
         fetchDispatch({
           type: 'ERROR',
           payload: { message: response.message, errorCode: response.errorCode },
         });
-      } else {
-        // console.log('reason: ', reason);
-        // console.log('date: ', date);
-        if (reason !== response.data.reason ) {
-          setReason(response.data.reason);
-        }
-        fetchDispatch({ type: 'FETCHING_FINISHED', payload: { isSet: response.data.isSet } });
-      }
-    };
-    initialFetching();
-  }, [date]);
+      } 
+     
+// This code will enable the save button upon successful request.
+        reason !== ''? setIsReasonUpdated(true) : setIsReasonUpdated(false);
 
-// ===============================================================
+// This 'if' statement will be executed when the modal is opened or when the date is changed. 
+//If the text area with the label 'What is your reason for requesting this time off' has been filled out, the 'if' statement will be ignored.
+       
+      if (reason === '') { 
+        responseReason.data.reasons.find((item) => {
+          const newDate = item.date.slice(0,-14);
+          if(localStorageGetItemDate === newDate || !localStorageGetItemDate){
+          item.reason === ''?  setIsReasonUpdated(false) : setIsReasonUpdated(true);
+          setReason(item.reason); 
+            
+            }
+            
+          });
+
+          }
+        
+        fetchDispatch({ type: 'FETCHING_FINISHED', payload: { isSet: response.data.isSet } });
+        
+      };
+        
+        initialFetching();
+
+        
+        
+        
+      }, [date]);
+            
+      // ===============================================================
   // This useEffect will make sure to close the modal that allows for users to schedule reasons - Sucheta
   useEffect(()=>{
     if(user.role === "Owner" || user.role === "Administrator"){
@@ -68,7 +97,7 @@ const ScheduleReasonModal = ({
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [offTimeWeeks, setOffTimeWeeks] = useState([]);
   const [dateInputError, setDateInputError] = useState('');
-
+  
   const validateDateIsNotBeforeToday = returnDate => {
     const isBeforeToday = moment(returnDate).isBefore(moment(), 'day');
     if (isBeforeToday) {
@@ -82,13 +111,13 @@ const ScheduleReasonModal = ({
   const toggleConfirmationModal = () => {
     setConfirmationModal(prev => !prev);
   };
-
+  
   const getWeekIntervals = endDate => {
     const weekEnd = moment(endDate).subtract(1, 'day');
     const weekStart = moment(weekEnd).startOf('week');
-
+    
     const formattedInterval = [formatDate(weekStart), formatDate(weekEnd)];
-
+    
     return formattedInterval;
   };
 
