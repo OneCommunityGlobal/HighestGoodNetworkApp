@@ -43,7 +43,7 @@ class UpdatePassword extends Form {
       .required()
       .label('Current Password'),
     newpassword: Joi.string()
-      .regex(/(?=^.{8,}$)(?=.*\d)(?=.*\W)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/)
+      .regex(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[\W_]).{8,}$/)
       .required()
       .disallow(Joi.ref('currentpassword'))
       .label('New Password')
@@ -55,7 +55,7 @@ class UpdatePassword extends Form {
           string: {
             regex: {
               base:
-                'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+                'should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, one number and one special character',
             },
           },
         },

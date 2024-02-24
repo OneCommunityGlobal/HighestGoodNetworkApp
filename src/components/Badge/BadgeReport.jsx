@@ -19,6 +19,7 @@ import {
   UncontrolledPopover,
   DropdownMenu,
   DropdownItem,
+  UncontrolledTooltip
 } from 'reactstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -191,34 +192,61 @@ const BadgeReport = props => {
   }, [props.badges]);
 
   const countChange = (badge, index, newValue) => {
-    let newBadges = sortBadges.slice();
-    let value = newValue.length === 0 ? 0 : parseInt(newValue);
-    const oldBadge = JSON.parse(JSON.stringify(badge));
-    newBadges[index].count = newValue.length === 0 ? 0 : parseInt(newValue);
-    if (value === 0 || newValue.length === 0) {
-      // upon reaching 0, show delete modal
-      handleDeleteBadge(oldBadge);
+    let copyOfExisitingBadges = [...sortBadges];
+    newValue = newValue === null || newValue === undefined ? -1 : parseInt(newValue);
+    if( newValue < 0 || !copyOfExisitingBadges || copyOfExisitingBadges.length === 0){
+      toast.error('Error: Invalid badge count or the badge is not exist in the badge records. Please fresh the page. If the problem persists, please contact the administrator.');
+      return;
     }
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    // Add 1 beacuse the month start at zero
-    let mm = today.getMonth() + 1;
-    let dd = today.getDate();
-
-    mm < 10 ? (mm = '0' + mm) : mm;
-    dd < 10 ? (dd = '0' + dd) : dd;
-    const formatedDate = `${yyyy}-${mm}-${dd}`;
-
-    newBadges.map((bdg, i) => {
-      if (newValue > bdg.count && i === index) {
-        bdg.earnedDate.push(formatedDate);
-      } else if (newValue < bdg.count && i === index) {
-        bdg.earnedDate.pop();
+    
+    const recordBeforeUpdate = props.badges.filter(item => item.badge._id === badge.badge._id);
+    // New requirement: We want to keep to the earned date so that there's still a record
+    // that badges were earned. hasBadgeDeletionImpact indicates a deletion has occured.
+    // The original code which remove the earned date is deleted.
+    if(recordBeforeUpdate.length !== 0){
+      const badgePrevState = badge;
+      if(newValue === 0) {
+        // Prev states before onChange event
+        handleDeleteBadge(badgePrevState);
+        // let newBadges = sortBadges.filter(badge => badge.badge._id !== badgeToDelete.badge._id);
+        // setSortBadges(newBadges);
+        return;
+      } else{
+        // Value of the existing record from the database before frontend udpate commit to db. 
+        const badgeCountFromExsitingRecord =  parseInt(recordBeforeUpdate[0].count);
+        
+        const currentDate = new Date(Date.now());
+        const formatedDate = formatDate(currentDate)
+        // new > prev && new > exsiting: check impact of deletion and push new date. Case: decrease and increase. Remove temp asterisk.
+        // new > prev && new < exsiting: do nothihng
+        // new < prev && new < exsiting: set deletion flag to true
+        // new < prev && new > exsiting OR new < pre && new === existing: remove earned date. Case: increase then decrease. Remove temp added earned dates. 
+        // new > prev && new === exsiting: remove temp asterisk
+        copyOfExisitingBadges = copyOfExisitingBadges.map(item => {
+          if(item.badge._id === badge.badge._id){
+            if(newValue > badgePrevState.count && newValue >= badgeCountFromExsitingRecord){
+              if(recordBeforeUpdate[0].hasBadgeDeletionImpact === false){
+                item.hasBadgeDeletionImpact = false;
+              }
+              if(newValue > badgeCountFromExsitingRecord){
+                item.earnedDate = [...item.earnedDate, formatedDate]
+              }
+            } else if (newValue < badgePrevState.count && newValue < badgeCountFromExsitingRecord ){
+              item.hasBadgeDeletionImpact = true;
+            } else if(newValue < badgePrevState.count && newValue >= badgeCountFromExsitingRecord){
+              item.earnedDate =  item.earnedDate.slice(0, -1)
+            } 
+            item.count = newValue;
+            return item;
+          }
+          return item;
+        });
       }
-    });
-
-    newBadges[index].count = newValue;
-    setSortBadges(newBadges);
+      setSortBadges(copyOfExisitingBadges);
+    } else{
+      toast.error('Error: The badge may not exist in the badge records. Please fresh the page. If the problem persists, please contact the administrator.');
+      return;
+    }
   };
 
   const featuredChange = (badge, index, e) => {
@@ -290,7 +318,7 @@ const BadgeReport = props => {
           <Table>
             <thead style={{ zIndex: '10' }}>
               <tr style={{ zIndex: '10' }}>
-                <th style={{ width: '93px' }}>Badge</th>
+                <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
                 <th style={{ width: '110px' }}>Earned Dates</th>
@@ -332,18 +360,36 @@ const BadgeReport = props => {
                         ? formatDate(value.lastModified)
                         : value.lastModified.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}
                     </td>
-                    <td>
+                    <td style={{ display: 'flex', alignItems: 'center' }} >
+                      <>
                       {' '}
                       <UncontrolledDropdown className="me-2" direction="down">
                         <DropdownToggle caret color="primary" style={boxStyle}>
                           Dates
                         </DropdownToggle>
-                        <DropdownMenu>
+                        <DropdownMenu className='badge_dropdown'>
                           {value.earnedDate.map((date, i) => {
                             return <DropdownItem key={i}>{date}</DropdownItem>;
                           })}
                         </DropdownMenu>
                       </UncontrolledDropdown>
+                      {value.hasBadgeDeletionImpact && value.hasBadgeDeletionImpact === true ?
+                            (<>
+                              <span id="mismatchExplainationTooltip" style={{paddingLeft: '3px'}}>
+                                {'  '} *
+                              </span>
+                              <UncontrolledTooltip
+                                placement="bottom"
+                                target="mismatchExplainationTooltip"
+                                style={{ maxWidth: '300px' }}
+                              >
+                                This record contains a mismatch in the badge count and associated dates. It indicates that a badge has been deleted. 
+                                Despite the deletion, we retain the earned date to ensure a record of the badge earned for historical purposes.
+                              </UncontrolledTooltip>
+                            </>)
+                            : null
+                        }
+                      </>
                     </td>
                     <td>
                       {canUpdateBadges ? (
@@ -502,7 +548,7 @@ const BadgeReport = props => {
                             Options
                           </DropdownToggle>
 
-                          <DropdownMenu>
+                          <DropdownMenu >
                             <DropdownItem
                               style={{
                                 display: 'flex',
@@ -596,6 +642,9 @@ const BadgeReport = props => {
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
             onClick={e => {
+              if(props.isRecordBelongsToJaeAndUneditable){
+                alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.");
+              }
               saveChanges();
             }}
           >
