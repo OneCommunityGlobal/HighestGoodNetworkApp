@@ -1,4 +1,3 @@
-
 import React, { PureComponent, useEffect, useState} from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
 
@@ -19,16 +18,17 @@ export function WbsPieChart ({
       return acc + member.weeklycommittedHours;
     }, 0)
      const arrData = totalUsers.map(member => {
-      let data = {
+      const data = {
         name: `${member.firstName} ${member.lastName}`,
         value:  member.weeklycommittedHours,
         projectName,
         totalHours,
         lastName: member.lastName
       }
-      return data;
+      return data
     })
-    setUserData(arrData)
+    const sortedArr = arrData.sort((a,b) =>(a.name).localeCompare(b.name))
+    setUserData(sortedArr)
   },[projectMembers])
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export function WbsPieChart ({
             </div>
           </div>  
          {isChecked && ( <div style={{ width: '100%', height: '32rem'}}>
-          <Example userData={userData} windowSize={windowSize.width}/>
+          <ProjectPieChart userData={userData} windowSize={windowSize.width}/>
         </div>)}
       </div>
     )
@@ -132,7 +132,7 @@ const generateRandomHexColor = () => {
     );
   };
   
-  export class Example extends PureComponent {
+  export class ProjectPieChart extends PureComponent {
 
     state = {
       activeIndex: 0,
