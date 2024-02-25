@@ -178,7 +178,7 @@ const TimeEntry = (props) => {
                           type="checkbox"
                           name="isTangible"
                           checked={isTangible}
-                          disabled={!(canEdit || canEditTimeEntryToggleTangible)}
+                          disabled={!canEditTimeEntryToggleTangible}
                           onChange={toggleTangibility}
                       />
                     </>
