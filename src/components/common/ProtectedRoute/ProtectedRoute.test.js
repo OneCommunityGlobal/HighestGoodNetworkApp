@@ -1,125 +1,137 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { MemoryRouter} from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute'; 
 import configureStore from 'redux-mock-store'; 
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import thunk from 'redux-thunk';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router-dom';
 
+// Custom render function that includes access to the history object
+const renderWithRouter = (
+  ui,
+  {
+    route = '/',
+    history = createMemoryHistory({ initialEntries: [route] }),
+    store,
+  } = {}
+) => {
+  const Wrapper = ({ children }) => (
+    <Provider store={store}>
+      <Router history={history}>{children}</Router>
+    </Provider>
+  );
+  return {
+    ...render(ui, { wrapper: Wrapper }),
+    history,
+  };
+};
 
-describe('ProtectedRoute', () => {
-  const mockStore = configureStore();
-  const mockComponent = () => <div>Mock Component</div>;
+const mockStore = configureStore([thunk]);
 
-  jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'), 
-    Redirect: ({ to }) => <div>Redirecting to {to.pathname}</div> // Mock Redirect
-  }));
-  
+// Mock components for testing
+const LoginComponent = () => <div>Login Page</div>;
+const DashboardComponent = () => <div>Dashboard Page</div>;
+const TargetComponent = () => <div>Target Page</div>;
 
-  it('redirects to login if user is not authenticated', () => {
-    const store = mockStore({
-      auth: { isAuthenticated: false },
+describe('ProtectedRoute Component', () => {
+  let store;
+
+  beforeEach(() => {
+    store = mockStore({
+      auth: { isAuthenticated: false, user: { role: '', permissions: { frontPermissions: [] } } },
       role: { roles: [] },
     });
-
-    render(
-      <Provider store={store}>
-        <Router>
-          <ProtectedRoute component={mockComponent} />
-        </Router>
-      </Provider>
-    );
-
-    expect(getByText("Redirecting to /login")).toBeInTheDocument(); 
   });
 
 
-  it('redirects to dashboard if user does not have permission', () => {
-    const store = mockStore({
+  test('should redirect to login if user is not authenticated', () => {
+    const { history } = renderWithRouter(<ProtectedRoute path="/protected" component={TargetComponent} />, { route: '/protected',store });
+    expect(history.location.pathname).toBe('/login');
+  });
+  
+
+  test('authenticated user without required permissions should redirect to dashboard', () => {
+    store = mockStore({
       auth: { isAuthenticated: true, user: { role: 'user', permissions: { frontPermissions: [] } } },
-      role: { roles: [{ roleName: 'user', permissions: [] }] },
-    });
-
-    render(
-      <Provider store={store}>
-        <Router>
-          <ProtectedRoute component={mockComponent} routePermissions="SOME_PERMISSION" />
-        </Router>
-      </Provider>
-    );
-
-    expect(screen.getByText(/dashboard/i)).toBeInTheDocument(); // Adjust based on your dashboard page rendering
-  });
-
-
-  it('renders the component if authenticated and has permission', () => {
-    const { container } = render(
-      <ProtectedRoute
-        component={mockComponent}
-        auth={{ isAuthenticated: true, user: { role: 'ADMIN', permissions: { frontPermissions: ['SOME_PERMISSION'] } } }}
-        roles={[{ roleName: 'ADMIN', permissions: ['SOME_PERMISSION'] }]}
-        routePermissions="SOME_PERMISSION"
-      />
-    );
-    expect(container.textContent).toContain('Mock Component');
-  });
-
-  
-  it('allows access if the user is authenticated and has required user permissions', () => {
-    const store = mockStore({
-      auth: { isAuthenticated: true, user: { role: 'user', permissions: { frontPermissions: ['VIEW_DASHBOARD'] } } },
       role: { roles: [] },
     });
   
-    render(
-      <Provider store={store}>
-        <Router>
-          <ProtectedRoute component={mockComponent} routePermissions={['VIEW_DASHBOARD']} />
-        </Router>
-      </Provider>
-    );
-  
-    expect(screen.getByText('Mock Component')).toBeInTheDocument();
+    const { history } = renderWithRouter(<ProtectedRoute path="/protected" component={TargetComponent} routePermissions="SPECIAL_ACCESS" />, { route: '/protected',store });
+    expect(history.location.pathname).toBe('/dashboard');
   });
 
 
-  it('allows access if the user is authenticated and belongs to an allowed role', () => {
-    const store = mockStore({
-      auth: { isAuthenticated: true, user: { role: 'admin' } },
+  test('user with required role should access the protected route', () => {
+    store = mockStore({
+      auth: { isAuthenticated: true, user: { role: 'admin', permissions: { frontPermissions: [] } } },
+      role: { roles: [{ roleName: 'admin', permissions: ['SPECIAL_ACCESS'] }] },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/protected']}>
+          <ProtectedRoute path="/protected" component={TargetComponent} allowedRoles={['admin']} />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
+  });
+
+
+  test('user with required permissions through roles should access the protected route', () => {
+    store = mockStore({
+      auth: { isAuthenticated: true, user: { role: 'admin', permissions: { frontPermissions: [] } } },
+      role: { roles: [{ roleName: 'admin', permissions: ['SPECIAL_ACCESS'] }] },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/protected']}>
+          <ProtectedRoute path="/protected" component={TargetComponent} routePermissions="SPECIAL_ACCESS" />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
+  });
+
+
+  test('user with required permissions through user permissions should access the protected route', () => {
+    store = mockStore({
+      auth: { isAuthenticated: true, user: { role: 'user', permissions: { frontPermissions: ['SPECIAL_ACCESS'] } } },
       role: { roles: [] },
     });
-  
+
     render(
       <Provider store={store}>
-        <Router>
-          <ProtectedRoute component={mockComponent} allowedRoles={['admin']} />
-        </Router>
+        <MemoryRouter initialEntries={['/protected']}>
+          <ProtectedRoute path="/protected" component={TargetComponent} routePermissions="SPECIAL_ACCESS" />
+        </MemoryRouter>
       </Provider>
     );
-  
-    expect(screen.getByText('Mock Component')).toBeInTheDocument();
+
+    expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
   });
 
-  
-  it('executes the render function when user meets the criteria', () => {
-    const store = mockStore({
-      auth: { isAuthenticated: true, user: { role: 'user', permissions: { frontPermissions: ['VIEW_DASHBOARD'] } } },
+
+  test('proper rendering of the component when conditions are met', () => {
+    store = mockStore({
+      auth: { isAuthenticated: true, user: { role: 'user', permissions: { frontPermissions: ['SPECIAL_ACCESS'] } } },
       role: { roles: [] },
     });
-  
-    const renderFunction = jest.fn().mockReturnValue(<div>Render Function Component</div>);
-  
+
     render(
       <Provider store={store}>
-        <Router>
-          <ProtectedRoute render={renderFunction} routePermissions={['VIEW_DASHBOARD']} />
-        </Router>
+        <MemoryRouter initialEntries={['/protected']}>
+          <ProtectedRoute path="/protected" component={TargetComponent} />
+        </MemoryRouter>
       </Provider>
     );
-  
-    expect(renderFunction).toHaveBeenCalled();
-    expect(screen.getByText('Render Function Component')).toBeInTheDocument();
+
+    expect(screen.getByText(/Target Page/i)).toBeInTheDocument();
   });
-  
-  
+
 });
