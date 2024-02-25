@@ -81,10 +81,11 @@ export default function Timer() {
   const [logTimeEntryModal, setLogTimeEntryModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
-  const [timerIsOverModalOpen, setTimerIsOverModalIsOpen] = useState(false);
+  const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
-  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0, isTangible: true });
-  const audioRef = useRef(null);
+  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
+  const timeIsOverAudioRef = useRef(null);
+  const forcedPausedAudioRef = useRef(null);
 
   const timeToLog = moment.duration(goal - remaining);
   const logHours = timeToLog.hours();
@@ -123,8 +124,8 @@ export default function Timer() {
   const toggleTimer = () => setShowTimer(timer => !timer);
 
   const toggleTimeIsOver = () => {
-    setTimerIsOverModalIsOpen(!timerIsOverModalOpen);
-    sendStartChime(!timerIsOverModalOpen);
+    setTimeIsOverModalIsOpen(!timeIsOverModalOpen);
+    sendStartChime(!timeIsOverModalOpen);
   };
 
   const checkBtnAvail = useCallback(
@@ -220,7 +221,7 @@ export default function Timer() {
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
     setInacModal(forcedPauseLJM);
-    setTimerIsOverModalIsOpen(chimingLJM);
+    setTimeIsOverModalIsOpen(chimingLJM);
   }, [lastJsonMessage]);
 
   useEffect(() => {
@@ -244,19 +245,30 @@ export default function Timer() {
 
   useEffect(() => {
     checkRemainingTime();
-    setLogTimer({ hours: logHours, minutes: logMinutes, isTangible: true });
+    setLogTimer({ hours: logHours, minutes: logMinutes });
   }, [remaining]);
 
   useEffect(() => {
-    if (timerIsOverModalOpen) {
+    if (timeIsOverModalOpen) {
       window.focus();
-      audioRef.current.play();
+      timeIsOverAudioRef.current.play();
     } else {
       window.focus();
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+      timeIsOverAudioRef.current.pause();
+      timeIsOverAudioRef.current.currentTime = 0;
     }
-  }, [timerIsOverModalOpen]);
+  }, [timeIsOverModalOpen]);
+
+  useEffect(() => {
+    if (inacModal) {
+      window.focus();
+      forcedPausedAudioRef.current.play();
+    } else {
+      window.focus();
+      forcedPausedAudioRef.current.pause();
+      forcedPausedAudioRef.current.currentTime = 0;
+    }
+  }, [inacModal]);
 
   return (
     <div className={css.timerContainer}>
@@ -366,7 +378,8 @@ export default function Timer() {
           sendStop={sendStop}
         />
       )}
-      <audio ref={audioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
+      <audio ref={timeIsOverAudioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
+      <audio ref={forcedPausedAudioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3" />
       <Modal
         isOpen={confirmationResetModal}
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
@@ -406,7 +419,7 @@ export default function Timer() {
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={timerIsOverModalOpen} toggle={toggleTimeIsOver} centered size="md">
+      <Modal isOpen={timeIsOverModalOpen} toggle={toggleTimeIsOver} centered size="md">
         <ModalHeader toggle={toggleTimeIsOver}>Time Complete!</ModalHeader>
         <ModalBody>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
           logMinutes ? ` ${logMinutes} minutes` : ''

@@ -3,13 +3,13 @@ import moment from 'moment';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
-import { weeklySummaryMockData1 } from './__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
-import { WeeklySummary } from './WeeklySummary';
-import CountdownTimer from './CountdownTimer';
+import { weeklySummaryMockData1 } from '../__mocks__/weeklySummaryMockData'; // Located in the tested component's __mocks__ folder
+import { WeeklySummary } from '../WeeklySummary';
+import CountdownTimer from '../CountdownTimer';
 import { shallow } from 'enzyme';
-import CurrentPromptModal from './CurrentPromptModal';
+import CurrentPromptModal from '../CurrentPromptModal';
 
-jest.mock('./CurrentPromptModal', () => 'current-Prompt-Modal')
+jest.mock('../CurrentPromptModal', () => 'current-Prompt-Modal')
 const wrapper = props => shallow(<CurrentPromptModal {...props} />);
 
 describe('WeeklySummary page', () => {
@@ -176,6 +176,9 @@ describe('WeeklySummary page', () => {
     });
 
     describe('Media URL field', () => {
+      it('should render Media URL field properly', () => {
+        expect(screen.getByTestId('media-input')).toBeInTheDocument();
+      });
       it('should handle input change', async () => {
         // const labelText = screen.getByLabelText(/Link to your media files/i);
         // await userEvent.type(labelText, 'h');
@@ -187,6 +190,14 @@ describe('WeeklySummary page', () => {
         //then type the content
         fireEvent.change(input, { target: { value: 'u' } });
         expect(input.value).toBe('u');
+      });
+      it('should display error message, confirm and close button when user input incorrect url input', async () => {
+        const theurl = 'this is a test script';
+        const element = screen.getByTestId('media-input');
+        userEvent.paste(element, theurl);
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        expect(screen.getAllByRole('button', { name: /Confirm/i })).toHaveLength(1);
+        expect(screen.getAllByRole('button', { name: /Close/i })).toHaveLength(2);
       });
       it('should display an error message on invalid URL and remove the error message when the user types in a valid URL', async () => {
         // const labelText = screen.getByLabelText(/Link to your media files/i);
@@ -207,6 +218,15 @@ describe('WeeklySummary page', () => {
         fireEvent.change(input, { target: { value: 'https://www.example.com/' } });
         // await userEvent.type(labelText, 'https://www.example.com/');
         expect(mediaUrlError).not.toBeInTheDocument();
+      });
+      it('should display the correct url input', () => {
+        const correcturl = 'https://testweb.com';
+        const element = screen.getByTestId('media-input');
+        userEvent.paste(element, correcturl);
+        userEvent.click(screen.getByText('Confirm'));
+        userEvent.paste(element, correcturl);
+        expect(element).toHaveValue('https://testweb.com');
+        expect(screen.getByText('Open link')).toBeInTheDocument();
       });
     });
 
