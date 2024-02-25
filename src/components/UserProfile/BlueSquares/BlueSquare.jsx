@@ -3,7 +3,6 @@ import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { connect, useSelector } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
-import { formatDateFromDescriptionString,formatTimeOffRequests } from 'utils/formatDateFromDescriptionString';
 
 const BlueSquare = (props) => {
   const authRole = useSelector(state => state.auth.user.role)
@@ -46,26 +45,9 @@ const BlueSquare = (props) => {
                   <div className="report" data-testid="report">
                     <div className="title">{formatDate(blueSquare.date)}</div>
                     {blueSquare.description !== undefined && 
-                      <div className="summary">{(() => {
-                        const dateFormattedDescription = formatDateFromDescriptionString(blueSquare.description);
-                        const formattedDescription = formatTimeOffRequests(dateFormattedDescription);
-                
-                        if (formattedDescription.length > 0) {
-                          return (
-                            <>
-                            <span>{blueSquare.createdDate !== undefined ? formatCreatedDate(BlueSquare.createdDate)+":"  : null}</span>
-                            <span>
-                              {formattedDescription[0]}
-                              <br />
-                              <span style={{ fontWeight: 'bold' }}>Notice :</span>
-                              <span style={{ fontStyle: "italic", textDecoration: "underline" }}>{`${formattedDescription[1]}`}</span>
-                            </span>
-                            </>
-                          );
-                        } else {
-                          return blueSquare.createdDate !== undefined ? formatCreatedDate(BlueSquare.createdDate)+": "+dateFormattedDescription  : dateFormattedDescription
-                        }
-                      })()}</div>
+                      <div className="summary">{
+                        blueSquare.createdDate !== undefined ? formatCreatedDate(blueSquare.createdDate)+": "+ blueSquare.description  : blueSquare.description
+                        }</div>
                     }
                   </div>
                 </div>

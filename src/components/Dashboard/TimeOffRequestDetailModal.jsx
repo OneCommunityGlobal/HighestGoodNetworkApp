@@ -38,7 +38,7 @@ const TimeOffRequestDetailModal = () => {
             <Col>
               <p className="time-off-detail-modal-sub-heading">From:</p>
               <p className="time-off-detail-modal-sub-section">
-                {moment(data?.startingDate).format('YYYY-MM-DD')}
+                {moment(data?.startingDate).format('DD MMM YYYY')}
               </p>
             </Col>
           </Row>
@@ -49,7 +49,7 @@ const TimeOffRequestDetailModal = () => {
             <Col>
               <p className="time-off-detail-modal-sub-heading">To:</p>
               <p className="time-off-detail-modal-sub-section">
-                {moment(data?.endingDate).format('YYYY-MM-DD')}
+                {moment(data?.endingDate).format('DD MMM YYYY')}
               </p>
             </Col>
           </Row>
