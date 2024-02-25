@@ -715,7 +715,7 @@ const TimeEntryForm = props => {
             <FormGroup>
               <Label for="notes">Notes</Label>
               <Editor
-                disabled={!(canEditTimeEntry || canEditTimeEntryDescription) }
+                disabled={!canEditTimeEntryDescription}
                 init={{
                   menubar: false,
                   placeholder: 'Description (10-word minimum) and reference link',
