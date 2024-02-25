@@ -170,7 +170,7 @@ const TimeEntry = (props) => {
             </p>
             <div className='mb-3'>
             {
-              (canEdit || canEditTimeEntryToggleTangible)
+              (canEditTimeEntryToggleTangible)
                 ? ( 
                     <>
                       <span className="text-muted">Tangible:&nbsp;</span>
