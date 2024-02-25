@@ -37,6 +37,7 @@ const TimeEntry = (props) => {
   const { authUser } = props;
 
   const { _id: timeEntryUserId } = timeEntryUserProfile;
+  const { _id: timeEntryId } = data;
 
   const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
   const dispatch = useDispatch();
@@ -132,7 +133,7 @@ const TimeEntry = (props) => {
     if (from === 'TaskTab') {
       dispatch(editTeamMemberTimeEntry(newData));
     } else if (from === 'WeeklyTab') {
-      dispatch(editTimeEntry(timeEntryUserId, newData));
+      dispatch(editTimeEntry(timeEntryId, newData));
       dispatch(updateUserProfile(timeEntryUserProfile));
       dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
     }
@@ -140,7 +141,10 @@ const TimeEntry = (props) => {
   let filteredColor;
   const daysPast = moment().diff(dateOfWork, 'days');
   switch (true) {
-    case daysPast < 2:
+    case daysPast === 0:
+      filteredColor = hrsFilterBtnColorMap[1];
+      break;
+    case daysPast === 1:
       filteredColor = hrsFilterBtnColorMap[2];
       break;
     case daysPast === 2:
@@ -163,7 +167,7 @@ const TimeEntry = (props) => {
           backgroundColor: taskId ? filteredColor : 'white',
         }}
       ></div>
-      <Card className="mb-1 p-2" style={{ backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF', flexGrow: 1 }}>
+      <Card className="mb-1 p-2" style={{ backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF', flexGrow: 1, maxWidth: "calc(100% - 12px)" }}>
         <Row className="mx-0">
           <Col md={3} className="date-block px-0">
             <div className="date-div">
@@ -243,8 +247,6 @@ const TimeEntry = (props) => {
 
 const mapStateToProps = (state) => ({
   authUser: state.auth.user,
-  // displayUserProjects: state.userProjects.projects,
-  // displayUserTasks: state.userTask,
 })
 
 export default connect(mapStateToProps, null)(TimeEntry);
