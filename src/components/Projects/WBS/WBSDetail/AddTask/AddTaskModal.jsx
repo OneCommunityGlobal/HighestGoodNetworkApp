@@ -5,12 +5,12 @@ import ReactTooltip from 'react-tooltip';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
+import { boxStyle } from 'styles';
+import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
-import { boxStyle } from 'styles';
-import { useMemo } from 'react';
 
 function AddTaskModal(props) {
   /*
@@ -23,9 +23,9 @@ function AddTaskModal(props) {
   const defaultCategory = useMemo(() => {
     if (props.taskId) {
       return tasks.find(({ _id }) => _id === props.taskId).category;
-    } else {
+    } 
       return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
-    }  
+      
   }, []);
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -222,6 +222,7 @@ function AddTaskModal(props) {
   };
 
   const addNewTask = async () => {
+    setIsLoading(true);
     const newTask = {
       taskName,
       wbsId: props.wbsId,
@@ -250,8 +251,9 @@ function AddTaskModal(props) {
       endstateInfo,
     };
     await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
-    props.load();
     toggle();
+    setIsLoading(false);
+    props.load();
   };
 
   /*
@@ -343,6 +345,7 @@ function AddTaskModal(props) {
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
+                      disableInput={false}
                     />
                   </div>
                 </td>
@@ -549,7 +552,7 @@ function AddTaskModal(props) {
                     {links.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i}>
-                          <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)} ></i>
+                          <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)}  />
                           <a href={link} className="task-link" target="_blank" rel="noreferrer">
                             {link}
                           </a>
@@ -676,15 +679,9 @@ function AddTaskModal(props) {
           </table>
         </ModalBody>
         <ModalFooter>
-          {taskName !== '' ? (
-            isLoading ? (
-              ' Adding...'
-            ) : (
-              <Button color="primary" onClick={addNewTask} disabled={hoursWarning} style={boxStyle}>
-                Save
-              </Button>
-            )
-          ) : null}
+          <Button color="primary" onClick={addNewTask} disabled={taskName === '' || hoursWarning || isLoading} style={boxStyle}>
+            {isLoading ? "Adding Task..." : "Save"}
+          </Button>
         </ModalFooter>
       </Modal>
       <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={boxStyle}>
