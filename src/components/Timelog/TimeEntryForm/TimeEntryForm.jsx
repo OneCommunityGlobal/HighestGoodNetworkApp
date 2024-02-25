@@ -196,7 +196,7 @@ const TimeEntryForm = props => {
     const today = moment().tz('America/Los_Angeles');
     const isDateValid = date.isValid();
     // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-    const isUserAuthorized = (canEditTimeEntry && canPutUserProfileImportantInfo) || canEditTimeEntryDescription || !edit || today.diff(date, 'days') === 0
+    const isUserAuthorized = (canEditTimeEntry && canPutUserProfileImportantInfo) || !edit || today.diff(date, 'days') === 0
     
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required'; 
     if (!isDateValid) errorObj.dateOfWork = 'Invalid date'; 
