@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import thunk from 'redux-thunk'; // I don't think I need thunk because the store update is synchronous. It is not asynchronous (i.e., it does not involve an HTTP request). 
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
@@ -25,28 +25,31 @@ const { default: NewRolePopUp } = require("../NewRolePopUp")
 
 // mock togglePopUpNewRole() and roleNames data
 const mockTogglePopUpNewRole = jest.fn()
-const mockRoleNames = [
-  {
-    permissions: [
-      'postRole',
-      'deleteRole',
-      'putRole',
-      'addDeleteEditOwners',
-      'putUserProfilePermissions'
-    ],
-    roleName: 'Owner',
-  },
-  {
-    permissions: [
-      'seeBadges',
-      'assignBadges',
-      'createBadges',
-      'deleteBadges',
-      'updateBadges',
-    ],
-    roleName: 'Administrator',
-  }
-]
+
+// time entry 1: changed mockRoleNames from this to that. Found this out by console logging the props passed into NewRolePopUp when interacting with the component normally.
+// const mockRoleNames = [
+//   {
+//     permissions: [
+//       'postRole',
+//       'deleteRole',
+//       'putRole',
+//       'addDeleteEditOwners',
+//       'putUserProfilePermissions'
+//     ],
+//     roleName: 'Owner',
+//   },
+//   {
+//     permissions: [
+//       'seeBadges',
+//       'assignBadges',
+//       'createBadges',
+//       'deleteBadges',
+//       'updateBadges',
+//     ],
+//     roleName: 'Administrator',
+//   }
+// ]
+const mockRoleNames = [ 'Owner', 'Administrator' ]
 
 const mockAuth = {
   isAuthenticated: true,
@@ -121,21 +124,37 @@ describe('Render NewRolePopUp', () => {
     
     /////////////////////////////////////////////////////////////////////
   });
-  it('Create button on click dispatches action to store', () => {
+  it('Create button on click dispatches action to store', async () => {
     // render component
     const container = renderComponent();
 
     // console.log(container.innerHTML);
 
     // select button
-    const createBtn = document.getElementById('createRole')
+    // const createBtn = document.getElementById('createRole')
+    const createBtn = screen.getByText('Create')
     expect(createBtn).toBeInTheDocument();
+    
+    
+    // Add an input to Role field
+    const roleInput = screen.getByPlaceholderText('Please enter a new role name')
+    expect(roleInput).toBeInTheDocument()
+    // Simulate a change event with a new value
+    fireEvent.change(roleInput, { target: { value: 'temp' } });
+    // console.log('roleInput.value: ' +  roleInput.value)
+
+    expect(roleInput.value).toBe('temp')
 
     // click on button
     fireEvent.click(createBtn);
 
     // check that action is dispatched to store.
-    console.log(store.getActions())
+    const actions = store.getActions()
+    console.log("🚀 ~ file: NewRolePopUp.test.js:139 ~ it ~ actions:", actions)
+
+    await waitFor(() => {
+      expect(actions).toHaveLength(1)
+    })
   });
 
 
