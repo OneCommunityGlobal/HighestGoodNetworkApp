@@ -159,7 +159,7 @@ handleSort = (e)=>{
 
     const role = this.props.state.userProfile.role;
 
-    const canPostProject = this.props.hasPermission('postProject') || this.props.hasPermission('seeProjectManagement');
+    const canPostProject = this.props.hasPermission('postProject');
 
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
