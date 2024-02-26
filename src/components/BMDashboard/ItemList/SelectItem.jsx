@@ -1,19 +1,19 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
 export default function SelectItem({
-  materials,
+  items,
   selectedProject,
-  selectedMaterial,
-  setSelectedMaterial,
+  selectedItem,
+  setSelectedItem,
 }) {
-  // create selectable projects
-  let materialSet = [];
-  if (materials.length) {
-    if (selectedProject === 'all') materialSet = [...new Set(materials.map(m => m.itemType?.name))];
+
+  let itemSet = [];
+  if (items.length) {
+    if (selectedProject === 'all') itemSet = [...new Set(items.map(m => m.itemType?.name))];
     else
-      materialSet = [
+      itemSet = [
         ...new Set(
-          materials.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
+          items.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
         ),
       ];
   }
@@ -25,17 +25,17 @@ export default function SelectItem({
           Material:
         </Label>
         <Input
-          id="select-material"
-          name="select-material"
+          id="select-item"
+          name="select-item"
           type="select"
-          value={selectedMaterial}
-          onChange={e => setSelectedMaterial(e.target.value)}
-          disabled={!materials.length}
+          value={selectedItem}
+          onChange={e => setSelectedItem(e.target.value)}
+          disabled={!items.length}
         >
-          {materials.length ? (
+          {items.length ? (
             <>
               <option value="all">All</option>
-              {materialSet.map(name => {
+              {itemSet.map(name => {
                 return (
                   <option key={name} value={name}>
                     {name}

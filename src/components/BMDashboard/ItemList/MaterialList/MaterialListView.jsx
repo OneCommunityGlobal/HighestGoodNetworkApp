@@ -2,17 +2,23 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import ItemListView from '../ItemListView';
-import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import UpdateMaterialModal from '../../UpdateMaterials/UpdateMaterialModal';
 
 function MaterialListView() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials.materialslist);
   const errors = useSelector(state => state.errors);
+  const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
+
 
   useEffect(() => {
     dispatch(fetchAllMaterials());
-  }, [dispatch]);
+  }, []);
+
+  useEffect(() => {
+    if (!postMaterialUpdateResult || postMaterialUpdateResult?.result == null)
+      dispatch(fetchAllMaterials());
+  }, [postMaterialUpdateResult?.result]);
 
   const itemType = 'Materials'
 
@@ -30,10 +36,8 @@ function MaterialListView() {
       items={materials}
       errors={errors}
       UpdateItemModal={UpdateMaterialModal}
-      resetItemUpdate={resetMaterialUpdate}
       dynamicColumns={dynamicColumns}
     />
-
   );
 }
 

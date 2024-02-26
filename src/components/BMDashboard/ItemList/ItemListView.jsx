@@ -7,15 +7,17 @@ import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import './ItemListView.css';
 
-export function ItemListView({ itemType, items, errors, UpdateItemModal, resetItemUpdate, dynamicColumns }) {
+export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
 
+
   useEffect(() => {
     if (items) setFilteredItems([...items]);
   }, [items]);
+
 
   useEffect(() => {
     let filterItems;
@@ -42,7 +44,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, resetIt
 
   if (isError) {
     return (
-      <main className="materials_list_container">
+      <main className="items_list_container">
         <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
@@ -50,27 +52,27 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, resetIt
   }
 
   return (
-    <main className="materials_list_container">
+    <main className="items_list_container">
       <h3>{itemType}</h3>
       <section>
         <span style={{ display: 'flex', margin: '5px' }}>
           {items && (
             <>
               <SelectForm
-                materials={items}
+                items={items}
                 setSelectedProject={setSelectedProject}
-                setSelectedMaterial={setSelectedItem}
+                setSelectedItem={setSelectedItem}
               />
               <SelectItem
-                materials={items}
+                items={items}
                 selectedProject={selectedProject}
-                selectedMaterial={selectedItem}
-                setSelectedMaterial={setSelectedItem}
+                selectedItem={selectedItem}
+                setSelectedItem={setSelectedItem}
               />
             </>
           )}
         </span>
-        {filteredItems && <ItemsTable filteredItems={filteredItems} UpdateItemModal={UpdateItemModal} resetItemUpdate={resetItemUpdate} dynamicColumns={dynamicColumns} />}
+        {filteredItems && <ItemsTable selectedProject={selectedProject} selectedItem={selectedItem} filteredItems={filteredItems} UpdateItemModal={UpdateItemModal} dynamicColumns={dynamicColumns} />}
       </section>
     </main>
   );
