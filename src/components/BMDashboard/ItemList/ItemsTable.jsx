@@ -44,38 +44,9 @@ export default function ItemsTable({ selectedProject, selectedItem, filteredItem
     setRecordType(type);
   };
 
-  // const sortData = (columnName) => {
-  //   let newSortedData = [...sortedData];
-  //   switch (columnName) {
-  //     case 'ProjectName':
-  //       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
-  //         newSortedData.sort((a, b) => (a.project?.name > b.project?.name) ? 1 : -1);
-  //         setProjectNameCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-  //       } else if (projectNameCol.sortOrder === 'asc') {
-  //         newSortedData.sort((a, b) => (a.project?.name < b.project?.name) ? 1 : -1);
-  //         setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-  //       }
-  //       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-  //       break;
-  //     case 'InventoryItemType':
-  //       if (inventoryItemTypeCol.sortOrder === 'default' || inventoryItemTypeCol.sortOrder === 'desc') {
-  //         newSortedData.sort((a, b) => (a.itemType?.name > b.itemType?.name) ? 1 : -1);
-  //         setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
-  //       } else if (inventoryItemTypeCol.sortOrder === 'asc') {
-  //         newSortedData.sort((a, b) => (a.itemType?.name < b.itemType?.name) ? 1 : -1);
-  //         setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
-  //       }
-  //       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  //   setData(newSortedData);
-  // };
   const sortData = (columnName) => {
-    let newSortedData = [...sortedData]; // Copy the current data to a new array for sorting
+    let newSortedData = [...sortedData];
 
-    // Sorting logic for the ProjectName column
     if (columnName === 'ProjectName') {
       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.project?.name || "").localeCompare(b.project?.name || ""));
@@ -86,7 +57,7 @@ export default function ItemsTable({ selectedProject, selectedItem, filteredItem
       }
       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
-    // Sorting logic for the InventoryItemType column
+
     else if (columnName === 'InventoryItemType') {
       if (inventoryItemTypeCol.sortOrder === 'default' || inventoryItemTypeCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.itemType?.name || "").localeCompare(b.itemType?.name || ""));
@@ -98,7 +69,6 @@ export default function ItemsTable({ selectedProject, selectedItem, filteredItem
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
 
-    // Update the sorted data
     setData(newSortedData);
   };
 
