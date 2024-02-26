@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllReusables } from 'actions/bmdashboard/reusableActions';
 import ItemListView from '../ItemList/ItemListView';
@@ -10,7 +10,6 @@ function ReusableListView() {
   const errors = useSelector(state => state.errors);
   const postReusableUpdateResult = useSelector(state => state.bmReusables.updateReusables);
 
-
   useEffect(() => {
     dispatch(fetchAllReusables());
   }, []);
@@ -20,13 +19,13 @@ function ReusableListView() {
       dispatch(fetchAllReusables());
   }, [postReusableUpdateResult?.result]);
 
-  const itemType = 'Reusables'
+  const itemType = 'Reusables';
 
   const dynamicColumns = [
     { label: 'Bought', key: 'stockBought' },
     { label: 'Available', key: 'stockAvailable' },
     { label: 'Destroyed', key: 'stockDestroyed' },
-  ]
+  ];
 
   return (
     <ItemListView

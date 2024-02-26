@@ -11,8 +11,7 @@ function UpdateConsumableModal({ modal, setModal, record }) {
       <Modal isOpen={modal} size="md">
         <ModalHeader>Update Consumable Form</ModalHeader>
         <ModalBody>
-          <div className="updateModalContainer">
-          </div>
+          <div className="updateModalContainer" />
         </ModalBody>
         <ModalFooter>
           <Button onClick={toggle}>Close</Button>

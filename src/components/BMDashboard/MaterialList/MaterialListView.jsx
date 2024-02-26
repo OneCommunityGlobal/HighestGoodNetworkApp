@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 import ItemListView from '../ItemList/ItemListView';
@@ -10,7 +10,6 @@ function MaterialListView() {
   const errors = useSelector(state => state.errors);
   const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
 
-
   useEffect(() => {
     dispatch(fetchAllMaterials());
   }, []);
@@ -20,7 +19,7 @@ function MaterialListView() {
       dispatch(fetchAllMaterials());
   }, [postMaterialUpdateResult?.result]);
 
-  const itemType = 'Materials'
+  const itemType = 'Materials';
 
   const dynamicColumns = [
     { label: 'Unit', key: 'itemType.unit' },
@@ -28,7 +27,7 @@ function MaterialListView() {
     { label: 'Used', key: 'stockUsed' },
     { label: 'Available', key: 'stockAvailable' },
     { label: 'Waste', key: 'stockWasted' },
-  ]
+  ];
 
   return (
     <ItemListView

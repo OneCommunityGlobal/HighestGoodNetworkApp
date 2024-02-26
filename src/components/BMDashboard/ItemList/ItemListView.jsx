@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import BMError from '../shared/BMError';
@@ -13,11 +13,9 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
 
-
   useEffect(() => {
     if (items) setFilteredItems([...items]);
   }, [items]);
-
 
   useEffect(() => {
     let filterItems;
@@ -72,16 +70,34 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             </>
           )}
         </span>
-        {filteredItems && <ItemsTable selectedProject={selectedProject} selectedItem={selectedItem} filteredItems={filteredItems} UpdateItemModal={UpdateItemModal} dynamicColumns={dynamicColumns} />}
+        {filteredItems && (
+          <ItemsTable
+            selectedProject={selectedProject}
+            selectedItem={selectedItem}
+            filteredItems={filteredItems}
+            UpdateItemModal={UpdateItemModal}
+            dynamicColumns={dynamicColumns}
+          />
+        )}
       </section>
     </main>
   );
 }
 
 ItemListView.propTypes = {
-  items: PropTypes.array.isRequired,
-  errors: PropTypes.object,
-  fetchItems: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string,
+    }),
+  ).isRequired,
+  errors: PropTypes.shape({
+    message: PropTypes.string,
+  }),
+};
+
+ItemListView.defaultProps = {
+  errors: {},
 };
 
 ItemListView.defaultProps = {

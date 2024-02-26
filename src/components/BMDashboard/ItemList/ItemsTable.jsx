@@ -5,7 +5,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
 
-export default function ItemsTable({ selectedProject, selectedItem, filteredItems, UpdateItemModal, dynamicColumns }) {
+export default function ItemsTable({
+  selectedProject,
+  selectedItem,
+  filteredItems,
+  UpdateItemModal,
+  dynamicColumns,
+}) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
@@ -14,11 +20,11 @@ export default function ItemsTable({ selectedProject, selectedItem, filteredItem
   const [updateRecord, setUpdateRecord] = useState(null);
   const [projectNameCol, setProjectNameCol] = useState({
     iconsToDisplay: faSort,
-    sortOrder: 'default'
+    sortOrder: 'default',
   });
   const [inventoryItemTypeCol, setInventoryItemTypeCol] = useState({
     iconsToDisplay: faSort,
-    sortOrder: 'default'
+    sortOrder: 'default',
   });
 
   useEffect(() => {
@@ -30,11 +36,10 @@ export default function ItemsTable({ selectedProject, selectedItem, filteredItem
     setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
   }, [selectedProject, selectedItem]);
 
-
-  const handleEditRecordsClick = (selectedItem, type) => {
+  const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
       setUpdateModal(true);
-      setUpdateRecord(selectedItem);
+      setUpdateRecord(selectedEl);
     }
   };
 
@@ -44,26 +49,31 @@ export default function ItemsTable({ selectedProject, selectedItem, filteredItem
     setRecordType(type);
   };
 
-  const sortData = (columnName) => {
-    let newSortedData = [...sortedData];
+  const sortData = columnName => {
+    const newSortedData = [...sortedData];
 
     if (columnName === 'ProjectName') {
       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.project?.name || "").localeCompare(b.project?.name || ""));
+        newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
       } else if (projectNameCol.sortOrder === 'asc') {
-        newSortedData.sort((a, b) => (b.project?.name || "").localeCompare(a.project?.name || ""));
+        newSortedData.sort((a, b) => (b.project?.name || '').localeCompare(a.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-    }
-
-    else if (columnName === 'InventoryItemType') {
-      if (inventoryItemTypeCol.sortOrder === 'default' || inventoryItemTypeCol.sortOrder === 'desc') {
-        newSortedData.sort((a, b) => (a.itemType?.name || "").localeCompare(b.itemType?.name || ""));
+    } else if (columnName === 'InventoryItemType') {
+      if (
+        inventoryItemTypeCol.sortOrder === 'default' ||
+        inventoryItemTypeCol.sortOrder === 'desc'
+      ) {
+        newSortedData.sort((a, b) =>
+          (a.itemType?.name || '').localeCompare(b.itemType?.name || ''),
+        );
         setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
       } else if (inventoryItemTypeCol.sortOrder === 'asc') {
-        newSortedData.sort((a, b) => (b.itemType?.name || "").localeCompare(a.itemType?.name || ""));
+        newSortedData.sort((a, b) =>
+          (b.itemType?.name || '').localeCompare(a.itemType?.name || ''),
+        );
         setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
@@ -78,7 +88,13 @@ export default function ItemsTable({ selectedProject, selectedItem, filteredItem
 
   return (
     <>
-      <RecordsModal modal={modal} setModal={setModal} record={record} setRecord={setRecord} recordType={recordType} />
+      <RecordsModal
+        modal={modal}
+        setModal={setModal}
+        record={record}
+        setRecord={setRecord}
+        recordType={recordType}
+      />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       <div className="items_table_container">
         <Table>
@@ -105,7 +121,6 @@ export default function ItemsTable({ selectedProject, selectedItem, filteredItem
               <th>Purchases</th>
             </tr>
           </thead>
-
 
           <tbody>
             {sortedData && sortedData.length > 0 ? (
@@ -152,7 +167,7 @@ export default function ItemsTable({ selectedProject, selectedItem, filteredItem
             )}
           </tbody>
         </Table>
-      </div >
+      </div>
     </>
   );
 }

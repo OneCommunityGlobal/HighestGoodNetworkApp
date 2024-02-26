@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllConsumables } from 'actions/bmdashboard/consumableActions';
 import ItemListView from '../ItemList/ItemListView';
@@ -10,7 +10,6 @@ function ConsumableListView() {
   const errors = useSelector(state => state.errors);
   const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables);
 
-
   useEffect(() => {
     dispatch(fetchAllConsumables());
   }, []);
@@ -20,7 +19,7 @@ function ConsumableListView() {
       dispatch(fetchAllConsumables());
   }, [postConsumableUpdateResult?.result]);
 
-  const itemType = 'Consumables'
+  const itemType = 'Consumables';
 
   const dynamicColumns = [
     { label: 'Unit', key: 'itemType.unit' },
@@ -28,7 +27,7 @@ function ConsumableListView() {
     { label: 'Used', key: 'stockUsed' },
     { label: 'Available', key: 'stockAvailable' },
     { label: 'Waste', key: 'stockWasted' },
-  ]
+  ];
 
   return (
     <ItemListView
