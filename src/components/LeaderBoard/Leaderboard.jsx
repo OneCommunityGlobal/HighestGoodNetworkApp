@@ -66,6 +66,7 @@ function LeaderBoard({
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
+    
   }, [timeEntries]);
 
   useDeepEffect(() => {
@@ -169,6 +170,7 @@ function LeaderBoard({
                 </div>
               </th>
               <th>Time Off</th>
+              <th>End Date</th>
               <th>
                 <span className="d-sm-none">Tan. Time</span>
                 <span className="d-none d-sm-block">Tangible Time</span>
