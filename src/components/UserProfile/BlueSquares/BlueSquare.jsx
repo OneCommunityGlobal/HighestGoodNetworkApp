@@ -4,9 +4,9 @@ import hasPermission from 'utils/permissions';
 import { connect, useSelector } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
 
-const BlueSquare = (props) => {
-  const authRole = useSelector(state => state.auth.user.role)
-  
+const BlueSquare = props => {
+  const authRole = useSelector(state => state.auth.user.role);
+
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const { blueSquares, handleBlueSquare} = props;
