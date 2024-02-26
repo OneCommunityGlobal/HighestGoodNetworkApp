@@ -18,6 +18,11 @@ export const permissionLabels = [
         key: 'highlightEligibleBios',
         description: 'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
       },
+      {
+        label: 'Edit Header Message',
+        key: 'editHeaderMessage',
+        description: 'Gives the user permission to edit the message displayed in the header.',
+      }
     ]
   },
   {

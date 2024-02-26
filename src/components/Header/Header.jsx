@@ -87,6 +87,10 @@ export const Header = props => {
   const canAccessPopups = props.hasPermission('createPopup')
     || props.hasPermission('updatePopup');
   // Permissions
+
+  const canManageUser = props.hasPermission('putUserProfilePermissions');
+  const canEditHeaderMessage = props.hasPermission('editHeaderMessage');
+
   const canAccessPermissionsManagement = props.hasPermission('postRole')
     || props.hasPermission('putRole')
     || props.hasPermission('deleteRole')
@@ -99,6 +103,7 @@ export const Header = props => {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
+
 
   const dispatch = useDispatch();
 
@@ -209,7 +214,7 @@ export const Header = props => {
           style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
           {isAuthenticated && <Timer />}
-          {isAuthenticated && (
+          {(isAuthenticated || canEditHeaderMessage) &&(
             <div className="owner-message">
               <OwnerMessage />
             </div>
