@@ -18,6 +18,11 @@ export const permissionLabels = [
         key: 'highlightEligibleBios',
         description: 'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
       },
+      {
+        label: 'Toggle Request Bio',
+        key: 'requestBio',
+        description: 'Gives the user permission to toggle the "Bio announcement" switch under "Reports" -> "Weekly Summaries Reports"',
+      }
     ]
   },
   {
@@ -55,6 +60,10 @@ export const permissionLabels = [
         description: 'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
       {
+        label: 'Toggle Invisibility Permission Self and Others',
+        key: 'toggleInvisibility',
+        description: 'Gives the user permission to change the invisibility toggle for themselves and others'
+      },
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',

@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 const UserTeamsTable = props => {
   const [tooltipOpen, setTooltip] = useState(false);
   const [teamCode, setTeamCode] = useState(props.userProfile? props.userProfile.teamCode: props.teamCode);
-
+  const canToggleInvisibility = props.hasPermission(('toggleInvisibility'));
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
@@ -37,7 +37,7 @@ const UserTeamsTable = props => {
     <div>
       <div className="teamtable-container desktop">
         <div className="container" style={{paddingLeft: '4px', paddingRight: '4px'}}>
-          {props.canEditVisibility && (
+          {(props.canEditVisibility || canToggleInvisibility) && (
             <div className="row" >
               <Col md="7">
                 <span className="teams-span">Visibility</span>
