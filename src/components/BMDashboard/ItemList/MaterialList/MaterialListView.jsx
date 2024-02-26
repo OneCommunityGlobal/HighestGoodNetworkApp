@@ -14,6 +14,8 @@ function MaterialListView() {
     dispatch(fetchAllMaterials());
   }, [dispatch]);
 
+  const itemType = 'Materials'
+
   const dynamicColumns = [
     { label: 'Unit', key: 'itemType.unit' },
     { label: 'Bought', key: 'stockBought' },
@@ -23,11 +25,10 @@ function MaterialListView() {
   ]
 
   return (
-
     <ItemListView
+      itemType={itemType}
       items={materials}
       errors={errors}
-      fetchItems={() => dispatch(fetchAllMaterials())}
       UpdateItemModal={UpdateMaterialModal}
       resetItemUpdate={resetMaterialUpdate}
       dynamicColumns={dynamicColumns}

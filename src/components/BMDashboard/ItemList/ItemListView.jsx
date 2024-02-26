@@ -7,15 +7,11 @@ import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import './ItemListView.css';
 
-export function ItemListView({ items, errors, fetchItems, UpdateItemModal, resetItemUpdate, dynamicColumns }) {
+export function ItemListView({ itemType, items, errors, UpdateItemModal, resetItemUpdate, dynamicColumns }) {
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
-
-  useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -47,7 +43,7 @@ export function ItemListView({ items, errors, fetchItems, UpdateItemModal, reset
   if (isError) {
     return (
       <main className="materials_list_container">
-        <h2>Items List</h2>
+        <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
@@ -55,7 +51,7 @@ export function ItemListView({ items, errors, fetchItems, UpdateItemModal, reset
 
   return (
     <main className="materials_list_container">
-      <h3>Items</h3>
+      <h3>{itemType}</h3>
       <section>
         <span style={{ display: 'flex', margin: '5px' }}>
           {items && (
