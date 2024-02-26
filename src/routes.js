@@ -60,7 +60,10 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 // const ReusablesView = lazy(() => import('./components/BMDashboard/Reusables/ReusablesView'));
 const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
 //TODO(Yan): needs to delete the following line or func after dev
-const ItemListView = lazy(() => import('./components/BMDashboard/ItemList/MaterialList'));
+const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
+// //TODO(Yan): needs to delete the following line or func after dev
+const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
+
 const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
@@ -219,7 +222,9 @@ export default (
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         {/* TODO(Yan): needs to delete the following line or func after dev */}
-        <BMProtectedRoute path="/bmdashboard/test/item" fallback component={ItemListView} />
+        <BMProtectedRoute path="/bmdashboard/two/consumable" fallback component={ConsumableListView} />
+        <BMProtectedRoute path="/bmdashboard/test/item" fallback component={MaterialListView} />
+        {/* TODO(Yan): needs to delete the following line or func after dev */}
         <BMProtectedRoute path="/bmdashboard/lessonlist/" component={LessonList} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
