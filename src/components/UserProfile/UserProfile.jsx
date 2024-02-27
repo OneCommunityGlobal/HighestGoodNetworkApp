@@ -1402,7 +1402,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && (activeTab === '1' || activeTab === '2' || activeTab === '3') && (
+              {canEdit && (activeTab === '1' || activeTab === '2' || activeTab === '3' || activeTab === '4') && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
