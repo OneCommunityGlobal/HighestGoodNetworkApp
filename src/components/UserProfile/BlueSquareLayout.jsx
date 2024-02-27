@@ -98,11 +98,12 @@ const BlueSquareLayout = props => {
         });
       } else {
         fetchDispatch({ type: 'SUCCESS' }); 
+        // The date will be saved in the local storage to be used for recovering the value of the reason.
+      localStorage.setItem('date', date);  
       }
       setShow(true);
 
-      // The date will be saved in the local storage to be used for recovering the value of the reason.
-      localStorage.setItem('date', date);  
+      
 
     } else { //add/create reason
       fetchDispatch({ type: 'FETCHING_STARTED' });
@@ -114,14 +115,15 @@ const BlueSquareLayout = props => {
         });
       } else {
         fetchDispatch({ type: 'SUCCESS' });
+        // The date will be saved in the local storage to be used for recovering the value of the reason.
+      localStorage.setItem('date', date);  
         setAddsReason(true);
       }
     }
     setIsReasonUpdated(false);
     setAddsReason(false);
 
-    // The date will be saved in the local storage to be used for recovering the value of the reason.
-    localStorage.setItem('date', date);  
+ 
 
   };
 
