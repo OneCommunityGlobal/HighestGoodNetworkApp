@@ -70,6 +70,16 @@ function Task(props) {
     props.deleteWBSTask(taskId, mother);
   };
 
+  function getInitials(name){
+    const initials = name
+    .split(' ')
+    .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
+    .map(n => n[0])
+    .join('')
+    .toUpperCase();
+    return initials;
+  }
+
   function assignColorsToInitials(names) {
     const colorsHex = [
       '#FF0000', // red
@@ -94,12 +104,7 @@ function Task(props) {
     let colorIndex = {};
     
     for (let name of names) {
-      const initials = name
-        .split(' ')
-        .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
-        .map(n => n[0])
-        .join('')
-        .toUpperCase();
+      const initials = getInitials(name);
       // If the initials haven't been encountered yet, assign a base color
       if (!colorIndex[initials]) {
         colors[name] = {
@@ -214,14 +219,7 @@ function Task(props) {
                     .filter((elm, i) => i < 2 || showMoreResources)
                     .map((elm, i) => {
                       const name = elm.name; //Getting initials and formatting them here
-                      const initials = elm.name
-                        .split(' ')
-                        .filter(
-                          (n, index) => index === 0 || index === elm.name.split(' ').length - 1,
-                        )
-                        .map(n => n[0])
-                        .join('')
-                        .toUpperCase();
+                      const initials = getInitials(name);
                       //getting background color here
                       const bg = colors_objs[name].color;
                       return (
