@@ -148,12 +148,7 @@ export default (
           component={Projects}
           fallback
           allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
-          routePermissions={[
-            RoutePermissions.projects,
-            RoutePermissions.projectManagement_fullFunctionality,
-            RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
-            RoutePermissions.updateTask
-          ].flat()}
+          routePermissions={RoutePermissions.projects}
         />
         <ProtectedRoute
           path="/projects"
@@ -189,14 +184,14 @@ export default (
           routePermissions={[
             RoutePermissions.permissionsManagement,
             RoutePermissions.userPermissionsManagement,
-          ]}
+          ].flat()}
         />
         <ProtectedRoute
           path="/permissionsmanagement/:userRole"
           exact
           component={UserRoleTab}
           fallback
-          routePermissions={RoutePermissions.permissionsManagementRole}
+          routePermissions={RoutePermissions.permissionsManagement}
         />
         <ProtectedRoute
           path="/teams"

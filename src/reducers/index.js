@@ -21,7 +21,6 @@ import { managingTeamsReducer } from './managingTeamsReducer';
 import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
-import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
@@ -58,7 +57,6 @@ const localReducers = {
   errors: errorsReducer,
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
-  timeZoneAPI: timeZoneAPIReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
   rolePreset: rolePresetReducer,
