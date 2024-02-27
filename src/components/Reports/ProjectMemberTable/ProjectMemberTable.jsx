@@ -10,6 +10,10 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
   const { fetched, foundUsers, members } = projectMembers;
 
   useEffect(() => {
+    handleMemberCount(activeMemberList.length);
+  })
+
+  useEffect(() => {
     if (fetched) {
       const memberList = [];
       const activeList = [];

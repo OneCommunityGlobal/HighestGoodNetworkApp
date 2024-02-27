@@ -16,7 +16,7 @@ const ShowCollapse = props => {
       <div>{props.resources[0].name}</div>
 
       {props.resources.slice(1).map(resource => (
-        <Collapse in={open}>
+        <Collapse in={open} key={resource._id}>
           <div key={resource._id} className="new-line">
             {resource.name}
           </div>
