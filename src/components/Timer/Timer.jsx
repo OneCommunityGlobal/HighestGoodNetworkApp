@@ -23,7 +23,7 @@ import TimerStatus from './TimerStatus';
 
 export default function Timer() {
   const WSoptions = {
-    share: false,
+    share: true,
     protocols: localStorage.getItem(config.tokenKey),
     shouldReconnect: () => true,
     reconnectAttempts: 5,
@@ -41,7 +41,7 @@ export default function Timer() {
    * }
    */
 
-  const { sendMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(
+  const { sendMessage, lastJsonMessage, readyState } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
     WSoptions,
   );
@@ -57,7 +57,6 @@ export default function Timer() {
     REMOVE_GOAL: 'REMOVE_FROM_GOAL=',
     ACK_FORCED: 'ACK_FORCED',
     START_CHIME: 'START_CHIME=',
-    HEARTBEAT: 'ping',
   };
 
   const defaultMessage = {
@@ -85,7 +84,6 @@ export default function Timer() {
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
-  const isWSOpenRef = useRef(true);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
 
@@ -93,22 +91,19 @@ export default function Timer() {
   const logHours = timeToLog.hours();
   const logMinutes = timeToLog.minutes();
 
-  const sendMessageNoQueue = useCallback(msg => sendMessage(msg, false), [sendMessage]);
-
   const wsMessageHandler = useMemo(
     () => ({
-      sendStart: () => sendMessageNoQueue(action.START_TIMER),
-      sendPause: () => sendMessageNoQueue(action.PAUSE_TIMER),
-      sendClear: () => sendMessageNoQueue(action.CLEAR_TIMER),
-      sendStop: () => sendMessageNoQueue(action.STOP_TIMER),
-      sendAckForced: () => sendMessageNoQueue(action.ACK_FORCED),
-      sendStartChime: state => sendMessageNoQueue(action.START_CHIME.concat(state)),
-      sendSetGoal: timerGoal => sendMessageNoQueue(action.SET_GOAL.concat(timerGoal)),
-      sendAddGoal: duration => sendMessageNoQueue(action.ADD_GOAL.concat(duration)),
-      sendRemoveGoal: duration => sendMessageNoQueue(action.REMOVE_GOAL.concat(duration)),
-      sendHeartbeat: () => sendMessageNoQueue(action.HEARTBEAT),
+      sendStart: () => sendMessage(action.START_TIMER),
+      sendPause: () => sendMessage(action.PAUSE_TIMER),
+      sendClear: () => sendMessage(action.CLEAR_TIMER),
+      sendStop: () => sendMessage(action.STOP_TIMER),
+      sendAckForced: () => sendMessage(action.ACK_FORCED),
+      sendStartChime: state => sendMessage(action.START_CHIME.concat(state)),
+      sendSetGoal: timerGoal => sendMessage(action.SET_GOAL.concat(timerGoal)),
+      sendAddGoal: duration => sendMessage(action.ADD_GOAL.concat(duration)),
+      sendRemoveGoal: duration => sendMessage(action.REMOVE_GOAL.concat(duration)),
     }),
-    [sendMessageNoQueue],
+    [sendMessage],
   );
 
   const {
@@ -120,7 +115,6 @@ export default function Timer() {
     sendStartChime,
     sendAddGoal,
     sendRemoveGoal,
-    sendHeartbeat,
   } = wsMessageHandler;
 
   const toggleLogTimeModal = () => {
@@ -213,11 +207,6 @@ export default function Timer() {
   };
 
   useEffect(() => {
-    // Exclude heartbeat message
-    if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
-      isWSOpenRef.current = true;
-      return;
-    }
     /**
      * This useEffect is to make sure that all the states will be updated before taking effects,
      * so that message state and other states like running, inacMoal ... will be updated together
@@ -234,24 +223,6 @@ export default function Timer() {
     setInacModal(forcedPauseLJM);
     setTimeIsOverModalIsOpen(chimingLJM);
   }, [lastJsonMessage]);
-
-  useEffect(() => {
-    // This useEffect is to make sure that the WS is open and send a heartbeat every 60 seconds
-    const interval = setInterval(() => {
-      if (isWSOpenRef.current) {
-        isWSOpenRef.current = false;
-        sendHeartbeat();
-        setTimeout(() => {
-          if (!isWSOpenRef.current) {
-            setInacModal(true);
-            getWebSocket().close();
-          }
-        }, 10000); // close the WS if no response after 10 seconds
-      }
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     /**
@@ -407,18 +378,8 @@ export default function Timer() {
           sendStop={sendStop}
         />
       )}
-      <audio
-        ref={timeIsOverAudioRef}
-        loop
-        preload="auto"
-        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
-      />
-      <audio
-        ref={forcedPausedAudioRef}
-        loop
-        preload="auto"
-        src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
-      />
+      <audio ref={timeIsOverAudioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
+      <audio ref={forcedPausedAudioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3" />
       <Modal
         isOpen={confirmationResetModal}
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
