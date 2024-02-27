@@ -35,9 +35,11 @@ export const ProjectReport = ({ match }) => {
   }, []);
 
   useEffect(() => {
-    wbs.WBSItems.forEach(wbs => {
-      dispatch(fetchAllTasks(wbs._id));
-    });
+    if(wbs.fetching === false){
+      wbs.WBSItems.forEach(wbs => {
+        dispatch(fetchAllTasks(wbs._id));
+      });
+    }
   }, [wbs]);
   
   useEffect(() => {
