@@ -32,6 +32,19 @@ function useDeepEffect(effectFunc, deps) {
   }, deps);
 }
 
+
+function displayDaysLeft(lastDay) {
+  if (lastDay) {
+      const today = new Date();
+      const endDate = new Date(lastDay);
+      const differenceInTime = endDate.getTime() - today.getTime();
+      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+      return -differenceInDays;
+  } else {
+      return null; // or any other appropriate default value
+  }
+}
+
 function LeaderBoard({
   getLeaderboardData,
   getOrgData,
@@ -169,8 +182,9 @@ function LeaderBoard({
                   />
                 </div>
               </th>
-              <th>Time Off</th>
               <th>End Date</th>
+              <th>Time Off</th>
+              
               <th>
                 <span className="d-sm-none">Tan. Time</span>
                 <span className="d-none d-sm-block">Tangible Time</span>
@@ -190,6 +204,7 @@ function LeaderBoard({
                   )}
                 </div>
               </th>
+              
             </tr>
           </thead>
           <tbody className="my-custome-scrollbar">
@@ -297,7 +312,7 @@ function LeaderBoard({
                   </div>
                   {/* </Link> */}
                 </td>
-                <th scope="row" className="align-middle">
+                <th scope="row" className="align-middle name">
                   <Link
                     to={`/userprofile/${item.personId}`}
                     title="View Profile"
@@ -337,6 +352,16 @@ function LeaderBoard({
                     <i className="fa fa-eye-slash" title="User is invisible" />
                   )}
                 </th>
+                <td className="align-middle">
+                  <span
+                    title={mouseoverTextValue}
+                    id="Days left"
+                    class="endDate"
+                    style={{color:"red"}}
+                  >
+                    {displayDaysLeft(item.endDate)}
+                  </span>
+                </td>
                 <td className="align-middle">
                   {(userOnTimeOff || userGoingOnTimeOff) &&
                     (userOnTimeOff[item.personId] || userGoingOnTimeOff[item.personId]) && (
@@ -404,6 +429,7 @@ function LeaderBoard({
                     {item.totaltime}
                   </span>
                 </td>
+                
               </tr>
             ))}
           </tbody>

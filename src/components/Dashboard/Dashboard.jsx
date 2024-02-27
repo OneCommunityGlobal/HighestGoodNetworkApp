@@ -38,7 +38,7 @@ export function Dashboard(props) {
   }, []);
 
   return (
-    <Container fluid>
+    <Container fluid className='pad'>
       {!isAuthUser ? <PopUpBar component="dashboard" /> : ''}
       <SummaryBar
         displayUserId={displayUserId}
@@ -72,7 +72,7 @@ export function Dashboard(props) {
         <Col lg={{ size: 5 }} className="order-sm-12">
           <Leaderboard displayUserId={displayUserId} />
         </Col>
-        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
+        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1 pad">
           {popup ? (
             <div className="my-2">
               <div id="weeklySum">

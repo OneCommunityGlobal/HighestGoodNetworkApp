@@ -24,7 +24,7 @@ const mapStateToProps = state => {
       const element = { ...originalElement }; // Create a new object with the same properties
       
       element.didMeetWeeklyCommitment =
-        element.totaltangibletime_hrs >= element.weeklycommittedHours;
+      element.totaltangibletime_hrs >= element.weeklycommittedHours;
 
       element.weeklycommitted = round(element.weeklycommittedHours, 2);
       element.tangibletime = round(element.totaltangibletime_hrs, 2);
@@ -37,7 +37,7 @@ const mapStateToProps = state => {
       element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
       element.totaltime = round(element.totaltime_hrs, 2);
       element.isVisible = element.role === 'Volunteer' || element.isVisible;
-    
+      
       return element;
     });
   }

@@ -14,6 +14,7 @@
     display: relative;
   }
 
+ 
   thead th {
     position: sticky;
     top: 0;
@@ -24,6 +25,15 @@
     border-top-color: rgb(222, 226, 230);
   }
 }
+
+.table-fixed tbody td {
+  white-space: normal; /* Allow text wrapping within cells */
+}
+
+.table-fixed{
+  font-size: 0.95rem;
+}
+
 
 .boldClass {
   color: #007bff;

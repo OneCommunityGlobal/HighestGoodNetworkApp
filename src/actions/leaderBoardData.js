@@ -10,7 +10,6 @@ export const getLeaderboardData = userId => {
   return async dispatch => {
     const url = ENDPOINTS.LEADER_BOARD(userId);
     const res = await httpService.get(url);
-    console.log("RES ",res.data[2])
     await dispatch(getLeaderBoardDataActionCreator(res.data));
   };
 };

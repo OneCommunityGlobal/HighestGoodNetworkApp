@@ -629,12 +629,26 @@ const BasicInformationTab = props => {
     </>
   );
 
+  function calculateDaysRemaining(lastDay) {
+    if (lastDay) {
+        const today = new Date();
+        const endDate = new Date(lastDay);
+        const differenceInTime = endDate.getTime() - today.getTime();
+        const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+        return differenceInDays;
+    } else {
+        // Handle the case where lastDay is null
+        // For example, return a default value
+        return 0; // or any other appropriate default value
+    }
+  }
+
   const endDateComponent = (
     <>
       <Col>
         <Label>
           {userProfile.endDate
-            ? 'End Date ' + formatDate(userProfile.endDate)
+            ? 'End Date ' + formatDate(userProfile.endDate) + ' -'+calculateDaysRemaining(userProfile.endDate).toString()
             : 'End Date ' + 'N/A'}
         </Label>
         {canEdit && !desktopDisplay && (
