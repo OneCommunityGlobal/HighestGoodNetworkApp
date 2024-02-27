@@ -15,6 +15,7 @@ export const TasksTable = ({ WbsTasksID }) => {
 
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
+  const [toggleEditTasks, setToggleEditTasks] = useState(false);
   const [filters, setFilters] = useState({
     status: '',
     priority: '',
@@ -101,19 +102,31 @@ export const TasksTable = ({ WbsTasksID }) => {
           />
         </div>
 
-        <button
-          className="tasks-table-clear-filter-button"
-          onClick={() => resetAllFilters()}
-          style={boxStyle}
-        >
-          Clear filters
-        </button>
+        <div className='d-flex'>
+          <button
+            className="tasks-table-edit-tasks-button"
+            onClick={() => setToggleEditTasks(!toggleEditTasks)}
+            style={boxStyle}
+          >
+            Edit Tasks
+          </button>
+
+          <button
+            className="tasks-table-clear-filter-button"
+            onClick={() => resetAllFilters()}
+            style={boxStyle}
+          >
+            Clear filters
+          </button>
+        </div>
+
       </div>
 
       <TasksDetail
         tasks_filter={get_tasks}
         isAssigned={isAssigned}
         isActive={isActive}
+        toggleEditTasks={toggleEditTasks}
         priority={filters.priority}
         status={filters.status}
         classification={filters.classification}

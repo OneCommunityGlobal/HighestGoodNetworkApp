@@ -36,7 +36,21 @@
   outline-color: #e7b1ef;
   color: #ca50db;
   border-radius: 4px;
-  margin-left: 40px;
+  margin-left: 20px;
+  width: 100px;
+  min-width: 100px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.tasks-table-edit-tasks-button{
+  display: block;
+  background-color: white;
+  border: 2px solid #007bff;
+  outline-color: #007bff;
+  color: #5750db;
+  border-radius: 4px;
+  margin-left: 0px;
   width: 100px;
   min-width: 100px;
   height: 30px;
@@ -48,4 +62,11 @@
 .tasks-table-clear-filter-button:active {
   border-color: #ca50db;
   outline-color: #ca50db;
+}
+
+.tasks-table-edit-tasks-button:hover,
+.tasks-table-edit-tasks-button:focus,
+.tasks-table-edit-tasks-button:active {
+  border-color: #5750db;
+  outline-color: #5750db;
 }

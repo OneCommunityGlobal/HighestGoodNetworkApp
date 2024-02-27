@@ -30,7 +30,7 @@ export const TasksDetail = props => {
   let tasksList = [];
   let tasks = [];
   tasks = props.tasks_filter;
-
+  console.log(props)
   if (props.tasks_filter.length > 0) {
     tasks = ['priority', 'status', 'classification', 'isActive', 'isAssigned'].reduce(
       (filteredTask, filter) => {
@@ -57,7 +57,7 @@ export const TasksDetail = props => {
   tasksList = tasks.map((task, index) => (
     <div key={task._id} className="tasks-detail-table-row">
       <div>
-        <EditTaskModal
+        {props.toggleEditTasks && <EditTaskModal
           key={`updateTask_${task._id}`}
           parentNum={task.num}
           taskId={task._id}
@@ -67,7 +67,7 @@ export const TasksDetail = props => {
           parentId3={task.parentId3}
           mother={task.mother}
           level={task.level}
-        />
+        />}
       </div>
       <div>
         <div>{index + 1}</div>
