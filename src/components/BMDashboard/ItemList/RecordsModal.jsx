@@ -49,8 +49,8 @@ export function Record({ record, recordType }) {
                 <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
                 <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
                 <td>
-                  <a href={`/userprofile/${data.createdBy._id}`}>
-                    {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
+                  <a href={`/userprofile/${requestedBy?._id}`}>
+                    {`${requestedBy?.firstName || 'Unknown'} ${requestedBy?.lastName || 'User'}`}
                   </a>
                 </td>
               </tr>
@@ -81,8 +81,8 @@ export function Record({ record, recordType }) {
                 <td>{brandPref}</td>
                 <td>{quantity || '-'}</td>
                 <td>
-                  <a href={`/userprofile/${requestedBy._id}`}>
-                    {`${requestedBy.firstName} ${requestedBy.lastName}`}
+                  <a href={`/userprofile/${requestedBy?._id}`}>
+                    {`${requestedBy?.firstName || 'Unknown'} ${requestedBy?.lastName || 'User'}`}
                   </a>
                 </td>
                 <td>{moment(date).format('MM/DD/YY')}</td>
