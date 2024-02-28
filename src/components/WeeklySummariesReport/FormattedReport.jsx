@@ -175,12 +175,12 @@ function EmailsList({ summaries, auth }) {
 function getTextColorForHoursLogged(hoursLogged, promisedHours) {
   const percentage = (hoursLogged / promisedHours) * 100;
 
-  if (percentage < 49) {
+  if (percentage < 50) {
     return 'red';
-  } else if (percentage >= 50 && percentage < 100) {
-    return 'lightgreen'; // Bright green color
+  } else if (percentage < 100) {
+    return 'lightgreen';
   } else {
-    return 'black'; // Default color
+    return 'black';
   }
 }
 
@@ -231,6 +231,7 @@ function ReportDetails({
                 canEditSummaryCount={canEditSummaryCount}
               />
             </ListGroupItem>
+
             <ListGroupItem>
               <b
                 style={{
@@ -243,7 +244,7 @@ function ReportDetails({
                 Hours logged:
               </b>
               {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
-                <p
+                <span
                   style={{
                     color: getTextColorForHoursLogged(
                       hoursLogged,
@@ -252,7 +253,7 @@ function ReportDetails({
                   }}
                 >
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
+                </span>
               ) : (
                 <span
                   className="ml-2"
@@ -267,6 +268,7 @@ function ReportDetails({
                 </span>
               )}
             </ListGroupItem>
+
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
