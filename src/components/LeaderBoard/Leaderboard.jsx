@@ -356,7 +356,7 @@ function LeaderBoard({
                   <span
                     title={mouseoverTextValue}
                     id="Days left"
-                    class="endDate"
+                    
                     style={{color:"red"}}
                   >
                     {displayDaysLeft(item.endDate)}
