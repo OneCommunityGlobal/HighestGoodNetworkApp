@@ -428,7 +428,9 @@ const Timelog = props => {
           <br />
         </Container>
       ) : (
-        <div className="text-center">
+      
+        <Container fluid="md" style={{textAlign: 'right'}}>
+       
         <EditableInfoModal
           areaName="DashboardTimelog"
           areaTitle="Timelog"
@@ -436,7 +438,8 @@ const Timelog = props => {
           isPermissionPage={true}
           role={authUser.role}
         />
-        </div>
+        </Container>
+   
       )}
 
       {timeLogState.isTimeEntriesLoading ? (
@@ -463,12 +466,12 @@ const Timelog = props => {
                         <EditableInfoModal
                           areaName="TasksAndTimelogInfoPoint"
                           areaTitle="Tasks and Timelogs"
-                          fontSize={22}
+                          fontSize={24}
                           isPermissionPage={true}
                           role={authUser.role} // Pass the 'role' prop to EditableInfoModal
                         />
-                      </div>
-                        <span style={{ padding: '0 5px' }}>
+                      
+                        <span className="mr-2" style={{padding: '1px'}}>
                           <ActiveCell
                             isActive={displayUserProfile.isActive}
                             user={displayUserProfile}
@@ -484,7 +487,8 @@ const Timelog = props => {
                             }}
                           />
                         </span>
-                        <ProfileNavDot userId={displayUserId} />
+                        <ProfileNavDot userId={displayUserId} style={{marginLeft: '2px', padding: '1px'}} />
+                        </div>
                       </CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
                         Viewing time entries logged in the last 3 weeks

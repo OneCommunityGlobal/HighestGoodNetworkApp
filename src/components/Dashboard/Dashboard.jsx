@@ -7,7 +7,6 @@ import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import '../../App.css';
-import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 
 export function Dashboard(props) {
@@ -42,11 +41,6 @@ export function Dashboard(props) {
     return () => {
       window.removeEventListener('storage', handleStorageEvent);
     };
-  }, []);
-
-  useEffect(() => {
-    // eslint-disable-next-line react/destructuring-assignment
-    props.getTimeZoneAPIKey();
   }, []);
 
   return (
@@ -110,6 +104,4 @@ const mapStateToProps = state => ({
   authUser: state.auth.user,
 });
 
-export default connect(mapStateToProps, {
-  getTimeZoneAPIKey,
-})(Dashboard);
+export default connect(mapStateToProps)(Dashboard);

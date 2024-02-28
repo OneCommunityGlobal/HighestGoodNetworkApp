@@ -322,8 +322,8 @@ const TeamMemberTasks = React.memo(props => {
           <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
             <tr>
               {/* Empty column header for hours completed icon */}
-              <th />
-              <th className="team-member-tasks-headers">
+              <th colSpan={1}/>
+              <th colSpan={2} className="team-member-tasks-headers">
                 <Table borderless className="team-member-tasks-subtable">
                   <thead>
                     <tr>
@@ -349,7 +349,7 @@ const TeamMemberTasks = React.memo(props => {
                   </thead>
                 </Table>
               </th>
-              <th className="team-member-tasks-headers">
+              <th colSpan={3} className="team-member-tasks-headers">
                 <Table borderless className="team-member-tasks-subtable">
                   <thead>
                     <tr>
@@ -409,7 +409,7 @@ const TeamMemberTasks = React.memo(props => {
                           .filter(timeEntry => timeEntry.personId === user.personId)
                           .map(timeEntry => (
                             <tr className="table-row" key={timeEntry._id}>
-                              <td colSpan={3} style={{ padding: 0 }}>
+                              <td colSpan={6} style={{ padding: 0 }}>
                                 <TimeEntry
                                   from="TaskTab"
                                   data={timeEntry}
