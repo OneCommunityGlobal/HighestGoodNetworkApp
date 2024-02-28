@@ -51,7 +51,7 @@ function ReportCharts({ title, pieChartId }) {
         <div className="team-report-chart-info-wrapper">
           <div className="team-report-chart-info">
             <div className="pie-chart-wrapper">
-              <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
+              <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" data-testid={`pie-chart-container-${pieChartId}`}/>
               <div className="pie-chart-info-detail">
                 <div className="pie-chart-info-detail-title">
                   <h5>Name</h5>

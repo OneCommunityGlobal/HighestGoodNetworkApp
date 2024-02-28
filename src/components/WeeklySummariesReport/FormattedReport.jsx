@@ -33,6 +33,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
@@ -59,7 +60,6 @@ function FormattedReport({
   summaries,
   weekIndex,
   bioCanEdit,
-  canEditSummaryCount,
   allRoleInfo,
   badges,
   loadBadges,
@@ -68,6 +68,8 @@ function FormattedReport({
   canSeeBioHighlight,
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
+  const dispatch = useDispatch();
+  const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
   return (
     <>
@@ -78,7 +80,7 @@ function FormattedReport({
             summary={summary}
             weekIndex={weekIndex}
             bioCanEdit={bioCanEdit}
-            canEditSummaryCount={canEditSummaryCount}
+            canEditSummaryCount={isEditCount}
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
