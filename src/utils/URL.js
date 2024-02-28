@@ -1,6 +1,5 @@
 const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
-const GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
@@ -87,9 +86,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
   TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
-  TIMEZONE_KEY: `${APIEndpoint}/timezone`,
-  GEOCODE_URI: (location, key) =>
-    `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
+  TIMEZONE_LOCATION: (location) => `${APIEndpoint}/timezone/${location}`,
 
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
@@ -100,14 +97,11 @@ export const ENDPOINTS = {
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
-
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
 
   SETUP_NEW_USER: () => `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
-  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
-  MAP_LOCATIONS_BY_TOKEN: () => `${APIEndpoint}/mapLocationsToken`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
   //reasons endpoints
