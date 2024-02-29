@@ -27,6 +27,8 @@ function ProjectSummary({ project }) {
   }, []);
 
   const summaryLabelCol = windowWidth < 700 ? '6' : '4';
+  const summaryLabelCol1 = windowWidth < 700 ? '6' : '8';
+  const summaryLabelCol2 = windowWidth < 700 ? '6' : '7';
 
   return (
     <div className="project-summary_content">
@@ -80,7 +82,7 @@ function ProjectSummary({ project }) {
         <Col xs={summaryLabelCol}>
           <Label className="project-summary_label">Rentals:</Label>
         </Col>
-        <Col xs={window.innerWidth < 700 ? '6' : '7'}>
+        <Col xs={summaryLabelCol2}>
           <span className="project-summary_span">Excavator 2 rental ends in 72 hours!</span>
         </Col>
       </Row>
@@ -88,7 +90,7 @@ function ProjectSummary({ project }) {
         <Col xs={summaryLabelCol}>
           <Label className="project-summary_label">Most material bought:</Label>
         </Col>
-        <Col xs={window.innerWidth < 700 ? '6' : '7'}>
+        <Col xs={summaryLabelCol2}>
           <span className="project-summary_span">
             {mostMaterialBought?.stockBought} {mostMaterialBought?.itemType.unit} of{' '}
             {mostMaterialBought?.itemType.name} purchased for this project
@@ -99,7 +101,7 @@ function ProjectSummary({ project }) {
         <Col xs={summaryLabelCol}>
           <Label className="project-summary_label">Stock:</Label>
         </Col>
-        <Col xs={window.innerWidth < 700 ? '6' : '8'}>
+        <Col xs={summaryLabelCol1}>
           <span className="project-summary_span">
             {leastMaterialAvailable?.itemType.name} is nearly out of stock (
             {leastMaterialAvailable?.stockAvailable} {leastMaterialAvailable?.itemType.unit}{' '}
