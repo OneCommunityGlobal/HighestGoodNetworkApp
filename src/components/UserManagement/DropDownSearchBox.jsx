@@ -28,7 +28,6 @@ class DropDownSearchBox extends React.PureComponent {
           );
         })}
       </select>
-
     );
   }
 

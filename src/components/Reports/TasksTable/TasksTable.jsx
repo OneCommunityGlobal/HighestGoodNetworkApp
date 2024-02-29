@@ -82,7 +82,7 @@ export const TasksTable = ({ WbsTasksID }) => {
           <TextSearchBox
             placeholder="Estimated hours"
             className="tasks-table-filter-item tasks-table-filter-input"
-            searchCallback={() => { }}
+            searchCallback={() => {}}
           />
 
           <Checkbox

@@ -2,13 +2,6 @@ td > input,
 select {
   width: 100%;
 }
-.dropdown {
-  display: flex;
-  flex-direction: column;
-  padding: '0 0 0 6px';
-  cursor: 'pointer';
-
-}
 
 .table-filter-wrapper {
   display: flex;
