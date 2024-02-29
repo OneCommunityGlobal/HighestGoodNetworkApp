@@ -195,6 +195,10 @@ export class WeeklySummariesReport extends Component {
     }
   }
 
+  componentWillUnmount() {
+    sessionStorage.removeItem('tabSelection');
+  }
+
   onSummaryRecepientsPopupClose = () => {
     this.setState({ summaryRecepientsPopupOpen: false });
   };
@@ -241,10 +245,6 @@ export class WeeklySummariesReport extends Component {
     });
     this.checkForValidPwd(true);
   };
-
-  componentWillUnmount() {
-    sessionStorage.removeItem('tabSelection');
-  }
 
   /**
    * Sort the summaries in alphabetixal order
