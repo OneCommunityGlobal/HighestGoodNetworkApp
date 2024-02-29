@@ -33,10 +33,10 @@ function WeeklySummaryContentTooltip({ tabId }) {
         <a href="https://www.onecommunityglobal.org/one-community-blog/">
           weekly progress updates blog.
         </a>
-        &nbsp; When writing your weekly summary, you should
-        <u>write it in 3rd person</u>
-        and include as much detail as possible about what you did for the week. Minimum length for a
-        weekly summary is 50 words and the app won’t allow you to submit one shorter than this.
+        &nbsp; When writing your weekly summary, you should&nbsp;
+        <u>write it in 3rd person</u>&nbsp; and include the specifics of what you did for the week.
+        Please be detailed. Minimum length for a weekly summary is 50 words and the app won’t allow
+        you to submit one shorter than this.
         <br />
         <br />
         Here’s an example of how to write your weekly summary in 3rd person:
