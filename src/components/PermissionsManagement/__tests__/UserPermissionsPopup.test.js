@@ -106,6 +106,7 @@ describe('UserPermissionsPopup component', () => {
     await waitFor(() => {
       expect(screen.getByText('Test1 Volunteer')).toBeInTheDocument();
       expect(screen.getByText('Test2 Manager')).toBeInTheDocument();
+      expect(screen.queryByText('Test3 Owner')).not.toBeInTheDocument();
     });
   });
   it('check if permissions is present', async () => {
@@ -219,18 +220,75 @@ describe('UserPermissionsPopup component', () => {
   it('check if Reset to Default button works as expected', async () => {
     axios.get.mockResolvedValue({
       status: 200,
-      data: '',
+      data: {
+        _id: 'ghi123',
+        role: 'Owner',
+        firstName: 'Test3',
+        lastName: 'Owner',
+        email: 'Test3.Owner@gmail.com',
+      },
     });
+
+    const store = mockStore({
+      auth: {
+        user: {
+          permissions: {
+            frontPermissions: [],
+            backPermissions: [],
+          },
+          role: 'Owner',
+        },
+        permissions: {
+          frontPermissions: [],
+          backPermissions: [],
+        },
+      },
+      role: mockAdminState.role,
+      allUserProfiles: {
+        userProfiles: [
+          {
+            isActive: true,
+            weeklycommittedHours: 0,
+            _id: 'abc123',
+            role: 'Volunteer',
+            firstName: 'Test1',
+            lastName: 'Volunteer',
+            email: 'Test1.Volunteer@gmail.com',
+          },
+          {
+            isActive: true,
+            weeklycommittedHours: 10,
+            _id: 'def123',
+            role: 'Manager',
+            firstName: 'Test2',
+            lastName: 'Manager',
+            email: 'Test2.Manager@gmail.com',
+          },
+          {
+            isActive: false,
+            weeklycommittedHours: 2,
+            _id: 'ghi123',
+            role: 'Owner',
+            firstName: 'Test3',
+            lastName: 'Owner',
+            email: 'Test3.Owner@gmail.com',
+          },
+        ],
+      },
+    });
+
     render(
       <Provider store={store}>
         <UserPermissionsPopUp />
       </Provider>,
     );
-
     const userElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(userElement);
-
-    await waitFor(() => {});
+    await waitFor(() => {
+      const addElement = screen.getAllByText('Add');
+      fireEvent.click(addElement[0]);
+    });
+    //await waitFor(() => {});
     screen.debug();
   });
 });
