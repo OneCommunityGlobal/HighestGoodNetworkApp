@@ -1,5 +1,6 @@
 .wrapper.container-fluid {
   padding: 0;
+
 }
 
 .reports-table-head {
@@ -11,9 +12,8 @@
 }
 
 .people-table-row {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 300px repeat(auto-fit, minmax(50px, 1fr));
   justify-content: space-between;
   align-items: center;
   min-height: 42px;
@@ -22,7 +22,8 @@
   border-bottom: 3px solid #f8f7f8;
 }
 
-.people-table-row > div {
+.people-table-row > div { 
+
   padding: 1%;
   text-align: center;
   margin:1%;
