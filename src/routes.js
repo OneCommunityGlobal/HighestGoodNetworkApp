@@ -208,14 +208,14 @@ export default (
 
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-          
+
         <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
+        <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/lessonlist/" component={LessonList} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
-        <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
