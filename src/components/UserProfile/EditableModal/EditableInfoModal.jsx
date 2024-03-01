@@ -57,8 +57,10 @@ export class EditableInfoModal extends Component {
     fontSize: 24,
   };
   
+  _isMounted = false;
   
   async componentDidMount() {
+    this._isMounted = true;
     await this.props.getInfoCollections();
     const {infoCollections, role, areaTitle, areaName, fontSize, isPermissionPage} = this.props;
 
@@ -78,19 +80,26 @@ export class EditableInfoModal extends Component {
                     (visible === '1' && (role ==='Owner' || role ==='Administrator')) ||
                     (visible === '2' && (role !== 'Volunteer'));
     let CanEdit = role === 'Owner';
-    this.setState({
-      infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
-      fetchError: this.props.fetchError,
-      loading: this.props.loading,
-      infoName: areaName,
-      infoContent: content || 'Please input information!',
-      visibility: visible,
-      CanRead,
-      CanEdit,
-      fontSize: fontSize,
-      isPermissionPage,
-    });
+    if(this._isMounted){
+      this.setState({
+        infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
+        fetchError: this.props.fetchError,
+        loading: this.props.loading,
+        infoName: areaName,
+        infoContent: content || 'Please input information!',
+        visibility: visible,
+        CanRead,
+        CanEdit,
+        fontSize: fontSize,
+        isPermissionPage,
+      });
+    }
+    
   };
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.infoCollections !== prevState.infoElements) {
@@ -222,7 +231,7 @@ export class EditableInfoModal extends Component {
           data-toggle="tooltip"
           data-placement="right"
           title="Click for user class information"
-          style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '10px'}}
+          style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '8px'}}
           aria-hidden="true"
           className="fa fa-info-circle"
           onClick={()=>this.setState({editableModalOpen: true})}

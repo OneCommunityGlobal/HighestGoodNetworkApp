@@ -186,7 +186,7 @@ useEffect(()=>{
         </div>
 
         {/* <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} /> */}
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} isInfringementMoreThanFive={isInfringementMoreThanFive} userRole={userProfile.role} numberOfReasons={numberOfReasons} infringementsNum={infringementsNum}/>
+        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} isInfringementMoreThanFive={isInfringementMoreThanFive} numberOfReasons={numberOfReasons} infringementsNum={infringementsNum}/>
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
           {

@@ -16,8 +16,6 @@ const BadgeManagement = props => {
   };
 
   const { role } = props; // Access the 'role' prop
-
-
   useEffect(() => {
     props.fetchAllBadges();
   }, []);
