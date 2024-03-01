@@ -8,7 +8,7 @@ import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
-  
+
   const user = get(state, 'userProfile', []);
 
   if (user.role !== 'Administrator' && user.role !== 'Owner' && user.role !== 'Core Team') {
@@ -19,12 +19,12 @@ const mapStateToProps = state => {
 
   if (leaderBoardData.length) {
     const maxTotal = maxBy(leaderBoardData, 'totaltime_hrs').totaltime_hrs || 10;
-    
+
     leaderBoardData = leaderBoardData.map(originalElement => {
       const element = { ...originalElement }; // Create a new object with the same properties
-      
+
       element.didMeetWeeklyCommitment =
-      element.totaltangibletime_hrs >= element.weeklycommittedHours;
+        element.totaltangibletime_hrs >= element.weeklycommittedHours;
 
       element.weeklycommitted = round(element.weeklycommittedHours, 2);
       element.tangibletime = round(element.totaltangibletime_hrs, 2);
@@ -37,7 +37,7 @@ const mapStateToProps = state => {
       element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
       element.totaltime = round(element.totaltime_hrs, 2);
       element.isVisible = element.role === 'Volunteer' || element.isVisible;
-      
+
       return element;
     });
   }
@@ -49,7 +49,7 @@ const mapStateToProps = state => {
   orgData.totaltime = round(orgData.totaltime_hrs, 2);
   orgData.intangibletime = round(orgData.totalintangibletime_hrs, 2);
   orgData.weeklycommittedHours = round(orgData.totalweeklycommittedHours, 2);
-  
+
   const tenPTotalOrgTime = orgData.weeklycommittedHours * 0.1;
   const orgTangibleColorTime = orgData.totaltime < tenPTotalOrgTime * 2 ? 0 : 5;
 
