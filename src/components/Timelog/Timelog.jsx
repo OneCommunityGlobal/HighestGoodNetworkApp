@@ -48,6 +48,7 @@ import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { useParams } from 'react-router-dom';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -126,6 +127,7 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const { userId: paramsUserId } = useParams();
+  const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
 
   const displayUserId = paramsUserId || authUser.userid;
   const isAuthUser = authUser.userid === displayUserId;
@@ -221,6 +223,10 @@ const Timelog = props => {
   };
 
   const toggle = () => {
+    if(isNotAllowedToEdit){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     setTimeLogState({ ...timeLogState, timeEntryFormModal: !timeLogState.timeEntryFormModal });
   };
 

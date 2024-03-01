@@ -293,7 +293,13 @@ class UserManagement extends React.PureComponent {
    * Call back on log time off button click
    */
   onLogTimeOffClick = user => {
+    // Check if target user is Jae's related user and authroized to manage time off requests
+    if(cantUpdateDevAdminDetails(user.email , this.props.state.userProfile.email)){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
+    
     const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
     if(canManageTimeOffRequests || hasRolePermission){
       this.setState({
