@@ -2,9 +2,11 @@ import axios from "axios";
 
 import { ENDPOINTS } from "utils/URL";
 import {
-  FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
-  POST_BUILDING_MATERIAL_INVENTORY_UNIT, RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT
-} from "constants/bmdashboard/inventoryTypeConstants"; import { GET_ERRORS } from "constants/errors";
+  FETCH_BUILDING_INVENTORY_UNITS,
+  POST_BUILDING_INVENTORY_UNIT,
+  RESET_POST_BUILDING_INVENTORY_UNIT
+} from "constants/bmdashboard/inventoryTypeConstants";
+import { GET_ERRORS } from "constants/errors";
 
 export const fetchInvUnits = () => {
   return async dispatch => {
@@ -32,20 +34,20 @@ export const postBuildingInventoryUnit = (payload) => {
 
 export const setPostInvUnitResult = (payload) => {
   return {
-    type: POST_BUILDING_MATERIAL_INVENTORY_UNIT,
+    type: POST_BUILDING_INVENTORY_UNIT,
     payload
   }
 }
 
 export const resetPostInvUnitResult = () => {
   return {
-    type: RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT
+    type: RESET_POST_BUILDING_INVENTORY_UNIT
   }
 }
 
 export const setInvUnits = payload => {
   return {
-    type: FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
+    type: FETCH_BUILDING_INVENTORY_UNITS,
     payload
   }
 }

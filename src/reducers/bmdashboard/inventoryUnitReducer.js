@@ -1,6 +1,7 @@
 import {
-  FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
-  POST_BUILDING_MATERIAL_INVENTORY_UNIT, RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT
+  FETCH_BUILDING_INVENTORY_UNITS,
+  POST_BUILDING_INVENTORY_UNIT,
+  RESET_POST_BUILDING_INVENTORY_UNIT
 } from "constants/bmdashboard/inventoryTypeConstants";
 
 const defaultState = {
@@ -13,12 +14,13 @@ const defaultState = {
 }
 
 export const bmInvUnitReducer = (state = defaultState, action) => {
-
   switch (action.type) {
-    case FETCH_BUILDING_MATERIAL_INVENTORY_UNITS:
-      state.list = action.payload;
-      return { ...state }
-    case POST_BUILDING_MATERIAL_INVENTORY_UNIT:
+    case FETCH_BUILDING_INVENTORY_UNITS:
+      return {
+        ...state,
+        list: action.payload
+      };
+    case POST_BUILDING_INVENTORY_UNIT:
       return {
         ...state,
         postedResult: {
@@ -27,7 +29,7 @@ export const bmInvUnitReducer = (state = defaultState, action) => {
           error: false
         }
       };
-    case RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT:
+    case RESET_POST_BUILDING_INVENTORY_UNIT:
       return {
         ...state,
         postedResult: {
@@ -35,10 +37,8 @@ export const bmInvUnitReducer = (state = defaultState, action) => {
           success: null,
           error: null
         }
-      }
+      };
     default:
-      {
-        return state;
-      }
+      return state;
   }
 }

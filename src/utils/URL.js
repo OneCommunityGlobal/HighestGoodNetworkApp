@@ -130,7 +130,9 @@ export const ENDPOINTS = {
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
+  BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_MATERIAL_TYPE: `${APIEndpoint}/bm/invtypes/material`,
+  BM_REUSABLE_TYPE: `${APIEndpoint}/bm/invtypes/reusable`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,

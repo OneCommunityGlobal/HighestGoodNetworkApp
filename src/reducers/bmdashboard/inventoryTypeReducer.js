@@ -1,4 +1,10 @@
-import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE, GET_TOOL_TYPES } from "constants/bmdashboard/inventoryTypeConstants";
+import GET_INVENTORY_TYPES, {
+  POST_BUILDING_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_INVENTORY_TYPE,
+  RESET_POST_BUILDING_INVENTORY_TYPE,
+  GET_INV_BY_TYPE,
+  GET_TOOL_TYPES
+} from "constants/bmdashboard/inventoryTypeConstants";
 
 const defaultState = {
   list: [],
@@ -14,19 +20,18 @@ const defaultState = {
 }
 
 export const bmInvTypeReducer = (state = defaultState, action) => {
-
   switch (action.type) {
-    case GET_MATERIAL_TYPES:
+    case GET_INVENTORY_TYPES:
       state.list = action.payload;
       return {
         ...state
       };
     case GET_TOOL_TYPES:
       state.list = action.payload;
-      return { 
+      return {
         ...state
       };
-    case POST_BUILDING_MATERIAL_INVENTORY_TYPE:
+    case POST_BUILDING_INVENTORY_TYPE:
       return {
         ...state,
         postedResult: {
@@ -35,7 +40,7 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
           error: false
         }
       };
-    case POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE:
+    case POST_ERROR_BUILDING_INVENTORY_TYPE:
       return {
         ...state,
         postedResult: {
@@ -44,7 +49,7 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
           error: true
         }
       };
-    case RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE:
+    case RESET_POST_BUILDING_INVENTORY_TYPE:
       return {
         ...state,
         postedResult: {
@@ -53,12 +58,10 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
           error: null
         }
       };
-      case GET_INV_BY_TYPE: {
-        state.invTypeList[action.payload.type] = [...action.payload.data]
-        return { ...state }
-      }
-    default: {
+    case GET_INV_BY_TYPE:
+      state.invTypeList[action.payload.type] = [...action.payload.data]
+      return { ...state }
+    default:
       return state;
-    }
   }
 };

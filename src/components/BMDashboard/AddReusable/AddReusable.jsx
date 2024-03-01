@@ -18,15 +18,14 @@ import Joi from 'joi';
 import { toast } from 'react-toastify';
 import {
   fetchMaterialTypes,
-  postBuildingMaterialInventoryType,
+  postBuildingReusableInventoryType,
   resetPostBuildingInventoryTypeResult,
 } from 'actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
 import Select from 'react-select';
 import { similarity } from './SimilarityCheck';
 
-function AddMaterial() {
-  const itemType = 'Material' // match this to the backend file called 'BuildingUnits.json'
+function AddReusable() {
   const dispatch = useDispatch();
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
   const buildingInventoryUnits = useSelector(state => state.bmInvUnits.list);
@@ -63,7 +62,6 @@ function AddMaterial() {
       });
     setFormattedUnits(_formattedUnits);
   }, [buildingInventoryUnits, itemType]);
-
 
   useEffect(() => {
     if (postBuildingInventoryResult?.error === true) {
@@ -204,7 +202,7 @@ function AddMaterial() {
       // formatted for react-select
       const _material = { ...material };
       _material.unit = material.unit?.value;
-      dispatch(postBuildingMaterialInventoryType(_material));
+      dispatch(postBuildingReusableInventoryType(_material));
     }
   };
 
@@ -433,4 +431,4 @@ function AddMaterial() {
   );
 }
 
-export default AddMaterial;
+export default AddReusable;
