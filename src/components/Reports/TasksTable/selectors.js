@@ -9,7 +9,7 @@ export const get_task_by_wbsId = (WbsTasksID, tasks) => {
     }
   }
 
-  return get_tasks[1];
+  return get_tasks[0];
 };
 
 export const getTasksTableData = (state, { WbsTasksID }) => ({
