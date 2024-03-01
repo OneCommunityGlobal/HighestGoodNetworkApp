@@ -8,7 +8,6 @@ import {
   Button,
   CardBody,
   Card,
-  Table,
 } from 'reactstrap';
 import './AddMaterial.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,42 +16,32 @@ import { useState } from 'react';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import {
-  fetchMaterialTypes,
+  fetchReusableTypes,
   postBuildingReusableInventoryType,
   resetPostBuildingInventoryTypeResult,
 } from 'actions/bmdashboard/invTypeActions';
-import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
 
-import { similarity } from './SimilarityCheck';
-
+//TODO(Yan): consider make this into a reusable component
+//TODO(Yan): change material to reusbale
 function AddReusable() {
   const dispatch = useDispatch();
+  //TODO(Yan): since all needs state.bmInvTypes.postedResult, fetchReusableTypes? fetchMaterialTypes? should I merge into one?
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
-  const buildingInventoryUnits = useSelector(state => state.bmInvUnits.list);
-  const [formattedUnits, setFormattedUnits] = useState([]);
-  const [similarityData, setSimilarityData] = useState([]);
 
   const [material, setMaterial] = useState({
     name: '',
-    unit: '',
-    customUnit: '',
-    customUnitCheck: false,
     description: '',
     allowNewMeasurement: false,
   });
   const [validations, setValidations] = useState({
     name: '',
     unit: '',
-    customUnit: '',
     description: '',
-    commonUnit: '',
-    customUnitCheck: '',
     total: true,
   });
 
   useEffect(() => {
-    dispatch(fetchMaterialTypes());
-    dispatch(fetchInvUnits());
+    dispatch(fetchReusableTypes());
   }, []);
 
 
@@ -79,12 +68,9 @@ function AddReusable() {
       .min(10)
       .max(150)
       .required(),
-    unit: Joi.optional(),
-    customUnit: Joi.string()
-      .allow('')
-      .optional(),
   };
   const schema = Joi.object(obj).options({ abortEarly: false, allowUnknown: true });
+
 
   const validationHandler = (field, value, complete) => {
     let validate;
@@ -97,6 +83,29 @@ function AddReusable() {
       validate = propertySchema.validate({ [field]: value });
     }
 
+    if (validate?.error) {
+      //TODO(Yan): double for loop?
+      for (let i = 0; i < validate.error.details.length; i += 1) {
+        const errorObj = validate.error.details[i];
+        if (errorObj.context.peersWithLabels) {
+          for (let j = 0; j < errorObj.context.peersWithLabels.length; j += 1) {
+            validations[errorObj.context.peersWithLabels[j]] = errorObj.message;
+            validationErrorFlag = true;
+          }
+        } else validations[errorObj.context.label] = errorObj.message;
+        validationErrorFlag = true;
+      }
+    } else if (!complete) {
+      validations[field] = '';
+    }
+
+    if (complete && similarityData.length !== 0 && !material.customUnitCheck) {
+      validationErrorFlag = validationErrorFlag || true;
+      validations.customUnitCheck = 'Please confirm or select a unit from available ones';
+    } else {
+      validationErrorFlag = validationErrorFlag || false;
+      validations.customUnitCheck = '';
+    }
 
     validations.total = validationErrorFlag;
 
@@ -104,45 +113,23 @@ function AddReusable() {
     return validationErrorFlag;
   };
 
-  const unitSelectHandler = value => {
-    material.customUnit = '';
-    material.customUnitCheck = false;
-    material.allowNewMeasurement = false;
-    material.unit = value;
-    setMaterial({ ...material });
-  };
-
   const changeHandler = e => {
     const field = e.target.name;
     const { value } = e.target;
     material[field] = value;
-    if (field === 'customUnit') {
-      if (value) {
-        material.unit = '';
-      }
-    }
-    // if (field === 'unit') {
-    //   if (value !== '') {
-    //     material.customUnit = '';
-    //     material.customUnitCheck = false;
-    //     material.allowNewMeasurement = false;
-    //   }
-    // }
-    if (field === 'customUnitCheck' || field === 'allowNewMeasurement') {
-      material[field] = e.target.checked;
-    }
     setMaterial({ ...material });
     if (field !== null) validationHandler(field, value);
   };
 
   const submitHandler = () => {
-    const error = validationHandler(null, null, true);
-    if (!error) {
-      // formatted for react-select
-      const _material = { ...material };
-      _material.unit = material.unit?.value;
-      dispatch(postBuildingReusableInventoryType(_material));
-    }
+    dispatch(postBuildingReusableInventoryType(material));
+    //TODO(Yan): which should you use?
+
+    // const error = validationHandler(null, null, true);
+    // if (!error) {
+    //   const _material = { ...material };
+    //   dispatch(postBuildingReusableInventoryType(_material));
+    // }
   };
 
   return (
@@ -187,14 +174,6 @@ function AddReusable() {
                     {validations.name !== '' && (
                       <Label for="materialNameErr" sm={12} className="materialFormError">
                         {`Material ${validations.name}`}
-                      </Label>
-                    )}
-                  </FormGroup>
-
-                  <FormGroup row>
-                    {validations.commonUnit !== '' && (
-                      <Label for="materialNameErr" sm={12} className="materialFormError">
-                        {validations.commonUnit}
                       </Label>
                     )}
                   </FormGroup>
