@@ -339,8 +339,8 @@ function LeaderBoard({
                   {(userOnTimeOff || userGoingOnTimeOff) &&
                     (userOnTimeOff[item.personId] || userGoingOnTimeOff[item.personId]) && (
                       <div>
-                        <button 
-                          style={{width : '35px', height: 'auto'}}
+                        <button
+                          style={{ width: '35px', height: 'auto' }}
                           type="button"
                           onClick={() => {
                             const request = userOnTimeOff[item.personId]
