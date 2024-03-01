@@ -12,7 +12,7 @@ describe('get_task_by_wbsId', () => {
     };
     const WbsTasksID = ['A','B'];
     const result = get_task_by_wbsId(WbsTasksID, mockTasks);
-    expect(result).toEqual([{ id: 2, wbsId: 'B' }]);
+    expect(result).toEqual([ { id: 1, wbsId: 'A' }, { id: 3, wbsId: 'A' }, { id: 2, wbsId: 'B' } ]);
   });
 
   it('returns the correct tasks based on WbsTasksID', () => {
@@ -26,7 +26,23 @@ describe('get_task_by_wbsId', () => {
     };
     const WbsTasksID = ['A'];
     const result = get_task_by_wbsId(WbsTasksID, mockTasks);
-    expect(result).toEqual(undefined);
+    console.log("RESULT: ");
+    console.log(result)
+    expect(result).toEqual([{"id": 1, "wbsId": "A"}, {"id": 3, "wbsId": "A"}]);
+  });
+
+  it('returns an empty array when WbsTasksID is not found', () => {
+    const mockTasks = {
+      fetched: true,
+      taskItems: [
+        { id: 1, wbsId: 'A' },
+        { id: 2, wbsId: 'B' },
+        { id: 3, wbsId: 'A' }
+      ]
+    };
+    const WbsTasksID = ['C']; // WbsTasksID not found
+    const result = get_task_by_wbsId(WbsTasksID, mockTasks);
+    expect(result).toEqual([]);
   });
 });
 
