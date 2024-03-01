@@ -186,9 +186,7 @@ function UpdateConsumable({ record, setModal }) {
                   New Available
                 </Label>
                 <Col sm={6} className="consumableFormValue">
-                  <span
-                    className={updateRecord.newAvailable < 0 ? 'consumableFormErrorClr' : undefined}
-                  >
+                  <span className={availableCount < 0 ? 'consumableFormErrorClr' : undefined}>
                     {availableCount}
                   </span>
                 </Col>
