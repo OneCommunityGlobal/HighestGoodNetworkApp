@@ -182,7 +182,7 @@ function LeaderBoard({
                   />
                 </div>
               </th>
-              <th>End Date</th>
+              <th>Days Left</th>
               <th>Time Off</th>
               
               <th>
