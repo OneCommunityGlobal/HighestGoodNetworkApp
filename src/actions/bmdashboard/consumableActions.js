@@ -25,7 +25,7 @@ export const purchaseConsumable = async body => {
       if (err.response) return err.response;
       if (err.request) return err.request;
       return err.message;
-    });
+    })
 }
 
 export const fetchAllConsumables = () => {

@@ -32,6 +32,10 @@ export default function PurchaseForm() {
     brand: Joi.string().allow(''),
   });
 
+  const sortedProjects = bmProjects.slice().sort((a, b) => {
+    return a.name.localeCompare(b.name); // Sort alphabetically by name
+  });
+
   const handleSubmit = async e => {
     e.preventDefault();
     const validate = schema.validate({
@@ -82,12 +86,12 @@ export default function PurchaseForm() {
             setValidationError('');
             setProjectId(currentTarget.value);
           }}
-          disabled={!bmProjects.length}
+          disabled={!sortedProjects.length}
         >
           <option disabled hidden value="">
             {' '}
           </option>
-          {bmProjects.map(({ _id, name }) => (
+          {sortedProjects.map(({ _id, name }) => (
             <option value={_id} key={_id}>
               {name}
             </option>
