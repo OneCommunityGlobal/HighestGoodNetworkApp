@@ -22,7 +22,7 @@ import {
   resetPostBuildingInventoryTypeResult,
 } from 'actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
-import Select from 'react-select';
+
 import { similarity } from './SimilarityCheck';
 
 function AddReusable() {
@@ -55,13 +55,6 @@ function AddReusable() {
     dispatch(fetchInvUnits());
   }, []);
 
-  useEffect(() => {
-    const _formattedUnits = buildingInventoryUnits.filter(el => el.category === itemType)
-      .map(proj => {
-        return { label: proj.unit, value: proj.unit };
-      });
-    setFormattedUnits(_formattedUnits);
-  }, [buildingInventoryUnits, itemType]);
 
   useEffect(() => {
     if (postBuildingInventoryResult?.error === true) {
@@ -104,60 +97,6 @@ function AddReusable() {
       validate = propertySchema.validate({ [field]: value });
     }
 
-    if (!material.unit && !material.customUnit) {
-      if (complete || field === 'unit' || field === 'customUnit') {
-        validations.commonUnit = 'At least one of "unit" or "customUnit" must have a valid value';
-        validationErrorFlag = true;
-      }
-    } else if (material.unit && material.customUnit) {
-      if (complete || field === 'unit' || field === 'customUnit') {
-        validations.commonUnit = 'Only one of the unit should have a value';
-        validationErrorFlag = true;
-      }
-    } else {
-      validations.commonUnit = '';
-    }
-
-    if (validate?.error) {
-      for (let i = 0; i < validate.error.details.length; i += 1) {
-        const errorObj = validate.error.details[i];
-        if (errorObj.context.peersWithLabels) {
-          for (let j = 0; j < errorObj.context.peersWithLabels.length; j += 1) {
-            validations[errorObj.context.peersWithLabels[j]] = errorObj.message;
-            validationErrorFlag = true;
-          }
-        } else validations[errorObj.context.label] = errorObj.message;
-        validationErrorFlag = true;
-      }
-    } else if (!complete) {
-      validations[field] = '';
-    }
-
-    if (material.customUnit !== '') {
-      const _similarityData = [];
-      for (let i = 0; i < buildingInventoryUnits.length; i += 1) {
-        const similarityPercent = similarity(buildingInventoryUnits[i].unit, material.customUnit);
-        // console.log(buildingInventoryUnits[i].unit, similarityPercent)
-        if (similarityPercent > 0.5) {
-          const simObj = {
-            unitFromStore: buildingInventoryUnits[i].unit,
-            similarityPercent: similarityPercent * 100,
-          };
-          _similarityData.push(simObj);
-        }
-      }
-      setSimilarityData([..._similarityData]);
-    } else {
-      const _similarityData = [];
-      setSimilarityData([..._similarityData]);
-    }
-    if (complete && similarityData.length !== 0 && !material.customUnitCheck) {
-      validationErrorFlag = validationErrorFlag || true;
-      validations.customUnitCheck = 'Please confirm or select a unit from available ones';
-    } else {
-      validationErrorFlag = validationErrorFlag || false;
-      validations.customUnitCheck = '';
-    }
 
     validations.total = validationErrorFlag;
 
@@ -211,7 +150,7 @@ function AddReusable() {
       <Container fluid className="materialContainer">
         <div className="materialPage">
           <div className="material">
-            <div className="materialTitle">ADD MATERIAL FORM</div>
+            <div className="materialTitle">ADD REUSABLE FORM</div>
             <Card>
               <CardBody>
                 <Form id="AddMaterialForm">
@@ -225,14 +164,14 @@ function AddReusable() {
                         name=""
                         type="text"
                         placeholder="Material Name"
-                        value="Material"
+                        value="Reusable"
                         disabled
                       />
                     </Col>
                   </FormGroup>
                   <FormGroup row className="align-items-center justify-content-start">
                     <Label for="name" lg={2} sm={4} className="materialFormLabel">
-                      Material Name
+                      Reusable Name
                     </Label>
                     <Col lg={4} sm={8} className="materialFormValue">
                       <Input
@@ -241,7 +180,7 @@ function AddReusable() {
                         type="text"
                         value={material.name}
                         onChange={e => changeHandler(e)}
-                        placeholder="Material Name"
+                        placeholder="Reusable Name"
                       />
                     </Col>
 
@@ -251,141 +190,6 @@ function AddReusable() {
                       </Label>
                     )}
                   </FormGroup>
-
-                  <FormGroup row className="align-items-center justify-content-start">
-                    <Label for="unit" lg={2} sm={4} className="materialFormLabel">
-                      Measurement
-                    </Label>
-                    <Col lg={4} sm={8}>
-                      {/* <Input
-                        id="unit"
-                        name="unit"
-                        type="select"
-                        value={material.unit}
-                        onChange={e => changeHandler(e)}
-                      >
-                        <option value="" key="customUnit">
-                          --Please select unit--
-                        </option>
-                        {buildingInventoryUnits?.map(matType => (
-                          <option key={matType._id} value={matType.unit}>
-                            {matType.unit}
-                          </option>
-                        ))}
-                      </Input> */}
-
-                      <Select
-                        id="unit"
-                        name="unit"
-                        onChange={unitSelectHandler}
-                        options={formattedUnits}
-                        value={material.unit}
-                        defaultValue={formattedUnits[0]}
-                      />
-                    </Col>
-                  </FormGroup>
-
-                  <FormGroup check>
-                    <Input
-                      id="allowNewMeasurement"
-                      name="allowNewMeasurement"
-                      type="checkbox"
-                      value={material.allowNewMeasurement}
-                      checked={material.allowNewMeasurement}
-                      onChange={e => changeHandler(e)}
-                    />
-                    <Label check for="allowNewMeasurement">
-                      Please check here if you want to enter a New Measurement. (You can always
-                      choose from provided list for better calculations)
-                    </Label>
-                  </FormGroup>
-
-                  {material.allowNewMeasurement && (
-                    <>
-                      <FormGroup row className="align-items-center justify-content-start">
-                        <Label for="customUnit" lg={2} sm={4} className="materialFormLabel">
-                          <div className="d-flex flex-column justify-content-start">
-                            New Measurement
-                            <br />
-                            <i className="materialFormSmallText">
-                              Please note that , you can either select a unit from the list or enter
-                              a cutom unit of your choice
-                            </i>
-                          </div>
-                        </Label>
-                        <Col lg={4} sm={8} className="materialFormValue">
-                          <Input
-                            id="customUnit"
-                            name="customUnit"
-                            type="text"
-                            placeholder="Material Unit"
-                            value={material.customUnit}
-                            onChange={e => changeHandler(e)}
-                          />
-                        </Col>
-                        {validations.customUnit !== '' && (
-                          <Label for="materialNameErr" sm={12} className="materialFormError">
-                            {validations.customUnit}
-                          </Label>
-                        )}
-                      </FormGroup>
-
-                      {similarityData.length !== 0 && (
-                        <FormGroup row className="align-items-center justify-content-start">
-                          <Label
-                            for="similarityCheck"
-                            lg={12}
-                            sm={12}
-                            className="materialFormLabel"
-                          >
-                            <div className="materialFormText">
-                              <div>
-                                <i>Found some similar units from store.</i>
-                                <br />
-
-                                <FormGroup check>
-                                  <Input
-                                    id="customUnitCheck"
-                                    name="customUnitCheck"
-                                    type="checkbox"
-                                    value={material.customUnitCheck}
-                                    onChange={e => changeHandler(e)}
-                                  />
-                                  <Label check for="customUnitCheck">
-                                    Please confirm if the newly entered unit is different from the
-                                    available ones.
-                                  </Label>
-                                  {validations.customUnitCheck !== '' && (
-                                    <Label
-                                      for="materialNameErr"
-                                      sm={12}
-                                      className="materialFormError"
-                                    >
-                                      {validations.customUnitCheck}
-                                    </Label>
-                                  )}
-                                </FormGroup>
-                              </div>
-                              <Table bordered striped className="materialMargin">
-                                <tbody>
-                                  <tr>
-                                    <th>Unit</th>
-                                    <th>Similarity Percentage to {material.customUnit}</th>
-                                  </tr>
-                                  {similarityData.map(sim => (
-                                    <tr key={sim.unitFromStore}>
-                                      <td> {sim.unitFromStore} </td>
-                                      <td> {sim.similarityPercent} </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </Table>
-                            </div>
-                          </Label>
-                        </FormGroup>
-                      )}
-                    </>
-                  )}
 
                   <FormGroup row>
                     {validations.commonUnit !== '' && (
@@ -397,14 +201,14 @@ function AddReusable() {
 
                   <FormGroup row className="align-items-center justify-content-start">
                     <Label for="description" lg={2} sm={4} className="materialFormLabel">
-                      Material Description
+                      Reusable Description
                     </Label>
                     <Col lg={4} sm={8} className="materialFormValue">
                       <Input
                         id="description"
                         name="description"
                         type="text"
-                        placeholder="Material description"
+                        placeholder="Reusable description"
                         value={material.description}
                         onChange={e => changeHandler(e)}
                       />
@@ -418,7 +222,7 @@ function AddReusable() {
 
                   <FormGroup row className="d-flex justify-content-right">
                     <Button onClick={() => submitHandler()} className="materialButtonBg">
-                      Add Material
+                      Add Reusable
                     </Button>
                   </FormGroup>
                 </Form>
