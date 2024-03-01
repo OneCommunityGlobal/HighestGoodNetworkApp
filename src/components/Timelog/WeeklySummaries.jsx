@@ -1,22 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import parse from 'html-react-parser';
 import './Timelog.css'
-import updateWeeklySummaries from 'actions/weeklySummaries';
+import {updateWeeklySummaries} from '../../actions/weeklySummaries';
 import { getUserProfile, updateUserProfile } from 'actions/userProfile';
 import hasPermission from 'utils/permissions';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { userProfileByIdReducer } from 'reducers/userProfileByIdReducer';
+import Spinner from 'react-bootstrap/Spinner';
 
 const WeeklySummaries = ({ userProfile }) => {
+
+  useEffect(() => {
+      setEditedSummaries([
+        userProfile.weeklySummaries[0]?.summary || '',
+        userProfile.weeklySummaries[1]?.summary || '',
+        userProfile.weeklySummaries[2]?.summary || '',
+      ]);
+    
+  }, [userProfile]);
+
   // Initialize state variables for editing and original summaries
+  
   const [editing, setEditing] = useState([false, false, false]);
+
   const [editedSummaries, setEditedSummaries] = useState([
     userProfile.weeklySummaries[0]?.summary || '',
     userProfile.weeklySummaries[1]?.summary || '',
     userProfile.weeklySummaries[2]?.summary || '',
   ]);
   const [originalSummaries, setOriginalSummaries] = useState([...editedSummaries]);
+
+  const [LoadingHandleSave, setLoadingHandleSave] = useState(null);
 
   const dispatch = useDispatch();
   const canEdit = dispatch(hasPermission('putUserProfile'));
@@ -54,10 +69,12 @@ const WeeklySummaries = ({ userProfile }) => {
   };
 
   const handleSave = async (index) => {
+    setLoadingHandleSave(index);
     // Save the edited summary content and toggle off editing mode
     const editedSummary = editedSummaries[index];
     // Check if the edited summary is not blank and contains at least 50 words
     const wordCount = editedSummary.split(/\s+/).filter(Boolean).length;
+
     if (editedSummary.trim() !== '' && wordCount >= 50) {
       const updatedUserProfile = {
         ...userProfile,
@@ -65,9 +82,14 @@ const WeeklySummaries = ({ userProfile }) => {
           i === index ? { ...item, summary: editedSummary } : item
         )
       };
-  
-    await dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
+
+    // This code updates the summary.  
+    await dispatch(updateUserProfile(userProfile));
+    
+    // This code saves edited weekly summaries in MongoDB.
+    await dispatch(updateWeeklySummaries(userProfile._id, updatedUserProfile));
     await dispatch(getUserProfile(userProfile._id));
+    await setLoadingHandleSave(null);
       // Toggle off editing mode
       toggleEdit(index);
     } else {
@@ -96,7 +118,12 @@ const WeeklySummaries = ({ userProfile }) => {
             value={editedSummaries[index]}
             onEditorChange={(content) => handleSummaryChange({ target: { value: content } }, index)}
           />
-          <button className = "button save-button" onClick={() => handleSave(index)}>Save</button>
+
+          <button className = "button save-button" onClick={() => handleSave(index)} 
+          disabled={LoadingHandleSave === index} >
+          { LoadingHandleSave === index? <Spinner animation="border" size="sm" /> : 'Save' }
+          </button>
+
           <button className = "button cancel-button" onClick={() => handleCancel(index)}>Cancel</button>
         </div>
       );
