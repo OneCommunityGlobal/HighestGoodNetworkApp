@@ -289,6 +289,36 @@ const ScheduleReasonModal = ({
     return false;
   };
 
+  const durationExplanationText = data => {
+
+    const { numberOfScheduledReasons, blueSquares, durationOfScheduledReasons } = data;
+
+    const transitionWord = numberOfScheduledReasons > 0 && blueSquares > 0 ? ` and ` : '';
+    const scheduledReasonsText =
+      numberOfScheduledReasons > 0
+        ? `${numberOfScheduledReasons} scheduled ${
+            numberOfScheduledReasons > 1 ? 'reasons' : 'reason'
+          } for a duration of ${durationOfScheduledReasons} ${
+            durationOfScheduledReasons > 1 ? 'weeks' : 'week'
+          }`
+        : '';
+
+    const blueSquaresText = blueSquares > 0 ? ` ${blueSquares} blue ${
+      blueSquares > 1 ? 'squares' : 'square'
+    }` : ''
+
+    const allowedPeriodText = `. Therefore,  you are only allowed to schedule a reason for no more than ${5 -
+      blueSquares - durationOfScheduledReasons} ${
+      5 - blueSquares - durationOfScheduledReasons > 1
+        ? 'weeks'
+        : 'week'
+    }` 
+
+    const finalText = (scheduledReasonsText === '' && blueSquaresText === '') ? `You are only allowed to schedule reason for no more than 5 Weeks.` : `You have ${scheduledReasonsText} ${transitionWord} ${blueSquaresText}${allowedPeriodText}.`;
+
+    return finalText
+  };
+
   return (
     <>
       {checkIfUserCanScheduleTimeOff() && (
@@ -309,7 +339,10 @@ const ScheduleReasonModal = ({
                   something) and let us know in advance. Blue squares are meant for situations like
                   this and we allow 5 a year.
                 </Form.Label>
-                <Form.Label>Select the Sunday of the week when you plan to leave:</Form.Label>
+                <Form.Label>
+                  Select the Sunday of the week you are planning to leave (If your leave is planned
+                  for a future week, select the Sunday of that week.):
+                </Form.Label>
                 <DatePicker
                   selected={requestData.dateOfLeave}
                   onChange={date => {
@@ -328,7 +361,7 @@ const ScheduleReasonModal = ({
                 <Form.Text className="text-danger pl-1">
                   {requestDataErrors.dateOfLeaveError}
                 </Form.Text>
-                <Form.Label>Enter the duration of your absence:</Form.Label>
+                <Form.Label>Enter the duration of your absence (In weeks):</Form.Label>
                 <Form.Control
                   type="number"
                   placeholder="Enter duration in weeks"
@@ -398,7 +431,9 @@ const ScheduleReasonModal = ({
                       <Col>Due to the reason of:</Col>
                     </Row>
                     <Row className="pl-2">
-                      <Col className="mb-2 font-italic"><li>{confirmationModalData.reasonForLeave}</li></Col>
+                      <Col className="mb-2 font-italic">
+                        <li>{confirmationModalData.reasonForLeave}</li>
+                      </Col>
                     </Row>
                     <Row>
                       <Col>The return day is:</Col>
@@ -414,7 +449,7 @@ const ScheduleReasonModal = ({
                     <Row>
                       <Col>
                         Please review the details of the request before confirming your selection.
-                        Once confirmed, an email will be sent to your manager
+                        Once confirmed, an email will be sent to you and your manager.
                       </Col>
                     </Row>
                   </Container>
@@ -432,29 +467,7 @@ const ScheduleReasonModal = ({
                 <ModalBody>
                   <Container>
                     <Row>
-                      You have
-                      {allowedDurationData.numberOfScheduledReasons > 0 &&
-                        `${allowedDurationData.numberOfScheduledReasons} scheduled ${
-                          allowedDurationData.numberOfScheduledReasons > 1 ? 'reasons' : 'reason'
-                        } for a duration of ${allowedDurationData.durationOfScheduledReasons}
-                    ${allowedDurationData.durationOfScheduledReasons > 1 ? 'weeks' : 'week'}`}
-                      {allowedDurationData.numberOfScheduledReasons > 0 &&
-                        allowedDurationData.blueSquares > 0 &&
-                        ' and'}
-                      {allowedDurationData.blueSquares > 0 &&
-                        ` ${allowedDurationData.blueSquares} blue ${
-                          allowedDurationData.blueSquares > 1 ? 'squares' : 'square'
-                        }`}
-                      {` are only allowed to schedule a reason for no more than ${5 -
-                        allowedDurationData.blueSquares -
-                        allowedDurationData.durationOfScheduledReasons} ${
-                        5 -
-                          allowedDurationData.blueSquares -
-                          allowedDurationData.durationOfScheduledReasons >
-                        1
-                          ? 'weeks.'
-                          : 'week.'
-                      }`}
+                      {durationExplanationText(allowedDurationData)}
                     </Row>
                   </Container>
                 </ModalBody>
@@ -480,7 +493,7 @@ const ScheduleReasonModal = ({
           </Modal.Header>
           <Modal.Footer>
             <Container
-              style={{ overflow: 'scroll', overflowX: 'hidden', maxHeight: ContainerMaxHeight }}
+              style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: ContainerMaxHeight }}
               id="user-time-off-request-list"
             >
               {allRequests[userId]
@@ -504,8 +517,8 @@ const ScheduleReasonModal = ({
                   </Row>
                   <Row>
                     <Col className="mb-1">
-                      Once you confirm, an email will be sent to your manager to notify them of the
-                      update.
+                      Once you confirm, an email will be sent to you and your manager to notify them
+                      of the update.
                     </Col>
                   </Row>
                 </Container>

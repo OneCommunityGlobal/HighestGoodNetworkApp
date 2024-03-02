@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import BlueSquare from './BlueSquares';
 import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import './UserProfile.scss';
-import './UserProfileEdit/UserProfileEdit.scss';
 import { Button } from 'react-bootstrap';
 import ScheduleExplanationModal from './ScheduleExplanationModal/ScheduleExplanationModal';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
@@ -11,6 +10,7 @@ import { useState } from 'react';
 import hasPermission from '../../utils/permissions';
 import { Modal } from 'react-bootstrap';
 import { boxStyle } from 'styles';
+import './UserProfileEdit/UserProfileEdit.scss';
 
 const BlueSquareLayout = props => {
   const dispatch = useDispatch();
