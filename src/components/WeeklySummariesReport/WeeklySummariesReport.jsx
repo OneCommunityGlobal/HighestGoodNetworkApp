@@ -136,7 +136,6 @@ export class WeeklySummariesReport extends Component {
 
       if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
     });
-    console.log('teamCodeGroup', teamCodeGroup)
     Object.keys(teamCodeGroup).forEach(code => {
       if (code !== 'noCodeLabel') {
         teamCodes.push({
@@ -151,7 +150,6 @@ export class WeeklySummariesReport extends Component {
         label: option,
       });
     });
-    console.log('teamCodeGroup', teamCodeGroup)
     colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
     teamCodes
       .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
@@ -289,34 +287,34 @@ export class WeeklySummariesReport extends Component {
       summaries,
       selectedOverTime,
       selectedBioStatus,
-   , tableData, COLORS} = this.state;
+    tableData, COLORS} = this.state;
     const data = [];
     let temptotal = 0;
     const structuredTeamTableData = [];
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
-
     const temp = summaries.filter(summary => {
       const { activeTab } = this.state;
       const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-
+    
       const isMeetCriteria =
         summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
-
+    
       const isBio = !selectedBioStatus || isMeetCriteria;
-
+    
       const isOverHours =
         !selectedOverTime ||
         (hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
-
+    
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
         isOverHours &&
         isBio
-      );
+      );});
+
     if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
       if (selectedCodes.length >= 52) {
         selectedCodes.forEach(code => {
@@ -365,7 +363,6 @@ export class WeeklySummariesReport extends Component {
      temptotal = data.reduce((acc, entry) => acc + entry.value, 0);
      structuredTeamTableData.sort()
      this.setState({ total: temptotal });
-    });
     this.setState({ filteredSummaries: temp });
     this.setState({ data: data });
     this.setState({ structuredTableData: structuredTeamTableData });
@@ -419,7 +416,7 @@ export class WeeklySummariesReport extends Component {
       structuredTableData,
       data,
       total,
-      COLORS
+      COLORS,
       auth,
     } = this.state;
     const { error } = this.props;
