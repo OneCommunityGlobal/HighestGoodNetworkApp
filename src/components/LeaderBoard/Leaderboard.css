@@ -42,3 +42,8 @@
     transform: rotate(360deg);
   }
 }
+
+.orgName {
+  display: flex;
+  flex-direction: column;
+}

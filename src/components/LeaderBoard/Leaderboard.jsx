@@ -198,12 +198,7 @@ function LeaderBoard({
             <tr>
               <td />
               <th scope="row">
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
+                <div className="orgName">
                   <span>{organizationData.name}</span>
                   {viewZeroHouraMembers(loggedInUser.role) && (
                     <span className="boldClass">
