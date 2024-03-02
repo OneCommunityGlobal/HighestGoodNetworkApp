@@ -16,7 +16,7 @@ function ToggleSwitch({ switchType, UpdateTeamMembersVisiblity, userId, choice }
               onChange={event => {
                 const isChecked = !visiblity;
                 setVisiblity(isChecked);
-                console.log('new value', isChecked);
+                // console.log('new value', isChecked);
 
                 UpdateTeamMembersVisiblity(userId, isChecked);
               }}

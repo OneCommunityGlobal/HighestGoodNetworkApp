@@ -134,30 +134,89 @@ export const TeamMembersPopup = React.memo(props => {
     });
   }, []);
 
+  // NEW CODE
+  const [cache, setCache] = useState({});
+  const [cacheState, setCacheState]=useState(false);
+
+  const c={};
+  const setTeamCache=()=>
+  {
+    console.log("Entering cache with props"+props.teamData[0]);
+    if(props.teamData[0] && cacheState) {
+      console.log("Saving cache logic");
+    props.teamData[0]?.members.forEach(member=>{
+      c[member.userId]=member.visible;
+    
+
+    });
+  
+
+    setCache(c);
+    // setCacheState(true);
+    console.log("cache:"+c);
+
+    console.log("Keys and values of 'newCache' object:");
+    Object.keys(c).forEach((key) => {
+      console.log("Key:", key, "Value:", c[key])});
+  }
+};
+
+
+
+// useEffect(() => {
+//   // Logic to update local state based on cache
+// }, [cache]);
+
+
   useEffect(() => {
+    // console.log("inside sort hook"+props.teamData);
     sortList(sortOrder);
+    // setTeamCache();
+  
   }, [props.members.teamMembers, sortOrder]);
 
+
+
   useEffect(() => {
+    console.log("inside props.open"+props.teamData);
+
     setIsValidUser(true);
     setDuplicateUserAlert(false);
-    setTeamVisibility(props.teamData);
+    setTeamCache();
+    // setCacheState(true);
+
+
+
   }, [props.open]);
 
-  // NEW CODE
+
+
   useEffect(() => {
-    console.log(props.teamData);
-    setTeamVisibility(props.teamData);
+    // console.log("coming here ");
+    // setTeamVisibility(props.teamData);
   }, [props.teamData]);
 
   // call the handler to update the team member's visibility
   const UpdateTeamMembersVisiblity = (userId, choice) => {
+    setCache(prevCache => ({
+      ...prevCache,
+      [userId]: choice
+    })); 
+    c[userId]=choice;
+    console.log("new choice for userid "+userId+"is "+cache[userId]);   
     props.onUpdateTeamMemberVisiblity(userId, choice);
   };
+
+// Update the local variable 'c' based on the 'cache' state
+  // useEffect(() => {
+    
+  // }, [cache]);
 
   const toggleInfoModal = () => {
     setInfoModal(!infoModal);
   };
+
+
   // NEW CODE ENDS 
 
   return (
@@ -217,6 +276,8 @@ export const TeamMembersPopup = React.memo(props => {
             <tbody>
               {props.members.teamMembers.length > 0 &&
                 memberList.toSorted().map((user, index) => {
+                  // console.log(cache[user._id]);
+
                   return (
                     <tr key={`team_member_${index}`}>
                       <td>
@@ -243,8 +304,10 @@ export const TeamMembersPopup = React.memo(props => {
                           switchType="limit-visiblity"
                           userId={user._id}
                           choice={
-                            teamVisibility[0]?.members.find(member => member.userId === user._id)
-                              ?.visible
+                            // teamVisibility[0]?.members.find(member => member.userId === user._id)
+                            //   ?.visible
+                            cache[user._id]
+                            // getChoiceForUserId
                           }
                           UpdateTeamMembersVisiblity={UpdateTeamMembersVisiblity}
                         />
