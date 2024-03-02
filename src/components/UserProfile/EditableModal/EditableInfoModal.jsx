@@ -234,7 +234,7 @@ export class EditableInfoModal extends Component {
           data-toggle="tooltip"
           data-placement="right"
           title="Click for user class information"
-          style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '10px'}}
+          style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '8px'}}
           aria-hidden="true"
           className="fa fa-info-circle"
           onClick={()=>this.setState({editableModalOpen: true})}
