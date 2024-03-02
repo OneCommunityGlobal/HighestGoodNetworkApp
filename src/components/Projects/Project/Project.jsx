@@ -17,7 +17,6 @@ const Project = props => {
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
-  const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
 
   const updateActive = () => {
     props.onClickActive(props.projectId, name, category, active);
@@ -46,7 +45,7 @@ const Project = props => {
         <div>{props.index + 1}</div>
       </th>
       <td className="projects__name--input">
-        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+        {(canPutProject) ? (
           <input
             type="text"
             className="form-control"
@@ -59,7 +58,7 @@ const Project = props => {
         )}
       </td>
       <td className="projects__category--input">
-        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+        {(canPutProject) ? (
           <select
             value={props.category}
             onChange={e => {
@@ -116,7 +115,7 @@ const Project = props => {
         </NavItem>
       </td>
 
-      {(canDeleteProject || canSeeProjectManagementFullFunctionality) ? (
+      {(canDeleteProject) ? (
         <td>
           <button
             type="button"
