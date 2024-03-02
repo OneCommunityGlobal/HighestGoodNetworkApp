@@ -6,6 +6,8 @@ import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import './ReusablesViewStyle.css';
 import ReactTooltip from 'react-tooltip';
 import { fetchAllReusables } from 'actions/bmdashboard/reusableActions';
+import { BiPencil } from 'react-icons/bi';
+import UpdateReusbableModal from '../UpdateReusables/UpdateReusableModal';
 
 function ReusablesTable({ reusable, project }) {
   const dispatch = useDispatch();
@@ -13,6 +15,8 @@ function ReusablesTable({ reusable, project }) {
   const [sortOrder, setSortOrder] = useState({ project: 'asc', itemType: 'asc' });
   const [iconToDisplay, setIconToDisplay] = useState({ project: faSortUp, itemType: faSortUp });
   const [reusablesViewData, setReusablesViewData] = useState(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [recordToUpdate, setRecordToUpdate] = useState(null);
 
   useEffect(() => {
     dispatch(fetchAllReusables());
@@ -82,49 +86,68 @@ function ReusablesTable({ reusable, project }) {
     );
   }
 
-  return (
-    <div>
-      <Table responsive>
-        <thead className="BuildingTableHeaderLine">
-          <tr>
-            {conditionalProjectTableHeaderUI()}
-            <th onClick={() => handleSort('itemType')}>
-              <div
-                data-tip={`Sort name ${sortOrder.itemType === 'asc' ? 'desc' : 'asc'}`}
-                className="d-flex align-items-stretch cursor-pointer"
-              >
-                <div>Name</div>
-                <FontAwesomeIcon icon={iconToDisplay.itemType} size="lg" />
-              </div>
-              <ReactTooltip />
-            </th>
+  const handleEditResuableClick = record => {
+    console.log(record);
+    setRecordToUpdate(record);
+    setModalIsOpen(true);
+  };
 
-            <th>Bought</th>
-            <th>Available</th>
-            <th>Destroyed</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reusablesViewData && reusablesViewData.length > 0 ? (
-            reusablesViewData.map(rec => (
-              <tr key={rec._id}>
-                <td>{rec.project?.name}</td>
-                <td>{rec.itemType?.name}</td>
-                <td>{rec.stockBought}</td>
-                <td>{rec.stockAvailable}</td>
-                <td>{rec.stockDestroyed}</td>
-              </tr>
-            ))
-          ) : (
+  return (
+    <>
+      <UpdateReusbableModal modal={modalIsOpen} setModal={setModalIsOpen} record={recordToUpdate} />
+      <div>
+        <Table responsive>
+          <thead className="BuildingTableHeaderLine">
             <tr>
-              <td colSpan="8" style={{ textAlign: 'center' }}>
-                No reusables data available
-              </td>
+              {conditionalProjectTableHeaderUI()}
+              <th onClick={() => handleSort('itemType')}>
+                <div
+                  data-tip={`Sort name ${sortOrder.itemType === 'asc' ? 'desc' : 'asc'}`}
+                  className="d-flex align-items-stretch cursor-pointer"
+                >
+                  <div>Name</div>
+                  <FontAwesomeIcon icon={iconToDisplay.itemType} size="lg" />
+                </div>
+                <ReactTooltip />
+              </th>
+
+              <th>Bought</th>
+              <th>Available</th>
+              <th>Destroyed</th>
+              <th>Updates</th>
             </tr>
-          )}
-        </tbody>
-      </Table>
-    </div>
+          </thead>
+          <tbody>
+            {reusablesViewData && reusablesViewData.length > 0 ? (
+              reusablesViewData.map(rec => (
+                <tr key={rec._id}>
+                  <td>{rec.project?.name}</td>
+                  <td>{rec.itemType?.name}</td>
+                  <td>{rec.stockBought}</td>
+                  <td>{rec.stockAvailable}</td>
+                  <td>{rec.stockDestroyed}</td>
+                  <td>
+                    <button
+                      type="button"
+                      onClick={() => handleEditResuableClick(rec)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <BiPencil />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" style={{ textAlign: 'center' }}>
+                  No reusables data available
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </div>
+    </>
   );
 }
 

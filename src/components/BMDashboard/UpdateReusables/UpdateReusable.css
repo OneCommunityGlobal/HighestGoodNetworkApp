@@ -1,0 +1,23 @@
+.updateModalContainer {
+  overflow-y: scroll;
+  height: 65vh;
+}
+
+.reusable-form-value {
+  font-weight: 400;
+  font-size: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.reusable-form-label {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1c8bcc;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.reusable-button-bg {
+  background-color: #2e5061 !important;
+}
