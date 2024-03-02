@@ -1,23 +1,24 @@
 import { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchToolById } from 'actions/bmdashboard/toolActions';
 import { Container, Button } from 'reactstrap';
+import { useHistory, useParams } from 'react-router-dom';
+import { fetchToolById } from 'actions/bmdashboard/toolActions';
+import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
 import { v4 as uuidv4 } from 'uuid';
-import ToolModal from './ToolModal';
-import './ToolDetailPage.css';
+import EquipmentModal from '../EquipmentModal';
+import '../EquipmentDetailPage.css';
 
 function DetailItem({ label, value }) {
   return (
-    <p className="ToolDetailPage__detail_item">
-      {label}: <span className="ToolDetailPage__span">{value}</span>
+    <p className="EquipmentDetailPage__detail_item">
+      {label}: <span className="EquipmentDetailPage__span">{value}</span>
     </p>
   );
 }
 
 function LinkItem({ label, value }) {
   return (
-    <p className="ToolDetailPage__detail_item">
+    <p className="EquipmentDetailPage__detail_item">
       <a href={value} target="_blank" rel="noopener noreferrer">
         {label}
       </a>
@@ -34,27 +35,28 @@ function DescriptionItem({ label, value, title }) {
       <Button onClick={toggle} color="link" className="descriptionItem_button">
         {label}
       </Button>
-      <ToolModal modal={modal} toggle={toggle} title={title} value={value} />
+      <EquipmentModal modal={modal} toggle={toggle} title={title} value={value} />
     </div>
   );
 }
 
 function RentalDurationItem({ label, from, to }) {
   return (
-    <p className="ToolDetailPage__detail_item">
-      {label}: <span className="ToolDetailPage__span">{from}</span> to{' '}
-      <span className="ToolDetailPage__span">{to}</span>
+    <p className="EquipmentDetailPage__detail_item">
+      {label}: <span className="EquipmentDetailPage__span">{from}</span> to{' '}
+      <span className="EquipmentDetailPage__span">{to}</span>
     </p>
   );
 }
 
 function DashedLineItem() {
-  return <div className="ToolDetailPage__dashed_line" />;
+  return <div className="EquipmentDetailPage__dashed_line" />;
 }
 
-function ToolDetailPage() {
+function EquipmentDetail() {
   const history = useHistory();
   const { toolId } = useParams();
+  const { equipmentId } = useParams();
 
   const tool = useSelector(state => state.bmTools);
 
@@ -62,6 +64,10 @@ function ToolDetailPage() {
 
   useEffect(() => {
     dispatch(fetchToolById(toolId));
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchEquipmentById(equipmentId));
   }, []);
 
   const toolStatus = tool?.logRecord.find(record => record.type === 'Check In');
@@ -81,17 +87,14 @@ function ToolDetailPage() {
 
   const formattedRentedOnDate = formatDateString(tool?.rentedOnDate);
   const formattedRentedDueDate = formatDateString(tool?.rentalDueDate);
-  const formattedLastUpdateDate = formatDateString(tool?.updateRecord[0]?.date);
-
-  const lastUsedPerson = `${tool?.updateRecord[0]?.createdBy.firstName} ${tool?.updateRecord[0]?.createdBy.lastName}`;
 
   const details = [
     { label: 'Belongs to project', value: 'Building 1' },
-    { label: 'Class', value: tool?.itemType.category },
-    { label: 'Name', value: tool?.itemType.name },
-    { label: 'Number', value: tool?.code },
-    { label: 'Ownership', value: tool?.purchaseStatus },
-    { label: 'Add Date', value: 'MM - DD - YYYY' },
+    { label: 'Class', value: 'Equipment' },
+    { label: 'Name', value: 'Back Hoe' },
+    { label: 'Number', value: '007' },
+    { label: 'Ownership', value: 'Owned' },
+    { label: 'Add Date', value: '02 - 29 - 2024' },
     // Remove 'Rental Duration' from details if 'Ownership' is 'Purchase'
     tool?.purchaseStatus === 'Purchase' ? null : { label: 'Rental Duration' },
     { label: 'Current Usage', value: toolLogRecord },
@@ -108,9 +111,9 @@ function ToolDetailPage() {
     },
     { label: 'Description', value: tool?.itemType.description },
     { label: 'Dashed Line' },
-    { label: 'Current Status', value: tool?.updateRecord[0]?.condition },
-    { label: 'Last Update Date', value: formattedLastUpdateDate },
-    { label: 'Last Used Person', value: lastUsedPerson },
+    { label: 'Current Status', value: 'Tested' },
+    { label: 'Last Update Date', value: '03-01-2024' },
+    { label: 'Last Used Person', value: 'Jae' },
     { label: 'Last Used Task', value: 'Garden clean up' },
     { label: 'Asked for a replacement?', value: 'No' },
   ];
@@ -163,16 +166,20 @@ function ToolDetailPage() {
   };
 
   return (
-    <Container className="ToolDetailPage justify-content-center align-items-center mw-80 px-4">
-      <header className="ToolDetailPage__header">
-        <h1>Tool Detail Page</h1>
+    <Container className="EquipmentDetailPage justify-content-center align-items-center mw-80 px-4">
+      <header className="EquipmentDetailPage__header">
+        <h1>Equipment Detail Page</h1>
       </header>
-      <main className="ToolDetailPage__content">
+      <main className="EquipmentDetailPage__content">
         <p>
-          <img src={tool?.imageUrl} alt={tool?.itemType.name} className="ToolDetailPage__image" />
+          <img
+            src={tool?.imageUrl}
+            alt={tool?.itemType.name}
+            className="EquipmentDetailPage__image"
+          />
         </p>
         {details.filter(Boolean).map(renderDetails)}
-        <Button outline onClick={() => history.push('/bmdashboard/tools')}>
+        <Button outline onClick={() => history.push('/bmdashboard/equipment')}>
           Back to List
         </Button>
       </main>
@@ -180,4 +187,4 @@ function ToolDetailPage() {
   );
 }
 
-export default ToolDetailPage;
+export default EquipmentDetail;
