@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Button } from 'reactstrap';
 import { useHistory, useParams } from 'react-router-dom';
+<<<<<<< HEAD
+=======
+import { fetchToolById } from 'actions/bmdashboard/toolActions';
+>>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
 import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
 import { v4 as uuidv4 } from 'uuid';
 import EquipmentModal from '../EquipmentModal';
@@ -54,6 +58,7 @@ function DashedLineItem() {
 
 function EquipmentDetail() {
   const history = useHistory();
+<<<<<<< HEAD
   const { equipmentId } = useParams();
 
   const equipment = useSelector(state => state.bmEquipments.singleEquipment);
@@ -70,6 +75,31 @@ function EquipmentDetail() {
     currentUsage = 'Checked In';
   } else if (lastLogRecord?.type === 'Check Out') {
     currentUsage = 'Checked Out';
+=======
+  const { toolId } = useParams();
+  const { equipmentId } = useParams();
+
+  const tool = useSelector(state => state.bmTools);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchToolById(toolId));
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchEquipmentById(equipmentId));
+  }, []);
+
+  const toolStatus = tool?.logRecord.find(record => record.type === 'Check In');
+
+  let toolLogRecord;
+
+  if (toolStatus) {
+    toolLogRecord = 'Checked In';
+  } else {
+    toolLogRecord = 'Checked out';
+>>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
   }
 
   function formatDateString(dateString) {
@@ -77,6 +107,7 @@ function EquipmentDetail() {
     return date.toLocaleDateString();
   }
 
+<<<<<<< HEAD
   const formattedRentedOnDate = formatDateString(equipment?.rentedOnDate);
   const formattedRentedDueDate = formatDateString(equipment?.rentalDueDate);
 
@@ -90,6 +121,21 @@ function EquipmentDetail() {
     // Remove 'Rental Duration' from details if 'Ownership' is 'Purchase'
     equipment?.purchaseStatus === 'Purchase' ? null : { label: 'Rental Duration' },
     { label: 'Current Usage', value: currentUsage },
+=======
+  const formattedRentedOnDate = formatDateString(tool?.rentedOnDate);
+  const formattedRentedDueDate = formatDateString(tool?.rentalDueDate);
+
+  const details = [
+    { label: 'Belongs to project', value: 'Building 1' },
+    { label: 'Class', value: 'Equipment' },
+    { label: 'Name', value: 'Back Hoe' },
+    { label: 'Number', value: '007' },
+    { label: 'Ownership', value: 'Owned' },
+    { label: 'Add Date', value: '02 - 29 - 2024' },
+    // Remove 'Rental Duration' from details if 'Ownership' is 'Purchase'
+    tool?.purchaseStatus === 'Purchase' ? null : { label: 'Rental Duration' },
+    { label: 'Current Usage', value: toolLogRecord },
+>>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
     { label: 'Dashed Line' },
     { label: 'Input Invoice No or ID', value: 'No123ABC' },
     { label: 'Price', value: '150USD' },
@@ -101,7 +147,11 @@ function EquipmentDetail() {
       label: 'Link To Buy/Rent',
       value: 'https://www.homedepot.com/',
     },
+<<<<<<< HEAD
     { label: 'Description', value: 'Testing Description' },
+=======
+    { label: 'Description', value: tool?.itemType.description },
+>>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
     { label: 'Dashed Line' },
     { label: 'Current Status', value: 'Tested' },
     { label: 'Last Update Date', value: '03-01-2024' },
@@ -134,7 +184,11 @@ function EquipmentDetail() {
       key={generateKey()}
       label={detail.label}
       value={detail.value}
+<<<<<<< HEAD
       // title={equipment?.itemType.name}
+=======
+      title={tool?.itemType.name}
+>>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
     />
   );
 
@@ -156,6 +210,10 @@ function EquipmentDetail() {
         return renderDetailItem(detail);
     }
   };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
   return (
     <Container className="EquipmentDetailPage justify-content-center align-items-center mw-80 px-4">
       <header className="EquipmentDetailPage__header">
@@ -163,6 +221,7 @@ function EquipmentDetail() {
       </header>
       <main className="EquipmentDetailPage__content">
         <p>
+<<<<<<< HEAD
           <img src={equipment?.imageUrl} alt="" className="EquipmentDetailPage__image" />
         </p>
         {details.filter(Boolean).map(renderDetails)}
@@ -172,6 +231,16 @@ function EquipmentDetail() {
           outline
           onClick={() => history.push('/bmdashboard/equipment')}
         >
+=======
+          <img
+            src={tool?.imageUrl}
+            alt={tool?.itemType.name}
+            className="EquipmentDetailPage__image"
+          />
+        </p>
+        {details.filter(Boolean).map(renderDetails)}
+        <Button outline onClick={() => history.push('/bmdashboard/equipment')}>
+>>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
           Back to List
         </Button>
       </main>

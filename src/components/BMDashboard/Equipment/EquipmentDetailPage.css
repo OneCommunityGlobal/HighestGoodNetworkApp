@@ -41,9 +41,12 @@
     width: 50%;
     margin-top: 10px;
     margin-bottom: 10px;
+<<<<<<< HEAD
   }
 
   .back-btn {
     color: black !important;;
     border-color: black !important;;
+=======
+>>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
   }
