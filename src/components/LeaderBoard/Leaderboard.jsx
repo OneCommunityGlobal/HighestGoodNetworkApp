@@ -89,7 +89,7 @@ function LeaderBoard({
 
   const [isLoading, setIsLoading] = useState(false);
   const individualsWithZeroHours = leaderBoardData.filter(
-    individuals => individuals.totaltime === 0,
+    individuals => individuals.weeklycommittedHours === 0,
   );
 
   // add state hook for the popup the personal's dashboard from leaderboard
