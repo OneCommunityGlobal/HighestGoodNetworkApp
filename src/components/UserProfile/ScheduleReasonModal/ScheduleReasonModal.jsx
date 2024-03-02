@@ -325,23 +325,22 @@ const ScheduleReasonModal = ({
         <>
           <Modal.Header closeButton={true}>
             <Modal.Title className="centered-container">
-              <div className="centered-text">Choose to Use a Blue Square</div>
+              <div className="centered-text mt-0 p1">Choose to Use a Blue Square</div>
             </Modal.Title>
           </Modal.Header>
           <Form onSubmit={handleSaveReason}>
             <Modal.Body>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+              <Form.Group className="mb-0" controlId="exampleForm.ControlTextarea1">
                 <Form.Label className="mb-3">
                   {/* Schedule a reason to be used on this weekend's blue square for {user.firstName} */}
-                  Need to take a week off for an emergency or vacation? That's no problem. The
+                  Need to take time off for an emergency or vacation? That's no problem. The
                   system will still issue you a blue square but scheduling here will note this
                   reason on it so it's clear you chose to use one (vs receiving one for missing
                   something) and let us know in advance. Blue squares are meant for situations like
                   this and we allow 5 a year.
                 </Form.Label>
                 <Form.Label>
-                  Select the Sunday of the week you are planning to leave (If your leave is planned
-                  for a future week, select the Sunday of that week.):
+                Select the Sunday of the week you'll be leaving ( If you'll be absent this week, choose the Sunday of current week ):
                 </Form.Label>
                 <DatePicker
                   selected={requestData.dateOfLeave}
@@ -361,7 +360,7 @@ const ScheduleReasonModal = ({
                 <Form.Text className="text-danger pl-1">
                   {requestDataErrors.dateOfLeaveError}
                 </Form.Text>
-                <Form.Label>Enter the duration of your absence (In weeks):</Form.Label>
+                <Form.Label>Enter the duration of your absence (In Weeks):</Form.Label>
                 <Form.Control
                   type="number"
                   placeholder="Enter duration in weeks"
@@ -488,12 +487,12 @@ const ScheduleReasonModal = ({
             style={{ borderTop: '1px solid #dee2e6' }}
           >
             <Modal.Title className="centered-container">
-              <div className="centered-text">Scheduled Time Off</div>
+              <div className="centered-text mt-0">Scheduled Time Off</div>
             </Modal.Title>
           </Modal.Header>
           <Modal.Footer>
             <Container
-              style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: ContainerMaxHeight }}
+              style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: ContainerMaxHeight, paddingLeft : '0px' }}
               id="user-time-off-request-list"
             >
               {allRequests[userId]

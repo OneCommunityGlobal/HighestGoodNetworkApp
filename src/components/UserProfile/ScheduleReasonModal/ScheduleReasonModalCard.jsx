@@ -14,7 +14,7 @@ function ScheduleReasonModalCard({ request , handleDeleteRequest }) {
           <Col md='7'>
             <p>
               <strong>Date Of Leave: </strong>
-              {moment(request.startingDate).format('MMM Do YY')}
+              {moment(request.startingDate).format('MMM Do YYYY')}
             </p>
           </Col >
           <Col md='5'>
