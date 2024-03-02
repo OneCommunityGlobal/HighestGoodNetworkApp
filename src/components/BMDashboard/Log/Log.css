@@ -27,22 +27,41 @@
 .subtitle-row {
     background-color: aqua;
     text-align: center;
+    width: 300px;
 }
 
 .log-form-cancel-button {
     font-size: 20px;
-    height: 50px;
-    width: 50%;
     background-color: #ffffff !important;
     color: #2e5061 !important;
     border-color: #2e5061 !important; 
 }
 
 .log-form-submit-button {
-    height: 50px;
-    width: 50%;
     background-color: #2e5061 !important;
     color: #ffffff !important;
     border-color: #2e5061 !important;
     font-size: 20px;
+}
+
+.input-group-div {
+    border-radius: 10px; 
+    padding: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+.input-item-div {
+    position: relative;
+    display: inline-block;
+    height: auto;
+}
+
+.span-and-input-box {
+    display: flex;
+    align-items: center;
+}
+
+.span-text {
+    margin-right: 8px;
 }
