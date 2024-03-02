@@ -22,6 +22,7 @@ import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -69,6 +70,9 @@ export class WeeklySummariesReport extends Component {
       data: [],
       total: 0,
       COLORS: [],
+      auth: [],
+      selectedOverTime: false,
+      selectedBioStatus: false,
     };
   }
 
@@ -84,17 +88,19 @@ export class WeeklySummariesReport extends Component {
       hasPermission,
       auth,
     } = this.props;
-
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
-
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner';
+    this.codeEditPermission =
+      hasPermission('editTeamCode') ||
+      auth.user.role === 'Owner' ||
+      auth.user.role === 'Administrator';
+    this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -108,13 +114,6 @@ export class WeeklySummariesReport extends Component {
       );
       return { ...summary, promisedHoursByWeek };
     });
-
-
-    // const noCodeLabel = `Select All With NO Code (${
-    //   summariesCopy.filter(summary => summary.teamCode === '').length
-    // })`;
-    // const sortedTeamCodes = this.teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
-    // this.teamCodes = [...sortedTeamCodes, { value: '', label: noCodeLabel }];
 
     /*
      * refactor logic of commentted codes above
@@ -179,7 +178,9 @@ export class WeeklySummariesReport extends Component {
       tableData: teamCodeGroup,
       data,
       COLORS,
+      auth,
     });
+
     await getInfoCollections();
     const role = authUser?.role;
     const roleInfoNames = this.getAllRoles(summariesCopy);
@@ -276,24 +277,46 @@ export class WeeklySummariesReport extends Component {
   toggleTab = tab => {
     const { activeTab } = this.state;
     if (activeTab !== tab) {
-      this.setState({ activeTab: tab });
+      this.setState({ activeTab: tab }, () => this.filterWeeklySummaries());
       sessionStorage.setItem('tabSelection', tab);
     }
   };
 
   filterWeeklySummaries = () => {
-    const { selectedCodes, selectedColors, summaries, tableData, COLORS} = this.state;
+    const {
+      selectedCodes,
+      selectedColors,
+      summaries,
+      selectedOverTime,
+      selectedBioStatus,
+   , tableData, COLORS} = this.state;
     const data = [];
     let temptotal = 0;
     const structuredTeamTableData = [];
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
-    const temp = summaries.filter(
-      summary =>
+
+    const temp = summaries.filter(summary => {
+      const { activeTab } = this.state;
+      const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+      const isMeetCriteria =
+        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+
+      const isBio = !selectedBioStatus || isMeetCriteria;
+
+      const isOverHours =
+        !selectedOverTime ||
+        (hoursLogged > 0 &&
+          hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+
+      return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
-          selectedColorsArray.includes(summary.weeklySummaryOption)),
-    );
+          selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+        isOverHours &&
+        isBio
+      );
     if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
       if (selectedCodes.length >= 52) {
         selectedCodes.forEach(code => {
@@ -342,6 +365,7 @@ export class WeeklySummariesReport extends Component {
      temptotal = data.reduce((acc, entry) => acc + entry.value, 0);
      structuredTeamTableData.sort()
      this.setState({ total: temptotal });
+    });
     this.setState({ filteredSummaries: temp });
     this.setState({ data: data });
     this.setState({ structuredTableData: structuredTeamTableData });
@@ -356,7 +380,30 @@ export class WeeklySummariesReport extends Component {
     this.setState({ selectedColors: event }, () => this.filterWeeklySummaries());
   };
 
+  handleOverHoursToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedOverTime: !prevState.selectedOverTime,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
+  };
+
+  handleBioStatusToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedBioStatus: !prevState.selectedBioStatus,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
+  };
+
   render() {
+    const { role } = this.props;
     const {
       loading,
       activeTab,
@@ -373,9 +420,10 @@ export class WeeklySummariesReport extends Component {
       data,
       total,
       COLORS
+      auth,
     } = this.state;
-    
     const { error } = this.props;
+    const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
 
     if (error) {
       return (
@@ -398,12 +446,23 @@ export class WeeklySummariesReport extends Component {
         </Container>
       );
     }
-
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
-            <h3 className="mt-3 mb-5">Weekly Summaries Reports page</h3>
+            <h3 className="mt-3 mb-5">
+              <div className="d-flex align-items-center">
+                <span className="mr-2">Weekly Summaries Reports page</span>
+                <EditableInfoModal
+                  areaName="WeeklySummariesReport"
+                  areaTitle="Weekly Summaries Report"
+                  role={role}
+                  fontSize={24}
+                  isPermissionPage
+                  className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                />
+              </div>
+            </h3>
           </Col>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
@@ -460,6 +519,44 @@ export class WeeklySummariesReport extends Component {
         </Row>
         <Row>
           
+        </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+            <div className="filter-container">
+              {(hasPermissionToFilter || this.canSeeBioHighlight) && (
+                <div className="filter-style margin-right">
+                  <span>Filter by Bio Status</span>
+                  <div className="custom-control custom-switch custom-control-smaller">
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="bio-status-toggle"
+                      onChange={this.handleBioStatusToggleChange}
+                    />
+                    <label className="custom-control-label" htmlFor="bio-status-toggle">
+                      {}
+                    </label>
+                  </div>
+                </div>
+              )}
+              {hasPermissionToFilter && (
+                <div className="filter-style">
+                  <span>Filter by Over Hours</span>
+                  <div className="custom-control custom-switch custom-control-smaller">
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="over-hours-toggle"
+                      onChange={this.handleOverHoursToggleChange}
+                    />
+                    <label className="custom-control-label" htmlFor="over-hours-toggle">
+                      {}
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Col>
         </Row>
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
@@ -521,6 +618,8 @@ export class WeeklySummariesReport extends Component {
                         badges={badges}
                         loadBadges={loadBadges}
                         canEditTeamCode={this.codeEditPermission}
+                        auth={auth}
+                        canSeeBioHighlight={this.canSeeBioHighlight}
                       />
                     </Col>
                   </Row>
@@ -547,6 +646,7 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
+  role: state.userProfile.role,
   auth: state.auth,
 });
 

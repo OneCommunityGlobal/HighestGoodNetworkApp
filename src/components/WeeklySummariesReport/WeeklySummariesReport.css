@@ -92,3 +92,40 @@
     margin-bottom: 0.25rem;
   }
 }
+
+.weekly-summary-report-container {
+  display: flex;
+  flex-direction: row;
+}
+.weekly-summary-text {
+  max-width: 100%;
+  margin-right: 5px;
+}
+
+.copy-icon {
+  cursor: pointer;
+  margin: 2px 2px;
+}
+
+.filter-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter-style {
+  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+}
+
+.custom-control-label:hover {
+  cursor: pointer;
+}
+
+.margin-right {
+  margin-right: 20px;
+}
+
+.custom-control-label {
+  margin-left: 8px;
+}

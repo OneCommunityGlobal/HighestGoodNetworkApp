@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../../actions/authActions';
-import { getTimerData } from '../../../actions/timer';
 import { getAllRoles } from '../../../actions/role';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
@@ -69,8 +68,6 @@ export const Header = props => {
   // Badges
   const canCreateBadges = props.hasPermission('createBadges');
   // Projects
-  const canSeeProjectManagementTab =
-    props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
   const canPostProject = props.hasPermission('postProject');
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
@@ -90,7 +87,6 @@ export const Header = props => {
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
-      props.getTimerData(props.auth.user.userid);
       if (props.auth.user.role === 'Administrator') {
         dispatch(fetchTaskEditSuggestions());
       }
@@ -221,7 +217,6 @@ export const Header = props => {
                 canPutUserProfileImportantInfo ||
                 canCreateBadges ||
                 canPostProject ||
-                canSeeProjectManagementTab ||
                 canDeleteTeam ||
                 canPutTeam ||
                 canCreatePopup ||
@@ -248,7 +243,7 @@ export const Header = props => {
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {(canPostProject || canSeeProjectManagementTab) && (
+                    {canPostProject && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
                       </DropdownItem>
@@ -321,7 +316,6 @@ const mapStateToProps = state => ({
 });
 export default connect(mapStateToProps, {
   getHeaderData,
-  getTimerData,
   getAllRoles,
   hasPermission,
 })(Header);

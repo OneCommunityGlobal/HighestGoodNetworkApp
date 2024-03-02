@@ -15,7 +15,7 @@ import { boxStyle } from 'styles';
 const WBSItem = props => {
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const canDeleteWBS = props.hasPermission('deleteWbs') || props.hasPermission('seeProjectManagement');
+  const canDeleteWBS = props.hasPermission('deleteWbs');
 
   const confirmDelete = () => {
     props.deleteWbs(props.wbsId);
