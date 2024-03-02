@@ -87,7 +87,7 @@ const BlueSquareLayout = props => {
                   Click to learn why
                 </span>
               </Button>
-              <Button
+              {allRequests[userProfile._id]?.length > 0 &&<Button
                 variant="primary"
                 onClick={handleOpen}
                 className="w-100 mt-3"
@@ -95,7 +95,7 @@ const BlueSquareLayout = props => {
                 style={boxStyle}
               >
                 View scheduled Blue Square Reasons
-              </Button>
+              </Button>}
             </>
           ) : (
             <Button
