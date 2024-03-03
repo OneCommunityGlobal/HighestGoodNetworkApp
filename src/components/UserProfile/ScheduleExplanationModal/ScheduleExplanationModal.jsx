@@ -36,7 +36,7 @@ function SchedulerExplanationModal({
                       <h6>INFRINGEMENTS:</h6>
                     </Col>
                   </Row>
-                  <Row>
+                  <Row className='infringements-explanation-modal-row ml-1' >
                     <Col>
                       <ol style={{paddingLeft: '20px'}}>
                         {infringements.map((el, index) => {
@@ -62,14 +62,14 @@ function SchedulerExplanationModal({
               </Row>
             )}
             {timeOffRequests.length > 0 && (
-              <Row>
+              <Row className='mt-3'>
                 <Col>
-                  <Row className='mb-2'>
+                  <Row className='mb-2 '>
                     <Col>
                       <h6>SCHEDULED TIME OFF:</h6>
                     </Col>
                   </Row>
-                  <Row>
+                  <Row className='scheduled-time-off-explanation-modal-row ml-1'>
                     <Col>
                       <ol style={{paddingLeft: '20px'}}>
                         {timeOffRequests.map((el, index) => {
@@ -98,7 +98,7 @@ function SchedulerExplanationModal({
                 </Col>
               </Row>
             )}
-            <Row>
+            <Row className='mt-3'>
               <Col>
                 <em>Note</em>: Blue squares expire after 1 calendar year from their issuance date.
               </Col>
