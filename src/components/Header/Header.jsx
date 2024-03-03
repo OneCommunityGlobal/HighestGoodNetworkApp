@@ -312,7 +312,7 @@ export function Header(props) {
                         {TEAMS}
                       </DropdownItem>
                     )}
-                    {(canDeleteTeam || canPutTeam) && (
+                    {(canAccessPermissionsManagement) && (
                       <DropdownItem tag={Link} to="/announcements">
                         {SEND_EMAILS}
                       </DropdownItem>
