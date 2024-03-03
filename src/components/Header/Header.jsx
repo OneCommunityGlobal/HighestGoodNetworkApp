@@ -365,7 +365,7 @@ export const Header = props => {
         )}
       {isSelectImgModalVisible && (
         <Card color="primary">
-        {props.userProfile.storedPics.length > 0 && (
+        {props?.userProfile?.storedPics?.length > 0 && (
           <>
             <div className="close-button">
               <Button close onClick={()=>{setSelectImgModalVisible(false)}} />
