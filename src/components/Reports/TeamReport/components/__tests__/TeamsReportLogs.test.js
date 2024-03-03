@@ -10,17 +10,6 @@ describe('TeamsReportLogs Component', () => {
   };
 
   const selectedTeamsWeeklyEffort = [30, 40, 20, 35]; // Example values for selectedTeamsWeeklyEffort
-
-  // it('renders without crashing', () => {
-  //   shallow(
-  //     <TeamsReportLogs
-  //       title="Teams Report"
-  //       selectedTeamsTotalValues={selectedTeamsTotalValues}
-  //       selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
-  //     />,
-  //   );
-  // });
-
   it('displays the correct title', () => {
     const title = 'Teams Report';
     const wrapper = shallow(
