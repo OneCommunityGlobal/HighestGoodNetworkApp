@@ -78,7 +78,7 @@ class Teams extends React.PureComponent {
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
 
     return (
-      <Container fluid>
+      <Container fluid className="teams-container">
         {fetching ? (
           <Loading />
         ) : (
@@ -93,7 +93,8 @@ class Teams extends React.PureComponent {
                 onSearch={this.onWildCardSearch}
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
               />
-              <table className="table table-bordered table-responsive-sm">
+
+              < table className="table table-bordered table-responsive-sm">
                 <thead>
                   <TeamTableHeader 
                     onTeamNameSort={this.toggleTeamNameSort} 
@@ -110,7 +111,7 @@ class Teams extends React.PureComponent {
                   )
                 }
               </table>
-            </div>
+              </div>
           </React.Fragment>
         )}
       </Container>

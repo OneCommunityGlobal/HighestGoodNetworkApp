@@ -3,10 +3,9 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
 
-
 const SetupNewUserPopup = React.memo(props => {
   const [email, setEmail] = useState('');
-  const [weeklyCommittedHours, setWeeklyCommittedHours] = useState(0);
+  const [weeklyCommittedHours, setWeeklyCommittedHours] = useState('0');
   const [alert, setAlert] = useState({ visibility: 'hidden', message: '', state: 'success' });
   const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
   const baseUrl = window.location.origin;
@@ -21,9 +20,13 @@ const SetupNewUserPopup = React.memo(props => {
       {
         setAlert({ visibility: 'visible', message: 'Please enter a valid email.', state: 'error' });
       }
-    }else if(weeklyCommittedHours < 0){
+    } else if (weeklyCommittedHours < 0) {
       {
-        setAlert({ visibility: 'visible', message: 'Weekly committed hours should be positive number.', state: 'error' });
+        setAlert({
+          visibility: 'visible',
+          message: 'Weekly committed hours should be positive number.',
+          state: 'error',
+        });
       }
     } else {
       httpService
@@ -35,12 +38,10 @@ const SetupNewUserPopup = React.memo(props => {
               message: 'The setup link has been successfully sent',
               state: 'success',
             });
-            console.log(res.data)
-
+            console.log(res.data);
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
-
         })
         .catch(err => {
           if (err.response.data === 'email already in use') {
@@ -53,15 +54,26 @@ const SetupNewUserPopup = React.memo(props => {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
         })
-        .finally(()=>{
-          setTimeout(()=>{
+        .finally(() => {
+          setTimeout(() => {
             setAlert({ visibility: 'hidden', message: '', state: 'success' });
-            setEmail('')
-            setWeeklyCommittedHours(0)
-          },2000)
-        })
-    }   
+            setEmail('');
+            setWeeklyCommittedHours(0);
+          }, 2000);
+        });
+    }
   };
+  const handleCommitedHoursChange = e => { 
+      let val = Number(e.target.value)
+      if (val > 168) {
+        setWeeklyCommittedHours('168');
+      } else if (val < 0 ) {
+        setWeeklyCommittedHours('0');
+      } else {
+        setWeeklyCommittedHours(val.toString());
+      }
+  }
+
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={'modal-dialog modal-lg'}>
       <ModalHeader
@@ -85,13 +97,14 @@ const SetupNewUserPopup = React.memo(props => {
             className="form-control setup-new-user-popup-input"
             placeholder="Please enter the email address for the new user"
           />
-           <input
+          <input
             type="number"
             name="weeklyCommittedHours"
+            min={0}
+            max={168}
             value={weeklyCommittedHours}
-            onChange={e => {
-              setWeeklyCommittedHours(e.target.value);
-            }}
+            onKeyDown={e=>{if(e.key === 'Backspace' || e.key === 'Delete'){setWeeklyCommittedHours('');}}}
+            onChange={handleCommitedHoursChange}
             className="form-control setup-new-user-popup-input"
             placeholder="weekly committed hours"
           />

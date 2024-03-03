@@ -62,6 +62,7 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
       state.invTypeList[action.payload.type] = [...action.payload.data]
       return { ...state }
     }
+
     default: {
       return state;
     }
