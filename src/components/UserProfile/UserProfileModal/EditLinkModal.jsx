@@ -112,14 +112,9 @@ const EditLinkModal = props => {
   };
 
   const isDifferentMediaUrl = () => {
-    let mediaLink = null;
-    if (userProfile.adminLinks.length >= 2) {
-      mediaLink = userProfile.adminLinks[1].Link;
-    }
-    else if (userProfile.adminLinks.length === 1 && userProfile.adminLinks[0].Name === 'Media Folder') {
-      mediaLink = userProfile.adminLinks[0].Link;
-    } 
-    if (mediaLink && mediaLink !== mediaFolderLink.Link) {
+    //* This is to compare the mediaUrl with Media Folder link when editing in the input area.
+    //* Because mediaUrl is a differnt object, but the link should be the same as Media Folder's link.
+    if (userProfile.mediaUrl !== mediaFolderLink.Link  && userProfile.mediaUrl !== '') {
       setMediaFolderDiffWarning(true);
     } else {
       setMediaFolderDiffWarning(false);
@@ -150,8 +145,8 @@ const EditLinkModal = props => {
   };
 
   const handleUpdate = async () => {
-    const isGoogleDocsValid = isValidGoogleDocsUrl(googleLink.Link);
-    const isDropboxValid = isValidMediaUrl(mediaFolderLink.Link);
+    const isGoogleDocsValid = isValidUrl(googleLink.Link);
+    const isDropboxValid = isValidUrl(mediaFolderLink.Link);
     const updatable =
       (isGoogleDocsValid && isDropboxValid) ||
       (googleLink.Link === '' && mediaFolderLink.Link === '') ||
@@ -196,7 +191,7 @@ const EditLinkModal = props => {
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
                   {mediaFolderDiffWarning && (
-                    <span className="warning-help-context">
+                    <span className="warning-help-context" data-testid="diff-media-url-warning" >
                       <strong>Media Folder link must be a working DropBox link</strong>
                       <p>
                         Current Media URL: <a href={userProfile.mediaUrl}>{userProfile.mediaUrl}</a>
@@ -205,8 +200,9 @@ const EditLinkModal = props => {
                   )}
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <label className='custom-label'>Google Doc</label>
+                      <label className='custom-label' htmlFor='google-doc-link' >Google Doc</label>
                       <input
+                        id='google-doc-link'
                         className="customEdit"
                         placeholder="Enter Google Doc link"
                         value={googleLink.Link}
@@ -218,10 +214,10 @@ const EditLinkModal = props => {
                     </div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
 
-                      <label className='custom-label'>Media Folder</label>
+                      <label className='custom-label' htmlFor='media-folder-link' >Media Folder</label>
                       <input
                         className="customEdit"
-                        id="linkURL2"
+                        id="media-folder-link"
                         placeholder="Enter Dropbox link"
                         value={mediaFolderLink.Link}
                         onChange={e => {handleMediaFolderLinkChanges(e)}}
@@ -266,7 +262,7 @@ const EditLinkModal = props => {
                       <div className="customTitle">+ ADD LINK:</div>
                     </div>
 
-                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields new-admin-links">
                       <input
                         className="customEdit"
                         id="linkName"
@@ -291,6 +287,7 @@ const EditLinkModal = props => {
                       <button
                         type="button"
                         className="addButton"
+                        aria-label='add-admin-link-button'
                         onClick={() => {
                           addNewLink(adminLinks, setAdminLinks, newAdminLink, () =>
                             setNewAdminLink(emptyLink),
@@ -328,6 +325,7 @@ const EditLinkModal = props => {
                         type="button"
                         className="closeButton"
                         color="danger"
+                        aria-label='add-personal-link-button'
                         onClick={() =>
                           removeLink(personalLinks, setPersonalLinks, {
                             name: link.Name,
@@ -380,7 +378,7 @@ const EditLinkModal = props => {
                 </div>
               </Card>
               {!isValidLink && (
-                <p className="invalid-help-context">
+                <p className='invalid-help-context' data-testid='invalid-url-warning' >
                   Please ensure each link has a unique and not empty, and enter valid URLs.
                 </p>
               )}
@@ -411,7 +409,7 @@ const EditLinkModal = props => {
           </Button>
         </ModalFooter>
 
-        <Modal isOpen={isWarningPopupOpen} toggle={()=> setIsWarningPopupOpen(!isWarningPopupOpen)}  >
+        <Modal data-testid='popup-warning' isOpen={isWarningPopupOpen} toggle={()=> setIsWarningPopupOpen(!isWarningPopupOpen)}  >
           <ModalHeader>Warning!</ModalHeader>
           <ModalBody>
             Whoa Tiger, don’t do this! This link was added by an Admin when you were set up in the system. It is used by the Admin Team and your Manager(s) for reviewing your work. You should only change it if you are ABSOLUTELY SURE the one you are changing it to is more correct than the one here already.

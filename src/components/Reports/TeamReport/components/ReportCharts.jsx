@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import { React, useEffect } from 'react';
 import './ReportCharts.css';
 import * as d3 from 'd3/dist/d3.min';
@@ -22,11 +23,11 @@ function ReportCharts({ title, pieChartId }) {
   const pie = d3.pie().value(d => d[1]);
 
   useEffect(() => {
-    const data_ready = pie(Object.entries([2, 6, 9]));
+    const dataReady = pie(Object.entries([2, 6, 9]));
 
     getCreateSvgPie()
       .selectAll('whatever')
-      .data(data_ready)
+      .data(dataReady)
       .join('path')
       .attr(
         'd',
@@ -50,7 +51,7 @@ function ReportCharts({ title, pieChartId }) {
         <div className="team-report-chart-info-wrapper">
           <div className="team-report-chart-info">
             <div className="pie-chart-wrapper">
-              <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
+              <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" data-testid={`pie-chart-container-${pieChartId}`}/>
               <div className="pie-chart-info-detail">
                 <div className="pie-chart-info-detail-title">
                   <h5>Name</h5>
@@ -68,7 +69,7 @@ function ReportCharts({ title, pieChartId }) {
               </div>
             </div>
           </div>
-          <div className="team-report-chart-info"></div>
+          <div className="team-report-chart-info" />
         </div>
       </div>
     </section>

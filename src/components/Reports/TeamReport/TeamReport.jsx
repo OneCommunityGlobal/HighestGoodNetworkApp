@@ -1,8 +1,12 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import { FiUsers } from 'react-icons/fi';
+import Dropdown from 'react-bootstrap/Dropdown';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 import { getTeamDetail } from '../../../actions/team';
 import {
   getAllUserTeams,
@@ -14,16 +18,10 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-
 import { getTeamReportData } from './selectors';
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
-
-import Dropdown from 'react-bootstrap/Dropdown';
-
-import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
 
 export function TeamReport({ match }) {
   const dispatch = useDispatch();
@@ -43,6 +41,7 @@ export function TeamReport({ match }) {
   const [selectedTeams, setSelectedTeams] = useState([]);
 
   // Create a state variable to store the selected radio input
+  // eslint-disable-next-line no-unused-vars
   const [selectedInput, setSelectedInput] = useState('isManager');
 
   // Event handler for when a radio input is selected
@@ -52,29 +51,41 @@ export function TeamReport({ match }) {
   };
 
   const handleStatus = useMemo(
-    () => isActive => {
-      return isActive ? (
-        <div
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-        >
-          <span
-            className="dot"
-            style={{ backgroundColor: '#00ff00', width: '0.7rem', height: '0.7rem' }}
-          ></span>
-          <strong>Active</strong>
-        </div>
-      ) : (
-        <div
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-        >
-          <span
-            className="dot"
-            style={{ backgroundColor: 'red', width: '0.7rem', height: '0.7rem' }}
-          ></span>
-          <strong>Inactive</strong>
-        </div>
-      );
-    },
+    () =>
+      // eslint-disable-next-line react/no-unstable-nested-components,func-names
+      function(isActive) {
+        return isActive ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+            }}
+          >
+            <span
+              className="dot"
+              style={{ backgroundColor: '#00ff00', width: '0.7rem', height: '0.7rem' }}
+            />
+            <strong>Active</strong>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+            }}
+          >
+            <span
+              className="dot"
+              style={{ backgroundColor: 'red', width: '0.7rem', height: '0.7rem' }}
+            />
+            <strong>Inactive</strong>
+          </div>
+        );
+      },
     [],
   );
 
@@ -85,6 +96,7 @@ export function TeamReport({ match }) {
       }
     } else {
       setSelectedTeams(prevSelectedTeams =>
+        // eslint-disable-next-line no-shadow
         prevSelectedTeams.filter(team => team.selectedTeam._id !== selectedTeam._id),
       );
     }
@@ -126,6 +138,7 @@ export function TeamReport({ match }) {
   }
 
   function handleSearch() {
+    // eslint-disable-next-line no-shadow
     const searchResults = allTeams.filter(team => {
       const isMatchedName = team.teamName
         .toLowerCase()
@@ -147,6 +160,7 @@ export function TeamReport({ match }) {
 
   function handleDate(date) {
     const formattedDates = {};
+    // eslint-disable-next-line no-shadow
     const getFormattedDate = date => {
       if (!formattedDates[date]) {
         formattedDates[date] = moment(date).format('MM-DD-YYYY');
@@ -167,6 +181,7 @@ export function TeamReport({ match }) {
           return result;
         })
         .then(result => {
+          // eslint-disable-next-line no-shadow
           const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
           Promise.all(allTeamMembersPromises).then(results => {
             setAllTeamsMembers([...results]);
@@ -180,10 +195,10 @@ export function TeamReport({ match }) {
   const [totalTeamWeeklyWorkedHours, setTotalTeamWeeklyWorkedHours] = useState('');
 
   const calculateTotalHrsForPeriod = timeEntries => {
-    let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
+    const hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
     if (timeEntries.length < 1) return hours;
 
-    for (let i = 0; i < timeEntries.length; i++) {
+    for (let i = 0; i < timeEntries.length; i += 1) {
       const timeEntry = timeEntries[i];
       if (timeEntry.isTangible) {
         hours.totalTangibleHrs += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
@@ -215,7 +230,9 @@ export function TeamReport({ match }) {
       if (parseFloat(totalTangibleHrs) > 0) {
         return totalTangibleHrs;
       }
+      return 0; // Added return statement
     } catch (networkError) {
+      // eslint-disable-next-line no-console
       console.log('Network error:', networkError.message);
       throw networkError;
     }
@@ -229,6 +246,7 @@ export function TeamReport({ match }) {
         );
         setTeamMembersWeeklyEffort(weeklyEfforts.filter(effort => !!effort));
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.log(err.message);
       }
     };
@@ -244,24 +262,31 @@ export function TeamReport({ match }) {
   }, [teamMembersWeeklyEffort]);
 
   // Get Total Tangible Hours this week [SELECTED TEAM]
+  // eslint-disable-next-line no-unused-vars
   const [selectedTeamsMembers, setSelectedTeamsMembers] = useState([]);
   const [selectedTeamsWeeklyEffort, setSelectedTeamsWeeklyEffort] = useState([]);
 
   useEffect(() => {
     const setSelectedTeamsMembersAndEffort = async () => {
+      // eslint-disable-next-line no-shadow
       const members = selectedTeams.map(team => allTeamsMembers[team.index]);
       setSelectedTeamsMembers(members);
 
       if (members) {
         const weeklyEfforts = await Promise.all(
+          // eslint-disable-next-line no-shadow
           members.map(team => Promise.all(team.map(member => getWeeklyTangibleHours(member)))),
         );
+        // eslint-disable-next-line no-shadow
         const totalWeeklyEfforts = weeklyEfforts.map(team =>
           team.reduce((accumulator, effort) => {
-            if (effort === undefined) {
-              effort = 0;
+            let localEffort = effort;
+
+            if (localEffort === undefined) {
+              localEffort = 0;
             }
-            return accumulator + Number(effort);
+
+            return accumulator + Number(localEffort);
           }, 0),
         );
 
@@ -320,6 +345,7 @@ export function TeamReport({ match }) {
           <div className="input-group input-group-sm d-flex flex-nowrap justify-content-between active-inactive-container">
             <div className="d-flex align-items-center">
               <div className="d-flex flex-column">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                 <label htmlFor="search-by-name" className="text-left">
                   Name
                 </label>
@@ -334,6 +360,7 @@ export function TeamReport({ match }) {
               <div className="date-picker-container">
                 <div id="task_startDate" className="date-picker-item">
                   <div className="d-flex flex-column">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                     <label htmlFor="search-by-startDate" className="text-left">
                       Created After
                     </label>
@@ -352,6 +379,7 @@ export function TeamReport({ match }) {
                 </div>
                 <div id="task_EndDate" className="date-picker-item">
                   <div className="d-flex flex-column">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                     <label htmlFor="search-by-endDate" className="text-left">
                       Modified After
                     </label>
@@ -370,6 +398,7 @@ export function TeamReport({ match }) {
                 </div>
                 <div className="active-inactive-container">
                   <div className="active-inactive-container-item">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                     <label htmlFor="active">Active</label>
                     <input
                       onChange={event => handleCheckboxChange(event)}
@@ -380,6 +409,7 @@ export function TeamReport({ match }) {
                     />
                   </div>
                   <div className="active-inactive-container-item">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                     <label htmlFor="inactive">Inactive</label>
                     <input
                       onChange={event => handleCheckboxChange(event)}
@@ -421,12 +451,13 @@ export function TeamReport({ match }) {
             </thead>
             {allTeamsMembers.length > 1 ? (
               <tbody className="table">
+                {/* eslint-disable-next-line no-shadow */}
                 {handleSearch().map((team, index) => (
                   <tr className="table-row" key={team._id}>
                     <td>
                       <input
                         type="checkbox"
-                        onChange={() => handleSelectTeam(event, team, index)}
+                        onChange={event => handleSelectTeam(event, team, index)}
                         disabled={
                           selectedTeams.length === 4 &&
                           !selectedTeams.some(
@@ -475,15 +506,15 @@ export function TeamReport({ match }) {
             ) : (
               <tbody>
                 <tr style={{ backgroundColor: 'white' }}>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td />
+                  <td />
+                  <td />
                   <td>
                     <strong>Loading...</strong>
                   </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td />
+                  <td />
+                  <td />
                 </tr>
               </tbody>
             )}

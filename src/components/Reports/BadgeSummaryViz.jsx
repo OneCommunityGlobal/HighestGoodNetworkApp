@@ -17,6 +17,7 @@ import {
   UncontrolledPopover,
   DropdownMenu,
   DropdownItem,
+  UncontrolledTooltip
 } from 'reactstrap';
 import { boxStyle } from '../../styles';
 import '../Badge/BadgeReport.css';
@@ -78,13 +79,13 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                             {' '}
                             <img
                               src={value.badge.imageUrl}
-                              id={`popover_${value.badge.badgeId}`}
+                              id={`popover_${value.badge._id}`}
                               alt="badge"
                             />
                           </td>
                           <UncontrolledPopover
                             trigger="hover"
-                            target={`popover_${value.badge.badgeId}`}
+                            target={`popover_${value.badge._id}`}
                           >
                             <Card className="text-center">
                               <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
@@ -109,18 +110,39 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                               ? value.lastModified.substring(0, 10)
                               : value.lastModified.toLocaleString().substring(0, 10)}
                           </td>
-                          <td>
-                            {' '}
-                            <UncontrolledDropdown className="me-2" direction="down">
-                              <DropdownToggle caret color="primary" style={boxStyle}>
-                                Dates
-                              </DropdownToggle>
-                              <DropdownMenu>
-                                {value.earnedDate.map(date => {
-                                  return <DropdownItem key={date}>{date}</DropdownItem>;
-                                })}
-                              </DropdownMenu>
-                            </UncontrolledDropdown>
+                          <td style={{ display: 'flex', alignItems: 'center' }}>
+                            <>
+                              {' '}
+                              <UncontrolledDropdown className="me-2" direction="down">
+                                <DropdownToggle caret color="primary" style={boxStyle}>
+                                  Dates
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  {value.earnedDate.map((date, index) => (
+                                    // eslint-disable-next-line react/no-array-index-key
+                                    <DropdownItem key={`date-${value._id}-${index}`}>
+                                      {date}
+                                    </DropdownItem>
+                                  ))}
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                              {value.hasBadgeDeletionImpact && value.hasBadgeDeletionImpact === true ?
+                              (<>
+                                <span id="mismatchExplainationTooltip" style={{paddingLeft: '3px'}}>
+                                  {'  '} *
+                                </span>
+                                <UncontrolledTooltip
+                                  placement="bottom"
+                                  target="mismatchExplainationTooltip"
+                                  style={{ maxWidth: '300px' }}
+                                >
+                                  This record contains a mismatch in the badge count and associated dates. It indicates that a badge has been deleted. 
+                                  Despite the deletion, we retain the earned date to ensure a record of the badge earned for historical purposes.
+                                </UncontrolledTooltip>
+                              </>)
+                              : null
+                              } 
+                            </>
                           </td>
                           <td>{value.count}</td>
                         </tr>
@@ -152,16 +174,16 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                     {badges && badges.length ? (
                       sortedBadges &&
                       sortedBadges.map(value => (
-                        <tr key={value.badge._id}>
+                        <tr key={value._id}>
                           <td className="badge_image_sm">
                             {' '}
                             <img
                               src={value.badge.imageUrl}
-                              id={`popover_${value.id}`}
+                              id={`popover_${value._id}`}
                               alt="badge"
                             />
                           </td>
-                          <UncontrolledPopover trigger="hover" target={`popover_${value.id}`}>
+                          <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                             <Card className="text-center">
                               <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
                               <CardBody>
