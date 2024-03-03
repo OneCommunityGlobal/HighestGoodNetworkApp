@@ -33,7 +33,7 @@ const SelectProfilePicPopup = React.memo(props => {
         ...userProfile,
         profilePic: selectedPic[0],
       };
-      await props.updateUserProfile(userProfile._id, updatedProfile);
+      await props.updateUserProfile(updatedProfile);
       toast.success('Picture selected has been saved as profile photo.');
     } catch (err) {
       console.log(err);
