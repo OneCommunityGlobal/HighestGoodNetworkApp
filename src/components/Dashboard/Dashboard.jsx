@@ -11,6 +11,7 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
+import './Dashboard.css';
 
 export function Dashboard(props) {
   const dispatch = useDispatch();
@@ -40,10 +41,25 @@ export function Dashboard(props) {
         role={authUser.role}
         summaryBarData={summaryBarData}
       />
-
-      <Row>
-        <Col lg={{ size: 7 }}>&nbsp;</Col>
-        <Col lg={{ size: 5 }}>
+      <div className="grid">
+        <div className="tasksandtimelogs">
+          {popup ? (
+            <div className="my-2">
+              <div id="weeklySum">
+                <WeeklySummary
+                  displayUserId={displayUserId}
+                  setPopup={setPopup}
+                  userRole={authUser.role}
+                />
+              </div>
+            </div>
+          ) : null}
+          <div className="my-2" id="wsummary">
+            <Timelog isDashboard passSummaryBarData={setSummaryBarData} match={match} />
+          </div>
+          <Badge userId={displayUserId} role={authUser.role} />
+        </div>
+        <div className="leaderboard-sm-12">
           <div className="row justify-content-center">
             <div
               role="button"
@@ -60,30 +76,9 @@ export function Dashboard(props) {
               />
             </div>
           </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col lg={{ size: 5 }} className="order-sm-12">
           <Leaderboard displayUserId={displayUserId} />
-        </Col>
-        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-          {popup ? (
-            <div className="my-2">
-              <div id="weeklySum">
-                <WeeklySummary
-                  displayUserId={displayUserId}
-                  setPopup={setPopup}
-                  userRole={authUser.role}
-                />
-              </div>
-            </div>
-          ) : null}
-          <div className="my-2" id="wsummary">
-            <Timelog isDashboard passSummaryBarData={setSummaryBarData} match={match} />
-          </div>
-          <Badge userId={displayUserId} role={authUser.role} />
-        </Col>
-      </Row>
+        </div>
+      </div>
       <TimeOffRequestDetailModal />
     </Container>
   );
