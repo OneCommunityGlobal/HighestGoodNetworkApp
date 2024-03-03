@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Row, Col, Container } from 'reactstrap';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
@@ -8,10 +10,10 @@ import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import PopUpBar from '../PopUpBar';
 import '../../App.css';
-import { getTimeZoneAPIKey } from '../../actions/timezoneAPIActions';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 
 export function Dashboard(props) {
+  const dispatch = useDispatch();
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { match, authUser } = props;
@@ -28,11 +30,6 @@ export function Dashboard(props) {
       }
     }, 150);
   };
-
-  useEffect(() => {
-    // eslint-disable-next-line react/destructuring-assignment
-    props.getTimeZoneAPIKey();
-  }, []);
 
   return (
     <Container fluid>
@@ -96,6 +93,4 @@ const mapStateToProps = state => ({
   authUser: state.auth.user,
 });
 
-export default connect(mapStateToProps, {
-  getTimeZoneAPIKey,
-})(Dashboard);
+export default connect(mapStateToProps)(Dashboard);
