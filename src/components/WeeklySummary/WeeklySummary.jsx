@@ -45,6 +45,7 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
+import WriteItForMeModal from './WriteItForMeModal';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -746,6 +747,7 @@ export class WeeklySummary extends Component {
                             </DropdownMenu>
                           </UncontrolledDropdown>
                           <CurrentPromptModal userRole={userRole} userId={displayUserId} />
+                          <WriteItForMeModal />
                         </Label>
                         <Editor
                           init={{
