@@ -910,6 +910,7 @@ function UserProfile(props) {
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
+                user={props.auth.user}
                 isUserSelf={isUserSelf}
                 canEdit={canEdit}
               />
@@ -1009,11 +1010,11 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
-                  edit={canEdit || targetIsDevAdminUneditable}
+                  edit={canEdit}
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && userProfile.role != 'Volunteer' && targetIsDevAdminUneditable}
+                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||

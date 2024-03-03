@@ -1,3 +1,4 @@
+import {useState}from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
@@ -18,11 +19,16 @@ export const PeopleTasksPieChart = () => {
     showViewAllTasksButton,
   } = useSelector(peopleTasksPieChartViewData);
 
-  const showAllTasks = () => {};
+  const [showAllTasks, setShowAllTasks] = useState(false);
 
   if (!showTasksPieChart && !showProjectsPieChart) {
     return null;
   }
+
+  function handleViewAll(){
+    setShowAllTasks(prev => !prev);
+  }
+
 
   return (
     <div className="people-pie-charts-wrapper">
@@ -42,31 +48,28 @@ export const PeopleTasksPieChart = () => {
           <h5 className="people-pie-charts-header">{`${
             showViewAllTasksButton ? 'Last ' : ''
           }Tasks With Completed Hours`}</h5>
-          <PieChart
+          {!showAllTasks && <PieChart
             pieChartId={'tasksPieChart'}
             data={displayedTasksWithLoggedHoursById}
             dataLegend={displayedTasksLegend}
             dataLegendHeader="Hours"
-          />
+          />}
           {showViewAllTasksButton && (
-            <NewModal
-              header={'Tasks With Completed Hours'}
-              trigger={() => (
-                <div onClick={showAllTasks} className="show-all-tasks-button">
-                  View all
-                </div>
-              )}
-            >
-              <PieChart
+         <div>               
+           {showAllTasks &&   <PieChart
                 pieChartId={'allTasksPieChart'}
                 data={tasksWithLoggedHoursById}
                 dataLegend={tasksLegend}
                 dataLegendHeader="Hours"
-              />
-            </NewModal>
+              />}
+               <div onClick={handleViewAll} className="show-all-tasks-button">
+                  {showAllTasks ? "Collapse":  "View all"}
+              </div>
+        </div>
           )}
         </ReportPage.ReportBlock>
       )}
     </div>
   );
+
 };
