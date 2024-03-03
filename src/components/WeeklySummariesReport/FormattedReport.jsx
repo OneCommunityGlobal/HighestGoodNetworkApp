@@ -61,7 +61,6 @@ function FormattedReport({
   weekIndex,
   bioCanEdit,
   canRequestBio,
-  canEditSummaryCount,
   allRoleInfo,
   badges,
   loadBadges,
