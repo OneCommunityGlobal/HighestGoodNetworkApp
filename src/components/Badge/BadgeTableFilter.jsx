@@ -1,10 +1,10 @@
 import React from 'react';
-import TextSearchBox from '../UserManagement/TextSearchBox';
-import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
 import { Button } from 'reactstrap';
 import { boxStyle } from 'styles';
+import TextSearchBox from '../UserManagement/TextSearchBox';
+import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
 
-const BadgeTableFilter = props => {
+function BadgeTableFilter(props) {
   const badgeTypes = [
     'No Infringement Streak',
     'Minimum Hours Multiple',
@@ -34,33 +34,33 @@ const BadgeTableFilter = props => {
 
   return (
     <tr>
-      <td id="badge_image"></td>
+      <td id="badge_image" />
       <td id="badge_name">
         <TextSearchBox
-          id={'badge_name_search'}
+          id="badge_name_search"
           searchCallback={onBadgeNameSearch}
           value={props.name}
         />
       </td>
       <td id="badge_description">
         <TextSearchBox
-          id={'badge_description_search'}
+          id="badge_description_search"
           searchCallback={onBadgeDescriptionSearch}
           value={props.description}
         />
       </td>
       <td id="badge_type">
         <DropDownSearchBox
-          id={'badge_types_search'}
+          id="badge_types_search"
           items={badgeTypes}
           searchCallback={onBadgeTypeSearch}
           value={props.type}
         />
       </td>
-      <td id="badge_details"></td>
+      <td id="badge_details" />
       <td id="badge_ranking">
         <DropDownSearchBox
-          id={'badge_ranking_sort'}
+          id="badge_ranking_sort"
           items={orders}
           searchCallback={onBadgeRankingSort}
           value={props.order}
@@ -79,6 +79,6 @@ const BadgeTableFilter = props => {
       </td>
     </tr>
   );
-};
+}
 
 export default BadgeTableFilter;

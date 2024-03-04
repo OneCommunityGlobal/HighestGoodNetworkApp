@@ -1,11 +1,10 @@
-import React from 'react';
 import { Card, CardTitle, CardBody, UncontrolledTooltip } from 'reactstrap';
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
 
-const NewBadges = props => {
+function NewBadges({ badges, personalBestMaxHrs }) {
   const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(
+    const filteredList = allBadges.filter(
       value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
     );
 
@@ -16,11 +15,14 @@ const NewBadges = props => {
       if (a.badge.ranking < b.badge.ranking) return -1;
       if (a.badge.badgeName > b.badge.badgeName) return 1;
       if (a.badge.badgeName < b.badge.badgeName) return -1;
+
+      // If none of the above conditions match, the objects are considered equal
+      return 0;
     });
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(props.badges);
+  const filteredBadges = filterBadges(badges);
 
   return (
     <>
@@ -37,23 +39,21 @@ const NewBadges = props => {
             New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
           <div className="new_badges">
-            {filteredBadges.length == 0 ? (
+            {filteredBadges.length === 0 && (
               <strong style={{ opacity: 0.7 }}>
                 Get yourself a herd of new badges! New badges are earned at the close of each epic
                 week. Newest badges are placed here at the top for a week after you earn them so
                 everyone can bask in the awesomeness of your achievement(s)!
               </strong>
-            ) : (
-              ''
             )}
             {filteredBadges.map((value, index) => (
               <BadgeImage
-                personalBestMaxHrs={props.personalBestMaxHrs}
+                personalBestMaxHrs={personalBestMaxHrs}
                 time="new"
                 count={value.count}
                 badgeData={value.badge}
                 index={index}
-                key={index}
+                // key={index}
               />
             ))}
           </div>
@@ -73,6 +73,6 @@ const NewBadges = props => {
       </UncontrolledTooltip>
     </>
   );
-};
+}
 
 export default NewBadges;

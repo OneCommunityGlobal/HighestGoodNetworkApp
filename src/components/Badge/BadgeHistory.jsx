@@ -2,9 +2,9 @@ import React from 'react';
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
 
-const BadgeHistory = props => {
+function BadgeHistory(props) {
   const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(
+    const filteredList = allBadges.filter(
       value => Date.now() - new Date(value.lastModified).getTime() > WEEK_DIFF,
     );
 
@@ -19,7 +19,7 @@ const BadgeHistory = props => {
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(props.badges);
+  const filteredBadges = filterBadges(props.badges);
 
   return (
     <div className="badge_history_container">
@@ -35,6 +35,6 @@ const BadgeHistory = props => {
       ))}
     </div>
   );
-};
+}
 
 export default BadgeHistory;

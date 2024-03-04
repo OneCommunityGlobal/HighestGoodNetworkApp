@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
 
-const BadgeImage = props => {
+function BadgeImage(props) {
   const [isOpen, setOpen] = useState(false);
 
   const toggle = () => setOpen(isOpen => !isOpen);
@@ -12,16 +12,16 @@ const BadgeImage = props => {
         <div className="badge_image_sm">
           <img
             src={props?.badgeData?.imageUrl}
-            id={'popover_' + props.time + props.index.toString()}
+            id={`popover_${props.time}${props.index.toString()}`}
             alt=""
             loading="lazy"
           />
         </div>
 
         {props.badgeData.type == 'Personal Max' ? (
-          <span className={'badge_count_personalmax'}>{Math.floor(props.personalBestMaxHrs)}</span>
+          <span className="badge_count_personalmax">{Math.floor(props.personalBestMaxHrs)}</span>
         ) : props.count < 100 ? (
-          <span className={'badge_count'}>{Math.round(props.count)}</span>
+          <span className="badge_count">{Math.round(props.count)}</span>
         ) : (
           <span className="badge_count_3_digit">{Math.round(props.count)}</span>
         )}
@@ -30,7 +30,7 @@ const BadgeImage = props => {
         trigger="hover"
         isOpen={isOpen}
         toggle={toggle}
-        target={'popover_' + props.time + props.index.toString()}
+        target={`popover_${props.time}${props.index.toString()}`}
       >
         <Card className="text-center">
           <CardImg className="badge_image_lg" src={props?.badgeData?.imageUrl} />
@@ -51,6 +51,6 @@ const BadgeImage = props => {
       </Popover>
     </>
   );
-};
+}
 
 export default BadgeImage;

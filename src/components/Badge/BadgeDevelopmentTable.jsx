@@ -14,15 +14,15 @@ import {
   Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
+import { boxStyle } from 'styles';
 import { updateBadge, deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
-import { boxStyle } from 'styles';
 import './Badge.css';
 
-const BadgeDevelopmentTable = props => {
+function BadgeDevelopmentTable(props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('');
@@ -109,7 +109,7 @@ const BadgeDevelopmentTable = props => {
   };
 
   const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
+    const filteredList = allBadges.filter(badge => {
       if (
         badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
         badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 &&
@@ -141,12 +141,12 @@ const BadgeDevelopmentTable = props => {
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(props.allBadgeData);
+  const filteredBadges = filterBadges(props.allBadgeData);
 
   // Badge Development checkbox
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
-    const checkValue = badgeValue.showReport ? true : false;
+    const checkValue = !!badgeValue.showReport;
     return (
       <div className="badge_check">
         <Input
@@ -185,8 +185,8 @@ const BadgeDevelopmentTable = props => {
             <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
-                <img src={value.imageUrl} id={'popover_' + value._id} />
-                <UncontrolledPopover trigger="hover" target={'popover_' + value._id}>
+                <img src={value.imageUrl} id={`popover_${value._id}`} />
+                <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className="text-center">
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />
                     <CardBody>
@@ -232,7 +232,7 @@ const BadgeDevelopmentTable = props => {
                   </Button>
                 </span>
               </td>
-                <td style={{textAlign:"center"}}>{reportBadge(value)}</td>
+              <td style={{ textAlign: 'center' }}>{reportBadge(value)}</td>
             </tr>
           ))}
         </tbody>
@@ -246,10 +246,10 @@ const BadgeDevelopmentTable = props => {
         badgeName={deleteName}
       />
       <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()}>
-        <ModalBody className={'badge-message-background-' + props.color}>
-          <p className={'badge-message-text-' + props.color}>{props.message}</p>
+        <ModalBody className={`badge-message-background-${props.color}`}>
+          <p className={`badge-message-text-${props.color}`}>{props.message}</p>
         </ModalBody>
-        <ModalFooter className={'badge-message-background-' + props.color}>
+        <ModalFooter className={`badge-message-background-${props.color}`}>
           <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK
           </Button>
@@ -257,7 +257,7 @@ const BadgeDevelopmentTable = props => {
       </Modal>
     </Container>
   );
-};
+}
 
 const mapStateToProps = state => ({
   message: state.badge.message,
