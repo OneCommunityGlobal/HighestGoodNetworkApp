@@ -104,6 +104,23 @@ export const ENDPOINTS = {
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
 
+  //reasons endpoints
+  CREATEREASON: () => {
+    return `${APIEndpoint}/reason/`;
+  },
+  GETALLUSERREASONS: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+  GETSINGLEREASONBYID: userId => {
+    return `${APIEndpoint}/reason/single/${userId}`;
+  },
+  PATCHUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+  DELETEUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+
   MOUSEOVERTEXT: () => `${APIEndpoint}/mouseoverText`,
   MOUSEOVERTEXT_BY_ID: mouseoverTextId => `${APIEndpoint}/mouseoverText/${mouseoverTextId}`,
   PERMISSION_CHANGE_LOGS: userId => `${APIEndpoint}/permissionChangeLogs/${userId}`,
