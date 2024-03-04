@@ -25,6 +25,9 @@ export default function Timer() {
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
+    shouldReconnect: () => true,
+    reconnectAttempts: 5,
+    reconnectInterval: 5000,
   };
   /**
    * Expected message format: {
@@ -235,12 +238,11 @@ export default function Timer() {
   useEffect(() => {
     // This useEffect is to make sure that the WS is open and send a heartbeat every 60 seconds
     const interval = setInterval(() => {
-      if (running && isWSOpenRef.current) {
+      if (isWSOpenRef.current) {
         isWSOpenRef.current = false;
         sendHeartbeat();
         setTimeout(() => {
           if (!isWSOpenRef.current) {
-            setRunning(false);
             setInacModal(true);
             getWebSocket().close();
           }
@@ -249,7 +251,7 @@ export default function Timer() {
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [running]);
+  }, []);
 
   useEffect(() => {
     /**
@@ -441,9 +443,8 @@ export default function Timer() {
         <ModalHeader toggle={() => setInacModal(!inacModal)}>Timer Paused</ModalHeader>
         <ModalBody>
           The user timer has been paused due to inactivity or a lost in connection to the server.
-          Please check your internet connection and refresh the page to continue. This is to ensure
-          that our resources are being used efficiently and to improve performance for all of our
-          users.
+          This is to ensure that our resources are being used efficiently and to improve performance
+          for all of our users.
         </ModalBody>
         <ModalFooter>
           <Button
