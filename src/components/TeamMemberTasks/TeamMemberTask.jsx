@@ -1,13 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faBell,
-  faCircle,
-  faCheck,
-  faTimes,
-  faExpandArrowsAlt,
-  faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
 
@@ -65,7 +58,7 @@ const TeamMemberTask = React.memo(
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
-    const [expandTimeOffIndicator, setExpandTimeOffIndicator] = useState({});
+    const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
 
     const thisWeekHours = user.totaltangibletime_hrs;
 
@@ -290,48 +283,28 @@ const TeamMemberTask = React.memo(
                 )}
               </tbody>
             </Table>
-            {showWhoHasTimeOff &&
-              (onTimeOff || goingOnTimeOff) &&
-              (expandTimeOffIndicator[user.personId] ? (
+            {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
+              <div className="taking-time-off-content-div">
+                <span className="taking-time-off-content-text">
+                  {onTimeOff
+                    ? `${user.name} Is Not Available this Week`
+                    : `${user.name} Is Not Available Next Week`}
+                </span>
                 <button
-                  className="expand-time-off-detail-button"
-                  onClick={e => {
-                    setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: false }));
+                  type="button"
+                  className="taking-time-off-content-btn"
+                  onClick={() => {
+                    const request = onTimeOff
+                      ? { ...onTimeOff, onVacation: true, name: user.name }
+                      : { ...goingOnTimeOff, onVacation: false, name: user.name };
+
+                    openDetailModal(request);
                   }}
                 >
-                  <FontAwesomeIcon icon={faExpandArrowsAlt} data-testid="icon" />
+                  Details ?
                 </button>
-              ) : (
-                <div className="taking-time-off-content-div">
-                  <button
-                    className="compress-time-off-detail-button"
-                    onClick={e => {
-                      setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
-                  </button>
-
-                  <span className="taking-time-off-content-text">
-                    {onTimeOff
-                      ? `${user.name} Is Not Available this Week`
-                      : `${user.name} Is Not Available Next Week`}
-                  </span>
-                  <button
-                    type="button"
-                    className="taking-time-off-content-btn"
-                    onClick={() => {
-                      const request = onTimeOff
-                        ? { ...onTimeOff, onVacation: true, name: user.name }
-                        : { ...goingOnTimeOff, onVacation: false, name: user.name };
-
-                      openDetailModal(request);
-                    }}
-                  >
-                    Details ?
-                  </button>
-                </div>
-              ))}
+              </div>
+            )}
           </td>
         </tr>
       </>
