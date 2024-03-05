@@ -43,7 +43,7 @@ const UserTeamsTable = props => {
                 <span className="teams-span">Visibility</span>
               </Col>
               <Col md='5'>
-              <ToggleSwitch
+                <ToggleSwitch
                   switchType="visible"
                   state={props.isVisible}
                   handleUserProfile={props.onUserVisibilitySwitch}
