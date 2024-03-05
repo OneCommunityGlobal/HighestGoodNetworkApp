@@ -18,7 +18,11 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    if (!isValidRole) {
+    if (newRoleName.trim() === '') {
+      toast.error('Please enter a role name');
+    } else if (permissionsChecked.length === 0) {
+      toast.error('Please select at least one permission');
+    } else if (!isValidRole) {
       toast.error('Please enter a valid role name');
     } else if (!isNotDuplicateRole) {
       toast.error('Please enter a non duplicate role name');
