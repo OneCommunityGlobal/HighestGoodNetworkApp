@@ -414,7 +414,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
     // eslint-disable-next-line radix
-    parseInt(summary.weeklySummariesCount),
+    parseInt(summary.weeklySummariesCount || 0),
   );
 
   const handleOnChange = async (userProfileSummary, count) => {
