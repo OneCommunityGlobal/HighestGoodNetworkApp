@@ -305,6 +305,7 @@ export class WeeklySummary extends Component {
   handleMove = () => {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
+      // eslint-disable-next-line no-alert
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
@@ -352,6 +353,7 @@ export class WeeklySummary extends Component {
     }
     // confitm move or not
     this.toggleMovePopup(movePopup);
+    // eslint-disable-next-line consistent-return
     return newformElements;
   };
 
@@ -579,6 +581,7 @@ export class WeeklySummary extends Component {
   handleMoveSave = async event => {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
+      // eslint-disable-next-line no-alert
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
@@ -596,6 +599,7 @@ export class WeeklySummary extends Component {
   handleSave = async event => {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
+      // eslint-disable-next-line no-alert
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
