@@ -129,7 +129,7 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
   const requestEndingDate = moment(endingDate);
 
   const currentWeekStart = moment().startOf('week').add(1, 'second');
-  const currentWeekEnd = moment().endOf('week').subtract(1, 'day').subtract(1, 'second');
+  const currentWeekEnd = moment().endOf('week').subtract(1, 'second');
 
   // Check if the current week falls within the date range of the request
   if (
