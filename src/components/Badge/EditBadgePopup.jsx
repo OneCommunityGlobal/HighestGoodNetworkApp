@@ -239,8 +239,9 @@ function EditBadgePopup({ badgeValues, setEditPopup, open }) {
               value={type}
               onChange={handleChange}
             >
-              {badgeTypes.map(element => (
-                <option key={element.id}>{element}</option>
+              <option value={'Custom'}>{'Custom'}</option>
+              {badgeTypes.map((element, i) => (
+                <option key={i}>{element}</option>
               ))}
             </Input>
           </FormGroup>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
@@ -8,16 +8,15 @@ import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 
-function BadgeManagement(props) {
+function BadgeManagement({ role, allBadgeData }) {
   const [activeTab, setActiveTab] = useState('1');
 
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
-  const { role } = props; // Access the 'role' prop
   useEffect(() => {
-    props.fetchAllBadges();
+    fetchAllBadges();
   }, []);
 
   return (
@@ -61,10 +60,10 @@ function BadgeManagement(props) {
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">
-          <AssignBadge allBadgeData={props.allBadgeData} />
+          <AssignBadge allBadgeData={allBadgeData} />
         </TabPane>
         <TabPane tabId="2">
-          <BadgeDevelopment allBadgeData={props.allBadgeData} />
+          <BadgeDevelopment allBadgeData={allBadgeData} />
         </TabPane>
       </TabContent>
     </div>

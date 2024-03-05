@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -13,11 +13,9 @@ import { connect } from 'react-redux';
 import './Badge.css';
 import { boxStyle } from 'styles';
 import { createNewBadge, closeAlert } from '../../actions/badgeManagement';
-import { fetchAllProjects } from '../../actions/projects';
-
 import badgeTypes from './BadgeTypes';
 
-function CreateNewBadgePopup(toggle) {
+function CreateNewBadgePopup(props) {
   const [badgeName, setBadgeName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
@@ -37,6 +35,21 @@ function CreateNewBadgePopup(toggle) {
   const [multiple, setMultiple] = useState(0);
   const [showPeople, setShowPeople] = useState(false);
   const [people, setPeople] = useState(0);
+
+  useEffect(() => {
+    displayTypeRelatedFields(type);
+  }, []);
+
+  const validRanking = ranking => {
+    const pattern = /^[0-9]*$/;
+    return pattern.test(ranking);
+  };
+
+  const enableButton =
+    badgeName.length === 0 ||
+    imageUrl.length === 0 ||
+    description.length === 0 ||
+    !validRanking(ranking);
 
   const resetTypeFieldDisplay = () => {
     setShowCategory(false);
@@ -71,27 +84,10 @@ function CreateNewBadgePopup(toggle) {
     }
   };
 
-  useEffect(() => {
-    displayTypeRelatedFields(type);
-  }, []);
-
-  const validRanking = inputRanking => {
-    const pattern = /^[0-9]*$/;
-    return pattern.test(inputRanking);
-  };
-
-  const enableButton =
-    badgeName.length === 0 ||
-    imageUrl.length === 0 ||
-    description.length === 0 ||
-    !validRanking(ranking);
-
   const closePopup = () => {
-    toggle();
+    props.toggle();
   };
 
-  let selectedCategoryValue;
-  let selectedType;
   const handleChange = event => {
     switch (event.target.id) {
       case 'badgeName':
@@ -104,7 +100,7 @@ function CreateNewBadgePopup(toggle) {
         setDescription(event.target.value);
         break;
       case 'category':
-        selectedCategoryValue = event.target.value;
+        const selectedCategoryValue = event.target.value;
         if (selectedCategoryValue.length === 0) {
           setCategory('Unspecified');
         } else {
@@ -112,7 +108,7 @@ function CreateNewBadgePopup(toggle) {
         }
         break;
       case 'badgeType':
-        selectedType = event.target.value;
+        const selectedType = event.target.value;
         setType(selectedType);
         if (selectedType.length === 0) {
           setType('Custom');
@@ -142,6 +138,7 @@ function CreateNewBadgePopup(toggle) {
   };
 
   const handleSubmit = () => {
+    console.log(totalHrs);
     const newBadge = {
       badgeName,
       imageUrl,
@@ -155,7 +152,7 @@ function CreateNewBadgePopup(toggle) {
       multiple,
       people,
     };
-    createNewBadge(newBadge).then(() => {
+    props.createNewBadge(newBadge).then(() => {
       closePopup();
     });
   };
@@ -214,8 +211,8 @@ function CreateNewBadgePopup(toggle) {
         </UncontrolledTooltip>
         <Input type="select" name="selectType" id="badgeType" value={type} onChange={handleChange}>
           <option value="Custom">Custom</option>
-          {badgeTypes.map(element => (
-            <option key={element.id}>{element}</option>
+          {badgeTypes.map((element, i) => (
+            <option key={i}>{element}</option>
           ))}
         </Input>
       </FormGroup>
@@ -238,9 +235,7 @@ function CreateNewBadgePopup(toggle) {
             value={category}
             onChange={handleChange}
           >
-            <option value="" disabled hidden>
-              Select a category
-            </option>
+            <option value="" />
             <option>Food</option>
             <option>Energy</option>
             <option>Housing</option>
