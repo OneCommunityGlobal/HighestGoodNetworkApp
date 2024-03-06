@@ -3,10 +3,6 @@ import { screen, render, fireEvent } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates';
 import EditConfirmModal from '../EditConfirmModal';
 
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 const closeModalMock = jest.fn()
 describe('UserProfileModal', () => {
   const props = {
