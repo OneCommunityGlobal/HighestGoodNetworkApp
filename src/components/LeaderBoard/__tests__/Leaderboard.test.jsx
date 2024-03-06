@@ -18,11 +18,11 @@ describe('Leaderboard page structure', () => {
     expect(table.length).toBe(1);
   });
 
-  it('should be rendered with 6 Headers', () => {
+   it('should be rendered with 7 Headers', () => {
     const tableHeader = mountedLeaderboard.find('thead');
     expect(tableHeader.length).toBe(1);
     const tableHeads = tableHeader.find('th');
-    expect(tableHeads.length).toBeGreaterThanOrEqual(6);
+    expect(tableHeads.length).toBe(7);
   });
 
   it('should be rendered with mock Leaderboard data', () => {
