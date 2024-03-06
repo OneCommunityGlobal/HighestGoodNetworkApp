@@ -65,7 +65,7 @@ export const postConsumableUpdate = payload => {
         dispatch(consumableUpdateEnd(res.data));
       })
       .catch(error => {
-        dispatch(consumableUpdateError(error));
+        dispatch(consumableUpdateError(error.response.data.message));
       });
   };
 };

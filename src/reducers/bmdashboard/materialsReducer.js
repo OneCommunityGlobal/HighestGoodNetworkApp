@@ -57,7 +57,6 @@ export const materialsReducer = (materials = defaultState, action) => {
       }
     case RESET_UPDATE_MATERIAL:
       {
-        console.log("RESET_UPDATE_MATERIAL in reducer. matl: ", materials)
         const obj = {
           loading: false,
           result: null,
