@@ -1,9 +1,11 @@
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
-import { Component } from 'react';
+
+import { useState, useEffect } from 'react';
+
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import {
   Alert,
   Container,
@@ -29,177 +31,196 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
-
+// import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
-export class WeeklySummariesReport extends Component {
-  weekDates = Array.from({ length: 4 }).map((_, index) => ({
-    fromDate: moment()
-      .tz('America/Los_Angeles')
-      .startOf('week')
-      .subtract(index, 'week')
-      .format('MMM-DD-YY'),
-    toDate: moment()
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .subtract(index, 'week')
-      .format('MMM-DD-YY'),
-  }));
+const weekDates = Array.from({ length: 4 }).map((_, index) => ({
+  fromDate: moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(index, 'week')
+    .format('MMM-DD-YY'),
+  toDate: moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(index, 'week')
+    .format('MMM-DD-YY'),
+}));
 
-  constructor(props) {
-    super(props);
+function WeeklySummariesReport() {
+  const props = useSelector(state => state);
+  console.log('props', props);
+  console.log(props.badge.allBadgeData, 'props.badge.allBadgeData');
 
-    this.state = {
-      loading: true,
-      summaries: [],
-      activeTab: navItems[1],
-      badges: [],
-      loadBadges: false,
-      hasSeeBadgePermission: false,
-      selectedCodes: [],
-      selectedColors: [],
-      filteredSummaries: [],
-      teamCodes: [],
-      colorOptions: [],
-      auth: [],
-      selectedOverTime: false,
-      selectedBioStatus: false,
-    };
-  }
+  // const func = state => {
+  //   console.log('I am an arrow function');
+  //   console.log('state', state);
+  //   return state;
+  // };
 
-  async componentDidMount() {
-    const {
-      loading,
-      allBadgeData,
-      authUser,
-      infoCollections,
-      getWeeklySummariesReport,
-      fetchAllBadges,
-      getInfoCollections,
-      hasPermission,
-      auth,
-    } = this.props;
-    // 1. fetch report
-    const res = await getWeeklySummariesReport();
-    // eslint-disable-next-line react/destructuring-assignment
-    const summaries = res?.data ?? this.props.summaries;
-    const badgeStatusCode = await fetchAllBadges();
-    this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
-    this.bioEditPermission = this.canPutUserProfileImportantInfo;
-    this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission =
-      hasPermission('editTeamCode') ||
-      auth.user.role === 'Owner' ||
-      auth.user.role === 'Administrator';
-    this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
+  // const auth = useSelector(state => state);
+  // function func(state) {
+  //   console.log("I'm a function");
+  // }
+  // console.log('auth', auth);
+  const [state, setState] = useState({
+    // loading: true,
+    // summaries: [],
+    // activeTab: navItems[1],
+    badges: [],
+    loadBadges: false,
+    hasSeeBadgePermission: false,
+    selectedCodes: [],
+    selectedColors: [],
+    // filteredSummaries: [],
+    teamCodes: [],
+    colorOptions: [],
+    auth: [],
+    allRoleInfo: [],
+  });
+  const [bioEditPermission, setBioEditPermission] = useState(false);
+  const [canEditSummaryCount, setCanEditSummaryCount] = useState(false);
+  const [codeEditPermission, setCodeEditPermission] = useState(false);
+  const [canSeeBioHighlight, setCanSeeBioHighlight] = useState(false);
 
-    // 2. shallow copy and sort
-    let summariesCopy = [...summaries];
-    summariesCopy = this.alphabetize(summariesCopy);
+  const [loading, setLoading] = useState(true);
+  const [summaries, setSummaries] = useState([]);
+  const [activeTab, setActiveTab] = useState(navItems[1]);
+  const [badges, setBadges] = useState([]);
+  const [loadBadges, setLoadBadges] = useState(false);
+  const [hasSeeBadgePermission, setHasSeeBadgePermission] = useState(false);
+  const [selectedCodes, setSelectedCodes] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [filteredSummaries, setFilteredSummaries] = useState([]);
+  const [teamCodes, setTeamCodes] = useState([]);
+  const [colorOptions, setColorOptions] = useState([]);
+  const [auth, setAuth] = useState([]);
+  const [allRoleInfo, setAllRoleInfo] = useState([]);
+  const [selectedOverTime, setSelectedOverTime] = useState([false]);
+  const [selectedBioStatus, setSelectedBioStatus] = useState([false]);
 
-    // 3. add new key of promised hours by week
-    summariesCopy = summariesCopy.map(summary => {
-      // append the promised hours starting from the latest week (this week)
-      const promisedHoursByWeek = this.weekDates.map(weekDate =>
-        this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-      );
-      return { ...summary, promisedHoursByWeek };
-    });
+  const dispatch = useDispatch();
 
-    /*
-     * refactor logic of commentted codes above
-     */
-    const teamCodeGroup = {};
-    const teamCodes = [];
-    const colorOptionGroup = new Set();
-    const colorOptions = [];
+  // Tool functions
 
-    summariesCopy.forEach(summary => {
-      const code = summary.teamCode || 'noCodeLabel';
-      if (teamCodeGroup[code]) {
-        teamCodeGroup[code].push(summary);
-      } else {
-        teamCodeGroup[code] = [summary];
-      }
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await dispatch(getWeeklySummariesReport());
+      setLoading(false);
+      console.log('RES:', res);
 
-      if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
-    });
+      //     // 1. fetch report
+      //     const res = await getWeeklySummariesReport();
+      //     // eslint-disable-next-line react/destructuring-assignment
+      //     const summaries = res?.data ?? this.props.summaries;
+      //     const badgeStatusCode = await fetchAllBadges();
 
-    Object.keys(teamCodeGroup).forEach(code => {
-      if (code !== 'noCodeLabel') {
-        teamCodes.push({
-          value: code,
-          label: `${code} (${teamCodeGroup[code].length})`,
-        });
-      }
-    });
-    colorOptionGroup.forEach(option => {
-      colorOptions.push({
-        value: option,
-        label: option,
+      //     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+      //     this.bioEditPermission = this.canPutUserProfileImportantInfo;
+      //     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
+      //     this.codeEditPermission =
+      //       hasPermission('editTeamCode') ||
+      //       auth.user.role === 'Owner' ||
+      //       auth.user.role === 'Administrator';
+      //     this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
+
+      //     // 2. shallow copy and sort
+      let summariesCopy = [...res.data];
+      summariesCopy = alphabetize(summariesCopy);
+
+      //     // 3. add new key of promised hours by week
+      summariesCopy = summariesCopy.map(summary => {
+        // append the promised hours starting from the latest week (this week)
+        const promisedHoursByWeek = weekDates.map(weekDate =>
+          getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+        );
+        return { ...summary, promisedHoursByWeek };
       });
-    });
 
-    colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
-    teamCodes
-      .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
-      .push({
-        value: '',
-        label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+      //     /*
+      //      * refactor logic of commentted codes above
+      //      */
+      const teamCodeGroup = {};
+      const teamCodes = [];
+      const colorOptionGroup = new Set();
+      const colorOptions = [];
+
+      summariesCopy.forEach(summary => {
+        const code = summary.teamCode || 'noCodeLabel';
+        if (teamCodeGroup[code]) {
+          teamCodeGroup[code].push(summary);
+        } else {
+          teamCodeGroup[code] = [summary];
+        }
+
+        if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
       });
-    this.setState({
-      loading,
-      allRoleInfo: [],
-      summaries: summariesCopy,
-      activeTab:
-        sessionStorage.getItem('tabSelection') === null
-          ? navItems[1]
-          : sessionStorage.getItem('tabSelection'),
-      badges: allBadgeData,
-      hasSeeBadgePermission: badgeStatusCode === 200,
-      filteredSummaries: summariesCopy,
-      colorOptions,
-      teamCodes,
-      auth,
-    });
 
-    await getInfoCollections();
-    const role = authUser?.role;
-    const roleInfoNames = this.getAllRoles(summariesCopy);
-    const allRoleInfo = [];
-    if (Array.isArray(infoCollections)) {
-      infoCollections.forEach(info => {
-        if (roleInfoNames?.includes(info.infoName)) {
-          const visible =
-            info.visibility === '0' ||
-            (info.visibility === '1' && (role === 'Owner' || role === 'Administrator')) ||
-            (info.visibility === '2' && role !== 'Volunteer');
-          // eslint-disable-next-line no-param-reassign
-          info.CanRead = visible;
-          allRoleInfo.push(info);
+      Object.keys(teamCodeGroup).forEach(code => {
+        if (code !== 'noCodeLabel') {
+          teamCodes.push({
+            value: code,
+            label: `${code} (${teamCodeGroup[code].length})`,
+          });
         }
       });
-    }
-    this.setState({ allRoleInfo });
-  }
+      colorOptionGroup.forEach(option => {
+        colorOptions.push({
+          value: option,
+          label: option,
+        });
+      });
 
-  componentDidUpdate(preProps, preState) {
-    const { loading } = this.props;
-    if (loading !== preState.loading) {
-      this.setState({ loading });
-    }
-  }
+      colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+      teamCodes
+        .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+        .push({
+          value: '',
+          label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+        });
+      setFilteredSummaries(summariesCopy);
+      //     this.setState({
+      //       loading,
+      //       allRoleInfo: [],
+      //       summaries: summariesCopy,
+      //       activeTab:
+      //         sessionStorage.getItem('tabSelection') === null
+      //           ? navItems[1]
+      //           : sessionStorage.getItem('tabSelection'),
+      //       badges: allBadgeData,
+      //       hasSeeBadgePermission: badgeStatusCode === 200,
+      //       filteredSummaries: summariesCopy,
+      //       colorOptions,
+      //       teamCodes,
+      //       auth,
+      //     });
 
-  componentWillUnmount() {
-    sessionStorage.removeItem('tabSelection');
-  }
-
+      await getInfoCollections();
+      // const role = authUser?.role;
+      // const roleInfoNames = getAllRoles(summariesCopy);
+      // const allRoleInfo = [];
+      // if (Array.isArray(infoCollections)) {
+      //   infoCollections.forEach(info => {
+      //     if (roleInfoNames?.includes(info.infoName)) {
+      //       const visible =
+      //         info.visibility === '0' ||
+      //         (info.visibility === '1' && (role === 'Owner' || role === 'Administrator')) ||
+      //         (info.visibility === '2' && role !== 'Volunteer');
+      //       // eslint-disable-next-line no-param-reassign
+      //       info.CanRead = visible;
+      //       allRoleInfo.push(info);
+      //     }
+      //   });
+    };
+    fetchData();
+    console.log('useffect being called');
+  }, []);
   /**
    * Sort the summaries in alphabetixal order
    * @param {*} summaries
    * @returns
    */
-  alphabetize = summaries => {
+  const alphabetize = summaries => {
     const temp = [...summaries];
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
@@ -211,7 +232,7 @@ export class WeeklySummariesReport extends Component {
    * @param {*} summaries
    * @returns
    */
-  getAllRoles = summaries => {
+  const getAllRoles = summaries => {
     const roleNames = summaries.map(summary => `${summary.role}Info`);
     const uniqueRoleNames = [...new Set(roleNames)];
     return uniqueRoleNames;
@@ -228,7 +249,7 @@ export class WeeklySummariesReport extends Component {
    *
    * @returns {number} The hours promised by the user by the given end date.
    */
-  getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
+  const getPromisedHours = (weekToDateX, weeklycommittedHoursHistory) => {
     // 0. Edge case: If the history doesnt even exist
     // only happens if the user is created without the backend changes
     if (!weeklycommittedHoursHistory) {
@@ -256,303 +277,384 @@ export class WeeklySummariesReport extends Component {
     return 0;
   };
 
-  toggleTab = tab => {
-    const { activeTab } = this.state;
+  // Equivalent to componentDidMount
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const {
+  //       loading,
+  //       allBadgeData,
+  //       authUser,
+  //       infoCollections,
+  //       // getWeeklySummariesReport,
+  //       // fetchAllBadges,
+  //       // getInfoCollections,
+  //       // hasPermission,
+  //       auth,
+  //     } = props;
+
+  //     // 1. fetch report
+  //     const res = await dispatch(getWeeklySummariesReport());
+  //     // setSummaries(res?.data ?? props.summaries);
+  //     // setState()
+  //     setState(prevState => ({ ...prevState, summaries: res?.data ?? props.summaries }));
+  //     const badgeStatusCode = await fetchAllBadges();
+
+  //     // const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+  //     const canPutUserProfileImportantInfo = true;
+  //     setBioEditPermission(canPutUserProfileImportantInfo);
+  //     setCanEditSummaryCount(canPutUserProfileImportantInfo);
+  //     // setCodeEditPermission(
+  //     //    hasPermission('editTeamCode') ||
+  //     //     auth.user.role === 'Owner' ||
+  //     //     auth.user.role === 'Administrator',
+  //     // );
+  //     setCodeEditPermission(true);
+  //     setCanSeeBioHighlight(true);
+  //     // setCanSeeBioHighlight(hasPermission('highlightEligibleBios'));
+  //     // 2. shallow copy and sort
+  //     let summariesCopy = [...state.summaries];
+  //     // console.log(state.summaries, 'state.summaries')
+  //     summariesCopy = alphabetize(summariesCopy);
+
+  //     // 3. add new key of promised hours by week
+  //     summariesCopy = summariesCopy.map(summary => {
+  //       const promisedHoursByWeek = weekDates.map(weekDate =>
+  //         getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+  //       );
+  //       return { ...summary, promisedHoursByWeek };
+  //     });
+
+  //     // await getInfoCollections();
+
+  //     // setLoading(loading);
+  //     // setAllRoleInfo([]);
+  //     // //summaries: summariesCopy, don't know why originial set summary again here
+  //     // setActiveTab(
+  //     //   sessionStorage.getItem('tabSelection') === null
+  //     //     ? navItems[1]
+  //     //     : sessionStorage.getItem('tabSelection')
+  //     // );
+  //     // setBadges(allBadgeData);
+  //     // setHasSeeBadgePermission(badgeStatusCode === 200);
+  //     // setFilteredSummaries(summariesCopy);
+
+  //     /*
+  //      * refactor logic of commentted codes above
+  //      */
+  //     const teamCodeGroup = {};
+  //     const teamCodes = [];
+  //     const colorOptionGroup = new Set();
+  //     const colorOptions = [];
+
+  //     summariesCopy.forEach(summary => {
+  //       const code = summary.teamCode || 'noCodeLabel';
+  //       if (teamCodeGroup[code]) {
+  //         teamCodeGroup[code].push(summary);
+  //       } else {
+  //         teamCodeGroup[code] = [summary];
+  //       }
+
+  //       if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
+  //     });
+
+  //     Object.keys(teamCodeGroup).forEach(code => {
+  //       if (code !== 'noCodeLabel') {
+  //         teamCodes.push({
+  //           value: code,
+  //           label: `${code} (${teamCodeGroup[code].length})`,
+  //         });
+  //       }
+  //     });
+  //     colorOptionGroup.forEach(option => {
+  //       colorOptions.push({
+  //         value: option,
+  //         label: option,
+  //       });
+  //     });
+
+  //     colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+  //     teamCodes
+  //       .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+  //       .push({
+  //         value: '',
+  //         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+  //       });
+  //     // setState({
+  //     //   loading,
+  //     //   allRoleInfo: [],
+  //     //   summaries: summariesCopy,
+  //     //   activeTab:
+  //     //     sessionStorage.getItem('tabSelection') === null
+  //     //       ? navItems[1]
+  //     //       : sessionStorage.getItem('tabSelection'),
+  //     //   badges: allBadgeData,
+  //     //   hasSeeBadgePermission: badgeStatusCode === 200,
+  //     //   filteredSummaries: summariesCopy,
+  //     //   colorOptions,
+  //     //   teamCodes,
+  //     //   auth,
+  //     // });
+
+  //     await getInfoCollections();
+  //     const role = authUser?.role;
+  //     const roleInfoNames = getAllRoles(summariesCopy);
+  //     const allRoleInfo = [];
+  //     if (Array.isArray(infoCollections)) {
+  //       infoCollections.forEach(info => {
+  //         if (roleInfoNames?.includes(info.infoName)) {
+  //           const visible =
+  //             info.visibility === '0' ||
+  //             (info.visibility === '1' && (role === 'Owner' || role === 'Administrator')) ||
+  //             (info.visibility === '2' && role !== 'Volunteer');
+  //           // eslint-disable-next-line no-param-reassign
+  //           info.CanRead = visible;
+  //           allRoleInfo.push(info);
+  //         }
+  //       });
+  //     }
+  //     setState(prevState => ({ ...prevState, allRoleInfo }));
+  //   }; // end of fetchData
+
+  //   fetchData();
+  // }, []);
+
+  // Equivalent to componentDidUpdate
+  // useEffect(() => {
+  //   setState(prevState => ({ ...prevState, loading: props.loading }));
+  // }, [props?.loading]); // Re-run effect when props.loading changes
+
+  // Equivalent to componentWillUnmount
+  // useEffect(() => {
+  //   return () => {
+  //     sessionStorage.removeItem('tabSelection');
+  //   };
+  // }, []); // Empty dependency array means this effect runs once on mount and cleanup runs on unmount
+
+  // toggleTab = tab => {
+  //   const { activeTab } = this.state;
+  //   if (activeTab !== tab) {
+  //     this.setState({ activeTab: tab });
+  //     sessionStorage.setItem('tabSelection', tab);
+  //   }
+  // };
+
+  // TODO: Refactor this function to use hooks
+  const toggleTab = tab => {
+    const { activeTab } = state;
     if (activeTab !== tab) {
-      this.setState({ activeTab: tab }, () => this.filterWeeklySummaries());
+      // setState(prevState => ({ ...prevState, activeTab: tab }));
+      setActiveTab(tab);
       sessionStorage.setItem('tabSelection', tab);
     }
   };
 
-  filterWeeklySummaries = () => {
-    const {
-      selectedCodes,
-      selectedColors,
-      summaries,
-      selectedOverTime,
-      selectedBioStatus,
-    } = this.state;
-
+  const filterWeeklySummaries = () => {
+    const { selectedCodes, selectedColors, summaries } = state;
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
-
-    const temp = summaries.filter(summary => {
-      const { activeTab } = this.state;
-      const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-
-      const isMeetCriteria =
-        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
-
-      const isBio = !selectedBioStatus || isMeetCriteria;
-
-      const isOverHours =
-        !selectedOverTime ||
-        (hoursLogged > 0 &&
-          hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
-
-      return (
+    const temp = summaries.filter(
+      summary =>
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
-          selectedColorsArray.includes(summary.weeklySummaryOption)) &&
-        isOverHours &&
-        isBio
-      );
-    });
-    this.setState({ filteredSummaries: temp });
-  };
-
-  handleSelectCodeChange = event => {
-    this.setState({ selectedCodes: event }, () => this.filterWeeklySummaries());
-  };
-
-  handleSelectColorChange = event => {
-    this.setState({ selectedColors: event }, () => this.filterWeeklySummaries());
-  };
-
-  handleOverHoursToggleChange = () => {
-    this.setState(
-      prevState => ({
-        selectedOverTime: !prevState.selectedOverTime,
-      }),
-      () => {
-        this.filterWeeklySummaries();
-      },
+          selectedColorsArray.includes(summary.weeklySummaryOption)),
     );
+    setState(prevState => ({ ...prevState, filteredSummaries: temp }));
   };
 
-  handleBioStatusToggleChange = () => {
-    this.setState(
-      prevState => ({
-        selectedBioStatus: !prevState.selectedBioStatus,
-      }),
-      () => {
-        this.filterWeeklySummaries();
-      },
-    );
+  const handleSelectCodeChange = event => {
+    setState(prevState => ({ ...prevState, selectedCodes: event }));
   };
 
-  render() {
-    const { role } = this.props;
-    const {
-      loading,
-      activeTab,
-      allRoleInfo,
-      badges,
-      loadBadges,
-      hasSeeBadgePermission,
-      selectedCodes,
-      selectedColors,
-      filteredSummaries,
-      colorOptions,
-      teamCodes,
-      auth,
-    } = this.state;
-    const { error } = this.props;
-    const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+  const handleSelectColorChange = event => {
+    setState(prevState => ({ ...prevState, selectedColors: event }));
+  };
 
-    if (error) {
-      return (
-        <Container>
-          <Row className="align-self-center" data-testid="error">
-            <Col>
-              <Alert color="danger">Error! {error.message}</Alert>
-            </Col>
-          </Row>
-        </Container>
-      );
-    }
+  // useEffect(() => {
+  //   filterWeeklySummaries();
+  // }, [state.selectedCodes, state.selectedColors]);
 
-    if (loading) {
-      return (
-        <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
-          <Row className="text-center" data-testid="loading">
-            <SkeletonLoading template="WeeklySummariesReport" />
-          </Row>
-        </Container>
-      );
-    }
+  // if (props.error) {
+  //   return (
+  //     <Container>
+  //       <Row className="align-self-center" data-testid="error">
+  //         <Col>
+  //           <Alert color="danger">Error! {props.error.message}</Alert>
+  //         </Col>
+  //       </Row>
+  //     </Container>
+  //   );
+  // }
+  if (loading) {
     return (
-      <Container fluid className="bg--white-smoke py-3 mb-5">
-        <Row>
-          <Col lg={{ size: 10, offset: 1 }}>
-            <h3 className="mt-3 mb-5">
-              <div className="d-flex align-items-center">
-                <span className="mr-2">Weekly Summaries Reports page</span>
-                <EditableInfoModal
-                  areaName="WeeklySummariesReport"
-                  areaTitle="Weekly Summaries Report"
-                  role={role}
-                  fontSize={24}
-                  isPermissionPage
-                  className="p-2" // Add Bootstrap padding class to the EditableInfoModal
-                />
-              </div>
-            </h3>
-          </Col>
-        </Row>
-        <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
-            Select Team Code
-            <MultiSelect
-              className="multi-select-filter"
-              options={teamCodes}
-              value={selectedCodes}
-              onChange={e => {
-                this.handleSelectCodeChange(e);
-              }}
-            />
-          </Col>
-          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
-            Select Color
-            <MultiSelect
-              className="multi-select-filter"
-              options={colorOptions}
-              value={selectedColors}
-              onChange={e => {
-                this.handleSelectColorChange(e);
-              }}
-            />
-          </Col>
-        </Row>
-        <Row style={{ marginBottom: '10px' }}>
-          <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
-            <div className="filter-container">
-              {(hasPermissionToFilter || this.canSeeBioHighlight) && (
-                <div className="filter-style margin-right">
-                  <span>Filter by Bio Status</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input"
-                      id="bio-status-toggle"
-                      onChange={this.handleBioStatusToggleChange}
-                    />
-                    <label className="custom-control-label" htmlFor="bio-status-toggle">
-                      {}
-                    </label>
-                  </div>
-                </div>
-              )}
-              {hasPermissionToFilter && (
-                <div className="filter-style">
-                  <span>Filter by Over Hours</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input"
-                      id="over-hours-toggle"
-                      onChange={this.handleOverHoursToggleChange}
-                    />
-                    <label className="custom-control-label" htmlFor="over-hours-toggle">
-                      {}
-                    </label>
-                  </div>
-                </div>
-              )}
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col lg={{ size: 10, offset: 1 }}>
-            <Nav tabs>
-              {navItems.map(item => (
-                <NavItem key={item}>
-                  <NavLink
-                    href="#"
-                    data-testid={item}
-                    active={item === activeTab}
-                    onClick={() => this.toggleTab(item)}
-                  >
-                    {item}
-                  </NavLink>
-                </NavItem>
-              ))}
-            </Nav>
-            <TabContent activeTab={activeTab} className="p-4">
-              {navItems.map((item, index) => (
-                <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
-                  <Row>
-                    <Col sm="12" md="6" className="mb-2">
-                      From <b>{this.weekDates[index].fromDate}</b> to{' '}
-                      <b>{this.weekDates[index].toDate}</b>
-                    </Col>
-                    <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <GeneratePdfReport
-                        summaries={filteredSummaries}
-                        weekIndex={index}
-                        weekDates={this.weekDates[index]}
-                      />
-                      {hasSeeBadgePermission && (
-                        <Button
-                          className="btn--dark-sea-green"
-                          style={boxStyle}
-                          onClick={() => this.setState({ loadBadges: !loadBadges })}
-                        >
-                          {loadBadges ? 'Hide Badges' : 'Load Badges'}
-                        </Button>
-                      )}
-                      <Button className="btn--dark-sea-green" style={boxStyle}>
-                        Load Trophies
-                      </Button>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <b>Total Team Members:</b> {filteredSummaries.length}
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <FormattedReport
-                        summaries={filteredSummaries}
-                        weekIndex={index}
-                        bioCanEdit={this.bioEditPermission}
-                        canEditSummaryCount={this.canEditSummaryCount}
-                        allRoleInfo={allRoleInfo}
-                        badges={badges}
-                        loadBadges={loadBadges}
-                        canEditTeamCode={this.codeEditPermission}
-                        auth={auth}
-                        canSeeBioHighlight={this.canSeeBioHighlight}
-                      />
-                    </Col>
-                  </Row>
-                </WeeklySummariesReportTab>
-              ))}
-            </TabContent>
-          </Col>
+      <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
+        <Row className="text-center" data-testid="loading">
+          <SkeletonLoading template="WeeklySummariesReport" />
         </Row>
       </Container>
     );
   }
+
+  return (
+    <Container fluid className="bg--white-smoke py-3 mb-5">
+      <Row>
+        <Col lg={{ size: 10, offset: 1 }}>
+          <h3 className="mt-3 mb-5">
+            <div className="d-flex align-items-center">
+              <span className="mr-2">Weekly Summaries Reports page</span>
+              <EditableInfoModal
+                areaName="WeeklySummariesReport"
+                areaTitle="Weekly Summaries Report"
+                role={state.role}
+                fontSize={24}
+                isPermissionPage
+                className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+              />
+            </div>
+          </h3>
+        </Col>
+      </Row>
+      <Row style={{ marginBottom: '10px' }}>
+        <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+          Select Team Code
+          <MultiSelect
+            className="multi-select-filter"
+            options={state.teamCodes}
+            value={state.selectedCodes}
+            onChange={e => {
+              // this.handleSelectCodeChange(e);
+              handleSelectCodeChange(e);
+            }}
+          />
+        </Col>
+        <Col lg={{ size: 5 }} xs={{ size: 5 }}>
+          Select Color
+          <MultiSelect
+            className="multi-select-filter"
+            options={state.colorOptions}
+            value={state.selectedColors}
+            onChange={e => {
+              // this.handleSelectColorChange(e);
+              handleSelectColorChange(e);
+            }}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col lg={{ size: 10, offset: 1 }}>
+          <Nav tabs>
+            {navItems.map(item => (
+              <NavItem key={item}>
+                <NavLink
+                  href="#"
+                  data-testid={item}
+                  active={item === activeTab}
+                  // onClick={() => this.toggleTab(item)}
+                  onClick={() => toggleTab(item)}
+                >
+                  {item}
+                </NavLink>
+              </NavItem>
+            ))}
+          </Nav>
+          <TabContent activeTab={activeTab} className="p-4">
+            {navItems.map((item, index) => (
+              <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
+                <Row>
+                  {/* <Col sm="12" md="6" className="mb-2">
+                    From <b>{this.weekDates[index].fromDate}</b> to{' '}
+                    <b>{this.weekDates[index].toDate}</b>
+                  </Col>
+                  <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <GeneratePdfReport
+                      summaries={filteredSummaries}
+                      weekIndex={index}
+                      weekDates={this.weekDates[index]}
+                    /> */}
+                  <Col sm="12" md="6" className="mb-2">
+                    From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
+                  </Col>
+                  <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <GeneratePdfReport
+                      summaries={state.filteredSummaries}
+                      weekIndex={index}
+                      weekDates={weekDates[index]}
+                    />
+                    {state.hasSeeBadgePermission && (
+                      <Button
+                        className="btn--dark-sea-green"
+                        style={boxStyle}
+                        // onClick={() => this.setState({ loadBadges: !loadBadges })}
+                        onClick={() =>
+                          setState(prevState => ({ ...prevState, loadBadges: !state.loadBadges }))
+                        }
+                      >
+                        {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
+                      </Button>
+                    )}
+                    <Button className="btn--dark-sea-green" style={boxStyle}>
+                      Load Trophies
+                    </Button>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <b>Total Team Members:</b> {state.filteredSummaries?.length}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <FormattedReport
+                      summaries={filteredSummaries}
+                      weekIndex={index}
+                      bioCanEdit={bioEditPermission}
+                      canEditSummaryCount={canEditSummaryCount}
+                      allRoleInfo={state.allRoleInfo}
+                      badges={state.badges}
+                      loadBadges={state.loadBadges}
+                      canEditTeamCode={codeEditPermission}
+                      auth={state.auth}
+                      canSeeBioHighlight={canSeeBioHighlight}
+                    />
+                  </Col>
+                </Row>
+              </WeeklySummariesReportTab>
+            ))}
+          </TabContent>
+        </Col>
+      </Row>
+    </Container>
+  );
 }
 
-WeeklySummariesReport.propTypes = {
-  error: PropTypes.any,
-  loading: PropTypes.bool.isRequired,
-  summaries: PropTypes.array.isRequired,
-  infoCollections: PropTypes.array,
-};
+// TODO
+// Need to refactor this component to use hooks: UseSelector and UseDispatch
+// WeeklySummariesReport.propTypes = {
+//   error: PropTypes.any,
+//   // loading: PropTypes.bool.isRequired,
+//   // summaries: PropTypes.array.isRequired,
+//   infoCollections: PropTypes.array,
+// };
 
-const mapStateToProps = state => ({
-  error: state.weeklySummariesReport.error,
-  loading: state.weeklySummariesReport.loading,
-  summaries: state.weeklySummariesReport.summaries,
-  allBadgeData: state.badge.allBadgeData,
-  infoCollections: state.infoCollections.infos,
-  role: state.userProfile.role,
-  auth: state.auth,
-});
+// const mapStateToProps = state => ({
+//   error: state.WeeklySummariesReport?.error,
+//   loading: state.WeeklySummariesReport?.loading,
+//   summaries: state.WeeklySummariesReport?.summaries,
+//   allBadgeData: state.badge?.allBadgeData,
+//   infoCollections: state.infoCollections?.infos,
+//   role: state.userProfile?.role,
+//   auth: state.auth,
+// });
 
-const mapDispatchToProps = dispatch => ({
-  fetchAllBadges: () => dispatch(fetchAllBadges()),
-  getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
-  hasPermission: permission => dispatch(hasPermission(permission)),
-  getInfoCollections: () => getInfoCollections(),
-});
+// const mapDispatchToProps = dispatch => ({
+//   fetchAllBadges: () => dispatch(fetchAllBadges()),
+//   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
+//   hasPermission: permission => dispatch(hasPermission(permission)),
+//   getInfoCollections: () => getInfoCollections(),
+// });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
   return <TabPane tabId={tabId}>{!hidden && children}</TabPane>;
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);
+// export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);
+export default WeeklySummariesReport;
