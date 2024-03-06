@@ -3,7 +3,9 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
-
+// DELETE ME
+import axios from "axios";
+// DELETE ME
 import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import { useDispatch } from 'react-redux';
 import RecordsModal from './RecordsModal';
@@ -18,6 +20,30 @@ export default function MaterialsTable({ filteredMaterials }) {
   const [order, setOrder] = useState('default');
   const [iconToDisplay, setIconToDisplay] = useState(faSort);
 
+// 
+// DELETE ME
+// 
+
+useEffect(()=>{
+  console.log("useEff in MaterialsTable, first load");
+  axios.get("http://localhost:4500/api/bm/tools")
+    .then(res => {
+      console.log("Tools list: ", res);
+    })
+    .catch(err => {
+      console.log("ERR: ", err)
+    })
+
+    // axios.get("http://localhost:4500/api/bm/tools/659f72a1e49bf93bc79a1b2d")
+    // .then(res => {
+    //   console.log("REZ one tool: ", res);
+    // })
+    // .catch(err => {
+    //   console.log("ERR: ", err)
+    // })
+},[])
+// 
+// 
   useEffect(() => {
     if (filteredMaterials && filteredMaterials.length > 0) {
       setData(filteredMaterials);

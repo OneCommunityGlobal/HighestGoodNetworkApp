@@ -49,16 +49,27 @@ function UpdateConsumable({ record, setModal }) {
   }, [postConsumableUpdateResult]);
 
   useEffect(() => {
-    if (updateRecord.quantityUsed !== '0' || updateRecord.quantityWasted !== '0') {
+    const qtyUsedFloat = parseFloat(updateRecord.quantityUsed);
+    const qtyWastedFloat = parseFloat(updateRecord.quantityWasted);
+
+    if (qtyUsedFloat || qtyWastedFloat) {
       setChangeOccured(true);
     } else {
       setChangeOccured(false);
     }
+
+    validate(
+      updateRecord.quantityUsed,
+      updateRecord.quantityWasted,
+      updateRecord.QtyUsedLogUnit,
+      updateRecord.QtyWastedLogUnit,
+    );
   }, [updateRecord]);
 
   const validate = (_qtyUsed, _qtyWasted, QtyUsedLogUnit, QtyWastedLogUnit) => {
     let unitsUsed = _qtyUsed === '' ? 0 : parseFloat(_qtyUsed);
     let unitsWasted = _qtyWasted === '' ? 0 : parseFloat(_qtyWasted);
+
     if (QtyUsedLogUnit === 'percent') {
       unitsUsed *= stockAvailable / 100;
     }
@@ -121,17 +132,11 @@ function UpdateConsumable({ record, setModal }) {
 
   const changeRecordHandler = e => {
     const { value, name } = e.target;
+    if (Number(value) < 0) return;
     const tempRecord = { ...updateRecord };
     tempRecord[name] = value;
 
     setUpdateRecord(tempRecord);
-
-    validate(
-      tempRecord.quantityUsed,
-      tempRecord.quantityWasted,
-      tempRecord.QtyUsedLogUnit,
-      tempRecord.QtyWastedLogUnit,
-    );
   };
 
   return (
