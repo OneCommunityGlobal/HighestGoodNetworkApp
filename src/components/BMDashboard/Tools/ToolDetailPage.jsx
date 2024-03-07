@@ -172,7 +172,7 @@ function ToolDetailPage() {
           <img src={tool?.imageUrl} alt={tool?.itemType.name} className="ToolDetailPage__image" />
         </p>
         {details.filter(Boolean).map(renderDetails)}
-        <Button outline onClick={() => history.push('/bmdashboard/tools')}>
+        <Button outline onClick={() => history.push('/bmdashboard')}>
           Back to List
         </Button>
       </main>

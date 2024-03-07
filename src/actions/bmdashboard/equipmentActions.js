@@ -5,24 +5,10 @@ import { GET_ERRORS } from 'constants/errors';
 
 export const fetchEquipmentById = (equipmentId) => {
   const url = ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId);
-  console.log('equipmentid',equipmentId)
   return async dispatch => {
     axios.get(url)
       .then(res => {
-        console.log(res.data)
-        dispatch(setEquipment(res.data))
-      })
-      .catch(error => {
-        dispatch(setErrors(error))
-      })
-  }
-}
-
-export const fetchEquipmentById = (equipmentId) => {
-  const url = ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId);
-  return async dispatch => {
-    axios.get(url)
-      .then(res => {
+        console.log("Hello");
         dispatch(setTool(res.data))
       })
       .catch(error => {
@@ -41,11 +27,7 @@ export const addEquipmentType = async (body) => {
     })
 }
 
-<<<<<<< HEAD
 export const setEquipment = payload => {
-=======
-export const setTool = payload => {
->>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
   return {
     type: GET_EQUIPMENT_BY_ID,
     payload
