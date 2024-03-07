@@ -101,7 +101,7 @@ const Timelog = props => {
   const initialState = {
     timeEntryFormModal: false,
     summary: false,
-    activeTab: 1,
+    activeTab: 0,
     projectsSelected: ['all'],
     fromDate: startOfWeek(0),
     toDate: endOfWeek(0),
@@ -117,7 +117,6 @@ const Timelog = props => {
   }
 
   // const [shouldFetchData, setShouldFetchData] = useState(false);
-  const [initialTab, setInitialTab] = useState(null);
   const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
   const [currentWeekEntries, setCurrentWeekEntries] = useState(null);
   const [lastWeekEntries, setLastWeekEntries] = useState(null);
@@ -156,39 +155,12 @@ const Timelog = props => {
       if (!props.isDashboard) {
         tab = 1; // Sets active tab to "Current Week Timelog" when clicked from the dashboard
       }
-      setInitialTab(tab);
-      console.log("tab", tab);
       setTimeLogState(prevState => ({
         ...prevState,
         activeTab: tab,
       }));
     }
-  }, [dataLoaded, authUser.userid]);
-
-  // const defaultTab = () => {
-  //   //change default to time log tab(1) in the following cases:
-  //   const role = authUser.role;
-  //   let tab = 0;
-  //   const userHaveTask = doesUserHaveTaskWithWBS(disPlayUserTasks, authUser.userid);
-  //   /* To set the Task tab as defatult this.userTask is being watched.
-  //   Accounts with no tasks assigned to it return an empty array.
-  //   Accounts assigned with tasks with no wbs return and empty array.
-  //   Accounts assigned with tasks with wbs return an array with that wbs data.
-  //   The problem: even after unassigning tasks the array keeps the wbs data.
-  //   That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
-
-  //   //if users don't have tasks assigned, then default tab is timelog.
-  //   console.log(userHaveTask);
-  //   if (!userHaveTask) {
-  //     tab = 1;
-  //   }
-
-  //   // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
-  //   if (!props.isDashboard) {
-  //     tab = 1;
-  //   }
-  //   return tab;
-  // };
+  }, [dataLoaded, authUser.userid, disPlayUserTasks]);
 
   /*---------------- methods -------------- */
   const updateTimeEntryItems = () => {
@@ -410,10 +382,6 @@ const Timelog = props => {
 
 
   /*---------------- useEffects -------------- */
-  useEffect(() => {
-    changeTab(initialTab);
-    console.log("initial",initialTab)
-  }, [initialTab]);
 
   useEffect(() => {
     // Build the time log after new data is loaded
