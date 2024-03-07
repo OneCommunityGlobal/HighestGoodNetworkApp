@@ -42,6 +42,7 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     const regexTest = noSymbolsRegex.test(value);
     const duplicateTest = checkIfDuplicate(value);
     if (value.trim() === '') {
+      /* Changes Made */
       setNewRoleName(value);
       setErrorMessage('Please enter a role name');
       setIsValidRole(false);
