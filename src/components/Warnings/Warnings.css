@@ -81,7 +81,9 @@
   border-radius: 5px;
   margin: 0;
 }
-
+.warnings__descriptions__title {
+  text-transform: capitalize;
+}
 .warnings__descriptions__title--gray {
   opacity: 0.6;
 }
@@ -127,4 +129,9 @@
   font-size: 1.2rem;
   font-weight: semi-bold;
   margin: 0.5em 0;
+}
+
+.alert__container {
+  margin-top: 0.5em;
+  text-align: center;
 }

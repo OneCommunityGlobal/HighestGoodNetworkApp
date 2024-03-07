@@ -33,12 +33,6 @@ import WarningItem from './WarningItem';
 // mouse over on the buttons as well
 
 import './Warnings.css';
-import { set } from 'lodash';
-// Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
-// Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
-// Log Time as You Go (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
-// Log Time to Action Items (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
-// Intangible Time Log w/o Reason (“i” = ,itlr = The timer should be used for all time logged, so any time logged as intangible must also include in the time log description an explanation for why you didn’t use the timer.
 
 export default function Warning({ personId, username, userRole }) {
   const dispatch = useDispatch();
@@ -172,12 +166,13 @@ export default function Warning({ personId, username, userRole }) {
           >
             {toggle ? 'Hide' : 'Tracking'}
           </Button>
-          {/* {userRole === 'Owner' && <Button>+/-</Button>} */}
-          <Button className="btn" size="sm" onClick={() => setToggleWarningModal(prev => !prev)}>
-            +/-
-          </Button>
-        </div>
 
+          {userRole === 'Owner' && (
+            <Button className="btn" size="sm" onClick={() => setToggleWarningModal(prev => !prev)}>
+              +/-
+            </Button>
+          )}
+        </div>
         {toggleWarningModal && (
           <WarningsModal
             toggleWarningModal={toggleWarningModal}
@@ -191,7 +186,6 @@ export default function Warning({ personId, username, userRole }) {
             // handleDeactivate={handleDeactivate}
           />
         )}
-
         <div className="warning-wrapper"> {warnings}</div>
         <div className="error-container">
           {error && (

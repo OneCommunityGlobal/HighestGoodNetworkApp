@@ -4,9 +4,8 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-alert */
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Row } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Alert } from 'reactstrap';
 import { useEffect, useState } from 'react';
-import reorder from './reorder.svg';
 import {
   postNewWarning,
   getWarningDescriptions,
@@ -15,12 +14,15 @@ import {
 } from '../../actions/warnings';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faYinYang } from '@fortawesome/free-solid-svg-icons';/
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
+
+import reorder from './reorder.svg';
+
 /**
+ *
+ *
  * Modal displaying information about how time entry works
  * @param {*} props
  * @param {Boolean} props.visible
@@ -45,32 +47,24 @@ function WarningsModal({
   const [toggeleWarningInput, setToggeleWarningInput] = useState(false);
   const [newWarning, setNewWarning] = useState('');
   const [warningDescriptions, setWarningDescriptions] = useState([]);
+  const [error, setError] = useState(null);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchWarningDescriptions = async () => {
       dispatch(getWarningDescriptions()).then(res => {
-        console.log('respoinse', res);
+        if (res.error) {
+          setError(res.error);
+          return;
+        }
         setWarningDescriptions(res);
       });
     };
     fetchWarningDescriptions();
   }, []);
 
-  // const popover = (
-  //   <Popover id="details">
-  //     <Popover.Title as="h4">Description</Popover.Title>
-  //     <Popover.Content>test</Popover.Content>
-  //   </Popover>
-  // );
-
-  // have the order based on the ids
-  //change the array if moved around
-  //
-
   const handleOverlayTrigger = title => {
-    console.log('title', title);
     if (title === 'info') {
       return (
         <Popover id="details">
@@ -109,6 +103,10 @@ function WarningsModal({
 
   const handleDeleteWarningDescription = warningId => {
     dispatch(deleteWarningDescription(warningId)).then(res => {
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
       setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
       getUsersWarnings();
     });
@@ -116,6 +114,10 @@ function WarningsModal({
 
   const handleDeactivate = warningId => {
     dispatch(updateWarningDescription(warningId)).then(res => {
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
       setWarningDescriptions(prev =>
         prev.map(warning => {
           if (warning._id === warningId) {
@@ -137,9 +139,19 @@ function WarningsModal({
 
     if (newWarning === '') return;
     dispatch(postNewWarning({ newWarning, activeWarning: true })).then(res => {
-      setWarningDescriptions(res);
       setNewWarning('');
+      console.log('res inside the modal', res);
+      if (res?.error) {
+        setError(res.error);
+        return;
+      }
+      if (res?.message) {
+        setError(res.message);
+        return;
+      }
+      setWarningDescriptions(res.newWarnings);
       getUsersWarnings();
+      setError(null);
     });
   };
 
@@ -172,7 +184,7 @@ function WarningsModal({
   if (toggleWarningModal) {
     return (
       <Modal isOpen={toggleWarningModal} toggle={() => setToggleWarningModal(false)}>
-        <ModalHeader>
+        <ModalHeader className="modal__header">
           Current Warning Descriptions
           <OverlayTrigger
             placement="right"
@@ -192,6 +204,11 @@ function WarningsModal({
             />
           </OverlayTrigger>
         </ModalHeader>
+        {error && (
+          <Alert key="error" variant="danger" color="danger" className="alert__container">
+            {error}
+          </Alert>
+        )}
         <ModalBody>
           {warningDescriptions.map(warning => (
             <div className="warnings__descriptions" key={warning._id}>

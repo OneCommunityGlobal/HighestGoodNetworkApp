@@ -37,7 +37,7 @@ export const postWarningByUserId = warningData => {
     try {
       const res = await axios.post(url, warningData);
       const response = await dispatch(postWarningsByUserId(res.data));
-      console.log('response', response);
+
       return response.payload.warnings;
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -67,7 +67,7 @@ export const deleteWarningsById = (warningId, personId) => {
   };
 };
 
-/*warning descriptions routes  */
+/* WARNING DESCRIPTION ACTIONS  */
 
 export const getWarningDescriptions = () => {
   const url = ENDPOINTS.GET_CURRENT_WARNINGS();
@@ -75,16 +75,14 @@ export const getWarningDescriptions = () => {
   return async dispatch => {
     try {
       const res = await axios.get(url);
-
       const response = await dispatch(getCurrentWarningsAction(res.data));
-
       // console.log('response insde of getwarning descriptions', response);
       return response.payload.currentWarningDescriptions;
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
       } else {
-        return { error: error.message };
+        return { error: 'error occured try again' };
       }
     }
   };
@@ -97,10 +95,9 @@ export const postNewWarning = newWarning => {
       // post needs to send an object with a key of newWarning
       const res = await axios.post(url, newWarning);
       const response = await dispatch(postNewWarningAction(res.data));
-
-      return response.payload.newWarnings;
+      return response.payload;
     } catch (error) {
-      console.log('error', error);
+      return { error: 'warning already exists' };
     }
   };
 };
@@ -115,7 +112,7 @@ export const deleteWarningDescription = warningDescriptionId => {
 
       return response.payload;
     } catch (error) {
-      console.log(error, 'Intangible Time Log w/o Reason      ');
+      return { error: error.message };
     }
   };
 };
@@ -130,7 +127,7 @@ export const updateWarningDescription = warningDescriptionId => {
 
       return response.payload;
     } catch (error) {
-      console.log(error);
+      return { error: error.message };
     }
   };
 };
