@@ -55,22 +55,21 @@ function DashedLineItem() {
 
 function EquipmentDetail() {
   const history = useHistory();
-  const { toolId } = useParams();
   const { equipmentId } = useParams();
 
-  const tool = useSelector(state => state.bmTools);
+  const tool = useSelector(state => state.tool);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchToolById(toolId));
+    dispatch(fetchToolById(equipmentId));
   }, []);
 
   useEffect(() => {
     dispatch(fetchEquipmentById(equipmentId));
   }, []);
 
-  const toolStatus = tool?.logRecord.find(record => record.type === 'Check In');
+  const toolStatus = true;
 
   let toolLogRecord;
 
@@ -109,7 +108,7 @@ function EquipmentDetail() {
       label: 'Link To Buy/Rent',
       value: 'https://www.homedepot.com/',
     },
-    { label: 'Description', value: tool?.itemType.description },
+    { label: 'Description', value: 'Testing Description' },
     { label: 'Dashed Line' },
     { label: 'Current Status', value: 'Tested' },
     { label: 'Last Update Date', value: '03-01-2024' },
@@ -164,7 +163,6 @@ function EquipmentDetail() {
         return renderDetailItem(detail);
     }
   };
-
   return (
     <Container className="EquipmentDetailPage justify-content-center align-items-center mw-80 px-4">
       <header className="EquipmentDetailPage__header">
@@ -172,11 +170,7 @@ function EquipmentDetail() {
       </header>
       <main className="EquipmentDetailPage__content">
         <p>
-          <img
-            src={tool?.imageUrl}
-            alt={tool?.itemType.name}
-            className="EquipmentDetailPage__image"
-          />
+          <img src={tool?.imageUrl} alt="" className="EquipmentDetailPage__image" />
         </p>
         {details.filter(Boolean).map(renderDetails)}
         <Button outline onClick={() => history.push('/bmdashboard/equipment')}>

@@ -1,12 +1,14 @@
 import axios from "axios";
-
 import { ENDPOINTS } from "utils/URL";
+import GET_EQUIPMENT_BY_ID from 'constants/bmdashboard/equipmentConstants';
+import { GET_ERRORS } from 'constants/errors';
 
 export const fetchEquipmentById = (equipmentId) => {
   const url = ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId);
   return async dispatch => {
     axios.get(url)
       .then(res => {
+        console.log("Hello");
         dispatch(setTool(res.data))
       })
       .catch(error => {
