@@ -3,7 +3,6 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
-
 import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import { useDispatch } from 'react-redux';
 import RecordsModal from './RecordsModal';

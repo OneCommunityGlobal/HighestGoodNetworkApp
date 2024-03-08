@@ -57,7 +57,6 @@ export const deleteWbs = wbsId => {
 
 export const fetchAllWBS = projectId => {
   const request = axios.get(ENDPOINTS.WBS(projectId));
-
   return async dispatch => {
     await dispatch(setWBSStart());
     request
