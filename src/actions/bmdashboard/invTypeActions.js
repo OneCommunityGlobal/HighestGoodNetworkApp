@@ -1,7 +1,8 @@
 import axios from "axios";
 
 import { ENDPOINTS } from "utils/URL";
-import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE, GET_TOOL_TYPES } from "constants/bmdashboard/inventoryTypeConstants";
+import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE, GET_TOOL_TYPES ,GET_CONSUMABLE_TYPES  } from "constants/bmdashboard/inventoryTypeConstants";
+
 import { GET_ERRORS } from "constants/errors";
 
 export const fetchMaterialTypes = () => {
@@ -66,6 +67,27 @@ export const setPostErrorBuildingInventoryTypeResult = (payload) => {
     payload
   }
 }
+
+export const fetchConsumableTypes = () => {
+  return async dispatch => {
+    axios
+      .get(ENDPOINTS.BM_CONSUMABLE_TYPES)
+      .then(res => {
+        dispatch(setConsumableTypes(res.data));
+      })
+      .catch(err => {
+        dispatch(setErrors(err));
+      });
+  };
+}
+
+export const setConsumableTypes = payload => {
+  return {
+    type: GET_CONSUMABLE_TYPES,
+    payload,
+  };
+}
+
 
 export const resetPostBuildingInventoryTypeResult = () => {
   return {
