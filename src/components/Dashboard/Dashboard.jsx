@@ -87,7 +87,6 @@ export function Dashboard(props) {
           <div className="my-2" id="wsummary">
             <Timelog isDashboard passSummaryBarData={setSummaryBarData} match={match} />
           </div>
-          <Badge userId={displayUserId} role={authUser.role} />
         </Col>
       </Row>
       <TimeOffRequestDetailModal />

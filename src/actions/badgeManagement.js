@@ -10,6 +10,8 @@ import {
   GET_MESSAGE,
   CLOSE_ALERT,
   GET_USER_ID,
+  GET_BADGE_COUNT,
+  RESET_BADGE_COUNT,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 import moment from 'moment';
@@ -31,6 +33,36 @@ export const fetchAllBadges = () => {
       return err.response.status;
     }
   };
+};
+
+const getBadgeCountSuccess = badgeCount => ({
+  type: GET_BADGE_COUNT,
+  payload: badgeCount,
+});
+
+export const getBadgeCount = userId => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(ENDPOINTS.BADGE_COUNT(userId));
+      dispatch(getBadgeCountSuccess(response.data.badgeCount));
+    } catch (err) {
+      return err.response.status;
+    }
+  };
+};
+
+export const resetBadgeCount = userId => async dispatch => {
+  try {
+    const response = await axios.put(ENDPOINTS.BADGE_COUNT_RESET(userId));
+    if (response.status === 200) {
+      dispatch({
+        type: RESET_BADGE_COUNT,
+        payload: 0,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to reset badge count", error);
+  }
 };
 
 export const closeAlert = () => {
