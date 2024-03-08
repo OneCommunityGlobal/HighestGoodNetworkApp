@@ -59,7 +59,7 @@ export const Header = props => {
     || props.hasPermission('deleteUserProfile')
     || props.hasPermission('putUserProfileImportantInfo');
   // Badges
-  const canCreateBadges = props.hasPermission('createBadges');
+  const canAccessBadgeManagement = props.hasPermission('createBadges');
   // Projects
   const canAccessProjects = props.hasPermission('postProject')
     || props.hasPermission('deleteProject')

@@ -19,7 +19,6 @@ const defaultState = {
 }
 
 export const materialsReducer = (materials = defaultState, action) => {
-  // console.log("materialsReducer. mat'ls: ", materials)
   switch (action.type) {
     case SET_MATERIALS:
       {
