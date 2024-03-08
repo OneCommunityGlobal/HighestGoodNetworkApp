@@ -6,6 +6,7 @@ import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { useParams } from 'react-router';
 
 const Project = props => {
   const [originName] = useState(props.name);
