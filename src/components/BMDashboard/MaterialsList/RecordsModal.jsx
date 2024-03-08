@@ -6,7 +6,6 @@ import './RecordsModal.css';
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
   if (record) {
     const toggle = () => {
-      console.log("RecordModal toggled")
       setModal(false);
       setRecord(null);
     };
