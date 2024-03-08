@@ -58,6 +58,7 @@ function UpdateConsumable({ record, setModal }) {
       setChangeOccured(false);
     }
 
+    // eslint-disable-next-line no-use-before-define
     validate(
       updateRecord.quantityUsed,
       updateRecord.quantityWasted,
