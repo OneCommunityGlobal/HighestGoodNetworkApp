@@ -47,3 +47,9 @@
 .data-legend-info-part:not(:last-child) {
   margin-right: 24px;
 }
+
+@media (max-width: 670px) {
+  .pie-chart-wrapper {
+     flex-direction: column;
+  }
+}

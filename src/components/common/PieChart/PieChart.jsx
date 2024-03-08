@@ -71,8 +71,8 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
           <div key={key} className="pie-chart-legend-item">
             <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
             <div className="data-legend-info">
-              {dataLegend[key].map(legendPart => (
-                <div className="data-legend-info-part">{legendPart}</div>
+              {dataLegend[key].map((legendPart, index) => (
+                <div className="data-legend-info-part" key={index}>{legendPart}</div>
               ))}
             </div>
           </div>

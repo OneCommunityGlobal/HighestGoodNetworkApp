@@ -140,6 +140,7 @@ export const Badges = props => {
           >
             {congratulatoryText}
           </span>
+          <span className="ml-2">
           <EditableInfoModal
             areaName="NumberOfBadgesInfoPoint"
             areaTitle="Number of Badges"
@@ -147,6 +148,7 @@ export const Badges = props => {
             fontSize={20}
             isPermissionPage={true}
           />
+          </span>
         </CardFooter>
       </Card>
       {/* <UncontrolledTooltip

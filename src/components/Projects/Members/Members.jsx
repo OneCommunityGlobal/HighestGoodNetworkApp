@@ -24,6 +24,7 @@ const Members = props => {
   const projectId = props.match.params.projectId;
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
+  const [lastTimeoutId, setLastTimeoutId] = useState(null);
 
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
@@ -35,12 +36,14 @@ const Members = props => {
 
   const assignAll = async () => {
     const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
-    
+
     // Wait for all members to be assigned
-    await Promise.all(allUsers.map(user => 
-      props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName)
-    ));
-  
+    await Promise.all(
+      allUsers.map(user =>
+        props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName),
+      ),
+    );
+
     props.fetchAllMembers(projectId);
   };
 
@@ -51,14 +54,28 @@ const Members = props => {
   // ADDED: State for toggling display of active members only
   const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
 
-  const displayedMembers = showActiveMembersOnly 
-  ? membersList.filter(member => member.isActive)
-  : membersList;
+  const displayedMembers = showActiveMembersOnly
+    ? membersList.filter(member => member.isActive)
+    : membersList;
 
   const handleToggle = async () => {
     setShowActiveMembersOnly(prevState => !prevState);
     await props.fetchAllMembers(projectId);
     setMembersList(props.state.projectMembers.members);
+  };
+
+  // Waits for user to finsh typing before calling API
+  const handleInputChange = event => {
+    const currentValue = event.target.value;
+
+    if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
+
+    const timeoutId = setTimeout(() => {
+      props.findUserProfiles(currentValue);
+      setShowFindUserList(true);
+    }, 300);
+
+    setLastTimeoutId(timeoutId);
   };
 
   return (
@@ -87,17 +104,15 @@ const Members = props => {
               className="form-control"
               aria-label="Search user"
               placeholder="Name"
-              onChange={e => {
-                props.findUserProfiles(e.target.value);
-                setShowFindUserList(true);
-              }}
+              onChange={e => handleInputChange(e)}
               disabled={showActiveMembersOnly}
             />
             <div className="input-group-append">
               <button
                 className="btn btn-outline-primary"
                 type="button"
-                onClick={e => {props.getAllUserProfiles();
+                onClick={e => {
+                  props.getAllUserProfiles();
                   setShowFindUserList(true);
                 }}
                 disabled={showActiveMembersOnly}
@@ -156,11 +171,11 @@ const Members = props => {
           </table>
         ) : null}
 
-          <ToggleSwitch 
-            switchType="active_members"
-            state={showActiveMembersOnly}
-            handleUserProfile={handleToggle}
-          />
+        <ToggleSwitch
+          switchType="active_members"
+          state={showActiveMembersOnly}
+          handleUserProfile={handleToggle}
+        />
 
         <table className="table table-bordered table-responsive-sm">
           <thead>

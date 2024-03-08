@@ -1,11 +1,15 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
+import hasPermission from 'utils/permissions';
 
 export const DeleteTeamPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };
+  const canDeleteTeam = props.hasPermission('deleteTeam');
+  const canPutTeam = props.hasPermission('putTeam');
 
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
@@ -17,24 +21,33 @@ export const DeleteTeamPopup = React.memo(props => {
         </span>
       </ModalBody>
       <ModalFooter>
-        <Button
-          color="danger"
-          onClick={async () => {
-            await props.onDeleteClick(props.selectedTeamId);
-          }}
-          style={boxStyle}
-        >
-          Confirm
-        </Button>
-        <Button
-          color="warning"
-          onClick={async () => {
-            await props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false, props.selectedTeamCode);
-          }}
-          style={boxStyle}
-        >
-          Set Inactive
-        </Button>
+        {(canDeleteTeam || canPutTeam) && (
+          <>
+            <Button
+            color="danger"
+            onClick={async () => {
+              await props.onDeleteClick(props.selectedTeamId);
+            }}
+            style={boxStyle}
+            >
+              Confirm
+            </Button>
+            <Button
+              color="warning"
+              onClick={async () => {
+                await props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false, props.selectedTeamCode);
+              }}
+              style={boxStyle}
+            >
+              Set Inactive
+            </Button>
+          </>
+        )}
+        {!(canDeleteTeam || canPutTeam) && (
+          <>
+            Unauthorized Action
+          </>
+        )}
         <Button color="primary" onClick={closePopup} style={boxStyle}>
           Close
         </Button>
@@ -42,4 +55,4 @@ export const DeleteTeamPopup = React.memo(props => {
     </Modal>
   );
 });
-export default DeleteTeamPopup;
+export default connect(null, { hasPermission })(DeleteTeamPopup);

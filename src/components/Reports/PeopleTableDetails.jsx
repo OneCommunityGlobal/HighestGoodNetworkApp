@@ -119,9 +119,10 @@ function PeopleTableDetails(props) {
             return null;
           }),
         )}
-        {value.resources?.map(res =>
+        {value.resources?.map((res, index) =>
           res.length > 2 ? (
             <button
+              key={index}
               type="button"
               className="name resourceMoreToggle"
               onClick={() => toggleMoreResources(value._id)}

@@ -8,7 +8,6 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
 const mockStore = configureStore([thunk]);
-
 const jaeAccountMock = {
   _id: '5edf141c78f1380017b829a6',
   isAdmin: true,

@@ -6,6 +6,7 @@ import AssignTableRow from '../Badge/AssignTableRow';
 import { assignBadgesByUserID, clearNameAndSelected } from '../../actions/badgeManagement';
 import { ENDPOINTS } from '../../utils/URL';
 import { boxStyle } from '../../styles';
+import { toast } from 'react-toastify';
 
 function AssignBadgePopup(props) {
   const [searchedName, setSearchedName] = useState('');

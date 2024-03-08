@@ -108,7 +108,7 @@ describe('User profile page', () => {
   });
   describe('behavior', () => {
     it('should show User Profile information when the user clicks on the tip button', async () =>{
-      userEvent.click(screen.getByTitle(/click for more information/i));
+      userEvent.click(screen.getByTitle(/Click for information about this/i));
       expect(screen.getByText(/This is your One Community Profile Page/i)).toBeInTheDocument();
     })
     it('should fire toggleTab to Basic Information tab when the user clicks on the Basic Information tab link', async () =>{

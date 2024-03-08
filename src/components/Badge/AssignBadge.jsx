@@ -19,9 +19,11 @@ import {
   getFirstName,
   getLastName,
   assignBadges,
+  assignBadgesByUserID,
   clearNameAndSelected,
   closeAlert,
   validateBadges,
+  getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Autosuggest from 'react-autosuggest';
@@ -46,7 +48,11 @@ const AssignBadge = props => {
   const getSuggestions = value => {
     //const escapedValue = escapeRegexCharacters(value.trim());
     //const regex = new RegExp('^' + escapedValue, 'i');
-    return activeUsers.filter(user => searchWithAccent(user.firstName, value.trim()) || searchWithAccent(user.lastName, value.trim()));
+    return activeUsers.filter(
+      user =>
+        searchWithAccent(user.firstName, value.trim()) ||
+        searchWithAccent(user.lastName, value.trim()),
+    );
   };
 
   const getSuggestionFirst = suggestion => suggestion.firstName;
@@ -79,6 +85,7 @@ const AssignBadge = props => {
 
   const onFirstSuggestionSelected = (event, { suggestion }) => {
     props.getLastName(suggestion.lastName);
+    props.getUserId(suggestion._id);
   };
 
   const onLastSuggestionsFetchRequested = ({ value }) => {
@@ -91,16 +98,22 @@ const AssignBadge = props => {
 
   const onLastSuggestionSelected = (event, { suggestion }) => {
     props.getFirstName(suggestion.firstName);
+    props.getUserId(suggestion._id);
   };
 
   const submit = () => {
     toggle(true);
-  }
+  };
 
   const toggle = (didSubmit = false) => {
-    const { firstName, lastName, selectedBadges } = props;
+    const { selectedBadges, firstName, lastName, userId } = props;
     if (isOpen && didSubmit === true) {
-      props.assignBadges(firstName, lastName, selectedBadges);
+      // If user is selected from dropdown suggestions
+      if (userId) {
+        props.assignBadgesByUserID(userId, selectedBadges);
+      } else {
+        props.assignBadges(firstName, lastName, selectedBadges);
+      }
       setOpen(isOpen => !isOpen);
       props.clearNameAndSelected();
     } else {
@@ -203,7 +216,11 @@ const AssignBadge = props => {
         <Modal isOpen={isOpen} toggle={toggle} backdrop="static">
           <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
           <ModalBody>
-            <AssignBadgePopup allBadgeData={props.allBadgeData} submit={submit} selectedBadges={props.selectedBadges}/>
+            <AssignBadgePopup
+              allBadgeData={props.allBadgeData}
+              submit={submit}
+              selectedBadges={props.selectedBadges}
+            />
           </ModalBody>
         </Modal>
         <FormText color="muted">Please select a badge from the badge list.</FormText>
@@ -221,6 +238,7 @@ const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
   firstName: state.badge.firstName,
   lastName: state.badge.lastName,
+  userId: state.badge.userId,
   message: state.badge.message,
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
@@ -230,10 +248,12 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getFirstName: firstName => dispatch(getFirstName(firstName)),
   getLastName: lastName => dispatch(getLastName(lastName)),
+  getUserId: userId => dispatch(getUserId(userId)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-  assignBadges: (fisrtName, lastName, selectedBadge) =>
-    dispatch(assignBadges(fisrtName, lastName, selectedBadge)),
+  assignBadgesByUserID: (id, selectedBadge) => dispatch(assignBadgesByUserID(id, selectedBadge)),
+  assignBadges: (firstName, lastName, selectedBadge) =>
+    dispatch(assignBadges(firstName, lastName, selectedBadge)),
   validateBadges: (firstName, lastName) => dispatch(validateBadges(firstName, lastName)),
   closeAlert: () => dispatch(closeAlert()),
 });

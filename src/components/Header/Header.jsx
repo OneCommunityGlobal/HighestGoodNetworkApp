@@ -57,19 +57,22 @@ export const Header = props => {
   // Users
   const canAccessUserManagement = props.hasPermission('postUserProfile')
     || props.hasPermission('deleteUserProfile')
-    || props.hasPermission('putUserProfileImportantInfo');
+    || props.hasPermission('changeUserStatus')
+    || props.hasPermission('getUserProfiles');
+
   // Badges
-  const canAccessBadgeManagement = props.hasPermission('createBadges');
+  const canAccessBadgeManagement = props.hasPermission('seeBadges')
+    || props.hasPermission('createBadges')
+    || props.hasPermission('updateBadges')
+    || props.hasPermission('deleteBadges');
   // Projects
   const canAccessProjects = props.hasPermission('postProject')
     || props.hasPermission('deleteProject')
     || props.hasPermission('putProject')
     || props.hasPermission('getProjectMembers')
     || props.hasPermission('assignProjectToUsers')
-    || props.hasPermission('category/non-permission')
     || props.hasPermission('postWbs')
     || props.hasPermission('deleteWbs')
-    || props.hasPermission('category/non-permission')
     || props.hasPermission('postTask')
     || props.hasPermission('updateTask')
     || props.hasPermission('deleteTask');
@@ -290,7 +293,7 @@ export const Header = props => {
                     ) : (
                       <React.Fragment></React.Fragment>
                     )}
-                    {canCreateBadges ? (
+                    {canAccessBadgeManagement ? (
                       <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>

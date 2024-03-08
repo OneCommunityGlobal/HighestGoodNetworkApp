@@ -72,7 +72,7 @@ const TimeEntryForm = props => {
       hours: 0,
       minutes: 0,
       notes: '',
-      isTangible: false,
+      isTangible: from === 'Timer' ? true : false,
       entryType: 'default',
     },
     data,
@@ -741,7 +741,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!canEditTimeEntry}
+                  disabled={!(canEditTimeEntry || from === 'Timer')}
                 />
                 Tangible&nbsp;
                 <i

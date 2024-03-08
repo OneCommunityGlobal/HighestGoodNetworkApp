@@ -45,7 +45,7 @@ const errorMessages = {
   curentpasswordEmpty: '"Current Password" is not allowed to be empty',
   newpasswordEmpty: '"New Password" is not allowed to be empty',
   newpasswordInvalid:
-    '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+    '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, one number and one special character',
   oldnewPasswordsSame: '"New Password" should not be same as old password',
   confirmpasswordMismatch: '"Confirm Password" must match new password',
   errorNon400Response: 'Something went wrong. Please contact your administrator.',

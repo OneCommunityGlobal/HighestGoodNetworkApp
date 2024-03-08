@@ -143,7 +143,9 @@ const BadgeDevelopmentTable = props => {
 
   let filteredBadges = filterBadges(props.allBadgeData);
 
+  // Badge Development checkbox
   const reportBadge = badgeValue => {
+    // Returns true for all checked badges and false for all unchecked
     const checkValue = badgeValue.showReport ? true : false;
     return (
       <div className="badge_check">
@@ -230,7 +232,7 @@ const BadgeDevelopmentTable = props => {
                   </Button>
                 </span>
               </td>
-              <td>{reportBadge(value)}</td>
+                <td style={{textAlign:"center"}}>{reportBadge(value)}</td>
             </tr>
           ))}
         </tbody>

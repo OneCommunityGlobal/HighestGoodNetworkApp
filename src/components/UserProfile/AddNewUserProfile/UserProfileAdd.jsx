@@ -38,7 +38,6 @@ import { fetchAllProjects } from 'actions/projects';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
 import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
@@ -46,6 +45,8 @@ import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
@@ -590,51 +591,31 @@ class AddUserProfile extends Component {
     this.setState({ projects: initialUserProject });
   };
 
-  // Function to call TimeZoneService with location and key
+  // Function to call TimeZoneService with location 
   onClickGetTimeZone = () => {
     const location = this.state.userProfile.location.userProvided;
-    const key = this.props.timeZoneKey;
+
     if (!location) {
       alert('Please enter valid location');
       return;
     }
-    if (key) {
-      getUserTimeZone(location, key)
-        .then(response => {
-          if (
-            response.data.status.code === 200 &&
-            response.data.results &&
-            response.data.results.length
-          ) {
-            let timezone = response.data.results[0].annotations.timezone.name;
 
-            let currentLocation = {
-              userProvided: location,
-              coords: {
-                lat: response.data.results[0].geometry.lat,
-                lng: response.data.results[0].geometry.lng,
-              },
-              country: response.data.results[0].components.country,
-              city: response.data.results[0].components.city,
-            };
-            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
-
-            this.setState({
-              ...this.state,
-              timeZoneFilter: timezone,
-              userProfile: {
-                ...this.state.userProfile,
-                location: currentLocation,
-                timeZone: timezone,
-              },
-            });
-          } else {
-            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
-            `);
-          }
-        })
-        .catch(err => console.log(err));
-    }
+    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
+      if(res.status === 200) {
+        const { timezone, currentLocation } = res.data;
+        this.setState({
+          ...this.state,
+          timeZoneFilter: timezone,
+          userProfile: {
+            ...this.state.userProfile,
+            location: currentLocation,
+            timeZone: timezone,
+          },
+        });
+      }
+    }).catch(err => {
+      toast.error(`An error occurred : ${err.response.data}`);
+    });
   };
 
   fieldsAreValid = () => {
@@ -1151,10 +1132,10 @@ const mapStateToProps = state => ({
   userProjects: state.userProjects,
   allProjects: get(state, 'allProjects'),
   allTeams: state,
-  timeZoneKey: state.timeZoneAPI.userAPIKey,
   role: state.role,
   state,
 });
+
 
 export default connect(mapStateToProps, {
   getUserProfile,

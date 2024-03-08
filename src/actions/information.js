@@ -5,7 +5,7 @@ import { ENDPOINTS } from '../utils/URL';
 // Get infoCollections
 export const getInfoCollections = () => {
   const url = ENDPOINTS.INFO_COLLECTIONS;
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const response = await axios.get(url);
       dispatch(fetchInfosSuccess(response.data));
@@ -17,10 +17,9 @@ export const getInfoCollections = () => {
 };
 
 // Add new info collection
-export const addInfoCollection = (newInfo) => {
-  
+export const addInfoCollection = newInfo => {
   const url = ENDPOINTS.INFO_COLLECTIONS;
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const response = await axios.post(url, newInfo);
       return response.status;
@@ -33,7 +32,7 @@ export const addInfoCollection = (newInfo) => {
 // Update info collection
 export const updateInfoCollection = (infoId, updatedInfo) => {
   const url = ENDPOINTS.INFO_COLLECTION(infoId);
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const response = await axios.put(url, updatedInfo);
       dispatch(updateInfoSuccess(response.data));
@@ -45,9 +44,9 @@ export const updateInfoCollection = (infoId, updatedInfo) => {
 };
 
 // Delete info collection by id
-export const deleteInfoCollectionById = (infoId) => {
+export const deleteInfoCollectionById = infoId => {
   const url = ENDPOINTS.INFO_COLLECTION(infoId);
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const response = await axios.delete(url);
       dispatch(deleteInfoSuccess(infoId));
@@ -64,7 +63,6 @@ export const deleteInfoSuccess = infoId => ({
   payload: infoId,
 });
 
-
 // Actions creators
 export const fetchInfosSuccess = infoCollectionsData => ({
   type: actions.FETCH_INFOS_SUCCESS,
@@ -75,6 +73,3 @@ export const updateInfoSuccess = updatedInfo => ({
   type: actions.UPDATE_INFO_SUCCESS,
   payload: updatedInfo,
 });
-
-
-
