@@ -80,19 +80,19 @@ function UpdateConsumable({ record, setModal }) {
     }
     const tempValidations = { ...validations };
 
-    if (unitsUsed > stockAvailable){
+    if (unitsUsed > stockAvailable) {
       tempValidations.quantityUsed = 'Quantity Used exceeds the available stock';
     } else {
       tempValidations.quantityUsed = '';
     }
 
-    if (unitsWasted > stockAvailable){
+    if (unitsWasted > stockAvailable) {
       tempValidations.quantityWasted = 'Quantity Wasted exceeds the available stock';
     } else {
       tempValidations.quantityWasted = '';
     }
 
-    if (unitsUsed + unitsWasted > stockAvailable){
+    if (unitsUsed + unitsWasted > stockAvailable) {
       tempValidations.quantityTogether = `Sum of Used and Wasted values exceeds available stock with a value of ${unitsUsed +
         unitsWasted}`;
     } else {

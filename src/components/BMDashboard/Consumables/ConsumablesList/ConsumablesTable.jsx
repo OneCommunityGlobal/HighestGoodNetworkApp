@@ -28,7 +28,7 @@ function ConsumablesTable({ consumable, project }) {
 
   useEffect(() => {
     setConsumablesViewData(consumables);
- }, [consumables]);
+  }, [consumables]);
 
   useEffect(() => {
     dispatch(fetchAllConsumables());
@@ -158,7 +158,7 @@ function ConsumablesTable({ consumable, project }) {
 
                     <td className="materials_cell">
                       <button type="button" onClick={() => handleOpenModal(rec, 'UpdatesEdit')}>
-                        <BiPencil />  
+                        <BiPencil />
                       </button>
                       <Button
                         color="primary"
