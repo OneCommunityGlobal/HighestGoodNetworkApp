@@ -74,7 +74,7 @@ function FormattedReport({
   return (
     <>
       <ListGroup flush>
-        {summaries.map(summary => (
+        {summaries.slice(0, 10).map(summary => (
           <ReportDetails
             key={summary._id}
             summary={summary}
@@ -133,40 +133,37 @@ function EmailsList({ summaries, auth }) {
       };
 
       return (
-        <>
-          <div className="d-flex align-items-center">
-            <h4>Emails</h4>
-            <Tooltip
-              placement="top"
-              isOpen={emailTooltipOpen}
-              target="emailIcon"
-              toggle={toggleEmailTooltip}
-            >
-              Launch the email client, organizing the recipient email addresses into batches, each
-              containing a maximum of 90 addresses.
-            </Tooltip>
-            <FontAwesomeIcon
-              className="mx-2"
-              onClick={handleEmailButtonClick}
-              icon={faMailBulk}
-              size="lg"
-              style={{ color: '#0f8aa9', cursor: 'pointer' }}
-              id="emailIcon"
-            />
-            <Tooltip
-              placement="top"
-              isOpen={copyTooltipOpen}
-              target="copytoclipboard"
-              toggle={toggleCopyTooltip}
-            >
-              Click to copy all emails.
-            </Tooltip>
-            <div id="copytoclipboard">
-              <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
-            </div>
+        <div className="d-flex align-items-center">
+          <h4>Emails</h4>
+          <Tooltip
+            placement="top"
+            isOpen={emailTooltipOpen}
+            target="emailIcon"
+            toggle={toggleEmailTooltip}
+          >
+            Launch the email client, organizing the recipient email addresses into batches, each
+            containing a maximum of 90 addresses.
+          </Tooltip>
+          <FontAwesomeIcon
+            className="mx-2"
+            onClick={handleEmailButtonClick}
+            icon={faMailBulk}
+            size="lg"
+            style={{ color: '#0f8aa9', cursor: 'pointer' }}
+            id="emailIcon"
+          />
+          <Tooltip
+            placement="top"
+            isOpen={copyTooltipOpen}
+            target="copytoclipboard"
+            toggle={toggleCopyTooltip}
+          >
+            Click to copy all emails.
+          </Tooltip>
+          <div id="copytoclipboard">
+            <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
           </div>
-          <p>{emails.join(', ')}</p>
-        </>
+        </div>
       );
     }
     return null;
