@@ -14,7 +14,7 @@ function WeeklySummariesPagination({ handlePageClick, currentPage, pagesCount })
           />
         </PaginationItem>
         {[...Array(pagesCount)].slice(0, 5).map((_, i) => (
-          <PaginationItem active={i === currentPage} key={i}>
+          <PaginationItem active={i === currentPage} key={_}>
             <PaginationLink onClick={e => handlePageClick(e, i)} href="#">
               {i + 1}
             </PaginationLink>
@@ -30,7 +30,7 @@ function WeeklySummariesPagination({ handlePageClick, currentPage, pagesCount })
           <PaginationLink href="#">...</PaginationLink>
         </PaginationItem>
         {[...Array(pagesCount)].slice(-steps).map((_, i) => (
-          <PaginationItem active={pagesCount - (steps - i) + 1 === currentPage} key={i}>
+          <PaginationItem active={pagesCount - (steps - i) + 1 === currentPage} key={_}>
             <PaginationLink
               onClick={e => handlePageClick(e, pagesCount - (steps - i) + 1)}
               href="#"
