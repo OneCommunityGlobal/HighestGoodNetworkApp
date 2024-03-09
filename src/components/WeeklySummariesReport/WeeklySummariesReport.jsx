@@ -70,6 +70,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      weeklyRecipientAuthPass: '',
     };
   }
 
@@ -236,15 +237,29 @@ export class WeeklySummariesReport extends Component {
         checkForValidPwd={this.checkForValidPwd}
         isValidPwd={this.state.isValidPwd}
         setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
+        setAuthpassword={this.setAuthpassword}
       />
     );
   };
 
-  onClickRecepients = () => {
+  // Authorization for the weeklySummary Recipients is required once
+  setAuthpassword = authPass => {
     this.setState({
-      passwordModalOpen: true,
+      weeklyRecipientAuthPass: authPass,
     });
-    this.checkForValidPwd(true);
+  };
+
+  onClickRecepients = () => {
+    if (this.state.weeklyRecipientAuthPass) {
+      this.setState({
+        summaryRecepientsPopupOpen: true,
+      });
+    } else {
+      this.setState({
+        passwordModalOpen: true,
+      });
+      this.checkForValidPwd(true);
+    }
   };
 
   /**
