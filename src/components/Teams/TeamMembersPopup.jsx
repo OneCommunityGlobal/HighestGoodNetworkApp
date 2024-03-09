@@ -22,6 +22,8 @@ export const TeamMembersPopup = React.memo(props => {
   // NEW CODE
   const [teamVisibility, setTeamVisibility] = useState([]);
   const [infoModal, setInfoModal] = useState(false);
+  const[cache,setCache]=useState({});
+
   //
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
@@ -135,84 +137,67 @@ export const TeamMembersPopup = React.memo(props => {
   }, []);
 
   // NEW CODE
-  const [cache, setCache] = useState({});
-  const [cacheState, setCacheState]=useState(false);
 
-  const c={};
-  const setTeamCache=()=>
-  {
-    console.log("Entering cache with props"+props.teamData[0]);
-    if(props.teamData[0] && cacheState) {
-      console.log("Saving cache logic");
-    props.teamData[0]?.members.forEach(member=>{
-      c[member.userId]=member.visible;
-    
+  const[flag,setFlag]=useState(true);
 
+  const updateCache=()=>{
+    // console.log("First time seting cached data");
+    let c= {};
+    if(flag===true && props.teamData && props.teamData.length!=0)
+    {
+       console.log("hmm  i am allowed ");
+        props.teamData[0]?.members.forEach(member=>{
+        c[member.userId]=member.visible;
     });
-  
-
+    // console.log(" Set cached data for the first time");
+    // for (var key in c) {
+    //   console.log(key, c[key]);
+    // }
     setCache(c);
-    // setCacheState(true);
-    console.log("cache:"+c);
+    if(c.length!=0)
+      setFlag(false);
 
-    console.log("Keys and values of 'newCache' object:");
-    Object.keys(c).forEach((key) => {
-      console.log("Key:", key, "Value:", c[key])});
   }
-};
+
+  return c;
+
+  };
 
 
 
-// useEffect(() => {
-//   // Logic to update local state based on cache
-// }, [cache]);
-
-
-  useEffect(() => {
-    // console.log("inside sort hook"+props.teamData);
-    sortList(sortOrder);
-    // setTeamCache();
   
-  }, [props.members.teamMembers, sortOrder]);
+  useEffect(() => {
+    sortList(sortOrder);
+    setTeamVisibility(updateCache());
+    
+  
+  }, [props.members.teamMembers, sortOrder, props.teamData]);
 
 
 
   useEffect(() => {
-    console.log("inside props.open"+props.teamData);
-
     setIsValidUser(true);
     setDuplicateUserAlert(false);
-    setTeamCache();
-    // setCacheState(true);
-
-
-
   }, [props.open]);
 
 
-
-  useEffect(() => {
-    // console.log("coming here ");
-    // setTeamVisibility(props.teamData);
-  }, [props.teamData]);
-
   // call the handler to update the team member's visibility
-  const UpdateTeamMembersVisiblity = (userId, choice) => {
-    setCache(prevCache => ({
-      ...prevCache,
-      [userId]: choice
-    })); 
-    c[userId]=choice;
-    console.log("new choice for userid "+userId+"is "+cache[userId]);   
+  const UpdateTeamMembersVisiblity = (userId, choice) => {  
+    // Deep copy of the cache object
+    let newCache = JSON.parse(JSON.stringify(cache));
+  
+    // Update the value for the specified userId
+    newCache[userId] = choice;
+  
+    // Update cache state variable
+    setCache(newCache);
+  
     props.onUpdateTeamMemberVisiblity(userId, choice);
   };
 
-// Update the local variable 'c' based on the 'cache' state
-  // useEffect(() => {
-    
-  // }, [cache]);
 
   const toggleInfoModal = () => {
+
     setInfoModal(!infoModal);
   };
 
@@ -276,7 +261,7 @@ export const TeamMembersPopup = React.memo(props => {
             <tbody>
               {props.members.teamMembers.length > 0 &&
                 memberList.toSorted().map((user, index) => {
-                  // console.log(cache[user._id]);
+                  // console.log("Render area :"+cache[user._id]);
 
                   return (
                     <tr key={`team_member_${index}`}>
@@ -305,9 +290,8 @@ export const TeamMembersPopup = React.memo(props => {
                           userId={user._id}
                           choice={
                             // teamVisibility[0]?.members.find(member => member.userId === user._id)
-                            //   ?.visible
-                            cache[user._id]
-                            // getChoiceForUserId
+                            //   ?.visible 
+                              cache[user._id]
                           }
                           UpdateTeamMembersVisiblity={UpdateTeamMembersVisiblity}
                         />

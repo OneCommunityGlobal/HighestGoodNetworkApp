@@ -181,6 +181,7 @@ class Teams extends React.PureComponent {
 
   teampopupElements = (allTeams) => {
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
+    const selectedTeamData= allTeams? allTeams.filter(team => team.teamName === this.state.selectedTeam) : [];
     return (
       <React.Fragment>
         <TeamMembersPopup
@@ -191,7 +192,7 @@ class Teams extends React.PureComponent {
           usersdata={this.props.state ? this.props.state.allUserProfiles : []}
           onAddUser={this.onAddUser}
           // NEW CODE
-          teamData= {allTeams.filter(team => team.teamName === this.state.selectedTeam)}
+          teamData= {selectedTeamData}
           onUpdateTeamMemberVisiblity={this.onUpdateTeamMemberVisiblity}
           selectedTeamName={this.state.selectedTeam}
           //
