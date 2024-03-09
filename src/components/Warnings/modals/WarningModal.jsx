@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 function WarningModal({
@@ -8,7 +9,7 @@ function WarningModal({
   deleteWarningTriggered,
   deleteWarning,
 }) {
-  const { today, id, colorAssigned, warningText, username } = warning || {};
+  const { colorAssigned, warningText, username } = warning || {};
 
   if (deleteWarning) {
     return (

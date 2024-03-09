@@ -66,7 +66,6 @@ export default function Warning({ personId, username, userRole }) {
         setUsersWarnings([]);
         return;
       }
-      //maybe a bug here
       setUsersWarnings(res);
     });
   };

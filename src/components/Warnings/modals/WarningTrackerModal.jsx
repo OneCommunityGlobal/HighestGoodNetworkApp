@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-unused-vars */
 /* eslint-disable spaced-comment */
 /* eslint-disable no-undef */
@@ -6,17 +7,17 @@
 /* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Alert } from 'reactstrap';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 import {
   postNewWarning,
   getWarningDescriptions,
   updateWarningDescription,
   deleteWarningDescription,
 } from '../../../actions/warnings';
-import { useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
 
 import reorder from '../reorder.svg';
 
@@ -129,6 +130,7 @@ function WarningTrackerModal({
     setNewWarning(e.target.value);
   };
 
+  // eslint-disable-next-line no-shadow
   const handleAddNewWarning = (e, newWarning) => {
     e.preventDefault();
 
