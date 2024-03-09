@@ -38,6 +38,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import googleDocIconGray from './google_doc_icon_gray.png';
 import googleDocIconPng from './google_doc_icon.png';
+import WeeklySummariesPagination from './components/WeeklySummariesPagination';
 
 const textColors = {
   Default: '#000000',
@@ -70,11 +71,23 @@ function FormattedReport({
   // if (auth?.user?.role){console.log(auth.user.role)}
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 10;
+  const pagesCount = Math.ceil(summaries.length / pageSize);
+  const handlePageClick = (e, index) => {
+    e.preventDefault();
+    if (index >= pagesCount) {
+      const newPage = pagesCount - index;
+      setCurrentPage(newPage);
+    } else {
+      setCurrentPage(index);
+    }
+  };
 
   return (
     <>
       <ListGroup flush>
-        {summaries.slice(0, 10).map(summary => (
+        {summaries.slice(currentPage * pageSize, (currentPage + 1) * pageSize).map(summary => (
           <ReportDetails
             key={summary._id}
             summary={summary}
@@ -90,6 +103,11 @@ function FormattedReport({
         ))}
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
+      <WeeklySummariesPagination
+        handlePageClick={handlePageClick}
+        currentPage={currentPage}
+        pagesCount={pagesCount}
+      />
     </>
   );
 }
