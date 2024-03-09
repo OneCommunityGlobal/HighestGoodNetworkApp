@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -14,10 +14,6 @@ const mockStore = configureStore([thunk]);
 const mockallBadgeData = [
   { _id: '1', badgeName: '30 HOURS 3-WEEK STREAK' },
   { _id: '2', badgeName: 'LEAD A TEAM OF 40+ (Trailblazer) ' },
-  { _id: '3', badgeName: '40 HOURS 2-WEEK STREAK' },
-  { _id: '4', badgeName: 'NO BLUE SQUARE FOR 3 MONTHS' },
-  { _id: '5', badgeName: '2X MINIMUM HOURS' },
-  { _id: '6', badgeName: 'Most Hours in A Week' },
 ];
 
 const mockUserProfilesData = [
@@ -31,8 +27,6 @@ const mockUserProfilesData = [
     },
     isActive: true,
     weeklycommittedHours: 50,
-    createdDate: '2023-10-18T21:07:33.024Z',
-    _id: '652ef81ccf71ca5032fa5acf',
     role: 'Volunteer',
     firstName: 'jerry',
     lastName: 'volunteer1',
@@ -48,20 +42,18 @@ const mockUserProfilesData = [
     },
     isActive: true,
     weeklycommittedHours: 10,
-    createdDate: '2023-08-23T19:22:13.124Z',
-    _id: '64e65c659c3e2408c823aabb',
     role: 'Volunteer',
     firstName: 'jerry',
     lastName: 'volunteer2',
     email: 'jerryvolunteer2@gmail.com',
-    reactivationDate: '2023-10-31T00:00:00.000Z'
   }
 ];
 
 const store = mockStore({
   badge: {
-    firstName: "",
-    lastName: "",
+    firstName: '',
+    lastName: '',
+    selectedBadges: ['Badge 1', 'Badge 2'],
   },
   allUserProfiles: {
     userProfiles: mockUserProfilesData,
@@ -77,6 +69,10 @@ const renderComponent = () => {
     </Provider>
   )  
 };
+
+beforeEach(() => {
+  store.clearActions();
+});
 
 describe('AssignBadge component', () => {
   it('Renders without crashing', () => {
@@ -96,8 +92,8 @@ describe('AssignBadge component', () => {
     expect(inputFirstNameElement).toBeInTheDocument();
     expect(inputLastNameElement).toBeInTheDocument();
   });
-  it('Renders the suggestions', async () => {
-    const firstSuggestions = ["Jerry Admin", "Jerry Volunteer", "Jerry Owner"];
+  it('Autosuggest component renders the suggestions', async () => {
+    const firstSuggestions = ['Jerry Admin', 'Jerry Volunteer', 'Jerry Owner'];
     const onFirstSuggestionsFetchRequested = jest.fn();
     const onFirstSuggestionsClearRequested = jest.fn();
     const onFirstSuggestionSelected = jest.fn();
@@ -107,7 +103,7 @@ describe('AssignBadge component', () => {
 
     const FirstInputProps = {
       placeholder: 'first name',
-      value: "Jerry",
+      value: 'Jerry',
       onChange: onFirstChange,
       autoFocus: true,
     };
@@ -123,7 +119,7 @@ describe('AssignBadge component', () => {
           renderSuggestion={renderSuggestion}
           inputProps={FirstInputProps}
           style={{ marginLeft: '5px', marginRight: '5px' }}
-          aria-labelledby="searchByNameLabel"
+          aria-labelledby='searchByNameLabel'
         />
       </div>
     )
@@ -136,14 +132,14 @@ describe('AssignBadge component', () => {
   });
   it('Manually apply reducer to mock store and dispatched action', () => {
     const initialState = {
-      firstName: "",
-      lastName: "",
+      firstName: '',
+      lastName: '',
     }
-    let newState = badgeReducer(initialState, { type: GET_FIRST_NAME, firstName: "NewFirstName" })
-    newState = badgeReducer(newState, { type: GET_LAST_NAME, lastName: "NewLastName" })
+    let newState = badgeReducer(initialState, { type: GET_FIRST_NAME, firstName: 'NewFirstName' })
+    newState = badgeReducer(newState, { type: GET_LAST_NAME, lastName: 'NewLastName' })
 
-    expect(newState.firstName).toEqual("NewFirstName");
-    expect(newState.lastName).toEqual("NewLastName");
+    expect(newState.firstName).toEqual('NewFirstName');
+    expect(newState.lastName).toEqual('NewLastName');
   });
   it('Render the Assign Badge button', () => {
     renderComponent();
@@ -166,14 +162,11 @@ describe('AssignBadge component', () => {
   });
   it('Dispatches action when badges are assigned', async () => {
     renderComponent();
-
-    const numOfBadges = screen.getByText("0 badges selected");
-    expect(numOfBadges).toBeInTheDocument();
-
+    
     const buttonElement = screen.getByText('Assign Badge')
     expect(buttonElement).toBeInTheDocument();
     fireEvent.click(buttonElement)
-
+    
     expect(store.getActions()).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -181,5 +174,10 @@ describe('AssignBadge component', () => {
         })
       ])
     )
+  });
+  it('2 badges selected message appears', async () => {
+    renderComponent();
+    const numOfBadges = screen.getByText("2 badges selected");
+    expect(numOfBadges).toBeInTheDocument();
   });
 });
