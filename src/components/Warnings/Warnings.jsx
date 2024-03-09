@@ -1,37 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Alert } from 'react-bootstrap';
 import {
   getWarningsByUserId,
   postWarningByUserId,
   deleteWarningsById,
-  postNewWarning,
-  getCurrentWarnings,
-  deleteWarningDescription,
-  updateWarningDescription,
 } from '../../actions/warnings';
 import WarningsModal from './WarningsModal';
+import WarningTrackerModal from './modals/WarningTrackerModal';
 import WarningItem from './WarningItem';
-
-// steps to refactor
-//cron job to check if user has any warnings left of the description that was deleted
-
-//to begin add/remove warnings from the user
-//modal will pop up to remove a description
-// if clikcing the dlete it will warn them again saying are you if so if it does it will delte teh warning from the scheema
-//then cron job will run afterwards
-//fetch the descriptions array the display the warnings for the user.
-
-// todo
-//buttons to the left of the warnings
-//deactivate the warning
-//will deactive until it is deleted from the admin
-//decactive data is saved reactivate button will appear to see
-//modal to delete the warning if x is clicked
-//
-//i button at the top right to explain details
-// mouse over on the buttons as well
-
 import './Warnings.css';
 
 export default function Warning({ personId, username, userRole }) {
@@ -39,15 +16,10 @@ export default function Warning({ personId, username, userRole }) {
 
   const [usersWarnings, setUsersWarnings] = useState([]);
   const [toggleWarningModal, setToggleWarningModal] = useState(false);
+  const [toggleWarningTrackerModal, setToggleWarningTrackerModal] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
 
-  // useffect (
-
-  //   if toggle is true fetch the new data otherwise ignore it
-  //   need to raise the data up here again
-  //   as it will be depended on that data if it updates or not
-  // )
   const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
       if (res.error) {
@@ -99,48 +71,6 @@ export default function Warning({ personId, username, userRole }) {
     });
   };
 
-  //modal will appear to add or remove descriptions
-  // pass the descriptions
-
-  //   'Log Time to Action Items', b
-  // 'Intangible Time Log w/o Reason',
-  // const handleEditDescriptions = () => {
-  //   dispatch(getCurrentWarnings()).then(res => {
-  //     if (res?.error) {
-  //       setError(res);
-  //       setUsersWarnings([]);
-  //       return;
-  //     }
-  //     setWarningDescriptions(res);
-  //     setWarningsModal(true);
-  //   });
-  //   // dispatch(postNewWarning('Log Time to Action Items'));
-  // };
-
-  // const handleAddNewWarning = (e, newWarning) => {
-  //   e.preventDefault();
-
-  //   if (newWarning === '') return;
-  //   dispatch(postNewWarning({ newWarning, activeWarning: true })).then(res => {
-  //     setWarningDescriptions(res);
-  //     fetchUsersWarningsById();
-  //   });
-  // };
-
-  // const handleDeleteDescription = warningId => {
-  //   const response = confirm('are you sure you want to delte it?');
-  //   if (response) {
-  //     dispatch(deleteWarningDescription(warningId)).then(res => {
-  //       // setWarningDescriptions(res);
-  //       // console.log('res', res);
-  //       setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
-  //     });
-  //     //compelte delete logic if canceld then nothing will happen
-  //     // console.log('conosle dlete logic will occur');
-  //     //Intangible Time Log w/o Reason
-  //   }
-  // };
-
   const warnings = !toggle
     ? null
     : usersWarnings.map(warning => (
@@ -168,7 +98,11 @@ export default function Warning({ personId, username, userRole }) {
           </Button>
 
           {userRole === 'Owner' && (
-            <Button className="btn" size="sm" onClick={() => setToggleWarningModal(prev => !prev)}>
+            <Button
+              className="btn"
+              size="sm"
+              onClick={() => setToggleWarningTrackerModal(prev => !prev)}
+            >
               +/-
             </Button>
           )}
@@ -179,11 +113,14 @@ export default function Warning({ personId, username, userRole }) {
             personId={personId}
             setToggleWarningModal={setToggleWarningModal}
             getUsersWarnings={fetchUsersWarningsById}
-            // setWarningsModal={setWarningsModal}
-            // warningDescriptions={warningDescriptions}
-            // handleDeleteDescription={handleDeleteDescription}
-            // handleAddNewWarning={handleAddNewWarning}
-            // handleDeactivate={handleDeactivate}
+          />
+        )}
+        {toggleWarningTrackerModal && (
+          <WarningTrackerModal
+            toggleWarningTrackerModal={toggleWarningTrackerModal}
+            personId={personId}
+            setToggleWarningTrackerModal={setToggleWarningTrackerModal}
+            getUsersWarnings={fetchUsersWarningsById}
           />
         )}
         <div className="warning-wrapper"> {warnings}</div>
