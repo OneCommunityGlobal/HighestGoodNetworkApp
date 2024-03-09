@@ -601,6 +601,12 @@ function UserProfile(props) {
           },
         });
         break;
+      case 'emailSubscriptionConfig':
+        setUserProfile({
+          ...userProfile,
+          emailSubscriptions: !userProfile.emailSubscriptions,
+        });
+        break;
       case 'phonePubliclyAccessible':
         setUserProfile({
           ...userProfile,

@@ -13,6 +13,7 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
+import Announcements from 'components/Announcements';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 // import Reports from './components/Reports';
@@ -43,6 +44,8 @@ import ForgotPassword from './components/Login/ForgotPassword';
 // import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 // import BadgeManagement from './components/Badge/BadgeManagement';
+import EmailSubscribeForm from './components/EmailSubscribeForm';
+import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 
 
 
@@ -202,6 +205,14 @@ export default (
           routePermissions={RoutePermissions.teams}
         />
 
+        <ProtectedRoute
+          path="/announcements"
+          exact
+          component={Announcements}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
+        />
+
         {/* ----- BEGIN BM Dashboard Routing ----- */}
 
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -232,6 +243,8 @@ export default (
 
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
+        <Route path="/email-subscribe" component={EmailSubscribeForm} />
+        <Route path="/email-unsubscribe" component={UnsubscribeForm} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
