@@ -356,6 +356,7 @@ function LeaderBoard({
 
                             handleTimeOffModalOpen(request);
                           }}
+                          className="leaderboard-timeoff-request-detail-button"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
