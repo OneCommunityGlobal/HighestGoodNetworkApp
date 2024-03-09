@@ -209,35 +209,36 @@ function UserProfile(props) {
 
   const loadSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
+    try {
+      const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+      const { data } = res;
 
-    const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
-    const { data } = res;
+      const activeMembers = data.filter(member => member._id !== currentManager._id && member.isActive);
 
-    const memberSubmitted = [];
-    const memberNotSubmitted = [];
+      const memberSubmitted = activeMembers
+        .filter(member => member.weeklySummaries[0].summary !== '')
+        .map(member => `${member.firstName} ${member.lastName}`);
 
-    data.forEach(member => {
-      if (member._id !== currentManager._id) {
-        if (member.weeklySummaries[0].summary !== '') {
-          memberSubmitted.push(`${member.firstName} ${member.lastName}`);
-        } else {
-          memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
-        }
-      }
-    });
+      const memberNotSubmitted = activeMembers
+        .filter(member => member.weeklySummaries[0].summary === '')
+        .map(member => `${member.firstName} ${member.lastName}`);
 
-    const memberSubmittedString =
-      memberSubmitted.length !== 0
-        ? memberSubmitted.join(', ')
-        : '<list all team members names included in the summary>';
-    const memberDidntSubmitString =
-      memberNotSubmitted.length !== 0
-        ? memberNotSubmitted.join(', ')
-        : '<list all team members names NOT included in the summary>';
+      const memberSubmittedString =
+        memberSubmitted.length !== 0
+          ? memberSubmitted.join(', ')
+          : '<list all team members names included in the summary>';
 
-    const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+      const memberDidntSubmitString =
+        memberNotSubmitted.length !== 0
+          ? memberNotSubmitted.join(', ')
+          : '<list all team members names NOT included in the summary>';
 
-    setSummaryIntro(summaryIntroString);
+      const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+
+      setSummaryIntro(summaryIntroString);
+    } catch (error) {
+      console.error('Error fetching team users:', error);
+    }
   };
 
   const loadUserTasks = async () => {
