@@ -220,9 +220,9 @@ describe('ProjectReport component', () => {
 
 describe('ProjectReport WBS link visibility', () => {
   it(`should display WBS links when the user has required permissions`, async () => {
-    const dummyPermission = ['resolveTask', 'acb'];
+    const mockPermissions = ['resolveTask', 'acb'];
 
-    const hasPermission = dummyPermission.some(permission =>
+    const hasPermission = mockPermissions.some(permission =>
       viewWBSpermissionsRequired.includes(permission),
     );
 
@@ -256,8 +256,8 @@ describe('ProjectReport WBS link visibility', () => {
   });
 
   it(`should not display WBS links when the user lacks required permissions`, async () => {
-    const dummyPermission = ['abc'];
-    const hasPermission = dummyPermission.some(permission =>
+    const mockPermissions = ['abc'];
+    const hasPermission = mockPermissions.some(permission =>
       viewWBSpermissionsRequired.includes(permission),
     );
     const canViewWBS = hasPermission;
