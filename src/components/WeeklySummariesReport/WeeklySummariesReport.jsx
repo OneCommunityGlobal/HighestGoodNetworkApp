@@ -50,7 +50,7 @@ const weekDates = Array.from({ length: 4 }).map((_, index) => ({
 function WeeklySummariesReport() {
   const props = useSelector(state => state);
   console.log('props', props);
-  console.log(props.badge.allBadgeData, 'props.badge.allBadgeData');
+  // console.log(props.badge.allBadgeData, 'props.badge.allBadgeData');
 
   // const func = state => {
   //   console.log('I am an arrow function');
@@ -107,7 +107,7 @@ function WeeklySummariesReport() {
     const fetchData = async () => {
       const res = await dispatch(getWeeklySummariesReport());
       setLoading(false);
-      console.log('RES:', res);
+      // console.log('RES:', res);
 
       //     // 1. fetch report
       //     const res = await getWeeklySummariesReport();
@@ -179,21 +179,11 @@ function WeeklySummariesReport() {
           label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
         });
       setFilteredSummaries(summariesCopy);
-      //     this.setState({
-      //       loading,
-      //       allRoleInfo: [],
-      //       summaries: summariesCopy,
-      //       activeTab:
-      //         sessionStorage.getItem('tabSelection') === null
-      //           ? navItems[1]
-      //           : sessionStorage.getItem('tabSelection'),
-      //       badges: allBadgeData,
-      //       hasSeeBadgePermission: badgeStatusCode === 200,
-      //       filteredSummaries: summariesCopy,
-      //       colorOptions,
-      //       teamCodes,
-      //       auth,
-      //     });
+      setActiveTab(
+        sessionStorage.getItem('tabSelection') === null
+          ? navItems[1]
+          : sessionStorage.getItem('tabSelection'),
+      );
 
       await getInfoCollections();
       // const role = authUser?.role;
@@ -440,33 +430,46 @@ function WeeklySummariesReport() {
 
   // TODO: Refactor this function to use hooks
   const toggleTab = tab => {
-    const { activeTab } = state;
     if (activeTab !== tab) {
-      // setState(prevState => ({ ...prevState, activeTab: tab }));
       setActiveTab(tab);
       sessionStorage.setItem('tabSelection', tab);
     }
   };
 
   const filterWeeklySummaries = () => {
-    const { selectedCodes, selectedColors, summaries } = state;
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
-    const temp = summaries.filter(
-      summary =>
+
+    const temp = summaries.filter(summary => {
+      const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+      const isMeetCriteria =
+        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+
+      const isBio = !selectedBioStatus || isMeetCriteria;
+
+      const isOverHours =
+        !selectedOverTime ||
+        (hoursLogged > 0 &&
+          hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+
+      return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
-          selectedColorsArray.includes(summary.weeklySummaryOption)),
-    );
-    setState(prevState => ({ ...prevState, filteredSummaries: temp }));
+          selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+        isOverHours &&
+        isBio
+      );
+    });
+    setFilteredSummaries(temp);
   };
 
   const handleSelectCodeChange = event => {
-    setState(prevState => ({ ...prevState, selectedCodes: event }));
+    setSelectedCodes(event);
   };
 
   const handleSelectColorChange = event => {
-    setState(prevState => ({ ...prevState, selectedColors: event }));
+    setSelectedCodes(event);
   };
 
   // useEffect(() => {
