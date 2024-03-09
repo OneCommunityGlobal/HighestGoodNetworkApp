@@ -34,7 +34,6 @@ import WeeklySummariesPagination from './components/WeeklySummariesPagination';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 
-
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
 export class WeeklySummariesReport extends Component {
