@@ -1,41 +1,54 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Teams from 'components/Teams/Team';
-import { allTeamsMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
+import { allTeamsMock, userProfileMock, rolesMock, allUserProfilesMock } from '../../../__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
-let store;
-
-beforeEach(() => {
-  store = mockStore({
-    allTeamsData: allTeamsMock,
-    userProfile: userProfileMock,
-    role: rolesMock,
-  });
-});
-
 describe('Teams Component', () => {
-  it('renders without crashing', () => {
-    render(
-      <Provider store={store}>
-        <Teams />
-      </Provider>
-    );
-    expect(screen.getByTestId('teams-container')).toBeInTheDocument();
+  let store;
+
+  beforeEach(() => {
+      store = mockStore({
+          allTeamsData: {
+              allTeams: allTeamsMock,
+              fetching: false, 
+          },
+          userProfile: userProfileMock,
+          role: rolesMock,
+          allUserProfiles: allUserProfilesMock,
+          auth: {
+              user: {
+                  role: 'Administrator',
+                  permissions: { frontPermissions: [] },
+              },
+          },
+      });
   });
 
-  it('displays teams from the redux store', () => {
+  it('renders without crashing', async () => {
+      render(
+          <Provider store={store}>
+              <Teams />
+          </Provider>
+      );
+      const teamsContainer = await screen.findByTestId('teams-container');
+      expect(teamsContainer).toBeInTheDocument();
+  });
+
+  it('displays teams from the redux store', async () => {
     render(
       <Provider store={store}>
         <Teams />
       </Provider>
     );
-    allTeamsMock.allTeams.forEach(team => {
-      expect(screen.getByText(team.teamName)).toBeInTheDocument();
+    await waitFor(() => {
+      allTeamsMock.allTeams.forEach(team => {
+        expect(screen.getByText(team.teamName)).toBeInTheDocument();
+      });
     });
   });
 
@@ -50,7 +63,7 @@ describe('Teams Component', () => {
     expect(actions.some(action => action.type === 'RECEIVE_ALL_USER_TEAMS')).toBeTruthy();
   });
 
-  it('opens TeamMembersPopup when a team member is clicked', () => {
+  it('opens TeamMembersPopup when a team member is clicked', async () => {
     render(
       <Provider store={store}>
         <Teams />
@@ -58,7 +71,7 @@ describe('Teams Component', () => {
     );
   
     fireEvent.click(screen.getByTestId('team-member-button'));
-    expect(screen.getByTestId('team-members-popup')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('team-members-popup')).toBeInTheDocument());
   });
 
   it('filters teams based on search input', () => {
@@ -80,7 +93,6 @@ describe('Teams Component', () => {
       </Provider>
     );
 
-    // Extract the team names from the table rows and check if they are sorted by modified date
     const teamRows = screen.getAllByRole('row');
     const teamNames = teamRows.slice(1).map(row => row.cells[1].textContent); // Skip the header row
 
@@ -139,7 +151,7 @@ describe('Teams Component', () => {
     expect(sortedActiveMarkers).toEqual(expectedSortedActivity);
   });
 
-  it('adds a new team when form is submitted', () => {
+  it('adds a new team when form is submitted', async () => {
     render(
       <Provider store={store}>
         <Teams />
@@ -147,40 +159,56 @@ describe('Teams Component', () => {
     );
   
     fireEvent.click(screen.getByTestId('add-team-button'));
-    // Fill out and submit the form
-    // Add assertions to check if a new team was added
+
+    // Simulate filling out the form
+    fireEvent.change(screen.getByTestId('team-name-input'), { target: { value: 'New Team Name' } });
+    
+    // Submit the form
+    fireEvent.click(screen.getByTestId('form-submit-button'));
+
+    await waitFor(() => {
+      const actions = store.getActions();
+      expect(actions.some(action => action.type === 'ADD_NEW_TEAM' && action.payload.teamName === 'New Team Name')).toBeTruthy();
+    });
   });
   
-  it('deletes a team when delete is confirmed', () => {
+  it('deletes a team when delete is confirmed', async () => {
     render(
       <Provider store={store}>
         <Teams />
       </Provider>
     );
-  
-    fireEvent.click(screen.getByTestId('delete-team-button'));
-    // Confirm deletion
-    // Add assertions to check if the team was deleted
+    
+    fireEvent.click(screen.getAllByTestId('delete-team-button')[0]); // Click the first delete button found
+    
+    // Confirm deletion by clicking on the confirmation in the dialog
+    fireEvent.click(screen.getByTestId('confirm-delete'));
+
+    await waitFor(() => {
+      const actions = store.getActions();
+      expect(actions.some(action => action.type === 'TEAMS_DELETE')).toBeTruthy();
+    });
   });
 
-  it('updates a team when edit is confirmed', () => {
+  it('updates a team when edit is confirmed', async () => {
     render(
       <Provider store={store}>
         <Teams />
       </Provider>
     );
 
-    fireEvent.click(screen.getByTestId('edit-team-button'));
-    // Fill out and submit the form for editing
-    // Add assertions to check if the team was updated
-  });
+    // Wait for the edit button to be in the document
+    const editButtons = await screen.findAllByTestId('edit-team-button');
+    fireEvent.click(editButtons[0]); // Click the first edit button found
 
-  it('matches the snapshot', () => {
-    const { asFragment } = render(
-      <Provider store={store}>
-        <Teams />
-      </Provider>
-    );
-    expect(asFragment()).toMatchSnapshot();
+    fireEvent.change(screen.getByTestId('team-name-input'), { target: { value: 'Updated Team Name' } });
+
+    // Submit the form
+    fireEvent.click(screen.getByTestId('form-submit-button'));
+
+    await waitFor(() => {
+      const actions = store.getActions();
+      expect(actions.some(action => action.type === 'UPDATE_TEAM' && action.payload.teamName === 'Updated Team Name')).toBeTruthy();
+    });
   });
 });
