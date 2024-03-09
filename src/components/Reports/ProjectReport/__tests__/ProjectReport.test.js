@@ -12,6 +12,11 @@ import { fetchAllWBS } from 'actions/wbs';
 
 const mockStore = configureStore([thunk]);
 const store = mockStore({
+  auth: {
+    user: {
+      role: 'Administrator',
+    },
+  },
   wbs: { WBSItems: [] },
   projectMembers: { members: [], foundUsers: [], fetched: true },
   tasks: [],
