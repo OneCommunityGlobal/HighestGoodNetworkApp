@@ -170,10 +170,19 @@ function EquipmentDetail() {
       </header>
       <main className="EquipmentDetailPage__content">
         <p>
-          <img src={tool?.imageUrl} alt="" className="EquipmentDetailPage__image" />
+          <img
+            src="https://ik.imagekit.io/tuc2020/wp-content/uploads/2021/01/HW2927.jpg"
+            alt=""
+            className="EquipmentDetailPage__image"
+          />
         </p>
         {details.filter(Boolean).map(renderDetails)}
-        <Button outline onClick={() => history.push('/bmdashboard/equipment')}>
+        <Button
+          class="back-btn"
+          style={{ color: 'black', borderWidth: '2px', borderRadius: '9px' }}
+          outline
+          onClick={() => history.push('/bmdashboard/equipment')}
+        >
           Back to List
         </Button>
       </main>

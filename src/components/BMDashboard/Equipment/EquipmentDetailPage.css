@@ -42,3 +42,8 @@
     margin-top: 10px;
     margin-bottom: 10px;
   }
+
+  .back-btn {
+    color: black !important;;
+    border-color: black !important;;
+  }
