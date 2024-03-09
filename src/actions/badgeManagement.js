@@ -9,6 +9,7 @@ import {
   GET_LAST_NAME,
   GET_MESSAGE,
   CLOSE_ALERT,
+  GET_USER_ID,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 import moment from 'moment';
@@ -21,15 +22,15 @@ const getAllBadges = allBadges => ({
 
 export const fetchAllBadges = () => {
   const url = ENDPOINTS.BADGE();
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const response = await axios.get(ENDPOINTS.BADGE());
       dispatch(getAllBadges(response.data));
       return response.status;
-    } catch(err) {
+    } catch (err) {
       return err.response.status;
     }
-  }
+  };
 };
 
 export const closeAlert = () => {
@@ -66,6 +67,11 @@ export const getLastName = lastName => ({
   lastName,
 });
 
+export const getUserId = userId => ({
+  type: GET_USER_ID,
+  userId,
+});
+
 export const getMessage = (message, color) => ({
   type: GET_MESSAGE,
   message,
@@ -86,7 +92,6 @@ export const validateBadges = (firstName, lastName) => {
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
-      
     }
   };
 };
@@ -106,9 +111,10 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       return;
     }
 
-    const userAssigned = `${firstName  } ${  lastName}`;
+    const userAssigned = `${firstName} ${lastName}`;
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
+
     if (res.data.length === 0) {
       dispatch(
         getMessage(
@@ -121,15 +127,18 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       }, 6000);
       return;
     }
-   
-    const {badgeCollection} = res.data[0];
+
+    const { badgeCollection } = res.data[0];
     const userToBeAssignedBadge = res.data[0]._id;
     // return a new badgeCollection for udpate
     const newBadgeCollection = returnUpdatedBadgesCollection(badgeCollection, selectedBadges);
-    
+
     const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
     try {
-      await axios.put(url, { badgeCollection: newBadgeCollection, newBadges: selectedBadges.length });
+      await axios.put(url, {
+        badgeCollection: newBadgeCollection,
+        newBadges: selectedBadges.length,
+      });
       dispatch(
         getMessage(
           "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
@@ -164,6 +173,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
     }
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+
     if (res.data.length === 0) {
       dispatch(
         getMessage(
@@ -176,7 +186,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       }, 6000);
       return;
     }
-    const {badgeCollection} = res.data;
+    const { badgeCollection } = res.data;
     // Update the badgeCollection.badge object to badge._id string for backend
     for (let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
@@ -188,7 +198,10 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
     // send updated badgeCollection to backend
     const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
     try {
-      await axios.put(url, { badgeCollection: newBadgeCollection, newBadges: selectedBadges.length });
+      await axios.put(url, {
+        badgeCollection: newBadgeCollection,
+        newBadges: selectedBadges.length,
+      });
       dispatch(
         getMessage(
           "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
@@ -208,55 +221,79 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 };
 
 // Return updated badgeCollection
-export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) =>{
+export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
   let newBadgeCollection = Array.from(badgeCollection);
-  
-  selectedBadgesId.forEach(badgeId => {
-    let included = false;
+
+  // object to track updated or newly added badges to prevent duplicates
+  let updatedOrAddedBadges = {};
+
+  selectedBadgesId.forEach(originalBadgeId => {
+    let badgeId = originalBadgeId;
     // Remove "assign-badge-" from badgeId
-    if(badgeId.includes("assign-badge-")) badgeId = badgeId.replace("assign-badge-", "");
-    // Change format of date to MMM-DD-YYYY
-    let currentTs = Date.now();
-    let currentDate = formatDate();
-    // Update record in badgeCollection if exist
-    newBadgeCollection.forEach(badgeObj => {
-      if (badgeId === badgeObj.badge) {
-        badgeObj.count++;
-        badgeObj.lastModified = currentTs;
-        badgeObj.earnedDate.push(currentDate);
-        included = true;
-        return; // find match and break
+    if (badgeId.includes('assign-badge-')) badgeId = badgeId.replace('assign-badge-', '');
+
+    if (!updatedOrAddedBadges[badgeId]) {
+      let included = false;
+      let currentTs = Date.now();
+      let currentDate = formatDate();
+
+      newBadgeCollection.forEach(badgeObj => {
+        if (badgeId === badgeObj.badge) {
+          if (!included) { 
+            // Only update the first instance
+            // Increment count only for the first instance found
+            badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1;
+            badgeObj.lastModified = currentTs;
+            badgeObj.earnedDate.push(currentDate);
+            included = true;
+          }
+          // Note this badge ID as updated so it's not added again
+          updatedOrAddedBadges[badgeId] = true;
+        }
+      });
+
+      // Add the new badge record to badgeCollection if not included already
+      if (!included) {
+        newBadgeCollection.push({
+          badge: badgeId,
+          count: 1,
+          lastModified: currentTs,
+          earnedDate: [currentDate],
+        });
+        // Note this badge ID as added
+        updatedOrAddedBadges[badgeId] = true;
       }
-    });
-    // Add the new badge record to badgeCollection
-    if (!included) {
-      newBadgeCollection.push({ badge: badgeId, count: 1, lastModified: currentTs, earnedDate: new Array(currentDate)});
     }
   });
+
   return newBadgeCollection;
-}
+};
 
 // Make API call to update badgeCollection
-export const sendUpdatedBadgeCollectionReq = async (badgeCollection, selectedBadges, userToBeAssignedBadge) => {
-    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
-    try {
-      await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
-      dispatch(
-        getMessage(
-          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-          'success',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-    } catch (e) {
-      dispatch(getMessage('Oops, something is wrong!', 'danger'));
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-    }
-    return;
+export const sendUpdatedBadgeCollectionReq = async (
+  badgeCollection,
+  selectedBadges,
+  userToBeAssignedBadge,
+) => {
+  const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
+  try {
+    await axios.put(url, { badgeCollection, newBadges: selectedBadges.length });
+    dispatch(
+      getMessage(
+        "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
+        'success',
+      ),
+    );
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+  } catch (e) {
+    dispatch(getMessage('Oops, something is wrong!', 'danger'));
+    setTimeout(() => {
+      dispatch(closeAlert());
+    }, 6000);
+  }
+  return;
 };
 
 export const changeBadgesByUserID = (userId, badgeCollection) => {
@@ -313,12 +350,6 @@ export const createNewBadge = newBadge => async dispatch => {
 export const updateBadge = (badgeId, badgeData) => async dispatch => {
   try {
     await axios.put(ENDPOINTS.BADGE_BY_ID(badgeId), badgeData);
-    dispatch(
-      getMessage('Awesomesauce! You have successfully updated the badge to the system!', 'success'),
-    );
-    setTimeout(() => {
-      dispatch(closeAlert());
-    }, 6000);
     dispatch(fetchAllBadges());
   } catch (e) {
     if (e.response.status === 403 || 400) {
