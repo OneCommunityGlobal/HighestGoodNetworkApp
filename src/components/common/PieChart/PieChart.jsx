@@ -4,9 +4,10 @@ import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
 
+
 export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => {
   const [totalHours, setTotalHours] = useState(0);
-
+  const [colors] = useState(generateArrayOfUniqColors(Object.keys(data).length));
   // create the pie chart
   const getCreateSvgPie = totalValue => {
     var svg = d3
@@ -16,30 +17,35 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
       .attr('width', CHART_SIZE)
       .attr('height', CHART_SIZE)
       .append('g')
-      .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
-
+      .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`)
     svg
       .append('text')
       .attr('text-anchor', 'middle')
-      .text(totalValue.toFixed(2));
-
+      .text(totalValue.toFixed(2))
     return svg;
   };
-
-  const color = d3.scaleOrdinal().range(generateArrayOfUniqColors(Object.keys(data).length));
-
+  const color = d3.scaleOrdinal().range(colors);
   const pie = d3.pie().value(d => d[1]);
-
   useEffect(() => {
     const data_ready = pie(Object.entries(data));
+    const name = Object.keys(dataLegend).map(key => {
+      return dataLegend[key][0];
+    });
 
     let totalValue = data_ready
       .map(obj => obj.value)
       .reduce((a, c) => {
         return a + c;
-      },0);
+      }, 0);
     setTotalHours(totalValue);
-
+    var div = d3.select(".tooltip-donut");
+    if (div.empty()) {
+      div = d3.select("body").append("div")
+        .attr("class", "tooltip-donut")
+        .style("opacity", 0)
+        .style("position", "absolute") // Ensure the tooltip uses absolute positioning
+        .style("pointer-events", "none"); // Prevents the tooltip from interfering with mouse events
+    }
     getCreateSvgPie(totalValue)
       .selectAll('whatever')
       .data(data_ready)
@@ -52,7 +58,39 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
           .outerRadius(CHART_RADIUS),
       )
       .attr('fill', d => color(d.data[0]))
-      .style('opacity', 0.8);
+      .on('mouseover', function (d, i) {
+        d3.select(this).transition()
+          .duration('50')
+          .attr('opacity', '.5')
+        div.transition()
+          .duration(50)
+          .style("opacity", 1)
+          .style("visibility", "visible");
+        const taskName = Object.keys(dataLegend).map(key => {
+          return dataLegend[key][0];
+        });
+        const index = Object.keys(dataLegend).map(function (e) { return e; }).indexOf(i.data[0]);
+        let legendInfo = taskName[index].toString()
+        div.html(legendInfo)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 15) + "px");
+
+      })
+      .on('mouseout', function (d, i) {
+        d3.select(this).transition()
+          .duration('50')
+          .attr('opacity', '.85')
+        div.transition()
+          .duration('50')
+          .style("opacity", 0)
+          .on("end", function () {
+            d3.select(this).style("visibility", "hidden"); // Hide after transition
+          });
+
+      });
+
+
+
 
     return () => {
       d3.select(`#pie-chart-${pieChartId}`).remove();
