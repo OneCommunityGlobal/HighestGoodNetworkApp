@@ -1,52 +1,49 @@
-.EquipmentDetailPage{
+.EquipmentDetailPage {
   font-size: clamp(0.9em, 2.5vw, 1em);
   margin-top: 1em;
   margin-bottom: 3rem;
-  }
-  
-  .EquipmentDetailPage__header h1{
-    font-size: clamp(2em, 2.5vw, 3em);
-  }
-  
-  .EquipmentDetailPage__span{
+}
+
+.EquipmentDetailPage__header h1 {
+  font-size: clamp(2em, 2.5vw, 3em);
+}
+
+.EquipmentDetailPage__span {
   background-color: #e6f5f2;
   border: 1px solid #e5e5e6;
   border-radius: 5px;
   padding: 0.5em;
   margin-left: 1em;
-  }
-  
-  .EquipmentDetailPage__image{
-    border: 1px solid #e5e5e6;
-    border-radius: 5px; 
-    width: 150px;
-    height: auto;
-  }
-  
-  .EquipmentDetailPage__detail_item{
-    line-height: 2.5;
-  }
-  
-  button.descriptionItem_button{
-   padding: 0em;
-   margin-bottom: 1em; 
-  }
-  
-  button.descriptionItem_button:hover{
-    background-color: transparent;
-  }
-  
-  .EquipmentDetailPage__dashed_line{
-    border-top: 1px dashed #000; 
-    width: 50%;
-    margin-top: 10px;
-    margin-bottom: 10px;
-<<<<<<< HEAD
-  }
+}
 
-  .back-btn {
-    color: black !important;;
-    border-color: black !important;;
-=======
->>>>>>> 58436a55d (Added equipment details page and papoulated with dummy data)
-  }
+.EquipmentDetailPage__image {
+  border: 1px solid #e5e5e6;
+  border-radius: 5px;
+  width: 150px;
+  height: auto;
+}
+
+.EquipmentDetailPage__detail_item {
+  line-height: 2.5;
+}
+
+button.descriptionItem_button {
+  padding: 0em;
+  margin-bottom: 1em;
+}
+
+button.descriptionItem_button:hover {
+  background-color: transparent;
+}
+
+.EquipmentDetailPage__dashed_line {
+  border-top: 1px dashed #000;
+  width: 50%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.back-btn {
+  color: black !important;
+  border-color: black !important;
+}

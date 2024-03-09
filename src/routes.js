@@ -238,6 +238,8 @@ export default (
         <BMProtectedRoute path="/bmdashboard/reusables" fallback component={ReusableListView} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" fallback exact component={EquipmentDetail} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumableListView} />
+        <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
+        <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumableListView} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
