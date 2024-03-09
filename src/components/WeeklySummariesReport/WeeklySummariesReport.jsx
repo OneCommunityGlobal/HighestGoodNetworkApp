@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
@@ -30,6 +31,9 @@ import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import WeeklySummariesPagination from './components/WeeklySummariesPagination';
+import PasswordInputModal from './PasswordInputModal';
+import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -54,6 +58,9 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: navItems[1],
+      passwordModalOpen: false,
+      summaryRecepientsPopupOpen: false,
+      isValidPwd: true,
       badges: [],
       loadBadges: false,
       hasSeeBadgePermission: false,
@@ -194,6 +201,53 @@ export class WeeklySummariesReport extends Component {
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
   }
+
+  onSummaryRecepientsPopupClose = () => {
+    this.setState({ summaryRecepientsPopupOpen: false });
+  };
+
+  setSummaryRecepientsPopup = val => {
+    this.setState({ summaryRecepientsPopupOpen: val });
+  };
+
+  popUpElements = () => {
+    return (
+      <WeeklySummaryRecipientsPopup
+        open={this.state.summaryRecepientsPopupOpen}
+        onClose={this.onSummaryRecepientsPopupClose}
+        summaries={this.props.summaries}
+      />
+    );
+  };
+
+  onpasswordModalClose = () => {
+    this.setState({
+      passwordModalOpen: false,
+    });
+  };
+
+  checkForValidPwd = booleanVal => {
+    this.setState({ isValidPwd: booleanVal });
+  };
+
+  passwordInputModalToggle = () => {
+    return (
+      <PasswordInputModal
+        open={this.state.passwordModalOpen}
+        onClose={this.onpasswordModalClose}
+        checkForValidPwd={this.checkForValidPwd}
+        isValidPwd={this.state.isValidPwd}
+        setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
+      />
+    );
+  };
+
+  onClickRecepients = () => {
+    this.setState({
+      passwordModalOpen: true,
+    });
+    this.checkForValidPwd(true);
+  };
 
   /**
    * Sort the summaries in alphabetixal order
@@ -374,6 +428,8 @@ export class WeeklySummariesReport extends Component {
     }
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
+        {this.passwordInputModalToggle()}
+        {this.popUpElements()}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <h3 className="mt-3 mb-5">
@@ -390,6 +446,17 @@ export class WeeklySummariesReport extends Component {
               </div>
             </h3>
           </Col>
+        </Row>
+        <Row className="d-flex justify-content-center mb-3">
+          <Button
+            color="primary"
+            className="permissions-management__button"
+            type="button"
+            onClick={() => this.onClickRecepients()}
+            style={boxStyle}
+          >
+            Weekly Summary Report Recipients
+          </Button>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
