@@ -52,14 +52,13 @@ function LeaderBoard({
   const userId = displayUserId || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  const isOwner = ['Owner'].includes(loggedInUser.role);
   const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team'];
+  const isOwner = ['Owner'].includes(loggedInUser.role);
   const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-  const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState(false);
-  const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState(false);
+  const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
+  const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState({});
   const usersOnFutureTimeOff = useSelector(state => state.timeOffRequests.futureTimeOff);
-
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
 
   const currentTimeOff = {};
@@ -163,8 +162,19 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
-  const currentTimeOfftoggle = () => setCurrentTimeOfftooltipOpen(!currentTimeOfftooltipOpen);
-  const futureTimeOfftoggle = () => setFutureTimeOfftooltipOpen(!futureTimeOfftooltipOpen);
+  const currentTimeOfftoggle = personId => {
+    setCurrentTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const futureTimeOfftoggle = personId => {
+    setFutureTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
   timeOffCalculate();
 
   return (
@@ -368,15 +378,18 @@ function LeaderBoard({
                     currentTimeOff[item.personId]?.isInTimeOff == true ? (
                       currentTimeOff[item.personId]?.weeks > 0 ? (
                         <>
-                          <sup style={{ color: 'rgba(128, 128, 128, 0.5)' }} id="currentTimeOff">
+                          <sup
+                            style={{ color: 'rgba(128, 128, 128, 0.5)' }}
+                            id={`currentTimeOff-${item.personId}`}
+                          >
                             {' '}
                             +{currentTimeOff[item.personId].weeks}
                           </sup>
                           <Tooltip
                             placement="top"
-                            isOpen={currentTimeOfftooltipOpen}
-                            target="currentTimeOff"
-                            toggle={currentTimeOfftoggle}
+                            isOpen={currentTimeOfftooltipOpen[item.personId]}
+                            target={`currentTimeOff-${item.personId}`}
+                            toggle={() => currentTimeOfftoggle(item.personId)}
                           >
                             Number with a preceeding + indicates the additional weeks the user will
                             be on a time off excluding the current week
@@ -385,15 +398,15 @@ function LeaderBoard({
                       ) : null
                     ) : futureWeeksOff[item.personId] > 0 ? (
                       <>
-                        <sup style={{ color: '#007bff' }} id="futureTimeOff">
+                        <sup style={{ color: '#007bff' }} id={`futureTimeOff-${item.personId}`}>
                           {' '}
                           {futureWeeksOff[item.personId]}
                         </sup>
                         <Tooltip
                           placement="top"
-                          isOpen={futureTimeOfftooltipOpen}
-                          target="futureTimeOff"
-                          toggle={futureTimeOfftoggle}
+                          isOpen={futureTimeOfftooltipOpen[item.personId]}
+                          target={`futureTimeOff-${item.personId}`}
+                          toggle={() => futureTimeOfftoggle(item.personId)}
                         >
                           This number indicates the number of weeks from now the user has scheduled
                           a time off
@@ -411,6 +424,7 @@ function LeaderBoard({
                     (userOnTimeOff[item.personId] || userGoingOnTimeOff[item.personId]) && (
                       <div>
                         <button
+                          style={{ width: '35px', height: 'auto' }}
                           type="button"
                           onClick={() => {
                             const request = userOnTimeOff[item.personId]
