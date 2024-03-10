@@ -52,68 +52,55 @@ function LeaderBoard({
   const userId = displayUserId || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+  const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team'];
   const isOwner = ['Owner'].includes(loggedInUser.role);
-  const isAdministrator = ['Administrator'].includes(loggedInUser.role);
-  const isManager = ['Manager'].includes(loggedInUser.role);
-  const isMentor = ['Mentor'].includes(loggedInUser.role);
-  const isCoreTeam = ['Core Team'].includes(loggedInUser.role);
+  const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-  const allRequests = useSelector(state => state.timeOffRequests.requests);
   const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState(false);
   const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState(false);
-
+  const usersOnFutureTimeOff = useSelector(state => state.timeOffRequests.futureTimeOff);
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
 
   const currentTimeOff = {};
   const futureWeeksOff = {};
 
   const timeOffCalculate = () => {
-    if (allRequests) {
-      for (const personId in allRequests) {
-        let closestStartDate = null;
-        let minDifference = Infinity;
-
-        for (const request of allRequests[personId]) {
-          // check if user if off for the current week
-          if (
-            currentDate.isSameOrAfter(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-            currentDate.isSameOrBefore(moment(request.endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
-          ) {
-            const additionalWeeks = Math.floor(
-              moment(request.endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
-                .subtract(1, 'day')
-                .diff(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
-            );
-            currentTimeOff[personId] = { isInTimeOff: true, weeks: additionalWeeks };
-          } else {
-            if (!currentTimeOff.hasOwnProperty(personId)) {
-              currentTimeOff[personId] = { isInTimeOff: false, weeks: -1 };
-            }
-          }
-
-          // find the closest start date
-          if (
-            currentDate.isBefore(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-            Math.floor(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate)) <
-              minDifference
-          ) {
-            closestStartDate = request.startingDate;
-            minDifference = Math.floor(
-              moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate),
-            );
-          }
-        }
-        // find the future weeks off based on closest start date
-        if (closestStartDate) {
-          futureWeeksOff[personId] = Math.ceil(
-            moment(closestStartDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(
-              moment(currentDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-              'days',
-            ) / 7,
+    if (userOnTimeOff) {
+      for (const personId in userOnTimeOff) {
+        // check if user if off for the current week
+        if (
+          currentDate.isSameOrAfter(
+            moment(userOnTimeOff[personId].startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          ) &&
+          currentDate.isSameOrBefore(
+            moment(userOnTimeOff[personId].endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          )
+        ) {
+          const additionalWeeks = Math.floor(
+            moment(userOnTimeOff[personId].endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+              .subtract(1, 'day')
+              .diff(
+                moment(userOnTimeOff[personId].startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                'weeks',
+              ),
           );
+          currentTimeOff[personId] = { isInTimeOff: true, weeks: additionalWeeks };
         } else {
-          futureWeeksOff[personId] = -1;
+          if (!currentTimeOff.hasOwnProperty(personId)) {
+            currentTimeOff[personId] = { isInTimeOff: false, weeks: -1 };
+          }
         }
+      }
+    }
+
+    if (usersOnFutureTimeOff) {
+      for (const personId in usersOnFutureTimeOff) {
+        futureWeeksOff[personId] = Math.ceil(
+          moment(usersOnFutureTimeOff[personId].startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(
+            moment(currentDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            'days',
+          ) / 7,
+        );
       }
     }
   };
@@ -368,12 +355,7 @@ function LeaderBoard({
                     title="View Profile"
                     style={{
                       color:
-                        (isAdministrator ||
-                          isManager ||
-                          isMentor ||
-                          isCoreTeam ||
-                          isOwner ||
-                          item.personId === userId) &&
+                        (isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
                         currentTimeOff[item.personId]?.isInTimeOff == true
                           ? 'rgba(128, 128, 128, 0.5)'
                           : undefined,
@@ -381,12 +363,7 @@ function LeaderBoard({
                   >
                     {item.name}
                   </Link>
-                  {isAdministrator ||
-                  isManager ||
-                  isMentor ||
-                  isCoreTeam ||
-                  isOwner ||
-                  item.personId === userId ? (
+                  {isAllowedOtherThanOwner || isOwner || item.personId === userId ? (
                     currentTimeOff[item.personId]?.isInTimeOff == true ? (
                       currentTimeOff[item.personId]?.weeks > 0 ? (
                         <>
