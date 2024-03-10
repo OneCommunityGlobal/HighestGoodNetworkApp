@@ -16,7 +16,7 @@ const ShowCollapse = props => {
       <div>{props.resources[0].name}</div>
 
       {props.resources.slice(1).map(resource => (
-        <Collapse in={open}>
+        <Collapse in={open} key={resource._id}>
           <div key={resource._id} className="new-line">
             {resource.name}
           </div>
@@ -30,7 +30,6 @@ export const TasksDetail = props => {
   let tasksList = [];
   let tasks = [];
   tasks = props.tasks_filter;
-
   if (props.tasks_filter.length > 0) {
     tasks = ['priority', 'status', 'classification', 'isActive', 'isAssigned'].reduce(
       (filteredTask, filter) => {
@@ -57,7 +56,7 @@ export const TasksDetail = props => {
   tasksList = tasks.map((task, index) => (
     <div key={task._id} className="tasks-detail-table-row">
       <div>
-        <EditTaskModal
+        {props.toggleEditTasks && <EditTaskModal
           key={`updateTask_${task._id}`}
           parentNum={task.num}
           taskId={task._id}
@@ -67,7 +66,7 @@ export const TasksDetail = props => {
           parentId3={task.parentId3}
           mother={task.mother}
           level={task.level}
-        />
+        />}
       </div>
       <div>
         <div>{index + 1}</div>
@@ -85,9 +84,9 @@ export const TasksDetail = props => {
 
       <div className="tasks-detail-center-cells">
         {task.isActive ? (
-          <tasks className="isActive">
+          <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
-          </tasks>
+          </div>
         ) : (
           <div className="isNotActive">
             <i className="fa fa-circle-o" aria-hidden="true"></i>
