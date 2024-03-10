@@ -61,3 +61,18 @@
     padding: 20px;
   }
 }
+
+.project-header{
+  font-size: 32px;
+  padding: 10px 10px;
+  text-align: center;
+  background-color:white;
+  border-radius: 20px;
+  box-shadow: 0 0 12px #eae1f6;
+}
+
+@media (max-width: 450px){
+  .project-header{
+    margin-top: 1rem;
+  }
+}
