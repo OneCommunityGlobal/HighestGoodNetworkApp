@@ -54,7 +54,8 @@ import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
 import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesList/ConsumablesView';
-import EquipmentList from './components/BMDashboard/Equipment/List';
+import EquipmentsView from './components/BMDashboard/EquipmentsList/EquipmentsView';
+
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import AddTool from './components/BMDashboard/Tools/AddTool';
@@ -227,7 +228,10 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
-        <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
+
+        <BMProtectedRoute path="/bmdashboard/equipments" component={EquipmentsView} />
+        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
+
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
