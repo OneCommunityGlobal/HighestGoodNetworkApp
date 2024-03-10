@@ -14,6 +14,8 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { useSelector } from 'react-redux';
+import { Tooltip } from 'reactstrap';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -51,9 +53,58 @@ function LeaderBoard({
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
+  const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team'];
+  const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+  const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState(false);
+  const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState(false);
+  const usersOnFutureTimeOff = useSelector(state => state.timeOffRequests.futureTimeOff);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
+
+  const currentTimeOff = {};
+  const futureWeeksOff = {};
+
+  const timeOffCalculate = () => {
+    if (userOnTimeOff) {
+      for (const personId in userOnTimeOff) {
+        // check if user if off for the current week
+        if (
+          currentDate.isSameOrAfter(
+            moment(userOnTimeOff[personId].startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          ) &&
+          currentDate.isSameOrBefore(
+            moment(userOnTimeOff[personId].endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          )
+        ) {
+          const additionalWeeks = Math.floor(
+            moment(userOnTimeOff[personId].endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+              .subtract(1, 'day')
+              .diff(
+                moment(userOnTimeOff[personId].startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                'weeks',
+              ),
+          );
+          currentTimeOff[personId] = { isInTimeOff: true, weeks: additionalWeeks };
+        } else {
+          if (!currentTimeOff.hasOwnProperty(personId)) {
+            currentTimeOff[personId] = { isInTimeOff: false, weeks: -1 };
+          }
+        }
+      }
+    }
+
+    if (usersOnFutureTimeOff) {
+      for (const personId in usersOnFutureTimeOff) {
+        futureWeeksOff[personId] = Math.ceil(
+          moment(usersOnFutureTimeOff[personId].startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(
+            moment(currentDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            'days',
+          ) / 7,
+        );
+      }
+    }
+  };
 
   useEffect(() => {
     getMouseoverText();
@@ -111,6 +162,10 @@ function LeaderBoard({
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
   };
+
+  const currentTimeOfftoggle = () => setCurrentTimeOfftooltipOpen(!currentTimeOfftooltipOpen);
+  const futureTimeOfftoggle = () => setFutureTimeOfftooltipOpen(!futureTimeOfftooltipOpen);
+  timeOffCalculate();
 
   return (
     <div>
@@ -301,35 +356,51 @@ function LeaderBoard({
                     title="View Profile"
                     style={{
                       color:
-                        currentDate.isSameOrAfter(
-                          moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-                        ) &&
-                        currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                        (isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
+                        currentTimeOff[item.personId]?.isInTimeOff == true
                           ? 'rgba(128, 128, 128, 0.5)'
                           : undefined,
                     }}
                   >
                     {item.name}
-                    {currentDate.isSameOrAfter(
-                      moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-                    ) &&
-                    currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-                    Math.floor(
-                      moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
-                        .subtract(1, 'day')
-                        .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
-                    ) > 0 ? (
-                      <sup>
-                        {' '}
-                        +
-                        {Math.floor(
-                          moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
-                            .subtract(1, 'day')
-                            .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
-                        )}
-                      </sup>
-                    ) : null}
                   </Link>
+                  {isAllowedOtherThanOwner || isOwner || item.personId === userId ? (
+                    currentTimeOff[item.personId]?.isInTimeOff == true ? (
+                      currentTimeOff[item.personId]?.weeks > 0 ? (
+                        <>
+                          <sup style={{ color: 'rgba(128, 128, 128, 0.5)' }} id="currentTimeOff">
+                            {' '}
+                            +{currentTimeOff[item.personId].weeks}
+                          </sup>
+                          <Tooltip
+                            placement="top"
+                            isOpen={currentTimeOfftooltipOpen}
+                            target="currentTimeOff"
+                            toggle={currentTimeOfftoggle}
+                          >
+                            Number with a preceeding + indicates the additional weeks the user will
+                            be on a time off excluding the current week
+                          </Tooltip>
+                        </>
+                      ) : null
+                    ) : futureWeeksOff[item.personId] > 0 ? (
+                      <>
+                        <sup style={{ color: '#007bff' }} id="futureTimeOff">
+                          {' '}
+                          {futureWeeksOff[item.personId]}
+                        </sup>
+                        <Tooltip
+                          placement="top"
+                          isOpen={futureTimeOfftooltipOpen}
+                          target="futureTimeOff"
+                          toggle={futureTimeOfftoggle}
+                        >
+                          This number indicates the number of weeks from now the user has scheduled
+                          a time off
+                        </Tooltip>
+                      </>
+                    ) : null
+                  ) : null}
                   &nbsp;&nbsp;&nbsp;
                   {hasVisibilityIconPermission && !item.isVisible && (
                     <i className="fa fa-eye-slash" title="User is invisible" />
