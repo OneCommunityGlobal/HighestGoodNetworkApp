@@ -19,11 +19,19 @@ import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { MyTeamMember } from "./MyTeamMember";
+
+//! =========================================================================================
+//! IMPORT PARA CRIAR FILTRO
+import { boxStyle } from 'styles';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+//! =========================================================================================
+
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store
   const { authUser, displayUser, isLoading, usersWithTasks, usersWithTimeEntries } = props;
-
+  
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
@@ -41,12 +49,58 @@ const TeamMemberTasks = React.memo(props => {
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
+  
+  
+    //! =========================================================================================
+    //!    UseState PARA CRIAR FILTRO
+
+    //? O TEAMS RETORNA O ID E O NOME DAS EQUIPES.
+    const [teams, setTeams] = useState(displayUser.teams);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [selectedTeamName, setSelectedTeamName] = useState(); // contain Team name and ID
+    const [usersSelectedTeam, setUsersSelectedTeam] = useState();
+    const [toggleButtonText, setToggleButtonText] = useState('View All');
+  
+    //! =========================================================================================
+
+  //! =========================================================================================
+  //!    javascript PARA CRIAR FILTRO
+
+  const handleToggleButtonClick = () => { 
+    if (!usersSelectedTeam) {
+        alert();
+        return;
+    }else{
+
+      setToggleButtonText(prevText => prevText === 'View All' ? 'My Team' : 'View All');
+    }
+    // Add any other logic for the button click here
+  }
+
+  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
+
+
+  // useEffect(() => {
+  //   if (selectedTeamId) {
+  //     updateTeamMembers(selectedTeamId);
+  //   }
+  // }, [selectedTeamId]);
+
+  // useEffect(() => {
+  //   const ids = new Set(timeEntriesList.map(entry => entry._id));
+  //   if (ids.size !== timeEntriesList.length) {
+  //     console.warn('Duplicate keys found in timeEntriesList');
+  //   }
+  // }, [timeEntriesList]);
+
+  //! =========================================================================================
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllTimeOffRequests());
+    dispatch(getAllTimeOffRequests()); 
   }, []);
+
 
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
@@ -178,9 +232,11 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
-  const renderTeamsList = async () => {
-    if (usersWithTasks.length > 0) {
-      //sort all users by their name
+  const renderTeamsList = async (team) => {
+
+    if (!team) {
+          if (usersWithTasks.length > 0) {
+            //sort all users by their name
       usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
       //find currentUser
       const currentUserIndex = usersWithTasks.findIndex(user => user.personId === displayUser._id);
@@ -190,13 +246,43 @@ const TeamMemberTasks = React.memo(props => {
         usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
       }
       setTeamList([...usersWithTasks]);
+      
     }
-  };
+  }else{
+        setSelectedTeamName(team.teamName);
+    // //TODO: Add additional logic needed when a team is selected
+       try {
+        const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
+        setUsersSelectedTeam(response.data);
 
+        //console.log('usersWithTasks',usersWithTasks);
+        
+      } catch (error) {
+        alert('Error fetching team members:', error);
+      }
+
+  }
+  };
+  
   useEffect(() => {
     // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
     const initialFetching = async () => {
       await dispatch(fetchTeamMembersTask(displayUser._id));
+      //await setLoading(false);
+
+      // if (userId !== props.auth.user.userid) {
+      //   console.log("run here [1]");
+      //   await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
+      //   const currentUserRole = getUserRole(userId)
+      //     .then(resp => resp)
+      //     .then(user => {
+      //       setUserRole(user.data.role);
+      //     });
+      // } else {
+      //   console.log("run here [2]");
+      //   await dispatch(fetchTeamMembersTask(userId, null));
+      //   setUserRole(props.auth.user.role);
+      // }
     };
     initialFetching();
   }, []);
@@ -222,10 +308,37 @@ const TeamMemberTasks = React.memo(props => {
     setShowWhoHasTimeOff(prev => !prev);
   };
 
-  return (
+ return (
     <div className="container team-member-tasks">
       <header className="header-box">
         <h1>Team Member Tasks</h1>
+
+         {/* Dropdown for selecting a team */}
+         {isLoading ? (
+          <p>Loading teams...</p>
+          ) : (
+            <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+            <DropdownToggle caret>
+              {selectedTeamName || 'Select a Team'} {/* Display selected team or default text */}
+            </DropdownToggle>
+            <DropdownMenu>
+              {teams.map((team) => (
+                <DropdownItem key={team._id} onClick={() => renderTeamsList(team)}>
+                  {team.teamName}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+        )}
+        {<button
+              type="button"
+              color="primary"
+              className="task-button"
+              onClick={handleToggleButtonClick}
+              style={boxStyle}
+            >
+              {toggleButtonText === 'View All' ? 'My Team' : 'View All'}
+          </button> }
 
         {finishLoading ? (
           <div className="hours-btn-container">
@@ -366,70 +479,91 @@ const TeamMemberTasks = React.memo(props => {
             {isLoading ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
-              teamList.map(user => {
-                if (!isTimeFilterActive) {
-                  return (
-                    <TeamMemberTask
+              <>
+                {toggleButtonText === 'View All' ? (
+                  teamList.map(user => {
+                    if (!isTimeFilterActive) {
+                      return (
+                        <TeamMemberTask
+                          user={user}
+                          userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
+                            'putReviewStatus',
+                          )}
+                          key={user.personId}
+                          handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                          handleMarkAsDoneModal={handleMarkAsDoneModal}
+                          handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                          handleTaskModalOption={handleTaskModalOption}
+                          userRole={displayUser.role}
+                          updateTaskStatus={updateTaskStatus}
+                          userId={displayUser._id}
+                          showWhoHasTimeOff={showWhoHasTimeOff}
+                          onTimeOff={userOnTimeOff[user.personId]}
+                          goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                        />
+                      );
+                    } else {
+                      return (
+                        <Fragment key={user.personId}>
+                          <TeamMemberTask
+                            user={user}
+                            key={user.personId}
+                            handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                            handleMarkAsDoneModal={handleMarkAsDoneModal}
+                            handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                            handleTaskModalOption={handleTaskModalOption}
+                            showWhoHasTimeOff={showWhoHasTimeOff}
+                            onTimeOff={userOnTimeOff[user.personId]}
+                            goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                            userRole={displayUser.role}
+                            updateTaskStatus={updateTaskStatus}
+                            userId={displayUser._id}
+                          />
+                          {timeEntriesList.length > 0 &&
+                            timeEntriesList
+                              .filter(timeEntry => timeEntry.personId === user.personId)
+                              .map(timeEntry => (
+                                <tr className="table-row" key={timeEntry._id}>
+                                  <td colSpan={6} style={{ padding: 0 }}>
+                                    <TimeEntry
+                                      from="TaskTab"
+                                      data={timeEntry}
+                                      displayYear
+                                      key={timeEntry._id}
+                                      timeEntryUserProfile={timeEntry.userProfile}
+                                    />
+                                  </td>
+                                </tr>
+                              ))}
+                        </Fragment>
+                      );
+                    }
+                  })
+                ) : (
+                  usersSelectedTeam.map(user => {
+                    return(
+                      <MyTeamMember key={user._id}
                       user={user}
-                      userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                        'putReviewStatus',
-                      )}
-                      key={user.personId}
+                      usersWithTasks={usersWithTasks}
                       handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                       handleMarkAsDoneModal={handleMarkAsDoneModal}
                       handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                       handleTaskModalOption={handleTaskModalOption}
-                      userRole={displayUser.role}
-                      updateTaskStatus={updateTaskStatus}
-                      userId={displayUser._id}
                       showWhoHasTimeOff={showWhoHasTimeOff}
-                      onTimeOff={userOnTimeOff[user.personId]}
-                      goingOnTimeOff={userGoingOnTimeOff[user.personId]}
-                    />
-                  );
-                } else {
-                  return (
-                    <Fragment key={user.personId}>
-                      <TeamMemberTask
-                        user={user}
-                        key={user.personId}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                        handleTaskModalOption={handleTaskModalOption}
-                        userRole={displayUser.role}
-                        updateTaskStatus={updateTaskStatus}
-                        userId={displayUser._id}
-                        showWhoHasTimeOff={showWhoHasTimeOff}
-                        onTimeOff={userOnTimeOff[user.personId]}
-                        goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                      onTimeOff={userOnTimeOff[user._id]}
+                      goingOnTimeOff={userGoingOnTimeOff[user._id]}
                       />
-                      {timeEntriesList.length > 0 &&
-                        timeEntriesList
-                          .filter(timeEntry => timeEntry.personId === user.personId)
-                          .map(timeEntry => (
-                            <tr className="table-row" key={timeEntry._id}>
-                              <td colSpan={6} style={{ padding: 0 }}>
-                                <TimeEntry
-                                  from="TaskTab"
-                                  data={timeEntry}
-                                  displayYear
-                                  key={timeEntry._id}
-                                  timeEntryUserProfile={timeEntry.userProfile}
-                                />
-                              </td>
-                            </tr>
-                          ))}
-                    </Fragment>
-                  );
-                }
-              })
+                    )
+                    })
+                )}
+              </>
             )}
           </tbody>
         </Table>
       </div>
     </div>
   );
+  
 });
 
 const mapStateToProps = state => ({
