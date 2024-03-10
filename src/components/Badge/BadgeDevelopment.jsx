@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { boxStyle } from 'styles';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
@@ -7,8 +7,7 @@ import CreateNewBadgePopup from './CreateNewBadgePopup';
 function BadgeDevelopment(props) {
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
 
-  const toggle = () =>
-    setCreateNewBadgePopupOpen(isCreateNewBadgePopupOpen => !isCreateNewBadgePopupOpen);
+  const toggle = () => setCreateNewBadgePopupOpen(prevIsOpen => !prevIsOpen);
 
   return (
     <div>

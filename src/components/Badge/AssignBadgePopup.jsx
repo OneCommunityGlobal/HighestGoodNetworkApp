@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { boxStyle } from 'styles';
 import AssignTableRow from './AssignTableRow';
@@ -15,6 +15,7 @@ function AssignBadgePopup(props) {
       if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
         return badge;
       }
+      return 0;
     });
     return filteredList;
   };

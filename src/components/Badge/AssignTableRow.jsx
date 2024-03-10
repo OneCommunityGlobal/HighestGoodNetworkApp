@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
 import { connect } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
@@ -15,7 +15,7 @@ function AssignTableRow(props) {
     }
   }, [props.selectedBadges, props.badge._id]);
 
-  const toggle = () => setOpen(isOpen => !isOpen);
+  const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
 
   const handleCheckBoxChange = e => {
     if (e.target.checked) {
@@ -31,7 +31,7 @@ function AssignTableRow(props) {
     <tr>
       <td className="badge_image_mini">
         {' '}
-        <img src={props.badge.imageUrl} id={`popover_${props.index.toString()}`} />
+        <img src={props.badge.imageUrl} id={`popover_${props.index.toString()}`} alt="" />
         <Popover
           trigger="hover"
           isOpen={isOpen}

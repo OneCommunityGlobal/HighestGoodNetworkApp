@@ -80,7 +80,7 @@ function BadgeReport({
     <div style="margin-bottom: 20px; color: orange;"><h4>For ${firstName} ${lastName}</h4></div>
     <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
     for (let i = 0; i < badgesAll.length; i += 1) {
-      imageToUri(badgesAll[i].badge.imageUrl, function(uri) {
+      imageToUri(badgesAll[i].badge.imageUrl, function handleUriCallback(uri) {
         bgReport[i + 1] = `
         <table>
           <thead>
@@ -124,8 +124,8 @@ function BadgeReport({
 
   const pdfDocGenerator = async () => {
     const CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
-    const badges = sortBadges.slice();
-    FormatReportForPdf(badges, formattedReport => {
+    const badgesList = sortBadges.slice();
+    FormatReportForPdf(badgesList, formattedReport => {
       const html = htmlToPdfmake(formattedReport, {
         tableAutoSize: true,
       });
@@ -434,7 +434,7 @@ function BadgeReport({
                         <button
                           type="button"
                           className="btn btn-outline-danger"
-                          onClick={e => handleDeleteBadge(sortBadges[index])}
+                          onClick={() => handleDeleteBadge(sortBadges[index])}
                           style={boxStyle}
                         >
                           Delete
@@ -473,7 +473,7 @@ function BadgeReport({
         <Button
           className="btn--dark-sea-green float-right"
           style={{ ...boxStyle, margin: 5 }}
-          onClick={e => {
+          onClick={() => {
             saveChanges();
           }}
         >

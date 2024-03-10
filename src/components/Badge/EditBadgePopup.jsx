@@ -17,15 +17,17 @@ import { connect } from 'react-redux';
 import './Badge.css';
 import { boxStyle } from 'styles';
 import { updateBadge, closeAlert } from '../../actions/badgeManagement';
-import { fetchAllProjects } from '../../actions/projects';
 import badgeTypes from './BadgeTypes';
 
-function EditBadgePopup({ badgeValues, setEditPopup, open }) {
+function EditBadgePopup(props) {
+  // eslint-disable-next-line
+  const [badgeValues, setBadgeValues] = useState('');
   const [badgeId, setBadgeId] = useState('');
   const [badgeName, setBadgeName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
   const [ranking, setRanking] = useState(0);
+
   const [type, setType] = useState('Custom');
   const [showCategory, setShowCategory] = useState(false);
   const [category, setCategory] = useState('Unspecified');
@@ -74,26 +76,25 @@ function EditBadgePopup({ badgeValues, setEditPopup, open }) {
   };
 
   useEffect(() => {
-    if (badgeValues) {
-      setBadgeId(badgeValues._id);
-      setBadgeName(badgeValues.badgeName);
-      setImageUrl(badgeValues.imageUrl);
-      setDescription(badgeValues.description);
-      setRanking(badgeValues.ranking);
-      setType(badgeValues.type);
-      setCategory(badgeValues.category);
-      setTotalHrs(badgeValues.totalHrs);
-      setWeeks(badgeValues.weeks);
-      setMonths(badgeValues.months);
-      setMultiple(badgeValues.multiple);
-      setPeople(badgeValues.people);
-      displayTypeRelatedFields(badgeValues.type);
-    }
-  }, [badgeValues]);
+    setBadgeValues(props.badgeValues);
+    setBadgeId(props.badgeValues ? props.badgeValues._id : null);
+    setBadgeName(props.badgeValues ? props.badgeValues.badgeName : '');
+    setImageUrl(props.badgeValues ? props.badgeValues.imageUrl : '');
+    setDescription(props.badgeValues ? props.badgeValues.description : '');
+    setRanking(props.badgeValues ? props.badgeValues.ranking : 0);
+    setType(props.badgeValues ? props.badgeValues.type : 'Custom');
+    setCategory(props.badgeValues ? props.badgeValues.category : 'Unspecified');
+    setTotalHrs(props.badgeValues ? props.badgeValues.totalHrs : 0);
+    setWeeks(props.badgeValues ? props.badgeValues.weeks : 0);
+    setMonths(props.badgeValues ? props.badgeValues.months : 0);
+    setMultiple(props.badgeValues ? props.badgeValues.multiple : 0);
+    setPeople(props.badgeValues ? props.badgeValues.people : 0);
+    displayTypeRelatedFields(props.badgeValues ? props.badgeValues.type : 'Custom');
+  }, [props.badgeValues]);
 
-  const validRanking = inputRanking => {
+  const validRanking = badgeRanking => {
     const pattern = /^[0-9]*$/;
-    return pattern.test(inputRanking);
+    return pattern.test(badgeRanking);
   };
 
   const enableButton =
@@ -103,12 +104,12 @@ function EditBadgePopup({ badgeValues, setEditPopup, open }) {
     !validRanking(ranking);
 
   const closePopup = () => {
-    setEditPopup(false);
+    props.setEditPopup(false);
   };
 
-  let selectedCategoryValue;
-  let selectedType;
   const handleChange = event => {
+    let selectedCategoryValue;
+    let selectedType;
     switch (event.target.id) {
       case 'badgeName':
         setBadgeName(event.target.value);
@@ -171,13 +172,13 @@ function EditBadgePopup({ badgeValues, setEditPopup, open }) {
       multiple,
       people,
     };
-    updateBadge(badgeId, badgeData).then(() => {
+    props.updateBadge(badgeId, badgeData).then(() => {
       closePopup();
     });
   };
 
   return (
-    <Modal isOpen={open} toggle={closePopup}>
+    <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Edit Badge</ModalHeader>
       <ModalBody>
         <Form id="badgeEdit">
@@ -239,7 +240,7 @@ function EditBadgePopup({ badgeValues, setEditPopup, open }) {
               value={type}
               onChange={handleChange}
             >
-              <option value={'Custom'}>{'Custom'}</option>
+              <option value="Custom">Custom</option>
               {badgeTypes.map((element, i) => (
                 <option key={i}>{element}</option>
               ))}
@@ -263,11 +264,9 @@ function EditBadgePopup({ badgeValues, setEditPopup, open }) {
                 id="category"
                 value={category}
                 onChange={handleChange}
-                aria-labelledby="category"
               >
-                <option value="" disabled hidden>
-                  Select a category
-                </option>
+                {/* eslint-disable-next-line */}
+                <option value="" />
                 <option>Food</option>
                 <option>Energy</option>
                 <option>Housing</option>
@@ -450,7 +449,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchAllProjects: () => dispatch(fetchAllProjects()),
   updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
   closeAlert: () => dispatch(closeAlert()),
 });

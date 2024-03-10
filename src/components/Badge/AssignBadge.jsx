@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Form,
   FormGroup,
   Label,
   FormText,
-  Row,
-  Col,
   Modal,
   ModalHeader,
   ModalBody,
@@ -101,10 +99,6 @@ function AssignBadge(props) {
     props.getUserId(suggestion._id);
   };
 
-  const submit = () => {
-    toggle(true);
-  };
-
   const toggle = (didSubmit = false) => {
     const { selectedBadges, firstName, lastName, userId } = props;
     if (isOpen && didSubmit === true) {
@@ -114,13 +108,17 @@ function AssignBadge(props) {
       } else {
         props.assignBadges(firstName, lastName, selectedBadges);
       }
-      setOpen(isOpen => !isOpen);
+      setOpen(prevIsOpen => !prevIsOpen);
       props.clearNameAndSelected();
     } else if (firstName && lastName) {
-      setOpen(isOpen => !isOpen);
+      setOpen(prevIsOpen => !prevIsOpen);
     } else {
       props.validateBadges(firstName, lastName);
     }
+  };
+
+  const submit = () => {
+    toggle(true);
   };
 
   const FirstInputProps = {

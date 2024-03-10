@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -36,21 +36,6 @@ function CreateNewBadgePopup(props) {
   const [showPeople, setShowPeople] = useState(false);
   const [people, setPeople] = useState(0);
 
-  useEffect(() => {
-    displayTypeRelatedFields(type);
-  }, []);
-
-  const validRanking = ranking => {
-    const pattern = /^[0-9]*$/;
-    return pattern.test(ranking);
-  };
-
-  const enableButton =
-    badgeName.length === 0 ||
-    imageUrl.length === 0 ||
-    description.length === 0 ||
-    !validRanking(ranking);
-
   const resetTypeFieldDisplay = () => {
     setShowCategory(false);
     setShowTotalHrs(false);
@@ -84,11 +69,29 @@ function CreateNewBadgePopup(props) {
     }
   };
 
+  useEffect(() => {
+    displayTypeRelatedFields(type);
+  }, []);
+
+  const validRanking = badgeRanking => {
+    const pattern = /^[0-9]*$/;
+    return pattern.test(badgeRanking);
+  };
+
+  const enableButton =
+    badgeName.length === 0 ||
+    imageUrl.length === 0 ||
+    description.length === 0 ||
+    !validRanking(ranking);
+
   const closePopup = () => {
+    // eslint-disable-next-line
     props.toggle();
   };
 
   const handleChange = event => {
+    let selectedCategoryValue;
+    let selectedType;
     switch (event.target.id) {
       case 'badgeName':
         setBadgeName(event.target.value);
@@ -100,7 +103,7 @@ function CreateNewBadgePopup(props) {
         setDescription(event.target.value);
         break;
       case 'category':
-        const selectedCategoryValue = event.target.value;
+        selectedCategoryValue = event.target.value;
         if (selectedCategoryValue.length === 0) {
           setCategory('Unspecified');
         } else {
@@ -108,7 +111,7 @@ function CreateNewBadgePopup(props) {
         }
         break;
       case 'badgeType':
-        const selectedType = event.target.value;
+        selectedType = event.target.value;
         setType(selectedType);
         if (selectedType.length === 0) {
           setType('Custom');
@@ -138,7 +141,6 @@ function CreateNewBadgePopup(props) {
   };
 
   const handleSubmit = () => {
-    console.log(totalHrs);
     const newBadge = {
       badgeName,
       imageUrl,
@@ -152,6 +154,7 @@ function CreateNewBadgePopup(props) {
       multiple,
       people,
     };
+    // eslint-disable-next-line
     props.createNewBadge(newBadge).then(() => {
       closePopup();
     });
@@ -235,6 +238,7 @@ function CreateNewBadgePopup(props) {
             value={category}
             onChange={handleChange}
           >
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <option value="" />
             <option>Food</option>
             <option>Energy</option>
@@ -402,7 +406,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchAllProjects: () => dispatch(fetchAllProjects()),
   createNewBadge: newBadge => dispatch(createNewBadge(newBadge)),
   closeAlert: () => dispatch(closeAlert()),
 });

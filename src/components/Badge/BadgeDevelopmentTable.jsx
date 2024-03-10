@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Button,
@@ -22,7 +22,7 @@ import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import './Badge.css';
 
-function BadgeDevelopmentTable(props) {
+function BadgeDevelopmentTable({ allBadgeData, alertVisible, color, message }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('');
@@ -69,6 +69,10 @@ function BadgeDevelopmentTable(props) {
             returnText = `${badegValue.totalHrs} Hours Total In ${badegValue.category} Category`;
           }
           break;
+        default:
+          // Handle the default case when the badge type doesn't match any specific cases
+          returnText = ''; // You can set a default value or handle it as per your requirement
+          break;
       }
     }
     return returnText;
@@ -97,8 +101,8 @@ function BadgeDevelopmentTable(props) {
     setType(text);
   };
 
-  const onBadgeRankingSort = order => {
-    setOrder(order);
+  const onBadgeRankingSort = rankingOrder => {
+    setOrder(rankingOrder);
   };
 
   const resetFilters = () => {
@@ -117,6 +121,7 @@ function BadgeDevelopmentTable(props) {
       ) {
         return badge;
       }
+      return 0;
     });
 
     if (order === 'Ascending') {
@@ -127,6 +132,7 @@ function BadgeDevelopmentTable(props) {
         if (a.ranking < b.ranking) return -1;
         if (a.badgeName > b.badgeName) return 1;
         if (a.badgeName < b.badgeName) return -1;
+        return 0;
       });
     } else if (order === 'Descending') {
       filteredList.sort((a, b) => {
@@ -136,12 +142,13 @@ function BadgeDevelopmentTable(props) {
         if (a.ranking < b.ranking) return 1;
         if (a.badgeName > b.badgeName) return 1;
         if (a.badgeName < b.badgeName) return -1;
+        return 0;
       });
     }
     return filteredList;
   };
 
-  const filteredBadges = filterBadges(props.allBadgeData);
+  const filteredBadges = filterBadges(allBadgeData);
 
   // Badge Development checkbox
   const reportBadge = badgeValue => {
@@ -154,9 +161,9 @@ function BadgeDevelopmentTable(props) {
           id={badgeValue._id}
           name="reportable"
           checked={badgeValue.showReport || false}
-          onChange={e => {
+          onChange={() => {
             const updatedValue = { ...badgeValue, showReport: !checkValue };
-            props.updateBadge(badgeValue._id, updatedValue);
+            updateBadge(badgeValue._id, updatedValue);
           }}
         />
       </div>
@@ -185,7 +192,7 @@ function BadgeDevelopmentTable(props) {
             <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
-                <img src={value.imageUrl} id={`popover_${value._id}`} />
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className="text-center">
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />
@@ -241,16 +248,16 @@ function BadgeDevelopmentTable(props) {
       <DeleteBadgePopup
         open={deletePopup}
         setDeletePopup={setDeletePopup}
-        deleteBadge={props.deleteBadge}
+        deleteBadge={deleteBadge}
         badgeId={deleteId}
         badgeName={deleteName}
       />
-      <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()}>
-        <ModalBody className={`badge-message-background-${props.color}`}>
-          <p className={`badge-message-text-${props.color}`}>{props.message}</p>
+      <Modal isOpen={alertVisible} toggle={() => closeAlert()}>
+        <ModalBody className={`badge-message-background-${color}`}>
+          <p className={`badge-message-text-${color}`}>{message}</p>
         </ModalBody>
-        <ModalFooter className={`badge-message-background-${props.color}`}>
-          <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
+        <ModalFooter className={`badge-message-background-${color}`}>
+          <Button color="secondary" size="sm" onClick={() => closeAlert()}>
             OK
           </Button>
         </ModalFooter>
