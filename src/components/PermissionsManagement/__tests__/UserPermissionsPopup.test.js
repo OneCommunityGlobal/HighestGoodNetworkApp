@@ -8,7 +8,7 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import object from 'joi/lib/types/object';
+import { object } from 'prop-types';
 
 const mockStore = configureStore([thunk]);
 let store;
