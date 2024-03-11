@@ -80,6 +80,7 @@ function UserProfile(props) {
   const [isProjectsEqual, setIsProjectsEqual] = useState(true);
   const [projects, setProjects] = useState([]);
   const [originalProjects, setOriginalProjects] = useState([]);
+  const [resetProjects, setResetProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [formValid, setFormValid] = useState(initialFormValid);
@@ -315,6 +316,7 @@ function UserProfile(props) {
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
+      setResetProjects(newUserProfile.projects);
       setUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
@@ -1013,7 +1015,7 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="4">
-                <ProjectsTab
+                <ProjectsTab 
                   userProjects={userProfile.projects || []}
                   userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
@@ -1118,6 +1120,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1175,6 +1178,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1243,6 +1247,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1304,6 +1309,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1353,6 +1359,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1424,6 +1431,7 @@ function UserProfile(props) {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
                         setTeams(originalTeams);
+                        setProjects(resetProjects);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
                       style={boxStyle}
