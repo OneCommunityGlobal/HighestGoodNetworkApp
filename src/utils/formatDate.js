@@ -7,3 +7,15 @@ export const formatDate = (date) => moment(date).tz('America/Los_Angeles').forma
 export const formatted_AM_PM_Time = (date) => moment(date).format('h:mm:ss A');
 export const formatCreatedDate = (date) => moment(date).format("MM/DD");
 
+/**
+ * Constants for day of week. Starting from Sunday.
+ */
+const DAY_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+/**
+ * 
+ * @param {String} utcTs A UTC timestamp String
+ * @returns {String} day of the week.
+ */
+export const getDayOfWeekStringFromUTC = (utcTs) => moment(utcTs).tz('America/Los_Angeles').day();
+

@@ -237,7 +237,7 @@ class UserManagement extends React.PureComponent {
 
   filteredUserList = userProfiles => {
     return userProfiles.filter(user => {
-      console.log('user', user);
+      // console.log('user', user);
       // Applying the search filters before creating each table data element
       return (
         // Check if the user matches the search criteria

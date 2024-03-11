@@ -440,13 +440,13 @@ const TimeEntryForm = props => {
       setSubmitting(false);
       return;
     }
-
     // see if this is the first time the user is logging time
+    // Update start date to current date upon first logging time.
     if (!edit) {
       if (timeEntryFormUserProfile?.isFirstTimelog) {
         const updatedUserProfile = {
           ...timeEntryFormUserProfile,
-          createdDate: new Date(),
+          startDate: new Date(),
           isFirstTimelog: false,
         };
         await updateUserProfile(updatedUserProfile);
