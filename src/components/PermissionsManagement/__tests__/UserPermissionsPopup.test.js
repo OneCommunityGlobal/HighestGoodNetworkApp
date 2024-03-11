@@ -226,6 +226,10 @@ describe('UserPermissionsPopup component', () => {
         firstName: 'Test3',
         lastName: 'Owner',
         email: 'Test3.Owner@gmail.com',
+        permissions: {
+          frontPermissions: [],
+          backPermissions: [],
+        },
       },
     });
 
@@ -244,6 +248,7 @@ describe('UserPermissionsPopup component', () => {
         },
       },
       role: mockAdminState.role,
+
       allUserProfiles: {
         userProfiles: [
           {
@@ -282,13 +287,18 @@ describe('UserPermissionsPopup component', () => {
         <UserPermissionsPopUp />
       </Provider>,
     );
-    const userElement = screen.getByText('Test1 Volunteer');
+    const userElement = screen.getByText('Test2 Manager');
     fireEvent.click(userElement);
-    await waitFor(() => {
-      const addElement = screen.getAllByText('Add');
-      fireEvent.click(addElement[0]);
-    });
-    //await waitFor(() => {});
-    screen.debug();
+    await waitFor(() => {});
+    const badgePermission = screen.getByTestId('putUserProfilePermissions');
+    const addButton = badgePermission.querySelector('button');
+    fireEvent.click(addButton);
+    await waitFor(() => {});
+    expect(badgePermission.querySelector('Add')).not.toBeInTheDocument();
+    const resetToDefaultButton = screen.getByText('Reset to Default');
+    fireEvent.click(resetToDefaultButton);
+    await waitFor(() => {});
+    const badgePermission1 = screen.getByTestId('putUserProfilePermissions');
+    expect(badgePermission1.querySelector('Delete')).not.toBeInTheDocument();
   });
 });
