@@ -2,7 +2,7 @@ import { Card, CardTitle, CardBody, UncontrolledTooltip } from 'reactstrap';
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
 
-function NewBadges({ badges, personalBestMaxHrs }) {
+function NewBadges(props) {
   const filterBadges = allBadges => {
     const filteredList = allBadges.filter(
       value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
@@ -15,14 +15,12 @@ function NewBadges({ badges, personalBestMaxHrs }) {
       if (a.badge.ranking < b.badge.ranking) return -1;
       if (a.badge.badgeName > b.badge.badgeName) return 1;
       if (a.badge.badgeName < b.badge.badgeName) return -1;
-
-      // If none of the above conditions match, the objects are considered equal
       return 0;
     });
     return filteredList;
   };
 
-  const filteredBadges = filterBadges(badges);
+  const filteredBadges = filterBadges(props.badges);
 
   return (
     <>
@@ -39,21 +37,23 @@ function NewBadges({ badges, personalBestMaxHrs }) {
             New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
           <div className="new_badges">
-            {filteredBadges.length === 0 && (
+            {filteredBadges.length === 0 ? (
               <strong style={{ opacity: 0.7 }}>
                 Get yourself a herd of new badges! New badges are earned at the close of each epic
                 week. Newest badges are placed here at the top for a week after you earn them so
                 everyone can bask in the awesomeness of your achievement(s)!
               </strong>
+            ) : (
+              ''
             )}
             {filteredBadges.map((value, index) => (
               <BadgeImage
-                personalBestMaxHrs={personalBestMaxHrs}
+                personalBestMaxHrs={props.personalBestMaxHrs}
                 time="new"
                 count={value.count}
                 badgeData={value.badge}
                 index={index}
-                // key={index}
+                key={index}
               />
             ))}
           </div>

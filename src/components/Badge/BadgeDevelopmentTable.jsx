@@ -22,7 +22,7 @@ import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import './Badge.css';
 
-function BadgeDevelopmentTable({ allBadgeData, alertVisible, color, message }) {
+function BadgeDevelopmentTable(props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('');
@@ -71,7 +71,7 @@ function BadgeDevelopmentTable({ allBadgeData, alertVisible, color, message }) {
           break;
         default:
           // Handle the default case when the badge type doesn't match any specific cases
-          returnText = ''; // You can set a default value or handle it as per your requirement
+          returnText = '';
           break;
       }
     }
@@ -101,8 +101,8 @@ function BadgeDevelopmentTable({ allBadgeData, alertVisible, color, message }) {
     setType(text);
   };
 
-  const onBadgeRankingSort = rankingOrder => {
-    setOrder(rankingOrder);
+  const onBadgeRankingSort = RankingOrder => {
+    setOrder(RankingOrder);
   };
 
   const resetFilters = () => {
@@ -148,7 +148,7 @@ function BadgeDevelopmentTable({ allBadgeData, alertVisible, color, message }) {
     return filteredList;
   };
 
-  const filteredBadges = filterBadges(allBadgeData);
+  const filteredBadges = filterBadges(props.allBadgeData);
 
   // Badge Development checkbox
   const reportBadge = badgeValue => {
@@ -163,7 +163,7 @@ function BadgeDevelopmentTable({ allBadgeData, alertVisible, color, message }) {
           checked={badgeValue.showReport || false}
           onChange={() => {
             const updatedValue = { ...badgeValue, showReport: !checkValue };
-            updateBadge(badgeValue._id, updatedValue);
+            props.updateBadge(badgeValue._id, updatedValue);
           }}
         />
       </div>
@@ -248,16 +248,16 @@ function BadgeDevelopmentTable({ allBadgeData, alertVisible, color, message }) {
       <DeleteBadgePopup
         open={deletePopup}
         setDeletePopup={setDeletePopup}
-        deleteBadge={deleteBadge}
+        deleteBadge={props.deleteBadge}
         badgeId={deleteId}
         badgeName={deleteName}
       />
-      <Modal isOpen={alertVisible} toggle={() => closeAlert()}>
-        <ModalBody className={`badge-message-background-${color}`}>
-          <p className={`badge-message-text-${color}`}>{message}</p>
+      <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()}>
+        <ModalBody className={`badge-message-background-${props.color}`}>
+          <p className={`badge-message-text-${props.color}`}>{props.message}</p>
         </ModalBody>
-        <ModalFooter className={`badge-message-background-${color}`}>
-          <Button color="secondary" size="sm" onClick={() => closeAlert()}>
+        <ModalFooter className={`badge-message-background-${props.color}`}>
+          <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK
           </Button>
         </ModalFooter>
