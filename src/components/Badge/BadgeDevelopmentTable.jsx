@@ -143,23 +143,32 @@ const BadgeDevelopmentTable = props => {
 
   let filteredBadges = filterBadges(props.allBadgeData);
 
+  const toggleCheckbox = (badgeValue) => {
+    const updatedValue = { ...badgeValue, showReport: !badgeValue.showReport };
+    props.updateBadge(badgeValue._id, updatedValue);
+  };
+
   // Badge Development checkbox
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
     const checkValue = badgeValue.showReport ? true : false;
     return (
-      <div className="badge_check">
-        <Input
-          type="checkbox"
-          id={badgeValue._id}
-          name="reportable"
-          checked={badgeValue.showReport || false}
-          onChange={e => {
-            const updatedValue = { ...badgeValue, showReport: !checkValue };
-            props.updateBadge(badgeValue._id, updatedValue);
-          }}
-        />
-      </div>
+      <div
+      role="checkbox"
+      aria-checked={badgeValue.showReport}
+      tabIndex={0}
+      onClick={() => toggleCheckbox(badgeValue)}
+      onKeyDown={(e) => e.key === 'Enter' && toggleCheckbox(badgeValue)}
+      style={{
+        display: 'inline-block',
+        width: '20px',
+        height: '20px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        backgroundColor: badgeValue.showReport ? '#007bff' : 'transparent',
+        cursor: 'pointer',
+      }}
+    />
     );
   };
 
@@ -206,9 +215,9 @@ const BadgeDevelopmentTable = props => {
                 </UncontrolledPopover>
               </td>
               <td>{value.badgeName}</td>
-              <td>{value.description || ''}</td>
+              <td className="d-xl-table-cell d-none">{value.description || ''}</td>
               <td>{value.type || ''}</td>
-              <td>{detailsText(value)}</td>
+              <td className='d-xl-table-cell d-none'>{detailsText(value)}</td>
               <td>{value.ranking || 0}</td>
               <td>
                 <span className="badgemanagement-actions-cell">
@@ -232,7 +241,7 @@ const BadgeDevelopmentTable = props => {
                   </Button>
                 </span>
               </td>
-                <td style={{textAlign:"center"}}>{reportBadge(value)}</td>
+              <td style={{textAlign:"center"}}>{reportBadge(value)}</td>
             </tr>
           ))}
         </tbody>
