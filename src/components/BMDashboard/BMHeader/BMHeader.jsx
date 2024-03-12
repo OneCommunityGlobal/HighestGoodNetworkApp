@@ -61,11 +61,11 @@ export const Header = props => {
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
   // Reports
-  const canGetWeeklySummaries = props.hasPermission(permissions.weeklySummariesReport);
+  const canGetWeeklySummaries = props.hasPermission(permissions.weeklySummariesReport.getWeeklySummaries);
   // Users
   const canPostUserProfile = props.hasPermission(permissions.userManagement.postUserProfile);
   const canDeleteUserProfile = props.hasPermission(permissions.userManagement.deleteUserProfile);
-  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
   // Badges
   const canCreateBadges = props.hasPermission(permissions.badgeManagement.createBadges);
   // Projects

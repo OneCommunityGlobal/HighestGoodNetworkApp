@@ -61,7 +61,7 @@ const SummaryBar = props => {
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
-  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
 
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop

@@ -12,8 +12,8 @@ import {
 const BlueSquare = props => {
   const authRole = useSelector(state => state.auth.user.role);
 
-  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
+  const isInfringementAuthorizer = props.hasPermission(permissions.infringementAuthorizer);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
   const { blueSquares, handleBlueSquare, numberOfReasons, infringementsNum } = props;
 
   return (

@@ -85,7 +85,7 @@ const endOfWeek = offset => {
 
 const Timelog = props => {
   // Main Function component
-  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo.putUserProfileImportantInfo);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
   const canEditTimeEntry = props.hasPermission(permissions.timeLog.editTimeEntry);
 
   // access the store states

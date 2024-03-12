@@ -19,6 +19,7 @@ import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 import { formatDate } from 'utils/formatDate';
+import { permissions } from 'utils/constants';
 
 
 function SingleTask(props) {
@@ -28,7 +29,7 @@ function SingleTask(props) {
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
-  const canPostProject = props.hasPermission('postProject');
+  const canPostProject = props.hasPermission(permissions.projects.postProject);
 
   const history = useHistory();
   useEffect(() => {

@@ -6,11 +6,12 @@ import { Input, FormGroup, FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { updateTeam } from 'actions/allTeamsAction';
+import { permissions } from 'utils/constants';
 
 function TeamTable({ allTeams, auth, hasPermission }) {
   // Display project lists
   let TeamsList = [];
-  const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role == 'Owner';
+  const canEditTeamCode = hasPermission(permissions.teams.editTeamCode) || auth.user.role == 'Owner';
 
   const EditTeamCode = ({team}) => {
 

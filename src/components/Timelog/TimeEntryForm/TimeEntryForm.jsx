@@ -121,8 +121,8 @@ const TimeEntryForm = props => {
   const [submitting, setSubmitting] = useState(false);
 
   const canEditTimeEntry =
-    props.hasPermission(permissions.timeLog);
-  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
+    props.hasPermission(permissions.timeLog.editTimeEntry);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
 
   const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry);
 

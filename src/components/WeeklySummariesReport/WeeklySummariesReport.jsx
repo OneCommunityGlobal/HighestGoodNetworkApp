@@ -32,6 +32,7 @@ import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import { permissions } from 'utils/constants';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -90,14 +91,14 @@ export class WeeklySummariesReport extends Component {
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
-    this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+    this.canPutUserProfileImportantInfo = hasPermission(permissions.userManagement.putUserProfileImportantInfo);
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
     this.codeEditPermission =
-      hasPermission('editTeamCode') ||
+      hasPermission(permissions.teams.editTeamCode) ||
       auth.user.role === 'Owner' ||
       auth.user.role === 'Administrator';
-    this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
+    this.canSeeBioHighlight = hasPermission(permissions.highlightEligibleBios);
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];

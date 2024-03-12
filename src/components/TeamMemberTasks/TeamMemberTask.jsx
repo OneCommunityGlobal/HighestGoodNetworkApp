@@ -71,7 +71,7 @@ const TeamMemberTask = React.memo(
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     // ^^^
 
-    const canGetWeeklySummaries = dispatch(hasPermission(permissions.weeklySummariesReport));
+    const canGetWeeklySummaries = dispatch(hasPermission(permissions.weeklySummariesReport.getWeeklySummaries));
     const canUpdateTask = dispatch(hasPermission(permissions.projects.updateTask));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 

@@ -1008,7 +1008,7 @@ function UserProfile(props) {
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
                     !isTeamSaved
                   }
-                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner' || targetIsDevAdminUneditable}
+                  canEditTeamCode={props.hasPermission(permissions.teams.editTeamCode) || requestorRole == 'Owner' || targetIsDevAdminUneditable}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
@@ -1220,7 +1220,7 @@ function UserProfile(props) {
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     canEditTeamCode={
-                      props.hasPermission('editTeamCode') || requestorRole === 'Owner' ||requestorRole === 'Administrator'
+                      props.hasPermission(permissions.teams.editTeamCode) || requestorRole === 'Owner' ||requestorRole === 'Administrator'
                     }
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
