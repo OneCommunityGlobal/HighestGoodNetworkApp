@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
 import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -7,7 +7,7 @@ import { Checkbox } from 'components/common/Checkbox';
 import TextSearchBox from '../../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
 
-function InputWithCalendarIcon({ value, onClick }) {
+const InputWithCalendarIcon = forwardRef(({ value, onClick }, ref) => {
   return (
     <>
       <input
@@ -15,11 +15,13 @@ function InputWithCalendarIcon({ value, onClick }) {
         className="table-filter-datePicker table-filter-item table-filter-input"
         value={value}
         onClick={onClick}
+        ref={ref}
+        readOnly
       />
       <FiCalendar className="date-picker-icon" onClick={onClick} />
     </>
   );
-}
+});
 
 function TableFilter({
   onTaskNameSearch,
