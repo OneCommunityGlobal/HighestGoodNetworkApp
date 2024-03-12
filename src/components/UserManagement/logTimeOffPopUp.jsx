@@ -236,10 +236,10 @@ const LogTimeOffPopUp = React.memo(props => {
         const requestEndingDate = moment(request.endingDate.split('T')[0]).startOf('day');
 
         if (
-          (dataStartingDate.isSameOrAfter(requestStartingDate) &&
-            dataStartingDate.isSameOrBefore(requestEndingDate)) ||
-          (dataEndingDate.isSameOrAfter(requestStartingDate) &&
-            dataEndingDate.isSameOrBefore(requestEndingDate))
+          (requestStartingDate.isSameOrAfter(dataStartingDate) &&
+          requestStartingDate.isSameOrBefore(dataEndingDate)) ||
+          (requestEndingDate.isSameOrAfter(dataStartingDate) &&
+          requestEndingDate.isSameOrBefore(dataEndingDate))
         ) {
           return true;
         }

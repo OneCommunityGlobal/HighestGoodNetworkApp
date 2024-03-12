@@ -87,11 +87,11 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
 const isUserOnVacation = requests => {
   moment.tz.setDefault('America/Los_Angeles');
 
-  requests.forEach( request => {
-    if (isTimeOffRequestIncludeCurrentWeek(request)) {
+  for (const request of requests) {
+    if(isTimeOffRequestIncludeCurrentWeek(request)) {
       return request;
     }
-  })
+  }
   return null;
 };
 
