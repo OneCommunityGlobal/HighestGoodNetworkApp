@@ -55,7 +55,8 @@ import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
-import { setCurrentUser } from '../../actions/authActions';
+import { GiConsoleController } from 'react-icons/gi';
+import { setCurrentUser } from '../../actions/authActions'
 
 function UserProfile(props) {
   /* Constant values */
@@ -1408,7 +1409,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && (activeTab === '1' || activeTab === '2' || activeTab === '3') && (
+              {canEdit && (activeTab === '1' || activeTab === '2' || activeTab === '3' || activeTab === '4') && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
