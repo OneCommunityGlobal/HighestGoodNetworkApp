@@ -15,6 +15,7 @@ import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequire
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
+import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
 
 // eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
@@ -30,6 +31,7 @@ export function ProjectReport({ match }) {
   const { wbs, projectMembers, isActive, projectName, wbsTasksID } = useSelector(
     projectReportViewData,
   );
+
 
   useEffect(() => {
     if (match) {
@@ -75,6 +77,9 @@ export function ProjectReport({ match }) {
           <TasksTable WbsTasksID={wbsTasksID} />
         </ReportPage.ReportBlock>
       </div>
+      <ReportPage.ReportBlock>
+        <WbsPieChart projectMembers={projectMembers} projectName={projectName}/>
+      </ReportPage.ReportBlock>
     </ReportPage>
   );
 }
