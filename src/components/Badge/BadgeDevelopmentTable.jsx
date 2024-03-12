@@ -143,32 +143,32 @@ const BadgeDevelopmentTable = props => {
 
   let filteredBadges = filterBadges(props.allBadgeData);
 
-  const toggleCheckbox = (badgeValue) => {
-    const updatedValue = { ...badgeValue, showReport: !badgeValue.showReport };
-    props.updateBadge(badgeValue._id, updatedValue);
-  };
-
   // Badge Development checkbox
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
     const checkValue = badgeValue.showReport ? true : false;
     return (
-      <div
-      role="checkbox"
-      aria-checked={badgeValue.showReport}
-      tabIndex={0}
-      onClick={() => toggleCheckbox(badgeValue)}
-      onKeyDown={(e) => e.key === 'Enter' && toggleCheckbox(badgeValue)}
-      style={{
+      <div className="badge_check">
+      <input
+        type="checkbox"
+        id={badgeValue._id}
+        name="reportable"
+        checked={badgeValue.showReport || false}
+        onChange={e => {
+          const updatedValue = { ...badgeValue, showReport: !checkValue };
+          props.updateBadge(badgeValue._id, updatedValue);
+        }}
+            style={{
         display: 'inline-block',
         width: '20px',
         height: '20px',
         border: '1px solid #ccc',
         borderRadius: '4px',
-        backgroundColor: badgeValue.showReport ? '#007bff' : 'transparent',
+        backgroundColor: checkValue ? '#007bff' : 'transparent',
         cursor: 'pointer',
       }}
-    />
+      />
+    </div>
     );
   };
 
