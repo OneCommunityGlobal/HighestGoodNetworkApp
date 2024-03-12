@@ -236,7 +236,7 @@ const SetupHistoryPopup = props => {
         baseUrl: baseUrl,
       })
       .then((res) => {
-        debugger;
+        // debugger;
         if (res.status === 200) {
           // Close and reload data from database.
           props.handleShouldRefreshInvitationHistory()

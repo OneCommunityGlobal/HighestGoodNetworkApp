@@ -25,3 +25,32 @@
 .div-addproject .btn-addproject[disabled] {
   pointer-events: none;
 }
+
+.projects-and-tasks-header {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  margin-bottom: 10px;
+}
+
+.table-container {
+  max-height: 300px;
+  overflow: auto;
+  margin: 2px;
+}
+
+.table-header {
+  width: 50px;
+}
+
+.table-cell {
+  width: 103px;
+  text-align: center;
+}
+
+.opacity-70{
+  opacity: 0.70;
+}
+
+.fs-18{
+  font-size: 18px;
+}

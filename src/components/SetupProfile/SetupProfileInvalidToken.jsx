@@ -21,6 +21,7 @@ const SetupProfileInvalidToken = (props) => {
    * to display the message.
    */
   const message = props.message;
+  debugger;
   const displayMessage = (message) => {
   switch (message) {
     case TOKEN_HAS_SETUP:

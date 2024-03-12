@@ -19,6 +19,7 @@ const SetupProfile = ({ match }) => {
     httpService
       .post(ENDPOINTS.VALIDATE_TOKEN(), { token })
       .then(res => {
+        debugger
         if (res.status === 200) {
           setIsValidToken(true);
           setEmail(res.data.email);
@@ -26,6 +27,7 @@ const SetupProfile = ({ match }) => {
         setLoading(false);
       })
       .catch(err => {
+        debugger
         let res = err.response;
         if(res.data) {
           setInValidMessage(res.data);
@@ -37,7 +39,7 @@ const SetupProfile = ({ match }) => {
   return (
     <>
       {!loading ? (
-        isValidToken && inValidMessage ? (
+        isValidToken ? (
           <SetupProfileUserEntry token={linktoken} userEmail={email} />
         ) : (
           <SetupProfileInvalidToken message={inValidMessage} />

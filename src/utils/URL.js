@@ -58,6 +58,10 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
+  SAVE_SUMMARY_RECEPIENTS: (userid) => `${APIEndpoint}/reports/recepients/${userid}`,
+  GET_SUMMARY_RECEPIENTS: ()=>`${APIEndpoint}/reports/getrecepients`,
+  AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () => `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
+  
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: id => `${APIEndpoint}/backup/popupeditor/${id}`,
@@ -106,6 +110,30 @@ export const ENDPOINTS = {
   GET_SETUP_INVITATION: () => `${APIEndpoint}/getSetupInvitation`,
   REFRESH_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/refreshSetupInvitationToken`,
   CANCEL_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/cancelSetupInvitationToken`,
+  // emails endpoint
+  POST_EMAILS: `${APIEndpoint}/send-emails`,
+  BROADCAST_EMAILS: `${APIEndpoint}/broadcast-emails`,
+  UPDATE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/update-email-subsriptions`,
+  NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
+  CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
+  REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
+  //reasons endpoints
+  CREATEREASON: () => {
+    return `${APIEndpoint}/reason/`;
+  },
+  GETALLUSERREASONS: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+  GETSINGLEREASONBYID: userId => {
+    return `${APIEndpoint}/reason/single/${userId}`;
+  },
+  PATCHUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+  DELETEUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+
   //reasons endpoints
   CREATEREASON: () => {
     return `${APIEndpoint}/reason/`;
@@ -135,6 +163,7 @@ export const ENDPOINTS = {
   BM_MATERIAL_TYPE: `${APIEndpoint}/bm/invtypes/material`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
+  BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
