@@ -50,7 +50,7 @@ import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect, useDispatch } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
+import { formatDate, convertDateFormatToMMMDDYY } from 'utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
@@ -699,6 +699,7 @@ function UserProfile(props) {
     setUserEndDate(endDate);
   };
 
+  console.log(userProfile.startDate);
   return (
     <div>
       <ActiveInactiveConfirmationPopup
@@ -835,7 +836,7 @@ function UserProfile(props) {
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{formatDate(userProfile.startDate)}</span>
+              From : <span>{convertDateFormatToMMMDDYY(userProfile.startDate)}</span>
               {'   '}
               To: <span>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
             </p>
