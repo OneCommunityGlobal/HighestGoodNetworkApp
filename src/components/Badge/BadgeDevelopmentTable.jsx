@@ -11,7 +11,6 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
-  Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { updateBadge, deleteBadge, closeAlert } from '../../actions/badgeManagement';
