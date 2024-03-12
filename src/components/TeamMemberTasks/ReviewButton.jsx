@@ -1,28 +1,56 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import './style.css';
 import './reviewButton.css';
 import { boxStyle } from 'styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import httpService from '../../services/httpService';
+import { ApiEndpoint } from 'utils/URL';
 
 const ReviewButton = ({
   user,
-  myUserId,
-  myRole,
   task,
-  updateTask
+  updateTask,
+  userPermission
 }) => {
+ 
 
+
+
+  const myUserId = useSelector(state => state.auth.user.userid);
+  const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
+  const [link, setLink] = useState("");
+  const [verifyModal, setVerifyModal] = useState(false);
+  const [selectedAction, setSelectedAction] = useState(null);
 
   const toggleModal = () => {
     setModal(!modal);
   };
-  
+
+  const toggleVerify = () => {
+    setVerifyModal(!verifyModal);
+  }
+
+  const handleLink = (e) => {
+    setLink(e.target.value);
+  };
+
+  const validURL = (url) => {
+    try {
+      const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
+      return pattern.test(url);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  }
+
   const reviewStatus = function() {
     let status = "Unsubmitted";
-    for(let resource of task.resources){
+    for(let resource of task.resources) {
       if (resource.userID === user.personId) {
         status = resource.reviewStatus ? resource.reviewStatus : "Unsubmitted"
         break;
@@ -34,12 +62,25 @@ const ReviewButton = ({
   const updReviewStat = (newStatus) => {
     const resources = [...task.resources];
     const newResources = resources.map(resource => {
-      const newResource = { ...resource };
-      newResource.reviewStatus = newStatus;
+      const newResource = { ...resource, reviewStatus: newStatus };
       newResource.completedTask = newStatus === "Reviewed";
       return newResource;
     });
-    const updatedTask = { ...task, resources: newResources };
+    let updatedTask = { ...task, resources: newResources };
+    //Add relatedWorkLinks to existing tasks
+    if(!Array.isArray(task.relatedWorkLinks)) {
+      task.relatedWorkLinks = [];
+    }
+  
+    if (newStatus === 'Submitted' && link) {
+      if (validURL(link)) {
+        updatedTask = {...updatedTask, relatedWorkLinks: [...task.relatedWorkLinks, link] };
+        setLink("");
+      } else {
+        alert('Invalid URL. Please enter a valid URL of at least 20 characters');
+        return;
+      }
+    }
     updateTask(task._id, updatedTask);
     setModal(false);
   };
@@ -50,28 +91,33 @@ const ReviewButton = ({
         Submit for Review
       </Button>;
      } else if (reviewStatus == "Submitted")  {
-      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") {
+      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || userPermission) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={boxStyle}>
               Ready for Review
             </DropdownToggle>
             <DropdownMenu>
-            <DropdownItem onClick={toggleModal}>
+            {task.relatedWorkLinks && task.relatedWorkLinks.map((link, index) => (
+              <DropdownItem key={index} href={link} target="_blank">
+                View Link
+              </DropdownItem>
+            ))}
+            <DropdownItem onClick={() => { setSelectedAction('Complete and Remove'); toggleVerify(); }}>
               <FontAwesomeIcon
                 className="team-member-tasks-done"
                 icon={faCheck}
               /> as complete and remove task
             </DropdownItem>
-            <DropdownItem onClick={() => {updReviewStat("Unsubmitted");}}>
+            <DropdownItem onClick={() => { setSelectedAction('More Work Needed'); toggleVerify()}}>
               More work needed, reset this button
             </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
         );
       } else if (user.personId == myUserId) {
-        return <Button className='reviewBtn' color='success' onClick={() => {updReviewStat("Unsubmitted");}}>
-          More work needed, reset this button
+        return <Button className='reviewBtn' color='info' disabled>
+          Work Submitted and Awaiting Review
         </Button>;
       } else {
         return <Button className='reviewBtn' color='success' disabled>
@@ -81,10 +127,57 @@ const ReviewButton = ({
      } else {
       return <></>;
      }
+    };
+  
+  const sendReviewReq = event => {
+    event.preventDefault();
+    var data = {};
+    data['myUserId'] = myUserId;
+    data['name'] = user.name;
+    data['taskName'] = task.taskName;
+
+    httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
   return (
     <>
+    {/* Verification Modal */}
+    <Modal isOpen={verifyModal} toggle={toggleVerify}>
+      <ModalHeader toggle={toggleVerify}>
+        {selectedAction === 'Complete and Remove' && 'Are you sure you have completed the review?'}
+        {selectedAction === 'More Work Needed' && 'Are you sure?'}
+      </ModalHeader>
+      <ModalFooter>
+      <Button
+            onClick={(e) => {
+              if (selectedAction === 'More Work Needed') {
+                updReviewStat("Unsubmitted");
+              } else if (reviewStatus === "Unsubmitted") {
+                updReviewStat("Submitted");
+                sendReviewReq(e);
+              } else {
+                updReviewStat("Reviewed");
+              }
+              toggleVerify();
+            }}
+            color="primary"
+            className="float-left"
+            style={boxStyle}
+          >
+            {reviewStatus == "Unsubmitted"
+              ? `Submit`
+              : `Complete`}
+          </Button>
+          <Button
+            onClick={toggleVerify}
+            style={boxStyle}
+          >
+            Cancel
+          </Button>
+      </ModalFooter>
+    </Modal>
+
+            {/* Submission Modal */}
       <Modal isOpen={modal} toggle={toggleModal}>
         <ModalHeader toggle={toggleModal}>
           Change Review Status
@@ -94,11 +187,20 @@ const ReviewButton = ({
             ? `Are you sure you want to submit for review?`
             : `Are you sure you have completed the review?`}
         </ModalBody>
+        <ModalBody>
+          Please add link to related work:
+          <Input 
+          type='text' 
+          value={link}
+          onChange={handleLink}
+          />
+        </ModalBody>
         <ModalFooter>
           <Button
-            onClick={() => {
+            onClick={(e) => {
               reviewStatus == "Unsubmitted"
-              ? updReviewStat("Submitted")
+              ? (updReviewStat("Submitted"),
+                sendReviewReq(e))
               : updReviewStat("Reviewed");
             }}
             color="primary"
@@ -121,5 +223,4 @@ const ReviewButton = ({
     </>
   );
 };
-
 export default ReviewButton;

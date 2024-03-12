@@ -88,6 +88,50 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
           </div>
         </div>
       );
+    case 'email-subcription':
+      if (state) {
+        return (
+          <div className="blueSqare">
+            <div className={style.switchSection}>
+              <div className="icon">
+                <i className="fa fa-envelope-o" aria-hidden="true" />
+              </div>
+              <div className={style.switchContainer}>
+                subscribed
+                <input
+                  id="emailSubscriptionConfig"
+                  data-testid="email-subcription-switch"
+                  type="checkbox"
+                  className={style.toggle}
+                  onChange={handleUserProfile}
+                />
+                unsubscribed
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className="blueSqare">
+          <div className={style.switchSection}>
+            <div className="icon">
+              <i className="fa fa-envelope-o" aria-hidden="true" />
+            </div>
+            <div className={style.switchContainer}>
+              subscribed
+              <input
+                id="emailSubscriptionConfig"
+                data-testid="email-subcription-switch"
+                type="checkbox"
+                className={style.toggle}
+                defaultChecked
+                onChange={handleUserProfile}
+              />
+              unsubscribed
+            </div>
+          </div>
+        </div>
+      );
     case 'phone':
       if (state) {
         return (
@@ -181,6 +225,44 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
             pos={state || 'default'} 
             onChange={handleUserProfile}/>
             requested
+            </div>
+          </div>
+        </div>
+      );
+      case 'active_members':
+      if (state) {
+        return (
+          <div className="blueSqare">
+            <div className={style.switchSection}>
+              <div className={style.switchContainer}>
+                Active
+                <input
+                  data-testid="active-switch"
+                  id="showActiveMembersOnly"
+                  type="checkbox"
+                  className={style.toggle}
+                  onChange={handleUserProfile}
+                />
+                All
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className="blueSqare">
+          <div className={style.switchSection}>
+            <div className={style.switchContainer}>
+              Active
+              <input
+                data-testid="active-switch"
+                id="showActiveMembersOnly"
+                type="checkbox"
+                className={style.toggle}
+                defaultChecked
+                onChange={handleUserProfile}
+              />
+              All
             </div>
           </div>
         </div>

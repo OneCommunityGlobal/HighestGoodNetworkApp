@@ -6,6 +6,7 @@ import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
 
+<<<<<<< HEAD
 export const permissionLabel = {
   getWeeklySummaries: 'See Weekly Summary Reports Tab',
   getWeeklySummaries: 'See Only Weekly Summary Reports Tab',
@@ -85,6 +86,8 @@ export const permissionLabel = {
   seeVisibilityIcon: 'See Visibility Icon',
   editTeamCode: 'Edit Team 4-Digit Codes',
 };
+=======
+>>>>>>> fd9a046f7ed5d101372d168d1ab72ad1065b79d9
 
 const UserRoleTab = props => {
   useEffect(() => {
@@ -113,11 +116,6 @@ const UserRoleTab = props => {
   const roleName = actualRole.roleName;
   const roleId = actualRole._id;
 
-  const permissionsList = [];
-
-  for (const key in permissionLabel) {
-    permissionsList.push(permissionLabel[key]);
-  }
   return (
     <div className="userRoleTab__container">
       <button
@@ -132,7 +130,6 @@ const UserRoleTab = props => {
         role={roleName}
         roleId={roleId}
         header={`${roleName} Permissions:`}
-        permissionsList={permissionsList}
         permissions={permissions}
       />
     </div>

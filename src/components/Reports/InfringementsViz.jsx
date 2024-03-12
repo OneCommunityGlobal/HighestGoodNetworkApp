@@ -2,56 +2,54 @@ import React from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { Button, Modal } from 'react-bootstrap';
 import './PeopleReport/PeopleReport.css';
-import { boxStyle } from 'styles';
+import { boxStyle } from '../../styles';
 
-const InfringementsViz = ({ infringements, fromDate, toDate }) => {
-  const [show, setShow] = React.useState(false);
-  const [modalShow, setModalShow] = React.useState(false);
+function InfringementsViz({ infringements, fromDate, toDate }) {
+  const [graphVisible, setGraphVisible] = React.useState(false);
+  const [modalVisible, setModalVisible] = React.useState(false);
   const [focusedInf, setFocusedInf] = React.useState({});
 
   const handleModalClose = () => {
-    setModalShow(false);
+    setModalVisible(false);
     setFocusedInf({});
   };
+
   const handleModalShow = d => {
     setFocusedInf(d);
-    setModalShow(true);
+    if (graphVisible === false) {
+      setModalVisible(!modalVisible);
+    }
+    setGraphVisible(!graphVisible); // Open the graph when opening the modal
   };
-
-  React.useEffect(() => {
-    generateGraph();
-  }, [show, fromDate, toDate]);
-
   function displayGraph(bsCount, maxSquareCount) {
-    if (!show) {
+    if (!graphVisible) {
       d3.selectAll('#infplot > *').remove();
     } else {
       d3.selectAll('#infplot > *').remove();
-      const margin = { top: 10, right: 30, bottom: 30, left: 60 },
-        width = 1000 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+      const margin = { top: 30, right: 20, bottom: 30, left: 20 };
+      const containerWidth = '1000';
+      // Adjusted width based on the available space
+      const width = Math.min(containerWidth - margin.left - margin.right, 1000);
 
-      var tooltipEl = function(d) {
+      const height = 400 - margin.top - margin.bottom;
+
+      const tooltipEl = function(d) {
         return (
-          '<div class="tip__container">' +
-          '<div class="close">' +
-          '<button>&times</button>' +
-          '</div>' +
-          '<div>' +
-          'Exact date: ' +
-          d3.timeFormat('%A, %B %e, %Y')(d.date) +
-          '<br>' +
-          'Count: ' +
-          (d.count == 1 ? d.count : d.count + ` <span class="detailsModal"><a>See All</a></span>`) +
-          '<br>' +
-          'Description: ' +
-          d.des[0] +
-          '</div>' +
-          '</div>'
+          `${'<div class="tip__container">' +
+            '<div class="close">' +
+            '<button>&times</button>' +
+            '</div>' +
+            '<div>' +
+            'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
+          `Count: ${
+            d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`
+          }<br>` +
+          `Description: ${d.des[0]}</div>` +
+          `</div>`
         );
       };
 
-      var legendEl = function() {
+      const legendEl = function() {
         return (
           '<div class="lengendSubContainer">' +
           '<div class="infLabelsOff">' +
@@ -70,8 +68,9 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
       const svg = d3
         .select('#infplot')
         .append('svg')
-        .attr('width', width + margin.left + margin.right)
+        .attr('width', '100%')
         .attr('height', height + margin.top + margin.bottom)
+        .attr('viewBox', `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`)
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -122,10 +121,10 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
         .attr('stroke-width', 3)
         .attr('fill', 'white')
         .on('click', function(event, d) {
-          let prevTooltip = d3.select(`.inf${d.id}`);
+          const prevTooltip = d3.select(`.inf${d.id}`);
 
           if (prevTooltip.empty()) {
-            let Tooltip = d3
+            const Tooltip = d3
               .select('#infplot')
               .append('div')
               .style('opacity', 0)
@@ -165,7 +164,7 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
         .style('z-index', 999)
         .style('font-weight', 700)
         .style('display', 'none')
-        .text(d => parseInt(d.count));
+        .text(d => parseInt(d.count, 10));
 
       svg
         .append('g')
@@ -181,14 +180,10 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
         .style('display', 'none')
         .text(d => d3.timeFormat('%m/%d/%Y')(d.date));
 
-      let legend = d3
+      const legend = d3
         .select('#infplot')
         .append('div')
-        .attr('class', 'legendContainer')
-        .style('position', 'relative')
-        .style('top', `-450px`)
-        .style('left', `980px`);
-
+        .attr('class', 'legendContainer');
       legend.html(legendEl());
 
       legend.select('.infLabelsOff').on('click', function() {
@@ -207,14 +202,13 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
       });
     }
   }
-
   const generateGraph = () => {
-    let dict = {};
-    let value = [];
+    const dict = {};
+    const value = [];
     let maxSquareCount = 0;
 
-    //aggregate infringements
-    for (let i = 0; i < infringements.length; i++) {
+    // aggregate infringements
+    for (let i = 0; i < infringements.length; i += 1) {
       if (infringements[i].date in dict) {
         dict[infringements[i].date].ids.push(infringements[i]._id);
         dict[infringements[i].date].count += 1;
@@ -228,31 +222,31 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
       }
     }
 
-    //filter infringements by date
-    if (fromDate == '' || toDate == '') {
-      //condition no longer needed
-      for (var key in dict) {
-        value.push({
-          date: d3.timeParse('%Y-%m-%d')(key.toString()),
-          des: dict[key].des,
-          count: dict[key].count,
-          type: 'Infringement',
-          ids: dict[key].ids,
-        });
-        if (dict[key].count > maxSquareCount) {
-          maxSquareCount = dict[key].count;
+    // filter infringements by date
+    if (fromDate === '' || toDate === '') {
+      // condition no longer needed
+      Object.keys(dict).forEach(key => {
+        // Use if statement to filter unwanted properties from the prototype chain
+        if (Object.prototype.hasOwnProperty.call(dict, key)) {
+          value.push({
+            date: d3.timeParse('%Y-%m-%d')(key),
+            des: dict[key].des,
+            count: dict[key].count,
+            type: 'Infringement',
+            ids: dict[key].ids,
+          });
+          if (dict[key].count > maxSquareCount) {
+            maxSquareCount = dict[key].count;
+          }
         }
-      }
+      });
     } else {
       let counter = 0;
-      for (var key in dict) {
-        if (
-          (Date.parse(fromDate) <= Date.parse(key.toString())) &
-          (Date.parse(key.toString()) <= Date.parse(toDate))
-        ) {
+      Object.keys(dict).forEach(key => {
+        if (Date.parse(fromDate) <= Date.parse(key) && Date.parse(key) <= Date.parse(toDate)) {
           value.push({
             id: counter,
-            date: d3.timeParse('%Y-%m-%d')(key.toString()),
+            date: d3.timeParse('%Y-%m-%d')(key),
             des: dict[key].des,
             count: dict[key].count,
             type: 'Infringement',
@@ -263,42 +257,49 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
           }
           counter += 1;
         }
-      }
+      });
     }
 
-    console.log('INFvalues', value);
+    // eslint-disable-next-line no-console
+    // console.log('INFvalues', value);
 
     displayGraph(value, maxSquareCount);
   };
 
+  React.useEffect(() => {
+    generateGraph();
+  }, [graphVisible, fromDate, toDate, focusedInf]);
+
   return (
     <div>
-      <Button onClick={() => setShow(!show)} aria-expanded={show} style={boxStyle}>
-        Show Infringements Graph
+      <Button onClick={handleModalShow} aria-expanded={graphVisible} style={boxStyle}>
+        {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div id="infplot"></div>
+      <div className="kaitest" id="infplot" />
 
-      <Modal size="lg" show={modalShow} onHide={handleModalClose}>
+      <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <table id="inf">
+          <div id="inf">
             <thead>
               <tr>
                 <th>Descriptions</th>
               </tr>
-              <tbody>
-                {focusedInf.des
-                  ? focusedInf.des.map(desc => (
+            </thead>
+            <tbody>
+              {focusedInf.des
+                ? focusedInf.des.map(desc => {
+                    return (
                       <tr>
                         <td>{desc}</td>
                       </tr>
-                    ))
-                  : focusedInf.des}
-              </tbody>
-            </thead>
-          </table>
+                    );
+                  })
+                : null}
+            </tbody>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>
@@ -308,6 +309,6 @@ const InfringementsViz = ({ infringements, fromDate, toDate }) => {
       </Modal>
     </div>
   );
-};
+}
 
 export default InfringementsViz;

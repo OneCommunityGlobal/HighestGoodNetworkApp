@@ -12,6 +12,8 @@ import {
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import moment from 'moment-timezone';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -39,13 +41,17 @@ function LeaderBoard({
   organizationData,
   timeEntries,
   isVisible,
-  asUser,
+  displayUserId,
   totalTimeMouseoverText,
+  userOnTimeOff,
+  userGoingOnTimeOff,
+  showTimeOffRequestModal,
 }) {
-  const userId = asUser || loggedInUser.userId;
+  const userId = displayUserId || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
 
@@ -80,69 +86,8 @@ function LeaderBoard({
     }
   }, [leaderBoardData]);
 
-  const [isOpen, setOpen] = useState(false);
-  const [modalContent, setContent] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const toggle = () => setOpen(isOpenState => !isOpenState);
-
-  const modalInfos = [
-    <>
-      <p>
-        This is the One Community Leaderboard! It is used to show how much tangible and total time
-        you’ve contributed, whether or not you’ve achieved your total committed hours for the week,
-        and (in the case of teams) where your completed hours for the week rank you compared to
-        other team members. It can also be used to access key areas of this application.
-      </p>
-      <ul>
-        <li>
-          The HGN Totals at the top shows how many volunteers are currently active in the system,
-          how many volunteer hours they are collectively committed to, and how many tangible and
-          total hours they have completed.
-          {/* The color and length of that bar
-          changes based on what percentage of the total committed hours for the week have been
-          completed: 0-20%: Red, 20-40%: Orange, 40-60% hrs: Green, 60-80%: Blue, 80-100%:Indigo,
-          and Equal or More than 100%: Purple. */}
-        </li>
-        <li>
-          The red/green dot shows whether or not a person has completed their “tangible” hours
-          commitment for the week. Green = yes (Great job!), Red = no. Clicking this dot will take
-          you to a person’s tasks section on their/your dashboard.{' '}
-        </li>
-        <li>
-          The time bar shows how much tangible and total (tangible + intangible) time you’ve
-          completed so far this week. In the case of teams, it also shows you where your completed
-          hours for the week rank you compared to other people on your team. Clicking a person’s
-          time bar will take you to the time log section on their/your dashboard. This bar also
-          changes color based on how many tangible hours you have completed: 0-5 hrs: Red, 5-10 hrs:
-          Orange, 10-20 hrs: Green, 20-30 hrs: Blue, 30-40 hrs: Indigo, 40-50 hrs: Violet, and 50+
-          hrs: Purple
-        </li>
-        <li>Clicking a person’s name will lead to their/your profile page.</li>
-      </ul>
-      <p>Hovering over any of these areas will tell you how they function too. </p>
-    </>,
-    <>
-      <p>
-        An Admin has made it so you can see your team but they can&apos;t see you. We recommend you
-        keep this setting as it is.
-      </p>
-      <p>
-        If you want to change this setting so your team/everyone can see and access your time log
-        though, you can do so by going to&nbsp;
-        <Link to={`/userprofile/${userId}`} title="View Profile">
-          Your Profile&nbsp;
-        </Link>
-        --&gt; Teams Tab --&gt; toggle the “Visibility” switch to “Visible”.
-      </p>
-      <p>Note: Admins and Core Team can always see all team members. This cannot be changed.</p>
-    </>,
-  ];
-
-  const handleModalOpen = idx => {
-    setContent(modalInfos[idx]);
-    setOpen(true);
-  };
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
@@ -163,66 +108,67 @@ function LeaderBoard({
     toast.success('Successfuly updated leaderboard');
   };
 
+  const handleTimeOffModalOpen = request => {
+    showTimeOffRequestModal(request);
+  };
+
   return (
     <div>
       <h3>
-        Leaderboard&nbsp;&nbsp;
-        <i
-          data-toggle="tooltip"
-          data-placement="right"
-          title="Click to refresh the leaderboard"
-          style={{ fontSize: 24, cursor: 'pointer' }}
-          aria-hidden="true"
-          className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
-          onClick={updateLeaderboardHandler}
-        />
-        &nbsp;&nbsp;
-        <i
-          data-toggle="tooltip"
-          data-placement="right"
-          title="Click for more information"
-          style={{ fontSize: 24, cursor: 'pointer' }}
-          aria-hidden="true"
-          className="fa fa-info-circle"
-          onClick={() => {
-            handleModalOpen(0);
-          }}
-        />
-      </h3>
-      {!isVisible && (
-        <Alert color="warning">
-          Note: You are currently invisible to the team(s) you are on.&nbsp;&nbsp;
+        <div className="d-flex align-items-center">
+          <span className="mr-2">Leaderboard</span>
           <i
             data-toggle="tooltip"
             data-placement="right"
-            title="Click for more information"
-            style={{ fontSize: 20, cursor: 'pointer' }}
+            title="Click to refresh the leaderboard"
+            style={{ fontSize: 24, cursor: 'pointer' }}
             aria-hidden="true"
-            className="fa fa-info-circle"
-            onClick={() => {
-              handleModalOpen(1);
-            }}
+            className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
+            onClick={updateLeaderboardHandler}
           />
+          &nbsp;
+          <EditableInfoModal
+            areaName="LeaderboardOrigin"
+            areaTitle="Leaderboard"
+            role={loggedInUser.role}
+            fontSize={24}
+            isPermissionPage
+          />
+        </div>
+      </h3>
+      {!isVisible && (
+        <Alert color="warning">
+          <div className="d-flex align-items-center">
+            Note: You are currently invisible to the team(s) you are on.{' '}
+            <EditableInfoModal
+              areaName="LeaderboardInvisibleInfoPoint"
+              areaTitle="Leaderboard settings"
+              role={loggedInUser.role}
+              fontSize={24}
+              isPermissionPage
+            />
+          </div>
         </Alert>
       )}
-      <span className="leaderboard">
-        <Modal isOpen={isOpen} toggle={toggle}>
-          <ModalHeader toggle={toggle}>Leaderboard Info</ModalHeader>
-          <ModalBody>{modalContent}</ModalBody>
-          <ModalFooter>
-            <Button onClick={toggle} color="secondary" className="float-left">
-              {' '}
-              Ok{' '}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      </span>
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <Table className="leaderboard table-fixed">
           <thead>
             <tr>
               <th>Status</th>
-              <th>Name</th>
+              <th>
+                <div className="d-flex align-items-center">
+                  <span className="mr-2">Name</span>
+                  <EditableInfoModal
+                    areaName="Leaderboard"
+                    areaTitle="Team Members Navigation"
+                    role={loggedInUser.role}
+                    fontSize={18}
+                    isPermissionPage
+                    className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  />
+                </div>
+              </th>
+              <th>Time Off</th>
               <th>
                 <span className="d-sm-none">Tan. Time</span>
                 <span className="d-none d-sm-block">Tangible Time</span>
@@ -248,6 +194,7 @@ function LeaderBoard({
             <tr>
               <td />
               <th scope="row">{organizationData.name}</th>
+              <td className="align-middle" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
@@ -268,7 +215,11 @@ function LeaderBoard({
               <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
-                    <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
+                    <Modal
+                      isOpen={isDashboardOpen === item.personId}
+                      toggle={dashboardToggle}
+                      className="modal-personal-dashboard"
+                    >
                       <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
                       <ModalBody>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
@@ -348,15 +299,93 @@ function LeaderBoard({
                   </div>
                   {/* </Link> */}
                 </td>
-                <th scope="row">
-                  <Link to={`/userprofile/${item.personId}`} title="View Profile">
+                <th scope="row" className="align-middle">
+                  <Link
+                    to={`/userprofile/${item.personId}`}
+                    title="View Profile"
+                    style={{
+                      color:
+                        currentDate.isSameOrAfter(
+                          moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                        ) &&
+                        currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                          ? 'rgba(128, 128, 128, 0.5)'
+                          : undefined,
+                    }}
+                  >
                     {item.name}
+                    {currentDate.isSameOrAfter(
+                      moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                    ) &&
+                    currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+                    Math.floor(
+                      moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+                        .subtract(1, 'day')
+                        .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+                    ) > 0 ? (
+                      <sup>
+                        {' '}
+                        +
+                        {Math.floor(
+                          moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+                            .subtract(1, 'day')
+                            .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+                        )}
+                      </sup>
+                    ) : null}
                   </Link>
                   &nbsp;&nbsp;&nbsp;
                   {hasVisibilityIconPermission && !item.isVisible && (
                     <i className="fa fa-eye-slash" title="User is invisible" />
                   )}
                 </th>
+                <td className="align-middle">
+                  {(userOnTimeOff || userGoingOnTimeOff) &&
+                    (userOnTimeOff[item.personId] || userGoingOnTimeOff[item.personId]) && (
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const request = userOnTimeOff[item.personId]
+                              ? {
+                                  ...userOnTimeOff[item.personId],
+                                  onVacation: true,
+                                  name: item.name,
+                                }
+                              : {
+                                  ...userGoingOnTimeOff[item.personId],
+                                  onVacation: false,
+                                  name: item.name,
+                                };
+
+                            handleTimeOffModalOpen(request);
+                          }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="22"
+                            height="19"
+                            viewBox="0 0 448 512"
+                            className="show-time-off-calender-svg"
+                          >
+                            <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
+                          </svg>
+
+                          <i className="show-time-off-icon">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="18"
+                              height="18"
+                              viewBox="0 0 512 512"
+                              className="show-time-off-icon-svg"
+                            >
+                              <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+                            </svg>
+                          </i>
+                        </button>
+                      </div>
+                    )}
+                </td>
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
                 </td>

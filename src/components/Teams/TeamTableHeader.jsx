@@ -6,19 +6,42 @@ import { connect } from 'react-redux';
 /**
  * The header row of the team table.
  */
+<<<<<<< HEAD
 export const TeamTableHeader = React.memo(props => {
   //const canDeleteTeam = props.hasPermission('deleteTeam');
   //const canPutTeam = props.hasPermission('putTeam');
   const canEditOrDeleteTeams = props.hasPermission('seeTeamsManagement') || 
   props.hasPermission('putTeam') || props.hasPermission('deleteTeam');
+=======
+export const TeamTableHeader = React.memo(
+  ({ onTeamNameSort, onTeamActiveSort, sortTeamNameState, sortTeamActiveState, ...props }) => {
+    const canDeleteTeam = props.hasPermission('deleteTeam');
+    const canPutTeam = props.hasPermission('putTeam');
+
+    const getSortIcon = (sortState) => {
+      switch(sortState) {
+        case 'ascending': return '↑';
+        case 'descending': return '↓';
+        default: return '⇵'; // Default icon or whatever you prefer
+      }
+    }
+
+>>>>>>> fd9a046f7ed5d101372d168d1ab72ad1065b79d9
   return (
     <tr>
       <th scope="col" id="teams__order">
         #
       </th>
-      <th scope="col">{TEAM_NAME}</th>
+      <th scope="col">
+        {/* Add the sorting button */}
+        <button onClick={onTeamNameSort}>
+          {getSortIcon(sortTeamNameState)}{TEAM_NAME}
+        </button>
+      </th>
       <th scope="col" id="teams__active">
-        {ACTIVE}
+        <button onClick={onTeamActiveSort}>
+          {getSortIcon(sortTeamActiveState)}{ACTIVE}
+        </button>
       </th>
       <th scope="col" id="teams__members">
         {MEMBERS}

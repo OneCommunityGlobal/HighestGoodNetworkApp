@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom';
 import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
@@ -30,10 +32,11 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
-import googleDocIconGray from './google_doc_icon_gray.png';
-import googleDocIconPng from './google_doc_icon.png';
+import GoogleDocIcon from '../common/GoogleDocIcon';
 
 const textColors = {
   Default: '#000000',
@@ -56,45 +59,16 @@ function FormattedReport({
   summaries,
   weekIndex,
   bioCanEdit,
-  canEditSummaryCount,
   allRoleInfo,
   badges,
   loadBadges,
   canEditTeamCode,
+  auth,
+  canSeeBioHighlight,
 }) {
-  const emails = [];
-
-  summaries.forEach(summary => {
-    if (summary.email !== undefined && summary.email !== null) {
-      emails.push(summary.email);
-    }
-  });
-  const handleEmailButtonClick = () => {
-    const batchSize = 90;
-    const emailChunks = [];
-
-    for (let i = 0; i < emails.length; i += batchSize) {
-      emailChunks.push(emails.slice(i, i + batchSize));
-    }
-
-    const openEmailClientWithBatchInNewTab = batch => {
-      const emailAddresses = batch.join(', ');
-      const mailtoLink = `mailto:${emailAddresses}`;
-      window.open(mailtoLink, '_blank');
-    };
-
-    emailChunks.forEach((batch, index) => {
-      setTimeout(() => {
-        openEmailClientWithBatchInNewTab(batch);
-      }, index * 2000);
-    });
-  };
-
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-
-  const toggleTooltip = () => {
-    setTooltipOpen(!tooltipOpen);
-  };
+  // if (auth?.user?.role){console.log(auth.user.role)}
+  const dispatch = useDispatch();
+  const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
   return (
     <>
@@ -105,32 +79,98 @@ function FormattedReport({
             summary={summary}
             weekIndex={weekIndex}
             bioCanEdit={bioCanEdit}
-            canEditSummaryCount={canEditSummaryCount}
+            canEditSummaryCount={isEditCount}
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
             loadBadges={loadBadges}
+            canSeeBioHighlight={canSeeBioHighlight}
           />
         ))}
       </ListGroup>
-      <div className="d-flex align-items-center">
-        <h4>Emails</h4>
-        <Tooltip placement="top" isOpen={tooltipOpen} target="emailIcon" toggle={toggleTooltip}>
-          Launch the email client, organizing the recipient email addresses into batches, each
-          containing a maximum of 90 addresses.
-        </Tooltip>
-        <FontAwesomeIcon
-          className="ml-2"
-          onClick={handleEmailButtonClick}
-          icon={faMailBulk}
-          size="lg"
-          style={{ color: '#0f8aa9', cursor: 'pointer' }}
-          id="emailIcon"
-        />
-      </div>
-      <p>{emails.join(', ')}</p>
+      <EmailsList summaries={summaries} auth={auth} />
     </>
   );
+}
+
+function EmailsList({ summaries, auth }) {
+  const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
+  const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
+  if (auth?.user?.role) {
+    const { role } = auth.user;
+    if (role === 'Administrator' || role === 'Owner') {
+      const emails = [];
+      summaries.forEach(summary => {
+        if (summary.email !== undefined && summary.email !== null) {
+          emails.push(summary.email);
+        }
+      });
+      const handleEmailButtonClick = () => {
+        const batchSize = 90;
+        const emailChunks = [];
+        for (let i = 0; i < emails.length; i += batchSize) {
+          emailChunks.push(emails.slice(i, i + batchSize));
+        }
+        const openEmailClientWithBatchInNewTab = batch => {
+          const emailAddresses = batch.join(', ');
+          const mailtoLink = `mailto:?bcc=${emailAddresses}`;
+          window.open(mailtoLink, '_blank');
+        };
+        emailChunks.forEach((batch, index) => {
+          setTimeout(() => {
+            openEmailClientWithBatchInNewTab(batch);
+          }, index * 2000);
+        });
+      };
+
+      const toggleEmailTooltip = () => {
+        setEmailTooltipOpen(!emailTooltipOpen);
+      };
+
+      const toggleCopyTooltip = () => {
+        setCopyTooltipOpen(!copyTooltipOpen);
+      };
+
+      return (
+        <>
+          <div className="d-flex align-items-center">
+            <h4>Emails</h4>
+            <Tooltip
+              placement="top"
+              isOpen={emailTooltipOpen}
+              target="emailIcon"
+              toggle={toggleEmailTooltip}
+            >
+              Launch the email client, organizing the recipient email addresses into batches, each
+              containing a maximum of 90 addresses.
+            </Tooltip>
+            <FontAwesomeIcon
+              className="mx-2"
+              onClick={handleEmailButtonClick}
+              icon={faMailBulk}
+              size="lg"
+              style={{ color: '#0f8aa9', cursor: 'pointer' }}
+              id="emailIcon"
+            />
+            <Tooltip
+              placement="top"
+              isOpen={copyTooltipOpen}
+              target="copytoclipboard"
+              toggle={toggleCopyTooltip}
+            >
+              Click to copy all emails.
+            </Tooltip>
+            <div id="copytoclipboard">
+              <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
+            </div>
+          </div>
+          <p>{emails.join(', ')}</p>
+        </>
+      );
+    }
+    return null;
+  }
+  return null;
 }
 
 function ReportDetails({
@@ -142,10 +182,21 @@ function ReportDetails({
   badges,
   loadBadges,
   canEditTeamCode,
+  canSeeBioHighlight,
 }) {
+  const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const isMeetCriteria =
+    canSeeBioHighlight &&
+    summary.totalTangibleHrs > 80 &&
+    summary.daysInTeam > 60 &&
+    summary.bioPosted !== 'posted';
+
+  useEffect(() => {
+    setFilteredBadges(badges.filter(badge => badge.showReport === true));
+  }, []);
 
   return (
     <li className="list-group-item px-0" ref={ref}>
@@ -159,14 +210,14 @@ function ReportDetails({
               <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
             </ListGroupItem>
             <ListGroupItem>
-              <Bio
-                bioCanEdit={bioCanEdit}
-                userId={summary._id}
-                bioPosted={summary.bioPosted}
-                summary={summary}
-                totalTangibleHrs={summary.totalTangibleHrs}
-                daysInTeam={summary.daysInTeam}
-              />
+              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+                <Bio
+                  bioCanEdit={bioCanEdit}
+                  userId={summary._id}
+                  bioPosted={summary.bioPosted}
+                  summary={summary}
+                />
+              </div>
             </ListGroupItem>
             <ListGroupItem>
               <TotalValidWeeklySummaries
@@ -174,41 +225,27 @@ function ReportDetails({
                 canEditSummaryCount={canEditSummaryCount}
               />
             </ListGroupItem>
-            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
+            <ListGroupItem>
+              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
+                Hours logged:
+              </b>
+              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
                 <p>
-                  <b
-                    style={{
-                      color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                    }}
-                  >
-                    Hours logged:{' '}
-                  </b>
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </p>
-              </ListGroupItem>
-            )}
-            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-              <ListGroupItem>
-                <b
-                  style={{
-                    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-                  }}
-                >
-                  Hours logged:
-                </b>
+              ) : (
                 <span className="ml-2">
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </span>
-              </ListGroupItem>
-            )}
+              )}
+            </ListGroupItem>
             <ListGroupItem>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
           <Col xs="6">
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
             )}
           </Col>
         </Row>
@@ -244,7 +281,20 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         .format('MMM-DD-YY');
       summaryDateText = `Summary Submitted On (${summaryDate}):`;
 
-      return <div style={style}>{ReactHtmlParser(summaryText)}</div>;
+      return (
+        <div style={style} className="weekly-summary-report-container">
+          <div className="weekly-summary-text">{ReactHtmlParser(summaryText)}</div>
+          <FontAwesomeIcon
+            icon={faCopy}
+            className="copy-icon "
+            onClick={() => {
+              const parsedSummary = summaryText.replace(/<\/?[^>]+>|&nbsp;/g, '');
+              navigator.clipboard.writeText(parsedSummary);
+              toast.success('Summary Copied!');
+            }}
+          />
+        </div>
+      );
     }
     if (
       summary?.weeklySummaryOption === 'Not Required' ||
@@ -360,7 +410,7 @@ function MediaUrlLink({ summary }) {
       );
     }
   }
-  return 'Not provided!';
+  return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
 }
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
@@ -369,8 +419,8 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    // eslint-disable-next-line radix
-    parseInt(summary.weeklySummariesCount),
+    // parseInt() returns an integer or NaN, convert to 0 if it's NaM
+    parseInt(summary.weeklySummariesCount, 10) || 0,
   );
 
   const handleOnChange = async (userProfileSummary, count) => {
@@ -424,10 +474,9 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam }) {
+function BioSwitch({ userId, bioPosted, summary }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
-  const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
   // eslint-disable-next-line no-shadow
@@ -439,7 +488,7 @@ function BioSwitch({ userId, bioPosted, summary, totalTangibleHrs, daysInTeam })
   };
 
   return (
-    <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+    <div>
       <div className="bio-toggle">
         <b style={style}>Bio announcement:</b>
       </div>
@@ -464,7 +513,7 @@ function BioLabel({ bioPosted, summary }) {
 
   let text = '';
   if (bioPosted === 'default') {
-    text = ' Not requested/posted';
+    text = 'Not requested/posted';
   } else if (bioPosted === 'posted') {
     text = 'Posted';
   } else {
@@ -472,7 +521,7 @@ function BioLabel({ bioPosted, summary }) {
   }
   return (
     <div>
-      <b style={style}>Bio announcement:</b>
+      <b style={style}>Bio announcement: </b>
       {text}
     </div>
   );
@@ -519,25 +568,29 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
           // eslint-disable-next-line react/no-array-index-key
           <div className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
             {' '}
-            <img src={value.imageUrl} id={`popover_${value._id}`} alt='""' />
-            <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-              <Card className="text-center">
-                <CardImg className="badge_image_lg" src={value?.imageUrl} />
-                <CardBody>
-                  <CardTitle
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: 18,
-                      color: '#285739',
-                      marginBottom: 15,
-                    }}
-                  >
-                    {value?.badgeName}
-                  </CardTitle>
-                  <CardText>{value?.description}</CardText>
-                </CardBody>
-              </Card>
-            </UncontrolledPopover>
+            {value && value.imageUrl && value._id && (
+              <>
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                  <Card className="text-center">
+                    <CardImg className="badge_image_lg" src={value.imageUrl} />
+                    <CardBody>
+                      <CardTitle
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: 18,
+                          color: '#285739',
+                          marginBottom: 15,
+                        }}
+                      >
+                        {value.badgeName}
+                      </CardTitle>
+                      <CardText>{value.description}</CardText>
+                    </CardBody>
+                  </Card>
+                </UncontrolledPopover>
+              </>
+            )}
           </div>
         ))}
       </ListGroupItem>
@@ -546,48 +599,36 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
 }
 
 function Index({ summary, weekIndex, allRoleInfo }) {
-  const handleGoogleDocClick = googleDocLink => {
-    const toastGoogleLinkDoesNotExist = 'toast-on-click';
-    if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
-      window.open(googleDocLink.Link);
-    } else {
-      toast.error(
-        'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
-        {
-          toastId: toastGoogleLinkDoesNotExist,
-          pauseOnFocusLoss: false,
-          autoClose: 3000,
-        },
-      );
-    }
-  };
-
-  // eslint-disable-next-line no-shadow
-  const getGoogleDocLink = summary => {
-    if (!summary.adminLinks) {
-      return undefined;
-    }
-    const googleDocLink = summary.adminLinks.find(link => link.Name === 'Google Doc');
-    return googleDocLink;
-  };
-
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
-  const googleDocLink = getGoogleDocLink(summary);
-  // Determine whether to use grayscale or color icon based on googleDocLink
-  const googleDocIcon =
-    googleDocLink && googleDocLink.Link.trim() !== '' ? googleDocIconPng : googleDocIconGray;
+  const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
+    if (currentElement.Name === 'Google Doc') {
+      // eslint-disable-next-line no-param-reassign
+      targetLink = currentElement.Link;
+    }
+    return targetLink;
+  }, undefined);
 
   return (
     <>
       <b>Name: </b>
-      <Link className="ml-2" to={`/userProfile/${summary._id}`} title="View Profile">
+      <Link
+        className="ml-2"
+        to={`/userProfile/${summary._id}`}
+        style={{
+          color:
+            currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              ? 'rgba(128, 128, 128, 0.5)'
+              : undefined,
+        }}
+        title="View Profile"
+      >
         {summary.firstName} {summary.lastName}
       </Link>
 
-      <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-        <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
-      </span>
+      <GoogleDocIcon link={googleDocLink} />
       <span>
         <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
       </span>

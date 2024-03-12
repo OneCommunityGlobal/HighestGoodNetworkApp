@@ -1,0 +1,154 @@
+.FormContainer{
+
+    padding: 5%;
+    background-color: #FFFFFF;
+    border-radius: 1%;
+      /* Override the max-width for form controls within form */
+   .form-control {
+     max-width: unset !important;
+   }
+  }
+  
+  .MasterContainer{
+   display: flex;
+   flex-direction: column;
+   height: 100%;
+     padding-left: 10%;
+     padding-right: 10%;
+     padding-top: 5%;
+     padding-bottom: 10%;
+      background-color: #E8F4F9;
+  }
+  .LessonLabel{
+     font-size: larger;
+     font-weight: bold;
+  }
+  .LessonPlaceholderText{
+   min-height: 20vh;
+  }
+  .LessonPlaceholderText::placeholder {
+   font-size: 16px; 
+   color: #CED4DA; 
+  
+  }
+  .FormSelectContainer{
+     display: flex;
+     flex-direction: row;
+     justify-content: flex-start;
+  
+  }
+  .SingleFormSelect{
+     margin-right: 4%;
+     width: 25%
+  }
+  .dragAndDropStyle {
+     border: 2px dashed #cccccc;
+     padding: .5%;
+     text-align: center;
+     cursor: pointer;
+  
+     border-radius: 1%;
+   }
+   .fileSelected {
+    border-color: #0b0b0b; 
+  }
+   .ImageDiv {
+     width: 50px; 
+     height: 50px; 
+     background-size: 100%;
+     background-repeat: no-repeat;
+     background-position: center center;
+  
+   }
+   .textUnderImage {
+     text-align: center;
+   }
+   .TextAndImageDiv{
+     display: flex;
+     flex-direction: column;
+    align-items: center;
+   }
+   .ButtonDiv{
+     display: flex;
+     justify-content: space-between;
+   }
+   .LessonFormButtonCancel{
+     width:25%;
+     height: 50px;
+    background-color: #FFFFFF !important;
+    color: #2E5061 !important; 
+    border-color: #2E5061 !important;
+   }
+   .LessonFormButtonSubmit{
+  
+     width:25%;
+     height: 50px;
+     background-color:  #2E5061!important;
+     color: #FFFFFF !important;
+     border-color: #2E5061 !important;
+    }
+  .DragandDropText{
+   color: #B0B0B0;
+  }
+  
+  /* Tags */
+  .TagsDiv{
+    margin-top: 1%;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .Tag {
+    flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    min-width: 50px;
+    padding: 4px 8px;
+    margin:1px;
+  
+    border: 1px solid black;
+    border-radius: 4px;
+    overflow: hidden;
+    word-break: break-all;
+  }
+  
+  .TagSpan {
+    flex: 1;
+    margin-right: 65px; /* Adjust the margin as needed */
+  }
+  
+  .removeTagBTN {
+    color: black;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  
+  /* End Tags */
+    @media (max-width: 570px) {
+     .FormSelectContainer {
+       align-items: center;
+       flex-direction: column;
+     }
+     .SingleFormSelect{
+  
+       width: 90%
+   }
+  
+   .LessonFormButtonSubmit{
+  
+     width:45%;
+  
+    }
+  
+    .LessonFormButtonCancel{
+     width:45%;
+  
+   }
+  
+   .MasterContainer{
+  
+      padding-bottom: 20%;
+  
+   }
+   }

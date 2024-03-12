@@ -1,39 +1,47 @@
-import { Row, Col, Container, Form, Button } from 'reactstrap';
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Container } from 'reactstrap';
+import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
+import BMError from './shared/BMError';
 import './BMDashboard.css';
 
-const dummyProjects = [
-  {
-    projectId: 1,
-    projectName: 'Big project',
-  },
-  {
-    projectId: 2,
-    projectName: 'Bigger project',
-  },
-  {
-    projectId: 3,
-    projectName: 'Very important project',
-  },
-  {
-    projectId: 4,
-    projectName: 'Super important project',
-  },
-];
+export function BMDashboard() {
+  const [isError, setIsError] = useState(false);
 
-export const BMDashboard = () => {
+  const dispatch = useDispatch();
+  const errors = useSelector(state => state.errors);
+
+  // fetch projects data on pageload
+  useEffect(() => {
+    dispatch(fetchBMProjects());
+  }, []);
+
+  // trigger an error state if there is an errors object
+  useEffect(() => {
+    if (Object.entries(errors).length) {
+      setIsError(true);
+    }
+  }, [errors]);
+
   return (
     <Container className="justify-content-center align-items-center mw-80 px-4">
       <header className="bm-dashboard__header">
         <h1>Building and Inventory Management Dashboard</h1>
       </header>
       <main>
-        <ProjectSelectForm projects={dummyProjects} />
-        <ProjectsList projects={dummyProjects} />
+        {isError ? (
+          <BMError errors={errors} />
+        ) : (
+          <>
+            <ProjectSelectForm />
+            <ProjectsList />
+          </>
+        )}
       </main>
     </Container>
   );
-};
+}
 
 export default BMDashboard;

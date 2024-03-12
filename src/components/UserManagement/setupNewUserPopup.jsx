@@ -5,6 +5,7 @@ import { ENDPOINTS } from 'utils/URL';
 
 const SetupNewUserPopup = React.memo(props => {
   const [email, setEmail] = useState('');
+  const [weeklyCommittedHours, setWeeklyCommittedHours] = useState('0');
   const [alert, setAlert] = useState({ visibility: 'hidden', message: '', state: 'success' });
   const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
   const baseUrl = window.location.origin;
@@ -17,18 +18,27 @@ const SetupNewUserPopup = React.memo(props => {
     setAlert({ visibility: 'hidden', message: '', state: 'success' });
     if (!email.match(patt)) {
       {
-        setAlert({ visibility: 'visible', message: 'Please enter a valid email', state: 'error' });
+        setAlert({ visibility: 'visible', message: 'Please enter a valid email.', state: 'error' });
+      }
+    } else if (weeklyCommittedHours < 0) {
+      {
+        setAlert({
+          visibility: 'visible',
+          message: 'Weekly committed hours should be positive number.',
+          state: 'error',
+        });
       }
     } else {
       httpService
-        .post(ENDPOINTS.SETUP_NEW_USER(), { baseUrl, email })
+        .post(ENDPOINTS.SETUP_NEW_USER(), { baseUrl, email, weeklyCommittedHours })
         .then(res => {
           if (res.status === 200) {
             setAlert({
               visibility: 'visible',
-              message: 'The setup link has been successfully generated',
+              message: 'The setup link has been successfully sent',
               state: 'success',
             });
+            console.log(res.data);
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
@@ -43,9 +53,27 @@ const SetupNewUserPopup = React.memo(props => {
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setAlert({ visibility: 'hidden', message: '', state: 'success' });
+            setEmail('');
+            setWeeklyCommittedHours(0);
+          }, 2000);
         });
     }
   };
+  const handleCommitedHoursChange = e => { 
+      let val = Number(e.target.value)
+      if (val > 168) {
+        setWeeklyCommittedHours('168');
+      } else if (val < 0 ) {
+        setWeeklyCommittedHours('0');
+      } else {
+        setWeeklyCommittedHours(val.toString());
+      }
+  }
+
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={'modal-dialog modal-lg'}>
       <ModalHeader
@@ -64,10 +92,21 @@ const SetupNewUserPopup = React.memo(props => {
             name="email"
             value={email}
             onChange={e => {
-              setEmail(e.target.value);
+              setEmail(e.target.value.toLocaleLowerCase());
             }}
             className="form-control setup-new-user-popup-input"
             placeholder="Please enter the email address for the new user"
+          />
+          <input
+            type="number"
+            name="weeklyCommittedHours"
+            min={0}
+            max={168}
+            value={weeklyCommittedHours}
+            onKeyDown={e=>{if(e.key === 'Backspace' || e.key === 'Delete'){setWeeklyCommittedHours('');}}}
+            onChange={handleCommitedHoursChange}
+            className="form-control setup-new-user-popup-input"
+            placeholder="weekly committed hours"
           />
           <button
             className="btn btn-primary"

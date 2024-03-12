@@ -8,16 +8,17 @@ import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import PropTypes from 'prop-types'; 
 
 const Member = props => {
   const canGetUserProfiles = props.hasPermission('getUserProfiles');
-  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject') || props.hasPermission('seeProjectManagement');
+  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
+  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
   return (
     <React.Fragment>
       <tr className="members__tr">
         <th scope="row">
-          <div>{props.index + 1}</div>
+          <div>{typeof props.index === 'number' ? props.index + 1 : null}</div>
         </th>
         <td className="members__name">
           {canGetUserProfiles ? (
@@ -50,6 +51,17 @@ const Member = props => {
     </React.Fragment>
   );
 };
+
+// Define default props
+Member.defaultProps = {
+  index: 0
+};
+
+// Define prop types
+Member.propTypes = {
+  index: PropTypes.number.isRequired
+};
+
 const mapStateToProps = state => {
   return { state };
 };

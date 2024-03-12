@@ -18,23 +18,64 @@ import FoundUser from './FoundUser';
 import './members.css';
 import hasPermission from '../../../utils/permissions';
 import { boxStyle } from 'styles';
+import ToggleSwitch from 'components/UserProfile/UserProfileEdit/ToggleSwitch';
 
 const Members = props => {
   const projectId = props.match.params.projectId;
+  const [showFindUserList, setShowFindUserList] = useState(false);
+  const [membersList, setMembersList] = useState(props.state.projectMembers.members);
+  const [lastTimeoutId, setLastTimeoutId] = useState(null);
 
-  const canGetProjectMembers = props.hasPermission('getProjectMembers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
-  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject') || props.hasPermission('seeProjectManagement');
+  const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
+  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
   useEffect(() => {
     props.fetchAllMembers(projectId);
   }, [projectId]);
 
-  const assignAll = () => {
+  const assignAll = async () => {
     const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
-    allUsers.forEach(user => {
-      props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName);
-    });
+
+    // Wait for all members to be assigned
+    await Promise.all(
+      allUsers.map(user =>
+        props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName),
+      ),
+    );
+
+    props.fetchAllMembers(projectId);
+  };
+
+  useEffect(() => {
+    setMembersList(props.state.projectMembers.members);
+  }, [props.state.projectMembers.members]);
+
+  // ADDED: State for toggling display of active members only
+  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
+
+  const displayedMembers = showActiveMembersOnly
+    ? membersList.filter(member => member.isActive)
+    : membersList;
+
+  const handleToggle = async () => {
+    setShowActiveMembersOnly(prevState => !prevState);
+    await props.fetchAllMembers(projectId);
+    setMembersList(props.state.projectMembers.members);
+  };
+
+  // Waits for user to finsh typing before calling API
+  const handleInputChange = event => {
+    const currentValue = event.target.value;
+
+    if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
+
+    const timeoutId = setTimeout(() => {
+      props.findUserProfiles(currentValue);
+      setShowFindUserList(true);
+    }, 300);
+
+    setLastTimeoutId(timeoutId);
   };
 
   return (
@@ -63,23 +104,33 @@ const Members = props => {
               className="form-control"
               aria-label="Search user"
               placeholder="Name"
-              onChange={e => {
-                props.findUserProfiles(e.target.value);
-              }}
+              onChange={e => handleInputChange(e)}
+              disabled={showActiveMembersOnly}
             />
             <div className="input-group-append">
               <button
                 className="btn btn-outline-primary"
                 type="button"
-                onClick={e => props.getAllUserProfiles()}
+                onClick={e => {
+                  props.getAllUserProfiles();
+                  setShowFindUserList(true);
+                }}
+                disabled={showActiveMembersOnly}
               >
                 All
+              </button>
+              <button
+                className="btn btn-outline-danger"
+                type="button"
+                onClick={() => setShowFindUserList(false)} // Hide the find user list
+              >
+                Cancel
               </button>
             </div>
           </div>
         ) : null}
 
-        {props.state.projectMembers.foundUsers.length === 0 ? null : (
+        {showFindUserList && props.state.projectMembers.foundUsers.length > 0 ? (
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <tr>
@@ -118,7 +169,13 @@ const Members = props => {
               ))}
             </tbody>
           </table>
-        )}
+        ) : null}
+
+        <ToggleSwitch
+          switchType="active_members"
+          state={showActiveMembersOnly}
+          handleUserProfile={handleToggle}
+        />
 
         <table className="table table-bordered table-responsive-sm">
           <thead>
@@ -131,7 +188,7 @@ const Members = props => {
             </tr>
           </thead>
           <tbody>
-            {props.state.projectMembers.members.map((member, i) => (
+            {displayedMembers.map((member, i) => (
               <Member
                 index={i}
                 key={member._id}
