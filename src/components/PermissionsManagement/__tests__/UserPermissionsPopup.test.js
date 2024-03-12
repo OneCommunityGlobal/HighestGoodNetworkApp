@@ -8,7 +8,6 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { object } from 'prop-types';
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -203,6 +202,7 @@ describe('UserPermissionsPopup component', () => {
         <UserPermissionsPopUp />
       </Provider>,
     );
+    const mockObject = {};
     const nameElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(nameElement);
     await waitFor(() => {
@@ -210,7 +210,7 @@ describe('UserPermissionsPopup component', () => {
     });
     expect(toast.error).toHaveBeenCalledWith(
       `
-        Permission updated failed. ${object}
+        Permission updated failed. ${mockObject}
         `,
       {
         autoClose: 10000,
