@@ -127,7 +127,8 @@ function WarningTrackerModal({
   };
 
   const handleChange = e => {
-    setNewWarning(e.target.value);
+    const value = e.target.value.trim();
+    setNewWarning(value);
   };
 
   // eslint-disable-next-line no-shadow
