@@ -19,7 +19,7 @@ beforeEach(() => {
           frontPermissions: [],
           backPermissions: [],
         },
-        role: 'Manager',
+        role: 'Owner',
       },
       permissions: {
         frontPermissions: [],
@@ -230,55 +230,6 @@ describe('UserPermissionsPopup component', () => {
           frontPermissions: [],
           backPermissions: [],
         },
-      },
-    });
-
-    const store = mockStore({
-      auth: {
-        user: {
-          permissions: {
-            frontPermissions: [],
-            backPermissions: [],
-          },
-          role: 'Owner',
-        },
-        permissions: {
-          frontPermissions: [],
-          backPermissions: [],
-        },
-      },
-      role: mockAdminState.role,
-
-      allUserProfiles: {
-        userProfiles: [
-          {
-            isActive: true,
-            weeklycommittedHours: 0,
-            _id: 'abc123',
-            role: 'Volunteer',
-            firstName: 'Test1',
-            lastName: 'Volunteer',
-            email: 'Test1.Volunteer@gmail.com',
-          },
-          {
-            isActive: true,
-            weeklycommittedHours: 10,
-            _id: 'def123',
-            role: 'Manager',
-            firstName: 'Test2',
-            lastName: 'Manager',
-            email: 'Test2.Manager@gmail.com',
-          },
-          {
-            isActive: false,
-            weeklycommittedHours: 2,
-            _id: 'ghi123',
-            role: 'Owner',
-            firstName: 'Test3',
-            lastName: 'Owner',
-            email: 'Test3.Owner@gmail.com',
-          },
-        ],
       },
     });
 
