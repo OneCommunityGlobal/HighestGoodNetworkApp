@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../../Timer/Timer';
 import OwnerMessage from '../../OwnerMessage/OwnerMessage';
+import { permissions } from '../../../utils/constants';
+
 import {
   // LOGO,
   DASHBOARD,
@@ -59,28 +61,27 @@ export const Header = props => {
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
 
   // Reports
-  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
+  const canGetWeeklySummaries = props.hasPermission(permissions.weeklySummariesReport);
   // Users
-
-  const canPostUserProfile = props.hasPermission('postUserProfile');
-  const canDeleteUserProfile = props.hasPermission('deleteUserProfile');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPostUserProfile = props.hasPermission(permissions.userManagement.postUserProfile);
+  const canDeleteUserProfile = props.hasPermission(permissions.userManagement.deleteUserProfile);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
   // Badges
-  const canCreateBadges = props.hasPermission('createBadges');
+  const canCreateBadges = props.hasPermission(permissions.badgeManagement.createBadges);
   // Projects
-  const canPostProject = props.hasPermission('postProject');
+  const canPostProject = props.hasPermission(permissions.projects.postProject);
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask');
+  const canUpdateTask = props.hasPermission(permissions.projects.updateTask);
   // Teams
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission(permissions.teams.deleteTeam);
+  const canPutTeam = props.hasPermission(permissions.teams.putTeam);
   // Popups
-  const canCreatePopup = props.hasPermission('createPopup');
-  const canUpdatePopup = props.hasPermission('updatePopup');
+  const canCreatePopup = props.hasPermission(permissions.popups.createPopup);
+  const canUpdatePopup = props.hasPermission(permissions.popups.updatePopup);
   // Roles
-  const canPutRole = props.hasPermission('putRole');
+  const canPutRole = props.hasPermission(permissions.permissionsManagement.putRole);
   // Permissions
-  const canManageUser = props.hasPermission('putUserProfilePermissions');
+  const canManageUser = props.hasPermission(permissions.permissionsManagement.putUserProfilePermissions);
 
   const dispatch = useDispatch();
 

@@ -5,6 +5,7 @@ import { boxStyle } from 'styles';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import './UserRoleTab.css';
+import { permissions } from 'utils/constants';
 
 
 
@@ -112,7 +113,7 @@ const PermissionListItem = (props) => {
                 setSubpermissions(subperms, howManySubpermsInRole !== 'All');
                 props.onChange();
               }}
-              disabled={!props.hasPermission('putRole')}
+              disabled={!props.hasPermission(permissions.permissionsManagement.putRole)}
               style={boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -121,7 +122,7 @@ const PermissionListItem = (props) => {
               className="icon-button"
               color={hasThisPermission ? 'danger' : 'success'}
               onClick={() => {togglePermission(permission)}}
-              disabled={!props.hasPermission('putRole') || immutablePermissions.includes(permission)}
+              disabled={!props.hasPermission(permissions.permissionsManagement.putRole) || immutablePermissions.includes(permission)}
               style={boxStyle}
             >
               {hasThisPermission ? 'Delete' : 'Add'}

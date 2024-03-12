@@ -29,6 +29,7 @@ import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
 import checkNegativeNumber from 'utils/checkNegativeHours';
 import fixDiscrepancy from 'utils/fixDiscrepancy';
 import { boxStyle } from 'styles';
@@ -120,8 +121,8 @@ const TimeEntryForm = props => {
   const [submitting, setSubmitting] = useState(false);
 
   const canEditTimeEntry =
-    props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+    props.hasPermission(permissions.timeLog);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
 
   const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry);
 

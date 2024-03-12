@@ -6,6 +6,8 @@ import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
+
 import './style.css';
 import { boxStyle } from 'styles';
 
@@ -69,8 +71,8 @@ const TeamMemberTask = React.memo(
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     // ^^^
 
-    const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
-    const canUpdateTask = dispatch(hasPermission('updateTask'));
+    const canGetWeeklySummaries = dispatch(hasPermission(permissions.weeklySummariesReport));
+    const canUpdateTask = dispatch(hasPermission(permissions.projects.updateTask));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const handleTruncateTasksButtonClick = () => {

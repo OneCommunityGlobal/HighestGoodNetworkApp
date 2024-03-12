@@ -4,6 +4,7 @@ import './Timelog.css'
 import updateWeeklySummaries from 'actions/weeklySummaries';
 import { getUserProfile, updateUserProfile } from 'actions/userProfile';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import { userProfileByIdReducer } from 'reducers/userProfileByIdReducer';
@@ -19,7 +20,7 @@ const WeeklySummaries = ({ userProfile }) => {
   const [originalSummaries, setOriginalSummaries] = useState([...editedSummaries]);
 
   const dispatch = useDispatch();
-  const canEdit = dispatch(hasPermission('putUserProfile'));
+  const canEdit = dispatch(hasPermission(permissions.userManagement.putUserProfile));
 
   const currentUserID = userProfile._id;
   const { user } = useSelector(state => state.auth);

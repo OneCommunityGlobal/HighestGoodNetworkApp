@@ -33,6 +33,7 @@ import hasPermission from '../../utils/permissions';
 import './BadgeReport.css';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
+import { permissions } from 'utils/constants';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const BadgeReport = props => {
@@ -42,8 +43,8 @@ const BadgeReport = props => {
   let [badgeToDelete, setBadgeToDelete] = useState([]);
   const [savingChanges, setSavingChanges] = useState(false);
 
-  const canDeleteBadges = props.hasPermission('deleteBadges');
-  const canUpdateBadges = props.hasPermission('updateBadges');
+  const canDeleteBadges = props.hasPermission(permissions.badgeManagement.deleteBadges);
+  const canUpdateBadges = props.hasPermission(permissions.badgeManagement.updateBadges);
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');

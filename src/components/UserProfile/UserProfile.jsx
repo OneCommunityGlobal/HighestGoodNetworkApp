@@ -27,6 +27,7 @@ import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
 } from '../../utils/permissions';
+import { permissions } from 'utils/constants';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -658,11 +659,13 @@ function UserProfile(props) {
   const authEmail = props.auth?.user?.email;
   const isUserSelf = targetUserId === requestorId;
 
-  const canChangeUserStatus = props.hasPermission('changeUserStatus');
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  const canPutUserProfile = props.hasPermission('putUserProfile');
-  const canUpdatePassword = props.hasPermission('updatePassword');
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canChangeUserStatus = props.hasPermission(permissions.userManagement.changeUserStatus);
+  const canAddDeleteEditOwners = props.hasPermission(permissions.userManagement.addDeleteEditOwners);
+  //permissions.userManagement.canPutUserProfile
+  const canPutUserProfile = props.hasPermission(permissions.userManagement.putUserProfile);
+  const canUpdatePassword = props.hasPermission(permissions.userManagement.updatePassword);
+  const canGetProjectMembers = props.hasPermission(permissions.projects.getProjectMembers);
+
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
  

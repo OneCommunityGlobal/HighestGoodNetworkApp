@@ -19,6 +19,8 @@ import './members.css';
 import hasPermission from '../../../utils/permissions';
 import { boxStyle } from 'styles';
 import ToggleSwitch from 'components/UserProfile/UserProfileEdit/ToggleSwitch';
+import { permissions } from 'utils/constants';
+
 
 const Members = props => {
   const projectId = props.match.params.projectId;
@@ -26,9 +28,10 @@ const Members = props => {
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
   const [lastTimeoutId, setLastTimeoutId] = useState(null);
 
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+  
+  const canGetProjectMembers = props.hasPermission(permissions.projects.getProjectMembers);
+  const canAssignProjectToUsers = props.hasPermission(permissions.projects.assignProjectToUsers);
+  const canUnassignUserInProject = props.hasPermission(permissions.projects.unassignUserInProject);
 
   useEffect(() => {
     props.fetchAllMembers(projectId);

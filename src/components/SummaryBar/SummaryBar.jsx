@@ -27,7 +27,7 @@ import suggestions_icon from './suggestions_icon.png';
 import httpService from '../../services/httpService';
 import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
-
+import { permissions } from 'utils/constants';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
@@ -61,7 +61,7 @@ const SummaryBar = props => {
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
 
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop

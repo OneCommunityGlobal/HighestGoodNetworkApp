@@ -7,6 +7,7 @@ import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal'
 import { getTaskEditSuggestionsData } from './selectors';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
 
+
 export const TaskEditSuggestions = () => {
   const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
   const [currentTaskEditSuggestion, setCurrentTaskEditSuggestion] = useState();

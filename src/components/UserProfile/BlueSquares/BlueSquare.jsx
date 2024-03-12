@@ -1,6 +1,7 @@
 import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
 import { connect, useSelector } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
 import {
@@ -12,7 +13,7 @@ const BlueSquare = props => {
   const authRole = useSelector(state => state.auth.user.role);
 
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.putUserProfileImportantInfo);
   const { blueSquares, handleBlueSquare, numberOfReasons, infringementsNum } = props;
 
   return (

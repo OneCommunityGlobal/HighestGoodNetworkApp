@@ -32,7 +32,9 @@ import LinkModButton from './LinkModButton';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import hasPermission from '../../../utils/permissions';
+
 import { connect } from 'react-redux';
+import { permissions } from 'utils/constants';
 
 const styleProfile = {};
 class UserProfileEdit extends Component {
@@ -518,8 +520,8 @@ class UserProfileEdit extends Component {
       ? this.props.match.params
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
-    const canPutUserProfile = this.props.hasPermission('putUserProfile');
-    const canAddDeleteEditOwners = this.props.hasPermission('addDeleteEditOwners');
+    const canPutUserProfile = this.props.hasPermission(permissions.userManagement.putUserProfile);
+    const canAddDeleteEditOwners = this.props.hasPermission(permissions.userManagement.addDeleteEditOwners);
 
     const {
       userProfile,

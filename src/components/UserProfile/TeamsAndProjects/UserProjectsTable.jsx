@@ -6,14 +6,18 @@ import styles from './UserProjectsTable.css';
 import { boxStyle } from 'styles';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { permissions } from 'utils/constants';
+
 
 const UserProjectsTable = React.memo(props => {
   const [tooltipOpen, setTooltip] = useState(false);
   
-  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canUpdateTask = props.hasPermission('updateTask');
-  const canDeleteProjects = props.hasPermission('deleteProject');
-  const canDeleteTasks = props.hasPermission('deleteTask')
+  const canAssignProjectToUsers = props.hasPermission(permissions.projects.assignProjectToUsers);
+  const canUpdateTask = props.hasPermission(permissions.projects.updateTask);
+
+  
+  const canDeleteProjects = props.hasPermission(permissions.projects.deleteProject);
+  const canDeleteTasks = props.hasPermission(permissions.projects.deleteTask)
 
   const userProjects = props.userProjectsById;
   const userTasks = props.userTasks;

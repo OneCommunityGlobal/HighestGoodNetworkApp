@@ -8,6 +8,8 @@ import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
+
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
@@ -307,7 +309,7 @@ const BasicInformationTab = props => {
     topMargin = '0px';
   }
 
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission(permissions.userManagement.addDeleteEditOwners);
   const handleLocation = e => {
     setUserProfile({
       ...userProfile,
