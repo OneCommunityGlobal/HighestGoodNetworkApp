@@ -329,6 +329,14 @@ const ViewTab = props => {
     <div data-testid="volunteering-time-tab">
       <Row className="volunteering-time-row">
         <Col md="6">
+          <Label className="hours-label">Account Created Date</Label>
+        </Col>
+        <Col md="6">
+        <p>{moment(userProfile.createdDate).format('MM/DD/YYYY')}</p>
+        </Col>
+      </Row>
+      <Row className="volunteering-time-row">
+        <Col md="6">
           <Label className="hours-label">Start Date</Label>
         </Col>
         <Col md="6">

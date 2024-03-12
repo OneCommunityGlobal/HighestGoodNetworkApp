@@ -44,7 +44,7 @@ function PeopleTable({ userProfiles }) {
             </div>
           </td>
           <td className="hide-mobile-start-end" style={{ width: '110px' }}>
-            {moment(person.createdDate).format('MM-DD-YY')}
+            {moment(person.startDate).format('MM-DD-YY')}
           </td>
           <td className="hide-mobile-start-end" style={{ width: '110px' }}>
             {moment(person.endDate).format('MM-DD-YY') || 'N/A'}
