@@ -3,11 +3,16 @@ import DatePicker from 'react-datepicker';
 import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TableFilter.css';
+import React from 'react';
 import { Checkbox } from 'components/common/Checkbox';
 import TextSearchBox from '../../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
 
-function InputWithCalendarIcon({ value, onClick }) {
+const InputWithCalendarIcon = React.forwardRef((props, ref) => {
+  const { value, onClick } = props;
+  const handleInputChange = (event) => {
+    console.log(event.target.value);
+  };
   return (
     <>
       <input
@@ -15,11 +20,12 @@ function InputWithCalendarIcon({ value, onClick }) {
         className="table-filter-datePicker table-filter-item table-filter-input"
         value={value}
         onClick={onClick}
+        onChange={handleInputChange}
       />
       <FiCalendar className="date-picker-icon" onClick={onClick} />
     </>
   );
-}
+})
 
 function TableFilter({
   onTaskNameSearch,
