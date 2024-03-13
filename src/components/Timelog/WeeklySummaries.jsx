@@ -33,6 +33,8 @@ const WeeklySummaries = ({ userProfile }) => {
 
   const [LoadingHandleSave, setLoadingHandleSave] = useState(null);
 
+  const [wordCount, setWordCount] = useState(0);
+
   const dispatch = useDispatch();
   const canEdit = dispatch(hasPermission('putUserProfile'));
 
@@ -45,14 +47,13 @@ const WeeklySummaries = ({ userProfile }) => {
   }
 
   const toggleEdit = (index) => {
-    // Toggle the editing state for the specified summary
-    const newEditing = [...editing];
-    newEditing[index] = !newEditing[index];
-    setEditing(newEditing);
+      const newEditing = editing.map((value, i) => (i === index ? !value : false));
+      setEditing(newEditing);    
   };
 
-  const handleSummaryChange = (event, index) => {
-    // Update the edited summary content
+  const handleSummaryChange = (event, index, editor) => {
+    const wordCounter = editor.plugins.wordcount.getCount();
+    setWordCount(wordCounter)    
     const newEditedSummaries = [...editedSummaries];
     newEditedSummaries[index] = event.target.value;
     setEditedSummaries(newEditedSummaries);
@@ -63,26 +64,25 @@ const WeeklySummaries = ({ userProfile }) => {
     const newEditedSummaries = [...editedSummaries];
     newEditedSummaries[index] = userProfile.weeklySummaries[index]?.summary || '';
     setEditedSummaries(newEditedSummaries);
-    
+  
     // Toggle off editing mode
     toggleEdit(index);
-  };
 
+  };
+  
   const handleSave = async (index) => {
     setLoadingHandleSave(index);
     // Save the edited summary content and toggle off editing mode
     const editedSummary = editedSummaries[index];
-    // Check if the edited summary is not blank and contains at least 50 words
-    const wordCount = editedSummary.split(/\s+/).filter(Boolean).length;
 
     if (editedSummary.trim() !== '' && wordCount >= 50) {
       const updatedUserProfile = {
         ...userProfile,
         weeklySummaries: userProfile.weeklySummaries.map((item, i) =>
-          i === index ? { ...item, summary: editedSummary } : item
+        i === index ? { ...item, summary: editedSummary } : item
         )
       };
-
+      
     // This code updates the summary.  
     await dispatch(updateUserProfile(userProfile));
     
@@ -90,11 +90,13 @@ const WeeklySummaries = ({ userProfile }) => {
     await dispatch(updateWeeklySummaries(userProfile._id, updatedUserProfile));
     await dispatch(getUserProfile(userProfile._id));
     await setLoadingHandleSave(null);
-      // Toggle off editing mode
-      toggleEdit(index);
-    } else {
-      // Invalid summary, show an error message or handle it as needed
-      alert('Please enter a valid summary with at least 50 words.');
+     setLoadingHandleSave(null);
+    // Toggle off editing mode
+    toggleEdit(index);    
+  } else {
+    // Invalid summary, show an error message or handle it as needed
+    alert('Please enter a valid summary with at least 50 words.');
+    setLoadingHandleSave(null);
     }
 
   };
@@ -116,7 +118,8 @@ const WeeklySummaries = ({ userProfile }) => {
               autoresize_bottom_margin: 1,
             }}
             value={editedSummaries[index]}
-            onEditorChange={(content) => handleSummaryChange({ target: { value: content } }, index)}
+            onEditorChange={(content, editor) => handleSummaryChange({ target: { value: content } }, index, editor)}
+            onGetContent={(content, editor) =>   setWordCount(editor.plugins.wordcount.getCount())}
           />
 
           <button className = "button save-button" onClick={() => handleSave(index)} 
