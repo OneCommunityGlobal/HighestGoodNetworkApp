@@ -9,9 +9,15 @@ import axios from 'axios';
 import { getProjectDetail } from 'actions/project';
 import { fetchAllMembers, foundUsers, getProjectActiveUser } from 'actions/projectMembers';
 import { fetchAllWBS } from 'actions/wbs';
+import viewWBSpermissionsRequired from 'utils/viewWBSpermissionsRequired';
 
 const mockStore = configureStore([thunk]);
 const store = mockStore({
+  auth: {
+    user: {
+      role: 'Administrator',
+    },
+  },
   wbs: { WBSItems: [] },
   projectMembers: { members: [], foundUsers: [], fetched: true },
   tasks: [],
@@ -209,5 +215,77 @@ describe('ProjectReport component', () => {
     await store.dispatch(fetchAllWBS('abc456'));
     await flushAllPromises();
     expect(store.getActions()).toEqual(expectedErrorAction);
+  });
+});
+
+describe('ProjectReport WBS link visibility', () => {
+  it(`should display WBS links when the user has required permissions`, async () => {
+    const mockPermissions = ['resolveTask', 'acb'];
+
+    const hasPermission = mockPermissions.some(permission =>
+      viewWBSpermissionsRequired.includes(permission),
+    );
+
+    const canViewWBS = hasPermission;
+
+    axios.get.mockResolvedValue({ status: 200, data: {} });
+
+    render(
+      <Provider store={store}>
+        <ProjectReport />
+      </Provider>,
+    );
+
+    const mockWBS = { _id: 'wbs123', wbsName: 'wbs name1' };
+    const projectId = '123';
+
+    if (canViewWBS) {
+      screen.findByRole('link', { name: mockWBS.wbsName }).then(linkElement => {
+        expect(linkElement).toBeInTheDocument();
+        expect(linkElement).toHaveAttribute(
+          'href',
+          expect.stringContaining(`/wbs/tasks/${mockWBS._id}/${projectId}/${mockWBS.wbsName}`),
+        );
+      });
+    } else {
+      screen.findByText(mockWBS.wbsName).then(divElement => {
+        expect(divElement).toBeInTheDocument();
+        expect(divElement.tagName).toBe('DIV');
+      });
+    }
+  });
+
+  it(`should not display WBS links when the user lacks required permissions`, async () => {
+    const mockPermissions = ['abc'];
+    const hasPermission = mockPermissions.some(permission =>
+      viewWBSpermissionsRequired.includes(permission),
+    );
+    const canViewWBS = hasPermission;
+
+    axios.get.mockResolvedValue({ status: 200, data: {} });
+
+    render(
+      <Provider store={store}>
+        <ProjectReport />
+      </Provider>,
+    );
+
+    const mockWBS = { _id: 'wbs123', wbsName: 'wbs name1' };
+    const projectId = '123';
+
+    if (canViewWBS) {
+      screen.findByRole('link', { name: mockWBS.wbsName }).then(linkElement => {
+        expect(linkElement).toBeInTheDocument();
+        expect(linkElement).toHaveAttribute(
+          'href',
+          expect.stringContaining(`/wbs/tasks/${mockWBS._id}/${projectId}/${mockWBS.wbsName}`),
+        );
+      });
+    } else {
+      screen.findByText(mockWBS.wbsName).then(divElement => {
+        expect(divElement).toBeInTheDocument();
+        expect(divElement.tagName).toBe('DIV');
+      });
+    }
   });
 });

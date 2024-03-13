@@ -14,6 +14,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
 import {
   Input,
   ListGroup,
@@ -32,12 +33,10 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
-import googleDocIconGray from './google_doc_icon_gray.png';
-import googleDocIconPng from './google_doc_icon.png';
+import GoogleDocIcon from '../common/GoogleDocIcon';
 
 const textColors = {
   Default: '#000000',
@@ -86,7 +85,6 @@ function FormattedReport({
             badges={badges}
             loadBadges={loadBadges}
             canSeeBioHighlight={canSeeBioHighlight}
-            auth={auth}
           />
         ))}
       </ListGroup>
@@ -180,11 +178,11 @@ function ReportDetails({
   weekIndex,
   bioCanEdit,
   canEditSummaryCount,
+  allRoleInfo,
   badges,
   loadBadges,
   canEditTeamCode,
   canSeeBioHighlight,
-  auth,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -204,7 +202,7 @@ function ReportDetails({
     <li className="list-group-item px-0" ref={ref}>
       <ListGroup className="px-0" flush>
         <ListGroupItem>
-          <Index summary={summary} weekIndex={weekIndex} auth={auth} />
+          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
@@ -421,8 +419,8 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    // eslint-disable-next-line radix
-    parseInt(summary.weeklySummariesCount),
+    // parseInt() returns an integer or NaN, convert to 0 if it's NaM
+    parseInt(summary.weeklySummariesCount, 10) || 0,
   );
 
   const handleOnChange = async (userProfileSummary, count) => {
@@ -600,76 +598,43 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, auth }) {
-  const handleGoogleDocClick = googleDocLink => {
-    const toastGoogleLinkDoesNotExist = 'toast-on-click';
-    if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
-      window.open(googleDocLink.Link);
-    } else {
-      toast.error(
-        'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
-        {
-          toastId: toastGoogleLinkDoesNotExist,
-          pauseOnFocusLoss: false,
-          autoClose: 3000,
-        },
-      );
-    }
-  };
-
-  // eslint-disable-next-line no-shadow
-  const getGoogleDocLink = summary => {
-    if (!summary.adminLinks) {
-      return undefined;
-    }
-    const googleDocLink = summary.adminLinks.find(link => link.Name === 'Google Doc');
-    return googleDocLink;
-  };
-
+function Index({ summary, weekIndex, allRoleInfo }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
-  const googleDocLink = getGoogleDocLink(summary);
-  // Determine whether to use grayscale or color icon based on googleDocLink
-  const googleDocIcon =
-    googleDocLink && googleDocLink.Link.trim() !== '' ? googleDocIconPng : googleDocIconGray;
+  const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
+    if (currentElement.Name === 'Google Doc') {
+      // eslint-disable-next-line no-param-reassign
+      targetLink = currentElement.Link;
+    }
+    return targetLink;
+  }, undefined);
+
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <b>Name: </b>
-        <Link
-          className="ml-2"
-          to={`/userProfile/${summary._id}`}
-          style={{
-            color:
-              currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-              currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
-                ? 'rgba(128, 128, 128, 0.5)'
-                : undefined,
-          }}
-          title="View Profile"
-        >
-          {summary.firstName} {summary.lastName}
-        </Link>
+      <b>Name: </b>
+      <Link
+        className="ml-2"
+        to={`/userProfile/${summary._id}`}
+        style={{
+          color:
+            currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              ? 'rgba(128, 128, 128, 0.5)'
+              : undefined,
+        }}
+        title="View Profile"
+      >
+        {summary.firstName} {summary.lastName}
+      </Link>
 
-        <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-          <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
-        </span>
-        <span>
-          <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
-        </span>
-        {/* {summary.role !== 'Volunteer' && (
+      <GoogleDocIcon link={googleDocLink} />
+      <span>
+        <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+      </span>
+      {summary.role !== 'Volunteer' && (
         <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)} />
-      )} */}
-        <EditableInfoModal
-          areaName="Core TeamInfo"
-          areaTitle="Core TeamInfo"
-          role={auth?.user?.role}
-          fontSize={24}
-          isPermissionPage
-          className="p-2" // Add Bootstrap padding class to the EditableInfoModal
-        />
-      </div>
+      )}
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"

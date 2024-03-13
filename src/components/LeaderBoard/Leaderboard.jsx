@@ -228,7 +228,11 @@ function LeaderBoard({
               <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
-                    <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
+                    <Modal
+                      isOpen={isDashboardOpen === item.personId}
+                      toggle={dashboardToggle}
+                      className="modal-personal-dashboard"
+                    >
                       <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
                       <ModalBody>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
@@ -369,6 +373,7 @@ function LeaderBoard({
 
                             handleTimeOffModalOpen(request);
                           }}
+                          style={{ width: '35px', height: 'auto' }}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
