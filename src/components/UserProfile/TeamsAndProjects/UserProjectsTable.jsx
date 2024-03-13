@@ -227,8 +227,8 @@ const UserProjectsTable = React.memo(props => {
                 <tbody>
                   {props.userProjectsById.length > 0 ? (
                     filteredTasks?.map(project =>
-                      project.tasks.map(task => {
-                        const isCompletedTask = task.resources.find(
+                      project?.tasks?.map(task => {
+                        const isCompletedTask = task?.resources?.find(
                           ({ userID }) => userID === props.userId,
                         )?.completedTask;
                         return (
@@ -404,8 +404,8 @@ const UserProjectsTable = React.memo(props => {
                 <tbody>
                   {props.userProjectsById.length > 0 ? (
                     filteredTasks?.map(project =>
-                      project.tasks.map(task => {
-                        const isCompletedTask = task.resources.find(
+                      project?.tasks?.map(task => {
+                        const isCompletedTask = task?.resources?.find(
                           ({ userID }) => userID === props.userId,
                         )?.completedTask;
                         return (
