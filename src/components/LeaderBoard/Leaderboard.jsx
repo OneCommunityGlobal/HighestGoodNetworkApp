@@ -87,7 +87,6 @@ function LeaderBoard({
   const isOwner = ['Owner'].includes(loggedInUser.role);
   const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team', 'Assistant Manager'];
   const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
-  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
   const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
   const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState({});
   const usersOnFutureTimeOff = useSelector(state => state.timeOffRequests.futureTimeOff);
@@ -243,52 +242,6 @@ function LeaderBoard({
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
   };
-
-  let currentTimeOff = {};
-  let futureWeeksOff = {};
-
-  const timeOffCalculate = () => {
-    if (userOnTimeOff) {
-      for (const personId in userOnTimeOff) {
-        // check if user if off for the current week
-        if (
-          currentDate.isSameOrAfter(
-            moment(userOnTimeOff[personId].startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          ) &&
-          currentDate.isSameOrBefore(
-            moment(userOnTimeOff[personId].endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          )
-        ) {
-          const additionalWeeks = Math.floor(
-            moment(userOnTimeOff[personId].endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
-              .subtract(1, 'day')
-              .diff(
-                moment(userOnTimeOff[personId].startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-                'weeks',
-              ),
-          );
-          currentTimeOff[personId] = { isInTimeOff: true, weeks: additionalWeeks };
-        } else {
-          if (!currentTimeOff.hasOwnProperty(personId)) {
-            currentTimeOff[personId] = { isInTimeOff: false, weeks: -1 };
-          }
-        }
-      }
-    }
-
-    if (usersOnFutureTimeOff) {
-      for (const personId in usersOnFutureTimeOff) {
-        futureWeeksOff[personId] = Math.ceil(
-          moment(usersOnFutureTimeOff[personId].startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(
-            moment(currentDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-            'days',
-          ) / 7,
-        );
-      }
-    }
-  };
-
-  timeOffCalculate();
 
   const currentTimeOfftoggle = personId => {
     setCurrentTimeOfftooltipOpen(prevState => ({
@@ -578,7 +531,7 @@ function LeaderBoard({
                     style={{
                       color:
                         (isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
-                        currentTimeOff[item.personId]?.isInTimeOff == true
+                        userOnTimeOff[item.personId]?.isInTimeOff == true
                           ? 'rgba(128, 128, 128, 0.5)'
                           : '#007BFF',
                     }}
@@ -586,15 +539,15 @@ function LeaderBoard({
                     {item.name}
                   </Link>
                   {isAllowedOtherThanOwner || isOwner || item.personId === userId ? (
-                    currentTimeOff[item.personId]?.isInTimeOff == true ? (
-                      currentTimeOff[item.personId]?.weeks > 0 ? (
+                    userOnTimeOff[item.personId]?.isInTimeOff == true ? (
+                      userOnTimeOff[item.personId]?.weeks > 0 ? (
                         <>
                           <sup
                             style={{ color: 'rgba(128, 128, 128, 0.5)' }}
                             id={`currentTimeOff-${item.personId}`}
                           >
                             {' '}
-                            +{currentTimeOff[item.personId].weeks}
+                            +{userOnTimeOff[item.personId].weeks}
                           </sup>
                           <Tooltip
                             placement="top"
@@ -607,11 +560,11 @@ function LeaderBoard({
                           </Tooltip>
                         </>
                       ) : null
-                    ) : futureWeeksOff[item.personId] > 0 ? (
+                    ) : usersOnFutureTimeOff[item.personId]?.weeks > 0 ? (
                       <>
                         <sup style={{ color: '#007bff' }} id={`futureTimeOff-${item.personId}`}>
                           {' '}
-                          {futureWeeksOff[item.personId]}
+                          {usersOnFutureTimeOff[item.personId].weeks}
                         </sup>
                         <Tooltip
                           placement="top"
