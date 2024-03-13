@@ -7,12 +7,12 @@
   font-size: 20px;
 }
 
-.table-container {
+.task_table-container {
   position: relative;
   overflow-x: auto;
 }
 
-.table-container table{
+.task_table-container table{
   table-layout: fixed;
   width: 100%;
 }
