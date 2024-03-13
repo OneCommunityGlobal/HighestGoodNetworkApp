@@ -350,8 +350,8 @@ function LeaderBoard({
                             target={`currentTimeOff-${item.personId}`}
                             toggle={() => currentTimeOfftoggle(item.personId)}
                           >
-                            Number with a preceeding + indicates additional weeks the user will be
-                            on a time off excluding the current week.
+                            Number with + indicates additional weeks the user will be on a time off
+                            excluding the current week.
                           </Tooltip>
                         </>
                       ) : null
