@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
 import { getProjectDetail } from '../../../actions/project';
 import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
+import { fetchAllTasks } from 'actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -28,6 +29,14 @@ export const ProjectReport = ({ match }) => {
       dispatch(fetchAllMembers(match.params.projectId));
     }
   }, []);
+
+  useEffect(() => {
+  if(wbs.fetching === false){
+    wbs.WBSItems.forEach(wbs => {
+      dispatch(fetchAllTasks(wbs._id));
+    });
+  }
+}, [wbs]);
 
   useEffect(() => {
     if (projectMembers.members) {

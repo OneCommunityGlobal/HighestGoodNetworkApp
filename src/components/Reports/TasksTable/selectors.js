@@ -12,6 +12,6 @@ export const get_task_by_wbsId = (WbsTasksID, tasks) => {
   return get_tasks;
 };
 
-export const getTasksTableData = (state, { WbsTasksID }) => ({
-  get_tasks: get_task_by_wbsId(WbsTasksID, state.tasks) || [],
+export const getTasksTableData = (tasks, { WbsTasksID }) => ({
+  get_tasks: get_task_by_wbsId(WbsTasksID, tasks) || [],
 });

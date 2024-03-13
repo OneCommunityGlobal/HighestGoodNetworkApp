@@ -11,7 +11,7 @@ import TextSearchBox from 'components/UserManagement/TextSearchBox';
 import { boxStyle } from 'styles';
 
 export const TasksTable = ({ WbsTasksID }) => {
-  const { get_tasks } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
+  const { get_tasks } = useSelector(state => getTasksTableData(state.tasks, { WbsTasksID }));
 
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
