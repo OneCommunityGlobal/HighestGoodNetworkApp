@@ -8,6 +8,8 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -67,6 +69,33 @@ describe('RolePermissions component', () => {
       </Provider>,
     );
     expect(screen.getByText('Role Name: Owner')).toBeInTheDocument();
+  });
+  it('check edit role modal', async () => {
+    axios.get.mockResolvedValue({
+      data: {},
+    });
+    const { container } = render(
+      <Provider store={store}>
+        <RolePermissions
+          userRole={store.getState().userProfile.role}
+          role={roleName}
+          roleId={roleId}
+          header={`${roleName} Permissions:`}
+          permissions={mockAdminState.role.roles[5].permissions}
+        />
+      </Provider>,
+    );
+    const editRoleIcon = container.querySelector('.user-role-tab__icon.edit-icon');
+    fireEvent.click(editRoleIcon);
+    expect(screen.queryByText('Edit Role Name')).toBeInTheDocument();
+    expect(screen.queryByText('New Role Name')).toBeInTheDocument();
+    const modalElement = screen.getByRole('dialog');
+    const modalDialog = modalElement.querySelector('.modal-dialog');
+    const modalContent = modalDialog.querySelector('.modal-content');
+    const modalBody = modalContent.querySelector('.modal-body');
+    const searchBox = modalBody.querySelector('[name="editRoleName"]');
+    fireEvent.change(searchBox, { target: { value: 'manager' } });
+    expect(searchBox.value).toBe('manager');
   });
   it('check if permission list header is displaying as expected', () => {
     axios.get.mockResolvedValue({
@@ -178,7 +207,7 @@ describe('RolePermissions component', () => {
     await waitFor(() => {});
     expect(toast.error).toHaveBeenCalledWith('Error creating preset');
   });
-  it('', async () => {
+  it('check if clicking on Load Presets opens modal', async () => {
     axios.get.mockResolvedValue({
       data: {},
     });
@@ -194,5 +223,84 @@ describe('RolePermissions component', () => {
         />
       </Provider>,
     );
+    const loadPresetButton = screen.getByText('Load Presets');
+    fireEvent.click(loadPresetButton);
+    expect(screen.queryByText('Role Presets')).toBeInTheDocument();
+  });
+  it('check save button toast success message', async () => {
+    axios.get.mockResolvedValue({
+      data: {},
+    });
+    const history = createMemoryHistory();
+
+    render(
+      <Router history={history}>
+        <Provider store={store}>
+          <RolePermissions
+            userRole={store.getState().userProfile.role}
+            role={roleName}
+            roleId={roleId}
+            header={`${roleName} Permissions:`}
+            permissions={mockAdminState.role.roles[5].permissions}
+          />
+        </Provider>
+      </Router>,
+    );
+    const saveButton = screen.getByText('Save');
+    fireEvent.click(saveButton);
+    await waitFor(() => {});
+    expect(toast.success).toHaveBeenCalledWith('Role updated successfully');
+    expect(history.location.pathname).toBe('/permissionsmanagement');
+  });
+  it('check save button toast success message', async () => {
+    axios.get.mockResolvedValue({
+      data: {},
+    });
+    const history = createMemoryHistory();
+
+    render(
+      <Router history={history}>
+        <Provider store={store}>
+          <RolePermissions
+            userRole={store.getState().userProfile.role}
+            role={roleName}
+            roleId={roleId}
+            header={`${roleName} Permissions:`}
+            permissions={mockAdminState.role.roles[5].permissions}
+          />
+        </Provider>
+      </Router>,
+    );
+  });
+  it('check delete role button modal', async () => {
+    axios.get.mockResolvedValue({
+      data: {},
+    });
+    const history = createMemoryHistory();
+
+    render(
+      <Router history={history}>
+        <Provider store={store}>
+          <RolePermissions
+            userRole={store.getState().userProfile.role}
+            role={roleName}
+            roleId={roleId}
+            header={`${roleName} Permissions:`}
+            permissions={mockAdminState.role.roles[5].permissions}
+          />
+        </Provider>
+      </Router>,
+    );
+    const deleteRole = screen.getByText('Delete Role');
+    fireEvent.click(deleteRole);
+    expect(screen.queryByText(`Delete ${roleName} Role`)).toBeInTheDocument();
+    expect(
+      screen.queryByText(`Are you sure you want to delete ${roleName} role?`),
+    ).toBeInTheDocument();
+    const modalElement = screen.getByRole('dialog');
+    const modalDialog = modalElement.querySelector('.modal-dialog');
+    const modalContent = modalDialog.querySelector('.modal-content');
+    const modalHeader = modalContent.querySelector('.modal-header');
+    const modalBody = modalContent.querySelector('.modal-body');
   });
 });
