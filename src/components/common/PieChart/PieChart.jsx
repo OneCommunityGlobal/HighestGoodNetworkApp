@@ -28,10 +28,6 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   const pie = d3.pie().value(d => d[1]);
   useEffect(() => {
     const data_ready = pie(Object.entries(data));
-    const name = Object.keys(dataLegend).map(key => {
-      return dataLegend[key][0];
-    });
-
     let totalValue = data_ready
       .map(obj => obj.value)
       .reduce((a, c) => {
