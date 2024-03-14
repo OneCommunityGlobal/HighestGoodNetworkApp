@@ -70,7 +70,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
-      weeklyRecipientAuthPass: '',
+      // weeklyRecipientAuthPass: '',
     };
   }
 
@@ -251,10 +251,16 @@ export class WeeklySummariesReport extends Component {
   };
 
   onClickRecepients = () => {
-    this.setState({
-      passwordModalOpen: true,
-    });
-    this.checkForValidPwd(true);
+    if (this.state.weeklyRecipientAuthPass) {
+      this.setState({
+        summaryRecepientsPopupOpen: true,
+      });
+    } else {
+      this.setState({
+        passwordModalOpen: true,
+      });
+      this.checkForValidPwd(true);
+    }
   };
 
   /**
