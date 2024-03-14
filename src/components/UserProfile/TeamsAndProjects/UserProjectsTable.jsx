@@ -40,10 +40,11 @@ const UserProjectsTable = React.memo(props => {
   const filterTasksByUserTaskSituation = situation => {
     if (sortedTasksByNumber) {
       return userProjects?.map(project => {
-        const tasks = [];
-        sortedTasksByNumber?.forEach(task => {
-          const isCompletedTask = task?.resources?.find(user => user.userID === props.userId)?.completedTask;
-          if (task?.projectId?.includes(project._id)) {
+        const filteredTasks = sortedTasksByNumber.filter(task => {
+          const isTaskForProject = task.projectId.includes(project._id);
+          const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
+  
+          if (isTaskForProject) {
             if (situation === 'active' && !isCompletedTask) {
               return true;
             } else if (situation === 'complete' && isCompletedTask) {
@@ -54,7 +55,7 @@ const UserProjectsTable = React.memo(props => {
           }
           return false;
         });
-
+  
         return { ...project, tasks: filteredTasks };
       });
     }
