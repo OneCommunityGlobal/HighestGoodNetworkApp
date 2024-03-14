@@ -14,7 +14,6 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { Tooltip } from 'reactstrap';
-import { useSelector } from 'react-redux';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -47,6 +46,7 @@ function LeaderBoard({
   userOnTimeOff,
   userGoingOnTimeOff,
   showTimeOffRequestModal,
+  usersOnFutureTimeOff,
 }) {
   const userId = displayUserId || loggedInUser.userId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -56,7 +56,6 @@ function LeaderBoard({
   const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
   const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
   const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState({});
-  const usersOnFutureTimeOff = useSelector(state => state.timeOffRequests.futureTimeOff);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
 
