@@ -131,6 +131,53 @@ function LeaderBoard({
     }));
   };
 
+  const timeOffIndicator = personId => {
+    if (userOnTimeOff[personId]?.isInTimeOff === true) {
+      if (userOnTimeOff[personId]?.weeks > 0) {
+        return (
+          <>
+            <sup style={{ color: 'rgba(128, 128, 128, 0.5)' }} id={`currentTimeOff-${personId}`}>
+              {' '}
+              +{userOnTimeOff[personId].weeks}
+            </sup>
+            <Tooltip
+              placement="top"
+              isOpen={currentTimeOfftooltipOpen[personId]}
+              target={`currentTimeOff-${personId}`}
+              toggle={() => currentTimeOfftoggle(personId)}
+            >
+              Number with + indicates additional weeks the user will be on a time off excluding the
+              current week.
+            </Tooltip>
+          </>
+        );
+      }
+
+      return null;
+    }
+
+    if (usersOnFutureTimeOff[personId]?.weeks > 0) {
+      return (
+        <>
+          <sup style={{ color: '#007bff' }} id={`futureTimeOff-${personId}`}>
+            {' '}
+            {usersOnFutureTimeOff[personId].weeks}
+          </sup>
+          <Tooltip
+            placement="top"
+            isOpen={futureTimeOfftooltipOpen[personId]}
+            target={`futureTimeOff-${personId}`}
+            toggle={() => futureTimeOfftoggle(personId)}
+          >
+            This number indicates number of weeks from now user has scheduled a time off.
+          </Tooltip>
+        </>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div>
       <h3>
@@ -332,46 +379,9 @@ function LeaderBoard({
                   >
                     {item.name}
                   </Link>
-                  {isAllowedOtherThanOwner || isOwner || item.personId === userId ? (
-                    userOnTimeOff[item.personId]?.isInTimeOff === true ? (
-                      userOnTimeOff[item.personId]?.weeks > 0 ? (
-                        <>
-                          <sup
-                            style={{ color: 'rgba(128, 128, 128, 0.5)' }}
-                            id={`currentTimeOff-${item.personId}`}
-                          >
-                            {' '}
-                            +{userOnTimeOff[item.personId].weeks}
-                          </sup>
-                          <Tooltip
-                            placement="top"
-                            isOpen={currentTimeOfftooltipOpen[item.personId]}
-                            target={`currentTimeOff-${item.personId}`}
-                            toggle={() => currentTimeOfftoggle(item.personId)}
-                          >
-                            Number with + indicates additional weeks the user will be on a time off
-                            excluding the current week.
-                          </Tooltip>
-                        </>
-                      ) : null
-                    ) : usersOnFutureTimeOff[item.personId]?.weeks > 0 ? (
-                      <>
-                        <sup style={{ color: '#007bff' }} id={`futureTimeOff-${item.personId}`}>
-                          {' '}
-                          {usersOnFutureTimeOff[item.personId].weeks}
-                        </sup>
-                        <Tooltip
-                          placement="top"
-                          isOpen={futureTimeOfftooltipOpen[item.personId]}
-                          target={`futureTimeOff-${item.personId}`}
-                          toggle={() => futureTimeOfftoggle(item.personId)}
-                        >
-                          This number indicates number of weeks from now user has scheduled a time
-                          off.
-                        </Tooltip>
-                      </>
-                    ) : null
-                  ) : null}
+                  {isAllowedOtherThanOwner || isOwner || item.personId === userId
+                    ? timeOffIndicator(item.personId)
+                    : null}
                   &nbsp;&nbsp;&nbsp;
                   {hasVisibilityIconPermission && !item.isVisible && (
                     <i className="fa fa-eye-slash" title="User is invisible" />
