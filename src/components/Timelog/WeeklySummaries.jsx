@@ -71,11 +71,11 @@ const WeeklySummaries = ({ userProfile }) => {
   };
   
   const handleSave = async (index) => {
-    setLoadingHandleSave(index);
     // Save the edited summary content and toggle off editing mode
     const editedSummary = editedSummaries[index];
-
+    
     if (editedSummary.trim() !== '' && wordCount >= 50) {
+      setLoadingHandleSave(index);
       const updatedUserProfile = {
         ...userProfile,
         weeklySummaries: userProfile.weeklySummaries.map((item, i) =>
@@ -96,7 +96,6 @@ const WeeklySummaries = ({ userProfile }) => {
   } else {
     // Invalid summary, show an error message or handle it as needed
     alert('Please enter a valid summary with at least 50 words.');
-    setLoadingHandleSave(null);
     }
 
   };
@@ -122,12 +121,16 @@ const WeeklySummaries = ({ userProfile }) => {
             onGetContent={(content, editor) =>   setWordCount(editor.plugins.wordcount.getCount())}
           />
 
+          <div style={{marginTop: '10px'}}>
+
           <button className = "button save-button" onClick={() => handleSave(index)} 
           disabled={LoadingHandleSave === index} >
           { LoadingHandleSave === index? <Spinner animation="border" size="sm" /> : 'Save' }
           </button>
 
           <button className = "button cancel-button" onClick={() => handleCancel(index)}>Cancel</button>
+          </div>
+
         </div>
       );
     } else if (summary && (canEdit || currentUserID == loggedInUserId)) {
