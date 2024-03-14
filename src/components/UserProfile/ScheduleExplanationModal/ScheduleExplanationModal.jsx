@@ -19,14 +19,21 @@ function SchedulerExplanationModal({
             <Col>
               Including your time already requested off, you have used the equivalent of{' '}
               <span style={{ color: 'red', fontWeight: 500 }}>{infringementsNum}</span> blue squares
-              and <span style={{ color: 'red', fontWeight: 500 }}>{timeOffRequests.length}</span>{' '}
-              schedule time offs. <span style={{ fontWeight: 500, color: 'green' }}>5</span> is the
-              maximum allowed per year of employment. Please remove a time-off request below or
-              contact your Administrator if you need to request time off in addition to what is
-              listed here:
+              {timeOffRequests?.length > 0 ? (
+                <span>
+                  and{' '}
+                  <span style={{ color: 'red', fontWeight: 500 }}>{timeOffRequests.length}</span>{' '}
+                  schedule time offs
+                </span>
+              ) : (
+                ''
+              )}
+              . <span style={{ fontWeight: 500, color: 'green' }}>5</span> is the maximum allowed
+              per year of employment. Please remove a time-off request below or contact your
+              Administrator if you need to request time off in addition to what is listed here:
             </Col>
           </Row>
-          {infringements.length > 0 && (
+          {infringements?.length > 0 && (
             <Row>
               <Col>
                 <Row className="mb-2">
@@ -37,7 +44,7 @@ function SchedulerExplanationModal({
                 <Row className="infringements-explanation-modal-row ml-1">
                   <Col>
                     <ol style={{ paddingLeft: '20px' }}>
-                      {infringements.map((el) => {
+                      {infringements.map(el => {
                         return (
                           <li key={el._id} className="Schedule-explanation-modal-list-marker">
                             <ul style={{ listStyleType: 'disc', paddingLeft: '30px' }}>
@@ -59,7 +66,7 @@ function SchedulerExplanationModal({
               </Col>
             </Row>
           )}
-          {timeOffRequests.length > 0 && (
+          {timeOffRequests?.length > 0 && (
             <Row className="mt-3">
               <Col>
                 <Row className="mb-2 ">
@@ -70,7 +77,7 @@ function SchedulerExplanationModal({
                 <Row className="scheduled-time-off-explanation-modal-row ml-1">
                   <Col>
                     <ol style={{ paddingLeft: '20px' }}>
-                      {timeOffRequests.map((el) => {
+                      {timeOffRequests.map(el => {
                         return (
                           <li key={el._id} className="Schedule-explanation-modal-list-marker">
                             <ul style={{ listStyleType: 'disc', paddingLeft: '30px' }}>
