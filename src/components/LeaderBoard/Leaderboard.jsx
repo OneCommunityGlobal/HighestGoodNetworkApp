@@ -28,7 +28,6 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { Tooltip } from 'reactstrap';
-import { useSelector } from 'react-redux';
 import { boxStyle } from 'styles';
 import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
@@ -78,6 +77,7 @@ function LeaderBoard({
   totalTimeMouseoverText,
   allRequests,
   showTimeOffRequestModal,
+  usersOnFutureTimeOff,
   darkMode,
   getWeeklySummaries,
 }) {
@@ -89,7 +89,6 @@ function LeaderBoard({
   const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
   const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
   const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState({});
-  const usersOnFutureTimeOff = useSelector(state => state.timeOffRequests.futureTimeOff);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
