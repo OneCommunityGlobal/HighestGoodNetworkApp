@@ -115,7 +115,9 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
                   <tr key={`recipient_name_${index}`}>
                     <td>{index + 1}</td>
                     <td>{`${user.firstName} ${user.lastName}`}</td>
-                    <td>{moment(user.createdDate).format('MMM-DD-YY')}</td>
+                    <td>
+                      {moment(user.permissionGrantedToGetWeeklySummaryReport).format('MMM-DD-YY')}
+                    </td>
                     <td>
                       <Button
                         color="danger"
