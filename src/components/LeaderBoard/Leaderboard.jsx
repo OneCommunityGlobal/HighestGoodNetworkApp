@@ -13,7 +13,6 @@ import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import moment from 'moment-timezone';
 import { Tooltip } from 'reactstrap';
 import { useSelector } from 'react-redux';
 
@@ -326,7 +325,7 @@ function LeaderBoard({
                     style={{
                       color:
                         (isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
-                        userOnTimeOff[item.personId]?.isInTimeOff == true
+                        userOnTimeOff[item.personId]?.isInTimeOff === true
                           ? 'rgba(128, 128, 128, 0.5)'
                           : undefined,
                     }}
@@ -334,7 +333,7 @@ function LeaderBoard({
                     {item.name}
                   </Link>
                   {isAllowedOtherThanOwner || isOwner || item.personId === userId ? (
-                    userOnTimeOff[item.personId]?.isInTimeOff == true ? (
+                    userOnTimeOff[item.personId]?.isInTimeOff === true ? (
                       userOnTimeOff[item.personId]?.weeks > 0 ? (
                         <>
                           <sup
