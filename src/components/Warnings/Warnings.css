@@ -67,9 +67,9 @@
   box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 0px;
 }
 .warnings__descriptions p {
-  margin: 0 0.5em 0 0.5em;
+  /* margin: 0 0.5em 0 0.5em;
   font-weight: bold;
-  font-size: 1em;
+  font-size: 1em; */
 }
 .warning__descriptions__btn {
   padding: 0 !important;
@@ -83,6 +83,15 @@
 }
 .warnings__descriptions__title {
   text-transform: capitalize;
+  border: none;
+  background: none;
+  width: 300px;
+  margin: 0 0.5em;
+  font-weight: bold;
+  font-size: 1em;
+}
+.warnings__descriptions__title:focus {
+  border: 1px solid red;
 }
 .warnings__descriptions__title--gray {
   opacity: 0.6;

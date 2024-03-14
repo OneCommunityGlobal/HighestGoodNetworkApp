@@ -252,13 +252,22 @@ function WarningTrackerModal({
             >
               <FontAwesomeIcon icon={faTimes} />
             </Button>
-            <p
+            {/* <p
               className={`warnings__descriptions__title ${
                 warning.activeWarning ? '' : 'warnings__descriptions__title--gray'
               }`}
             >
               {warning.warningTitle}
-            </p>
+            </p> */}
+
+            <input
+              type="text"
+              value={warning.warningTitle}
+              placeholder="warning title"
+              className={`warnings__descriptions__title ${
+                warning.activeWarning ? '' : 'warnings__descriptions__title--gray'
+              }`}
+            />
           </div>
         ))}
         <div className="btn__container">
