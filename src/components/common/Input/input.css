@@ -1,28 +1,6 @@
 .input-text {
   position: relative;
 }
-input[type="text"] {
-  height: 45px;
-  width: 100%;
-  border: none;
-  border-radius: 9px;
-  border: 1px solid #e0e3e9;
-  padding: 0 10px;
-  padding-left: 20px;
-  outline: 0;
-  font-size: 15px;
-}
-input[type="password"] {
-  height: 45px;
-  width: 100%;
-  border: none;
-  border-radius: 9px;
-  border: 1px solid #e0e3e9;
-  padding: 0 10px;
-  padding-left: 20px;
-  padding-right: 17px;
-  outline: 0;
-}
 .input-text .fa-eye-slash {
   position: absolute;
   right: 10px;
