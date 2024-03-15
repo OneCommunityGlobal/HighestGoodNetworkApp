@@ -24,7 +24,10 @@
     border-top-color: rgb(222, 226, 230);
   }
 }
-
+.title-dashboard {
+  font-size: 15px;
+  text-align: center;
+}
 .boldClass {
   color: #007bff;
   font-weight: bold;

@@ -17,11 +17,11 @@ export const assignStarDotColors = (hoursLogged, weeklyCommittedHours) => {
     ? 'purple'
     : hoursLogged >= weeklyCommittedHours * FUCHSIA_TIER &&
       hoursLogged < weeklyCommittedHours * PURPLE_TIER
-    ? 'fuchsia'
-    : hoursLogged >= weeklyCommittedHours * DARKGREEN_TIER &&
-      hoursLogged < weeklyCommittedHours * FUCHSIA_TIER
-    ? 'darkgreen'
-    : 'green';
+      ? 'fuchsia'
+      : hoursLogged >= weeklyCommittedHours * DARKGREEN_TIER &&
+        hoursLogged < weeklyCommittedHours * FUCHSIA_TIER
+        ? 'darkgreen'
+        : 'green';
 };
 
 export const showStar = (hoursLogged, weeklyCommittedHours) => {
