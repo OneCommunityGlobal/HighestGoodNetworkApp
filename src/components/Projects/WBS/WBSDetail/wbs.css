@@ -176,3 +176,17 @@
     column-gap: 2vw;
   }
 }
+
+#member_project__name {
+  padding: 5px;
+  margin-top: 3px;
+  margin: auto;
+}
+
+.wbs-task-title {
+    flex-grow: 1;
+    display: flex;
+    font-size: 1.5em;
+    justify-content: center;
+    margin-right: 15%;
+}

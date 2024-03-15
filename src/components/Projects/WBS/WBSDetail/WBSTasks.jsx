@@ -27,6 +27,7 @@ function WBSTasks(props) {
   */
   // props from store
   const { tasks, fetched } = props;
+  const { allProjects } = props;
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
@@ -45,6 +46,7 @@ function WBSTasks(props) {
 
   // permissions
   const canPostTask = props.hasPermission('postTask');
+  const projectName = allProjects.find(project => project._id === projectId).projectName;
 
   /*
   * -------------------------------- functions --------------------------------
@@ -178,12 +180,13 @@ function WBSTasks(props) {
       <div className="container-tasks">
         <nav aria-label="breadcrumb">
           <ol className="breadcrumb">
-            <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
+            <NavItem tag={Link} to={`/project/wbs/${projectId}/${projectName}`}>
               <button type="button" className="btn btn-secondary" style={boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
             </NavItem>
-            <div id="member_project__name">{wbsName}</div>
+            <div id="member_project__name">Return to WBSs</div>
+            <div className='wbs-task-title'>{wbsName}</div>
           </ol>
         </nav>
         <div className='mb-2'>
@@ -395,7 +398,10 @@ function WBSTasks(props) {
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
   fetched: state.tasks.fetched,
+  state: state,
+  allProjects: state.allProjects.projects,
 });
+
 
 export default connect(mapStateToProps, {
   fetchAllTasks,
