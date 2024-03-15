@@ -58,17 +58,6 @@ const EditLinkModal = props => {
   const [isMediaFolderLinkChanged, setIsMediaFolderLinkChanged] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
 
-  const isValidGoogleDocsUrl = (url) => {
-    const pattern = /^https:\/\/docs\.google\.com\/document\/d\/[a-zA-Z0-9-_]+/;
-    return pattern.test(url);
-  };
-
-  const isValidMediaUrl = (url) => {
-    const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
-    return pattern.test(url);
-  };
-
-
   const handleNameChanges = (e, links, index, setLinks) => {
     const updateLinks = [...links];
     updateLinks[index] = { ...updateLinks[index], Name: e.target.value };
@@ -163,7 +152,7 @@ const EditLinkModal = props => {
     if (isGoogleDocsValid && isMediaFolderValid) {
       const linksToUpdate = [googleLink, mediaFolderLink, ...adminLinks];
       await updateLink(personalLinks, linksToUpdate, mediaFolderLink.Link);
-      handleSubmit(); 
+      handleSubmit();
       setIsValidLink(true);
       setIsChanged(false);
       closeModal();
@@ -376,7 +365,7 @@ const EditLinkModal = props => {
               </Card>
               {!isValidLink && (
                 <p className='invalid-help-context' data-testid='invalid-url-warning' >
-                  Please ensure each link has a unique and not empty, and enter valid URLs.
+                  Please enter valid URLs for each link.
                 </p>
               )}
             </CardBody>
