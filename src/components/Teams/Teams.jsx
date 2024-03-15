@@ -13,7 +13,6 @@ import {
   addTeamMember,
   updateTeamMemeberVisiblity,
 } from '../../actions/allTeamsAction';
-import './Teams.css';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Loading from '../common/Loading';
 import TeamTableHeader from './TeamTableHeader';
@@ -94,7 +93,8 @@ class Teams extends React.PureComponent {
                 onSearch={this.onWildCardSearch}
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
               />
-              <table className="table table-bordered ">
+
+              < table className="table table-bordered table-responsive-sm">
                 <thead>
                   <TeamTableHeader 
                     onTeamNameSort={this.toggleTeamNameSort} 
@@ -111,7 +111,7 @@ class Teams extends React.PureComponent {
                   )
                 }
               </table>
-            </div>
+              </div>
           </React.Fragment>
         )}
       </Container>

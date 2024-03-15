@@ -13,10 +13,10 @@ import {
   Button,
 } from 'reactstrap';
 import RequirementModal from './requirementModal';
-import axios from 'axios';
+import httpService from 'services/httpService';
 import { ENDPOINTS } from 'utils/URL';
 
-const HomeCountryModal = ({ isOpen, toggle, setLocation }) => {
+const HomeCountryModal = ({ isOpen, toggle, setLocation,token}) => {
   const [inputError, setInputError] = useState('');
   const locationInitialState = {
     userProvided: '',
@@ -59,7 +59,7 @@ const HomeCountryModal = ({ isOpen, toggle, setLocation }) => {
       setInputError('Please enter valid location');
       return;
     }
-    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
+    httpService.post(ENDPOINTS.TIMEZONE_LOCATION(location),{token}).then(res => {
       if (res.status === 200) {
         const { currentLocation } = res.data;
         setLocationInput({
