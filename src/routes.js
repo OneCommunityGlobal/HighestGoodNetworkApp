@@ -70,6 +70,7 @@ const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddM
 
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
+const OverviewReport = lazy(() => import('./components/OverviewReport'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
 const Reports = lazy(() => import('./components/Reports'));
 const PeopleReport = lazy(() => import('./components/Reports/PeopleReport'));
@@ -119,7 +120,15 @@ export default (
           component={Inventory}
           routePermissions={RoutePermissions.inventoryProjectWbs}
         />
-
+        <ProtectedRoute
+          path="/overviewreport"
+          exact
+          component={OverviewReport}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+          ]}
+        />
         <ProtectedRoute
           path="/weeklysummariesreport"
           exact
