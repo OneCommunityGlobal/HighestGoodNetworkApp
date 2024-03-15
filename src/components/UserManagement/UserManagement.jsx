@@ -300,7 +300,8 @@ class UserManagement extends React.PureComponent {
    */
   onLogTimeOffClick = user => {
     // Check if target user is Jae's related user and authroized to manage time off requests
-    if(cantUpdateDevAdminDetails(user.email , this.props.state.userProfile.email)){
+    debugger;
+    if(cantUpdateDevAdminDetails(user.email , this.authEmail)){
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
@@ -323,7 +324,7 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
-    if(cantUpdateDevAdminDetails(user.email , this.props.state.userProfile.email)) {
+    if(cantUpdateDevAdminDetails(user.email , this.authEmail)) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
