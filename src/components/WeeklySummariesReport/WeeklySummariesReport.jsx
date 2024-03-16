@@ -53,7 +53,13 @@ function WeeklySummariesReport() {
 
   const error = useSelector(state => state?.weeklySummariesReport?.error);
   const allBadgeData = useSelector(state => state?.badge?.allBadgeData);
-  console.log('allbadgedata', allBadgeData);
+  const authUser = useSelector(state => state?.auth?.user);
+  const infoCollections = useSelector(state => state?.infoCollections?.infos);
+  const role = useSelector(state => state?.userProfile?.role);
+  // console.log('infoCollections', infoCollections);
+  // console.log('authUser', authUser);
+  // console.log('allbadgedata', allBadgeData);
+  // console.log('args', args);
 
   // const func = state => {
   //   console.log('I am an arrow function');
@@ -66,21 +72,7 @@ function WeeklySummariesReport() {
   //   console.log("I'm a function");
   // }
   // console.log('auth', auth);
-  const [state, setState] = useState({
-    // loading: true,
-    // summaries: [],
-    // activeTab: navItems[1],
-    badges: [],
-    loadBadges: false,
-    hasSeeBadgePermission: false,
-    selectedCodes: [],
-    selectedColors: [],
-    // filteredSummaries: [],
-    teamCodes: [],
-    colorOptions: [],
-    auth: [],
-    allRoleInfo: [],
-  });
+
   const [bioEditPermission, setBioEditPermission] = useState(false);
   const [canEditSummaryCount, setCanEditSummaryCount] = useState(false);
   const [codeEditPermission, setCodeEditPermission] = useState(false);
@@ -105,31 +97,37 @@ function WeeklySummariesReport() {
   const [allRoleInfo, setAllRoleInfo] = useState([]);
   const [selectedOverTime, setSelectedOverTime] = useState([false]);
   const [selectedBioStatus, setSelectedBioStatus] = useState([false]);
+  // const [role, setRole] = useState('');
 
   const dispatch = useDispatch();
 
   // Tool functions
-
+  /**
+   * Get the roleNames
+   * @param {*} summaries
+   * @returns
+   */
+  const getAllRoles = summaries => {
+    const roleNames = summaries.map(summary => `${summary.role}Info`);
+    const uniqueRoleNames = [...new Set(roleNames)];
+    return uniqueRoleNames;
+  };
   useEffect(() => {
     const fetchData = async () => {
       const res = await dispatch(getWeeklySummariesReport());
+      const badgeStatusCode = await dispatch(fetchAllBadges());
+      // console.log('badgeStatusCode', badgeStatusCode);
       setLoading(false);
       // console.log('RES:', res);
 
-      //     // 1. fetch report
-      //     const res = await getWeeklySummariesReport();
-      //     // eslint-disable-next-line react/destructuring-assignment
-      //     const summaries = res?.data ?? this.props.summaries;
-      //     const badgeStatusCode = await fetchAllBadges();
-
-      //     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
-      //     this.bioEditPermission = this.canPutUserProfileImportantInfo;
-      //     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-      //     this.codeEditPermission =
-      //       hasPermission('editTeamCode') ||
-      //       auth.user.role === 'Owner' ||
-      //       auth.user.role === 'Administrator';
-      //     this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
+      const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+      const bioEditPermission = canPutUserProfileImportantInfo;
+      const canEditSummaryCount = canPutUserProfileImportantInfo;
+      const codeEditPermission =
+        hasPermission('editTeamCode') ||
+        auth.user.role === 'Owner' ||
+        auth.user.role === 'Administrator';
+      const canSeeBioHighlight = hasPermission('highlightEligibleBios');
 
       //     // 2. shallow copy and sort
       let summariesCopy = [...res.data];
@@ -144,9 +142,9 @@ function WeeklySummariesReport() {
         return { ...summary, promisedHoursByWeek };
       });
 
-      //     /*
-      //      * refactor logic of commentted codes above
-      //      */
+      /*
+       * refactor logic of commentted codes above
+       */
       const teamCodeGroup = {};
       const teamCodes = [];
       const colorOptionGroup = new Set();
@@ -185,30 +183,38 @@ function WeeklySummariesReport() {
           value: '',
           label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
         });
-      setFilteredSummaries(summariesCopy);
+
+      setSummaries(summariesCopy);
       setActiveTab(
         sessionStorage.getItem('tabSelection') === null
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
       );
-      // TODO DEFINE ALLBADGEDATA
       setBadges(allBadgeData);
+      setHasSeeBadgePermission(badgeStatusCode === 200);
+      setFilteredSummaries(summariesCopy);
+      setColorOptions(colorOptions);
+      setTeamCodes(teamCodes);
+      setAuth(auth);
+
       await getInfoCollections();
-      // const role = authUser?.role;
-      // const roleInfoNames = getAllRoles(summariesCopy);
-      // const allRoleInfo = [];
-      // if (Array.isArray(infoCollections)) {
-      //   infoCollections.forEach(info => {
-      //     if (roleInfoNames?.includes(info.infoName)) {
-      //       const visible =
-      //         info.visibility === '0' ||
-      //         (info.visibility === '1' && (role === 'Owner' || role === 'Administrator')) ||
-      //         (info.visibility === '2' && role !== 'Volunteer');
-      //       // eslint-disable-next-line no-param-reassign
-      //       info.CanRead = visible;
-      //       allRoleInfo.push(info);
-      //     }
-      //   });
+      const role = authUser?.role;
+      const roleInfoNames = getAllRoles(summariesCopy);
+      const allRoleInfo = [];
+      if (Array.isArray(infoCollections)) {
+        infoCollections.forEach(info => {
+          if (roleInfoNames?.includes(info.infoName)) {
+            const visible =
+              info.visibility === '0' ||
+              (info.visibility === '1' && (role === 'Owner' || role === 'Administrator')) ||
+              (info.visibility === '2' && role !== 'Volunteer');
+            // eslint-disable-next-line no-param-reassign
+            info.CanRead = visible;
+            allRoleInfo.push(info);
+          }
+        });
+      }
+      setAllRoleInfo(allRoleInfo);
     };
     fetchData();
     console.log('useffect being called');
@@ -223,17 +229,6 @@ function WeeklySummariesReport() {
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
-  };
-
-  /**
-   * Get the roleNames
-   * @param {*} summaries
-   * @returns
-   */
-  const getAllRoles = summaries => {
-    const roleNames = summaries.map(summary => `${summary.role}Info`);
-    const uniqueRoleNames = [...new Set(roleNames)];
-    return uniqueRoleNames;
   };
 
   /**
@@ -275,53 +270,6 @@ function WeeklySummariesReport() {
     return 0;
   };
 
-  //     // setLoading(loading);
-  //     // setAllRoleInfo([]);
-  //     // //summaries: summariesCopy, don't know why originial set summary again here
-  //     // setActiveTab(
-  //     //   sessionStorage.getItem('tabSelection') === null
-  //     //     ? navItems[1]
-  //     //     : sessionStorage.getItem('tabSelection')
-  //     // );
-  //     // setBadges(allBadgeData);
-  //     // setHasSeeBadgePermission(badgeStatusCode === 200);
-  //     // setFilteredSummaries(summariesCopy);
-
-  //     await getInfoCollections();
-  //     const role = authUser?.role;
-  //     const roleInfoNames = getAllRoles(summariesCopy);
-  //     const allRoleInfo = [];
-  //     if (Array.isArray(infoCollections)) {
-  //       infoCollections.forEach(info => {
-  //         if (roleInfoNames?.includes(info.infoName)) {
-  //           const visible =
-  //             info.visibility === '0' ||
-  //             (info.visibility === '1' && (role === 'Owner' || role === 'Administrator')) ||
-  //             (info.visibility === '2' && role !== 'Volunteer');
-  //           // eslint-disable-next-line no-param-reassign
-  //           info.CanRead = visible;
-  //           allRoleInfo.push(info);
-  //         }
-  //       });
-  //     }
-  //     setState(prevState => ({ ...prevState, allRoleInfo }));
-  //   }; // end of fetchData
-
-  //   fetchData();
-  // }, []);
-
-  // Equivalent to componentDidUpdate
-  // useEffect(() => {
-  //   setState(prevState => ({ ...prevState, loading: props.loading }));
-  // }, [props?.loading]); // Re-run effect when props.loading changes
-
-  // Equivalent to componentWillUnmount
-  // useEffect(() => {
-  //   return () => {
-  //     sessionStorage.removeItem('tabSelection');
-  //   };
-  // }, []); // Empty dependency array means this effect runs once on mount and cleanup runs on unmount
-
   const toggleTab = tab => {
     if (activeTab !== tab) {
       setActiveTab(tab);
@@ -356,13 +304,36 @@ function WeeklySummariesReport() {
     });
     setFilteredSummaries(temp);
   };
+  useEffect(() => {
+    if (selectedCodes !== null) {
+      filterWeeklySummaries();
+    }
+  }, [selectedCodes]);
 
   const handleSelectCodeChange = event => {
     setSelectedCodes(event);
   };
 
+  useEffect(() => {
+    if (selectedColors !== null) {
+      filterWeeklySummaries();
+    }
+  }, [selectedColors]);
+
   const handleSelectColorChange = event => {
-    setSelectedCodes(event);
+    setSelectedColors(event);
+  };
+
+  useEffect(() => {
+    filterWeeklySummaries();
+  }, [selectedOverTime, selectedBioStatus]);
+
+  const handleOverHoursToggleChange = () => {
+    setSelectedOverTime(!selectedOverTime);
+  };
+
+  const handleBioStatusToggleChange = () => {
+    setSelectedBioStatus(!selectedBioStatus);
   };
 
   if (error) {
@@ -396,7 +367,7 @@ function WeeklySummariesReport() {
               <EditableInfoModal
                 areaName="WeeklySummariesReport"
                 areaTitle="Weekly Summaries Report"
-                role={state.role} // 大问题，这个role去掉state的话会报错undefined
+                role={role} // 大问题，这个role去掉state的话会报错undefined
                 fontSize={24}
                 isPermissionPage
                 className="p-2" // Add Bootstrap padding class to the EditableInfoModal
@@ -410,8 +381,8 @@ function WeeklySummariesReport() {
           Select Team Code
           <MultiSelect
             className="multi-select-filter"
-            options={state.teamCodes}
-            value={state.selectedCodes}
+            options={teamCodes}
+            value={selectedCodes}
             onChange={e => {
               handleSelectCodeChange(e);
             }}
@@ -421,8 +392,8 @@ function WeeklySummariesReport() {
           Select Color
           <MultiSelect
             className="multi-select-filter"
-            options={state.colorOptions}
-            value={state.selectedColors}
+            options={colorOptions}
+            value={selectedColors}
             onChange={e => {
               handleSelectColorChange(e);
             }}
@@ -462,8 +433,7 @@ function WeeklySummariesReport() {
                       <Button
                         className="btn--dark-sea-green"
                         style={boxStyle}
-                        // onClick={() => this.setState({ loadBadges: !loadBadges })}
-                        onClick={() => setState(!loadBadges)}
+                        onClick={() => setLoadBadges(!loadBadges)}
                       >
                         {loadBadges ? 'Hide Badges' : 'Load Badges'}
                       </Button>
@@ -475,7 +445,7 @@ function WeeklySummariesReport() {
                 </Row>
                 <Row>
                   <Col>
-                    <b>Total Team Members:</b> {state.filteredSummaries?.length}
+                    <b>Total Team Members:</b> {filteredSummaries?.length}
                   </Col>
                 </Row>
                 <Row>
@@ -503,35 +473,7 @@ function WeeklySummariesReport() {
   );
 }
 
-// TODO
-// Need to refactor this component to use hooks: UseSelector and UseDispatch
-// WeeklySummariesReport.propTypes = {
-//   error: PropTypes.any,
-//   // loading: PropTypes.bool.isRequired,
-//   // summaries: PropTypes.array.isRequired,
-//   infoCollections: PropTypes.array,
-// };
-
-// const mapStateToProps = state => ({
-//   error: state.WeeklySummariesReport?.error,
-//   loading: state.WeeklySummariesReport?.loading,
-//   summaries: state.WeeklySummariesReport?.summaries,
-//   allBadgeData: state.badge?.allBadgeData,
-//   infoCollections: state.infoCollections?.infos,
-//   role: state.userProfile?.role,
-//   auth: state.auth,
-// });
-
-// const mapDispatchToProps = dispatch => ({
-//   fetchAllBadges: () => dispatch(fetchAllBadges()),
-//   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
-//   hasPermission: permission => dispatch(hasPermission(permission)),
-//   getInfoCollections: () => getInfoCollections(),
-// });
-
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
   return <TabPane tabId={tabId}>{!hidden && children}</TabPane>;
 }
-
-// export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummariesReport);
 export default WeeklySummariesReport;
