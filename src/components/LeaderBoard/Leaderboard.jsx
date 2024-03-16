@@ -200,7 +200,7 @@ function LeaderBoard({
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
-                  <span className="boldClass">
+                  <span className="leaderboard-totals-title">
                     0 hrs Totals: {individualsWithZeroHours.length} Members
                   </span>
                 )}
@@ -413,7 +413,7 @@ function LeaderBoard({
                   <span
                     title={mouseoverTextValue}
                     id="Total time"
-                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                    className={item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null}
                   >
                     {item.totaltime}
                   </span>
