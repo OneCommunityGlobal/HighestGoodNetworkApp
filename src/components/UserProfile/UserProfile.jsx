@@ -893,6 +893,7 @@ function UserProfile(props) {
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
+                user={props.auth.user}
                 isUserSelf={isUserSelf}
                 canEdit={canEdit}
               />
@@ -1408,7 +1409,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && (activeTab === '1' || activeTab === '2' || activeTab === '3') && (
+              {canEdit && (activeTab) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"

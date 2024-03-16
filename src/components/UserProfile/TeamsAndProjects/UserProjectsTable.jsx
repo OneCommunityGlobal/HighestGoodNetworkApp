@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 
 const UserProjectsTable = React.memo(props => {
   const [tooltipOpen, setTooltip] = useState(false);
-  
+
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUpdateTask = props.hasPermission('updateTask');
   const canDeleteProjects = props.hasPermission('deleteProject');
@@ -33,17 +33,18 @@ const UserProjectsTable = React.memo(props => {
   const sortedTasksByNumber = userTasks?.sort((task1, task2) => task1.num - task2.num);
 
   const tasksByProject = userProjects?.map(project => {
-    const tasks = sortedTasksByNumber.filter(task => task.projectId.includes(project._id));
+    const tasks = sortedTasksByNumber?.filter(task => task.projectId.includes(project._id));
     return { ...project, tasks };
   });
 
   const filterTasksByUserTaskSituation = situation => {
     if (sortedTasksByNumber) {
       return userProjects?.map(project => {
-        const tasks = [];
-        sortedTasksByNumber?.forEach(task => {
-          const isCompletedTask = task?.resources?.find(user => user.userID === props.userId)?.completedTask;
-          if (task?.projectId?.includes(project._id)) {
+        const filteredTasks = sortedTasksByNumber.filter(task => {
+          const isTaskForProject = task.projectId.includes(project._id);
+          const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
+  
+          if (isTaskForProject) {
             if (situation === 'active' && !isCompletedTask) {
               return true;
             } else if (situation === 'complete' && isCompletedTask) {
@@ -67,7 +68,7 @@ const UserProjectsTable = React.memo(props => {
   }, [sortedTasksByNumber, actualType]);
 
   const removeOrAddTaskFromUser = (task, method) => {
-    const newResources = task.resources.map(resource => {
+    const newResources = task.resources?.map(resource => {
       if (resource.userID === props.userId) {
         if (method === 'remove') {
           task.status = 'Complete';
@@ -78,7 +79,7 @@ const UserProjectsTable = React.memo(props => {
       }
       return resource;
     });
-  
+
     const updatedTask = { ...task, resources: newResources };
     props.updateTask(task._id, updatedTask, method);
   };
@@ -145,7 +146,7 @@ const UserProjectsTable = React.memo(props => {
               </thead>
               <tbody>
                 {props.userProjectsById.length > 0 ? (
-                  tasksByProject.map((project, index) => (
+                  tasksByProject?.map((project, index) => (
                     <tr key={project._id}>
                       <td>{index + 1}</td>
                       <td>{project.projectName}</td>
@@ -165,7 +166,7 @@ const UserProjectsTable = React.memo(props => {
                         </td>
                       )}
                     </tr>
-                    
+
                   ))
                 ) : (
                   <></>
@@ -227,14 +228,14 @@ const UserProjectsTable = React.memo(props => {
                 <tbody>
                   {props.userProjectsById.length > 0 ? (
                     filteredTasks?.map(project =>
-                      project.tasks.map(task => {
-                        const isCompletedTask = task.resources.find(
+                      project?.tasks?.map(task => {
+                        const isCompletedTask = task?.resources?.find(
                           ({ userID }) => userID === props.userId,
                         )?.completedTask;
                         return (
                           <tr key={task._id}>
                             <td>{task.num}</td>
-                            <td>  
+                            <td>
                               <span className='opacity-70'>{project.projectName} </span>
                               <br />
                               <span className="fs-18">{task.taskName && `\u2003 ↳ ${task.taskName}`}</span>
@@ -294,9 +295,9 @@ const UserProjectsTable = React.memo(props => {
                       title="Please save changes before assign project"
                       display={props.disabled ? "none" : "block"}
                     >
-                      <Button 
-                        className="btn-addproject" 
-                        color="primary" 
+                      <Button
+                        className="btn-addproject"
+                        color="primary"
                         disabled={props.disabled ? true : false}
                         onClick={() => {
                           props.onButtonClick();
@@ -324,7 +325,7 @@ const UserProjectsTable = React.memo(props => {
               </thead>
               <tbody>
                 {props.userProjectsById.length > 0 ? (
-                  tasksByProject.map((project, index) => (
+                  tasksByProject?.map((project, index) => (
                     <tr key={project._id}>
                       <td>{index + 1}</td>
                       <td>{`${project.projectName}`}</td>
@@ -404,14 +405,14 @@ const UserProjectsTable = React.memo(props => {
                 <tbody>
                   {props.userProjectsById.length > 0 ? (
                     filteredTasks?.map(project =>
-                      project.tasks.map(task => {
-                        const isCompletedTask = task.resources.find(
+                      project?.tasks?.map(task => {
+                        const isCompletedTask = task?.resources?.find(
                           ({ userID }) => userID === props.userId,
                         )?.completedTask;
                         return (
                           <tr key={task._id}>
                             <td>{task.num}</td>
-                            <td>  
+                            <td>
                               <span className='opacity-70'>{project.projectName}</span>
                               <br />
                               <span className='fs-18'>{task.taskName && `\u2003 ↳ ${task.taskName}`}</span>
