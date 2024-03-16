@@ -1,25 +1,24 @@
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { Row, Col, Container } from 'reactstrap';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 
 export function Dashboard(props) {
-  const dispatch = useDispatch();
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { match, authUser } = props;
-  const displayUserId = match.params.userId || authUser.userid;
+  const { authUser } = props;
 
-  const isAuthUser = displayUserId === authUser.userid;
+  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  const [displayUserId, setDisplayUserId] = useState(
+    viewingUser ? viewingUser.userId : authUser.userid,
+  );
 
   const toggle = () => {
     setPopup(!popup);
@@ -31,9 +30,21 @@ export function Dashboard(props) {
     }, 150);
   };
 
+  const handleStorageEvent = () => {
+    const sessionStorageData = checkSessionStorage();
+    setViewingUser(sessionStorageData || false);
+    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+  };
+
+  useEffect(() => {
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, []);
+
   return (
     <Container fluid>
-      {!isAuthUser ? <PopUpBar component="dashboard" /> : ''}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -79,7 +90,7 @@ export function Dashboard(props) {
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            <Timelog isDashboard passSummaryBarData={setSummaryBarData} match={match} />
+            <Timelog isDashboard passSummaryBarData={setSummaryBarData} />
           </div>
           <Badge userId={displayUserId} role={authUser.role} />
         </Col>
