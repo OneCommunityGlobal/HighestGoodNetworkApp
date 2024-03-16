@@ -25,11 +25,6 @@
   }
 }
 
-.leaderboard-totals-title {
-  color: #007bff;
-  font-weight: bold;
-}
-
 .animation {
   animation: l-animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
@@ -43,6 +38,11 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.leaderboard-totals-title {
+  color: #007bff;
+  font-weight: bold;
 }
 
 .leaderboard-totals-container {
