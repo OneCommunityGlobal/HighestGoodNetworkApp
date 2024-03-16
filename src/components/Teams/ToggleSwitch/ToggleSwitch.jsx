@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import style from './ToggleSwitch.module.scss';
 
-function ToggleSwitch({ switchType, UpdateTeamMembersVisiblity, userId, choice }) {
-  const [visiblity, setVisiblity] = useState(choice);
+function ToggleSwitch({ switchType, UpdateTeamMembersVisiblity, userId, getChoice }) {    
+  const choice = getChoice(userId);
+  const [visiblity, setVisiblity] = useState(choice); 
   switch (switchType) {
     case 'limit-visiblity':
       return (
@@ -17,7 +18,6 @@ function ToggleSwitch({ switchType, UpdateTeamMembersVisiblity, userId, choice }
                 const isChecked = !visiblity;
                 setVisiblity(isChecked);
                 // console.log('new value', isChecked);
-
                 UpdateTeamMembersVisiblity(userId, isChecked);
               }}
             />

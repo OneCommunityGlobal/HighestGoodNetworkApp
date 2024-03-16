@@ -22,12 +22,11 @@ export const TeamMembersPopup = React.memo(props => {
   // NEW CODE
   const [teamVisibility, setTeamVisibility] = useState([]);
   const [infoModal, setInfoModal] = useState(false);
-  const[cache,setCache]=useState({});
+  const [cache, setCache] = useState({});
 
   //
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
- 
   const closePopup = () => {
     props.onClose();
     setSortOrder(0);
@@ -39,6 +38,7 @@ export const TeamMembersPopup = React.memo(props => {
         props.onAddUser(selectedUser);
         setSearchText('');
         setDuplicateUserAlert(false);
+        updateCache();
       } else {
         setSearchText('');
         setDuplicateUserAlert(true);
@@ -138,71 +138,85 @@ export const TeamMembersPopup = React.memo(props => {
 
   // NEW CODE
 
-  const[flag,setFlag]=useState(true);
+  const [flag, setFlag] = useState(true);
 
-  const updateCache=()=>{
+  const updateCache = () => {
     // console.log("First time seting cached data");
-    let c= {};
-    if(flag===true && props.teamData && props.teamData.length!=0)
-    {
-       console.log("hmm  i am allowed ");
-        props.teamData[0]?.members.forEach(member=>{
-        c[member.userId]=member.visible;
-    });
-    // console.log(" Set cached data for the first time");
-    // for (var key in c) {
-    //   console.log(key, c[key]);
+    let c = {};
+    if (
+      flag === true &&
+      props.teamData !== null &&
+      props.teamData !== undefined &&
+      props.teamData.length !== 0
+    ) {
+      // console.log('hmm  i am allowed ');
+      props.teamData[0]?.members.forEach(member => {
+        c[member.userId] = member.visible;
+      });
+
+      // console.log(" Set cached data for the first time");
+      // for (var key in c) {
+      //   console.log(key, c[key]);
+      // }
+      setCache(c);
+      if (c.length !== 0) setFlag(false);
+    }
+    // } else if (
+    //   flag === false &&
+    //   Object.keys(cache).length > 0 &&
+    //   selectedUser !== null &&
+    //   selectedUser !== undefined
+    // ) {
+    //   // Updating cache with new user
+    //   setCache(prevCache => ({
+    //     ...prevCache, // Shallow copy of previous cache
+    //     [selectedUser._id]: true, // Adding new entry to cache
+    //   }));
     // }
-    setCache(c);
-    if(c.length!=0)
-      setFlag(false);
-
-  }
-
-  return c;
-
+    // console.log( "setting cache:"+Object.keys(cache).length);
+    return c;
   };
 
-
-
-  
   useEffect(() => {
     sortList(sortOrder);
     setTeamVisibility(updateCache());
-    
-  
   }, [props.members.teamMembers, sortOrder, props.teamData]);
-
-
 
   useEffect(() => {
     setIsValidUser(true);
     setDuplicateUserAlert(false);
   }, [props.open]);
 
-
   // call the handler to update the team member's visibility
-  const UpdateTeamMembersVisiblity = (userId, choice) => {  
+  const UpdateTeamMembersVisiblity = (userId, choice) => {
     // Deep copy of the cache object
-    let newCache = JSON.parse(JSON.stringify(cache));
-  
+    const newCache = JSON.parse(JSON.stringify(cache));
+
     // Update the value for the specified userId
     newCache[userId] = choice;
-  
+
     // Update cache state variable
     setCache(newCache);
-  
+
     props.onUpdateTeamMemberVisiblity(userId, choice);
   };
 
-
   const toggleInfoModal = () => {
-
     setInfoModal(!infoModal);
   };
 
+  const getChoice = userId => {
+    // console.log("GET CHOICE:"+Object.keys(cache)+"\n"+userId);
 
-  // NEW CODE ENDS 
+    if (Object.keys(cache).length !== 0 && userId in cache) {
+      // console.log("the userId is in cache");
+      return cache[userId];
+    }
+
+    return true;
+  };
+
+  // NEW CODE ENDS
 
   return (
     <Container fluid>
@@ -288,11 +302,10 @@ export const TeamMembersPopup = React.memo(props => {
                         <ToggleSwitch
                           switchType="limit-visiblity"
                           userId={user._id}
-                          choice={
-                            // teamVisibility[0]?.members.find(member => member.userId === user._id)
-                            //   ?.visible 
-                              cache[user._id]
-                          }
+                          getChoice={getChoice}
+                          // teamVisibility[0]?.members.find(member => member.userId === user._id)
+                          //   ?.visible
+                          // cache[user._id]
                           UpdateTeamMembersVisiblity={UpdateTeamMembersVisiblity}
                         />
                       </td>
