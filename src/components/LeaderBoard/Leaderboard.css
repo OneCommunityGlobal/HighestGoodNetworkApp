@@ -45,7 +45,7 @@
   }
 }
 
-.orgName {
+.leaderboard-totals-container {
   display: flex;
   flex-direction: column;
 }

@@ -197,15 +197,13 @@ function LeaderBoard({
           <tbody className="my-custome-scrollbar">
             <tr>
               <td />
-              <th scope="row">
-                <div className="orgName">
-                  <span>{organizationData.name}</span>
-                  {viewZeroHouraMembers(loggedInUser.role) && (
-                    <span className="boldClass">
-                      0 hrs Totals: {individualsWithZeroHours.length} Members
-                    </span>
-                  )}
-                </div>
+              <th scope="row" className="leaderboard-totals-container">
+                <span>{organizationData.name}</span>
+                {viewZeroHouraMembers(loggedInUser.role) && (
+                  <span className="boldClass">
+                    0 hrs Totals: {individualsWithZeroHours.length} Members
+                  </span>
+                )}
               </th>
               <td className="align-middle" />
               <td className="align-middle">
