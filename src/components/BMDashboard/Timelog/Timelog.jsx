@@ -1,14 +1,65 @@
 import './Timelog.css';
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { getUserProfile } from '../../../actions/userProfile';
+import { ENDPOINTS } from '../../../utils/URL';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import config from '../../../config.json';
 
 function Timelog() {
   const projects = useSelector(state => state.bmProjects);
   const [membersData, setMembersData] = useState([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+
+  const WSoptions = {
+    share: true,
+    protocols: localStorage.getItem(config.tokenKey),
+    shouldReconnect: () => true,
+    reconnectAttempts: 5,
+    reconnectInterval: 5000,
+  };
+
+  const { sendMessage, lastJsonMessage, readyState } = useWebSocket(
+    ENDPOINTS.TIMER_SERVICE,
+    WSoptions,
+  );
+
+  const action = {
+    BM_START_TIMER: 'BM_START_TIMER',
+    BM_PAUSE_TIMER: 'BM_PAUSE_TIMER',
+    BM_STOP_TIMER: 'BM_STOP_TIMER',
+    BM_CLEAR_TIMER: 'BM_CLEAR_TIMER',
+  };
+
+  const wsMessageHandler = useMemo(
+    () => ({
+      sendStart: () => sendMessage(action.BM_START_TIMER),
+      sendPause: () => sendMessage(action.BM_PAUSE_TIMER),
+      sendClear: () => sendMessage(action.BM_CLEAR_TIMER),
+      sendStop: () => sendMessage(action.BM_STOP_TIMER),
+    }),
+    [sendMessage],
+  );
+
+  const { sendStart, sendPause, sendStop, sendClear } = wsMessageHandler;
+
+  const handleStartButton = useCallback(() => {
+    sendStart();
+  }, [sendStart]);
+
+  const handlePauseButton = useCallback(() => {
+    sendPause();
+  }, [sendPause]);
+
+  const handleStopButton = useCallback(() => {
+    sendStop();
+  }, [sendStop]);
+
+  const handleClearButton = useCallback(() => {
+    sendClear();
+  }, [sendClear]);
 
   function formatHours(seconds) {
     const totalSeconds = Math.round(seconds);
@@ -94,53 +145,53 @@ function Timelog() {
     return date.toLocaleString('en-US', options);
   }
 
-  function handleTimerChange(userID, status) {
-    const updatedUsersData = membersData.map(user => {
-      if (user._id === userID) {
-        const updatedUser = { ...user };
-        if (status === 'START') {
-          updatedUser.timerStatus = true;
+  // function handleTimerChange(userID, status) {
+  //   const updatedUsersData = membersData.map(user => {
+  //     if (user._id === userID) {
+  //       const updatedUser = { ...user };
+  //       if (status === 'START') {
+  //         updatedUser.timerStatus = true;
 
-          const intervalId = setInterval(() => {
-            updatedUser.currentTime += 1;
-            setMembersData(prevMembersData => {
-              const updatedData = prevMembersData.map(member => {
-                if (member._id === userID) {
-                  return updatedUser;
-                }
-                return member;
-              });
-              return updatedData;
-            });
-          }, 1000);
+  //         const intervalId = setInterval(() => {
+  //           updatedUser.currentTime += 1;
+  //           setMembersData(prevMembersData => {
+  //             const updatedData = prevMembersData.map(member => {
+  //               if (member._id === userID) {
+  //                 return updatedUser;
+  //               }
+  //               return member;
+  //             });
+  //             return updatedData;
+  //           });
+  //         }, 1000);
 
-          updatedUser.intervalId = intervalId;
-        } else if (status === 'PAUSE') {
-          updatedUser.timerStatus = false;
-          clearInterval(updatedUser.intervalId);
-          delete updatedUser.intervalId;
-        } else if (status === 'CLEAR') {
-          updatedUser.timerStatus = false;
-          clearInterval(updatedUser.intervalId);
-          updatedUser.currentTime = 0;
-          updatedUser.startTime = '--';
-        } else if (status === 'STOP') {
-          updatedUser.timerStatus = false;
-          clearInterval(updatedUser.intervalId);
-          updatedUser.currentTime = 0;
-          updatedUser.startTime = '--';
-        }
+  //         updatedUser.intervalId = intervalId;
+  //       } else if (status === 'PAUSE') {
+  //         updatedUser.timerStatus = false;
+  //         clearInterval(updatedUser.intervalId);
+  //         delete updatedUser.intervalId;
+  //       } else if (status === 'CLEAR') {
+  //         updatedUser.timerStatus = false;
+  //         clearInterval(updatedUser.intervalId);
+  //         updatedUser.currentTime = 0;
+  //         updatedUser.startTime = '--';
+  //       } else if (status === 'STOP') {
+  //         updatedUser.timerStatus = false;
+  //         clearInterval(updatedUser.intervalId);
+  //         updatedUser.currentTime = 0;
+  //         updatedUser.startTime = '--';
+  //       }
 
-        if (updatedUser.startTime === '--' && status === 'START') {
-          updatedUser.startTime = getCurrentTimeInLA();
-        }
-        return updatedUser;
-      }
-      return user;
-    });
+  //       if (updatedUser.startTime === '--' && status === 'START') {
+  //         updatedUser.startTime = getCurrentTimeInLA();
+  //       }
+  //       return updatedUser;
+  //     }
+  //     return user;
+  //   });
 
-    setMembersData(updatedUsersData);
-  }
+  //   setMembersData(updatedUsersData);
+  // }
 
   return (
     <div className="BMTimelogContainer">
@@ -173,42 +224,21 @@ function Timelog() {
                   {!member.timerStatus ? (
                     <div
                       className="MemberTimelogBtn bmTLStart"
-                      onClick={() => handleTimerChange(member._id, 'START')}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          handleTimerChange(member._id, 'START');
-                        }
-                      }}
+                      onClick={() => handleStartButton(member._id)}
                     >
                       START
                     </div>
                   ) : (
                     <div
                       className="MemberTimelogBtn bmTLPause"
-                      onClick={() => handleTimerChange(member._id, 'PAUSE')}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          handleTimerChange(member._id, 'PAUSE');
-                        }
-                      }}
+                      onClick={() => handlePauseButton(member._id)}
                     >
                       PAUSE
                     </div>
                   )}
                   <div
                     className="MemberTimelogBtn bmTLStop"
-                    onClick={() => handleTimerChange(member._id, 'STOP')}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') {
-                        handleTimerChange(member._id, 'STOP');
-                      }
-                    }}
+                    onClick={() => handleStopButton(member._id)}
                   >
                     STOP
                   </div>
@@ -225,14 +255,7 @@ function Timelog() {
                 </div>
                 <div
                   className="MemberTimelogBtn bmTLClear"
-                  onClick={() => handleTimerChange(member._id, 'CLEAR')}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      handleTimerChange(member._id, 'CLEAR');
-                    }
-                  }}
+                  onClick={() => handleClearButton(member._id)}
                 >
                   CLEAR
                 </div>
