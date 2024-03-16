@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -21,6 +21,11 @@ export const TasksTable = ({ WbsTasksID }) => {
     classification: '',
     users: '',
   });
+
+
+  useEffect(() => {
+    console.log(isAssigned)
+  }, [isAssigned])
 
   const resetAllFilters = () => {
     setActive(true);
@@ -82,20 +87,20 @@ export const TasksTable = ({ WbsTasksID }) => {
           <TextSearchBox
             placeholder="Estimated hours"
             className="tasks-table-filter-item tasks-table-filter-input"
-            searchCallback={() => {}}
+            searchCallback={() => { }}
           />
 
           <Checkbox
             value={isActive}
             onChange={() => setActive(!isActive)}
-            id="active"
+            id="active_checkbox"
             wrapperClassname="tasks-table-filter-item"
             label="Active"
           />
           <Checkbox
             value={isAssigned}
             onChange={() => setAssigned(!isAssigned)}
-            id="assign"
+            id="assign_checkbox"
             wrapperClassname="tasks-table-filter-item"
             label="Assign"
           />
