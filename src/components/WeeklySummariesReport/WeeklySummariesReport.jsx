@@ -25,13 +25,13 @@ import 'moment-timezone';
 import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import SkeletonLoading from '../common/SkeletonLoading';
-import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
+import { fetchAllBadges } from '../../actions/badgeManagement';
+import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
-import { fetchAllBadges } from '../../actions/badgeManagement';
-// import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
 const weekDates = Array.from({ length: 4 }).map((_, index) => ({
@@ -50,7 +50,10 @@ const weekDates = Array.from({ length: 4 }).map((_, index) => ({
 function WeeklySummariesReport() {
   const props = useSelector(state => state);
   console.log('props', props);
-  // console.log(props.badge.allBadgeData, 'props.badge.allBadgeData');
+
+  const error = useSelector(state => state?.weeklySummariesReport?.error);
+  const allBadgeData = useSelector(state => state?.badge?.allBadgeData);
+  console.log('allbadgedata', allBadgeData);
 
   // const func = state => {
   //   console.log('I am an arrow function');
@@ -86,6 +89,10 @@ function WeeklySummariesReport() {
   const [loading, setLoading] = useState(true);
   const [summaries, setSummaries] = useState([]);
   const [activeTab, setActiveTab] = useState(navItems[1]);
+  // three new set from the latest commit
+  // const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  // const [isValidPwd, setIsValidPwd] = useState(true);
+  // const [summaryRecepientsPopupOpen, setSummaryRecepientsPopupOpen] = useState(false);
   const [badges, setBadges] = useState([]);
   const [loadBadges, setLoadBadges] = useState(false);
   const [hasSeeBadgePermission, setHasSeeBadgePermission] = useState(false);
@@ -184,7 +191,8 @@ function WeeklySummariesReport() {
           ? navItems[1]
           : sessionStorage.getItem('tabSelection'),
       );
-
+      // TODO DEFINE ALLBADGEDATA
+      setBadges(allBadgeData);
       await getInfoCollections();
       // const role = authUser?.role;
       // const roleInfoNames = getAllRoles(summariesCopy);
@@ -267,55 +275,6 @@ function WeeklySummariesReport() {
     return 0;
   };
 
-  // Equivalent to componentDidMount
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const {
-  //       loading,
-  //       allBadgeData,
-  //       authUser,
-  //       infoCollections,
-  //       // getWeeklySummariesReport,
-  //       // fetchAllBadges,
-  //       // getInfoCollections,
-  //       // hasPermission,
-  //       auth,
-  //     } = props;
-
-  //     // 1. fetch report
-  //     const res = await dispatch(getWeeklySummariesReport());
-  //     // setSummaries(res?.data ?? props.summaries);
-  //     // setState()
-  //     setState(prevState => ({ ...prevState, summaries: res?.data ?? props.summaries }));
-  //     const badgeStatusCode = await fetchAllBadges();
-
-  //     // const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
-  //     const canPutUserProfileImportantInfo = true;
-  //     setBioEditPermission(canPutUserProfileImportantInfo);
-  //     setCanEditSummaryCount(canPutUserProfileImportantInfo);
-  //     // setCodeEditPermission(
-  //     //    hasPermission('editTeamCode') ||
-  //     //     auth.user.role === 'Owner' ||
-  //     //     auth.user.role === 'Administrator',
-  //     // );
-  //     setCodeEditPermission(true);
-  //     setCanSeeBioHighlight(true);
-  //     // setCanSeeBioHighlight(hasPermission('highlightEligibleBios'));
-  //     // 2. shallow copy and sort
-  //     let summariesCopy = [...state.summaries];
-  //     // console.log(state.summaries, 'state.summaries')
-  //     summariesCopy = alphabetize(summariesCopy);
-
-  //     // 3. add new key of promised hours by week
-  //     summariesCopy = summariesCopy.map(summary => {
-  //       const promisedHoursByWeek = weekDates.map(weekDate =>
-  //         getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-  //       );
-  //       return { ...summary, promisedHoursByWeek };
-  //     });
-
-  //     // await getInfoCollections();
-
   //     // setLoading(loading);
   //     // setAllRoleInfo([]);
   //     // //summaries: summariesCopy, don't know why originial set summary again here
@@ -327,63 +286,6 @@ function WeeklySummariesReport() {
   //     // setBadges(allBadgeData);
   //     // setHasSeeBadgePermission(badgeStatusCode === 200);
   //     // setFilteredSummaries(summariesCopy);
-
-  //     /*
-  //      * refactor logic of commentted codes above
-  //      */
-  //     const teamCodeGroup = {};
-  //     const teamCodes = [];
-  //     const colorOptionGroup = new Set();
-  //     const colorOptions = [];
-
-  //     summariesCopy.forEach(summary => {
-  //       const code = summary.teamCode || 'noCodeLabel';
-  //       if (teamCodeGroup[code]) {
-  //         teamCodeGroup[code].push(summary);
-  //       } else {
-  //         teamCodeGroup[code] = [summary];
-  //       }
-
-  //       if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
-  //     });
-
-  //     Object.keys(teamCodeGroup).forEach(code => {
-  //       if (code !== 'noCodeLabel') {
-  //         teamCodes.push({
-  //           value: code,
-  //           label: `${code} (${teamCodeGroup[code].length})`,
-  //         });
-  //       }
-  //     });
-  //     colorOptionGroup.forEach(option => {
-  //       colorOptions.push({
-  //         value: option,
-  //         label: option,
-  //       });
-  //     });
-
-  //     colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
-  //     teamCodes
-  //       .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
-  //       .push({
-  //         value: '',
-  //         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
-  //       });
-  //     // setState({
-  //     //   loading,
-  //     //   allRoleInfo: [],
-  //     //   summaries: summariesCopy,
-  //     //   activeTab:
-  //     //     sessionStorage.getItem('tabSelection') === null
-  //     //       ? navItems[1]
-  //     //       : sessionStorage.getItem('tabSelection'),
-  //     //   badges: allBadgeData,
-  //     //   hasSeeBadgePermission: badgeStatusCode === 200,
-  //     //   filteredSummaries: summariesCopy,
-  //     //   colorOptions,
-  //     //   teamCodes,
-  //     //   auth,
-  //     // });
 
   //     await getInfoCollections();
   //     const role = authUser?.role;
@@ -420,15 +322,6 @@ function WeeklySummariesReport() {
   //   };
   // }, []); // Empty dependency array means this effect runs once on mount and cleanup runs on unmount
 
-  // toggleTab = tab => {
-  //   const { activeTab } = this.state;
-  //   if (activeTab !== tab) {
-  //     this.setState({ activeTab: tab });
-  //     sessionStorage.setItem('tabSelection', tab);
-  //   }
-  // };
-
-  // TODO: Refactor this function to use hooks
   const toggleTab = tab => {
     if (activeTab !== tab) {
       setActiveTab(tab);
@@ -472,21 +365,17 @@ function WeeklySummariesReport() {
     setSelectedCodes(event);
   };
 
-  // useEffect(() => {
-  //   filterWeeklySummaries();
-  // }, [state.selectedCodes, state.selectedColors]);
-
-  // if (props.error) {
-  //   return (
-  //     <Container>
-  //       <Row className="align-self-center" data-testid="error">
-  //         <Col>
-  //           <Alert color="danger">Error! {props.error.message}</Alert>
-  //         </Col>
-  //       </Row>
-  //     </Container>
-  //   );
-  // }
+  if (error) {
+    return (
+      <Container>
+        <Row className="align-self-center" data-testid="error">
+          <Col>
+            <Alert color="danger">Error! {error.message}</Alert>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
   if (loading) {
     return (
       <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
@@ -507,7 +396,7 @@ function WeeklySummariesReport() {
               <EditableInfoModal
                 areaName="WeeklySummariesReport"
                 areaTitle="Weekly Summaries Report"
-                role={state.role}
+                role={state.role} // 大问题，这个role去掉state的话会报错undefined
                 fontSize={24}
                 isPermissionPage
                 className="p-2" // Add Bootstrap padding class to the EditableInfoModal
@@ -524,7 +413,6 @@ function WeeklySummariesReport() {
             options={state.teamCodes}
             value={state.selectedCodes}
             onChange={e => {
-              // this.handleSelectCodeChange(e);
               handleSelectCodeChange(e);
             }}
           />
@@ -536,7 +424,6 @@ function WeeklySummariesReport() {
             options={state.colorOptions}
             value={state.selectedColors}
             onChange={e => {
-              // this.handleSelectColorChange(e);
               handleSelectColorChange(e);
             }}
           />
@@ -551,7 +438,6 @@ function WeeklySummariesReport() {
                   href="#"
                   data-testid={item}
                   active={item === activeTab}
-                  // onClick={() => this.toggleTab(item)}
                   onClick={() => toggleTab(item)}
                 >
                   {item}
@@ -563,35 +449,23 @@ function WeeklySummariesReport() {
             {navItems.map((item, index) => (
               <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
                 <Row>
-                  {/* <Col sm="12" md="6" className="mb-2">
-                    From <b>{this.weekDates[index].fromDate}</b> to{' '}
-                    <b>{this.weekDates[index].toDate}</b>
-                  </Col>
-                  <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <GeneratePdfReport
-                      summaries={filteredSummaries}
-                      weekIndex={index}
-                      weekDates={this.weekDates[index]}
-                    /> */}
                   <Col sm="12" md="6" className="mb-2">
                     From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
                   </Col>
                   <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <GeneratePdfReport
-                      summaries={state.filteredSummaries}
+                      summaries={filteredSummaries}
                       weekIndex={index}
                       weekDates={weekDates[index]}
                     />
-                    {state.hasSeeBadgePermission && (
+                    {hasSeeBadgePermission && (
                       <Button
                         className="btn--dark-sea-green"
                         style={boxStyle}
                         // onClick={() => this.setState({ loadBadges: !loadBadges })}
-                        onClick={() =>
-                          setState(prevState => ({ ...prevState, loadBadges: !state.loadBadges }))
-                        }
+                        onClick={() => setState(!loadBadges)}
                       >
-                        {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
+                        {loadBadges ? 'Hide Badges' : 'Load Badges'}
                       </Button>
                     )}
                     <Button className="btn--dark-sea-green" style={boxStyle}>
@@ -611,11 +485,11 @@ function WeeklySummariesReport() {
                       weekIndex={index}
                       bioCanEdit={bioEditPermission}
                       canEditSummaryCount={canEditSummaryCount}
-                      allRoleInfo={state.allRoleInfo}
-                      badges={state.badges}
-                      loadBadges={state.loadBadges}
+                      allRoleInfo={allRoleInfo}
+                      badges={badges}
+                      loadBadges={loadBadges}
                       canEditTeamCode={codeEditPermission}
-                      auth={state.auth}
+                      auth={auth}
                       canSeeBioHighlight={canSeeBioHighlight}
                     />
                   </Col>
