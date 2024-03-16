@@ -6,13 +6,6 @@ import { connect } from 'react-redux';
 /**
  * The header row of the team table.
  */
-<<<<<<< HEAD
-export const TeamTableHeader = React.memo(props => {
-  //const canDeleteTeam = props.hasPermission('deleteTeam');
-  //const canPutTeam = props.hasPermission('putTeam');
-  const canEditOrDeleteTeams = props.hasPermission('seeTeamsManagement') || 
-  props.hasPermission('putTeam') || props.hasPermission('deleteTeam');
-=======
 export const TeamTableHeader = React.memo(
   ({ onTeamNameSort, onTeamActiveSort, sortTeamNameState, sortTeamActiveState, ...props }) => {
     const canDeleteTeam = props.hasPermission('deleteTeam');
@@ -26,7 +19,6 @@ export const TeamTableHeader = React.memo(
       }
     }
 
->>>>>>> fd9a046f7ed5d101372d168d1ab72ad1065b79d9
   return (
     <tr>
       <th scope="col" id="teams__order">

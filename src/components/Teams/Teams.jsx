@@ -20,12 +20,8 @@ import TeamMembersPopup from './TeamMembersPopup';
 import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
-<<<<<<< HEAD
-import hasPermission from 'utils/permissions';
-=======
 import { toast } from 'react-toastify';
 import { searchWithAccent } from 'utils/search';
->>>>>>> fd9a046f7ed5d101372d168d1ab72ad1065b79d9
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -215,11 +211,7 @@ class Teams extends React.PureComponent {
           selectedStatus={this.state.isActive}
           onDeleteClick={this.onDeleteUser}
           onSetInactiveClick={this.onConfirmClick}
-<<<<<<< HEAD
-          //hasPermission={canDeleteTeams}
-=======
           selectedTeamCode={this.state.selectedTeamCode}
->>>>>>> fd9a046f7ed5d101372d168d1ab72ad1065b79d9
         />
 
         <TeamStatusPopup

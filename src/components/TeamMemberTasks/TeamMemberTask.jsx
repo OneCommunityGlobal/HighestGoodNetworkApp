@@ -63,9 +63,10 @@ const TeamMemberTask = React.memo(
     const thisWeekHours = user.totaltangibletime_hrs;
 
     // these need to be changed to actual permissions...
+    // const rolesAllowedToResolveTasks = ['Owner']; // Un-comment for testing
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
-    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
+    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     // ^^^
 
@@ -73,26 +74,6 @@ const TeamMemberTask = React.memo(
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
-<<<<<<< HEAD
-  const thisWeekHours = user.totaltangibletime_hrs;
-  const dispatch = useDispatch();
-  const canResolveTask = dispatch(hasPermission('viewAndInteractWithTaskTick'));
-  // these need to be changed to actual permissions...
-  const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
-  const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
-  const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole) || canResolveTask;
-  const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
-  //^^^
-
-  
-  const canUpdateTask = dispatch(hasPermission('updateTask'));
-  const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
-
-  const handleTruncateTasksButtonClick = () => {
-    if (!isTruncated) {
-      ref.current?.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => {
-=======
     const handleTruncateTasksButtonClick = () => {
       if (!isTruncated) {
         ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -100,7 +81,6 @@ const TeamMemberTask = React.memo(
           setIsTruncated(!isTruncated);
         }, 0);
       } else {
->>>>>>> fd9a046f7ed5d101372d168d1ab72ad1065b79d9
         setIsTruncated(!isTruncated);
       }
     };

@@ -80,16 +80,10 @@ export function Header(props) {
   // Tasks
   const canUpdateTask = props.hasPermission('updateTask');
   // Teams
-<<<<<<< HEAD
-  const canSeeTeamsManagementTab = props.hasPermission('seeTeamsManagement') || props.hasPermission('seeTeamsManagementTab');
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
-=======
   const canAccessTeams = props.hasPermission('postTeam')
     || props.hasPermission('putTeam')
     || props.hasPermission('deleteTeam')
     || props.hasPermission('assignTeamToUsers');
->>>>>>> fd9a046f7ed5d101372d168d1ab72ad1065b79d9
   // Popups
   const canAccessPopups = props.hasPermission('createPopup')
     || props.hasPermission('updatePopup');
@@ -283,27 +277,12 @@ export function Header(props) {
                   </i>
                 </NavLink>
               </NavItem>
-<<<<<<< HEAD
-              {(canPostUserProfile ||
-                canDeleteUserProfile ||
-                canPutUserProfileImportantInfo ||
-                canCreateBadges ||
-                canPostProject ||
-                canSeeProjectManagementTab ||
-                canDeleteTeam ||
-                canPutTeam ||
-                canSeeTeamsManagementTab ||
-                canCreatePopup ||
-                canUpdatePopup ||
-                canManageUser) && (
-=======
               {(canAccessUserManagement ||
                 canAccessBadgeManagement ||
                 canAccessProjects ||
                 canAccessTeams ||
                 canAccessPopups ||
                 canAccessPermissionsManagement) && (
->>>>>>> fd9a046f7ed5d101372d168d1ab72ad1065b79d9
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{OTHER_LINKS}</span>
@@ -328,11 +307,7 @@ export function Header(props) {
                         {PROJECTS}
                       </DropdownItem>
                     )}
-<<<<<<< HEAD
-                    {(canDeleteTeam || canPutTeam || canSeeTeamsManagementTab) && (
-=======
                     {(canAccessTeams) && (
->>>>>>> fd9a046f7ed5d101372d168d1ab72ad1065b79d9
                       <DropdownItem tag={Link} to="/teams">
                         {TEAMS}
                       </DropdownItem>
