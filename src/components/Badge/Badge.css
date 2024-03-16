@@ -68,15 +68,14 @@
 
 .badge_count_3_digit {
   border-radius: 50%;
-  width: 20px;
-  height: 15px;
+  padding: 1px 3px;
   background: #007bff;
   color: #fff;
   text-align: center;
-  font: 11px Arial, sans-serif;
+  font-size: 9px;
   position: absolute;
-  right: 2px;
-  bottom: 2px;
+  right: 5px;
+  bottom: 5px;
   z-index: 10;
 }
 
