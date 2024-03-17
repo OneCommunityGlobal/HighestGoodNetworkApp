@@ -70,6 +70,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      // weeklyRecipientAuthPass: '',
     };
   }
 
@@ -237,15 +238,30 @@ export class WeeklySummariesReport extends Component {
         checkForValidPwd={this.checkForValidPwd}
         isValidPwd={this.state.isValidPwd}
         setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
+        setAuthpassword={this.setAuthpassword}
+        authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
       />
     );
   };
 
-  onClickRecepients = () => {
+  // Authorization for the weeklySummary Recipients is required once
+  setAuthpassword = authPass => {
     this.setState({
-      passwordModalOpen: true,
+      weeklyRecipientAuthPass: authPass,
     });
-    this.checkForValidPwd(true);
+  };
+
+  onClickRecepients = () => {
+    if (this.state.weeklyRecipientAuthPass) {
+      this.setState({
+        summaryRecepientsPopupOpen: true,
+      });
+    } else {
+      this.setState({
+        passwordModalOpen: true,
+      });
+      this.checkForValidPwd(true);
+    }
   };
 
   /**
@@ -403,6 +419,9 @@ export class WeeklySummariesReport extends Component {
     } = this.state;
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+    const { authEmailWeeklySummaryRecipient } = this.props;
+    const authorizedUser1 = process.env.REACT_APP_JAE;
+    const authorizedUser2 = process.env.REACT_APP_SARA;
 
     if (error) {
       return (
@@ -446,17 +465,20 @@ export class WeeklySummariesReport extends Component {
             </h3>
           </Col>
         </Row>
-        <Row className="d-flex justify-content-center mb-3">
-          <Button
-            color="primary"
-            className="permissions-management__button"
-            type="button"
-            onClick={() => this.onClickRecepients()}
-            style={boxStyle}
-          >
-            Weekly Summary Report Recipients
-          </Button>
-        </Row>
+        {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
+          authEmailWeeklySummaryRecipient === authorizedUser2) && (
+          <Row className="d-flex justify-content-center mb-3">
+            <Button
+              color="primary"
+              className="permissions-management__button"
+              type="button"
+              onClick={() => this.onClickRecepients()}
+              style={boxStyle}
+            >
+              Weekly Summary Report Recipients
+            </Button>
+          </Row>
+        )}
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
@@ -609,6 +631,7 @@ const mapStateToProps = state => ({
   infoCollections: state.infoCollections.infos,
   role: state.userProfile.role,
   auth: state.auth,
+  authEmailWeeklySummaryRecipient: state.userProfile.email, // capturing the user email through Redux store - Sucheta
 });
 
 const mapDispatchToProps = dispatch => ({
