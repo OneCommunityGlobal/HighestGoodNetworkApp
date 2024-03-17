@@ -56,6 +56,8 @@ export function Header(props) {
   // Reports
   const canGetReports = props.hasPermission('getReports');
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
+  const canGetOverviewReport = props.hasPermission('getOverviewReport');
+
   // Users
   const canAccessUserManagement = props.hasPermission('postUserProfile')
     || props.hasPermission('deleteUserProfile')
@@ -240,15 +242,17 @@ export function Header(props) {
                   <span className="dashboard-text-link">{TIMELOG}</span>
                 </NavLink>
               </NavItem>
-              {(canGetReports || canGetWeeklySummaries) ? (
+              {(canGetReports || canGetWeeklySummaries || canGetOverviewReport) ? (
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    <DropdownItem tag={Link} to="/overviewreport">
-                      {OVERVIEW_REPORT}
-                    </DropdownItem>
+                    {canGetOverviewReport &&
+                      <DropdownItem tag={Link} to="/overviewreport">
+                        {OVERVIEW_REPORT}
+                      </DropdownItem>
+                    }
                     {canGetReports &&
                       <DropdownItem tag={Link} to="/reports">
                         {REPORTS}

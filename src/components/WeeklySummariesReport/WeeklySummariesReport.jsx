@@ -85,6 +85,7 @@ export class WeeklySummariesReport extends Component {
       hasPermission,
       auth,
     } = this.props;
+
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
@@ -494,7 +495,7 @@ export class WeeklySummariesReport extends Component {
                       onChange={this.handleBioStatusToggleChange}
                     />
                     <label className="custom-control-label" htmlFor="bio-status-toggle">
-                      {}
+                      { }
                     </label>
                   </div>
                 </div>
@@ -510,7 +511,7 @@ export class WeeklySummariesReport extends Component {
                       onChange={this.handleOverHoursToggleChange}
                     />
                     <label className="custom-control-label" htmlFor="over-hours-toggle">
-                      {}
+                      { }
                     </label>
                   </div>
                 </div>

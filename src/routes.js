@@ -128,6 +128,7 @@ export default (
           allowedRoles={[
             UserRole.Administrator,
           ]}
+          routePermissions={RoutePermissions.overviewReport}
         />
         <ProtectedRoute
           path="/weeklysummariesreport"
