@@ -517,7 +517,7 @@ export class WeeklySummariesReport extends Component {
                       onChange={this.handleBioStatusToggleChange}
                     />
                     <label className="custom-control-label" htmlFor="bio-status-toggle">
-                      { }
+                      {}
                     </label>
                   </div>
                 </div>
@@ -533,7 +533,7 @@ export class WeeklySummariesReport extends Component {
                       onChange={this.handleOverHoursToggleChange}
                     />
                     <label className="custom-control-label" htmlFor="over-hours-toggle">
-                      { }
+                      {}
                     </label>
                   </div>
                 </div>
