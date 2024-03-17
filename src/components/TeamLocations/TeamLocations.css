@@ -17,3 +17,35 @@
 #map-container {
   height: calc(100vh - 225px);
 }
+
+.text-and-table-icon-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+  align-items: baseline;
+
+}
+
+.map-table-container {
+  position: absolute;
+  top: 150px; 
+  right: 20px; 
+  z-index: 1000; 
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid #ccc;
+  padding: 10px;
+  transition: opacity 0.6s ease-in-out;
+  opacity: 0;
+}
+
+.map-table-container.visible {
+  opacity: 1; 
+}
+
+.active-only-checkbox {
+  position: absolute; /* Set position to absolute */
+  top: 0; /* Align with the top of the container */
+  right: 10px; /* Adjust the right distance as needed */
+  
+}
