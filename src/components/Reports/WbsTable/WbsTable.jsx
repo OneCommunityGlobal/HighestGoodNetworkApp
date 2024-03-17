@@ -1,6 +1,6 @@
-import React from 'react';
-import { Stub } from 'components/common/Stub';
-import './WbsTable.css';
+import React from "react";
+import { Stub } from "components/common/Stub";
+import "./WbsTable.css";
 
 // eslint-disable-next-line import/prefer-default-export
 export function WbsTable({ wbs, skip, take, match, canViewWBS }) {
@@ -13,7 +13,9 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS }) {
         <div>{skip + index + 1}</div>
         <div>
           {canViewWBS ? (
-            <a href={`/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`}>{item.wbsName}</a>
+            <a href={`/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`}>
+              {item.wbsName}
+            </a>
           ) : (
             <div>{item.wbsName}</div>
           )}
@@ -29,17 +31,22 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS }) {
             </div>
           )}
         </div>
-        <div>{window.innerWidth >= 1100 ? item._id : item._id.substring(0, 10)}</div>
+        <div>
+          {window.innerWidth >= 1100 ? item._id : item._id.substring(0, 10)}
+        </div>
       </div>
     ));
   }
 
   return (
     <div className="wbs-table">
-      <h5 style={{ marginBottom: '2.125rem' }} className="wbs-table-title">
+      <h5 style={{ marginBottom: "2.125rem" }} className="wbs-table-title">
         WBS
       </h5>
-      <div style={{ marginBottom: '0px' }} className="reports-table-head wbs-table-row">
+      <div
+        style={{ marginBottom: "0px" }}
+        className="reports-table-head wbs-table-row"
+      >
         <div className="wbs-table-cell">#</div>
         <div className="wbs-table-cell">Name</div>
         <div className="wbs-table-cell">Active</div>
