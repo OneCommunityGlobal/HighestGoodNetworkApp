@@ -14,6 +14,7 @@ import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
 import ListUsersPopUp from './ListUsersPopUp';
 import AddOrEditPopup from './AddOrEditPopup';
 import MarkerPopup from './MarkerPopup';
+import TeamLocationsTable from './TeamLocationsTable';
 
 
 
@@ -26,7 +27,8 @@ function TeamLocations() {
   const [editingUser, setEditingUser] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [popupsOpen, setPopupsOpen] = useState(false);
-  const [mapMarkers,setMapMarkers] =useState([])
+  const [mapMarkers,setMapMarkers] = useState([])
+  const [tableVisible, setTableVisible] = useState(false);
   const role = useSelector(state => state.auth.user.role);
 
 
@@ -115,6 +117,10 @@ function TeamLocations() {
     return modifiedLongitude;
   };
 
+  const toggleVisibility = () => {
+    setTableVisible(!tableVisible);
+  }
+
   // Get an array of all users' non-null countries (some locations may not be associated with a country)
   // Get the number of unique countries
 
@@ -139,6 +145,7 @@ function TeamLocations() {
 
   return (
     <Container fluid className="mb-4">
+      <div>{tableVisible && <TeamLocationsTable visible={tableVisible} mapMarkers={mapMarkers} />}</div>
       {isAbleToEdit ? (
         <>
           <AddOrEditPopup
@@ -162,7 +169,12 @@ function TeamLocations() {
         </>
       ) : null}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
-        <h5>Total Countries: {totalUniqueCountries}</h5>
+        <div className='text-and-table-icon-container'>
+          <h5>Total Countries: {totalUniqueCountries}</h5>
+          <button disabled={mapMarkers.length == 0} onClick={toggleVisibility}>
+            <i class="fa fa-table" aria-hidden="true"></i>
+          </button>
+        </div>
         {isAbleToEdit ? (
           <div className="d-flex align-center">
             <div className="d-flex align-center pr-5 flex-column flex-md-row  position-relative">
