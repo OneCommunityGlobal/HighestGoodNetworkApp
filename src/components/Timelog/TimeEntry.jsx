@@ -32,7 +32,7 @@ import checkNegativeNumber from 'utils/checkNegativeHours';
 
 const TimeEntry = (props) => {
   // props from parent
-  const { from, data, displayYear, timeEntryUserProfile, displayUserProjects, displayUserTasks, tab } = props
+  const { from, data, displayYear,isOwnTask,timeEntryUserProfile, displayUserProjects, displayUserTasks, tab } = props
   // props from store
   const { authUser } = props;
 
@@ -81,12 +81,16 @@ const TimeEntry = (props) => {
     //permission to edit any time entry on their own time logs tab
     || dispatch(hasPermission('editTimeEntry')) 
 
-  //permission to Delete time entry from other user's Dashboard
-  const canDelete = dispatch(hasPermission('deleteTimeEntryOthers')) ||
-    //permission to delete any time entry on their own time logs tab
-    dispatch(hasPermission('deleteTimeEntry')) ||
-    //default permission: delete own sameday tangible entry
-    isAuthUserAndSameDayEntry;
+  //permission to Delete any time entry from other user's Dashboard
+  const canDeleteOther = (dispatch(hasPermission('deleteTimeEntryOthers')) && !isOwnTask);
+
+  //permission to delete any time entry on their own time logs tab
+  const canDeleteOwn=(dispatch(hasPermission('deleteTimeEntryOwn')) && isOwnTask);
+
+  // condition for allowing delete in delete model
+  //default permission: delete own sameday tangible entry = isAuthUserAndSameDayEntry
+  const canDelete = canDeleteOther || canDeleteOwn || isAuthUserAndSameDayEntry;
+
 
   const toggleTangibility = () => {
     //Update intangible hours property in userprofile
@@ -218,8 +222,11 @@ const TimeEntry = (props) => {
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
                   </button>
               )}
-              {canDelete && from === 'WeeklyTab' && (
+              
+              { canDelete && from === 'WeeklyTab' && (
+                
                 <button className='text-primary'>
+                  
                   <DeleteModal
                     timeEntry={data}
                     userProfile={timeEntryUserProfile}
@@ -227,7 +234,7 @@ const TimeEntry = (props) => {
                     taskClassification={taskClassification}
                   />
                 </button>
-              )}
+              ) }
             </div>
           </Col>
         </Row>

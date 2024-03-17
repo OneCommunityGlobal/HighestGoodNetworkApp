@@ -186,6 +186,7 @@ const Timelog = props => {
        *  */ 
       <TimeEntry
         from='WeeklyTab'
+        isOwnTask={authUser.userid == displayUserId}
         data={entry}
         displayYear
         key={entry._id}
@@ -196,7 +197,7 @@ const Timelog = props => {
       />
     ));
   };
-
+       
   const loadAsyncData = async userId => {
     //load the timelog data
     setTimeLogState({ ...timeLogState, isTimeEntriesLoading: true });
