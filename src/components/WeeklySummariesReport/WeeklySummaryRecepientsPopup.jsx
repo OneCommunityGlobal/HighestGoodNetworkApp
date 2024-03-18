@@ -38,7 +38,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
       }
     };
     getRecipients();
-  }, [updatedRecipients]);
+  }, [open, updatedRecipients]);
 
   const closePopup = () => {
     onClose();
@@ -60,6 +60,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
         }
         toast.success('Added new recipient.');
         setRecipients(prevState => [...prevState, selectedUser]);
+        setUpdatedRecipients(prevState => !prevState);
         setSearchText('');
       } catch (error) {
         toast.error('Could not add recipient');
@@ -115,7 +116,9 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
                   <tr key={`recipient_name_${index}`}>
                     <td>{index + 1}</td>
                     <td>{`${user.firstName} ${user.lastName}`}</td>
-                    <td>{moment(user.createdDate).format('MMM-DD-YY')}</td>
+                    <td>
+                      {moment(user.permissionGrantedToGetWeeklySummaryReport).format('MMM-DD-YY')}
+                    </td>
                     <td>
                       <Button
                         color="danger"

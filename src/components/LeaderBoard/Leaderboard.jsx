@@ -361,6 +361,7 @@ function LeaderBoard({
 
                             handleTimeOffModalOpen(request);
                           }}
+                          style={{ width: '35px', height: 'auto' }}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
