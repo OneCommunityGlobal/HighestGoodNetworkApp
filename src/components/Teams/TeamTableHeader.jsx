@@ -38,7 +38,7 @@ export const TeamTableHeader = React.memo(
       <th scope="col" id="teams__members">
         {MEMBERS}
       </th>
-      {(canEditOrDeleteTeams) && <th scope="col" id="teams__delete"></th>}
+      {(canDeleteTeam || canPutTeam) && <th scope="col" id="teams__delete"></th>}
     </tr>
   );
 });

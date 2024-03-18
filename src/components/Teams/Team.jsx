@@ -7,7 +7,7 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 
 export const Team = props => {
-  const canDeleteTeam = props.hasPermission('deleteTeam') || props.hasPermission('seeTeamsManagement');
+  const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
   return (

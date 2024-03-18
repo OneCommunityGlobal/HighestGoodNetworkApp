@@ -180,7 +180,6 @@ class Teams extends React.PureComponent {
    */
 
   teampopupElements = () => {
-    //const canDeleteTeams = this.props.hasPermission('seeTeamsManagement') || this.props.hasPermission('assignTeamToUsers');
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
     return (
       <React.Fragment>
