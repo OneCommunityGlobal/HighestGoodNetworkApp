@@ -443,7 +443,7 @@ const Timelog = props => {
           <Row>
             <Col md={12}>
               <Card>
-                <CardHeader>
+                <CardHeader className='card-header-shadow'>
                   <Row>
                     <Col md={11}>
                       <CardTitle tag="h4">
@@ -578,7 +578,7 @@ const Timelog = props => {
                     </Col>
                   </Row>
                 </CardHeader>
-                <CardBody>
+                <CardBody className="card-body-shadow">
                   <Nav tabs className="mb-1">
                     <NavItem>
                       <NavLink
