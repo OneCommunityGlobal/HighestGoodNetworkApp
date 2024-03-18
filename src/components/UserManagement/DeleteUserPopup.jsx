@@ -15,6 +15,7 @@ import { CLOSE } from '../../languages/en/ui';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
 
 /**
  * Modal popup to delete the user profile
@@ -23,7 +24,7 @@ const DeleteUserPopup = React.memo(props => {
   const closePopup = e => {
     props.onClose();
   };
-  const canDeleteUser = props.hasPermission('deleteUserProfile');
+  const canDeleteUser = props.hasPermission(permissions.userManagement.deleteUserProfile);
 
   return (
     <Modal isOpen={props.open} toggle={closePopup}>

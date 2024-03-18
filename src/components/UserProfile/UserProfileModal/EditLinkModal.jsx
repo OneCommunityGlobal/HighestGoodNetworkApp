@@ -15,11 +15,12 @@ import './EditLinkModal.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import { permissions } from 'utils/constants';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
 
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },

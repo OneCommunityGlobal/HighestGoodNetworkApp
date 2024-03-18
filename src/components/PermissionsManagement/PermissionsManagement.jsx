@@ -16,14 +16,15 @@ import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
 import PermissionChangeLogTable from './PermissionChangeLogTable'
 import { ENDPOINTS } from 'utils/URL';
+import { permissions } from 'utils/constants';
 
 function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile, hasPermission, getInfoCollections }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
-  const canPostRole = hasPermission('postRole');
-  const canPutRole = hasPermission('putRole');
-  const canManageUserPermissions = hasPermission('putUserProfilePermissions');
+  const canPostRole = hasPermission(permissions.permissionsManagement.postRole);
+  const canPutRole = hasPermission(permissions.permissionsManagement.putRole);
+  const canManageUserPermissions = hasPermission(permissions.permissionsManagement.putUserProfilePermissions);
 
    // Added permissionChangeLogs state management
    const [changeLogs, setChangeLogs] = useState([])

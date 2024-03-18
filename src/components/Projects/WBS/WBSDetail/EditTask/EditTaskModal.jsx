@@ -17,6 +17,8 @@ import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
+import {permissions} from 'utils/constants'
+
 
 function EditTaskModal(props) {
   /*
@@ -26,8 +28,8 @@ function EditTaskModal(props) {
   const { allMembers, error } = props;
 
   // permissions
-  const canUpdateTask = props.hasPermission('updateTask');
-  const canSuggestTask = props.hasPermission('suggestTask');
+  const canUpdateTask = props.hasPermission(permissions.projects.updateTask);
+  const canSuggestTask = props.hasPermission(permissions.projects.suggestTask);
   const editable = canSuggestTask || canUpdateTask;
 
   // states from hooks

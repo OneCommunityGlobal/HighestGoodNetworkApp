@@ -5,6 +5,7 @@ import Loading from 'components/common/Loading';
 import EditHistoryModal from './EditHistoryModal';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
+import { permissions } from 'utils/constants';
 
 function LostTimeHistory(props) {
 
@@ -17,7 +18,7 @@ function LostTimeHistory(props) {
   const toDate = props.endDate.toLocaleDateString('en-CA');
 
   const idList = props.allData.map(data => data._id);
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
+  const canEditTimeEntry = props.hasPermission(permissions.timeLog.editTimeEntry);
 
   useEffect(() => {
     loadLostTimeEntries(type, idList, fromDate, toDate);

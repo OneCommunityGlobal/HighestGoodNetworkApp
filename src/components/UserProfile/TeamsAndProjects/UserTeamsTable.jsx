@@ -6,12 +6,13 @@ import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { permissions } from 'utils/constants';
 
 const UserTeamsTable = props => {
   const [tooltipOpen, setTooltip] = useState(false);
   const [teamCode, setTeamCode] = useState(props.userProfile? props.userProfile.teamCode: props.teamCode);
 
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+  const canAssignTeamToUsers = props.hasPermission(permissions.teams.assignTeamToUsers);
   const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 

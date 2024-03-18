@@ -20,6 +20,8 @@ import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
 import { boxStyle } from 'styles';
+import {permissions} from 'utils/constants'
+
 
 function WBSTasks(props) {
   /*
@@ -44,7 +46,7 @@ function WBSTasks(props) {
   const myRef = useRef(null);
 
   // permissions
-  const canPostTask = props.hasPermission('postTask');
+  const canPostTask = props.hasPermission(permissions.projects.postTask);
 
   /*
   * -------------------------------- functions --------------------------------

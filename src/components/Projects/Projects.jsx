@@ -31,6 +31,7 @@ import Loading from '../common/Loading';
 import { PROJECT_DELETE_POPUP_ID } from './../../constants/popupId';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { permissions } from 'utils/constants';
 
 export class Projects extends Component {
   constructor(props) {
@@ -159,7 +160,7 @@ handleSort = (e)=>{
 
     const role = this.props.state.userProfile.role;
 
-    const canPostProject = this.props.hasPermission('postProject');
+    const canPostProject = this.props.hasPermission(permissions.projects.postProject);
 
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;

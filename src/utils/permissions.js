@@ -12,6 +12,13 @@ const hasPermission = (action) => {
       if (roleIndex !== -1) {
         permissions = rolePermissions[roleIndex].permissions;
       }
+      if(typeof(action) === 'object'){
+        for (const key of Object.keys(action)) {
+          if(userPermissions?.includes(key) || permissions?.includes(key)){
+            return true;
+          }
+        }
+      }
 
       return userPermissions?.includes(action) || permissions?.includes(action);
     }

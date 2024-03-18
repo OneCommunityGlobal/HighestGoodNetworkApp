@@ -8,15 +8,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
-
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
 import { hrsFilterBtnColorMap } from 'constants/colors';
-
-
 import checkNegativeNumber from 'utils/checkNegativeHours';
+import { permissions } from 'utils/constants';
 
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
@@ -78,14 +76,14 @@ const TimeEntry = (props) => {
 
   //permission to edit any time log entry (from other user's Dashboard
     // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-  const canEdit = dispatch(hasPermission('editTimelogInfo')) 
+  const canEdit = dispatch(hasPermission(permissions.timeLog.editTimelogInfo)) 
     //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission('editTimeEntry')) 
+    || dispatch(hasPermission(permissions.timeLog.editTimeEntry)) 
 
   //permission to Delete time entry from other user's Dashboard
-  const canDelete = dispatch(hasPermission('deleteTimeEntryOthers')) ||
+  const canDelete = dispatch(hasPermission(permissions.timeLog.deleteTimeEntryOthers)) ||
     //permission to delete any time entry on their own time logs tab
-    dispatch(hasPermission('deleteTimeEntry')) ||
+    dispatch(hasPermission(permissions.timeLog.deleteTimeEntry)) ||
     //default permission: delete own sameday tangible entry
     isAuthUserAndSameDayEntry;
 

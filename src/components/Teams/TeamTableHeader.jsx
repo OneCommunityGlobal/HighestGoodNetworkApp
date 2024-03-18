@@ -2,14 +2,15 @@ import React from 'react';
 import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
+import { permissions } from 'utils/constants';
 
 /**
  * The header row of the team table.
  */
 export const TeamTableHeader = React.memo(
   ({ onTeamNameSort, onTeamActiveSort, sortTeamNameState, sortTeamActiveState, ...props }) => {
-    const canDeleteTeam = props.hasPermission('deleteTeam');
-    const canPutTeam = props.hasPermission('putTeam');
+    const canDeleteTeam = props.hasPermission(permissions.teams.deleteTeam);
+    const canPutTeam = props.hasPermission(permissions.teams.putTeam);
 
     const getSortIcon = (sortState) => {
       switch(sortState) {

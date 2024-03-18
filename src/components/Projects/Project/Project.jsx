@@ -6,6 +6,7 @@ import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { permissions } from 'utils/constants';
 
 const Project = props => {
   const [originName] = useState(props.name);
@@ -15,8 +16,8 @@ const Project = props => {
   const [active, setActive] = useState(props.active);
   const [firstLoad, setFirstLoad] = useState(true);
 
-  const canPutProject = props.hasPermission('putProject');
-  const canDeleteProject = props.hasPermission('deleteProject');
+  const canPutProject = props.hasPermission(permissions.projects.putProject);
+  const canDeleteProject = props.hasPermission(permissions.projects.deleteProject);
 
   const updateActive = () => {
     props.onClickActive(props.projectId, name, category, active);

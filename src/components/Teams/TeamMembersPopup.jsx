@@ -7,6 +7,7 @@ import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
+import { permissions } from 'utils/constants';
 
 export const TeamMembersPopup = React.memo(props => {
   const closePopup = () => {
@@ -20,7 +21,7 @@ export const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0)
 
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+  const canAssignTeamToUsers = props.hasPermission(permissions.teams.assignTeamToUsers);
 
 
 

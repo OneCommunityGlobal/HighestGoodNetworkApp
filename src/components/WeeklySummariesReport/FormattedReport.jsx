@@ -37,6 +37,7 @@ import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import { permissions } from 'utils/constants';
 
 const textColors = {
   Default: '#000000',
@@ -68,7 +69,7 @@ function FormattedReport({
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
   const dispatch = useDispatch();
-  const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+  const isEditCount = dispatch(hasPermission(permissions.weeklySummariesReport.totalValidWeeklySummaries));
 
   return (
     <>

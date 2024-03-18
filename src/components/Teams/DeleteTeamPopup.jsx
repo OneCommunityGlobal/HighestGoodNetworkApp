@@ -3,13 +3,14 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
 
 export const DeleteTeamPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission(permissions.teams.deleteTeam);
+  const canPutTeam = props.hasPermission(permissions.teams.putTeam);
 
   return (
     <Modal isOpen={props.open} toggle={closePopup}>

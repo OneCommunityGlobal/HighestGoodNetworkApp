@@ -15,6 +15,8 @@ import { updateTask } from 'actions/task';
 import hasPermission from 'utils/permissions';
 import { useSelector, useStore } from 'react-redux';
 import { useState } from 'react';
+import {permissions} from 'utils/constants'
+
 
 export const TaskEditSuggestionsModal = ({
   isTaskEditSuggestionModalOpen,
@@ -30,7 +32,7 @@ export const TaskEditSuggestionsModal = ({
     updateTask(
       taskEditSuggestion.taskId,
       taskEditSuggestion.newTask,
-      dispatch(hasPermission('updateTask')),
+      dispatch(hasPermission(permissions.projects.updateTask)),
     )(dispatch, getState);
     dispatch(rejectTaskEditSuggestion(taskEditSuggestion._id));
     handleToggleTaskEditSuggestionModal();

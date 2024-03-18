@@ -7,11 +7,12 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
 
 const AddWBS = props => {
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
-  const canPostWBS = props.hasPermission('postWbs');
+  const canPostWBS = props.hasPermission(permissions.projects.postWbs);
 
   const changeNewName = newName => {
     if (newName.length !== 0) {
