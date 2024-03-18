@@ -16,7 +16,7 @@ import config from '../config.json';
 import '../App.css';
 
 const { persistor, store } = configureStore();
-const {tokenKey} = config;
+const { tokenKey } = config;
 // Require re-login 2 days before the token expires on server side
 // Avoid failure due to token expiration when user is working
 const TOKEN_LIFETIME_BUFFER = 86400 * 2;

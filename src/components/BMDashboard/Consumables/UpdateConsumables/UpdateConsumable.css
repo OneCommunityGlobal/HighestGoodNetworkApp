@@ -1,0 +1,85 @@
+.updateConsumablesContainer {
+  padding: 0% !important;
+}
+
+.updateConsumablesPage {
+  background-color: #E8F4F9;
+  width: 100%;
+  height: auto;
+  margin: 0px;
+  padding: 1rem 2rem;
+  font-size: 15px;
+}
+
+.updateConsumablesContent {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: auto;
+}
+
+.consumablesImage {
+  height: 10rem;
+  width: 10rem;
+  margin-bottom: 1rem;
+}
+
+.consumablesFormField {
+  margin-bottom: .5rem;
+}
+
+.consumablesFormLabel {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1C8BCC;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.consumablesFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.consumablesFormTableError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+}
+
+.consumablesFormErrorClr {
+  color: red;
+}
+
+.consumablesFormValue {
+  font-weight: 400;
+  font-size: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.consumablesButtonOutline {
+  color: #2E5061 !important;
+}
+
+.consumablesButtonOutline:hover {
+  background-color: #2E5061 !important;
+  color: white !important;
+}
+
+.consumablesButtonBg {
+  background-color: #2E5061 !important;
+}
+
+.consumablesButtonBg:hover {
+  background-color: white !important;
+  color: #2E5061 !important;
+}
+
+.updateConsumablesModalContainer {
+  overflow-y: scroll;
+  height: 75vh;
+}
