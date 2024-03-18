@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { boxStyle } from 'styles';
 
 const EditConfirmModal = props => {
-  const { isOpen, closeModal, modalTitle, modalMessage, userProfile } = props;
+  const { isOpen, closeModal, modalTitle, modalMessage, userProfile, disabled } = props;
   const history = useHistory();
   const toggle = () => {
     closeModal();
@@ -13,10 +13,10 @@ const EditConfirmModal = props => {
   return (
     <React.Fragment>
       <Modal isOpen={isOpen} toggle={closeModal}>
-        <ModalHeader toggle={closeModal}>{modalTitle}</ModalHeader>
+        <ModalHeader toggle={disabled ? () => false : closeModal}>{modalTitle}</ModalHeader>
         <ModalBody>{modalMessage}</ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={toggle} style={boxStyle}>
+          <Button color="primary" onClick={toggle} style={boxStyle} disabled={disabled}>
             Close
           </Button>
         </ModalFooter>
@@ -31,6 +31,7 @@ EditConfirmModal.propTypes = {
   modalMessage: PropTypes.string.isRequired,
   userProfile: PropTypes.object.isRequired,
   isOpen: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool.isRequired,
 };
 
 export default EditConfirmModal;
