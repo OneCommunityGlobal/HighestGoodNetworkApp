@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, Suspense } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,7 +24,7 @@ import { MyTeamMember } from "./MyTeamMember";
 //! =========================================================================================
 //! IMPORT PARA CRIAR FILTRO
 import { boxStyle } from 'styles';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button } from 'reactstrap';
 //! =========================================================================================
 
 
@@ -58,8 +58,9 @@ const TeamMemberTasks = React.memo(props => {
     const [teams, setTeams] = useState(displayUser.teams);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [selectedTeamName, setSelectedTeamName] = useState(); // contain Team name and ID
-    const [usersSelectedTeam, setUsersSelectedTeam] = useState();
+    const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
     const [toggleButtonText, setToggleButtonText] = useState('View All');
+    const [userRole, setUserRole] = useState();
   
     //! =========================================================================================
 
@@ -78,20 +79,6 @@ const TeamMemberTasks = React.memo(props => {
   }
 
   const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
-
-
-  // useEffect(() => {
-  //   if (selectedTeamId) {
-  //     updateTeamMembers(selectedTeamId);
-  //   }
-  // }, [selectedTeamId]);
-
-  // useEffect(() => {
-  //   const ids = new Set(timeEntriesList.map(entry => entry._id));
-  //   if (ids.size !== timeEntriesList.length) {
-  //     console.warn('Duplicate keys found in timeEntriesList');
-  //   }
-  // }, [timeEntriesList]);
 
   //! =========================================================================================
 
@@ -255,19 +242,18 @@ const TeamMemberTasks = React.memo(props => {
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
         setUsersSelectedTeam(response.data);
 
-        //console.log('usersWithTasks',usersWithTasks);
-        
       } catch (error) {
-        alert('Error fetching team members:', error);
+        toast.error('Error fetching team members:', error);
       }
-
   }
   };
   
   useEffect(() => {
     // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
     const initialFetching = async () => {
+
       await dispatch(fetchTeamMembersTask(displayUser._id));
+      setUserRole(displayUser.role)
       //await setLoading(false);
 
       // if (userId !== props.auth.user.userid) {
@@ -311,38 +297,67 @@ const TeamMemberTasks = React.memo(props => {
  return (
     <div className="container team-member-tasks">
       <header className="header-box">
+        <section className='d-flex flex-column'>
         <h1>Team Member Tasks</h1>
 
          {/* Dropdown for selecting a team */}
-         {isLoading ? (
-          <p>Loading teams...</p>
-          ) : (
-            <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-            <DropdownToggle caret>
-              {selectedTeamName || 'Select a Team'} {/* Display selected team or default text */}
-            </DropdownToggle>
-            <DropdownMenu>
-              {teams.map((team) => (
-                <DropdownItem key={team._id} onClick={() => renderTeamsList(team)}>
-                  {team.teamName}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-        )}
-        {<button
-              type="button"
-              color="primary"
-              className="task-button"
-              onClick={handleToggleButtonClick}
-              style={boxStyle}
-            >
-              {toggleButtonText === 'View All' ? 'My Team' : 'View All'}
-          </button> }
+         {isLoading && (userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Owner') 
+? (
+  <p>Loading teams...</p>
+  ) :
+ !isLoading && (userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Owner')  
+? (
+<Suspense fallback={<p>aaaaaaaaaa</p>}>
+  <>
+    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className='mb-3'>
+      <DropdownToggle caret>
+        {selectedTeamName || 'Select a Team'} {/* Display selected team or default text */}
+      </DropdownToggle>
+      <DropdownMenu>
+        {
+        teams.length === 0?
+          <DropdownItem onClick={() => toast.warning('Please, create a team to use the filter.')}>
+            {'Please, create a team to use the filter.'}
+          </DropdownItem>
+          :
+        teams.map((team) => (
+          <DropdownItem key={team._id} onClick={() => renderTeamsList(team)}>
+            {team.teamName}
+          </DropdownItem>
+        ))
+
+      }
+      </DropdownMenu>
+    </Dropdown>
+
+    <Button 
+      color="primary"
+      onClick={handleToggleButtonClick}
+      style={{width: '7rem'}}
+      className='mb-3 mb-0-md-end'
+      disabled={isLoading || teams.length === 0}
+    >
+      {toggleButtonText === 'View All' ? 'My Team' : 'View All'}
+    </Button>
+  </>
+    </Suspense>   
+) : (
+  userRole !== 'Administrator' && userRole !== 'Core Team' && userRole !== 'Owner' ? (
+    <></>
+  ) : !isLoading && (userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Owner')  
+   (
+    null
+  )
+ 
+)}
+
+        </section>
+
+
 
         {finishLoading ? (
-          <div className="hours-btn-container">
-            <button
+          <section className="hours-btn-container">
+           <button
               type="button"
               className={`show-time-off-btn ${
                 showWhoHasTimeOff ? 'show-time-off-btn-selected' : ''
@@ -399,7 +414,7 @@ const TeamMemberTasks = React.memo(props => {
               isPermissionPage={true}
               role={authUser.role} 
             />
-          </div>
+          </section>
         ) : (
           <SkeletonLoading template="TimelogFilter" />
         )}
@@ -433,6 +448,8 @@ const TeamMemberTasks = React.memo(props => {
       <div className="table-container">
         <Table>
           <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
+          {
+          toggleButtonText === 'View All' ? (
             <tr>
               {/* Empty column header for hours completed icon */}
               <th colSpan={1}/>
@@ -474,6 +491,62 @@ const TeamMemberTasks = React.memo(props => {
                 </Table>
               </th>
             </tr>
+                                            
+          ) :   usersSelectedTeam.length === 0?( 
+            <tr>
+
+            <th  className="team-member-tasks-headers">
+             <Table borderless>
+              <thead>
+                <th> <h4>Error</h4></th>
+              </thead>
+              </Table> 
+            </th>
+
+            </tr>
+              
+
+          ) : (
+            <tr>                
+            <th  
+className="team-member-tasks-headers table-row d-flex justify-content-between d-flex align-items-center"   
+                    >
+                      
+                      <Table borderless className="team-member-tasks-subtable">
+                        <thead>
+                          <tr>
+                          <th></th>
+        
+                            <th className="team-member-tasks-headers team-member-tasks-user-name">
+                              Team Member
+                            </th>
+                            <th className="team-member-tasks-headers team-clocks team-clocks-header "
+                              style={{ gap: 4 }}
+                            >
+                              <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                              /
+                              <FontAwesomeIcon
+                                style={{ color: 'green' }}
+                                icon={faClock}
+                                title="Total Hours Completed this Week"
+                              />
+                              /
+                              <FontAwesomeIcon
+                                style={{ color: 'red' }}
+                                icon={faClock}
+                                title="Total Remaining Hours"
+                              />
+                            </th>
+                          </tr>
+                        </thead>
+                      </Table>
+                    </th>                                 
+      
+    </tr>
+           
+          )
+
+          }
           </thead>
           <tbody>
             {isLoading ? (
@@ -539,7 +612,19 @@ const TeamMemberTasks = React.memo(props => {
                       );
                     }
                   })
-                ) : (
+                ) : 
+                usersSelectedTeam.length === 0?(
+                  <Table>
+              <tbody>
+              <tr>
+                <th>The team currently has no members. Please add a member to this team or select another team.</th>
+              </tr>
+              </tbody>
+
+            </Table>
+                ):
+                (
+                  
                   usersSelectedTeam.map(user => {
                     return(
                       <MyTeamMember key={user._id}
@@ -552,6 +637,7 @@ const TeamMemberTasks = React.memo(props => {
                       showWhoHasTimeOff={showWhoHasTimeOff}
                       onTimeOff={userOnTimeOff[user._id]}
                       goingOnTimeOff={userGoingOnTimeOff[user._id]}
+                      updateTaskStatus={updateTaskStatus}
                       />
                     )
                     })

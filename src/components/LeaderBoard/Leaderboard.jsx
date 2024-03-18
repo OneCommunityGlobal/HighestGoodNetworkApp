@@ -14,6 +14,14 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { ENDPOINTS } from "../../utils/URL";
+import axios from 'axios' 
+//! =========================================================================================
+//! IMPORT PARA CRIAR FILTRO
+import { boxStyle } from 'styles';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, } from 'reactstrap';
+import { Fragment } from 'react';
+//! =========================================================================================
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -54,12 +62,82 @@ function LeaderBoard({
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
-
+  
   useEffect(() => {
     getMouseoverText();
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
+  
+  //! =========================================================================================
+    //!    UseState PARA CRIAR FILTRO
 
+    const [teams, setTeams] = useState([]);
+    //? O TEAMS RETORNA O ID E O NOME DAS EQUIPES.
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [selectedTeamName, setSelectedTeamName] = useState(); // contain Team name and ID
+    const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
+    const [toggleButtonText, setToggleButtonText] = useState('View All');
+    const [isLoadingTeams, setIsLoadingTeams] = useState(false);
+    
+    const [userRole, setUserRole] = useState();
+    
+    const [openModal, setOpenModal] = useState();
+    //! =========================================================================================
+  //! =========================================================================================
+  //!    javascript PARA CRIAR FILTRO
+
+  const dashboardToggleTeams = item => setOpenModal(item._id);
+
+  useEffect(() => {
+    const fetchInitial = async ()  => {
+      const url = ENDPOINTS.USER_PROFILE(displayUserId);
+      try {
+        const response = await axios.get(url);
+        setIsLoadingTeams(true);
+
+        setTeams(response.data.teams);
+        setUserRole(response.data.role)
+
+          setIsLoadingTeams(false);
+
+      } catch (error) {
+        toast.error(error);
+      }
+    }
+      
+    fetchInitial();
+
+    
+  }, [])  
+  
+  const handleToggleButtonClick = () => { 
+    if (!usersSelectedTeam) {
+        alert();
+        return;
+    }else{setToggleButtonText(prevText => prevText === 'View All' ? 'My Team' : 'View All')};
+    // Add any other logic for the button click here
+  }
+
+  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
+
+  const renderTeamsList = async (team) => {
+
+        setSelectedTeamName(team.teamName);
+
+       try {
+        const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
+         setUsersSelectedTeam(response.data);
+      
+    } catch (error) {
+      toast.error('Error fetching team members:', error);
+    }
+
+  
+    
+  };
+
+  //! =========================================================================================
+  
   const handleMouseoverTextUpdate = text => {
     setMouseoverTextValue(text);
   };
@@ -94,12 +172,15 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
-    dashboardClose();
-    window.open(
-      `/dashboard/${item.personId}`,
-      'Popup',
-      'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
-    );
+    //showDashboardTeams
+            item.personId? dashboardClose() : setOpenModal(false);
+
+      window.open(
+        `/dashboard/${item.personId? item.personId : item._id}`,
+        'Popup',
+        'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
+      );
+    
   };
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
@@ -114,6 +195,7 @@ function LeaderBoard({
 
   return (
     <div>
+      <div style={{}}>
       <h3>
         <div className="d-flex align-items-center">
           <span className="mr-2">Leaderboard</span>
@@ -135,7 +217,58 @@ function LeaderBoard({
             isPermissionPage
           />
         </div>
+
+
       </h3>
+
+
+      {
+       userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Owner'? (
+  <section className="d-flex flex-row mb-3">
+    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=' mr-3 '>
+      <DropdownToggle caret>
+        {selectedTeamName || 'Select a Team'} {/* Display selected team or default text */}
+      </DropdownToggle>
+        <DropdownMenu>
+
+        {
+        teams.length === 0?
+          <DropdownItem onClick={() => toast.warning('Please, create a team to use the filter.')}>
+            {'Please, create a team to use the filter.'}
+          </DropdownItem>
+          :
+        teams.map((team) => (
+          <DropdownItem key={team._id} onClick={() => renderTeamsList(team)}>
+            {team.teamName}
+          </DropdownItem>
+        ))
+
+      }
+        </DropdownMenu>
+
+    </Dropdown>
+
+    <Button
+      color="primary"
+      onClick={handleToggleButtonClick}
+      disabled={isLoadingTeams || teams.length === 0}
+    >
+      {toggleButtonText === 'View All' ? 'My Team' : 'View All'}
+    </Button>
+
+  </section>
+) : (
+  userRole !== 'Administrator' && userRole !== 'Core Team' && userRole !== 'Owner' ? (
+    <></>
+  ) : (
+    null
+  )
+)}
+      </div>
+
+
+
+
       {!isVisible && (
         <Alert color="warning">
           <div className="d-flex align-items-center">
@@ -150,6 +283,8 @@ function LeaderBoard({
           </div>
         </Alert>
       )}
+      {
+          toggleButtonText === 'View All'? (
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <Table className="leaderboard table-fixed">
           <thead>
@@ -250,7 +385,7 @@ function LeaderBoard({
                         }
                       }}
                     >
-                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                      {hasLeaderboardPermissions(item.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
                           className="fa fa-star"
@@ -296,6 +431,7 @@ function LeaderBoard({
                   {/* </Link> */}
                 </td>
                 <th scope="row" className="align-middle">
+                  
                   <Link
                     to={`/userprofile/${item.personId}`}
                     title="View Profile"
@@ -408,6 +544,160 @@ function LeaderBoard({
           </tbody>
         </Table>
       </div>
+
+          )  : 
+          usersSelectedTeam.length === 0?(
+          
+            <Table  className='text-start mt-3'>
+              <thead>
+              <tr>
+                <td><h4>Error</h4></td>
+              </tr>
+              </thead>
+
+              <tbody>
+              <tr>
+                <th>The team currently has no members. Please add a member to this team or select another team.</th>
+              </tr>
+              </tbody>
+
+            </Table>
+                        ) :  (
+          
+            <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+<Table
+className="p-2"
+>
+ 
+  <thead>
+    <tr>
+      <th
+         className="align-middle"
+      >
+        Status
+      </th>
+      <th  className="align-middle">
+        <span style={{ display: 'flex',  gap:5 }}>
+
+         Name
+         <EditableInfoModal
+                    areaName="Leaderboard"
+                    areaTitle="Team Members Navigation"
+                    role={loggedInUser.role}
+                    fontSize={18}
+                    isPermissionPage
+                    className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  />
+        </span>
+      </th>
+      
+      <th className="align-middle">
+       Total Time
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {  usersSelectedTeam.map((item) => {
+                              return(
+                                <Fragment key={item._id}>
+                             
+                                       <Modal isOpen={openModal === item._id} toggle={dashboardToggleTeams}>
+                                         <ModalHeader toggle={dashboardToggleTeams}>Jump to personal Dashboard</ModalHeader>
+                                         <ModalBody>
+                                           <p>Are you sure you wish to view this {item.firstName} {item.lastName} dashboard?</p>
+                                         </ModalBody>
+                                         <ModalFooter>
+                                           <Button variant="primary" onClick={() => showDashboard(item)}>
+                                             Ok
+                                           </Button>{' '}
+                                           <Button variant="secondary" onClick={dashboardToggleTeams}>
+                                             Cancel
+                                           </Button>
+                                         </ModalFooter>
+                                       </Modal>                                  
+                    <tr>
+                      <th   className="align-middle">
+                        
+                      <div            
+                                      role="button"
+                                      tabIndex={0}
+                                      onClick={() => {
+                                        dashboardToggleTeams(item);
+                                      }}
+                                      onKeyDown={e => {
+                                        if (e.key === 'Enter') {
+                                          dashboardToggleTeams(item);
+                                        }
+                                      }}
+                                    >
+                                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                                      showStar(item.totalIntangibleHrs, item.weeklycommittedHours) ? (
+                                        <i
+                                          className="fa fa-star"
+                                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                                          style={{
+                                            color: assignStarDotColors(
+                                              item.totalIntangibleHrs,
+                                              item.weeklycommittedHours,
+                                            ),
+                                            fontSize: '20px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                          }}
+                                        />
+                                      ) : (
+                                        <div
+                                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                                          style={{
+                                            backgroundColor:
+                                              item.totalTangibleHrs >= item.weeklycommittedHours ? '#32CD32' : 'red',
+                                            width: 15,
+                                            height: 15,
+                                            borderRadius: 7.5,
+                                            margin: 'auto',
+                                            verticalAlign: 'middle',
+                                          }}
+                                        />
+
+                                        
+                                      )}
+                                    </div>
+                
+                      
+                      </th>
+                
+                      <th scope="row" className="align-middle" >
+                          
+                                <Link to={`/userprofile/${item._id}`}>{item.firstName} {item.lastName}</Link>
+                      </th>
+                
+                        <th className="align-middle">
+                             <p>{item.totalTangibleHrs}</p>
+                        </th>
+                
+                    </tr>
+
+                                </Fragment>
+                            
+                            )
+                          })
+
+              
+
+    }
+      
+
+   
+  </tbody>
+</Table>
+
+            </div>
+
+            
+
+          )
+      }
     </div>
   );
 }

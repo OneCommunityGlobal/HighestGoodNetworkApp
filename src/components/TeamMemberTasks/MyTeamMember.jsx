@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -10,88 +10,52 @@ import {
   faCompressArrowsAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
-
-//! ============================================================================================
-//! IMPORTAÇÕES DO OUTRO CÓDIGO
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-
-import hasPermission from 'utils/permissions';
 import './style.css';
-import { boxStyle } from 'styles';
-
-import Warning from 'components/Warnings/Warnings';
-import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
-
-import ReviewButton from './ReviewButton';
-import { getProgressColor, getProgressValue } from '../../utils/effortColors';
-import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
-import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 import GoogleDocIcon from '../../components/common/GoogleDocIcon'
+import hasPermission from 'utils/permissions';
+import { useDispatch, useSelector } from 'react-redux';
+
+export const MyTeamMember = ({user, usersWithTasks,}) => {
   
-//! ============================================================================================
-
-export const MyTeamMember = (
-  {user, 
-  usersWithTasks,
-  handleOpenTaskNotificationModal,
-  handleMarkAsDoneModal,
-  handleRemoveFromTaskModal,
-  handleTaskModalOption,
-  showWhoHasTimeOff,
-  onTimeOff,
-  goingOnTimeOff
-}
-  ) => {
-
   const thisWeekHours = user.totalTangibleHrs;
+
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+
+  const dispatch = useDispatch();
+
   
-  const totalHoursRemaining = usersWithTasks.reduce((total, task) => {
-    task.hoursLogged = task.hoursLogged || 0;
-    task.estimatedHours = task.estimatedHours || 0;
-    if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-      return total + Math.max(0, task.estimatedHours - task.hoursLogged);
-    }
-    return total;
-  }, 0);
+  const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
+
+
   
-  const activeTasks = usersWithTasks.filter(
-    task =>
-      !task.resources?.some(
-        resource => resource.userID === user.personId && resource.completedTask,
-      ),
-  );
+            const totalHoursRemaining = usersWithTasks.reduce((total, user) => {
+                                
+              user.tasks.forEach(task => {
 
-  console.log('activeTasks', activeTasks);
-
-  const test = usersWithTasks.filter(item => {
-    !item.tasks.resources?.some(
-      resource => resource.userID === user.personId && resource.completedTask,
-    ),
-    console.log('item.task', item.tasks);
-  });
-  
-    console.log('test', test)
-
-  const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
-  const [isTruncated, setIsTruncated] = useState(canTruncate);
-
-
-  const NUM_TASKS_SHOW_TRUNCATE = 6;
-
-   console.log('canTruncate', canTruncate)
-  
-  const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
-
-  console.log('numTasksToShow', numTasksToShow)
-  
+                  if (task.status !== 'Complete' && task.isAssigned !== 'false') {
+                    return  total + Math.max(0, task.estimatedHours - task.hoursLogged);
+                  }
+              });
+              return total;
+          }, 0);
+          
+ const userGoogleDocLink = user.adminLinks?.reduce((targetLink, currentElement) => {
+  if (currentElement.Name === 'Google Doc') {
+    targetLink = currentElement.Link
+  }
+  return targetLink;
+}, undefined);
 
 
   return (
-    <>
-    <tr className="table-row" key={user._id}>
-      <td colSpan={1}>
-      <section style={{ display: 'flex', alignItems: 'center' }}>
+    <tr className="table-row d-flex justify-content-between d-flex align-items-center"
+     key={user._id} 
+    >
+      <td>
+      <section style={{ display: 'flex', alignItems: 'center'}}
+      
+      >
 
         <div className="committed-hours-circle">
 
@@ -104,8 +68,9 @@ export const MyTeamMember = (
                   data-testid="icon"
                 />
         </div>
+        
 
-        <Link to={`/timelog/${user.personId}`}>
+        <Link to={`/timelog/${user._id}`}>
                 <i
                   className="fa fa-clock-o"
                   aria-hidden="true"
@@ -117,28 +82,49 @@ export const MyTeamMember = (
       </section>
       </td>
 
-      <td colSpan={2}>
-        <Table borderless className="team-member-tasks-subtable">
-          <tbody>
-            <tr>
-              <td className="team-member-tasks-user-name">
+      <td 
+        
 
-                  <Link to={`/userprofile/${user._id}`}>{user.firstName}</Link>
+      >
+        <Table borderless className="team-member-tasks-subtable"
+        >
+          <tbody
+          >
+            
+            <tr
+
+            >
+              <td className="team-member-tasks-user-name"
+              >
+
+                  <Link to={`/userprofile/${user._id}`}
+                   style={{
+                    color:
+                      currentDate.isSameOrAfter(
+                        moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                      ) &&
+                      currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                        ? 'rgba(128, 128, 128, 0.5)'
+                        : undefined,
+                  }}
+                  >{user.firstName} {user.lastName}</Link>
+                    {canGetWeeklySummaries && (<GoogleDocIcon link={userGoogleDocLink}/>)}
 
               </td>
 
-              <td data-label="Time" className="team-clocks">
+              <td data-label="Time" /* className="team-clocks" */
+    >
                   <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                     <font color="red"> {totalHoursRemaining.toFixed(1)}</font>              
               </td>
+
             </tr>
           </tbody>
         </Table>
 
       </td>
-      
+           
     </tr>
-    </>
   );
 }
