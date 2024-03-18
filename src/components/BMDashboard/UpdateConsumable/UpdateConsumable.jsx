@@ -51,7 +51,6 @@ function UpdateConsumable({ record, setModal }) {
   useEffect(() => {
     const qtyUsedFloat = parseFloat(updateRecord.quantityUsed);
     const qtyWastedFloat = parseFloat(updateRecord.quantityWasted);
-
     if (qtyUsedFloat || qtyWastedFloat) {
       setChangeOccured(true);
     } else {
@@ -71,11 +70,11 @@ function UpdateConsumable({ record, setModal }) {
     let unitsUsed = _qtyUsed === '' ? 0 : parseFloat(_qtyUsed);
     let unitsWasted = _qtyWasted === '' ? 0 : parseFloat(_qtyWasted);
 
-    if (QtyUsedLogUnit === 'percent') {
+    if (QtyUsedLogUnit === 'percent' && stockAvailable > 0) {
       unitsUsed *= stockAvailable / 100;
     }
 
-    if (QtyWastedLogUnit === 'percent') {
+    if (QtyWastedLogUnit === 'percent' && stockAvailable > 0) {
       unitsWasted *= stockAvailable / 100;
     }
     const tempValidations = { ...validations };
