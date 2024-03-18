@@ -28,6 +28,7 @@ import { warningsByUserIdReducer } from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+import {weeklySummaryRecipientsReducer} from "./weeklySummaryRecipientsReducer";
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -64,6 +65,7 @@ const localReducers = {
   ownerMessage: ownerMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
+  weeklySummaryRecipients:weeklySummaryRecipientsReducer,
 
   // bmdashboard
   materials: materialsReducer,
