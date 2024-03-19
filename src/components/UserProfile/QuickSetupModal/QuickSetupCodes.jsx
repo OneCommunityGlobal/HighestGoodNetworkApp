@@ -1,4 +1,4 @@
-function QuickSetupCodes({ titles, setAssignPopup, setTitleOnClick }) {
+function QuickSetupCodes({ titles, setShowAssignModal, setTitleOnClick }) {
   return (
     <div className="blueSquares mt-3">
       {titles.map((title) => (
@@ -8,14 +8,14 @@ function QuickSetupCodes({ titles, setAssignPopup, setTitleOnClick }) {
           id="wrapper"
           className="role-button bg-warning"
           onClick={() => {
-            setAssignPopup(true);
+            setShowAssignModal(true);
             setTitleOnClick(title);
           }}
           value={title.titleName}
         >
           {title?.shortName}
           <div className="title">
-            <div className="summary">{title?.titleName}</div>
+            <span className="setup-title-name">{title?.titleName}</span>
           </div>
         </div>
       ))}

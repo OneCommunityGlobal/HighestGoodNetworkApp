@@ -10,21 +10,12 @@ import {
   Label,
   Input,
 } from 'reactstrap';
-import { addTitle, getAllTitle } from '../../../actions/title';
+import { addTitle } from '../../../actions/title';
 import PropTypes from 'prop-types';
 import AddTeamsAutoComplete from '../TeamsAndProjects/AddTeamsAutoComplete';
 import AddProjectsAutoComplete from '../TeamsAndProjects/AddProjectsAutoComplete';
-// import { getAllTitle } from '../../../actions/title';
 
-function AddNewTitleModal({
-  isOpen,
-  setIsOpen,
-  setTitles,
-//   setSubmit,
-//   submittoggler,
-  teamsData,
-  projectsData,
-}) {
+function AddNewTitleModal({ isOpen, setIsOpen, setSubmit, teamsData, projectsData }) {
   const [titleData, setTitleData] = useState({
     titleName: '',
     mediaFolder: '',
@@ -35,7 +26,7 @@ function AddNewTitleModal({
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
   const [isValidProject, onValidation] = useState(false);
-  const [searchText, setSearchText] = useState("");  // For addTeamAutoComplete
+  const [searchText, setSearchText] = useState(''); // For addTeamAutoComplete
 
   const selectProject = project => {
     onSelectProject(project);
@@ -65,13 +56,7 @@ function AddNewTitleModal({
   const confirmOnClick = () => {
     addTitle(titleData);
     setIsOpen(false);
-    getAllTitle()
-      .then(res => {
-        setTitles(res.data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    setSubmit(true);
   };
 
   return (
@@ -123,6 +108,7 @@ function AddNewTitleModal({
               selectedTeam={selectedTeam}
               setSearchText={setSearchText}
               searchText={searchText}
+              setNewTeamName={() => console.log('test')}
             />
           </FormGroup>
         </Form>

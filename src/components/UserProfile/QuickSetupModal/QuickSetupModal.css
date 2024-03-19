@@ -4,16 +4,24 @@
     margin: 5px;
   }
   
+  #wrapper{
+    position: relative;
+  }
+
   #wrapper .title {
     position: absolute;
     color: white;
-    left: 10px;
-    right: 10px;
-    top: 23vh;
+    top:30px;
+    left: 30px;
     display: none;
+    white-space: nowrap;
+    z-index: 10;
   }
   
   #wrapper:hover .title {
-    display: block;
+    display: inline-block;
     visibility: visible;
   }
+.setup-title-name{
+    max-height: 30px;
+}

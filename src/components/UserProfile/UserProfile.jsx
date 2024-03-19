@@ -57,6 +57,7 @@ import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
+import { getAllTitle } from 'actions/title';
 
 function UserProfile(props) {
   /* Constant values */
@@ -113,7 +114,14 @@ function UserProfile(props) {
 
   // yh
   const testYH = () => {
-    console.log(canSeeQSC);
+    // console.log(canSeeQSC);
+    getAllTitle()
+      .then((resp) => {
+        console.log(resp.data)
+      })
+      .catch((e) => {
+        console.log(e)
+      })
 
   } 
 
@@ -765,14 +773,14 @@ function UserProfile(props) {
 
             { canSeeQSC ? <QuickSetupModal
               canAddTitle={props.hasPermission('addNewTitle')}
-              // canAssignTitle={props.hasPermission('assignTitle')}
-              // setSaved={setSaved}
-              // handleSubmit={handleSubmit}
-              // setUserProfile={setUserProfile}
-              // userProfile={userProfile}
-              // userTeams={teams || []}
-              // teamsData={props?.allTeams?.allTeamsData || []}
-              // projectsData={props?.allProjects?.projects || []}
+              canAssignTitle={props.hasPermission('assignTitle')}
+              setSaved={setSaved}
+              handleSubmit={handleSubmit}
+              setUserProfile={setUserProfile}
+              userProfile={userProfile}
+              userTeams={teams || []}
+              teamsData={props?.allTeams?.allTeamsData || []}
+              projectsData={props?.allProjects?.projects || []}
               /> : ''
               }
           </Col>

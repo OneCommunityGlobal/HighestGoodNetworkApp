@@ -5,7 +5,6 @@ export async function addTitle(titleData) {
   try {
     const url = ENDPOINTS.CREATE_NEW_TITLE();
     const response = await axios.post(url, titleData);
-    console.log(response);
     return Promise.resolve(response);
 
   } catch (error) {
