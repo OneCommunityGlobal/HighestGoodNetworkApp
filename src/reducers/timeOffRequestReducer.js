@@ -4,6 +4,7 @@ const initialState = {
   requests: {},
   onTimeOff: {},
   goingOnTimeOff: {},
+  futureTimeOff: {},
   timeOffModal: {
     isOpen: false,
     data: {},
@@ -58,6 +59,9 @@ export const timeOffRequestsReducer = (state = initialState, action) => {
     }
     case types.ADD_GOING_ON_TIME_OFF_REQUESTS: {
       return { ...state, goingOnTimeOff: action.payload, error: null };
+    }
+    case types.ADD_FUTURE_TIME_OFF: {
+      return { ...state, futureTimeOff: action.payload, error: null };
     }
     case types.TIME_OFF_REQUEST_DETAIL_MODAL_OPEN: {
       return {
