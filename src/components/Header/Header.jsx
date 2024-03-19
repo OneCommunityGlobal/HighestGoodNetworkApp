@@ -64,7 +64,8 @@ export const Header = props => {
   const canAccessBadgeManagement = props.hasPermission('seeBadges')
     || props.hasPermission('createBadges')
     || props.hasPermission('updateBadges')
-    || props.hasPermission('deleteBadges');
+    || props.hasPermission('deleteBadges')
+    || props.hasPermission('assignBadges');
   // Projects
   const canAccessProjects = props.hasPermission('postProject')
     || props.hasPermission('deleteProject')
@@ -244,28 +245,28 @@ export const Header = props => {
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                        {canGetReports &&
-                          <DropdownItem tag={Link} to="/reports">
-                            {REPORTS}
-                          </DropdownItem>
-                        }
-                        {canGetWeeklySummaries &&
-                          <DropdownItem tag={Link} to="/weeklysummariesreport">
-                            {WEEKLY_SUMMARIES_REPORT}
-                          </DropdownItem>
-                        }
-                        <DropdownItem tag={Link} to="/teamlocations">
-                          {TEAM_LOCATIONS}
-                        </DropdownItem>
+                    {canGetReports &&
+                      <DropdownItem tag={Link} to="/reports">
+                        {REPORTS}
+                      </DropdownItem>
+                    }
+                    {canGetWeeklySummaries &&
+                      <DropdownItem tag={Link} to="/weeklysummariesreport">
+                        {WEEKLY_SUMMARIES_REPORT}
+                      </DropdownItem>
+                    }
+                    <DropdownItem tag={Link} to="/teamlocations">
+                      {TEAM_LOCATIONS}
+                    </DropdownItem>
                   </DropdownMenu>
-              </UncontrolledDropdown>
+                </UncontrolledDropdown>
               ) :
-              <NavItem>
-                <NavLink tag={Link} to="/teamlocations">
-                  {TEAM_LOCATIONS}
-                </NavLink>
-              </NavItem>
-            }
+                <NavItem>
+                  <NavLink tag={Link} to="/teamlocations">
+                    {TEAM_LOCATIONS}
+                  </NavLink>
+                </NavItem>
+              }
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${user.userid}`}>
                   <i className="fa fa-bell i-large">
@@ -282,46 +283,46 @@ export const Header = props => {
                 canAccessTeams ||
                 canAccessPopups ||
                 canAccessPermissionsManagement) && (
-                <UncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">{OTHER_LINKS}</span>
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    {canAccessUserManagement ? (
-                      <DropdownItem tag={Link} to="/usermanagement">
-                        {USER_MANAGEMENT}
-                      </DropdownItem>
-                    ) : (
-                      <React.Fragment></React.Fragment>
-                    )}
-                    {canAccessBadgeManagement ? (
-                      <DropdownItem tag={Link} to="/badgemanagement">
-                        {BADGE_MANAGEMENT}
-                      </DropdownItem>
-                    ) : (
-                      <React.Fragment></React.Fragment>
-                    )}
-                    {(canAccessProjects) && (
-                      <DropdownItem tag={Link} to="/projects">
-                        {PROJECTS}
-                      </DropdownItem>
-                    )}
-                    {(canAccessTeams) && (
-                      <DropdownItem tag={Link} to="/teams">
-                        {TEAMS}
-                      </DropdownItem>
-                    )}
-                    {(canAccessPermissionsManagement) && (
-                      <>
-                        <DropdownItem divider />
-                        <DropdownItem tag={Link} to="/permissionsmanagement">
-                          {PERMISSIONS_MANAGEMENT}
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret>
+                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      {canAccessUserManagement ? (
+                        <DropdownItem tag={Link} to="/usermanagement">
+                          {USER_MANAGEMENT}
                         </DropdownItem>
-                      </>
-                    )}
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              )}
+                      ) : (
+                        <React.Fragment></React.Fragment>
+                      )}
+                      {canAccessBadgeManagement ? (
+                        <DropdownItem tag={Link} to="/badgemanagement">
+                          {BADGE_MANAGEMENT}
+                        </DropdownItem>
+                      ) : (
+                        <React.Fragment></React.Fragment>
+                      )}
+                      {(canAccessProjects) && (
+                        <DropdownItem tag={Link} to="/projects">
+                          {PROJECTS}
+                        </DropdownItem>
+                      )}
+                      {(canAccessTeams) && (
+                        <DropdownItem tag={Link} to="/teams">
+                          {TEAMS}
+                        </DropdownItem>
+                      )}
+                      {(canAccessPermissionsManagement) && (
+                        <>
+                          <DropdownItem divider />
+                          <DropdownItem tag={Link} to="/permissionsmanagement">
+                            {PERMISSIONS_MANAGEMENT}
+                          </DropdownItem>
+                        </>
+                      )}
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
               <NavItem>
                 <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
                   <img
@@ -358,13 +359,13 @@ export const Header = props => {
         )}
       </Navbar>
       {props.auth.isAuthenticated && isModalVisible && (
-          <Card color="primary">
-            <div className="close-button">
-              <Button close onClick={closeModal} />
-            </div>
-            <div className="card-content">{modalContent}</div>
-          </Card>
-        )}
+        <Card color="primary">
+          <div className="close-button">
+            <Button close onClick={closeModal} />
+          </div>
+          <div className="card-content">{modalContent}</div>
+        </Card>
+      )}
     </div>
   );
 };

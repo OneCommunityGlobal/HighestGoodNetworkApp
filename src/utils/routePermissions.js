@@ -13,7 +13,8 @@ export const RoutePermissions = {
     'seeBadges',
     'createBadges',
     'updateBadges',
-    'deleteBadges'
+    'deleteBadges',
+    'assignBadges'
   ],
   projects: [
     'postProject',
