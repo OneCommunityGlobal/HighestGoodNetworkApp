@@ -26,6 +26,8 @@ export default function PasswordInputModal({
   checkForValidPwd,
   isValidPwd,
   setSummaryRecepientsPopup,
+  setAuthpassword,
+  authEmailWeeklySummaryRecipient,
 }) {
   const [state, dispatch] = useReducer(weeklySummaryRecipientsReducer, {
     passwordMatch: '',
@@ -39,21 +41,24 @@ export default function PasswordInputModal({
   const authorizeWeeklySummariesButton = async () => {
     const url = ENDPOINTS.AUTHORIZE_WEEKLY_SUMMARY_REPORTS();
     try {
-      await axios.post(url, { currentPassword: passwordField }).then(response => {
-        // console.log(response);
-        if (response.status !== 200) {
-          dispatch(authorizeWeeklySummariesReportError('Incorrect Password! Unauthorised User!'));
-          checkForValidPwd(false);
-          setSummaryRecepientsPopup(false);
-        } else {
-          dispatch(authorizeWeeklySummaries(response.data.message));
-          checkForValidPwd(true);
-          toast.success('Authorization successful! Please wait to see Recipients table!');
-          setSummaryRecepientsPopup(true);
-        }
-      });
+      await axios
+        .post(url, { currentPassword: passwordField, currentUser: authEmailWeeklySummaryRecipient })
+        .then(response => {
+          // console.log(response);
+          if (response.status !== 200) {
+            dispatch(authorizeWeeklySummariesReportError('Incorrect Password! Unauthorised User!'));
+            checkForValidPwd(false);
+            setSummaryRecepientsPopup(false);
+          } else {
+            dispatch(authorizeWeeklySummaries(response.data.message));
+            checkForValidPwd(true);
+            toast.success('Authorization successful! Please wait to see Recipients table!');
+            setAuthpassword(response.data.password);
+            setSummaryRecepientsPopup(true);
+            onClose();
+          }
+        });
     } catch (error) {
-      // console.log('error:', error);
       checkForValidPwd(false);
       dispatch(authorizeWeeklySummariesReportError('Incorrect Password! Unauthorised User!'));
       throw Error(error);
@@ -63,9 +68,8 @@ export default function PasswordInputModal({
   const onSubmit = () => {
     setPasswordField('');
     authorizeWeeklySummariesButton(passwordField);
-
-    onClose();
   };
+
   return (
     <Container fluid>
       <Modal isOpen={open} toggle={onClose} autoFocus={false} size="lg">
