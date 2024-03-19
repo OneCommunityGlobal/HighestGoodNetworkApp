@@ -65,8 +65,7 @@ export function Header(props) {
   const canAccessBadgeManagement = props.hasPermission('seeBadges')
     || props.hasPermission('createBadges')
     || props.hasPermission('updateBadges')
-    || props.hasPermission('deleteBadges')
-    || props.hasPermission('assignBadges');
+    || props.hasPermission('deleteBadges');
   // Projects
   const canAccessProjects = props.hasPermission('postProject')
     || props.hasPermission('deleteProject')
@@ -324,35 +323,9 @@ export function Header(props) {
                           <DropdownItem tag={Link} to="/permissionsmanagement">
                             {PERMISSIONS_MANAGEMENT}
                           </DropdownItem>
-                          ) : (
-                          <React.Fragment></React.Fragment>
+                        </>
                       )}
-                          {canAccessBadgeManagement ? (
-                            <DropdownItem tag={Link} to="/badgemanagement">
-                              {BADGE_MANAGEMENT}
-                            </DropdownItem>
-                          ) : (
-                            <React.Fragment></React.Fragment>
-                          )}
-                          {(canAccessProjects) && (
-                            <DropdownItem tag={Link} to="/projects">
-                              {PROJECTS}
-                            </DropdownItem>
-                          )}
-                          {(canAccessTeams) && (
-                            <DropdownItem tag={Link} to="/teams">
-                              {TEAMS}
-                            </DropdownItem>
-                          )}
-                          {(canAccessPermissionsManagement) && (
-                            <>
-                              <DropdownItem divider />
-                              <DropdownItem tag={Link} to="/permissionsmanagement">
-                                {PERMISSIONS_MANAGEMENT}
-                              </DropdownItem>
-                            </>
-                          )}
-                        </DropdownMenu>
+                    </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
               <NavItem>
