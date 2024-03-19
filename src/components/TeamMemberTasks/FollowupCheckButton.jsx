@@ -7,7 +7,7 @@ import './FollowUpCheckButton.css';
 
 const FollowupCheckButton = ({ moseoverText, user, task }) => {
   const dispatch = useDispatch();
-  const userFollowUps = useSelector(state => state.userFollowUp.followUps[user.personId] || []);
+  const userFollowUps = useSelector(state => state.userFollowUp?.followUps[user.personId] || []);
   const userFollowUpTask = userFollowUps.filter(ele => ele.taskId === task._id);
   const isChecked = userFollowUpTask[0]?.followUpCheck || false;
 
