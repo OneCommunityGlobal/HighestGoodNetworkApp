@@ -77,8 +77,7 @@ function LeaderBoard({
     const [selectedTeamName, setSelectedTeamName] = useState(); // contain Team name and ID
     const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
     const [toggleButtonText, setToggleButtonText] = useState('View All');
-    const [isLoadingTeams, setIsLoadingTeams] = useState(false);
-    
+    const [isLoadingTeams, setIsLoadingTeams] = useState(false);    
     const [userRole, setUserRole] = useState();
     
     const [openModal, setOpenModal] = useState();
@@ -93,13 +92,10 @@ function LeaderBoard({
       const url = ENDPOINTS.USER_PROFILE(displayUserId);
       try {
         const response = await axios.get(url);
-        setIsLoadingTeams(true);
-
+        
         setTeams(response.data.teams);
         setUserRole(response.data.role)
-
-          setIsLoadingTeams(false);
-
+        
       } catch (error) {
         toast.error(error);
       }
@@ -111,10 +107,12 @@ function LeaderBoard({
   }, [])  
   
   const handleToggleButtonClick = () => { 
-    if (!usersSelectedTeam) {
-        alert();
-        return;
-    }else{setToggleButtonText(prevText => prevText === 'View All' ? 'My Team' : 'View All')};
+const text  =  'You have not selected a team or the selected team does not have any members.';
+
+      isLoadingTeams? toast.warning('Please wait while the teams are loading.')
+    : usersSelectedTeam.length === 0? toast.error(text)
+    :
+    setToggleButtonText(prevText => prevText === 'View All' ? 'My Team' : 'View All');
     // Add any other logic for the button click here
   }
 
@@ -122,14 +120,18 @@ function LeaderBoard({
 
   const renderTeamsList = async (team) => {
 
-        setSelectedTeamName(team.teamName);
+    
+    try {
+      setIsLoadingTeams(true);
+      const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
+      setUsersSelectedTeam(response.data);
+      setIsLoadingTeams(false);
 
-       try {
-        const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
-         setUsersSelectedTeam(response.data);
-      
-    } catch (error) {
-      toast.error('Error fetching team members:', error);
+      const teamName = team.teamName.substring(0, 30) + '...'
+      setSelectedTeamName(team.teamName.length >= 30 ? teamName : team.teamName );
+      } catch (error) {
+        toast.error('Error fetching team members:', error);
+        setIsLoadingTeams(false);
     }
 
   
@@ -195,7 +197,7 @@ function LeaderBoard({
 
   return (
     <div>
-      <div style={{}}>
+      <div>
       <h3>
         <div className="d-flex align-items-center">
           <span className="mr-2">Leaderboard</span>
@@ -224,8 +226,8 @@ function LeaderBoard({
 
       {
        userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Owner'? (
-  <section className="d-flex flex-row mb-3">
-    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=' mr-3 '>
+  <section className="d-flex flex-row flex-wrap mb-3">
+    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=' mr-3'>
       <DropdownToggle caret>
         {selectedTeamName || 'Select a Team'} {/* Display selected team or default text */}
       </DropdownToggle>
@@ -251,7 +253,7 @@ function LeaderBoard({
     <Button
       color="primary"
       onClick={handleToggleButtonClick}
-      disabled={isLoadingTeams || teams.length === 0}
+      disabled={teams.length === 0}
     >
       {toggleButtonText === 'View All' ? 'My Team' : 'View All'}
     </Button>
