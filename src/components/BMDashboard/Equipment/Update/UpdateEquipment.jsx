@@ -1,14 +1,28 @@
 import { useEffect, useState } from 'react';
-import { Button, Form, FormGroup, Label, Input, Container, Row, Col } from 'reactstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchToolById } from 'actions/bmdashboard/toolActions';
+import {
+  Button,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Container,
+  Row,
+  Col,
+  Card,
+  CardImg,
+} from 'reactstrap';
 import './UpdateEquipment.css';
 import '../../BMDashboard.css';
 import CheckTypesModal from 'components/BMDashboard/shared/CheckTypesModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCamera } from '@fortawesome/free-solid-svg-icons';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 export default function UpdateEquipment() {
   const history = useHistory();
+  const { equipmentId } = useParams();
   const [modal, setModal] = useState(false);
   const [lastUsedBy, setLastUsedBy] = useState('');
   const [lastUsedByOther, setLastUsedByOther] = useState('');
@@ -20,23 +34,30 @@ export default function UpdateEquipment() {
   const [updateDate, setUpdateDate] = useState('');
   const [status, setStatus] = useState('');
   const [notes, setNotes] = useState('');
-  const [itemOwnership, setItemOwnership] = useState('');
+  const [itemOwnership] = useState('');
+  const toolDetails = useSelector(state => state.bmTools.toolDetails);
 
+  const dispatch = useDispatch(); // Use this if you're using Redux
   useEffect(() => {
-    // Replace with your actual logic to fetch the item's details
-    const fetchItemDetails = async () => {
-      // const response = await fetch('/api/item-details');
-      // const data = await response.json();
-      // setItemOwnership(data.ownership);
-
-      // Simulating a response
-      setItemOwnership('Rental'); // For example, set it to 'Rental' or 'Owned'
-    };
-
-    fetchItemDetails();
-  }, []);
-
+    if (equipmentId) {
+      dispatch(fetchToolById(equipmentId));
+      // The component will re-render with new state once the fetch is complete and state is updated
+    }
+  }, [dispatch, equipmentId]);
   const handleCancel = () => history.goBack();
+
+  const calculateDaysLeft = endDate => {
+    if (!endDate) return '';
+
+    const today = new Date();
+    const rentalEnd = new Date(endDate);
+    const timeDiff = rentalEnd.getTime() - today.getTime();
+
+    // Calculate the days left
+    const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    return daysLeft >= 0 ? daysLeft : 'Expired';
+  };
 
   const handleSubmit = e => {
     e.preventDefault(); // Prevent the default form submit action
@@ -59,75 +80,108 @@ export default function UpdateEquipment() {
 
     // eslint-disable-next-line no-console
     console.log('Form Data Submitted:', formData);
-
-    // Here you would typically make an API call to submit your form data
-    // For example:
-    // fetch('/api/submit-equipment-update', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(formData),
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //   console.log('Success:', data);
-    //   // Perform any actions after successful submission, like redirecting
-    //   history.push('/success-page'); // Redirect to a success page, if you have one
-    // })
-    // .catch((error) => {
-    //   console.error('Error:', error);
-    // });
   };
   return (
     <Container className="inv-form-page-container">
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
-      <header className="bm-dashboard__header">
-        <h1>Update Tool or Equipment Status Form</h1>
-      </header>
-      <div className="image-container">
-        <img src="https://via.placeholder.com/150" alt="Placeholder" />
-      </div>
+      <Row>
+        <Col md={12}>
+          <header className="bm-dashboard__header text-center">
+            <h1>Update Tool or Equipment Status</h1>
+          </header>
+        </Col>
+      </Row>
+
+      {toolDetails && (
+        <Row>
+          <Col md={3}>
+            <Card className="mb-1">
+              <CardImg
+                top
+                className="square-image"
+                src={toolDetails.itemType.imageUrl || 'https://via.placeholder.com/150'}
+                alt="Tool image"
+              />
+            </Card>
+          </Col>
+        </Row>
+      )}
       <Form className="inv-form">
         <FormGroup className="background-from-db">
           <Row form>
             <Col md={4}>
               <Label for="itemName">Name</Label>
-              <Input readOnly value="Grinder" className="read-only-input" />
+              <Input
+                readOnly
+                value={toolDetails ? toolDetails.itemType.name : 'Loading...'}
+                className="read-only-input"
+              />
             </Col>
             <Col md={4}>
               <Label for="itemNumber">Number</Label>
-              <Input readOnly value="#1" className="read-only-input" />
+              <Input
+                readOnly
+                value={toolDetails ? toolDetails._id : ''}
+                className="read-only-input"
+              />
             </Col>
             <Col md={4}>
               <Label for="itemClass">Class</Label>
-              <Input readOnly value="Tool" className="read-only-input" />
+              <Input
+                readOnly
+                value={toolDetails ? toolDetails.itemType.category : ''}
+                className="read-only-input"
+              />
             </Col>
           </Row>
           <Row form>
             <Col md={4}>
               <Label for="itemProject">Project</Label>
-              <Input readOnly value="Project 1" className="read-only-input" />
+              <Input
+                readOnly
+                value={toolDetails ? toolDetails.project.name : ''}
+                className="read-only-input"
+              />
             </Col>
             <Col md={4}>
               <Label for="itemStatus">Current Status</Label>
-              <Input readOnly value="Working Well" className="read-only-input" />
+              <Input
+                readOnly
+                value={
+                  toolDetails && toolDetails.updateRecord.length > 0
+                    ? toolDetails.updateRecord[toolDetails.updateRecord.length - 1].condition
+                    : 'N/A'
+                }
+                className="read-only-input"
+              />
             </Col>
             <Col md={4}>
               <Label for="itemOwnership">Ownership</Label>
-              <Input readOnly value="Rental" className="read-only-input" />
+              <Input
+                readOnly
+                value={toolDetails ? toolDetails.purchaseStatus : ''}
+                className="read-only-input"
+              />
             </Col>
           </Row>
           {/* Only show this row if the item is a rental */}
-          {itemOwnership === 'Rental' && (
+          {toolDetails && toolDetails.purchaseStatus === 'Rental' && (
             <Row form>
               <Col md={4}>
                 <Label for="rentalEndDate">Rental End Date</Label>
-                <Input readOnly value="MM-DD-YYYY" className="read-only-input" />
+                <Input
+                  readOnly
+                  value={toolDetails ? toolDetails.rentalDueDate.split('T')[0] : ''}
+                  className="read-only-input"
+                />
               </Col>
               <Col md={4}>
                 <Label for="daysLeft">Days Left</Label>
-                <Input readOnly value="20" className="read-only-input" />
+                <Input
+                  readOnly
+                  value={calculateDaysLeft(toolDetails.rentalDueDate)}
+                  className="read-only-input"
+                />
               </Col>
             </Row>
           )}
@@ -166,10 +220,11 @@ export default function UpdateEquipment() {
                 value={status}
                 onChange={e => setStatus(e.target.value)}
               >
-                <option value="1">Available</option>
-                <option value="2">Checked Out</option>
-                <option value="3">Under Maintenance</option>
-                <option value="4">Retired</option>
+                <option value="1">Working well</option>
+                <option value="2">Broken/Needs repair</option>
+                <option value="3">Stolen/Lost</option>
+                <option value="4">End of life</option>
+                <option value="5">Returned</option>
               </Input>
             </FormGroup>
           </Col>

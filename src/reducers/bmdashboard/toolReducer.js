@@ -1,10 +1,16 @@
 import { GET_TOOL_BY_ID, SET_TOOLS } from "constants/bmdashboard/toolsConstants";
 
-const defaultState = []
+const defaultState = {}
 
 export const toolReducer = (state = defaultState, action) => {
   switch (action.type) {
     case GET_TOOL_BY_ID:
+  console.log("Reducer Payload:", action.payload); // Debug log
+  return {
+    ...state,
+    toolDetails: action.payload,
+  };
+
     case SET_TOOLS:
       return action.payload;
     default:
