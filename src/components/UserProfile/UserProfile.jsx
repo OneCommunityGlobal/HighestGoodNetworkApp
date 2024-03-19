@@ -48,6 +48,7 @@ import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
+import QuickSetupModal from 'components/UserProfile/QuickSetupModal/QuickSetupModal';
 import { boxStyle } from 'styles';
 import { connect, useDispatch } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
@@ -109,6 +110,12 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
+
+  // yh
+  const testYH = () => {
+    console.log(canSeeQSC);
+
+  } 
 
 
   /* useEffect functions */
@@ -664,6 +671,7 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canSeeQSC = props.hasPermission('seeQSC');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
  
@@ -746,12 +754,27 @@ function UserProfile(props) {
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
-                    onChange={handleImageUpload}
+                    // yh, temporaly changed for test
+                    onClick={testYH}
+                    // onChange={handleImageUpload}
                     accept="image/png,image/jpeg, image/jpg"
                   />
                 </div>
               ) : null}
             </div>
+
+            { canSeeQSC ? <QuickSetupModal
+              canAddTitle={props.hasPermission('addNewTitle')}
+              // canAssignTitle={props.hasPermission('assignTitle')}
+              // setSaved={setSaved}
+              // handleSubmit={handleSubmit}
+              // setUserProfile={setUserProfile}
+              // userProfile={userProfile}
+              // userTeams={teams || []}
+              // teamsData={props?.allTeams?.allTeamsData || []}
+              // projectsData={props?.allProjects?.projects || []}
+              /> : ''
+              }
           </Col>
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || (!isTeamsEqual && !isTeamSaved) || !isProjectsEqual ? (
