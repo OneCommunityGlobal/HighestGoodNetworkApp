@@ -173,6 +173,5 @@
   .flex-responsive {
     display: flex;
     flex-direction: row;
-    column-gap: 2vw;
   }
 }
