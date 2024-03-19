@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useRef} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck, faTimes, faExpandArrowsAlt, faCompressArrowsAlt} from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
@@ -10,14 +10,14 @@ import './style.css';
 import { boxStyle } from 'styles';
 
 import Warning from 'components/Warnings/Warnings';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import moment from 'moment-timezone';
 
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
-import GoogleDocIcon from '../../components/common/GoogleDocIcon'
+import GoogleDocIcon from '../common/GoogleDocIcon'
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -31,7 +31,6 @@ const TeamMemberTask = React.memo(
     userRole,
     userId,
     updateTaskStatus,
-    userPermission,
     showWhoHasTimeOff,
     onTimeOff,
     goingOnTimeOff,
@@ -58,7 +57,7 @@ const TeamMemberTask = React.memo(
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
-    const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
+    const [expandTimeOffIndicator, setExpandTimeOffIndicator] = useState({});
 
     const thisWeekHours = user.totaltangibletime_hrs;
 
@@ -275,7 +274,7 @@ const TeamMemberTask = React.memo(
                 {canTruncate && (
                   <tr key="truncate-button-row" className="task-break">
                     <td className="task-align">
-                      <button onClick={handleTruncateTasksButtonClick}>
+                      <button type="button" onClick={handleTruncateTasksButtonClick}>
                         {isTruncated ? `Show All (${activeTasks.length}) Tasks` : 'Truncate Tasks'}
                       </button>
                     </td>
@@ -283,8 +282,29 @@ const TeamMemberTask = React.memo(
                 )}
               </tbody>
             </Table>
-            {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
+            {showWhoHasTimeOff &&
+              (onTimeOff || goingOnTimeOff) &&
+              (expandTimeOffIndicator[user.personId] ? (
+                <button
+                  type="button"
+                  className="expand-time-off-detail-button"
+                  onClick={() => {
+                    setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: false }));
+                  }}
+                >
+                  <FontAwesomeIcon icon={faExpandArrowsAlt} data-testid="icon" />
+                </button>
+            ) : (
               <div className="taking-time-off-content-div">
+                <button
+                  className="compress-time-off-detail-button"
+                  onClick={() => {
+                    setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                </button>
+
                 <span className="taking-time-off-content-text">
                   {onTimeOff
                     ? `${user.name} Is Not Available this Week`
@@ -304,7 +324,7 @@ const TeamMemberTask = React.memo(
                   Details ?
                 </button>
               </div>
-            )}
+            ))}
           </td>
         </tr>
       </>
