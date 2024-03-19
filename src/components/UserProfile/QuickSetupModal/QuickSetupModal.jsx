@@ -16,47 +16,51 @@
 import { useState, useEffect } from 'react';
 // import AddNewTitle from './AddNewTitle';
 // import AssignPopUp from './AssignPopUp';
-// import QuickSetupCodes from './QuickSetUpCodes';
+import QuickSetupCodes from './QuickSetupCodes';
 import SaveButton from '../UserProfileEdit/SaveButton';
-// import { getAllTitle } from '../../../actions/title';
+import AddNewTitleModal from './AddNewTitleModal';
 
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import './QuickSetupModal.css';
 
 function QuickSetupModal({ canAddTitle, canAssignTitle, jobTitle, teamsData, projectsData, userProfile, setUserProfile, handleSubmit, setSaved,}) {
-    const [onAddTitle, setAddTitle] = useState(false);
+    const [showAddTitle, setShowAddTitle] = useState(false);
 //   const [onAddTitle, setAddTitle] = useState(false);
   const [assignPopUp, setAssignPopup] = useState(false);
-  const [titles, setTitles] = useState([]);
+  const [titles, setTitles] = useState([
+    {_id:"111", titleName:"qwe", shortName:"YH"},
+    {_id:"1111xs", titleName:"qwasde", shortName:"YH"},
+  ]);
   const [curtitle, setTitleOnClick] = useState('');
-  const [submittoggler, setSubmit] = useState(false);
+  // const [submittoggler, setSubmit] = useState(false);
   const [titleOnSet, setTitleOnSet] = useState(true);
 
-  useEffect(() => {
-    // getAllTitle()
-    //   .then(res => {setTitles(res.data)})
-    //   .catch(err => console.log(err))
-  }, [submittoggler]);
+  // useEffect(() => {
+  //   // getAllTitle()
+  //   //   .then(res => {setTitles(res.data)})
+  //   //   .catch(err => console.log(err))
+  // }, [submittoggler]);
 
   return (
     <div className="container pt-3">
-        {/* <QuickSetupCodes
+        <QuickSetupCodes
           setSaved={setSaved}
           userProfile={userProfile}
           setUserProfile={setUserProfile}
           titles={titles}
           setAssignPopup={setAssignPopup}
           setTitleOnClick={setTitleOnClick}
-        /> */}
+        />
 
       <div className="col text-center">
         {canAddTitle ? (
-          <Button color="primary" onClick={() => setAddTitle(true)}>
+          <Button color="primary" onClick={() => setShowAddTitle(true)}>
           Add A New Title
         </Button>
         ) : (
           ''
         )}
+    
       </div>
       <div className="col text-center">
         {canAddTitle ? <SaveButton
@@ -66,7 +70,19 @@ function QuickSetupModal({ canAddTitle, canAssignTitle, jobTitle, teamsData, pro
           setSaved={() => setSaved(true)}
         /> : ''}
       </div>
-      {/* {canAddTitle ? <AddNewTitle teamsData={teamsData} projectsData={projectsData} isOpen={onAddTitle} setIsOpen={setAddTitle} toggle={setAddTitle} setSubmit={setSubmit} submittoggler={submittoggler}/> : '' } */}
+      {showAddTitle ? (
+        <AddNewTitleModal
+          teamsData={teamsData}
+          projectsData={projectsData}
+          isOpen={showAddTitle}
+          setIsOpen={setShowAddTitle}
+          // setSubmit={setSubmit}
+          // submittoggler={submittoggler}
+          setTitles={setTitles}
+        />
+      ) : (
+        ''
+      )}
       {/* {canAssignTitle ? <AssignPopUp
       setSaved={() => setSaved(true)}
       handleSubmit={handleSubmit}

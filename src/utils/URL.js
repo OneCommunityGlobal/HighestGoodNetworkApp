@@ -154,6 +154,12 @@ export const ENDPOINTS = {
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
 
+  //titles endpoints
+  TITLES: () => `${APIEndpoint}/title`,
+  TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+  CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
+  DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
