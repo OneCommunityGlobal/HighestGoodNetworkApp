@@ -5,6 +5,7 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import {
   Alert,
   Container,
@@ -30,8 +31,12 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
+import TeamChart from './teamChart';
+
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -66,7 +71,13 @@ export class WeeklySummariesReport extends Component {
       selectedColors: [],
       filteredSummaries: [],
       teamCodes: [],
+      tableData: [],
+      structuredTableData: [],
       colorOptions: [],
+      teams: [],
+      data: [],
+      total: 0,
+      COLORS: [],
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
@@ -120,6 +131,9 @@ export class WeeklySummariesReport extends Component {
     const teamCodes = [];
     const colorOptionGroup = new Set();
     const colorOptions = [];
+    
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF00FF', '#800080', '#FFFF00', '#00FFFF'];
+
 
     summariesCopy.forEach(summary => {
       const code = summary.teamCode || 'noCodeLabel';
@@ -131,7 +145,6 @@ export class WeeklySummariesReport extends Component {
 
       if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
     });
-
     Object.keys(teamCodeGroup).forEach(code => {
       if (code !== 'noCodeLabel') {
         teamCodes.push({
@@ -146,7 +159,6 @@ export class WeeklySummariesReport extends Component {
         label: option,
       });
     });
-
     colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
     teamCodes
       .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
@@ -154,6 +166,9 @@ export class WeeklySummariesReport extends Component {
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
       });
+      
+      const data = [
+      ];
     this.setState({
       loading,
       allRoleInfo: [],
@@ -167,6 +182,9 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries: summariesCopy,
       colorOptions,
       teamCodes,
+      tableData: teamCodeGroup,
+      data,
+      COLORS,
       auth,
     });
 
@@ -340,36 +358,88 @@ export class WeeklySummariesReport extends Component {
       summaries,
       selectedOverTime,
       selectedBioStatus,
-    } = this.state;
-
+    tableData, COLORS} = this.state;
+    const data = [];
+    let temptotal = 0;
+    const structuredTeamTableData = [];
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
-
     const temp = summaries.filter(summary => {
       const { activeTab } = this.state;
       const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-
+    
       const isMeetCriteria =
         summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
-
+    
       const isBio = !selectedBioStatus || isMeetCriteria;
-
+    
       const isOverHours =
         !selectedOverTime ||
         (hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
-
+    
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
         isOverHours &&
         isBio
-      );
-    });
-    this.setState({ filteredSummaries: temp });
-  };
+      );});
 
+    if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
+      if (selectedCodes.length >= 52) {
+        selectedCodes.forEach(code => {
+          if (code.value === '') return;
+          data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
+          const team = tableData[code.value];
+          const index = selectedCodesArray.indexOf(code.value);
+          const color = COLORS[index % COLORS.length]
+          const members = [];
+          team.forEach(member => {
+             members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
+           })
+          structuredTeamTableData.push({team: code.value, color, members,})
+        })
+      }else{
+        data.push({name: 'All With NO Code', value: temp.filter(summary => summary.teamCode === '').length})
+        const team = tableData['noCodeLabel'];
+        const index = selectedCodesArray.indexOf('noCodeLabel');
+        const color = COLORS[index % COLORS.length]
+        const members = [];
+        team.forEach(member => {
+           members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
+         })
+        structuredTeamTableData.push({team: 'noCodeLabel', color, members,})
+      }
+    }else{
+    selectedCodes.forEach(code => {
+      data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
+      let team = tableData[code.value];
+      const index = selectedCodesArray.indexOf(code.value);
+      const color = COLORS[index % COLORS.length]
+      const members = [];
+      if (team !== undefined){
+        team.forEach(member => {
+          members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
+        })
+       structuredTeamTableData.push({team: code.value, color, members,})
+      }
+      
+    
+
+     })
+    }
+
+     data.sort()
+     temptotal = data.reduce((acc, entry) => acc + entry.value, 0);
+     structuredTeamTableData.sort()
+     this.setState({ total: temptotal });
+    this.setState({ filteredSummaries: temp });
+    this.setState({ data: data });
+    this.setState({ structuredTableData: structuredTeamTableData });
+    
+  };
+  
   handleSelectCodeChange = event => {
     this.setState({ selectedCodes: event }, () => this.filterWeeklySummaries());
   };
@@ -414,6 +484,10 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries,
       colorOptions,
       teamCodes,
+      structuredTableData,
+      data,
+      total,
+      COLORS,
       auth,
     } = this.state;
     const { error } = this.props;
@@ -501,6 +575,37 @@ export class WeeklySummariesReport extends Component {
               }}
             />
           </Col>
+        </Row>
+        <Row>
+          <Col>
+          <ResponsiveContainer width="100%" height={500}>
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={150}
+                fill="#8884d8"
+                label={({ name, value }) => `${name}:(${Math.round((value / total) * 100)}%)`}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
+                Total: {total}
+              </text>
+            </PieChart>
+          </ResponsiveContainer>
+          </Col>
+          <Col>
+          <TeamChart teamData= {structuredTableData}/>
+          </Col>
+        </Row>
+        <Row>
+          
         </Row>
         <Row style={{ marginBottom: '10px' }}>
           <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
@@ -638,6 +743,8 @@ const mapDispatchToProps = dispatch => ({
   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
+  getAllUserTeams: () => dispatch(getAllUserTeams()),
+  
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {

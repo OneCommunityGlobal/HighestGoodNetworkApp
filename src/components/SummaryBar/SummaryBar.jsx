@@ -83,7 +83,7 @@ const SummaryBar = props => {
     try {
       const response = await axios.get(ENDPOINTS.TASKS_BY_USERID(userId));
       const newUserTasks = response.data;
-      setTasks(newUserTasks.length);
+      setTasks(newUserTasks?.length);
     } catch (err) {
       console.log('User Tasks not loaded.');
     }
