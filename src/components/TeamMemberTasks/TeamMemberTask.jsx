@@ -1,6 +1,13 @@
-import React, { useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck, faTimes, faExpandArrowsAlt, faCompressArrowsAlt} from '@fortawesome/free-solid-svg-icons';
+import {
+  faBell,
+  faCircle,
+  faCheck,
+  faTimes,
+  faExpandArrowsAlt,
+  faCompressArrowsAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 
@@ -17,7 +24,9 @@ import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
-import GoogleDocIcon from '../common/GoogleDocIcon'
+import GoogleDocIcon from '../common/GoogleDocIcon';
+import FollowupCheckButton from './FollowupCheckButton';
+import FollowUpInfoModal from './FollowUpInfoModal';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -38,6 +47,7 @@ const TeamMemberTask = React.memo(
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
+    const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
@@ -89,10 +99,23 @@ const TeamMemberTask = React.memo(
 
     const userGoogleDocLink = user.adminLinks?.reduce((targetLink, currentElement) => {
       if (currentElement.Name === 'Google Doc') {
-        targetLink = currentElement.Link
+        targetLink = currentElement.Link;
       }
       return targetLink;
     }, undefined);
+
+    const followUpMouseoverText = task => {
+      const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
+      if (progressPersantage < 50) {
+        return 'Check this box once you’ve checked in for the first time with this team member to make sure they are clear on their task.';
+      } else if (progressPersantage >= 50 && progressPersantage < 75) {
+        return 'Your team member’s task should be at least 50% complete. Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed.';
+      } else if (progressPersantage >= 75 && progressPersantage < 90) {
+        return 'Your team member’s task should be at least 75% complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
+      } else if (progressPersantage >= 90) {
+        return 'Your team member’s task should be almost complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
+      }
+    };
 
     return (
       <>
@@ -137,7 +160,7 @@ const TeamMemberTask = React.memo(
                             : undefined,
                       }}
                     >{`${user.name}`}</Link>
-                    {canGetWeeklySummaries && (<GoogleDocIcon link={userGoogleDocLink}/>)}
+                    {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
 
                     <Warning
                       username={user.name}
@@ -251,12 +274,21 @@ const TeamMemberTask = React.memo(
                                 {task.deadlineCount === undefined ? 0 : task.deadlineCount}
                               </span>
                             )}
-                            <div>
-                              <span data-testid={`times-${task.taskName}`}>
+                            <div className="team-task-progress-container">
+                              <span
+                                data-testid={`times-${task.taskName}`}
+                                className={canSeeFollowUpCheckButton ? "team-task-progress-time" : "team-task-progress-time-volunteers" }
+                              >
                                 {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
                                   task.estimatedHours.toFixed(2),
                                 )}`}
                               </span>
+                              {canSeeFollowUpCheckButton && (
+                                <>
+                                  <FollowupCheckButton moseoverText={followUpMouseoverText(task)} user={user} task={task}/>
+                                  <FollowUpInfoModal />
+                                </>
+                              )}
                               <Progress
                                 color={getProgressColor(
                                   task.hoursLogged,
@@ -264,6 +296,7 @@ const TeamMemberTask = React.memo(
                                   true,
                                 )}
                                 value={getProgressValue(task.hoursLogged, task.estimatedHours)}
+                                className="team-task-progress-bar"
                               />
                             </div>
                           </td>
@@ -294,37 +327,37 @@ const TeamMemberTask = React.memo(
                 >
                   <FontAwesomeIcon icon={faExpandArrowsAlt} data-testid="icon" />
                 </button>
-            ) : (
-              <div className="taking-time-off-content-div">
-                <button
-                  className="compress-time-off-detail-button"
-                  onClick={() => {
-                    setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
-                  }}
-                >
-                  <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
-                </button>
+              ) : (
+                <div className="taking-time-off-content-div">
+                  <button
+                    className="compress-time-off-detail-button"
+                    onClick={() => {
+                      setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                  </button>
 
-                <span className="taking-time-off-content-text">
-                  {onTimeOff
-                    ? `${user.name} Is Not Available this Week`
-                    : `${user.name} Is Not Available Next Week`}
-                </span>
-                <button
-                  type="button"
-                  className="taking-time-off-content-btn"
-                  onClick={() => {
-                    const request = onTimeOff
-                      ? { ...onTimeOff, onVacation: true, name: user.name }
-                      : { ...goingOnTimeOff, onVacation: false, name: user.name };
+                  <span className="taking-time-off-content-text">
+                    {onTimeOff
+                      ? `${user.name} Is Not Available this Week`
+                      : `${user.name} Is Not Available Next Week`}
+                  </span>
+                  <button
+                    type="button"
+                    className="taking-time-off-content-btn"
+                    onClick={() => {
+                      const request = onTimeOff
+                        ? { ...onTimeOff, onVacation: true, name: user.name }
+                        : { ...goingOnTimeOff, onVacation: false, name: user.name };
 
-                    openDetailModal(request);
-                  }}
-                >
-                  Details ?
-                </button>
-              </div>
-            ))}
+                      openDetailModal(request);
+                    }}
+                  >
+                    Details ?
+                  </button>
+                </div>
+              ))}
           </td>
         </tr>
       </>

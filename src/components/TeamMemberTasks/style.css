@@ -9,7 +9,6 @@
 
 .task_table-container {
   position: relative;
-  overflow-x: auto;
 }
 
 .task_table-container table{
@@ -64,13 +63,6 @@
   width:120px;
   min-width: 120px;
   max-width: 120px;
-}
-@media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
-  .team-task-progress {
-    width: 100%; /* or any other value that fits your design */
-    min-width: auto;
-    max-width: none;
-  }
 }
 
 .task-break {
@@ -227,7 +219,6 @@
   background-color: white;
 }
 
-
 .show-time-off-icon-selected {
   background-color: #17a2b8;
 }
@@ -248,6 +239,7 @@
   padding: 7px;
   border-radius: 6px;
 }
+
 .taking-time-off-content-btn:hover {
   background-color: rgba(0, 0, 25, 0.8);
 }
@@ -284,6 +276,56 @@
   bottom: 1px;
   background-color: rgba(0, 0, 25, 0.7);
   border-radius: 5px;
+}
+
+.team-member-tasks-icons {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px; /* Adjust the gap as needed */
+}
+
+.team-member-tasks-content {
+  align-items: center; /* Vertically center-align children */
+  gap: 8px; /* Space between children */
+}
+
+.team-task-progress-container {
+  display: grid;
+  grid-template-columns: 1fr repeat(2, auto);
+  grid-template-rows: repeat(2, auto);
+  column-gap: 3px;
+}
+
+.team-task-progress-time {
+  grid-column: 1 / span 1;
+  grid-row: 1 / span 1;
+  align-self: center;
+}
+
+.team-task-progress-time-volunteers {
+  grid-column: 1 / span 3;
+  grid-row: 1 / span 1;
+  justify-self: center;
+}
+
+.folloup-tooltip-container {
+  grid-column: 3 / span 1;
+  grid-row: 1 / span 1;
+  align-self: center;
+}
+
+.team-task-progress-bar {
+  grid-column: 1 / span 3;
+  grid-row: 2 / span 1;
+  margin-top: 5px;
+}
+
+@media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
+  .team-task-progress {
+    width: 100%; /* or any other value that fits your design */
+    min-width: auto;
+    max-width: none;
+  }
 }
 
 @media only screen and (max-width: 768px) {
@@ -357,13 +399,4 @@
   }
 }
 
-.team-member-tasks-icons {
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 8px; /* Adjust the gap as needed */
-}
 
-.team-member-tasks-content {
-  align-items: center; /* Vertically center-align children */
-  gap: 8px; /* Space between children */
-}
