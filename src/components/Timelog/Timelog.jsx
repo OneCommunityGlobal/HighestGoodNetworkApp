@@ -117,7 +117,7 @@ const Timelog = props => {
     personId: displayUserProfile._id,
   }
 
-  // const [shouldFetchData, setShouldFetchData] = useState(false);
+  const [shouldFetchData, setShouldFetchData] = useState(false);
   const [initialTab, setInitialTab] = useState(null);
   const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
   const [currentWeekEntries, setCurrentWeekEntries] = useState(null);
@@ -392,14 +392,14 @@ const Timelog = props => {
     }
   }, [timeLogState.isTimeEntriesLoading, timeEntries]);
 
-  useEffect(() => {
+   useEffect(() => {
       loadAsyncData(displayUserId);
-  }, [displayUserId]);
+   }, [displayUserId]);
 
   // useEffect(() => {
-  //   if (shouldFetchData) loadAsyncData(displayUserId);
+  //  if (shouldFetchData) loadAsyncData(displayUserId);
   //   setShouldFetchData(false)
-  // }, [shouldFetchData]);
+  //  }, [shouldFetchData]);
 
   useEffect(() => {
     // Filter the time entries
