@@ -465,7 +465,7 @@ function AddTaskModal(props) {
                       onChange={e => setHoursBest(e.target.value)}
                       onBlur={() => calHoursEstimate()}
                       id="bestCase"
-                      className="w-25"
+                      className="w-25 mr-3"
                     />
                     <div className="warning">
                       {hoursWarning
@@ -484,7 +484,7 @@ function AddTaskModal(props) {
                       value={hoursWorst}
                       onChange={e => setHoursWorst(e.target.value)}
                       onBlur={() => calHoursEstimate('hoursWorst')}
-                      className="w-25"
+                      className="w-25 mr-3"
                     />
                     <div className="warning">
                       {hoursWarning
@@ -503,7 +503,7 @@ function AddTaskModal(props) {
                       value={hoursMost}
                       onChange={e => setHoursMost(e.target.value)}
                       onBlur={() => calHoursEstimate('hoursMost')}
-                      className="w-25"
+                      className="w-25 mr-3"
                     />
                     <div className="warning">
                       {hoursWarning
@@ -521,7 +521,7 @@ function AddTaskModal(props) {
                       max="500"
                       value={hoursEstimate}
                       onChange={e => setHoursEstimate(e.target.value)}
-                      className="w-25"
+                      className="w-25 mr-3"
                     />
                   </div>
                 </td>
