@@ -8,8 +8,7 @@ export const fetchEquipmentById = (equipmentId) => {
   return async dispatch => {
     axios.get(url)
       .then(res => {
-        console.log("Hello");
-        dispatch(setTool(res.data))
+        dispatch(setEquipment(res.data))
       })
       .catch(error => {
         dispatch(setErrors(error))

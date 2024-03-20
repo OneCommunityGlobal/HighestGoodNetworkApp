@@ -5,19 +5,24 @@ const defaultState = {
   singleEquipment: {}
 }
 
-export const equipmentReducer = (state = defaultState, action) => {
+export const equipmentReducer = (equipments = defaultState, action) => {
   switch (action.type) {
     case GET_EQUIPMENT_BY_ID:
-      return {
-        ...state,
-        singleEquipment: action.payload
-      };
+      {
+        equipments.equipmentslist = action.payload;
+        return {
+          ...equipments
+        }
+      }
     case SET_EQUIPMENTS:
-      return {
-        ...state,
-        equipmentslist: action.payload
-      };
+      {
+        equipments.equipmentslist = action.payload;
+        return {
+          ...equipments
+        }
+      }
+
     default:
-      return state; 
+      return equipments; // Return the current state for unknown actions
   }
 };
