@@ -891,6 +891,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                 isOpen={homecountryModalOpen}
                 toggle={toggleHomecountryModal}
                 setLocation={setHomecountryLocation}
+                token={token}
               />
             </Col>
           </Row>
