@@ -699,7 +699,6 @@ function UserProfile(props) {
     setUserEndDate(endDate);
   };
 
-  console.log(userProfile.startDate);
   return (
     <div>
       <ActiveInactiveConfirmationPopup

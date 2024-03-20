@@ -9,6 +9,7 @@ import './timeTab.css';
 import { boxStyle } from 'styles';
 import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY } from 'utils/formatDate';
 
+
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
@@ -18,11 +19,13 @@ const startEndDateValidation = props => {
   );
 };
 
+
 const StartDate = props => {
   if (!props.canEdit) {
     return <p>{formatDateYYYYMMDD(props.userProfile.startDate)}</p>;
   }
-  console.log('props.userProfile.startDate', props.userProfile.startDate);
+  
+  
   return (
     <Input
       type="date"
@@ -234,7 +237,7 @@ const ViewTab = props => {
   const [historyModal, setHistoryModal] = useState(false);
 
   const handleStartDates = async startDate => {
-    debugger;
+
     if(!userProfile.isFirstTimelog) {
       alert('This user has already logged time in the system. Are you sure you want to change the start date?');
     }
