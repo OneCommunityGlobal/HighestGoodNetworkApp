@@ -70,23 +70,22 @@ function FormattedReport({
   // if (auth?.user?.role){console.log(auth.user.role)}
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
-  const [currentPage, setCurrentPage] = useState(0);
-  const pageSize = 10;
-  const pagesCount = Math.ceil(summaries.length / pageSize);
-  const handlePageClick = (e, index) => {
-    e.preventDefault();
-    if (index >= pagesCount) {
-      const newPage = pagesCount - index;
-      setCurrentPage(newPage);
-    } else {
-      setCurrentPage(index);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+
+  const getSummaries = (customPage, customLimit) => {
+    const array = [];
+    for (let i = (customPage - 1) * customLimit; i < customPage * customLimit; i += 1) {
+      array.push(summaries[i]);
     }
+    return array;
   };
+  console.log(getSummaries(page, limit));
 
   return (
     <>
       <ListGroup flush>
-        {summaries.slice(currentPage * pageSize, (currentPage + 1) * pageSize).map(summary => (
+        {getSummaries(page, limit).map(summary => (
           <ReportDetails
             key={summary._id}
             summary={summary}
@@ -102,11 +101,7 @@ function FormattedReport({
         ))}
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
-      <WeeklySummariesPagination
-        handlePageClick={handlePageClick}
-        currentPage={currentPage}
-        pagesCount={pagesCount}
-      />
+      <WeeklySummariesPagination />
     </>
   );
 }
