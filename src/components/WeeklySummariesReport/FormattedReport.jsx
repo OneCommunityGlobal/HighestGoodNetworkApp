@@ -67,11 +67,14 @@ function FormattedReport({
   auth,
   canSeeBioHighlight,
 }) {
-  // if (auth?.user?.role){console.log(auth.user.role)}
+  console.log('Here are your summaries');
+  console.log(summaries);
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [page, setPage] = useState(10);
+  const [limit, setLimit] = useState(10);
+
+  const totalPages = Math.ceil(summaries.length / limit);
 
   const getSummaries = (customPage, customLimit) => {
     const array = [];
@@ -80,28 +83,31 @@ function FormattedReport({
     }
     return array;
   };
-  console.log(getSummaries(page, limit));
-
+  const newSummary = getSummaries(page, limit);
   return (
     <>
-      <ListGroup flush>
-        {getSummaries(page, limit).map(summary => (
-          <ReportDetails
-            key={summary._id}
-            summary={summary}
-            weekIndex={weekIndex}
-            bioCanEdit={bioCanEdit}
-            canEditSummaryCount={isEditCount}
-            allRoleInfo={allRoleInfo}
-            canEditTeamCode={canEditTeamCode}
-            badges={badges}
-            loadBadges={loadBadges}
-            canSeeBioHighlight={canSeeBioHighlight}
-          />
-        ))}
-      </ListGroup>
+      {newSummary[0] !== undefined && (
+        <div>
+          <ListGroup flush>
+            {newSummary.map(summary => (
+              <ReportDetails
+                key={summary._id}
+                summary={summary}
+                weekIndex={weekIndex}
+                bioCanEdit={bioCanEdit}
+                canEditSummaryCount={isEditCount}
+                allRoleInfo={allRoleInfo}
+                canEditTeamCode={canEditTeamCode}
+                badges={badges}
+                loadBadges={loadBadges}
+                canSeeBioHighlight={canSeeBioHighlight}
+              />
+            ))}
+          </ListGroup>
+        </div>
+      )}
       <EmailsList summaries={summaries} auth={auth} />
-      <WeeklySummariesPagination />
+      <WeeklySummariesPagination totalPages={totalPages} page={page} limit={limit} siblings={1} />
     </>
   );
 }
