@@ -76,6 +76,24 @@ function FormattedReport({
 
   const totalPages = Math.ceil(summaries.length / limit);
 
+  const handlePageChange = value => {
+    if (value === '&laquo;' || value === '... ') {
+      setPage(1);
+    } else if (value === '&lsaquo;') {
+      if (page === -1) {
+        setPage(page - 1);
+      }
+    } else if (value === '&rsaquo;') {
+      if (page !== totalPages) {
+        setPage(page + 1);
+      }
+    } else if (value === '&raquo;' || value === ' ...') {
+      setPage(totalPages);
+    } else {
+      setPage(value);
+    }
+  };
+
   const getSummaries = (customPage, customLimit) => {
     const array = [];
     for (let i = (customPage - 1) * customLimit; i < customPage * customLimit; i += 1) {
@@ -107,7 +125,13 @@ function FormattedReport({
         </div>
       )}
       <EmailsList summaries={summaries} auth={auth} />
-      <WeeklySummariesPagination totalPages={totalPages} page={page} limit={limit} siblings={1} />
+      <WeeklySummariesPagination
+        handlePageChange={handlePageChange}
+        totalPages={totalPages}
+        page={page}
+        limit={limit}
+        siblings={1}
+      />
     </>
   );
 }
