@@ -124,3 +124,14 @@
 .custom-control-label {
   margin-left: 8px;
 }
+
+.weekly-summaries-pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.weekly-summaries-limit {
+  margin-right:2rem;
+  padding-right:1rem;
+}

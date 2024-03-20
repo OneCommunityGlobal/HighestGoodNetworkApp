@@ -38,6 +38,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import WeeklySummariesPagination from './components/WeeklySummariesPagination';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import LimitSelection from './components/LimitSelection';
 
 const textColors = {
   Default: '#000000',
@@ -67,20 +68,50 @@ function FormattedReport({
   auth,
   canSeeBioHighlight,
 }) {
-  console.log('Here are your summaries');
-  console.log(summaries);
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
-  const [page, setPage] = useState(10);
+  const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [newSummary, setNewSummary] = useState([]);
 
   const totalPages = Math.ceil(summaries.length / limit);
+
+  let pageNo;
+  if (page <= totalPages) {
+    pageNo = page;
+  } else {
+    setPage(totalPages);
+    pageNo = page;
+  }
+
+  const getSummaries = (customPage, customLimit) => {
+    const array = [];
+    for (
+      let i = (customPage - 1) * customLimit;
+      i < customPage * customLimit && summaries[i];
+      i += 1
+    ) {
+      array.push(summaries[i]);
+    }
+    return array;
+  };
+
+  useEffect(() => {
+    // Initialize the page with 10 summaries
+    if (newSummary[0] === undefined && summaries[0]) {
+      const data = summaries.slice(0, 10);
+      setNewSummary(data);
+    } else {
+      const data = getSummaries(page, limit);
+      setNewSummary(data);
+    }
+  }, [summaries, page, limit]);
 
   const handlePageChange = value => {
     if (value === '&laquo;' || value === '... ') {
       setPage(1);
     } else if (value === '&lsaquo;') {
-      if (page === -1) {
+      if (page !== 1) {
         setPage(page - 1);
       }
     } else if (value === '&rsaquo;') {
@@ -94,44 +125,40 @@ function FormattedReport({
     }
   };
 
-  const getSummaries = (customPage, customLimit) => {
-    const array = [];
-    for (let i = (customPage - 1) * customLimit; i < customPage * customLimit; i += 1) {
-      array.push(summaries[i]);
-    }
-    return array;
+  const onLimitChange = customLimit => {
+    setLimit(customLimit);
   };
-  const newSummary = getSummaries(page, limit);
   return (
     <>
       {newSummary[0] !== undefined && (
-        <div>
-          <ListGroup flush>
-            {newSummary.map(summary => (
-              <ReportDetails
-                key={summary._id}
-                summary={summary}
-                weekIndex={weekIndex}
-                bioCanEdit={bioCanEdit}
-                canEditSummaryCount={isEditCount}
-                allRoleInfo={allRoleInfo}
-                canEditTeamCode={canEditTeamCode}
-                badges={badges}
-                loadBadges={loadBadges}
-                canSeeBioHighlight={canSeeBioHighlight}
-              />
-            ))}
-          </ListGroup>
-        </div>
+        <ListGroup flush>
+          {newSummary.map(summary => (
+            <ReportDetails
+              key={summary._id}
+              summary={summary}
+              weekIndex={weekIndex}
+              bioCanEdit={bioCanEdit}
+              canEditSummaryCount={isEditCount}
+              allRoleInfo={allRoleInfo}
+              canEditTeamCode={canEditTeamCode}
+              badges={badges}
+              loadBadges={loadBadges}
+              canSeeBioHighlight={canSeeBioHighlight}
+            />
+          ))}
+        </ListGroup>
       )}
       <EmailsList summaries={summaries} auth={auth} />
-      <WeeklySummariesPagination
-        handlePageChange={handlePageChange}
-        totalPages={totalPages}
-        page={page}
-        limit={limit}
-        siblings={1}
-      />
+      <div className="weekly-summaries-pagination-container">
+        <LimitSelection onLimitChange={onLimitChange} />
+        <WeeklySummariesPagination
+          handlePageChange={handlePageChange}
+          totalPages={totalPages}
+          page={pageNo}
+          limit={limit}
+          siblings={1}
+        />
+      </div>
     </>
   );
 }
