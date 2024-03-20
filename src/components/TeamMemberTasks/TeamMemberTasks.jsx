@@ -20,12 +20,8 @@ import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { MyTeamMember } from "./MyTeamMember";
-
-//! =========================================================================================
-//! IMPORT PARA CRIAR FILTRO
 import { boxStyle } from 'styles';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Spinner  } from 'reactstrap';
-//! =========================================================================================
 
 
 const TeamMemberTasks = React.memo(props => {
@@ -50,23 +46,13 @@ const TeamMemberTasks = React.memo(props => {
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
   
-  
-    //! =========================================================================================
-    //!    UseState PARA CRIAR FILTRO
-
-    //? O TEAMS RETORNA O ID E O NOME DAS EQUIPES.
-    const [teams, setTeams] = useState(displayUser.teams);
-    const [dropdownOpen, setDropdownOpen] = useState(false);    
-    const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
-    const [selectedTeamName, setSelectedTeamName] = useState(''); 
-    const [toggleButtonText, setToggleButtonText] = useState('View All');
-    const [userRole, setUserRole] = useState(displayUser.role);
-    const [loading, setLoading] = useState(false);
-  
-    //! =========================================================================================
-
-  //! =========================================================================================
-  //!    javascript PARA CRIAR FILTRO
+  const [teams, setTeams] = useState(displayUser.teams);
+  const [dropdownOpen, setDropdownOpen] = useState(false);    
+  const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
+  const [selectedTeamName, setSelectedTeamName] = useState(''); 
+  const [toggleButtonText, setToggleButtonText] = useState('View All');
+  const [userRole, setUserRole] = useState(displayUser.role);
+  const [loading, setLoading] = useState(false);
 
   const handleToggleButtonClick = () => { 
 const text  =  'You have not selected a team or the selected team does not have any members.';
@@ -79,7 +65,6 @@ const text  =  'You have not selected a team or the selected team does not have 
 
   const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
 
-  //! =========================================================================================
 
   const dispatch = useDispatch();
 
@@ -253,21 +238,7 @@ const text  =  'You have not selected a team or the selected team does not have 
     const initialFetching = async () => {
 
       await dispatch(fetchTeamMembersTask(displayUser._id));
-      //await setLoading(false);
-
-      // if (userId !== props.auth.user.userid) {
-      //   console.log("run here [1]");
-      //   await dispatch(fetchTeamMembersTask(userId, props.auth.user.userid));
-      //   const currentUserRole = getUserRole(userId)
-      //     .then(resp => resp)
-      //     .then(user => {
-      //       setUserRole(user.data.role);
-      //     });
-      // } else {
-      //   console.log("run here [2]");
-      //   await dispatch(fetchTeamMembersTask(userId, null));
-      //   setUserRole(props.auth.user.role);
-      // }
+      
     };
     initialFetching();
   }, []);

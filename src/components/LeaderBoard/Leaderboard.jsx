@@ -16,12 +16,9 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import moment from 'moment-timezone';
 import { ENDPOINTS } from "../../utils/URL";
 import axios from 'axios' 
-//! =========================================================================================
-//! IMPORT PARA CRIAR FILTRO
 import { boxStyle } from 'styles';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, } from 'reactstrap';
 import { Fragment } from 'react';
-//! =========================================================================================
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -68,22 +65,14 @@ function LeaderBoard({
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
   
-  //! =========================================================================================
-    //!    UseState PARA CRIAR FILTRO
-
     const [teams, setTeams] = useState([]);
-    //? O TEAMS RETORNA O ID E O NOME DAS EQUIPES.
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [selectedTeamName, setSelectedTeamName] = useState(); // contain Team name and ID
+    const [selectedTeamName, setSelectedTeamName] = useState(); 
     const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
     const [toggleButtonText, setToggleButtonText] = useState('View All');
     const [isLoadingTeams, setIsLoadingTeams] = useState(false);    
     const [userRole, setUserRole] = useState();
-    
     const [openModal, setOpenModal] = useState();
-    //! =========================================================================================
-  //! =========================================================================================
-  //!    javascript PARA CRIAR FILTRO
 
   const dashboardToggleTeams = item => setOpenModal(item._id);
 
@@ -133,12 +122,7 @@ const text  =  'You have not selected a team or the selected team does not have 
         toast.error('Error fetching team members:', error);
         setIsLoadingTeams(false);
     }
-
-  
-    
   };
-
-  //! =========================================================================================
   
   const handleMouseoverTextUpdate = text => {
     setMouseoverTextValue(text);
