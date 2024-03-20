@@ -26,6 +26,7 @@ const TaskCompletedModal = React.memo(props => {
 
     const updatedTask = { ...task, resources: newResources };
     props.updateTask(task._id, updatedTask);
+    toast.success("Task is successfully marked as done. ");
   };
 
   const removeUserFromTask = task => {
