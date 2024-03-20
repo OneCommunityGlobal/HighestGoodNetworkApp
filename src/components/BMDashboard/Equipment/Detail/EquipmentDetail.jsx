@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Button } from 'reactstrap';
 import { useHistory, useParams } from 'react-router-dom';
-import { fetchToolById } from 'actions/bmdashboard/toolActions';
 import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
 import { v4 as uuidv4 } from 'uuid';
 import EquipmentModal from '../EquipmentModal';
@@ -57,13 +56,9 @@ function EquipmentDetail() {
   const history = useHistory();
   const { equipmentId } = useParams();
 
-  const tool = useSelector(state => state.tool);
+  const equipment = useSelector(state => state.bmEquipments.singleEquipment);
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchToolById(equipmentId));
-  }, []);
 
   useEffect(() => {
     dispatch(fetchEquipmentById(equipmentId));
@@ -84,8 +79,8 @@ function EquipmentDetail() {
     return date.toLocaleDateString();
   }
 
-  const formattedRentedOnDate = formatDateString(tool?.rentedOnDate);
-  const formattedRentedDueDate = formatDateString(tool?.rentalDueDate);
+  const formattedRentedOnDate = formatDateString(equipment?.rentedOnDate);
+  const formattedRentedDueDate = formatDateString(equipment?.rentalDueDate);
 
   const details = [
     { label: 'Belongs to project', value: 'Building 1' },
@@ -95,7 +90,7 @@ function EquipmentDetail() {
     { label: 'Ownership', value: 'Owned' },
     { label: 'Add Date', value: '02 - 29 - 2024' },
     // Remove 'Rental Duration' from details if 'Ownership' is 'Purchase'
-    tool?.purchaseStatus === 'Purchase' ? null : { label: 'Rental Duration' },
+    equipment?.purchaseStatus === 'Purchase' ? null : { label: 'Rental Duration' },
     { label: 'Current Usage', value: toolLogRecord },
     { label: 'Dashed Line' },
     { label: 'Input Invoice No or ID', value: 'No123ABC' },
@@ -141,7 +136,7 @@ function EquipmentDetail() {
       key={generateKey()}
       label={detail.label}
       value={detail.value}
-      title={tool?.itemType.name}
+      title={equipment?.itemType.name}
     />
   );
 
@@ -178,7 +173,7 @@ function EquipmentDetail() {
         </p>
         {details.filter(Boolean).map(renderDetails)}
         <Button
-          class="back-btn"
+          className="back-btn"
           style={{ color: 'black', borderWidth: '2px', borderRadius: '9px' }}
           outline
           onClick={() => history.push('/bmdashboard/equipment')}

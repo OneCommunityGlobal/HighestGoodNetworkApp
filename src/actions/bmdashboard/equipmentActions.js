@@ -8,8 +8,7 @@ export const fetchEquipmentById = (equipmentId) => {
   return async dispatch => {
     axios.get(url)
       .then(res => {
-        console.log("Hello");
-        dispatch(setTool(res.data))
+        dispatch(setEquipment(res.data))
       })
       .catch(error => {
         dispatch(setErrors(error))
@@ -27,7 +26,7 @@ export const addEquipmentType = async (body) => {
     })
 }
 
-export const setTool = payload => {
+export const setEquipment = payload => {
   return {
     type: GET_EQUIPMENT_BY_ID,
     payload
