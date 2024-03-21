@@ -19,15 +19,14 @@ import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
-import { MyTeamMember } from "./MyTeamMember";
+import { MyTeamMember } from './MyTeamMember';
 import { boxStyle } from 'styles';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Spinner  } from 'reactstrap';
-
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Spinner } from 'reactstrap';
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store
   const { authUser, displayUser, isLoading, usersWithTasks, usersWithTimeEntries } = props;
-  
+
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
   const [currentTask, setCurrentTask] = useState();
@@ -45,33 +44,32 @@ const TeamMemberTasks = React.memo(props => {
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
-  
+
   const [teams, setTeams] = useState(displayUser.teams);
-  const [dropdownOpen, setDropdownOpen] = useState(false);    
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
-  const [selectedTeamName, setSelectedTeamName] = useState(''); 
+  const [selectedTeamName, setSelectedTeamName] = useState('');
   const [toggleButtonText, setToggleButtonText] = useState('View All');
   const [userRole, setUserRole] = useState(displayUser.role);
   const [loading, setLoading] = useState(false);
 
-  const handleToggleButtonClick = () => { 
-const text  =  'You have not selected a team or the selected team does not have any members.';
+  const handleToggleButtonClick = () => {
+    const text = 'You have not selected a team or the selected team does not have any members.';
 
-    loading? toast.warning('Please wait while the teams are loading.') 
-    : usersSelectedTeam.length === 0? toast.error(text) 
-    :
-      setToggleButtonText(prevText => prevText === 'View All' ? 'My Team' : 'View All');
-  }
+    loading
+      ? toast.warning('Please wait while the teams are loading.')
+      : usersSelectedTeam.length === 0
+      ? toast.error(text)
+      : setToggleButtonText(prevText => (prevText === 'View All' ? 'My Team' : 'View All'));
+  };
 
   const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
-
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllTimeOffRequests()); 
+    dispatch(getAllTimeOffRequests());
   }, []);
-
 
   const closeMarkAsDone = () => {
     setClickedToShowModal(false);
@@ -144,7 +142,7 @@ const text  =  'You have not selected a team or the selected team does not have 
     handleOpenTaskNotificationModal();
   };
 
-  const getTimeEntriesForPeriod = async (selectedPeriod) => {
+  const getTimeEntriesForPeriod = async selectedPeriod => {
     const oneDayAgo = moment()
       .tz('America/Los_Angeles')
       .subtract(1, 'days')
@@ -154,7 +152,7 @@ const text  =  'You have not selected a team or the selected team does not have 
       .tz('America/Los_Angeles')
       .subtract(2, 'days')
       .format('YYYY-MM-DD');
-    
+
     const threeDaysAgo = moment()
       .tz('America/Los_Angeles')
       .subtract(3, 'days')
@@ -167,19 +165,27 @@ const text  =  'You have not selected a team or the selected team does not have 
 
     switch (selectedPeriod) {
       case '1':
-        const oneDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(oneDayAgo));
+        const oneDaysList = usersWithTimeEntries.filter(entry =>
+          moment(entry.dateOfWork).isAfter(oneDayAgo),
+        );
         setTimeEntriesList(oneDaysList);
         break;
       case '2':
-        const twoDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
+        const twoDaysList = usersWithTimeEntries.filter(entry =>
+          moment(entry.dateOfWork).isAfter(twoDaysAgo),
+        );
         setTimeEntriesList(twoDaysList);
         break;
       case '3':
-        const threeDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(threeDaysAgo));
+        const threeDaysList = usersWithTimeEntries.filter(entry =>
+          moment(entry.dateOfWork).isAfter(threeDaysAgo),
+        );
         setTimeEntriesList(threeDaysList);
         break;
       case '4':
-        const fourDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(fourDaysAgo));
+        const fourDaysList = usersWithTimeEntries.filter(entry =>
+          moment(entry.dateOfWork).isAfter(fourDaysAgo),
+        );
         setTimeEntriesList(fourDaysList);
         break;
       case '7':
@@ -203,42 +209,40 @@ const text  =  'You have not selected a team or the selected team does not have 
     }
   };
 
-  const renderTeamsList = async (team) => {
-
+  const renderTeamsList = async team => {
     if (!team) {
-          if (usersWithTasks.length > 0) {
-            //sort all users by their name
-      usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
-      //find currentUser
-      const currentUserIndex = usersWithTasks.findIndex(user => user.personId === displayUser._id);
-      // if current user doesn't have any task, the currentUser cannot be found
-      if (usersWithTasks[currentUserIndex]?.tasks.length) {
-        //conditional variable for moving current user up front.
-        usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
+      if (usersWithTasks.length > 0) {
+        //sort all users by their name
+        usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
+        //find currentUser
+        const currentUserIndex = usersWithTasks.findIndex(
+          user => user.personId === displayUser._id,
+        );
+        // if current user doesn't have any task, the currentUser cannot be found
+        if (usersWithTasks[currentUserIndex]?.tasks.length) {
+          //conditional variable for moving current user up front.
+          usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
+        }
+        setTeamList([...usersWithTasks]);
       }
-      setTeamList([...usersWithTasks]);
-      
-    }
-  }else{    
-    try {
-          setLoading(true);
-          const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
-          setUsersSelectedTeam(response.data);
-          setLoading(false);
-          const teamName = team.teamName.substring(0, 15) + '...'
-          setSelectedTeamName( team.teamName.length >= 15 ? teamName : team.teamName)
-        } catch (error) {
+    } else {
+      try {
+        setLoading(true);
+        const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
+        setUsersSelectedTeam(response.data);
+        setLoading(false);
+        const teamName = team.teamName.substring(0, 15) + '...';
+        setSelectedTeamName(team.teamName.length >= 15 ? teamName : team.teamName);
+      } catch (error) {
         toast.error('Error fetching team members:', error);
-      } 
-  }
+      }
+    }
   };
-  
+
   useEffect(() => {
     // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
     const initialFetching = async () => {
-
       await dispatch(fetchTeamMembersTask(displayUser._id));
-      
     };
     initialFetching();
   }, []);
@@ -264,133 +268,124 @@ const text  =  'You have not selected a team or the selected team does not have 
     setShowWhoHasTimeOff(prev => !prev);
   };
 
- return (
+  return (
     <div className="container team-member-tasks container-fluid">
       <header className="header-box">
-        <section className='d-flex flex-column'>
-        <h1>Team Member Tasks</h1>
+        <section className="d-flex flex-column">
+          <h1>Team Member Tasks</h1>
 
-         {/* Dropdown for selecting a team */}
-         { isLoading &&  ( userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Owner' )
-? (
-  <>
-      <span  className='d-flex justify-content-start align-items-center'> Loading teams:  &nbsp;
-    <Spinner color="primary">
-    Loading...
-    </Spinner>
-      </span> 
-    
-  </>
-  ) :
- !isLoading && (userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Owner')  
-? (
-  <section className='d-flex flex-row mr-xl-2'>
-    <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className='mb-3'>
-      <DropdownToggle caret>
-      {selectedTeamName || 'Select a Team'}
-      </DropdownToggle>
-      <DropdownMenu>
-        {
-        teams.length === 0?
-          <DropdownItem onClick={() => toast.warning('Please, create a team to use the filter.')}>
-            {'Please, create a team to use the filter.'}
-          </DropdownItem>
-          :
-        teams.map((team) => (
-          <DropdownItem key={team._id} onClick={() => renderTeamsList(team)}>
-            {team.teamName}
-          </DropdownItem>
-        ))
-
-      }
-      </DropdownMenu>
-    </Dropdown>
-
-    &nbsp; &nbsp; 
-
-    <Button 
-      color="primary"
-      onClick={handleToggleButtonClick}
-      style={{width: '7rem'}}
-      className='mb-3 mb-0-md-end'
-      disabled={teams.length === 0}
-    >
-      {toggleButtonText === 'View All' ? 'My Team' : 'View All'}
-    </Button>
-  </section>
-) : (
-  !isLoading && (userRole !== 'Administrator' && userRole !== 'Core Team' && userRole !== 'Owner' )? (
-    <></>
-  ) : 
-  (
-    null
-  )
- 
-)}
-
+          {/* Dropdown for selecting a team */}
+          {isLoading &&
+          (userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Owner') ? (
+            <>
+              <span className="d-flex justify-content-start align-items-center">
+                {' '}
+                Loading teams: &nbsp;
+                <Spinner color="primary">Loading...</Spinner>
+              </span>
+            </>
+          ) : !isLoading &&
+            (userRole === 'Administrator' || userRole === 'Core Team' || userRole === 'Owner') ? (
+            <section className="d-flex flex-row mr-xl-2">
+              <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="mb-3">
+                <DropdownToggle caret>{selectedTeamName || 'Select a Team'}</DropdownToggle>
+                <DropdownMenu>
+                  {teams.length === 0 ? (
+                    <DropdownItem
+                      onClick={() => toast.warning('Please, create a team to use the filter.')}
+                    >
+                      {'Please, create a team to use the filter.'}
+                    </DropdownItem>
+                  ) : (
+                    teams.map(team => (
+                      <DropdownItem key={team._id} onClick={() => renderTeamsList(team)}>
+                        {team.teamName}
+                      </DropdownItem>
+                    ))
+                  )}
+                </DropdownMenu>
+              </Dropdown>
+              &nbsp; &nbsp;
+              <Button
+                color="primary"
+                onClick={handleToggleButtonClick}
+                style={{ width: '7rem' }}
+                className="mb-3 mb-0-md-end"
+                disabled={teams.length === 0}
+                boxstyle={boxStyle}
+              >
+                {toggleButtonText === 'View All' ? 'My Team' : 'View All'}
+              </Button>
+            </section>
+          ) : !isLoading &&
+            userRole !== 'Administrator' &&
+            userRole !== 'Core Team' &&
+            userRole !== 'Owner' ? (
+            <></>
+          ) : null}
         </section>
 
         {finishLoading ? (
-          <section className=" hours-btn-container   flex-wrap ml-3 "
-          >
-            <div  className='mb-2'>
-           <button
-              type="button"
-              className={` mr-2 show-time-off-btn ${
-                showWhoHasTimeOff ? 'show-time-off-btn-selected' : ''
-              }`}
-              onClick={handleshowWhoHasTimeOff}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="19"
-                viewBox="0 0 448 512"
-                className={` mr-2 show-time-off-calender-svg ${
-                  showWhoHasTimeOff ? 'show-time-off-calender-svg-selected' : ''
+          <section className=" hours-btn-container   flex-wrap ml-3 ">
+            <div className="mb-2">
+              <button
+                type="button"
+                className={` mr-2 show-time-off-btn ${
+                  showWhoHasTimeOff ? 'show-time-off-btn-selected' : ''
                 }`}
-              >
-                <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
-              </svg>
-              <i
-                className={`show-time-off-icon ${
-                  showWhoHasTimeOff ? 'show-time-off-icon-selected' : ''
-                }`}
+                onClick={handleshowWhoHasTimeOff}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 512 512"
-                  className="show-time-off-icon-svg"
+                  width="22"
+                  height="19"
+                  viewBox="0 0 448 512"
+                  className={` mr-2 show-time-off-calender-svg ${
+                    showWhoHasTimeOff ? 'show-time-off-calender-svg-selected' : ''
+                  }`}
                 >
-                  <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+                  <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
                 </svg>
-              </i>
-            </button>
-            {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
-              <button
-                key={idx}
-                type="button"
-                className={`circle-border ${days} days mr-2 mb-2 `}
-                title={`Timelogs submitted in the past ${days} days`}
-                style={{
-                  color: selectedPeriod === days && isTimeFilterActive ? 'white' : color,
-                  backgroundColor: selectedPeriod === days && isTimeFilterActive ? color : 'white',
-                  border: `1px solid ${color}`,
-                }}
-                onClick={() => selectPeriod(days)}
-              >
-                {days} days
+                <i
+                  className={`show-time-off-icon ${
+                    showWhoHasTimeOff ? 'show-time-off-icon-selected' : ''
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 512 512"
+                    className="show-time-off-icon-svg"
+                  >
+                    <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+                  </svg>
+                </i>
               </button>
-            ))}
+              {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`circle-border ${days} days mr-2 mb-2 `}
+                  title={`Timelogs submitted in the past ${days} days`}
+                  style={{
+                    color: selectedPeriod === days && isTimeFilterActive ? 'white' : color,
+                    backgroundColor:
+                      selectedPeriod === days && isTimeFilterActive ? color : 'white',
+                    border: `1px solid ${color}`,
+                  }}
+                  onClick={() => selectPeriod(days)}
+                >
+                  {days} days
+                </button>
+              ))}
             </div>
             <EditableInfoModal
               areaName="TeamMemberTasksTimeFilterInfoPoint"
               areaTitle="Team Member Task Time Filter"
               fontSize={22}
               isPermissionPage={true}
-              role={authUser.role} 
+              role={authUser.role}
             />
           </section>
         ) : (
@@ -426,105 +421,96 @@ const text  =  'You have not selected a team or the selected team does not have 
       <div className="table-container">
         <Table>
           <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
-          {
-          toggleButtonText === 'View All' ? (
-            <tr>
-              {/* Empty column header for hours completed icon */}
-              <th colSpan={1}/>
-              <th colSpan={2} className="team-member-tasks-headers">
-                <Table borderless className="team-member-tasks-subtable">
-                  <thead>
-                    <tr>
-                      <th className="team-member-tasks-headers team-member-tasks-user-name">
-                        Team Member
+            {toggleButtonText === 'View All' ? (
+              <tr>
+                {/* Empty column header for hours completed icon */}
+                <th colSpan={1} />
+                <th colSpan={2} className="team-member-tasks-headers">
+                  <Table borderless className="team-member-tasks-subtable">
+                    <thead>
+                      <tr>
+                        <th className="team-member-tasks-headers team-member-tasks-user-name">
+                          Team Member
+                        </th>
+                        <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                          <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                          /
+                          <FontAwesomeIcon
+                            style={{ color: 'green' }}
+                            icon={faClock}
+                            title="Total Hours Completed this Week"
+                          />
+                          /
+                          <FontAwesomeIcon
+                            style={{ color: 'red' }}
+                            icon={faClock}
+                            title="Total Remaining Hours"
+                          />
+                        </th>
+                      </tr>
+                    </thead>
+                  </Table>
+                </th>
+                <th colSpan={3} className="team-member-tasks-headers">
+                  <Table borderless className="team-member-tasks-subtable">
+                    <thead>
+                      <tr>
+                        <th>Tasks(s)</th>
+                        <th className="team-task-progress">Progress</th>
+                        {displayUser.role === 'Administrator' ? <th>Status</th> : null}
+                      </tr>
+                    </thead>
+                  </Table>
+                </th>
+              </tr>
+            ) : usersSelectedTeam.length === 0 ? (
+              <tr>
+                <th className="team-member-tasks-headers">
+                  <Table borderless>
+                    <thead>
+                      <th>
+                        {' '}
+                        <h4>Error</h4>
                       </th>
-                      <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                        <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                        /
-                        <FontAwesomeIcon
-                          style={{ color: 'green' }}
-                          icon={faClock}
-                          title="Total Hours Completed this Week"
-                        />
-                        /
-                        <FontAwesomeIcon
-                          style={{ color: 'red' }}
-                          icon={faClock}
-                          title="Total Remaining Hours"
-                        />
-                      </th>
-                    </tr>
-                  </thead>
-                </Table>
-              </th>
-              <th colSpan={3} className="team-member-tasks-headers">
-                <Table borderless className="team-member-tasks-subtable">
-                  <thead>
-                    <tr>
-                      <th>Tasks(s)</th>
-                      <th className="team-task-progress">Progress</th>
-                      {displayUser.role === 'Administrator' ? <th>Status</th> : null}
-                    </tr>
-                  </thead>
-                </Table>
-              </th>
-            </tr>
-                                            
-          ) :   usersSelectedTeam.length === 0?( 
-            <tr>
+                    </thead>
+                  </Table>
+                </th>
+              </tr>
+            ) : (
+              <tr>
+                <th className="team-member-tasks-headers table-row d-flex justify-content-between d-flex align-items-center">
+                  <Table borderless className="team-member-tasks-subtable">
+                    <thead>
+                      <tr>
+                        <th></th>
 
-            <th  className="team-member-tasks-headers">
-             <Table borderless>
-              <thead>
-                <th> <h4>Error</h4></th>
-              </thead>
-              </Table> 
-            </th>
-
-            </tr>
-              
-
-          ) : (
-            <tr>                
-            <th  
-className="team-member-tasks-headers table-row d-flex justify-content-between d-flex align-items-center"   
-                    >
-                      
-                      <Table borderless className="team-member-tasks-subtable">
-                        <thead>
-                          <tr>
-                          <th></th>
-        
-                            <th className="team-member-tasks-headers team-member-tasks-user-name">
-                              Team Member
-                            </th>
-                            <th className="team-member-tasks-headers team-clocks team-clocks-header "
-                              style={{ gap: 4 }}
-                            >
-                              <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                              /
-                              <FontAwesomeIcon
-                                style={{ color: 'green' }}
-                                icon={faClock}
-                                title="Total Hours Completed this Week"
-                              />
-                              /
-                              <FontAwesomeIcon
-                                style={{ color: 'red' }}
-                                icon={faClock}
-                                title="Total Remaining Hours"
-                              />
-                            </th>
-                          </tr>
-                        </thead>
-                      </Table>
-                    </th>                                 
-      
-    </tr>
-           
-          )
-
-          }
+                        <th className="team-member-tasks-headers team-member-tasks-user-name">
+                          Team Member
+                        </th>
+                        <th
+                          className="team-member-tasks-headers team-clocks team-clocks-header "
+                          style={{ gap: 4 }}
+                        >
+                          <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                          /
+                          <FontAwesomeIcon
+                            style={{ color: 'green' }}
+                            icon={faClock}
+                            title="Total Hours Completed this Week"
+                          />
+                          /
+                          <FontAwesomeIcon
+                            style={{ color: 'red' }}
+                            icon={faClock}
+                            title="Total Remaining Hours"
+                          />
+                        </th>
+                      </tr>
+                    </thead>
+                  </Table>
+                </th>
+              </tr>
+            )}
           </thead>
           <tbody>
             {isLoading ? (
@@ -590,35 +576,35 @@ className="team-member-tasks-headers table-row d-flex justify-content-between d-
                       );
                     }
                   })
-                ) : 
-                usersSelectedTeam.length === 0?(
+                ) : usersSelectedTeam.length === 0 ? (
                   <Table>
-              <tbody>
-              <tr>
-                <th>The team currently has no members. Please add a member to this team or select another team.</th>
-              </tr>
-              </tbody>
-
-            </Table>
-                ):
-                (
-                  
+                    <tbody>
+                      <tr>
+                        <th>
+                          The team currently has no members. Please add a member to this team or
+                          select another team.
+                        </th>
+                      </tr>
+                    </tbody>
+                  </Table>
+                ) : (
                   usersSelectedTeam.map(user => {
-                    return(
-                      <MyTeamMember key={user._id}
-                      user={user}
-                      usersWithTasks={usersWithTasks}
-                      handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                      handleMarkAsDoneModal={handleMarkAsDoneModal}
-                      handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                      handleTaskModalOption={handleTaskModalOption}
-                      showWhoHasTimeOff={showWhoHasTimeOff}
-                      onTimeOff={userOnTimeOff[user._id]}
-                      goingOnTimeOff={userGoingOnTimeOff[user._id]}
-                      updateTaskStatus={updateTaskStatus}
+                    return (
+                      <MyTeamMember
+                        key={user._id}
+                        user={user}
+                        usersWithTasks={usersWithTasks}
+                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                        handleMarkAsDoneModal={handleMarkAsDoneModal}
+                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                        handleTaskModalOption={handleTaskModalOption}
+                        showWhoHasTimeOff={showWhoHasTimeOff}
+                        onTimeOff={userOnTimeOff[user._id]}
+                        goingOnTimeOff={userGoingOnTimeOff[user._id]}
+                        updateTaskStatus={updateTaskStatus}
                       />
-                    )
-                    })
+                    );
+                  })
                 )}
               </>
             )}
@@ -627,7 +613,6 @@ className="team-member-tasks-headers table-row d-flex justify-content-between d-
       </div>
     </div>
   );
-  
 });
 
 const mapStateToProps = state => ({
