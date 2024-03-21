@@ -1,6 +1,14 @@
 import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
-import { Table } from 'reactstrap';
+import {
+  Table,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+  Spinner,
+} from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -21,7 +29,6 @@ import { toast } from 'react-toastify';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { MyTeamMember } from './MyTeamMember';
 import { boxStyle } from 'styles';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Spinner } from 'reactstrap';
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store
