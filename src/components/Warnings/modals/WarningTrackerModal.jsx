@@ -126,10 +126,6 @@ function WarningTrackerModal({
     });
   };
 
-  const handleChange = e => {
-    setNewWarning(e.target.value);
-  };
-
   // eslint-disable-next-line no-shadow
   const handleAddNewWarning = (e, newWarning) => {
     e.preventDefault();
