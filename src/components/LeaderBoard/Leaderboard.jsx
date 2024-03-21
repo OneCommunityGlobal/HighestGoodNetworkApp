@@ -313,7 +313,11 @@ function LeaderBoard({
                 <tr key={item.personId}>
                   <td className="align-middle">
                     <div>
-                      <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
+                      <Modal
+                        isOpen={isDashboardOpen === item.personId}
+                        toggle={dashboardToggle}
+                        className="modal-personal-dashboard"
+                      >
                         <ModalHeader toggle={dashboardToggle}>
                           Jump to personal Dashboard
                         </ModalHeader>
@@ -350,7 +354,7 @@ function LeaderBoard({
                           }
                         }}
                       >
-                        {hasLeaderboardPermissions(item.role) &&
+                        {hasLeaderboardPermissions(loggedInUser.role) &&
                         showStar(item.tangibletime, item.weeklycommittedHours) ? (
                           <i
                             className="fa fa-star"
@@ -440,7 +444,6 @@ function LeaderBoard({
                       (userOnTimeOff[item.personId] || userGoingOnTimeOff[item.personId]) && (
                         <div>
                           <button
-                            style={{ width: '35px', height: 'auto' }}
                             type="button"
                             onClick={() => {
                               const request = userOnTimeOff[item.personId]
@@ -457,6 +460,7 @@ function LeaderBoard({
 
                               handleTimeOffModalOpen(request);
                             }}
+                            style={{ width: '35px', height: 'auto' }}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
