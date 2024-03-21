@@ -4,6 +4,7 @@ import {
   DELETE_WARNINGS_BY_USER_ID,
   CURRENT_WARNINGS,
   POST_NEW_WARNING,
+  EDIT_WARNING_DESCRIPTION,
 } from '../constants/warning';
 
 export const warningsByUserIdReducer = (state = [], action) => {
@@ -16,6 +17,8 @@ export const warningsByUserIdReducer = (state = [], action) => {
         ...state,
         ...action.payload,
       };
+    case EDIT_WARNING_DESCRIPTION:
+      return action.payload;
     case CURRENT_WARNINGS:
       return action.payload;
     case POST_NEW_WARNING:

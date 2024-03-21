@@ -17,6 +17,7 @@ import {
   getWarningDescriptions,
   updateWarningDescription,
   deleteWarningDescription,
+  editWarningDescription,
 } from '../../../actions/warnings';
 
 import reorder from '../reorder.svg';
@@ -39,20 +40,22 @@ function WarningTrackerModal({
   const [warningDescriptions, setWarningDescriptions] = useState([]);
   const [toggleDeleteModal, setToggleDeleteModal] = useState(false);
   const [warningToDelete, setWarningToDelete] = useState(null);
+  const [warningEdited, setWarningEdited] = useState(false);
+  const [editedWarning, setEditedWarning] = useState(null);
 
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
 
+  const fetchWarningDescriptions = async () => {
+    dispatch(getWarningDescriptions()).then(res => {
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
+      setWarningDescriptions(res);
+    });
+  };
   useEffect(() => {
-    const fetchWarningDescriptions = async () => {
-      dispatch(getWarningDescriptions()).then(res => {
-        if (res.error) {
-          setError(res.error);
-          return;
-        }
-        setWarningDescriptions(res);
-      });
-    };
     fetchWarningDescriptions();
   }, []);
 
@@ -131,6 +134,33 @@ function WarningTrackerModal({
     setNewWarning(value);
   };
 
+  const handleEditWarningDescription = (e, warningId) => {
+    setWarningEdited(true);
+
+    const updatedWarningDescriptions = warningDescriptions.map(warning => {
+      if (warning._id === warningId) {
+        const updatedWarning = { ...warning, warningTitle: e.target.value };
+        setEditedWarning(updatedWarning);
+        return updatedWarning;
+      }
+      return { ...warning, disabled: true };
+    });
+    setWarningDescriptions(updatedWarningDescriptions);
+  };
+
+  const handleSaveEditedWarning = () => {
+    dispatch(editWarningDescription(editedWarning)).then(res => {
+      if (res.error) {
+        setError(res.error);
+        return;
+      }
+      setWarningEdited(false);
+      setEditedWarning(null);
+      getUsersWarnings();
+      setError(null);
+      fetchWarningDescriptions();
+    });
+  };
   // eslint-disable-next-line no-shadow
   const handleAddNewWarning = (e, newWarning) => {
     e.preventDefault();
@@ -212,7 +242,7 @@ function WarningTrackerModal({
         </Alert>
       )}
       <ModalBody>
-        {warningDescriptions.map(warning => (
+        {warningDescriptions.map((warning, index) => (
           <div className="warnings__descriptions" key={warning._id}>
             <img src={reorder} alt="" className="warning__reorder" />
             {warning.activeWarning ? (
@@ -252,17 +282,12 @@ function WarningTrackerModal({
             >
               <FontAwesomeIcon icon={faTimes} />
             </Button>
-            {/* <p
-              className={`warnings__descriptions__title ${
-                warning.activeWarning ? '' : 'warnings__descriptions__title--gray'
-              }`}
-            >
-              {warning.warningTitle}
-            </p> */}
 
             <input
               type="text"
+              onChange={e => handleEditWarningDescription(e, warning._id)}
               value={warning.warningTitle}
+              disabled={warning?.disabled}
               placeholder="warning title"
               className={`warnings__descriptions__title ${
                 warning.activeWarning ? '' : 'warnings__descriptions__title--gray'
@@ -270,6 +295,14 @@ function WarningTrackerModal({
             />
           </div>
         ))}
+        {warningEdited && (
+          <div className="btn__container">
+            <Button onClick={handleSaveEditedWarning} color="success">
+              Save
+            </Button>
+          </div>
+        )}
+
         <div className="btn__container">
           {!toggeleWarningInput && (
             <Button

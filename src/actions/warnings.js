@@ -8,6 +8,7 @@ import {
   postNewWarning as postNewWarningAction,
   deleteWarningDescription as deleteWarningDescriptionAction,
   updateWarningDescription as updateWarningDescriptionAction,
+  editWarningDescription as editWarningDescriptionAction,
 } from '../constants/warning';
 
 export const getWarningsByUserId = userId => {
@@ -76,7 +77,6 @@ export const getWarningDescriptions = () => {
     try {
       const res = await axios.get(url);
       const response = await dispatch(getCurrentWarningsAction(res.data));
-      // console.log('response insde of getwarning descriptions', response);
       return response.payload.currentWarningDescriptions;
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -110,6 +110,19 @@ export const deleteWarningDescription = warningDescriptionId => {
       const res = await axios.delete(url, { data: { warningDescriptionId } });
       const response = await dispatch(deleteWarningDescriptionAction(res.data));
 
+      return response.payload;
+    } catch (error) {
+      return { error: error.message };
+    }
+  };
+};
+
+export const editWarningDescription = editedWarning => {
+  const url = ENDPOINTS.EDIT_WARNING_DESCRIPTION();
+  return async dispatch => {
+    try {
+      const res = await axios.put(url, { editedWarning });
+      const response = await dispatch(editWarningDescriptionAction(res.data));
       return response.payload;
     } catch (error) {
       return { error: error.message };
