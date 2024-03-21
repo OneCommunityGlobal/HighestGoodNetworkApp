@@ -403,7 +403,6 @@ function LeaderBoard({
                           style={{
                             color: '#32a518',
                             cursor: 'default',
-
                           }}
                         >
                           <strong>✓</strong>
