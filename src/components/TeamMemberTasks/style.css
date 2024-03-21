@@ -7,12 +7,12 @@
   font-size: 20px;
 }
 
-.table-container {
+.task_table-container {
   position: relative;
   overflow-x: auto;
 }
 
-.table-container table{
+.task_table-container table{
   table-layout: fixed;
   width: 100%;
 }
@@ -275,7 +275,6 @@
 
 .compress-time-off-detail-button:hover,.expand-time-off-detail-button:hover{
   background-color: rgba(0, 0, 25, 0.6);
-  
 }
 
 .expand-time-off-detail-button{
@@ -286,7 +285,6 @@
   background-color: rgba(0, 0, 25, 0.7);
   border-radius: 5px;
 }
-
 
 @media only screen and (max-width: 768px) {
   .pc-component {

@@ -1,5 +1,5 @@
 import httpService from 'services/httpService';
-
+import moment from 'moment';
 import {
   FETCH_TIME_OFF_REQUESTS_SUCCESS,
   FETCH_TIME_OFF_REQUESTS_FAILURE,
@@ -12,7 +12,6 @@ import {
   TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE,
 } from '../constants/timeOffRequestConstants';
 import { ENDPOINTS } from '../utils/URL';
-import moment from 'moment';
 import 'moment-timezone';
 
 /**
@@ -63,6 +62,56 @@ export const hideTimeOffRequestModal = () => ({
   type: TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE,
 });
 
+const isTimeOffRequestIncludeCurrentWeek = request => {
+  const { startingDate, endingDate } = request;
+
+  moment.tz.setDefault('America/Los_Angeles');
+
+  const requestStartingDate = moment(startingDate);
+  const requestEndingDate = moment(endingDate);
+
+  const currentWeekStart = moment().startOf('week').add(1, 'second');
+  const currentWeekEnd = moment().endOf('week').subtract(1, 'day').subtract(1, 'second');
+
+  // Check if the current week falls within the date range of the request
+  if (
+    currentWeekStart.isSameOrAfter(requestStartingDate) &&
+    currentWeekEnd.isSameOrBefore(requestEndingDate)
+  ) {
+    return true;
+  }
+
+  return false;
+};
+
+const isUserOnVacation = requests => {
+  moment.tz.setDefault('America/Los_Angeles');
+
+  for (const request of requests) {
+    if(isTimeOffRequestIncludeCurrentWeek(request)) {
+      return request;
+    }
+  }
+  return null;
+};
+
+const isUserGoingOnVacation = requests => {
+  moment.tz.setDefault('America/Los_Angeles');
+
+  const nextWeekStart = moment()
+    .add(1, 'week')
+    .startOf('week');
+
+  // Find the first request that starts on Sunday next week
+  const userGoingOnVacation = requests.find(request => {
+    const startingDate = moment(request.startingDate);
+    return startingDate.isSame(nextWeekStart, 'day');
+  });
+
+  return userGoingOnVacation || null;
+};
+
+
 // Thunk Function
 export const getAllTimeOffRequests = () => async dispatch => {
   try {
@@ -72,7 +121,7 @@ export const getAllTimeOffRequests = () => async dispatch => {
     const keys = Object.keys(requests);
     let onVacation = {};
     let goingOnVacation = {};
-    for (const key of keys) {
+    keys.forEach( key => {
       const arrayOfRequests = requests[key];
       const isUserOff = isUserOnVacation(arrayOfRequests);
       const isUserGoingOff = isUserGoingOnVacation(arrayOfRequests);
@@ -81,7 +130,7 @@ export const getAllTimeOffRequests = () => async dispatch => {
       } else if (isUserGoingOff) {
         goingOnVacation = { ...goingOnVacation, [key]: { ...isUserGoingOff } };
       }
-    }
+    })
     dispatch(addIsOnTimeOffRequests(onVacation));
     dispatch(addGoingOnTimeOffRequests(goingOnVacation));
   } catch (error) {
@@ -118,53 +167,4 @@ export const deleteTimeOffRequestThunk = id => async dispatch => {
   } catch (error) {
     console.log(error);
   }
-};
-
-const isTimeOffRequestIncludeCurrentWeek = request => {
-  const { startingDate, endingDate } = request;
-
-  moment.tz.setDefault('America/Los_Angeles');
-
-  const requestStartingDate = moment(startingDate);
-  const requestEndingDate = moment(endingDate);
-
-  const currentWeekStart = moment().startOf('week').add(1, 'second');
-  const currentWeekEnd = moment().endOf('week').subtract(1, 'day').subtract(1, 'second');
-
-  // Check if the current week falls within the date range of the request
-  if (
-    currentWeekStart.isSameOrAfter(requestStartingDate) &&
-    currentWeekEnd.isSameOrBefore(requestEndingDate)
-  ) {
-    return true;
-  }
-
-  return false;
-};
-
-const isUserOnVacation = requests => {
-  moment.tz.setDefault('America/Los_Angeles');
-
-  for (const request of requests) {
-    if (isTimeOffRequestIncludeCurrentWeek(request)) {
-      return request;
-    }
-  }
-  return null;
-};
-
-const isUserGoingOnVacation = requests => {
-  moment.tz.setDefault('America/Los_Angeles');
-
-  const nextWeekStart = moment()
-    .add(1, 'week')
-    .startOf('week');
-
-  // Find the first request that starts on Sunday next week
-  const userGoingOnVacation = requests.find(request => {
-    const startingDate = moment(request.startingDate);
-    return startingDate.isSame(nextWeekStart, 'day');
-  });
-
-  return userGoingOnVacation || null;
 };

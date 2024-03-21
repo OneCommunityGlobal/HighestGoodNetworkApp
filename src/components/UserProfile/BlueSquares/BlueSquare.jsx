@@ -1,11 +1,9 @@
-import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
 
 const BlueSquare = props => {
-  const authRole = useSelector(state => state.auth.user.role);
 
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
@@ -44,17 +42,19 @@ const BlueSquare = props => {
                 >
                   <div className="report" data-testid="report">
                     <div className="title">{formatDate(blueSquare.date)}</div>
-                    {blueSquare.description !== undefined && 
-                      <div className="summary">{
-                        blueSquare.createdDate !== undefined ? formatCreatedDate(blueSquare.createdDate)+": "+ blueSquare.description  : blueSquare.description
-                        }</div>
-                    }
+                    {blueSquare.description !== undefined && (
+                      <div className="summary">
+                        {blueSquare.createdDate !== undefined
+                          ? `${formatCreatedDate(blueSquare.createdDate)}: ${blueSquare.description}`
+                          : blueSquare.description}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
           : null}
       </div>
-      {isInfringementAuthorizer && ( 
+      {isInfringementAuthorizer && (
         <div
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');

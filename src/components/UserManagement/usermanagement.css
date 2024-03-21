@@ -261,7 +261,7 @@ tr:hover {
   fill: #0d6efd;
 }
 .Logged-time-off-cards-container {
-  overflow-y: auto;
+  overflow: auto;
   overflow-x: hidden;
   max-height: 215px;
 }

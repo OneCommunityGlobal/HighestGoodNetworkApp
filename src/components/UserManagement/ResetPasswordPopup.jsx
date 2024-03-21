@@ -5,11 +5,11 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Input,
   Label,
   Alert,
   Form,
 } from 'reactstrap';
+import Input from 'components/common/Input';
 import { boxStyle } from 'styles';
 /**
  * Modal popup to show the reset password action
@@ -64,10 +64,6 @@ const ResetPasswordPopup = React.memo(props => {
         <Form>
           <div className="flex justify-between items-center mb-2">
               <Label className="mr-2" for="newpassword">New Password</Label>
-              <span 
-                className={`fa ${showPassword.newPassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} 
-                onClick={() => togglePasswordVisibility('newPassword')} 
-              ></span>
           </div>
           <Input
             autoFocus
@@ -91,10 +87,6 @@ const ResetPasswordPopup = React.memo(props => {
           
           <div className="flex justify-between items-center mt-4 mb-2">
               <Label className="mr-2" for="confirmpassword">Confirm Password</Label>
-              <span 
-                className={`fa ${showPassword.confirmPassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} 
-                onClick={() => togglePasswordVisibility('confirmPassword')} 
-              ></span>
           </div>
           <Input
             type={showPassword.confirmPassword ? 'text' : 'password'}

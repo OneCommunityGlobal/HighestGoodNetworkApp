@@ -11,14 +11,14 @@ const TimeOffRequestDetailModal = () => {
     dispatch(hideTimeOffRequestModal());
   };
 
-  const getWeekIntervals = data => {
-    const dateOfLeaveStr = moment(data.startingDate)
+  const getWeekIntervals = req => {
+    const dateOfLeaveStr = moment(req.startingDate)
       .tz('America/Los_Angeles')
       .format()
       .split('T')[0];
     const intervals = [];
     let startDate = moment(dateOfLeaveStr);
-    for (let i = 0; i < data.duration; i++) {
+    for (let i = 0; i < req.duration; i++) {
       const endDate = startDate.clone().endOf('week');
       intervals.push([startDate.format('MM-DD-YYYY'), endDate.format('MM-DD-YYYY')]);
       startDate = startDate.add(1, 'week').startOf('week');
@@ -31,7 +31,7 @@ const TimeOffRequestDetailModal = () => {
       <Modal isOpen={isOpen} toggle={() => detailModalClose()} returnFocusAfterClose={true}>
         <ModalHeader toggle={() => detailModalClose()}>Time Off Details</ModalHeader>
         <ModalBody className="time-off-detail-modal">
-          <Container>
+        <Container>
             <Row>
               <Col className="mb-1">
                 {data?.onVacation

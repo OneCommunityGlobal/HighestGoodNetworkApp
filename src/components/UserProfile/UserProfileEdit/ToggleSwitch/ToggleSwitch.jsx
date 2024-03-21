@@ -88,6 +88,50 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
           </div>
         </div>
       );
+    case 'email-subcription':
+      if (state) {
+        return (
+          <div className="blueSqare">
+            <div className={style.switchSection}>
+              <div className="icon">
+                <i className="fa fa-envelope-o" aria-hidden="true" />
+              </div>
+              <div className={style.switchContainer}>
+                subscribed
+                <input
+                  id="emailSubscriptionConfig"
+                  data-testid="email-subcription-switch"
+                  type="checkbox"
+                  className={style.toggle}
+                  onChange={handleUserProfile}
+                />
+                unsubscribed
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className="blueSqare">
+          <div className={style.switchSection}>
+            <div className="icon">
+              <i className="fa fa-envelope-o" aria-hidden="true" />
+            </div>
+            <div className={style.switchContainer}>
+              subscribed
+              <input
+                id="emailSubscriptionConfig"
+                data-testid="email-subcription-switch"
+                type="checkbox"
+                className={style.toggle}
+                defaultChecked
+                onChange={handleUserProfile}
+              />
+              unsubscribed
+            </div>
+          </div>
+        </div>
+      );
     case 'phone':
       if (state) {
         return (

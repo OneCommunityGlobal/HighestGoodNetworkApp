@@ -423,7 +423,7 @@ const TeamMemberTasks = React.memo(props => {
           taskModalOption={taskModalOption}
         />
       )}
-      <div className="table-container">
+      <div className="task_table-container">
         <Table>
           <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
             {toggleButtonText === 'View All' ? (

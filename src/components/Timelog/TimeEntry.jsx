@@ -63,7 +63,8 @@ const TimeEntry = (props) => {
     ({ projectName, projectCategory } = timeEntryProject);
     if (taskId) {
       const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
-      ({ taskName, taskClassification = '' } = timeEntryTask);
+      console.log('timeEntryTask', timeEntryTask)
+      if (timeEntryTask) ({ taskName, taskClassification = '' } = timeEntryTask); // temporary fix for timeentry of tasks not have current user as resource
     }
   }
   
