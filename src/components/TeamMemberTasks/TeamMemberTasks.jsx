@@ -61,13 +61,13 @@ const TeamMemberTasks = React.memo(props => {
   const [loading, setLoading] = useState(false);
 
   const handleToggleButtonClick = () => {
-    const text = 'You have not selected a team or the selected team does not have any members.';
-
-    loading
-      ? toast.warning('Please wait while the teams are loading.')
-      : usersSelectedTeam.length === 0
-      ? toast.error(text)
-      : setToggleButtonText(prevText => (prevText === 'View All' ? 'My Team' : 'View All'));
+    if (loading) {
+      toast.warning('Please wait while the teams are loading.');
+    } else if (usersSelectedTeam.length === 0) {
+      toast.error(`You have not selected a team or the selected team does not have any members.`);
+    } else {
+      setToggleButtonText(prevText => (prevText === 'View All' ? 'My Team' : 'View All'));
+    }
   };
 
   const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
@@ -327,9 +327,7 @@ const TeamMemberTasks = React.memo(props => {
           ) : !isLoading &&
             userRole !== 'Administrator' &&
             userRole !== 'Core Team' &&
-            userRole !== 'Owner' ? (
-            <></>
-          ) : null}
+            userRole !== 'Owner' ? null : null}
         </section>
 
         {finishLoading ? (
