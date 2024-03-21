@@ -127,8 +127,7 @@ function WarningTrackerModal({
   };
 
   const handleChange = e => {
-    const value = e.target.value.trim();
-    setNewWarning(value);
+    setNewWarning(e.target.value);
   };
 
   // eslint-disable-next-line no-shadow
@@ -283,9 +282,7 @@ function WarningTrackerModal({
                 required
                 className="warning__input"
                 value={newWarning}
-                onChange={e => {
-                  handleChange(e);
-                }}
+                onChange={e => setNewWarning(e.target.value)}
               />
               <div>
                 <Button color="primary" type="submit">
