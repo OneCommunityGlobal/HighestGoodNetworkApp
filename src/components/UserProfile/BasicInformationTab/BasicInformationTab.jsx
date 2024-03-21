@@ -626,7 +626,7 @@ const BasicInformationTab = props => {
 
   const endDateComponent = (
     <>
-      <Col md={desktopDisplay ? '8' : ''} className="mr-5">
+      <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
         <Label className='mr-1'>
           {userProfile.endDate
             ? 'End Date ' + formatDate(userProfile.endDate)
@@ -682,7 +682,7 @@ const BasicInformationTab = props => {
         </>
       ) : (
         <>
-          <Col md="9">
+          <Col>
             <Label>Status</Label>
             <div>
               <Label style={{ fontWeight: 'normal' }}>
