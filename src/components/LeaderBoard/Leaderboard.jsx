@@ -1,9 +1,20 @@
-import  { useEffect, useState, useRef, Fragment } from 'react';
+import { useEffect, useState, useRef, Fragment } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
-import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button,
-    Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import {
+  Table,
+  Progress,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -15,9 +26,9 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { boxStyle } from 'styles';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
-import { boxStyle } from 'styles';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
