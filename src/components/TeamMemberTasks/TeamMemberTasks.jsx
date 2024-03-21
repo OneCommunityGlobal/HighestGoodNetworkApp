@@ -19,7 +19,6 @@ import './style.css';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { boxStyle } from 'styles';
-import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
@@ -29,6 +28,7 @@ import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { MyTeamMember } from './MyTeamMember';
+import { ENDPOINTS } from 'utils/URL';
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store

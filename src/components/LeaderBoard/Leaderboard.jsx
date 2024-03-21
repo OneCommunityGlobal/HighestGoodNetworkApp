@@ -27,8 +27,8 @@ import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
 import { boxStyle } from 'styles';
-import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
