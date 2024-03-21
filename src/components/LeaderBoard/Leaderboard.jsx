@@ -318,10 +318,11 @@ function LeaderBoard({
                       toggle={dashboardToggle}
                       className="modal-personal-dashboard"
                     >
-                        <ModalHeader toggle={dashboardToggle}>
-                          Jump to personal Dashboard
-                        </ModalHeader>                      
-                        <ModalBody>
+                      {/* eslint-disable prettier/prettier */}
+                      <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
+                      {/* eslint-disable prettier/prettier */}
+
+                      <ModalBody>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
                       </ModalBody>
                       <ModalFooter>
