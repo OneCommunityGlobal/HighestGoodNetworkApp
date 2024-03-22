@@ -19,6 +19,7 @@ import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { fetchAllFollowUps } from '../../actions/followUpActions';
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store
@@ -46,6 +47,7 @@ const TeamMemberTasks = React.memo(props => {
 
   useEffect(() => {
     dispatch(getAllTimeOffRequests());
+    dispatch(fetchAllFollowUps())
   }, []);
 
   const closeMarkAsDone = () => {

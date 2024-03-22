@@ -1,0 +1,27 @@
+.folloup-tooltip-container {
+  display: inline-block;
+}
+
+.folloup-tooltip {
+  visibility: hidden;
+  background-color: #333333;
+  color: white;
+  text-align: center; 
+  border-radius: 1%;
+  padding: 20px;
+  position: absolute;
+  z-index: 9; 
+  top: 30px; 
+  transform: translate(-50%); 
+  width: 40vw;
+}
+
+.folloup-tooltip-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.folloup-tooltip-container:hover .folloup-tooltip {
+  visibility: visible;
+}
