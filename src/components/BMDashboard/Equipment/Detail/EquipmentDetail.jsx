@@ -56,7 +56,7 @@ function EquipmentDetail() {
   const history = useHistory();
   const { equipmentId } = useParams();
 
-  const equipment = useSelector(state => state.bmEquipments.singleEquipment);
+  const equipment = useSelector(state => state.equipment);
 
   const dispatch = useDispatch();
 
