@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { setUserFollowUp } from '../../actions/followUpActions';
@@ -10,50 +10,62 @@ const FollowupCheckButton = ({ moseoverText, user, task }) => {
   const userFollowUps = useSelector(state => state.userFollowUp?.followUps[user.personId] || []);
   const userFollowUpTask = userFollowUps.filter(ele => ele.taskId === task._id);
   const isChecked = userFollowUpTask[0]?.followUpCheck || false;
+  const followUpPercentageDeadline = userFollowUpTask[0]?.followUpPercentageDeadline || 0;
+  const [needFollowUp, setNeedFollowUp] = useState(false)
+
+  useEffect(()=>{
+    CheckNeedFollowUp()
+  },[followUpPercentageDeadline])
 
   const handleCheckboxFollowUp = () => {
     const progressPersantage =
       Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
 
     const data = {
-      followUpCheck: !isChecked,
+      followUpCheck: needFollowUp ? true : !isChecked,
       followUpPercentageDeadline: progressPersantage,
     };
-
+    console.log(data)
     dispatch(setUserFollowUp(user.personId, task._id, data));
   };
 
-  const NeedFollowUp = () => {
+  const CheckNeedFollowUp = () => {
     const taskProgressPercentage =
       Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
-
+    
     if (userFollowUpTask.length > 0) {
       const followUp = userFollowUpTask[0];
       const followUpPercentageDeadline = Number(followUp.followUpPercentageDeadline) || 0;
 
       if (followUpPercentageDeadline < 50 && taskProgressPercentage > 50) {
-        return true;
+        setNeedFollowUp(true)
+        return;
       } else if (
         followUpPercentageDeadline >= 50 &&
         followUpPercentageDeadline < 75 &&
         taskProgressPercentage > 75
       ) {
-        return true;
+        setNeedFollowUp(true)
+        return;
       } else if (
         followUpPercentageDeadline >= 75 &&
         followUpPercentageDeadline < 90 &&
         taskProgressPercentage > 90
       ) {
-        return true;
+        setNeedFollowUp(true)
+        return;
       } else if (followUpPercentageDeadline < 90 && taskProgressPercentage > 90) {
-        return true;
+        setNeedFollowUp(true)
+        return;
       }
     } else {
       if (taskProgressPercentage > 50) {
-        return true;
+        setNeedFollowUp(true)
+        return;
       }
     }
-    return false;
+    setNeedFollowUp(false)
+    return;
   };
 
   return (
@@ -62,17 +74,17 @@ const FollowupCheckButton = ({ moseoverText, user, task }) => {
         type="checkbox"
         title={moseoverText}
         className={`team-task-progress-follow-up ${
-          NeedFollowUp() ? 'team-task-progress-follow-up-red' : ''
+          needFollowUp ? 'team-task-progress-follow-up-red' : ''
         }`}
-        checked={isChecked && !NeedFollowUp()}
-        onChange={() => handleCheckboxFollowUp()}
+        checked={isChecked && !needFollowUp}
+        onChange={handleCheckboxFollowUp}
       />
-      {isChecked && !NeedFollowUp() && (
+      {isChecked && !needFollowUp && (
         <FontAwesomeIcon
           icon={faCheck}
           title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
           className="team-task-progress-follow-up-check"
-          onClick={() => handleCheckboxFollowUp()}
+          onClick={handleCheckboxFollowUp}
         />
       )}
     </>
