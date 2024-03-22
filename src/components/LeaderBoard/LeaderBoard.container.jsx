@@ -8,6 +8,7 @@ import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
+
   const user = get(state, 'userProfile', []);
 
   if (user.role !== 'Administrator' && user.role !== 'Owner' && user.role !== 'Core Team') {
@@ -30,7 +31,6 @@ const mapStateToProps = state => {
       element.intangibletime = round(element.totalintangibletime_hrs, 2);
 
       element.tangibletimewidth = round((element.totaltangibletime_hrs * 100) / maxTotal, 0);
-
       element.intangibletimewidth = round((element.totalintangibletime_hrs * 100) / maxTotal, 0);
 
       element.barcolor = getcolor(element.totaltangibletime_hrs);
