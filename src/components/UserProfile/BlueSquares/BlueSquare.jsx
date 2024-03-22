@@ -44,7 +44,7 @@ const BlueSquare = props => {
                     <div className="title">{formatDate(blueSquare.date)}</div>
                     {blueSquare.description !== undefined && (
                       <div className="summary">
-                        {blueSquare.createdDate !== undefined
+                        {blueSquare.createdDate !== undefined && blueSquare.createdDate !== null
                           ? `${formatCreatedDate(blueSquare.createdDate)}: ${blueSquare.description}`
                           : blueSquare.description}
                       </div>
