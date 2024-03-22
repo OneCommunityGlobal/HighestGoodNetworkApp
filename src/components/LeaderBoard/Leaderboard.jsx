@@ -339,7 +339,7 @@ function LeaderBoard({
                   )}
                 </th>
                 <td className="align-middle">
-                  {allRequests[item.personId]?.length > 0 && (
+                  {allRequests && allRequests[item.personId]?.length > 0 && (
                     <div>
                       <button
                         type="button"
