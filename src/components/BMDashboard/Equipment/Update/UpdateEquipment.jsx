@@ -62,25 +62,24 @@ export default function UpdateEquipment() {
   const handleSubmit = e => {
     e.preventDefault(); // Prevent the default form submit action
 
-    // Create a data object with the values from your state
     const formData = {
-      lastUsedBy,
-      lastUsedByOther,
-      lastUsedFor,
-      lastUsedForOther,
+      lastUsedBy: lastUsedBy === 'other' ? lastUsedByOther : lastUsedBy,
+      lastUsedFor: lastUsedFor === 'other' ? lastUsedForOther : lastUsedFor,
       replacementRequired,
-      description,
-      sendNote,
       updateDate,
       status,
+      description,
+      sendNote,
       notes,
-      itemOwnership,
-      // ...any other fields you want to include
+      // Tool image handling logic will be implemented based on your application's requirements
     };
 
     // eslint-disable-next-line no-console
     console.log('Form Data Submitted:', formData);
+
+    // Here, implement the logic to send formData to your backend server
   };
+
   return (
     <Container className="inv-form-page-container">
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
