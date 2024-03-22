@@ -8,6 +8,7 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 
 const UserTeamsTable = props => {
+  console.log(props);
   const [tooltipOpen, setTooltip] = useState(false);
   const [teamCode, setTeamCode] = useState(props.userProfile? props.userProfile.teamCode: props.teamCode);
 
@@ -35,7 +36,7 @@ const UserTeamsTable = props => {
 
   return (
     <div>
-      <div className="teamtable-container desktop">
+      <div className="teamtable-container desktop" data-testid='userTeamTest'>
         <div className="container" style={{paddingLeft: '4px', paddingRight: '4px'}}>
           {props.canEditVisibility && (
             <div className="row" >
