@@ -8,11 +8,25 @@ import { WeeklySummary } from '../WeeklySummary';
 import CountdownTimer from '../CountdownTimer';
 import { shallow } from 'enzyme';
 import CurrentPromptModal from '../CurrentPromptModal';
+import configureMockStore from 'redux-mock-store';
+import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
+import { renderWithProvider } from '../../../__tests__/utils';
+import thunk from 'redux-thunk';
+
+const mockStore = configureMockStore([thunk]);
 
 jest.mock('../CurrentPromptModal', () => 'current-Prompt-Modal')
 const wrapper = props => shallow(<CurrentPromptModal {...props} />);
 
 describe('WeeklySummary page', () => {
+  let store;
+  beforeEach(() => {
+    store = mockStore({
+      auth: authMock,
+      userProfile: userProfileMock,
+      role: rolesMock.role,
+    });
+  });
   describe('On page load', () => {
     it('displays loading indicator', () => {
       const props = {
@@ -25,8 +39,8 @@ describe('WeeklySummary page', () => {
         roles: [],
       };
 
-      render(<WeeklySummary {...props} />);
-
+      renderWithProvider(<WeeklySummary {...props} />, { store, });
+  
       expect(screen.getByTestId('loading')).toBeInTheDocument();
     });
     it('displays an error message if there is an error on data fetch', async () => {
@@ -40,7 +54,7 @@ describe('WeeklySummary page', () => {
         authUser: { role: '' },
         roles: [],
       };
-      render(<WeeklySummary {...props} />);
+      renderWithProvider(<WeeklySummary {...props} />, { store, });
 
       await waitFor(() => screen.getByTestId('loading'));
 
@@ -60,7 +74,7 @@ describe('WeeklySummary page', () => {
     };
 
     beforeEach(() => {
-      render(<WeeklySummary {...props} />);
+      renderWithProvider(<WeeklySummary {...props} />, { store, });
     });
 
     it('should display 4 tabs even when the user summaries related fields have not been initialized in the database', () => {
@@ -74,7 +88,7 @@ describe('WeeklySummary page', () => {
         roles: [],
       };
 
-      render(<WeeklySummary {...props} />);
+      renderWithProvider(<WeeklySummary {...props} />, { store, });
 
       const li = screen.getAllByRole('listitem');
       expect(li.length).toEqual(4);
@@ -136,7 +150,7 @@ describe('WeeklySummary page', () => {
     };
 
     beforeEach(() => {
-      render(<WeeklySummary {...props} />);
+      renderWithProvider(<WeeklySummary {...props} />, { store, });
     });
 
     const testTooltip = async testId => {
@@ -172,7 +186,7 @@ describe('WeeklySummary page', () => {
     };
 
     beforeEach(() => {
-      render(<WeeklySummary {...props} />);
+      renderWithProvider(<WeeklySummary {...props} />, { store, });
     });
 
     describe('Media URL field', () => {
