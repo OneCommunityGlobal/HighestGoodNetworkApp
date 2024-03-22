@@ -47,7 +47,7 @@ function WriteItForMeModal(props) {
 
   return (
     <div>
-      <Button color="info" onClick={fetchSummary} style={{ ...boxStyle, width: '187px' }}>
+      <Button color="info" onClick={fetchSummary} style={{ ...boxStyle, width: '100%' }}>
         Write It For Me
       </Button>
 

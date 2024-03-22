@@ -758,7 +758,7 @@ export class WeeklySummary extends Component {
                               </DropdownItem>
                             </DropdownMenu>
                           </UncontrolledDropdown>
-                          <div>
+                          <div style={{ width: '10rem' }}>
                             <CurrentPromptModal userRole={userRole} userId={displayUserId} />
                             <WriteItForMeModal pasteResponse={this.pasteResponse} />
                           </div>
