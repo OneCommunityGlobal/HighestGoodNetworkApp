@@ -43,8 +43,7 @@ function LeaderBoard({
   isVisible,
   displayUserId,
   totalTimeMouseoverText,
-  userOnTimeOff,
-  userGoingOnTimeOff,
+  allRequests,
   showTimeOffRequestModal,
 }) {
   const userId = displayUserId || loggedInUser.userId;
@@ -340,25 +339,14 @@ function LeaderBoard({
                   )}
                 </th>
                 <td className="align-middle">
-                  {(userOnTimeOff || userGoingOnTimeOff) &&
-                    (userOnTimeOff[item.personId] || userGoingOnTimeOff[item.personId]) && (
+                  {allRequests[item.personId] &&
+                    allRequests[item.personId]?.length > 0 && (
                       <div>
                         <button
                           type="button"
                           onClick={() => {
-                            const request = userOnTimeOff[item.personId]
-                              ? {
-                                  ...userOnTimeOff[item.personId],
-                                  onVacation: true,
-                                  name: item.name,
-                                }
-                              : {
-                                  ...userGoingOnTimeOff[item.personId],
-                                  onVacation: false,
-                                  name: item.name,
-                                };
-
-                            handleTimeOffModalOpen(request);
+                            const data = {requests:[...allRequests[item.personId]], name: item.name , leaderboard: true}
+                            handleTimeOffModalOpen(data);
                           }}
                           style={{ width: '35px', height: 'auto' }}
                         >

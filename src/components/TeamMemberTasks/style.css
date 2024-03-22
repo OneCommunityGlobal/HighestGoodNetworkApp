@@ -286,6 +286,12 @@
   border-radius: 5px;
 }
 
+.time-off-detail-modal-card-container{
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
 @media only screen and (max-width: 768px) {
   .pc-component {
     display: none;
