@@ -8,6 +8,7 @@ import {
   hasLeaderboardPermissions,
   assignStarDotColors,
   showStar,
+  viewZeroHouraMembers,
 } from 'utils/leaderboardPermissions';
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
@@ -86,6 +87,9 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
+  const individualsWithZeroHours = leaderBoardData.filter(
+    individuals => individuals.weeklycommittedHours === 0,
+  );
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -192,7 +196,14 @@ function LeaderBoard({
           <tbody className="my-custome-scrollbar">
             <tr>
               <td />
-              <th scope="row">{organizationData.name}</th>
+              <th scope="row" className="leaderboard-totals-container">
+                <span>{organizationData.name}</span>
+                {viewZeroHouraMembers(loggedInUser.role) && (
+                  <span className="leaderboard-totals-title">
+                    0 hrs Totals: {individualsWithZeroHours.length} Members
+                  </span>
+                )}
+              </th>
               <td className="align-middle" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
@@ -393,7 +404,7 @@ function LeaderBoard({
                   <span
                     title={mouseoverTextValue}
                     id="Total time"
-                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                    className={item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null}
                   >
                     {item.totaltime}
                   </span>
