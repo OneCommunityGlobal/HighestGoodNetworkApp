@@ -304,6 +304,12 @@ export class WeeklySummary extends Component {
   };
 
   handleMove = () => {
+    const { isNotAllowedToEdit } = this.props;
+    if (isNotAllowedToEdit) {
+      // eslint-disable-next-line no-alert
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     const { moveSelect, formElements, activeTab, movePopup } = this.state;
     const newformElements = { ...formElements };
 
@@ -348,6 +354,7 @@ export class WeeklySummary extends Component {
     }
     // confitm move or not
     this.toggleMovePopup(movePopup);
+    // eslint-disable-next-line consistent-return
     return newformElements;
   };
 
@@ -586,6 +593,12 @@ export class WeeklySummary extends Component {
   };
 
   handleMoveSave = async event => {
+    const { isNotAllowedToEdit } = this.props;
+    if (isNotAllowedToEdit) {
+      // eslint-disable-next-line no-alert
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     if (event) {
       event.preventDefault();
     }
@@ -598,6 +611,12 @@ export class WeeklySummary extends Component {
   };
 
   handleSave = async event => {
+    const { isNotAllowedToEdit } = this.props;
+    if (isNotAllowedToEdit) {
+      // eslint-disable-next-line no-alert
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     if (event) {
       event.preventDefault();
     }
@@ -625,8 +644,7 @@ export class WeeklySummary extends Component {
       editPopup,
       movePopup,
     } = this.state;
-
-    const { isDashboard, isPopup, isModal } = this.props;
+    const { isDashboard, isPopup, isModal, isNotAllowedToEdit } = this.props;
 
     // Create an object containing labels for each summary tab:
     // - 'This Week' for the current week's tab
@@ -723,41 +741,43 @@ export class WeeklySummary extends Component {
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
-                          <UncontrolledDropdown>
-                            <DropdownToggle
-                              className="px-5 btn--dark-sea-green"
-                              caret
-                              style={boxStyle}
-                            >
-                              Move This Summary
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              <DropdownItem
-                                disabled={activeTab === '1'}
-                                onClick={() => this.handleMoveSelect('1')}
+                          {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
+                            <UncontrolledDropdown>
+                              <DropdownToggle
+                                className="px-5 btn--dark-sea-green"
+                                caret
+                                style={boxStyle}
                               >
-                                This Week
-                              </DropdownItem>
-                              <DropdownItem
-                                disabled={activeTab === '2'}
-                                onClick={() => this.handleMoveSelect('2')}
-                              >
-                                Last Week
-                              </DropdownItem>
-                              <DropdownItem
-                                disabled={activeTab === '3'}
-                                onClick={() => this.handleMoveSelect('3')}
-                              >
-                                Week Before Last
-                              </DropdownItem>
-                              <DropdownItem
-                                disabled={activeTab === '4'}
-                                onClick={() => this.handleMoveSelect('4')}
-                              >
-                                Three Weeks Ago
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </UncontrolledDropdown>
+                                Move This Summary
+                              </DropdownToggle>
+                              <DropdownMenu>
+                                <DropdownItem
+                                  disabled={activeTab === '1'}
+                                  onClick={() => this.handleMoveSelect('1')}
+                                >
+                                  This Week
+                                </DropdownItem>
+                                <DropdownItem
+                                  disabled={activeTab === '2'}
+                                  onClick={() => this.handleMoveSelect('2')}
+                                >
+                                  Last Week
+                                </DropdownItem>
+                                <DropdownItem
+                                  disabled={activeTab === '3'}
+                                  onClick={() => this.handleMoveSelect('3')}
+                                >
+                                  Week Before Last
+                                </DropdownItem>
+                                <DropdownItem
+                                  disabled={activeTab === '4'}
+                                  onClick={() => this.handleMoveSelect('4')}
+                                >
+                                  Three Weeks Ago
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </UncontrolledDropdown>
+                          )}
                           <div style={{ width: '10rem' }}>
                             <CurrentPromptModal userRole={userRole} userId={displayUserId} />
                             <WriteItForMeModal pasteResponse={this.pasteResponse} />

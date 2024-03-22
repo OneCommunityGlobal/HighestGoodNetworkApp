@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { updatePassword } from '../../actions/updatePassword';
 import { logoutUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
+import Input from 'components/common/Input';
 
 
 class UpdatePassword extends Form {
@@ -102,7 +103,6 @@ class UpdatePassword extends Form {
                 <div className="mb-4">
                     <div className="flex justify-between items-center">
                         <label htmlFor="currentpassword" className="text-sm font-medium text-gray-700 mr-2">Current Password:</label>
-                        <i className={`fa ${this.state.showPassword.currentpassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} onClick={() => this.togglePasswordVisibility('currentpassword')}></i>
                     </div>
                     {this.renderInput({ name: 'currentpassword', type: this.state.showPassword.currentpassword ? 'text' : 'password' })}
                 </div>
@@ -110,7 +110,6 @@ class UpdatePassword extends Form {
                 <div className="mb-4">
                     <div className="flex justify-between items-center">
                         <label htmlFor="newpassword" className="text-sm font-medium text-gray-700 mr-2">New Password:</label>
-                        <i className={`fa ${this.state.showPassword.newpassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} onClick={() => this.togglePasswordVisibility('newpassword')}></i>
                     </div>
                     {this.renderInput({ name: 'newpassword', type: this.state.showPassword.newpassword ? 'text' : 'password' })}
                 </div>
@@ -118,7 +117,6 @@ class UpdatePassword extends Form {
                 <div className="mb-4">
                     <div className="flex justify-between items-center">
                         <label htmlFor="confirmnewpassword" className="text-sm font-medium text-gray-700 mr-2">Confirm Password:</label>
-                        <i className={`fa ${this.state.showPassword.confirmnewpassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} onClick={() => this.togglePasswordVisibility('confirmnewpassword')}></i>
                     </div>
                     {this.renderInput({ name: 'confirmnewpassword', type: this.state.showPassword.confirmnewpassword ? 'text' : 'password' })}
                 </div>

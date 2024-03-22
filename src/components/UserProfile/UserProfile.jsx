@@ -80,6 +80,7 @@ function UserProfile(props) {
   const [isProjectsEqual, setIsProjectsEqual] = useState(true);
   const [projects, setProjects] = useState([]);
   const [originalProjects, setOriginalProjects] = useState([]);
+  const [resetProjects, setResetProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [formValid, setFormValid] = useState(initialFormValid);
@@ -209,35 +210,36 @@ function UserProfile(props) {
 
   const loadSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
+    try {
+      const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+      const { data } = res;
 
-    const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
-    const { data } = res;
+      const activeMembers = data.filter(member => member._id !== currentManager._id && member.isActive);
 
-    const memberSubmitted = [];
-    const memberNotSubmitted = [];
+      const memberSubmitted = activeMembers
+        .filter(member => member.weeklySummaries[0].summary !== '')
+        .map(member => `${member.firstName} ${member.lastName}`);
 
-    data.forEach(member => {
-      if (member._id !== currentManager._id) {
-        if (member.weeklySummaries[0].summary !== '') {
-          memberSubmitted.push(`${member.firstName} ${member.lastName}`);
-        } else {
-          memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
-        }
-      }
-    });
+      const memberNotSubmitted = activeMembers
+        .filter(member => member.weeklySummaries[0].summary === '')
+        .map(member => `${member.firstName} ${member.lastName}`);
 
-    const memberSubmittedString =
-      memberSubmitted.length !== 0
-        ? memberSubmitted.join(', ')
-        : '<list all team members names included in the summary>';
-    const memberDidntSubmitString =
-      memberNotSubmitted.length !== 0
-        ? memberNotSubmitted.join(', ')
-        : '<list all team members names NOT included in the summary>';
+      const memberSubmittedString =
+        memberSubmitted.length !== 0
+          ? memberSubmitted.join(', ')
+          : '<list all team members names included in the summary>';
 
-    const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+      const memberDidntSubmitString =
+        memberNotSubmitted.length !== 0
+          ? memberNotSubmitted.join(', ')
+          : '<list all team members names NOT included in the summary>';
 
-    setSummaryIntro(summaryIntroString);
+      const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+
+      setSummaryIntro(summaryIntroString);
+    } catch (error) {
+      console.error('Error fetching team users:', error);
+    }
   };
 
   const loadUserTasks = async () => {
@@ -314,6 +316,7 @@ function UserProfile(props) {
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
+      setResetProjects(newUserProfile.projects);
       setUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
@@ -452,6 +455,10 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+    if (targetIsDevAdminUneditable){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     setType(type);
     setShowModal(status);
 
@@ -516,7 +523,7 @@ function UserProfile(props) {
     }
     try {
       await props.updateUserProfile(userProfileRef.current);
-
+      
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -525,6 +532,7 @@ function UserProfile(props) {
       setSaved(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
+      return err.message;
     }
   };
  
@@ -598,6 +606,12 @@ function UserProfile(props) {
             ...userProfile.privacySettings,
             email: !userProfile.privacySettings?.email,
           },
+        });
+        break;
+      case 'emailSubscriptionConfig':
+        setUserProfile({
+          ...userProfile,
+          emailSubscriptions: !userProfile.emailSubscriptions,
         });
         break;
       case 'phonePubliclyAccessible':
@@ -884,6 +898,7 @@ function UserProfile(props) {
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
+                user={props.auth.user}
                 isUserSelf={isUserSelf}
                 canEdit={canEdit}
               />
@@ -983,11 +998,11 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
-                  edit={canEdit || targetIsDevAdminUneditable}
+                  edit={canEdit}
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && userProfile.role != 'Volunteer' && targetIsDevAdminUneditable}
+                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
@@ -1006,7 +1021,7 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="4">
-                <ProjectsTab
+                <ProjectsTab 
                   userProjects={userProfile.projects || []}
                   userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
@@ -1096,7 +1111,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1111,6 +1126,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1153,7 +1169,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1168,6 +1184,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1221,7 +1238,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1236,6 +1253,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1282,7 +1300,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1297,6 +1315,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1331,7 +1350,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1346,6 +1365,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1394,11 +1414,11 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && (activeTab === '1' || activeTab === '2' || activeTab === '3') && (
+              {canEdit && (activeTab) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
-                    handleSubmit={handleSubmit}
+                    handleSubmit={async () => await handleSubmit()}
                     disabled={
                       !formValid.firstName ||
                       !formValid.lastName ||
@@ -1417,6 +1437,7 @@ function UserProfile(props) {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
                         setTeams(originalTeams);
+                        setProjects(resetProjects);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
                       style={boxStyle}

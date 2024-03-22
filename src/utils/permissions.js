@@ -27,6 +27,12 @@ export const getUserInfo = (action)=>{
 }
 
 // others cannot change the details for devadmin@hgn.net
+/**
+ * 
+ * @param {String} devAdminEmail target user email
+ * @param {String} authEmail logged in user email
+ * @returns {boolean} true if the user is not allowed to update the devadmin details
+ */
 export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
   const allowedEmails = ['jae@onecommunityglobal.org',
                          'one.community@me.com',
