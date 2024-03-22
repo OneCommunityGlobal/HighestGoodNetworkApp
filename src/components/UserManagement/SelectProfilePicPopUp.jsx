@@ -5,16 +5,40 @@ import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { connect, useDispatch, useSelector } from 'react-redux';
-
+import { ENDPOINTS } from '../../utils/URL';
+import axios from 'axios';
+import { set } from 'lodash';
 /**
  * Modal popup to show the user profile picture
  */
 const SelectProfilePicPopup = React.memo(props => {
   const [selectedPic, setSelectedPic] = useState();
   const [newPic, setNewPic] = useState();
-  const storedPics = props.user?.storedPics;
-  const profilePic = props.user?.profilePic;
+  const [storedPics, setStoredPics] = useState();
+  const [profilePic, setProfilePic] = useState();
   const userProfile = useSelector(state => state.userProfile);
+
+
+  
+  useEffect(() => {
+    loadUserProfile();
+  }, [props]);
+
+  const loadUserProfile = async () => {
+    
+    const userId = props?.user?._id;
+    if (!userId) return;
+    console.log(userId);
+    try {
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const userProfile = response.data;
+      setStoredPics(userProfile.storedPics);
+      setProfilePic(userProfile.profilePic);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to load user profile.');
+    }
+  };
 
   const closePopup = e => {
     props.onClose();

@@ -59,7 +59,7 @@ class UserManagement extends React.PureComponent {
       deletePopupOpen: false,
       isPaused: false,
       finalDayDateOpen: false,
-      profilePicOpen: false,
+      // profilePicOpen: false,
       setupNewUserPopupOpen: false,
       logTimeOffPopUpOpen: false,
       userForTimeOff: '',
