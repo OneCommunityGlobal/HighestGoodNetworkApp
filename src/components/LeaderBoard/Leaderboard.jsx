@@ -1,3 +1,6 @@
+/**
+ * consider pagination
+ */
 import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';

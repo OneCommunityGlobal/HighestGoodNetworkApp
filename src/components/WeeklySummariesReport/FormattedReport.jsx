@@ -36,7 +36,9 @@ import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
+import WeeklySummariesPagination from './components/WeeklySummariesPagination';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import LimitSelection from './components/LimitSelection';
 
 const textColors = {
   Default: '#000000',
@@ -66,29 +68,97 @@ function FormattedReport({
   auth,
   canSeeBioHighlight,
 }) {
-  // if (auth?.user?.role){console.log(auth.user.role)}
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [newSummary, setNewSummary] = useState([]);
 
+  const totalPages = Math.ceil(summaries.length / limit);
+
+  let pageNo;
+  if (page <= totalPages) {
+    pageNo = page;
+  } else {
+    setPage(totalPages);
+    pageNo = page;
+  }
+
+  const getSummaries = (customPage, customLimit) => {
+    const array = [];
+    for (
+      let i = (customPage - 1) * customLimit;
+      i < customPage * customLimit && summaries[i];
+      i += 1
+    ) {
+      array.push(summaries[i]);
+    }
+    return array;
+  };
+
+  useEffect(() => {
+    // Initialize the page with 10 summaries
+    if (newSummary[0] === undefined && summaries[0]) {
+      const data = summaries.slice(0, 10);
+      setNewSummary(data);
+    } else {
+      const data = getSummaries(page, limit);
+      setNewSummary(data);
+    }
+  }, [summaries, page, limit]);
+
+  const handlePageChange = value => {
+    if (value === '&laquo;' || value === '... ') {
+      setPage(1);
+    } else if (value === '&lsaquo;') {
+      if (page !== 1) {
+        setPage(page - 1);
+      }
+    } else if (value === '&rsaquo;') {
+      if (page !== totalPages) {
+        setPage(page + 1);
+      }
+    } else if (value === '&raquo;' || value === ' ...') {
+      setPage(totalPages);
+    } else {
+      setPage(value);
+    }
+  };
+
+  const onLimitChange = customLimit => {
+    setLimit(customLimit);
+  };
   return (
     <>
-      <ListGroup flush>
-        {summaries.map(summary => (
-          <ReportDetails
-            key={summary._id}
-            summary={summary}
-            weekIndex={weekIndex}
-            bioCanEdit={bioCanEdit}
-            canEditSummaryCount={isEditCount}
-            allRoleInfo={allRoleInfo}
-            canEditTeamCode={canEditTeamCode}
-            badges={badges}
-            loadBadges={loadBadges}
-            canSeeBioHighlight={canSeeBioHighlight}
-          />
-        ))}
-      </ListGroup>
+      {newSummary[0] !== undefined && (
+        <ListGroup flush>
+          {newSummary.map(summary => (
+            <ReportDetails
+              key={summary._id}
+              summary={summary}
+              weekIndex={weekIndex}
+              bioCanEdit={bioCanEdit}
+              canEditSummaryCount={isEditCount}
+              allRoleInfo={allRoleInfo}
+              canEditTeamCode={canEditTeamCode}
+              badges={badges}
+              loadBadges={loadBadges}
+              canSeeBioHighlight={canSeeBioHighlight}
+            />
+          ))}
+        </ListGroup>
+      )}
       <EmailsList summaries={summaries} auth={auth} />
+      <div className="weekly-summaries-pagination-container">
+        <LimitSelection onLimitChange={onLimitChange} />
+        <WeeklySummariesPagination
+          handlePageChange={handlePageChange}
+          totalPages={totalPages}
+          page={pageNo}
+          limit={limit}
+          siblings={1}
+        />
+      </div>
     </>
   );
 }
@@ -132,40 +202,37 @@ function EmailsList({ summaries, auth }) {
       };
 
       return (
-        <>
-          <div className="d-flex align-items-center">
-            <h4>Emails</h4>
-            <Tooltip
-              placement="top"
-              isOpen={emailTooltipOpen}
-              target="emailIcon"
-              toggle={toggleEmailTooltip}
-            >
-              Launch the email client, organizing the recipient email addresses into batches, each
-              containing a maximum of 90 addresses.
-            </Tooltip>
-            <FontAwesomeIcon
-              className="mx-2"
-              onClick={handleEmailButtonClick}
-              icon={faMailBulk}
-              size="lg"
-              style={{ color: '#0f8aa9', cursor: 'pointer' }}
-              id="emailIcon"
-            />
-            <Tooltip
-              placement="top"
-              isOpen={copyTooltipOpen}
-              target="copytoclipboard"
-              toggle={toggleCopyTooltip}
-            >
-              Click to copy all emails.
-            </Tooltip>
-            <div id="copytoclipboard">
-              <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
-            </div>
+        <div className="d-flex align-items-center">
+          <h4>Emails</h4>
+          <Tooltip
+            placement="top"
+            isOpen={emailTooltipOpen}
+            target="emailIcon"
+            toggle={toggleEmailTooltip}
+          >
+            Launch the email client, organizing the recipient email addresses into batches, each
+            containing a maximum of 90 addresses.
+          </Tooltip>
+          <FontAwesomeIcon
+            className="mx-2"
+            onClick={handleEmailButtonClick}
+            icon={faMailBulk}
+            size="lg"
+            style={{ color: '#0f8aa9', cursor: 'pointer' }}
+            id="emailIcon"
+          />
+          <Tooltip
+            placement="top"
+            isOpen={copyTooltipOpen}
+            target="copytoclipboard"
+            toggle={toggleCopyTooltip}
+          >
+            Click to copy all emails.
+          </Tooltip>
+          <div id="copytoclipboard">
+            <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
           </div>
-          <p>{emails.join(', ')}</p>
-        </>
+        </div>
       );
     }
     return null;
