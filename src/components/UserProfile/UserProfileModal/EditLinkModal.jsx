@@ -20,6 +20,7 @@ const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canEditAdminLinks = props.hasPermission('manageAdminLinks');
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
@@ -144,7 +145,7 @@ const EditLinkModal = props => {
     }
   };
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (err) => {
     const isGoogleDocsValid = isValidUrl(googleLink.Link);
     const isDropboxValid = isValidUrl(mediaFolderLink.Link);
     const updatable =
@@ -186,7 +187,7 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {canPutUserProfileImportantInfo && (
+            {(canPutUserProfileImportantInfo || canEditAdminLinks) && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>

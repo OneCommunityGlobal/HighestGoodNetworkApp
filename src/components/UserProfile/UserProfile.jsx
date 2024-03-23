@@ -521,7 +521,9 @@ function UserProfile(props) {
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
+    
     try {
+
       await props.updateUserProfile(userProfileRef.current);
       
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
@@ -666,6 +668,7 @@ function UserProfile(props) {
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canEditLink = props.hasPermission('manageAdminLinks');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
 
@@ -678,6 +681,8 @@ function UserProfile(props) {
     : canPutUserProfile;
 
   const canEdit = canEditUserProfile || isUserSelf;
+
+  const canManageEditLink = canEditLink;
 
   const customStyles = {
     control: (base, state) => ({
@@ -876,6 +881,7 @@ function UserProfile(props) {
               setOriginalUserProfile={setOriginalUserProfile}
               role={requestorRole}
               canEdit={canEdit}
+              canManageEditLink={canManageEditLink}
               handleSubmit={handleBadgeSubmit}
               isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} //
             />
@@ -891,7 +897,8 @@ function UserProfile(props) {
                 handleLinkModel={props.handleLinkModel}
                 handleSubmit={handleSubmit}
                 role={requestorRole}
-                canEdit={canEdit}
+                canEdit={canEditLink}
+                canManageEditLink={canManageEditLink}
               />
               <BlueSquareLayout
                 userProfile={userProfile}

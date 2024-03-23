@@ -519,6 +519,7 @@ class UserProfileEdit extends Component {
       : { userId: undefined };
     const { userid: requestorId, role: requestorRole } = this.props.auth.user;
     const canPutUserProfile = this.props.hasPermission('putUserProfile');
+    const canEditLink = this.props.hasPermission('manageAdminLinks');
     const canAddDeleteEditOwners = this.props.hasPermission('addDeleteEditOwners');
 
     const {
