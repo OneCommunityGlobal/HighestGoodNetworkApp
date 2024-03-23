@@ -51,9 +51,6 @@ const PermissionListItem = (props) => {
       ? updatedPermissions = updatedPermissions.filter(perm => perm !== permission)
       : updatedPermissions.push(permission);
     }
-    // rolePermissions.includes(permission) || immutablePermissions.includes(permission)
-    //   ? setPermissions(previous => previous.filter(perm => perm !== permission))
-    //   : setPermissions(previous => [...previous, permission]);
     setPermissions(updatedPermissions);
     props.onChange();
   };
