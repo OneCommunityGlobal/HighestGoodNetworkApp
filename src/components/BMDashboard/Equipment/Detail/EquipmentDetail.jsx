@@ -59,10 +59,6 @@ function EquipmentDetail() {
   const equipment = useSelector(state => state.bmEquipments.singleEquipment);
 
   const dispatch = useDispatch();
-<<<<<<< HEAD
-=======
-
->>>>>>> 6ab6d1aba (Made changes in multiple files)
   useEffect(() => {
     dispatch(fetchEquipmentById(equipmentId));
   }, [dispatch, equipmentId]);
@@ -93,11 +89,7 @@ function EquipmentDetail() {
     { label: 'Add Date', value: 'MM - DD - YYYY' },
     // Remove 'Rental Duration' from details if 'Ownership' is 'Purchase'
     equipment?.purchaseStatus === 'Purchase' ? null : { label: 'Rental Duration' },
-<<<<<<< HEAD
     { label: 'Current Usage', value: currentUsage },
-=======
-    { label: 'Current Usage', value: toolLogRecord },
->>>>>>> 6ab6d1aba (Made changes in multiple files)
     { label: 'Dashed Line' },
     { label: 'Input Invoice No or ID', value: 'No123ABC' },
     { label: 'Price', value: '150USD' },
@@ -142,7 +134,7 @@ function EquipmentDetail() {
       key={generateKey()}
       label={detail.label}
       value={detail.value}
-      title={equipment?.itemType.name}
+      // title={equipment?.itemType.name}
     />
   );
 
