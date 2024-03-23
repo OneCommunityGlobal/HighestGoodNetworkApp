@@ -85,14 +85,13 @@
 .mobile-table{ 
   width: 350px;
   border-radius: 16px;
-  border: 1px solid rgb(204, 214, 221);
+  border: 3px solid rgb(150, 148, 148);
   overflow: hidden;
   display: flex;
   flex-direction: row;
   justify-content: center;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
   margin: 6em 100px;
 }
 
@@ -102,16 +101,6 @@
     text-align: left;
     padding: 17px;
     width: 100%;
-  
-}
-.mobile-table h3{
-    display: flex;
-    font-size: 18px;
-    border: 1px solid rgb(204, 214, 221);
-    background: transparent;
-    padding: 17px;
-    text-align: left;
-    
   
 }
 
