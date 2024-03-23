@@ -26,9 +26,35 @@ const PermissionListItem = (props) => {
   };
 
   const togglePermission = (permission) => {
-    rolePermissions.includes(permission) || immutablePermissions.includes(permission)
-      ? setPermissions(previous => previous.filter(perm => perm !== permission))
-      : setPermissions(previous => [...previous, permission]);
+    let updatedPermissions = [...rolePermissions];
+    const badgePermissions = ["createBadges", "updateBadges", "deleteBadges", 'seeBadges'];
+
+    // check if the toggled badge permmison is badge permissions
+    if (badgePermissions.includes(permission)){
+      // add or remove "seeBadges depending on the action"
+      if (!updatedPermissions.includes(permission)){
+        updatedPermissions.push(permission)
+        // ensure include "seeBadges"
+        if (!updatedPermissions.includes('seeBadges')){
+          updatedPermissions.push('seeBadges')
+        }
+      } else{
+        updatedPermissions = updatedPermissions.filter(perm => perm !== permission);
+        const remainBadgePermissions = updatedPermissions.filter(perm => badgePermissions.includes(perm));
+        if (remainBadgePermissions.length === 0) {
+          updatedPermissions = updatedPermissions.filter(perm => perm !== 'SeeBadges');
+        }
+      }
+    } else{
+      // For non-badge management permissions, toggle as usual
+      updatedPermissions.includes(permission) || immutablePermissions.includes(permission)
+      ? updatedPermissions = updatedPermissions.filter(perm => perm !== permission)
+      : updatedPermissions.push(permission);
+    }
+    // rolePermissions.includes(permission) || immutablePermissions.includes(permission)
+    //   ? setPermissions(previous => previous.filter(perm => perm !== permission))
+    //   : setPermissions(previous => [...previous, permission]);
+    setPermissions(updatedPermissions);
     props.onChange();
   };
 

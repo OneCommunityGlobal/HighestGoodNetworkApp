@@ -45,6 +45,14 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
+    // Ensure "seeBadges" is included if any badge-related permissions are present
+    const badgePermissions = ["createBadges", "updateBadges", "deleteBadges"];
+    const hasBadgePermission = userPermissions.some(permission => badgePermissions.includes(permission));
+  
+    if (hasBadgePermission && !userPermissions.includes("seeBadges")) {
+        userPermissions.push("seeBadges");
+    }
+    
     const userId = actualUserProfile?._id;
 
     const url = ENDPOINTS.USER_PROFILE(userId);
