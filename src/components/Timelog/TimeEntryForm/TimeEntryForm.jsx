@@ -119,8 +119,10 @@ const TimeEntryForm = props => {
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
-  const canEditTimeEntry =
-    props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
+
+  const canEditTimeEntry = props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
+  const canAddTimeEntry = props.hasPermission('postTimeEntry');
+
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry);
@@ -203,13 +205,11 @@ const TimeEntryForm = props => {
     const today = moment().tz('America/Los_Angeles');
     const isDateValid = date.isValid();
     // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-    const isUserAuthorized =
-      (canEditTimeEntry && canPutUserProfileImportantInfo) ||
-      !edit ||
-      today.diff(date, 'days') === 0;
 
-    if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required';
-    if (!isDateValid) errorObj.dateOfWork = 'Invalid date';
+    const isUserAuthorized = (canEditTimeEntry && canPutUserProfileImportantInfo) || !edit || today.diff(date, 'days') === 0 || canAddTimeEntry;
+    if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required'; 
+    if (!isDateValid) errorObj.dateOfWork = 'Invalid date'; 
+
     if (!isUserAuthorized) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
     if (!formValues.hours && !formValues.minutes)
       errorObj.time = 'Time should be greater than 0 minutes';
@@ -642,7 +642,9 @@ const TimeEntryForm = props => {
                 id="dateOfWork"
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
-                disabled={from === 'Timer' || !canEditTimeEntry}
+
+                disabled={from === 'Timer' || !(canEditTimeEntry || canAddTimeEntry)}
+
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -663,7 +665,8 @@ const TimeEntryForm = props => {
                     placeholder="Hours"
                     value={formValues.hours}
                     onChange={handleInputChange}
-                    disabled={!canChangeTime}
+                    disabled={(from === 'Timer' || !(canEditTimeEntry || canAddTimeEntry)) || !canChangeTime}
+
                   />
                 </Col>
                 <Col>
@@ -676,7 +679,9 @@ const TimeEntryForm = props => {
                     placeholder="Minutes"
                     value={formValues.minutes}
                     onChange={handleInputChange}
-                    disabled={!canChangeTime}
+                    disabled={(from === 'Timer' || !(canEditTimeEntry || canAddTimeEntry)) || !canChangeTime}
+
+
                   />
                 </Col>
               </Row>
@@ -741,7 +746,8 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!(canEditTimeEntry || from === 'Timer')}
+                  disabled={!(canEditTimeEntry || from === 'Timer') && !(canEditTimeEntry || canAddTimeEntry)}
+
                 />
                 Tangible&nbsp;
                 <i
