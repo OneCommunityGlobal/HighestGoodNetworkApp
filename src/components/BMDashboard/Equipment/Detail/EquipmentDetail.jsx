@@ -56,22 +56,20 @@ function EquipmentDetail() {
   const history = useHistory();
   const { equipmentId } = useParams();
 
-  const equipment = useSelector(state => state.equipment);
+  const equipment = useSelector(state => state.bmEquipments.singleEquipment);
 
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(fetchEquipmentById(equipmentId));
-  }, []);
+  }, [dispatch, equipmentId]);
 
-  const toolStatus = true;
+  const lastLogRecord = equipment?.logRecord[equipment.logRecord.length - 1];
+  let currentUsage = 'Unkown';
 
-  let toolLogRecord;
-
-  if (toolStatus) {
-    toolLogRecord = 'Checked In';
-  } else {
-    toolLogRecord = 'Checked out';
+  if (lastLogRecord?.type === 'Check In') {
+    currentUsage = 'Checked In';
+  } else if (lastLogRecord?.type === 'Check Out') {
+    currentUsage = 'Checked Out';
   }
 
   function formatDateString(dateString) {
@@ -83,15 +81,15 @@ function EquipmentDetail() {
   const formattedRentedDueDate = formatDateString(equipment?.rentalDueDate);
 
   const details = [
-    { label: 'Belongs to project', value: 'Building 1' },
-    { label: 'Class', value: 'Equipment' },
-    { label: 'Name', value: 'Back Hoe' },
-    { label: 'Number', value: '007' },
-    { label: 'Ownership', value: 'Owned' },
-    { label: 'Add Date', value: '02 - 29 - 2024' },
+    { label: 'Belongs to project', value: equipment?.project?.name },
+    { label: 'Class', value: equipment?.itemType?.category },
+    { label: 'Name', value: equipment?.itemType?.name },
+    { label: 'Number', value: equipment?.code },
+    { label: 'Ownership', value: equipment?.purchaseStatus },
+    { label: 'Add Date', value: 'MM - DD - YYYY' },
     // Remove 'Rental Duration' from details if 'Ownership' is 'Purchase'
     equipment?.purchaseStatus === 'Purchase' ? null : { label: 'Rental Duration' },
-    { label: 'Current Usage', value: toolLogRecord },
+    { label: 'Current Usage', value: currentUsage },
     { label: 'Dashed Line' },
     { label: 'Input Invoice No or ID', value: 'No123ABC' },
     { label: 'Price', value: '150USD' },
@@ -136,7 +134,7 @@ function EquipmentDetail() {
       key={generateKey()}
       label={detail.label}
       value={detail.value}
-      title={equipment?.itemType.name}
+      // title={equipment?.itemType.name}
     />
   );
 
@@ -165,11 +163,7 @@ function EquipmentDetail() {
       </header>
       <main className="EquipmentDetailPage__content">
         <p>
-          <img
-            src="https://ik.imagekit.io/tuc2020/wp-content/uploads/2021/01/HW2927.jpg"
-            alt=""
-            className="EquipmentDetailPage__image"
-          />
+          <img src={equipment?.imageUrl} alt="" className="EquipmentDetailPage__image" />
         </p>
         {details.filter(Boolean).map(renderDetails)}
         <Button
