@@ -280,9 +280,8 @@ export const permissionLabels = [
               },
               {
                 label: 'Toggle Tangible Time Others',
-                key: 'editTimeEntry',
-                description:
-                  'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
+                key: 'editTimeEntryToggleTangible',
+                description: 'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
               },
               {
                 label: 'Change Time Entry Date',
