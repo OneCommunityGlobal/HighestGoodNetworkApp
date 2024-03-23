@@ -140,27 +140,8 @@ function PeopleTableDetails(props) {
   const filteredTasks = filterTasks(taskData);
   const filteredOptions = filterOptions(taskData)
 
-  const CategoryRow = ({ children }) => (
-    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', marginBottom: '20px' }}>
-      {children}
-    </div>
-  );
-  const names = ["taskName", "priority", "status", "assign", "active", "estimatedHours", "startDate", "endDate"]
-  const getvalue = (filtedtask, value) => {
-
-    return (
-      filtedtask[value]
-    )
-  }
   const renderMobileFilteredTask = (value) => {
     return (
-      // <div className="main-table mobile-table">
-
-      //   {names.map((name) => (
-      //     <p >{name} :{getvalue(value, name)}</p>
-
-      //   ))}
-      // </div>
       <div className="mobile-table">
         <div key={value._id} >
           <h5 >Task :</h5>
