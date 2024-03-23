@@ -28,7 +28,6 @@ src/components/NewProfileLink/**
 
 src/components/PermissionsManagement/**
 src/components/ProfileLinks/**
-src/components/Projects/**
 src/components/Reports/**
 src/components/SetupProfile/**
 src/components/SummaryBar/**
