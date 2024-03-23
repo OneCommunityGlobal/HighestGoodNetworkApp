@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
 import './PeopleTableDetails.css';
 import { NewModal } from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
+
 
 function PeopleTableDetails(props) {
   const [name, setName] = useState('');
@@ -16,6 +17,24 @@ function PeopleTableDetails(props) {
   const [order, setOrder] = useState('');
   const [startDate] = useState('');
   const [endDate] = useState('');
+  const [isMobile, setisMobile] = useState(false);
+  useEffect(() => {
+    function handleResize() {
+      const w = window.innerWidth
+      if (w <= 400) {
+
+        setisMobile(true);
+        console.log(isMobile)
+      }
+    }
+
+    console.log(window.innerWidth)
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
 
 
@@ -124,73 +143,139 @@ function PeopleTableDetails(props) {
   const filteredTasks = filterTasks(taskData);
   const filteredOptions = filterOptions(taskData)
 
-  const renderFilteredTask = value => (
-    <div key={value._id} className="people-table-row people-table-body-row">
-      <div>{value.taskName}</div>
-      <div>{value.priority}</div>
-      <div>{value.status}</div>
-      <div>
-        {value.resources?.map(res =>
-          res.map((resource, index) => {
-            if (index < 2) {
-              return (
-                <img
-                  key={resource.index}
-                  alt={resource.name}
-                  src={resource.profilePic || '/pfp-default.png'}
-                  className="img-circle"
-                  title={resource.name}
-                />
-              );
-            }
-            return null;
-          }),
-        )}
-        {value.resources?.map((res, index) =>
-          res.length > 2 ? (
-            <button
-              key={index}
-              type="button"
-              className="name resourceMoreToggle"
-              onClick={() => toggleMoreResources(value._id)}
-            >
-              <span className="dot">{res.length - 2}+</span>
-            </button>
-          ) : null,
-        )}
-        <div id={value._id} className="extra">
-          <div className="extra1">
-            {value.resources?.map(res =>
-              // eslint-disable-next-line array-callback-return,consistent-return
-              res.map((resource, index) => {
-                if (index >= 2) {
-                  return (
-                    <img
-                      key={resource.index}
-                      alt={resource.name}
-                      src={resource.profilePic || '/pfp-default.png'}
-                      className="img-circle"
-                      title={resource.name}
-                    />
-                  );
-                }
-              }),
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="people-table-center-cell">
-        {value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
-      </div>
-      <div className="people-table-center-cell">
-        {value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
-      </div>
-      <div className="people-table-end-cell">{value.estimatedHours}</div>
-      <div className="people-table-end-cell">{value.startDate}</div>
-      <div className="people-table-end-cell">{value.endDate}</div>
+  const CategoryRow = ({ children }) => (
+    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', marginBottom: '20px' }}>
+      {children}
     </div>
   );
 
+  // const rows = [
+  //   { "Task": Object.values(filteredTasks).map((value) => (value.taskName)) },
+  //   { "Priority": Object.values(filteredTasks).map((value) => (value.priority)) },
+  //   { "Status": Object.values(filteredTasks).map((value) => (value.status)) },
+  //   {
+  //     "Resources": Object.values(filteredTasks).map(function (value) {
+  //       value.resources?.map(res =>
+  //         res.map((resource, index) => {
+  //           if (index < 2) {
+  //             return (
+  //               <img
+  //                 key={resource.index}
+  //                 alt={resource.name}
+  //                 src={resource.profilePic || '/pfp-default.png'}
+  //                 className="img-circle"
+  //                 title={resource.name}
+  //               />
+  //             );
+  //           }
+  //           return null;
+  //         }),
+  //       )
+  //     })
+  //   },
+  //   { "Active": Object.values(filteredTasks).map(function (value) { value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span> }) },
+  //   { "Estimated Hours": Object.values(filteredTasks).map((value) => (value.estimatedHours)) },
+  //   { "Start Date": Object.values(filteredTasks).map((value) => (value.startDate)) },
+  //   { "End Date": Object.values(filteredTasks).map((value) => (value.endDate)) },
+  // ];
+  // console.log(filteredTasks)
+  // const columes = ["Task", "Priority", "Status", "Resources", "Active", "Estimated Hours", "Start Date", "End Date"]
+  const names = ["taskName", "priority", "status", "assign", "active", "estimatedHours", "startDate", "endDate"]
+  const getvalue = (filtedtask, value) => {
+
+    return (
+      filtedtask[value]
+    )
+  }
+  const renderMobileFilteredTask = (value) => {
+    return (
+      <table className="main-table mobile-table">
+        <thead >
+          {names.map((name) => (
+            <tr >
+              <h3 >{name}</h3>
+              <p>{getvalue(value, name)}</p>
+            </tr>
+
+          ))}
+        </thead>
+      </table>
+
+    )
+  }
+
+  const renderFilteredTask = value => (
+    <div>
+      <div key={value._id} className="people-table-row people-table-body-row">
+        <div>{value.taskName}</div>
+        <div>{value.priority}</div>
+        <div>{value.status}</div>
+        <div>
+          {value.resources?.map(res =>
+            res.map((resource, index) => {
+              if (index < 2) {
+                return (
+                  <img
+                    key={resource.index}
+                    alt={resource.name}
+                    src={resource.profilePic || '/pfp-default.png'}
+                    className="img-circle"
+                    title={resource.name}
+                  />
+                );
+              }
+              return null;
+            }),
+          )}
+          {value.resources?.map((res, index) =>
+            res.length > 2 ? (
+              <button
+                key={index}
+                type="button"
+                className="name resourceMoreToggle"
+                onClick={() => toggleMoreResources(value._id)}
+              >
+                <span className="dot">{res.length - 2}+</span>
+              </button>
+            ) : null,
+          )}
+          <div id={value._id} className="extra">
+            <div className="extra1">
+              {value.resources?.map(res =>
+                // eslint-disable-next-line array-callback-return,consistent-return
+                res.map((resource, index) => {
+                  if (index >= 2) {
+                    return (
+                      <img
+                        key={resource.index}
+                        alt={resource.name}
+                        src={resource.profilePic || '/pfp-default.png'}
+                        className="img-circle"
+                        title={resource.name}
+                      />
+                    );
+                  }
+                }),
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="people-table-center-cell">
+          {value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
+        </div>
+        <div className="people-table-center-cell">
+          {value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}
+        </div>
+        <div className="people-table-end-cell">{value.estimatedHours}</div>
+        <div className="people-table-end-cell">{value.startDate}</div>
+        <div className="people-table-end-cell">{value.endDate}</div>
+      </div>
+    </div>
+  );
+
+  // const renderFilteredTask = () => (
+
+  // )
   return (
     <Container fluid className="wrapper">
 
@@ -228,7 +313,7 @@ function PeopleTableDetails(props) {
       </div>
       <div className="people-table">
         {filteredTasks.map(value => (
-          <NewModal header="Task info" trigger={() => renderFilteredTask(value)}>
+          <NewModal header="Task info" trigger={() => <> {isMobile ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
             <div>Why This Task is important</div>
             <textarea className="rectangle" type="text" value={value.whyInfo} />
             <div>Design Intent</div>

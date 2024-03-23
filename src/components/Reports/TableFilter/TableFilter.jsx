@@ -49,7 +49,6 @@ function TableFilter({
   const uniquetaskHour = [...new Set(taskHour)];
   const uniquetaskResource = [...new Set(taskResource)];
 
-  console.log(uniquetaskResource)
 
 
   return (
