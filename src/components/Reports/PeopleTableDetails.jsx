@@ -24,11 +24,8 @@ function PeopleTableDetails(props) {
       if (w <= 400) {
 
         setisMobile(true);
-        console.log(isMobile)
       }
     }
-
-    console.log(window.innerWidth)
     window.addEventListener('resize', handleResize);
 
     return () => {
@@ -148,38 +145,6 @@ function PeopleTableDetails(props) {
       {children}
     </div>
   );
-
-  // const rows = [
-  //   { "Task": Object.values(filteredTasks).map((value) => (value.taskName)) },
-  //   { "Priority": Object.values(filteredTasks).map((value) => (value.priority)) },
-  //   { "Status": Object.values(filteredTasks).map((value) => (value.status)) },
-  //   {
-  //     "Resources": Object.values(filteredTasks).map(function (value) {
-  //       value.resources?.map(res =>
-  //         res.map((resource, index) => {
-  //           if (index < 2) {
-  //             return (
-  //               <img
-  //                 key={resource.index}
-  //                 alt={resource.name}
-  //                 src={resource.profilePic || '/pfp-default.png'}
-  //                 className="img-circle"
-  //                 title={resource.name}
-  //               />
-  //             );
-  //           }
-  //           return null;
-  //         }),
-  //       )
-  //     })
-  //   },
-  //   { "Active": Object.values(filteredTasks).map(function (value) { value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span> }) },
-  //   { "Estimated Hours": Object.values(filteredTasks).map((value) => (value.estimatedHours)) },
-  //   { "Start Date": Object.values(filteredTasks).map((value) => (value.startDate)) },
-  //   { "End Date": Object.values(filteredTasks).map((value) => (value.endDate)) },
-  // ];
-  // console.log(filteredTasks)
-  // const columes = ["Task", "Priority", "Status", "Resources", "Active", "Estimated Hours", "Start Date", "End Date"]
   const names = ["taskName", "priority", "status", "assign", "active", "estimatedHours", "startDate", "endDate"]
   const getvalue = (filtedtask, value) => {
 
