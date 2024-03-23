@@ -53,3 +53,14 @@
      flex-direction: column;
   }
 }
+
+div.tooltip-donut {
+  position: absolute;
+  text-align: center;
+  padding: .5rem;
+  background: #FFFFFF;
+  color: #313639;
+  border-radius: 8px;
+  pointer-events: none;
+  font-size: 1rem;
+}

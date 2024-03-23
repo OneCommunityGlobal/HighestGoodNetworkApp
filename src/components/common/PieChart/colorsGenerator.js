@@ -41,6 +41,5 @@ export const generateArrayOfUniqColors = numberOfColors => {
     const newUniqColor = generateUniqColor(arrayOfUniqColors);
     arrayOfUniqColors.push(newUniqColor);
   }
-
   return arrayOfUniqColors;
 };
