@@ -89,6 +89,8 @@ const TimeEntry = (props) => {
     //default permission: delete own sameday tangible entry
     isAuthUserAndSameDayEntry;
 
+  const canEditTimeEntryDescription = dispatch(hasPermission('editTimeEntryDescription'))
+
   const toggleTangibility = () => {
     //Update intangible hours property in userprofile
     const formattedHours = parseFloat(hours) + parseFloat(minutes) / 60;
@@ -212,12 +214,14 @@ const TimeEntry = (props) => {
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {(canEdit || isAuthUserAndSameDayEntry) 
+
+              {(canEdit || isAuthUserAndSameDayEntry || canEditTimeEntryDescription) 
                 && from === 'WeeklyTab' 
                 && (
                   <button className="mr-3 text-primary">
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
                   </button>
+
               )}
               {canDelete && from === 'WeeklyTab' && (
                 <button className='text-primary'>

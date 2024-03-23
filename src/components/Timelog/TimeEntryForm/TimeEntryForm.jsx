@@ -119,8 +119,12 @@ const TimeEntryForm = props => {
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
+
+  const canEditTimeEntryDescription = props.hasPermission('editTimeEntryDescription')
+
   const canEditTimeEntry =
     props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
+
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry);
@@ -663,7 +667,9 @@ const TimeEntryForm = props => {
                     placeholder="Hours"
                     value={formValues.hours}
                     onChange={handleInputChange}
-                    disabled={!canChangeTime}
+                    disabled={!((canEditTimeEntry && !fromTimer) || canChangeTime)}
+
+
                   />
                 </Col>
                 <Col>
@@ -676,7 +682,9 @@ const TimeEntryForm = props => {
                     placeholder="Minutes"
                     value={formValues.minutes}
                     onChange={handleInputChange}
-                    disabled={!canChangeTime}
+                   disabled={!((canEditTimeEntry && !fromTimer) || canChangeTime)}
+
+
                   />
                 </Col>
               </Row>
@@ -694,6 +702,7 @@ const TimeEntryForm = props => {
                 id="projectOrTask"
                 value={projectOrTaskId || 'title'}
                 onChange={handleProjectOrTaskChange}
+                disabled={!canEditTimeEntry}
               >
                 {projectsAndTasksOptions}
               </Input>
@@ -706,6 +715,7 @@ const TimeEntryForm = props => {
             <FormGroup>
               <Label for="notes">Notes</Label>
               <Editor
+                disabled={!canEditTimeEntryDescription}
                 init={{
                   menubar: false,
                   placeholder: 'Description (10-word minimum) and reference link',
@@ -741,7 +751,8 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!(canEditTimeEntry || from === 'Timer')}
+
+                  disabled={!((!canEditTimeEntry && !initialIsTangible && !canEditTimeEntryDescription) || (canEditTimeEntry || from === 'Timer'))}
                 />
                 Tangible&nbsp;
                 <i
