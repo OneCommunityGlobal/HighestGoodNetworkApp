@@ -1,9 +1,19 @@
 import React from 'react';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
 import { boxStyle } from 'styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 /**
  * The search panel stateless component for user management grid
  */
+
+const setupHistoryTooltip = (
+  <Tooltip id="tooltip">
+    Setup History Modal
+  </Tooltip>
+)
+
 const UserSearchPanel = props => {
   // console.log('UserSearchPanel props', props);
 
@@ -12,6 +22,17 @@ const UserSearchPanel = props => {
       <button type="button" className="btn btn-info mr-2" onClick={props.handleNewUserSetupPopup}>
         {SEND_SETUP_LINK}
       </button>
+      <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
+        <button type="button" className="btn btn-info mr-2" onClick={props.handleSetupHistoryPopup}>
+          <FontAwesomeIcon
+            className="bell_icon"
+            icon={faBell}
+          />
+        </button>
+      </OverlayTrigger>
+    
+    
+      
       <button
         type="button"
         className="btn btn-info mr-2"

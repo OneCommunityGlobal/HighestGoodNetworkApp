@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
@@ -38,7 +38,10 @@ const SetupNewUserPopup = React.memo(props => {
               message: 'The setup link has been successfully sent',
               state: 'success',
             });
-            console.log(res.data);
+            // console.log(res.data)
+            setTimeout(()=>{
+              props.handleShouldRefreshInvitationHistory();
+            }, 800)
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
@@ -58,6 +61,7 @@ const SetupNewUserPopup = React.memo(props => {
           setTimeout(() => {
             setAlert({ visibility: 'hidden', message: '', state: 'success' });
             setEmail('');
+            props.handleShouldRefreshInvitationHistory();
             setWeeklyCommittedHours(0);
           }, 2000);
         });
