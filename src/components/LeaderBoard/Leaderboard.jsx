@@ -20,6 +20,7 @@ import {
   hasLeaderboardPermissions,
   assignStarDotColors,
   showStar,
+  viewZeroHouraMembers,
 } from 'utils/leaderboardPermissions';
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
@@ -58,8 +59,7 @@ function LeaderBoard({
   isVisible,
   displayUserId,
   totalTimeMouseoverText,
-  userOnTimeOff,
-  userGoingOnTimeOff,
+  allRequests,
   showTimeOffRequestModal,
 }) {
   const userId = displayUserId || loggedInUser.userId;
@@ -156,6 +156,9 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
+  const individualsWithZeroHours = leaderBoardData.filter(
+    individuals => individuals.weeklycommittedHours === 0,
+  );
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
