@@ -149,8 +149,11 @@ function TeamLocations() {
     <Container fluid className={`${darkMode ? 'bg-oxford-blue text-light' : ''}`} style={{minHeight: "100%", paddingBottom: "73px"}}>
 =======
     <Container fluid className="mb-4">
+<<<<<<< HEAD
       <div>{tableVisible && <TeamLocationsTable visible={tableVisible} mapMarkers={mapMarkers} />}</div>
 >>>>>>> 3965a92e1 (Added the table to map component)
+=======
+>>>>>>> 84a65394c (Updated layout and styling of table; Added sorting functionality to table.)
       {isAbleToEdit ? (
         <>
           <AddOrEditPopup
@@ -282,6 +285,8 @@ function TeamLocations() {
           </div>
         ) : null}
       </div>
+      <div style={{position: 'relative'}}>
+      <div>{tableVisible && <TeamLocationsTable visible={tableVisible} mapMarkers={mapMarkers} />}</div>
       <MapContainer
         id='map-container'
         center={[51.505, -0.09]}
@@ -295,7 +300,7 @@ function TeamLocations() {
         style={{ border: '1px solid grey' }}
       >
         <EventComponent setPopupsOpen={setPopupsOpen}  />
-      
+        
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -327,6 +332,7 @@ function TeamLocations() {
           })}
         </MarkerClusterGroup>
       </MapContainer>
+      </div>
     </Container>
   );
 }
