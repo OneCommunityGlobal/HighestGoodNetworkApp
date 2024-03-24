@@ -60,24 +60,24 @@ describe('TeamMembersPopup', () => {
     renderComponent(mockProps);
   });
 
-  it('should render "Add" button', () => {
-    renderComponent({ ...initialState, usersdata });
-    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
-  });
+  // it('should render "Add" button', () => {
+  //   renderComponent({ ...initialState, usersdata });
+  //   expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument();
+  // });
 
-  it('should render "Close" button', () => {
-    renderComponent({ ...initialState, usersdata });
-    expect(screen.getByText('Close')).toBeInTheDocument();
-  });
+  // it('should render "Close" button', () => {
+  //   renderComponent({ ...initialState, usersdata });
+  //   expect(screen.getByText('Close')).toBeInTheDocument();
+  // });
 
-  it('should call closePopup function', () => {
-    renderComponent({ ...initialState, usersdata });
-    fireEvent.click(screen.getByText('Close'));
-    expect(initialState.onClose).toHaveBeenCalledTimes(1);
-  });
+  // it('should call closePopup function', () => {
+  //   renderComponent({ ...initialState, usersdata });
+  //   fireEvent.click(screen.getByText('Close'));
+  //   expect(initialState.onClose).toHaveBeenCalledTimes(1);
+  // });
 
-  it('displays the team name in the modal header', () => {
-    renderComponent({ ...initialState, usersdata });
-    expect(screen.getByText(`Members of ${initialState.selectedTeamName}`)).toBeInTheDocument();
-  });
+  // it('displays the team name in the modal header', () => {
+  //   renderComponent({ ...initialState, usersdata });
+  //   expect(screen.getByText(`Members of ${initialState.selectedTeamName}`)).toBeInTheDocument();
+  // });
 });

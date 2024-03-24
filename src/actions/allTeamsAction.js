@@ -12,6 +12,7 @@ import {
   FETCH_TEAM_USERS_ERROR,
   TEAM_MEMBER_DELETE,
   TEAM_MEMBER_ADD,
+  UPDATE_TEAM_MEMBER_VISIBILITY,
 } from '../constants/allTeamsConstants';
 
 /**
@@ -101,6 +102,14 @@ export const teamMemberAddAction = (member) => ({
   type: TEAM_MEMBER_ADD,
   member,
 });
+
+export const updateVisibilityAction = (visibility, userId, teamId) => ({
+  type: UPDATE_TEAM_MEMBER_VISIBILITY,
+  visibility,
+  userId,
+  teamId,
+});
+
 
 /**
  * fetching all user teams
@@ -221,5 +230,30 @@ export const addTeamMember = (teamId, userId, firstName, lastName, role, addDate
     teamMemberAddPromise.then((res) => {
       dispatch(teamMemberAddAction(res.data.newMember));
     });
+  };
+};
+
+export const updateTeamMemeberVisiblity = (teamId, userId, visibility) => {
+  console.log("comping here actions ");
+  const updateData = { visibility, userId, teamId };
+  const updateVisiblityPromise = axios.put(ENDPOINTS.TEAM, updateData);
+
+  return async dispatch => {
+    updateVisiblityPromise
+      .then(res => {
+        dispatch(updateVisibilityAction(visibility, userId, teamId));
+      })
+      .catch(error => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          console.error('Error updating visibility:', error.response.data);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error('Error updating visibility: No response received');
+        } else {
+          // Something happened in setting up the request that triggered an error
+          console.error('Error updating visibility:', error.message);
+        }
+      });
   };
 };
