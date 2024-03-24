@@ -55,7 +55,7 @@ import { boxStyle } from 'styles';
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile } = props;
 
   // props from store
   const { authUser } = props;
@@ -253,12 +253,11 @@ const TimeEntryForm = props => {
   const updateHoursByCategory = async (timeEntry, hours, minutes) => {
     const { projectId, isTangible, personId } = timeEntry;
     const url = ENDPOINTS.USER_PROFILE(personId);
-
+   
     try {
       const { data: userProfile } = await axios.get(url);
 
       const { hoursByCategory } = userProfile;
-
       //fix discrepancy in hours in userProfile if any
       fixDiscrepancy(userProfile);
       //Format hours && minutes
@@ -296,7 +295,6 @@ const TimeEntryForm = props => {
   const editHoursByCategory = async (timeEntry, hours, minutes) => {
     const { projectId: formProjectId, isTangible: formIsTangible, personId } = timeEntry;
     const url = ENDPOINTS.USER_PROFILE(personId);
-
     try {
       const { data: userProfile } = await axios.get(url);
 
@@ -421,16 +419,20 @@ const TimeEntryForm = props => {
     const timeEntry = { ...formValues };
 
     let timeEntryStatus;
-
     if (edit) {
       timeEntry.hours = formHours;
       timeEntry.minutes = formMinutes;
-      editHoursByCategory(timeEntry, formHours, formMinutes);
       timeEntryStatus = await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
+      if (timeEntryStatus == 200) {
+        editHoursByCategory(timeEntry, formHours, formMinutes);
+      }
     } else {
       timeEntry.timeSpent = `${formHours}:${formMinutes}:00`;
-      updateHoursByCategory(timeEntry, formHours, formMinutes);
       timeEntryStatus = await props.postTimeEntry(timeEntry);
+      if (timeEntryStatus == 200) {
+        updateHoursByCategory(timeEntry, formHours, formMinutes);
+      }
+     
     }
 
     if (timeEntryStatus !== 200) {
@@ -441,17 +443,7 @@ const TimeEntryForm = props => {
       return;
     }
 
-    // see if this is the first time the user is logging time
-    if (!edit) {
-      if (timeEntryFormUserProfile?.isFirstTimelog) {
-        const updatedUserProfile = {
-          ...timeEntryFormUserProfile,
-          createdDate: new Date(),
-          isFirstTimelog: false,
-        };
-        await updateUserProfile(updatedUserProfile);
-      }
-    }
+    await props.getUserProfile(timeEntryFormUserProfile._id);
 
     setFormValues(initialFormValues);
 
@@ -642,6 +634,7 @@ const TimeEntryForm = props => {
                 id="dateOfWork"
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
+                min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]} 
                 disabled={from === 'Timer' || !canEditTimeEntry}
               />
               {'dateOfWork' in errors && (
@@ -797,6 +790,7 @@ TimeEntryForm.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
+  userProfile: state.userProfile,
 });
 
 export default connect(mapStateToProps, {

@@ -50,8 +50,11 @@ import { ENDPOINTS } from 'utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
-const nextDay = new Date();
-nextDay.setDate(nextDay.getDate() + 1);
+/** Change the create date from next date to current date
+ * const nextDay = new Date();
+ * nextDay.setDate(nextDay.getDate() + 1);
+ */
+const today = new Date();
 
 class AddUserProfile extends Component {
   constructor(props) {
@@ -83,9 +86,10 @@ class AddUserProfile extends Component {
         },
         showphone: true,
         weeklySummaryOption: 'Required',
-        createdDate: nextDay,
+        createdDate: today,
         actualEmail: '',
         actualPassword: '',
+        startDate: today,
       },
       formValid: {},
       formErrors: {
@@ -467,13 +471,13 @@ class AddUserProfile extends Component {
                     <FormGroup>
                       <div className="date-picker-item">
                         <DatePicker
-                          selected={this.state.userProfile.createdDate}
-                          minDate={new Date(DATE_PICKER_MIN_DATE)}
+                          selected={this.state.userProfile.startDate}
+                          minDate={today}
                           onChange={date =>
                             this.setState({
                               userProfile: {
                                 ...this.state.userProfile,
-                                createdDate: date,
+                                startDate: date == '' || date == null ? today : date,
                               },
                             })
                           }
@@ -667,6 +671,7 @@ class AddUserProfile extends Component {
       createdDate,
       actualEmail,
       actualPassword,
+      startDate,
     } = that.state.userProfile;
 
     const userData = {
@@ -693,6 +698,7 @@ class AddUserProfile extends Component {
       teamCode: this.state.teamCode,
       actualEmail: actualEmail,
       actualPassword: actualPassword,
+      startDate: startDate,
     };
 
     this.setState({ formSubmitted: true });

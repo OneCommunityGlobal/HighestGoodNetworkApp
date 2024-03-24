@@ -38,7 +38,7 @@ const SetupNewUserPopup = React.memo(props => {
               message: 'The setup link has been successfully sent',
               state: 'success',
             });
-            console.log(res.data);
+            // console.log(res.data);
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }

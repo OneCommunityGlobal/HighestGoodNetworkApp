@@ -163,7 +163,7 @@ const UserTableData = React.memo(props => {
           ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
-      <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
+      <td>{props.user.startDate ? formatDate(props.user.startDate) : 'N/A'}</td>
       
        <td className="email_cell">
       {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}

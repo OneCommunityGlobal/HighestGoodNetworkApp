@@ -50,7 +50,7 @@ import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect, useDispatch } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
+import { formatDate, convertDateFormatToMMMDDYY } from 'utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
@@ -321,15 +321,15 @@ function UserProfile(props) {
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        createdDate: newUserProfile?.createdDate.split('T')[0],
+        startDate: newUserProfile?.startDate.split('T')[0],
       });
       setOriginalUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        createdDate: newUserProfile?.createdDate.split('T')[0],
+        startDate: newUserProfile?.startDate.split('T')[0],
       });
-      setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
+      setUserStartDate(newUserProfile?.startDate.split('T')[0]);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -842,7 +842,7 @@ function UserProfile(props) {
             </div>
             <h6 className="job-title">{jobTitle}</h6>
             <p className="proile-rating">
-              From : <span>{formatDate(userProfile.createdDate)}</span>
+              From : <span>{convertDateFormatToMMMDDYY(userProfile.startDate)}</span>
               {'   '}
               To: <span>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
             </p>

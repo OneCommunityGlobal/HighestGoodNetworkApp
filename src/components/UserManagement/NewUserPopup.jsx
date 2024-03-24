@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { connect } from 'react-redux';
-
+import { getDayOfWeekStringFromUTC } from '../../utils/formatDate';
 /**
  * Modal popup to show the user profile in create mode
  */
@@ -16,7 +16,6 @@ const NewUserPopup = React.memo(props => {
   const history = useHistory();
 
   const { role } = props; // Access the 'role' prop
-
 
   /**
    * User creation success call back.

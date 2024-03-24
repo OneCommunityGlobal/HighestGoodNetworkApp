@@ -421,7 +421,7 @@ class PeopleReport extends Component {
 
     const renderProfileInfo = () => {
       const { isRehireable, bioStatus, authRole } = this.state;
-      const { profilePic, role, jobTitle, endDate, _id, createdDate } = userProfile;
+      const { profilePic, role, jobTitle, endDate, _id, createdDate, startDate} = userProfile;
 
       return (
         <ReportPage.ReportHeader
@@ -452,7 +452,7 @@ class PeopleReport extends Component {
 
             <div className="stats">
               <div>
-                <h4>{formatDate(createdDate)}</h4>
+                <h4>{formatDate(startDate)}</h4>
                 <p>Start Date</p>
               </div>
               <div>
