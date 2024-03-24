@@ -145,7 +145,6 @@ function TeamLocations() {
 
   return (
     <Container fluid className="mb-4">
-      <div>{tableVisible && <TeamLocationsTable visible={tableVisible} mapMarkers={mapMarkers} />}</div>
       {isAbleToEdit ? (
         <>
           <AddOrEditPopup
@@ -277,6 +276,8 @@ function TeamLocations() {
           </div>
         ) : null}
       </div>
+      <div style={{position: 'relative'}}>
+      <div>{tableVisible && <TeamLocationsTable visible={tableVisible} mapMarkers={mapMarkers} />}</div>
       <MapContainer
         id='map-container'
         center={[51.505, -0.09]}
@@ -290,7 +291,7 @@ function TeamLocations() {
         style={{ border: '1px solid grey' }}
       >
         <EventComponent setPopupsOpen={setPopupsOpen}  />
-      
+        
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -322,6 +323,7 @@ function TeamLocations() {
           })}
         </MarkerClusterGroup>
       </MapContainer>
+      </div>
     </Container>
   );
 }

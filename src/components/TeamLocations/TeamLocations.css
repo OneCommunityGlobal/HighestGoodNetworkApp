@@ -27,25 +27,73 @@
 
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .map-table-container {
   position: absolute;
-  top: 150px; 
-  right: 20px; 
-  z-index: 1000; 
-  background-color: rgba(255, 255, 255, 0.7);
+  top: 10px; 
+  right: 10px; 
+  z-index: 2; 
+  background-color: rgba(255, 255, 255, 0.95);
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 1px;
+  padding-top: 0px;
+  max-height: 70vh; 
+  width: 90%; /* Set width to 90% */
+  max-width: 300px; /* Set max-width to 300px */
+  overflow-y: scroll; 
+  overflow-x: hidden; 
   transition: opacity 0.6s ease-in-out;
   opacity: 0;
+  border-radius: 10px;
 }
 
 .map-table-container.visible {
   opacity: 1; 
 }
 
-.active-only-checkbox {
-  position: absolute; /* Set position to absolute */
-  top: 0; /* Align with the top of the container */
-  right: 10px; /* Adjust the right distance as needed */
-  
+@media screen and (max-width: 768px) {
+  .map-table-container {
+    width: 60%; 
+    max-width: 60%; 
+    max-height: 40vh;
+  }
+
+  th {
+    background-color: #282828;
+  }
+}
+
+table {
+  border-collapse: collapse; /* Change to collapse for better spacing */
+  width: 100%; /* Table takes full width */
+  font-size: 0.8rem;
+}
+
+th {
+  background-color: #282828 !important;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 10px;
+  text-align: left;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #cfcaca;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
