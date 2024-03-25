@@ -155,6 +155,12 @@
   padding-right: 5px;
 }
 
+.flex-responsive {
+  display: flex;
+  flex-direction: row;
+  margin-right: 10px;
+}
+
 @media only screen and (max-width: 600px) {
   .desktop-view {
     display: none;
