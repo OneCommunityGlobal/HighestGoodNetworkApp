@@ -174,16 +174,17 @@ describe('UserPermissionsPopup component', () => {
     );
     const nameElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(nameElement);
-    await waitFor(() => {});
-    expect(toast.success).not.toHaveBeenCalledWith(
-      `
-          Permission has been updated successfully. Be sure to tell them that you are changing these
-          permissions and for that they need to log out and log back in for their new permissions to take
-          place.`,
-      {
-        autoClose: 10000,
-      },
-    );
+    await waitFor(() => {
+      expect(toast.success).not.toHaveBeenCalledWith(
+        `
+            Permission has been updated successfully. Be sure to tell them that you are changing these
+            permissions and for that they need to log out and log back in for their new permissions to take
+            place.`,
+        {
+          autoClose: 10000,
+        },
+      );
+    });
   });
   it('check if toast error message gets displayed when the button is clicked', async () => {
     axios.get.mockResolvedValue({
@@ -240,16 +241,21 @@ describe('UserPermissionsPopup component', () => {
     );
     const userElement = screen.getByText('Test2 Manager');
     fireEvent.click(userElement);
-    await waitFor(() => {});
+    await waitFor(() => {
+      const addElement = screen.getAllByText('Add');
+      expect(addElement[0]).toBeInTheDocument();
+    });
     const profilePermission = screen.getByTestId('putUserProfilePermissions');
     const addButton = profilePermission.querySelector('button');
     fireEvent.click(addButton);
-    await waitFor(() => {});
-    expect(profilePermission.querySelector('Add')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(profilePermission.querySelector('Add')).not.toBeInTheDocument();
+    });
     const resetToDefaultButton = screen.getByText('Reset to Default');
     fireEvent.click(resetToDefaultButton);
-    await waitFor(() => {});
-    const profilePermissionButtonChange = screen.getByTestId('putUserProfilePermissions');
-    expect(profilePermissionButtonChange.querySelector('Delete')).not.toBeInTheDocument();
+    await waitFor(() => {
+      const profilePermissionButtonChange = screen.getByTestId('putUserProfilePermissions');
+      expect(profilePermissionButtonChange.querySelector('Delete')).not.toBeInTheDocument();
+    });
   });
 });
