@@ -696,7 +696,7 @@ export class WeeklySummary extends Component {
             </Button>
           </Col>
         </Row>
-        <Form className="mt-4">
+        <Form>
           <Nav tabs>
             {Object.values(summariesLabels).map((weekName, i) => {
               const tId = String(i + 1);
