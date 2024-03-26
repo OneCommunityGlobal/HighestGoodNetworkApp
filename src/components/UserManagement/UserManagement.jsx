@@ -32,6 +32,7 @@ import { Container } from 'reactstrap';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import { Table } from 'react-bootstrap';
+import SelectProfilePicPopup from './SelectProfilePicPopup';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
@@ -58,6 +59,7 @@ class UserManagement extends React.PureComponent {
       deletePopupOpen: false,
       isPaused: false,
       finalDayDateOpen: false,
+      // profilePicOpen: false,
       setupNewUserPopupOpen: false,
       logTimeOffPopUpOpen: false,
       userForTimeOff: '',
@@ -131,6 +133,7 @@ class UserManagement extends React.PureComponent {
    * 3. Popup to choose the delete option upon clicking delete button.
    * 4. Popup to confirm the action of setting a user active or inactive upon the status column click.
    * 5. Popup to show the last day selection
+   * 6. Popup to show and select the profile pictures matched
    */
   popupElements = () => {
     let user_name = this.state?.selectedUser?.firstName + '_' + this.state?.selectedUser?.lastName;
@@ -177,6 +180,11 @@ class UserManagement extends React.PureComponent {
           open={this.state.logTimeOffPopUpOpen}
           onClose={this.logTimeOffPopUpClose}
           user={this.state.userForTimeOff}
+        />
+        <SelectProfilePicPopup
+          open={this.state.profilePicOpen}
+          onClose={this.profilePicPopupClose}
+          user={this.state.selectedUser}
         />
       </React.Fragment>
     );
@@ -229,6 +237,8 @@ class UserManagement extends React.PureComponent {
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
+              hasProfilePic={user.profilePic ? [user.profilePic].flat().length : 0}
+              onSelectProfilePicClick={that.onSelectProfilePicClick}
             />
           );
         });
@@ -316,6 +326,16 @@ class UserManagement extends React.PureComponent {
       toast.warn(`You do not have permission to manage time-off requests.`)
     }
 
+  };
+
+  /**
+   * Call back on Select or Show button click to trigger the action to update user profile picture
+   */
+  onSelectProfilePicClick = user => {
+    this.setState({
+      profilePicOpen: true,
+      selectedUser: user,
+    });
   };
 
   /**
@@ -428,6 +448,15 @@ class UserManagement extends React.PureComponent {
   activeInactivePopupClose = () => {
     this.setState({
       activeInactivePopupOpen: false,
+    });
+  };
+
+  /**
+   * Callback to close the profile picture popup on close button click.
+   */
+  profilePicPopupClose = () => {
+    this.setState({
+      profilePicOpen: false,
     });
   };
 
