@@ -9,6 +9,12 @@ export const permissionLabels = [
         description: 'Make ONLY "Reports -> “Reports” option appear/accessible.',
       },
       {
+        label: 'See Overview Report',
+        key: 'getOverviewReport',
+        description:
+          'Makes ONLY the "Reports" -> "Overview Report" option appear/accessible.',
+      },
+      {
         label: 'See Weekly Summaries',
         key: 'getWeeklySummaries',
         description:

@@ -1,0 +1,15 @@
+.overview-report-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 8px;
+}
+
+.overview-report-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 25px 25px 0 0;
+}

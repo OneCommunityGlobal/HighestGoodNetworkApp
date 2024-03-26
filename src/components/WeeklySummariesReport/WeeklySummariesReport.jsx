@@ -86,6 +86,7 @@ export class WeeklySummariesReport extends Component {
       hasPermission,
       auth,
     } = this.props;
+
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
