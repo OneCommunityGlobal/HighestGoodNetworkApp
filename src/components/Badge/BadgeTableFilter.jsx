@@ -42,7 +42,7 @@ const BadgeTableFilter = props => {
           value={props.name}
         />
       </td>
-      <td id="badge_description">
+      <td id="badge_description" className='d-xl-table-cell d-none'>
         <TextSearchBox
           id={'badge_description_search'}
           searchCallback={onBadgeDescriptionSearch}
@@ -57,7 +57,7 @@ const BadgeTableFilter = props => {
           value={props.type}
         />
       </td>
-      <td id="badge_details"></td>
+      <td id="badge_details" className='d-xl-table-cell d-none'></td>
       <td id="badge_ranking">
         <DropDownSearchBox
           id={'badge_ranking_sort'}
