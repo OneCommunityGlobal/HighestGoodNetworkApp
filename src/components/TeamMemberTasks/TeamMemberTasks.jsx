@@ -120,48 +120,16 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const getTimeEntriesForPeriod = async (selectedPeriod) => {
-    const oneDayAgo = moment()
+    if(isNaN(parseInt(selectedPeriod))) {
+      setTimeEntriesList([]);
+    } else {
+    const xDaysAgo = moment()
       .tz('America/Los_Angeles')
-      .subtract(1, 'days')
+      .subtract(parseInt(selectedPeriod), 'days')
       .format('YYYY-MM-DD');
 
-    const twoDaysAgo = moment()
-      .tz('America/Los_Angeles')
-      .subtract(2, 'days')
-      .format('YYYY-MM-DD');
-    
-    const threeDaysAgo = moment()
-      .tz('America/Los_Angeles')
-      .subtract(3, 'days')
-      .format('YYYY-MM-DD');
-
-    const fourDaysAgo = moment()
-      .tz('America/Los_Angeles')
-      .subtract(4, 'days')
-      .format('YYYY-MM-DD');
-
-    switch (selectedPeriod) {
-      case '1':
-        const oneDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(oneDayAgo));
-        setTimeEntriesList(oneDaysList);
-        break;
-      case '2':
-        const twoDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
-        setTimeEntriesList(twoDaysList);
-        break;
-      case '3':
-        const threeDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(threeDaysAgo));
-        setTimeEntriesList(threeDaysList);
-        break;
-      case '4':
-        const fourDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(fourDaysAgo));
-        setTimeEntriesList(fourDaysList);
-        break;
-      case '7':
-        setTimeEntriesList(usersWithTimeEntries);
-        break;
-      default:
-        setTimeEntriesList([]);
+      const xDaysList = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(xDaysAgo));
+      setTimeEntriesList(xDaysList);
     }
 
     setFinishLoading(true);
