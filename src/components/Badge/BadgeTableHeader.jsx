@@ -5,9 +5,9 @@ const BadgeTableHeader = () => (
   <tr>
     <th>Badge</th>
     <th>Name</th>
-    <th>Description</th>
+    <th className='d-xl-table-cell d-none'>Description</th>
     <th>Type</th>
-    <th>Details</th>
+    <th className='d-xl-table-cell d-none'>Details</th>
     <th>
       Ranking <i className="fa fa-info-circle" id="SortRankingInfo" style={{ marginLeft: '5px' }} />
       <UncontrolledTooltip
