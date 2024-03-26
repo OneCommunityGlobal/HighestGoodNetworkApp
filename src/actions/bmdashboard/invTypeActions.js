@@ -83,11 +83,9 @@ export const postBuildingConsumableType = payload => {
     axios
       .post(ENDPOINTS.BM_CONSUMABLES, payload)
       .then(res => {
-        console.log("res: ", res)
         dispatch(setPostBuildingConsumableTypeResult(res.data));
       })
       .catch(err => {
-        console.log("err: ", err)
         dispatch(
           setPostErrorBuildingConsumableTypeResult(
             JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
