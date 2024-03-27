@@ -63,7 +63,8 @@ export const permissionLabels = [
       {
         label: 'Modify Important User Info',
         key: 'putUserProfileImportantInfo',
-        description: 'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
+        description:
+          'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
       {
         label: 'Manage Time Off Requests',
@@ -247,17 +248,20 @@ export const permissionLabels = [
           {
             label: 'Add Time Entry (Others)',
             key: 'postTimeEntry',
-            description: 'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button". Currently not implemented.',
+            description:
+              'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button". Currently not implemented.',
           },
           {
             label: 'Toggle Tangible Time Self',
             key: 'toggleTangibleTime',
-            description: 'Gives the user permission to toggle the Tangible check when editing their own time entry.',
+            description:
+              'Gives the user permission to toggle the Tangible check when editing their own time entry.',
           },
           {
             label: 'Delete Time Entry (Others)',
             key: 'deleteTimeEntry',
-            description: 'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
+            description:
+              'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
           },
           {
             label: 'Edit Time Entries',
@@ -271,23 +275,26 @@ export const permissionLabels = [
               {
                 label: 'Edit Timelog Description',
                 key: 'editTimeEntry',
-                description: 'Gives the user permission to edit the description of any time log entry.',
+                description:
+                  'Gives the user permission to edit the description of any time log entry.',
               },
               {
                 label: 'Toggle Tangible Time Others',
                 key: 'editTimeEntry',
-                description: 'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
+                description:
+                  'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
               },
               {
                 label: 'Change Time Entry Date',
                 key: 'editTimelogDate',
-                description: 'Gives the user permission to edit the date when adding an intangible time entry.',
+                description:
+                  'Gives the user permission to edit the date when adding an intangible time entry.',
               },
-            ]
-          }
-        ]
-      }
-    ]
+            ],
+          },
+        ],
+      },
+    ],
   },
   {
     label: 'Permissions Management',
@@ -335,7 +342,7 @@ export const permissionLabels = [
       //   key: 'deletePopup',
       //   description: 'WIP - not implemented',
       // },
-    ]
+    ],
   },
   {
     label: 'Misc/Unsorted',
