@@ -93,6 +93,8 @@ export class WeeklySummariesReport extends Component {
     const badgeStatusCode = await fetchAllBadges();
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
+    this.canToggleRequestBio = hasPermission('requestBio');
+    this.canRequestBio = this.canToggleRequestBio;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
     this.codeEditPermission =
       hasPermission('editTeamCode') ||
@@ -595,6 +597,7 @@ export class WeeklySummariesReport extends Component {
                         summaries={filteredSummaries}
                         weekIndex={index}
                         bioCanEdit={this.bioEditPermission}
+                        canRequestBio={this.canRequestBio}
                         canEditSummaryCount={this.canEditSummaryCount}
                         allRoleInfo={allRoleInfo}
                         badges={badges}
