@@ -14,7 +14,7 @@ import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
 import { hrsFilterBtnColorMap } from 'constants/colors';
-
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 
 import checkNegativeNumber from 'utils/checkNegativeHours';
 
@@ -54,6 +54,8 @@ const TimeEntry = (props) => {
 
   let projectName, projectCategory, taskName, taskClassification;
 
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
+
   if (from === 'TaskTab') {
     // Time Entry rendered under Tasks tab
     ({ projectName, projectCategory, taskName, taskClassification } = data)
@@ -78,17 +80,17 @@ const TimeEntry = (props) => {
 
   //permission to edit any time log entry (from other user's Dashboard
     // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-  const canEdit = dispatch(hasPermission('editTimelogInfo')) 
+  const canEdit = (dispatch(hasPermission('editTimelogInfo')) 
     //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission('editTimeEntry')) 
+    || dispatch(hasPermission('editTimeEntry'))) && !cantEditJaeRelatedRecord;
 
   //permission to Delete time entry from other user's Dashboard
-  const canDelete = dispatch(hasPermission('deleteTimeEntryOthers')) ||
+  const canDelete = (dispatch(hasPermission('deleteTimeEntryOthers')) ||
     //permission to delete any time entry on their own time logs tab
     dispatch(hasPermission('deleteTimeEntry')) ||
     //default permission: delete own sameday tangible entry
-    isAuthUserAndSameDayEntry;
-
+    isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord;
+  debugger;
   const toggleTangibility = () => {
     //Update intangible hours property in userprofile
     const formattedHours = parseFloat(hours) + parseFloat(minutes) / 60;
@@ -212,7 +214,7 @@ const TimeEntry = (props) => {
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {(canEdit || isAuthUserAndSameDayEntry) 
+              {((canEdit || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
                 && from === 'WeeklyTab' 
                 && (
                   <button className="mr-3 text-primary">
