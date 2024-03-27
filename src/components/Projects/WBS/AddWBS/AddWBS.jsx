@@ -13,6 +13,10 @@ const AddWBS = props => {
   const [newName, setNewName] = useState('');
   const canPostWBS = props.hasPermission('postWbs');
 
+  const toggleSort = () => {
+    props.toggleSort(); // Notify parent component about the sorting order change
+  };
+
   const changeNewName = newName => {
     if (newName.length !== 0) {
       setShowAddButton(true);
@@ -38,6 +42,9 @@ const AddWBS = props => {
             placeholder="WBS Name"
             onChange={e => changeNewName(e.target.value)}
           />
+          <button className="btn btn-primary" type="button" onClick={toggleSort}>
+            Name
+          </button>
           <div className="input-group-append">
             {showAddButton ? (
               <button
