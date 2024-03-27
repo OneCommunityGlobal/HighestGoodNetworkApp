@@ -101,6 +101,18 @@ export const ENDPOINTS = {
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
+  SETUP_NEW_USER: () =>
+    `${APIEndpoint}/getInitialSetuptoken`,
+  VALIDATE_TOKEN: () =>
+    `${APIEndpoint}/validateToken`,
+  SETUP_NEW_USER_PROFILE: () =>
+    `${APIEndpoint}/ProfileInitialSetup`,
+  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
+  MAP_LOCATIONS_BY_TOKEN: () => `${APIEndpoint}/mapLocationsToken`,
+  ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
+
+  INTERACT_WITH_CHATGPT: `${APIEndpoint}/interactWithChatGPT`,
+
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
 
   SETUP_NEW_USER: () => `${APIEndpoint}/getInitialSetuptoken`,
