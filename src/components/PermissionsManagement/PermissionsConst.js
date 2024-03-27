@@ -242,6 +242,18 @@ export const permissionLabels = [
     description: 'Category for all permissions related to timelog management',
     subperms: [
       {
+        label: 'Timelog Management (Own)',
+        description: 'Category for all permissions related to timelog management',
+        subperms: [
+          {
+            label: 'Delete Time Entry (Own)',
+            key: 'deleteTimeEntryOwn',
+            description:
+              'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
+          },
+        ]
+      },
+      {
         label: 'Timelog Management (Others)',
         description: 'Category for all permissions related to timelog management',
         subperms: [
@@ -259,7 +271,7 @@ export const permissionLabels = [
           },
           {
             label: 'Delete Time Entry (Others)',
-            key: 'deleteTimeEntry',
+            key: 'deleteTimeEntryOthers',
             description:
               'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
           },
