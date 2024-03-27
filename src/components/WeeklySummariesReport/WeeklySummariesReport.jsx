@@ -31,6 +31,8 @@ import { fetchAllBadges } from '../../actions/badgeManagement';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
+import PasswordInputModal from './PasswordInputModal';
+import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -56,22 +58,6 @@ function WeeklySummariesReport() {
   const authUser = useSelector(state => state?.auth?.user);
   const infoCollections = useSelector(state => state?.infoCollections?.infos);
   const role = useSelector(state => state?.userProfile?.role);
-  // console.log('infoCollections', infoCollections);
-  // console.log('authUser', authUser);
-  // console.log('allbadgedata', allBadgeData);
-  // console.log('args', args);
-
-  // const func = state => {
-  //   console.log('I am an arrow function');
-  //   console.log('state', state);
-  //   return state;
-  // };
-
-  // const auth = useSelector(state => state);
-  // function func(state) {
-  //   console.log("I'm a function");
-  // }
-  // console.log('auth', auth);
 
   const [bioEditPermission, setBioEditPermission] = useState(false);
   const [canEditSummaryCount, setCanEditSummaryCount] = useState(false);
@@ -82,9 +68,10 @@ function WeeklySummariesReport() {
   const [summaries, setSummaries] = useState([]);
   const [activeTab, setActiveTab] = useState(navItems[1]);
   // three new set from the latest commit
-  // const [passwordModalOpen, setPasswordModalOpen] = useState(false);
-  // const [isValidPwd, setIsValidPwd] = useState(true);
-  // const [summaryRecepientsPopupOpen, setSummaryRecepientsPopupOpen] = useState(false);
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [summaryRecepientsPopupOpen, setSummaryRecepientsPopupOpen] = useState(false);
+  const [isValidPwd, setIsValidPwd] = useState(true);
+
   const [badges, setBadges] = useState([]);
   const [loadBadges, setLoadBadges] = useState(false);
   const [hasSeeBadgePermission, setHasSeeBadgePermission] = useState(false);
@@ -304,6 +291,13 @@ function WeeklySummariesReport() {
     });
     setFilteredSummaries(temp);
   };
+
+  useEffect(() => {
+    if (props.weeklySummariesReport.loading !== loading) {
+      setLoading(props.weeklySummariesReport.loading);
+    }
+  }, [props.weeklySummariesReport.loading, loading]);
+
   useEffect(() => {
     if (selectedCodes !== null) {
       filterWeeklySummaries();
@@ -336,6 +330,76 @@ function WeeklySummariesReport() {
     setSelectedBioStatus(!selectedBioStatus);
   };
 
+  // componentWillUnmount() {
+  //   sessionStorage.removeItem('tabSelection');
+  // }
+
+  const onSummaryRecepientsPopupClose = () => {
+    setSummaryRecepientsPopupOpen(false);
+  };
+
+  const setSummaryRecepientsPopup = val => {
+    setSummaryRecepientsPopupOpen(val);
+  };
+
+  popUpElements = () => {
+    return (
+      <WeeklySummaryRecipientsPopup
+        open={summaryRecepientsPopupOpen}
+        onClose={onSummaryRecepientsPopupClose}
+        summaries={props.summaries}
+      />
+    );
+  };
+
+  // onpasswordModalClose = () => {
+  //   this.setState({
+  //     passwordModalOpen: false,
+  //   });
+  // };
+
+  // checkForValidPwd = booleanVal => {
+  //   this.setState({ isValidPwd: booleanVal });
+  // };
+
+  // passwordInputModalToggle = () => {
+  //   return (
+  //     <PasswordInputModal
+  //       open={this.state.passwordModalOpen}
+  //       onClose={this.onpasswordModalClose}
+  //       checkForValidPwd={this.checkForValidPwd}
+  //       isValidPwd={this.state.isValidPwd}
+  //       setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
+  //       setAuthpassword={this.setAuthpassword}
+  //       authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
+  //     />
+  //   );
+  // };
+
+  // // Authorization for the weeklySummary Recipients is required once
+  // setAuthpassword = authPass => {
+  //   this.setState({
+  //     weeklyRecipientAuthPass: authPass,
+  //   });
+  // };
+
+  // onClickRecepients = () => {
+  //   if (this.state.weeklyRecipientAuthPass) {
+  //     this.setState({
+  //       summaryRecepientsPopupOpen: true,
+  //     });
+  //   } else {
+  //     this.setState({
+  //       passwordModalOpen: true,
+  //     });
+  //     this.checkForValidPwd(true);
+  //   }
+  // };
+
+  const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+  const authorizedUser1 = process.env.REACT_APP_JAE;
+  const authorizedUser2 = process.env.REACT_APP_SARA;
+
   if (error) {
     return (
       <Container>
@@ -359,6 +423,8 @@ function WeeklySummariesReport() {
 
   return (
     <Container fluid className="bg--white-smoke py-3 mb-5">
+      {/* {this.passwordInputModalToggle()}
+        {this.popUpElements()} */}
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
@@ -367,7 +433,7 @@ function WeeklySummariesReport() {
               <EditableInfoModal
                 areaName="WeeklySummariesReport"
                 areaTitle="Weekly Summaries Report"
-                role={role} // 大问题，这个role去掉state的话会报错undefined
+                role={role}
                 fontSize={24}
                 isPermissionPage
                 className="p-2" // Add Bootstrap padding class to the EditableInfoModal
@@ -376,6 +442,20 @@ function WeeklySummariesReport() {
           </h3>
         </Col>
       </Row>
+      {/* {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
+          authEmailWeeklySummaryRecipient === authorizedUser2) && (
+          <Row className="d-flex justify-content-center mb-3">
+            <Button
+              color="primary"
+              className="permissions-management__button"
+              type="button"
+              onClick={() => this.onClickRecepients()}
+              style={boxStyle}
+            >
+              Weekly Summary Report Recipients
+            </Button>
+          </Row>
+        )} */}
       <Row style={{ marginBottom: '10px' }}>
         <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
           Select Team Code
@@ -400,6 +480,44 @@ function WeeklySummariesReport() {
           />
         </Col>
       </Row>
+      {/* <Row style={{ marginBottom: '10px' }}>
+        <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+          <div className="filter-container">
+            {(hasPermissionToFilter || this.canSeeBioHighlight) && (
+              <div className="filter-style margin-right">
+                <span>Filter by Bio Status</span>
+                <div className="custom-control custom-switch custom-control-smaller">
+                  <input
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="bio-status-toggle"
+                    onChange={this.handleBioStatusToggleChange}
+                  />
+                  <label className="custom-control-label" htmlFor="bio-status-toggle">
+                    {}
+                  </label>
+                </div>
+              </div>
+            )}
+            {hasPermissionToFilter && (
+              <div className="filter-style">
+                <span>Filter by Over Hours</span>
+                <div className="custom-control custom-switch custom-control-smaller">
+                  <input
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="over-hours-toggle"
+                    onChange={this.handleOverHoursToggleChange}
+                  />
+                  <label className="custom-control-label" htmlFor="over-hours-toggle">
+                    {}
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
+        </Col>
+      </Row> */}
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <Nav tabs>
