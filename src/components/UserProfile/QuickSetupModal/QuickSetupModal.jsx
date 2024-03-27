@@ -39,7 +39,7 @@ function QuickSetupModal({
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
   const [curtitle, setTitleOnClick] = useState('');
-  const [submittoggler, setSubmit] = useState(false);
+  // const [submittoggler, setSubmit] = useState(false);
   const [titleOnSet, setTitleOnSet] = useState(true);
 
   useEffect(() => {
@@ -52,19 +52,31 @@ function QuickSetupModal({
   }, []);
 
   //triggered when add a new title
-  useEffect(() => {
-    // eslint-disable-next-line no-undef
-    if (submittoggler) {
-      console.log('triggered');
-      getAllTitle()
-        .then(res => {
-          setSubmit(false);
-          console.log(res.data);
-          setTitles(res.data);
-        })
-        .catch(err => console.log(err));
-    }
-  }, [submittoggler]);
+  // useEffect(() => {
+  //   // eslint-disable-next-line no-undef
+  //   if (submittoggler) {
+  //     console.log('triggered');
+  //     getAllTitle()
+  //       .then(res => {
+  //         setSubmit(false);
+  //         console.log(res.data);
+  //         setTitles(res.data);
+  //       })
+  //       .catch(err => console.log(err));
+  //   }
+  // }, [submittoggler]);
+
+  const refreshModalTitles = () => {
+    getAllTitle()
+      .then(res => {
+        // setSubmit(false);
+        console.log(res.data);
+        setTitles(res.data);
+      })
+      .catch(err => console.log(err));
+  }
+
+
 
   return (
     <div className="container pt-3">
@@ -104,7 +116,7 @@ function QuickSetupModal({
           projectsData={projectsData}
           isOpen={showAddTitle}
           setIsOpen={setShowAddTitle}
-          setSubmit={setSubmit}
+          refreshModalTitles={refreshModalTitles}
         />
       ) : (
         ''
@@ -120,6 +132,7 @@ function QuickSetupModal({
           toggle={setShowAssignModal}
           title={curtitle}
           setTitleOnSet={setTitleOnSet}
+          refreshModalTitles={refreshModalTitles}
         />
       ) : (
         ''

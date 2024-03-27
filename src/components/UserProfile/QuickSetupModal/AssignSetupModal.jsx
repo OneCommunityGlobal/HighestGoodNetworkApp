@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
+import { deleteTitleById } from 'actions/title';
 
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet }) {
+function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles }) {
   const [validation, setValid] = useState({
     volunteerAgree: false,
   });
@@ -50,6 +51,18 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
     setIsOpen(false);
   };
 
+
+  const deleteTitle = (titleId) => {
+    deleteTitleById(titleId)
+      .then(() => {
+        refreshModalTitles();
+        setIsOpen(false);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
   return (
     <Modal isOpen={isOpen} toggle={() => setIsOpen(false)} >
       <ModalHeader toggle={() => setIsOpen(false)}>
@@ -90,7 +103,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           <Button className="bg-danger m-3" onClick={() => setNoOnClick()}>
             No
           </Button>
-          {/* <Button className="bg-danger m-3" onClick={() => deleteTitleById(title._id)}></Button> */}
+          {/* <Button className="bg-danger m-3" onClick={() => deleteTitle(title._id)}>Delete Title</Button> */}
         </div>
       </ModalFooter>
     </Modal>

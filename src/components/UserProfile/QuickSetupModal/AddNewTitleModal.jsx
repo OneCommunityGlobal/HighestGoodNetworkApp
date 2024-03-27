@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import AddTeamsAutoComplete from '../TeamsAndProjects/AddTeamsAutoComplete';
 import AddProjectsAutoComplete from '../TeamsAndProjects/AddProjectsAutoComplete';
 
-function AddNewTitleModal({ isOpen, setIsOpen, setSubmit, teamsData, projectsData }) {
+function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData }) {
   const [titleData, setTitleData] = useState({
     titleName: '',
     mediaFolder: '',
@@ -54,9 +54,14 @@ function AddNewTitleModal({ isOpen, setIsOpen, setSubmit, teamsData, projectsDat
   };
 
   const confirmOnClick = () => {
-    addTitle(titleData);
-    setIsOpen(false);
-    setSubmit(true);
+    addTitle(titleData)
+      .then(() => {
+        setIsOpen(false);
+        refreshModalTitles();
+      })
+      .catch(e => {
+        console.log(e);
+      });
   };
 
   return (
