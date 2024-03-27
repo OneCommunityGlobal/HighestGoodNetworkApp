@@ -57,7 +57,6 @@ import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
-import { getAllTitle } from 'actions/title';
 
 function UserProfile(props) {
   /* Constant values */
@@ -111,20 +110,6 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
-
-  // yh
-  const testYH = () => {
-    // console.log(canSeeQSC);
-    getAllTitle()
-      .then((resp) => {
-        console.log(resp.data)
-      })
-      .catch((e) => {
-        console.log(e)
-      })
-
-  } 
-
 
   /* useEffect functions */
   useEffect(() => {
@@ -762,9 +747,7 @@ function UserProfile(props) {
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
-                    // yh, temporaly changed for test
-                    onClick={testYH}
-                    // onChange={handleImageUpload}
+                    onChange={handleImageUpload}
                     accept="image/png,image/jpeg, image/jpg"
                   />
                 </div>

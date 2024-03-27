@@ -53,6 +53,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     onValidation(true);
   };
 
+  // confirm and save
   const confirmOnClick = () => {
     addTitle(titleData)
       .then(() => {

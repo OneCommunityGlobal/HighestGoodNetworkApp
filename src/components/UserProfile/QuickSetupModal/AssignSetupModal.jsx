@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import { deleteTitleById } from 'actions/title';
 
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles }) {
+function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles}) {
   const [validation, setValid] = useState({
     volunteerAgree: false,
   });
@@ -19,6 +19,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       : setValid(prev => ({ ...prev, volunteerAgree: true }));
   };
 
+  // add QSC into user profile (and needs to save by clicking the save button)
   const setAssignedOnClick = () => {
     if (validation.volunteerAgree && googleDoc.length !== 0) {
       const data = {
@@ -27,31 +28,24 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         projects: [...userProfile.projects, title.projectAssigned],
         teamCode: title.teamCode,
       };
-      // remove duplicate
-      // eslint-disable-next-line no-unused-expressions
+      // remove duplicate project and teams
       userProfile.teams.includes(title?.teamAssiged) ? data.teams.pop() : '';
-      // eslint-disable-next-line no-unused-expressions
       userProfile.projects.includes(title.projectAssigned) ? data.projects.pop() : '';
 
       setUserProfile(prev => ({ ...prev, ...data }));
+
       setTitleOnSet(false);
       setValid(() => ({ volunteerAgree: false }));
       setIsOpen(false);
     }
   };
 
+  // close the modal
   const setNoOnClick = () => {
-    setUserProfile(prev => ({
-      ...prev,
-      teams: [...userProfile.teams],
-      jobTitle: userProfile.jobTitle,
-      projects: [...userProfile.projects],
-      teamCode: userProfile.teamCode,
-    }));
     setIsOpen(false);
   };
 
-
+  // delete this title
   const deleteTitle = (titleId) => {
     deleteTitleById(titleId)
       .then(() => {
@@ -103,7 +97,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           <Button className="bg-danger m-3" onClick={() => setNoOnClick()}>
             No
           </Button>
-          {/* <Button className="bg-danger m-3" onClick={() => deleteTitle(title._id)}>Delete Title</Button> */}
+          <Button className="bg-danger m-3" onClick={() => deleteTitle(title._id)}>Delete QSC</Button>
         </div>
       </ModalFooter>
     </Modal>

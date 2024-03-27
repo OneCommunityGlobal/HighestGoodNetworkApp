@@ -27,7 +27,6 @@ import './QuickSetupModal.css';
 function QuickSetupModal({
   canAddTitle,
   canAssignTitle,
-  jobTitle,
   teamsData,
   projectsData,
   userProfile,
@@ -39,44 +38,35 @@ function QuickSetupModal({
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
   const [curtitle, setTitleOnClick] = useState('');
-  // const [submittoggler, setSubmit] = useState(false);
   const [titleOnSet, setTitleOnSet] = useState(true);
 
   useEffect(() => {
     getAllTitle()
       .then(res => {
-        console.log(res.data);
         setTitles(res.data);
       })
       .catch(err => console.log(err));
   }, []);
 
-  //triggered when add a new title
-  // useEffect(() => {
-  //   // eslint-disable-next-line no-undef
-  //   if (submittoggler) {
-  //     console.log('triggered');
-  //     getAllTitle()
-  //       .then(res => {
-  //         setSubmit(false);
-  //         console.log(res.data);
-  //         setTitles(res.data);
-  //       })
-  //       .catch(err => console.log(err));
-  //   }
-  // }, [submittoggler]);
-
+  // refresh the QSCs after CREATE/DELETE operations on titles
   const refreshModalTitles = () => {
     getAllTitle()
       .then(res => {
-        // setSubmit(false);
-        console.log(res.data);
         setTitles(res.data);
       })
       .catch(err => console.log(err));
-  }
+  };
 
-
+  //handle
+  const handleSaveChanges = () => {
+    handleSubmit()
+      .then(() => {
+        setTitleOnSet(true);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  };
 
   return (
     <div className="container pt-3">
@@ -89,7 +79,7 @@ function QuickSetupModal({
         setTitleOnClick={setTitleOnClick}
       />
 
-      <div className="col text-center">
+      <div className="col text-center mt-3">
         {canAddTitle ? (
           <Button color="primary" onClick={() => setShowAddTitle(true)}>
             Add A New Title
@@ -98,10 +88,10 @@ function QuickSetupModal({
           ''
         )}
       </div>
-      <div className="col text-center">
+      <div className="col text-center mt-3">
         {canAddTitle ? (
           <SaveButton
-            handleSubmit={handleSubmit}
+            handleSubmit={handleSaveChanges}
             userProfile={userProfile}
             disabled={titleOnSet}
             setSaved={() => setSaved(true)}
