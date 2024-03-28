@@ -13,6 +13,7 @@ import {
   TabPane,
   TabContent,
 } from 'reactstrap';
+import CommonInput from 'components/common/Input';
 import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
@@ -344,16 +345,16 @@ class AddUserProfile extends Component {
                       </Col>
                       <Col md="6">
                         <FormGroup>
-                          <Input
+                          <CommonInput
                             type="password"
                             name="actualPassword"
                             id="actualPassword"
                             value={actualPassword}
                             onChange={this.handleUserProfile}
                             placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword}
+                            invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
+                            className="d-flex justify-start items-start"
                           />
-                          <FormFeedback>{this.state.formErrors.actualPassword}</FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
@@ -363,18 +364,16 @@ class AddUserProfile extends Component {
                       </Col>
                       <Col md="6">
                         <FormGroup>
-                          <Input
+                          <CommonInput
                             type="password"
                             name="actualConfirmedPassword"
                             id="actualConfirmedPassword"
                             value={actualConfirmedPassword}
                             onChange={this.handleUserProfile}
                             placeholder="Confirm Actual Password"
-                            invalid={actualPassword !== actualConfirmedPassword}
+                            invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
+                            className="d-flex justify-start items-start"
                           />
-                          {actualPassword !== actualConfirmedPassword && (
-                            <FormFeedback>Passwords do not match</FormFeedback>
-                          )}
                         </FormGroup>
                       </Col>
                     </Row>
