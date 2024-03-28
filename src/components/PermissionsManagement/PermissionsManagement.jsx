@@ -42,7 +42,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     getAllRoles();
     getInfoCollections();
     getUserRole(auth?.user.userid);
-    
+
     const getChangeLogs = async () => {
       try {
         const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid))

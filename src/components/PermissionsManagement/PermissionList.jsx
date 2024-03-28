@@ -22,6 +22,8 @@ const PermissionList = (props) => {
           // runs when permission is added or removed
           onChange=()=>{},
         } = props;
+
+
   return (
     <ul className="user-role-tab__permissionList">
         {permissionsList.map((permission) => (

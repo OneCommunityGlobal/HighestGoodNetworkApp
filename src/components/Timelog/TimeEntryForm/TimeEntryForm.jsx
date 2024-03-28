@@ -122,6 +122,7 @@ const TimeEntryForm = props => {
   const canEditTimeEntry =
     props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canToggleTanglibleTime = props.hasPermission('toggleTangibleTime')
 
   const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry);
 
@@ -741,7 +742,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!(canEditTimeEntry || from === 'Timer')}
+                  disabled={!canToggleTanglibleTime || !(canEditTimeEntry || from === 'Timer')}
                 />
                 Tangible&nbsp;
                 <i

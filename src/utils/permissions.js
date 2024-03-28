@@ -2,6 +2,7 @@
 const hasPermission = (action) => {
   return (dispatch, getState) => {
     const state = getState();
+    console.log('STATE', state)
     const rolePermissions = state.role.roles;
     const userRole = state.auth.user.role;
     const userPermissions = state.auth.user.permissions?.frontPermissions;
@@ -12,8 +13,8 @@ const hasPermission = (action) => {
       if (roleIndex !== -1) {
         permissions = rolePermissions[roleIndex].permissions;
       }
-
-      return userPermissions?.includes(action) || permissions?.includes(action);
+        console.log(action, userPermissions.includes(action), permissions?.includes(action))
+      return userPermissions.includes(action) || permissions?.includes(action);
     }
     return false;
   }
@@ -21,7 +22,7 @@ const hasPermission = (action) => {
 
 // others cannot change the details for devadmin@hgn.net
 /**
- * 
+ *
  * @param {String} devAdminEmail target user email
  * @param {String} authEmail logged in user email
  * @returns {boolean} true if the user is not allowed to update the devadmin details
