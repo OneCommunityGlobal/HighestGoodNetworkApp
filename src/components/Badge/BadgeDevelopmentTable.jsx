@@ -11,7 +11,6 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
-  Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { updateBadge, deleteBadge, closeAlert } from '../../actions/badgeManagement';
@@ -149,17 +148,26 @@ const BadgeDevelopmentTable = props => {
     const checkValue = badgeValue.showReport ? true : false;
     return (
       <div className="badge_check">
-        <Input
-          type="checkbox"
-          id={badgeValue._id}
-          name="reportable"
-          checked={badgeValue.showReport || false}
-          onChange={e => {
-            const updatedValue = { ...badgeValue, showReport: !checkValue };
-            props.updateBadge(badgeValue._id, updatedValue);
-          }}
-        />
-      </div>
+      <input
+        type="checkbox"
+        id={badgeValue._id}
+        name="reportable"
+        checked={badgeValue.showReport || false}
+        onChange={e => {
+          const updatedValue = { ...badgeValue, showReport: !checkValue };
+          props.updateBadge(badgeValue._id, updatedValue);
+        }}
+            style={{
+        display: 'inline-block',
+        width: '20px',
+        height: '20px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        backgroundColor: checkValue ? '#007bff' : 'transparent',
+        cursor: 'pointer',
+      }}
+      />
+    </div>
     );
   };
 
@@ -206,9 +214,9 @@ const BadgeDevelopmentTable = props => {
                 </UncontrolledPopover>
               </td>
               <td>{value.badgeName}</td>
-              <td>{value.description || ''}</td>
+              <td className="d-xl-table-cell d-none">{value.description || ''}</td>
               <td>{value.type || ''}</td>
-              <td>{detailsText(value)}</td>
+              <td className='d-xl-table-cell d-none'>{detailsText(value)}</td>
               <td>{value.ranking || 0}</td>
               <td>
                 <span className="badgemanagement-actions-cell">
@@ -232,7 +240,7 @@ const BadgeDevelopmentTable = props => {
                   </Button>
                 </span>
               </td>
-                <td style={{textAlign:"center"}}>{reportBadge(value)}</td>
+              <td style={{textAlign:"center"}}>{reportBadge(value)}</td>
             </tr>
           ))}
         </tbody>
