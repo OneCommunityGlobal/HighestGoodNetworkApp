@@ -20,9 +20,9 @@ const Input = ({ label, name, error, className, type, ...rest }) => {
     <div className={`form-group ${className ? className : ''}`}>
       <label htmlFor={name}>{label}</label>
       {type === 'password' ? (
-        <div className='input-text'>
+        <div className='input-text-for-input-component'>
           <input {...rest} type={password} id={name} name={name} className={`form-control`} />
-          <i onClick={toggleEye} className={`fa ${eye ? "fa-eye-slash" : "fa-eye"}`}></i>
+          <i onClick={toggleEye} className={`fa ${eye ? "fa-eye-slash fa-eye-slash-input-component" : "fa-eye fa-eye-input-component"}`}></i>
         </div>
       ) : (
         <input {...rest} type={type} id={name} name={name} className={`form-control`} />

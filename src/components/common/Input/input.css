@@ -1,14 +1,14 @@
-.input-text {
+.input-text-for-input-component {
   position: relative;
 }
-.input-text .fa-eye-slash {
+.input-text-for-input-component .fa-eye-slash-input-component {
   position: absolute;
   right: 10px;
   top: 12px;
   font-size: 15px;
   cursor: pointer;
 }
-.fa-eye {
+.fa-eye-input-component {
   position: absolute;
   right: 10px;
   top: 12px;

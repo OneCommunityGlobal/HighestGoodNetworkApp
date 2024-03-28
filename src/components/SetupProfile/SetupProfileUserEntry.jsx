@@ -32,7 +32,7 @@ import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
 import HomeCountryModal from './homeCountryModal';
 import ProfilePictureModal from './profilePictureModal';
-import DeleteHoumeCountryModal from './deleteHomeCountryModal';
+import DeleteHomeCountryModal from './deleteHomeCountryModal';
 import  collaborationOptions  from './collaborationSuggestionData' ;
 import Image from 'react-bootstrap/Image';
 import 'react-phone-input-2/lib/style.css';
@@ -95,7 +95,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     type: '',
   });
   const [totalCountryCount, setTotalCountryCount] = useState('');
-  const [deleteHoumeCountryModal, setDeleteHoumeCountryModal] = useState(false);
+  const [deleteHomeCountryModal, setDeleteHomeCountryModal] = useState(false);
 
   const [collaborationSuggestionOpen, setCollaborationSuggestionOpen] = useState(false);
   const [collaborationSuggestions, setCollaborationSuggestions] = useState([]);
@@ -202,8 +202,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     sethomecountryModalOpen(prev => !prev);
   };
 
-  const toggleDeleteHoumeCountryModal = () => {
-    setDeleteHoumeCountryModal(prev => !prev);
+  const toggleDeleteHomeCountryModal = () => {
+    setDeleteHomeCountryModal(prev => !prev);
   };
 
   const toggleProfilePictureModal = () => {
@@ -707,7 +707,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                   <InputGroupText
                     id="showPassword"
                     onClick={togglePasswordVisibility}
-                    style={{ backgroundColor: '#f5f5f5' }}
+                    style={{ backgroundColor: 'transparent' ,width: '45px' , justifyContent : 'center'  }}
                   >
                     {showPassword ? (
                       <FontAwesomeIcon icon={faEyeSlash} />
@@ -736,7 +736,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                   <InputGroupText
                     id="showConfirmPassword"
                     onClick={toggleConfirmPasswordVisibility}
-                    style={{ backgroundColor: '#f5f5f5' }}
+                    style={{ backgroundColor: 'transparent' , width: '45px' , justifyContent : 'center' }}
                   >
                     {showConfirmPassword ? (
                       <FontAwesomeIcon icon={faEyeSlash} />
@@ -965,16 +965,16 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                     </b>
                     .
                   </p>
-                  <button type="button" className="close" onClick={toggleDeleteHoumeCountryModal}>
+                  <button type="button" className="close" onClick={toggleDeleteHomeCountryModal}>
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
               </Col>
             </Row>
           )}
-          <DeleteHoumeCountryModal
-            isOpen={deleteHoumeCountryModal}
-            toggle={toggleDeleteHoumeCountryModal}
+          <DeleteHomeCountryModal
+            isOpen={deleteHomeCountryModal}
+            toggle={toggleDeleteHomeCountryModal}
             setLocation={setHomecountryLocation}
           />
           <Row>
