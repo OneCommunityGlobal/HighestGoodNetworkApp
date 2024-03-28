@@ -27,12 +27,3 @@ export const assignStarDotColors = (hoursLogged, weeklyCommittedHours) => {
 export const showStar = (hoursLogged, weeklyCommittedHours) => {
   return weeklyCommittedHours !== 0 && hoursLogged >= weeklyCommittedHours * DARKGREEN_TIER;
 };
-
-
-export const viewZeroHouraMembers = authRole => {
-  return (
-    authRole === 'Owner' ||
-    authRole === 'Administrator' ||
-    authRole === 'Core Team'
-  );
-};
