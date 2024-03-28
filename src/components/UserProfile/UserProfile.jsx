@@ -1002,7 +1002,7 @@ function UserProfile(props) {
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(userProfile.role)}
+                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
