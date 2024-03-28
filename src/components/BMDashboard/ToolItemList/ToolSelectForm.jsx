@@ -1,9 +1,12 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
 export default function SelectForm({ items, setSelectedProject, setSelectedItem }) {
+  // console.log("SelectForm. items: ", items, ", setSelectedProject: ",setSelectedProject, ", setSelectedItem: ", setSelectedItem);
+  // console.log("SelectForm. items: ", items)
   let projectsSet = [];
   if (items.length) {
     projectsSet = [...new Set(items.map(el => el.project?.name))];
+    // console.log("projectsSet: ", projectsSet);
   }
 
   const handleChange = event => {

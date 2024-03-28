@@ -3,7 +3,7 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import RecordsModal from './RecordsModal';
+import ToolRecordsModal from './ToolRecordsModal';
 
 export default function ItemsTable({
   selectedProject,
@@ -27,6 +27,20 @@ export default function ItemsTable({
     sortOrder: 'default',
   });
 
+// 
+  // useEffect(() => {
+  //   console.log("ItemsTable. selectedProject: ", selectedProject, ", selectedItem: ", selectedItem, ", filteredItems: ", filteredItems, ", dynamicColumns: ", dynamicColumns)
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log("projectNameCol: ", projectNameCol)
+  //   console.log("inventoryItemTypeCol: ",inventoryItemTypeCol);
+  // }, [projectNameCol, inventoryItemTypeCol]);
+
+    useEffect(() => {
+    console.log("sortedData changed: ", sortedData)
+  }, [sortedData]);
+  // // 
   useEffect(() => {
     setData(filteredItems);
   }, [filteredItems]);
@@ -51,8 +65,9 @@ export default function ItemsTable({
 
   const sortData = columnName => {
     const newSortedData = [...sortedData];
-
+    console.log("");
     if (columnName === 'ProjectName') {
+      console.log("columnName === 'ProjectName'");
       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
@@ -62,6 +77,7 @@ export default function ItemsTable({
       }
       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'InventoryItemType') {
+      console.log("columnName === 'InventoryItemType'");
       if (
         inventoryItemTypeCol.sortOrder === 'default' ||
         inventoryItemTypeCol.sortOrder === 'desc'
@@ -82,13 +98,25 @@ export default function ItemsTable({
     setData(newSortedData);
   };
 
+
+  // const dynamicColumns = [
+  //   { label: 'Unit', key: 'itemType.unit' },
+  //   { label: 'Bought', key: 'stockBought' },
+  //   { label: 'Used', key: 'stockUsed' },
+  //   { label: 'Available', key: 'stockAvailable' },
+  //   { label: 'Waste', key: 'stockWasted' },
+  // ];
+
   const getNestedValue = (obj, path) => {
+    // console.log("obj: ", obj, ", path: ", path);
+    // console.log("path: ", path.split('.'));
+    
     return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
   };
 
   return (
     <>
-      <RecordsModal
+      <ToolRecordsModal
         modal={modal}
         setModal={setModal}
         record={record}
@@ -128,10 +156,14 @@ export default function ItemsTable({
                 return (
                   <tr key={el._id}>
                     <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
-                    {dynamicColumns.map(({ label, key }) => (
+                    <td>{el/*.itemType?*/.name}</td>
+                    {/* {dynamicColumns.map(({ label, key }) => (
                       <td key={label}>{getNestedValue(el, key)}</td>
-                    ))}
+                    ))} */}
+                    <td>{el.available.length + el.using.length}</td>
+                    <td>{el.using.length}</td>
+                    <td>{el.available.length}</td>
+                    <td>0</td>
                     <td className="items_cell">
                       <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>
                         <BiPencil />
