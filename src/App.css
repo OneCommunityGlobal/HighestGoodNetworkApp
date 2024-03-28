@@ -120,3 +120,11 @@ nav ul.navbar-nav li:last-child > div {
 tr {
   content-visibility: auto;
 }
+
+.custom-checkbox *:hover {
+  cursor: pointer;
+}
+
+input[type="radio"]:hover {
+  cursor: pointer;
+}
