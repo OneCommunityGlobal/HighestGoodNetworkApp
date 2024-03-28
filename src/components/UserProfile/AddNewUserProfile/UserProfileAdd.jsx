@@ -718,7 +718,7 @@ class AddUserProfile extends Component {
     this.setState({ formSubmitted: true });
 
     if (actualPassword != actualConfirmedPassword) {
-      toast.error('Must confirm password!');
+      toast.error('Your passwords do not match!');
       return;
     }
 
