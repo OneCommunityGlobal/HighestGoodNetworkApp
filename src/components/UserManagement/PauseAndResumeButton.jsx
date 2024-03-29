@@ -74,6 +74,7 @@ const PauseAndResumeButton = props => {
           onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
         }}
         style={boxStyle}
+        data-testid="pause-resume-button"
       >
         {isActive ? PAUSE : RESUME}
       </Button>

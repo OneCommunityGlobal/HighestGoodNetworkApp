@@ -12,10 +12,11 @@ import {
   FormFeedback,
   Button,
 } from 'reactstrap';
-import getUserTimeZone from '../../services/timezoneApiService';
 import RequirementModal from './requirementModal';
+import httpService from 'services/httpService';
+import { ENDPOINTS } from 'utils/URL';
 
-const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
+const HomeCountryModal = ({ isOpen, toggle, setLocation,token}) => {
   const [inputError, setInputError] = useState('');
   const locationInitialState = {
     userProvided: '',
@@ -58,34 +59,16 @@ const HomeCountryModal = ({ isOpen, toggle, apiKey, setLocation }) => {
       setInputError('Please enter valid location');
       return;
     }
-    if (!apiKey) {
-      setInputError('Geocoding API key missing');
-      return;
-    }
-    getUserTimeZone(location, apiKey)
-      .then(response => {
-        if (
-          response.data.status.code === 200 &&
-          response.data.results &&
-          response.data.results.length
-        ) {
-          let currentLocation = {
-            userProvided: location,
-            coords: {
-              lat: response.data.results[0].geometry.lat,
-              lng: response.data.results[0].geometry.lng,
-            },
-            country: response.data.results[0].components.country,
-            city: response.data.results[0].components.city || '',
-          };
-          setLocationInput({
-            ...currentLocation,
-          });
-        } else {
-          setInputError('Invalid location or ' + response.data.status.message);
-        }
-      })
-      .catch(err => console.log(err));
+    httpService.post(ENDPOINTS.TIMEZONE_LOCATION(location),{token}).then(res => {
+      if (res.status === 200) {
+        const { currentLocation } = res.data;
+        setLocationInput({
+          ...currentLocation
+        });
+      }
+    }).catch((err) => {
+      setInputError(`An error occured: ${err.response.data}`);
+    })
   };
 
   const handleYesClick = () => {

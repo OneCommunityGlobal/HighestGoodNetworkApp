@@ -23,9 +23,7 @@ import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
 import logo from '../../assets/images/logo.png';
 import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
-import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import getUserTimeZone from '../../services/timezoneApiService';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
@@ -48,7 +46,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
   const containLow = RegExp(/[a-z]/);
   const containNumb = RegExp(/\d/);
   const containOnlyLetters = RegExp(/^[a-zA-Z\s]+$/);
-  const [APIkey, setAPIkey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userProfile, setUserProfile] = useState({
@@ -167,11 +164,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     return result.trim();
   };
 
-  //  get the timezone API key using the setup token
+
   useEffect(() => {
-    httpService.post(ENDPOINTS.TIMEZONE_KEY_BY_TOKEN(), { token }).then(response => {
-      setAPIkey(response.data.userAPIKey);
-    });
     httpService.get(ENDPOINTS.GET_TOTAL_COUNTRY_COUNT()).then(response => {
       const total = numberToWords(Number(response.data.CountryCount));
       setTotalCountryCount(total);
@@ -312,41 +306,24 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       }));
       return;
     }
-    if (!APIkey) {
-      console.log('Geocoding API key missing');
-      return;
-    }
-    getUserTimeZone(location, APIkey)
-      .then(response => {
-        if (
-          response.data.status.code === 200 &&
-          response.data.results &&
-          response.data.results.length
-        ) {
-          let timezone = response.data.results[0].annotations.timezone.name;
-          let currentLocation = {
-            userProvided: location,
-            coords: {
-              lat: response.data.results[0].geometry.lat,
-              lng: response.data.results[0].geometry.lng,
-            },
-            country: response.data.results[0].components.country,
-            city: response.data.results[0].components.city,
-          };
-          setUserProfile(prevProfile => ({
-            ...prevProfile,
-            timeZoneFilter: timezone,
-            timeZone: timezone,
-            location: currentLocation,
-          }));
-        } else {
-          setFormErrors(prevErrors => ({
-            ...prevErrors,
-            location: 'Invalid location',
-          }));
-        }
-      })
-      .catch(err => console.log(err));
+
+    httpService.post(ENDPOINTS.TIMEZONE_LOCATION(location),{token}).then(response => {
+      if(response.status === 200) {
+        const { timezone, currentLocation } = response.data;
+        setUserProfile(prevProfile => ({
+          ...prevProfile,
+          timeZoneFilter: timezone,
+          timeZone: timezone,
+          location: currentLocation
+        }));
+      }
+    }).catch(err => {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        location: 'Invalid location',
+      }));
+      alert(`An error occurred : ${err.response.data}`);
+     })
   };
 
   const validateFormData = () => {
@@ -613,13 +590,13 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
           }
         })
         .catch(error => {
-          if (error.response.data === 'email already in use') {
+          if (error?.response?.data === 'email already in use') {
             setFormErrors(prevErrors => ({
               ...prevErrors,
               email: 'This email is already in use, Please contact your manager',
             }));
           }
-          console.log(error.response);
+          console.log(error?.response);
         });
     }
   };
@@ -900,7 +877,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                 </UncontrolledTooltip>
               </Label>
             </Col>
-
             <Col md="8">
               <Button
                 color="secondary "
@@ -914,8 +890,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               <HomeCountryModal
                 isOpen={homecountryModalOpen}
                 toggle={toggleHomecountryModal}
-                apiKey={APIkey}
                 setLocation={setHomecountryLocation}
+                token={token}
               />
             </Col>
           </Row>

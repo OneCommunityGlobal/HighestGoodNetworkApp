@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  addTimeOffRequestThunk,
-  updateTimeOffRequestThunk,
-  deleteTimeOffRequestThunk,
-} from '../../actions/timeOffRequestAction';
 import moment from 'moment-timezone';
 import {
   Button,
@@ -21,27 +16,27 @@ import {
   Label,
   Card,
   CardBody,
-  CardTitle,
   Form,
   Alert,
 } from 'reactstrap';
 import { boxStyle } from 'styles';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import {
+  addTimeOffRequestThunk,
+  updateTimeOffRequestThunk,
+  deleteTimeOffRequestThunk,
+} from '../../actions/timeOffRequestAction';
 
 const LogTimeOffPopUp = React.memo(props => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const today = moment().format('YYYY-MM-DD');
-  const nextSundayStr = moment()
-    .tz('America/Los_Angeles')
-    .startOf('isoWeek')
-    .add(7, 'days')
-    .format('YYYY-MM-DD');
-  const nextSundayDate = new Date(nextSundayStr);
+  const nextSundayStr =  moment().isoWeekday(7).startOf('day')
+  const nextSunday = new Date(nextSundayStr.year(), nextSundayStr.month(), nextSundayStr.date())
 
   const initialRequestData = {
-    dateOfLeave: nextSundayDate,
+    dateOfLeave: nextSunday,
     numberOfWeeks: 1,
     reasonForLeave: '',
   };
@@ -81,7 +76,7 @@ const LogTimeOffPopUp = React.memo(props => {
     setUpdateRequestDataErrors(initialUpdateRequestDataErrors);
   };
 
-  const closePopup = e => {
+  const closePopup = () => {
     resetState();
     props.onClose();
   };
@@ -101,10 +96,17 @@ const LogTimeOffPopUp = React.memo(props => {
     });
   };
 
+  const getDateWithoutTimeZone = date =>{
+    const newDateObject = new Date(date); 
+    const day = newDateObject.getDate(); 
+    const month = newDateObject.getMonth() + 1; 
+    const year = newDateObject.getFullYear();
+    return moment(`${month}-${day}-${year}`, 'MM-DD-YYYY').format('YYYY-MM-DD')
+  }
+
   const handleUpdateRequestDataChange = e => {
     e.preventDefault();
-    const id = e.target.id;
-    const value = e.target.value;
+    const {id , value }= e.target
     setUpdateRequestData(prev => ({
       ...prev,
       [id]: value,
@@ -112,14 +114,13 @@ const LogTimeOffPopUp = React.memo(props => {
   };
 
   const filterSunday = date => {
-    const losAngelesDate = moment(date).tz('America/Los_Angeles');
-    return losAngelesDate.day() === 6; // Sunday
+    const day = date.getDay();
+    return day === 0;
   };
 
   const handleAddRequestDataChange = e => {
     e.preventDefault();
-    const id = e.target.id;
-    const value = e.target.value;
+    const {id , value }= e.target
     setRequestData(prev => ({
       ...prev,
       [id]: value,
@@ -137,8 +138,8 @@ const LogTimeOffPopUp = React.memo(props => {
     return true;
   };
   // checks if duration is not empty and is not negative or 0
-  const validateNumberOfWeeks = (data, nestedModal) => {
-    if ((data, nestedModal)) {
+  const validateNumberOfWeeks = (data, nestedmodal) => {
+    if ((data, nestedmodal)) {
       if (!data.numberOfWeeks) {
         setUpdateRequestDataErrors(prev => ({
           ...prev,
@@ -172,9 +173,8 @@ const LogTimeOffPopUp = React.memo(props => {
     return true;
   };
   // checks reason for leave is not empty
-  const validateReasonForLeave = (data, nestedModal) => {
-    
-    if (nestedModal) {
+  const validateReasonForLeave = (data, nestedmodal) => {
+    if (nestedmodal) {
       if (!data.reasonForLeave) {
         setUpdateRequestDataErrors(prev => ({
           ...prev,
@@ -183,7 +183,7 @@ const LogTimeOffPopUp = React.memo(props => {
         return false;
       }
       const words = data.reasonForLeave?.split(' ');
-      if (words.length < 10 ) {
+      if (words.length < 10) {
         setUpdateRequestDataErrors(prev => ({
           ...prev,
           reasonForLeaveError: 'Reason for leave can not be less than 10 words',
@@ -209,9 +209,10 @@ const LogTimeOffPopUp = React.memo(props => {
     }
     return true;
   };
-  // checks if date of leave is not before today
-  const validateDateIsNotBeforeToday = data => {
-    const isBeforeToday = moment(data.dateOfLeave).isBefore(moment().startOf('week'), 'day');
+  // checks if date of leave is not before the start of current week
+  const validateDateIsNotBeforeStartOfCurrentWeek = data => {
+
+    const isBeforeToday = moment(getDateWithoutTimeZone(data.dateOfLeave)).isBefore(moment().startOf('week'), 'day');
     if (isBeforeToday) {
       setRequestDataErrors(prev => ({
         ...prev,
@@ -222,43 +223,34 @@ const LogTimeOffPopUp = React.memo(props => {
 
     return true;
   };
-  // checks if the date of leave is not befor the date of return of other requests
-  const validateDateIsNotBeforeEndOfOtherRequests = data => {
-    if (allRequests[props.user._id]?.length > 0) {
-      const isAnyEndingDateAfterDate = allRequests[props.user._id].some(request => {
-        const requestDate = moment(request.endingDate);
-        const dateOfLeave = moment(data.dateOfLeave);
-        return requestDate.isAfter(dateOfLeave);
-      });
-
-      if (isAnyEndingDateAfterDate) {
-        setRequestDataErrors(prev => ({
-          ...prev,
-          dateOfLeaveError: 'Date of leave can not be before the return date of other requests',
-        }));
-        return false;
-      }
-    }
-    return true;
-  };
-
+  // checks if the newly added request doesn't overlap with existing ones
   const checkIfRequestOverlapsWithOtherRequests = data => {
+    const dataStartingDate =  moment(getDateWithoutTimeZone(data.dateOfLeave)).startOf('day');
+    const dataEndingDate = moment(getDateWithoutTimeZone(data.dateOfLeave))
+    .add(Number(data.numberOfWeeks), 'week')
+    .subtract(1, 'day')
+    .startOf('day');
     if (allRequests[props.user._id]?.length > 0) {
       const isAnyOverlapingRequests = allRequests[props.user._id].some(request => {
-        const requestStartingDate = moment(request.startingDate);
-        if (request._id !== data.id && requestStartingDate.isAfter(moment(data.dateOfLeave)) ) {
-          const endOfVacation = moment(data.dateOfLeave)
-            .tz('America/Los_Angeles')
-            .add(Number(data.numberOfWeeks), 'week')
-            .subtract(1, 'second');
-          return endOfVacation.isAfter(requestStartingDate);
-        }
-      });
+        const requestStartingDate = moment(request.startingDate.split('T')[0]).startOf('day');
+        const requestEndingDate = moment(request.endingDate.split('T')[0]).startOf('day');
 
+        if (
+          (requestStartingDate.isSameOrAfter(dataStartingDate) &&
+          requestStartingDate.isSameOrBefore(dataEndingDate)) ||
+          (requestEndingDate.isSameOrAfter(dataStartingDate) &&
+          requestEndingDate.isSameOrBefore(dataEndingDate))
+        ) {
+          return true;
+        }
+        return false
+      });
+      
+     
       if (isAnyOverlapingRequests) {
-        setUpdateRequestDataErrors(prev => ({
+        setRequestDataErrors(prev => ({
           ...prev,
-          numberOfWeeksError: 'You cannot make this request overlap with other existing requests',
+          dateOfLeaveError: 'this request overlap with other existing requests',
         }));
         return false;
       }
@@ -271,17 +263,15 @@ const LogTimeOffPopUp = React.memo(props => {
     setRequestDataErrors(initialRequestDataErrors);
 
     if (!validateDateOfLeave(requestData)) return;
+    if (!validateDateIsNotBeforeStartOfCurrentWeek(requestData)) return;
+    if (!checkIfRequestOverlapsWithOtherRequests(requestData)) return;
     if (!validateNumberOfWeeks(requestData, false)) return;
     if (!validateReasonForLeave(requestData, false)) return;
-    if (!validateDateIsNotBeforeToday(requestData)) return;
-    if (!validateDateIsNotBeforeEndOfOtherRequests(requestData)) return;
 
     const data = {
       requestFor: props.user._id,
       reason: requestData.reasonForLeave,
-      startingDate: moment(requestData.dateOfLeave)
-        .tz('America/Los_Angeles')
-        .format('YYYY-MM-DD'),
+      startingDate: getDateWithoutTimeZone(requestData.dateOfLeave),
       duration: requestData.numberOfWeeks,
     };
     dispatch(addTimeOffRequestThunk(data));
@@ -294,6 +284,7 @@ const LogTimeOffPopUp = React.memo(props => {
     if (!validateNumberOfWeeks(updateRequestData, true)) return;
     if (!validateReasonForLeave(updateRequestData, true)) return;
     if (!checkIfRequestOverlapsWithOtherRequests(updateRequestData)) return;
+    
     const data = {
       reason: updateRequestData.reasonForLeave,
       startingDate: moment(updateRequestData.dateOfLeave)
@@ -310,6 +301,12 @@ const LogTimeOffPopUp = React.memo(props => {
     dispatch(deleteTimeOffRequestThunk(id));
   };
 
+  const sortRequests = (a, b) => {
+    const momentA = moment(a.startingDate, 'YYYY-MM-DD');
+    const momentB = moment(b.startingDate, 'YYYY-MM-DD');
+    return momentA - momentB;
+  }
+
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
       <ModalHeader toggle={closePopup}>Add New Time Off Request</ModalHeader>
@@ -322,20 +319,20 @@ const LogTimeOffPopUp = React.memo(props => {
                   <Label for="dateOfLeave">Date of leave</Label>
                   <DatePicker
                     selected={requestData.dateOfLeave}
-                    onChange={date =>
+                    onChange={date =>{
                       setRequestData(prev => ({
                         ...prev,
-                        ['dateOfLeave']: date,
-                      }))
+                        dateOfLeave: date,
+                      }))}
                     }
                     filterDate={filterSunday}
-                    dateFormat="yyyy/MM/dd"
+                    dateFormat="MM/dd/yyyy"
                     placeholderText="Select a Sunday"
                     id="dateOfLeave"
                     className="date-of-leave-datepicker"
                   />
 
-                  {<FormText color="danger">{requestDataErrors.dateOfLeaveError}</FormText>}
+                  <FormText color="danger">{requestDataErrors.dateOfLeaveError}</FormText>
                 </FormGroup>
               </Col>
               <Col>
@@ -348,7 +345,7 @@ const LogTimeOffPopUp = React.memo(props => {
                     value={requestData.numberOfWeeks}
                     onChange={e => handleAddRequestDataChange(e)}
                   />
-                  {<FormText color="danger">{requestDataErrors.numberOfWeeksError}</FormText>}
+                  <FormText color="danger">{requestDataErrors.numberOfWeeksError}</FormText>
                 </FormGroup>
               </Col>
             </Row>
@@ -364,7 +361,7 @@ const LogTimeOffPopUp = React.memo(props => {
                     value={requestData.reasonForLeave}
                     onChange={e => handleAddRequestDataChange(e)}
                   />
-                  {<FormText color="danger">{requestDataErrors.reasonForLeaveError}</FormText>}
+                  <FormText color="danger">{requestDataErrors.reasonForLeaveError}</FormText>
                 </FormGroup>
               </Col>
             </Row>
@@ -389,7 +386,7 @@ const LogTimeOffPopUp = React.memo(props => {
           <ModalHeader>Time Off Requests</ModalHeader>
           <ModalBody className="Logged-time-off-cards-container">
             <Container>
-              {allRequests[props.user._id].map(request => (
+              {allRequests[props.user._id].slice().sort(sortRequests).map(request => (
                 <Card className="mb-2" key={request._id}>
                   <CardBody>
                     <Row>
@@ -440,11 +437,11 @@ const LogTimeOffPopUp = React.memo(props => {
                             id="numberOfWeeks"
                             onChange={e => handleUpdateRequestDataChange(e)}
                           />
-                          {
+                          
                             <FormText color="danger">
                               {updaterequestDataErrors.numberOfWeeksError}
                             </FormText>
-                          }
+                          
                         </FormGroup>
                       </Col>
                     </Row>
@@ -459,11 +456,9 @@ const LogTimeOffPopUp = React.memo(props => {
                             id="reasonForLeave"
                             onChange={e => handleUpdateRequestDataChange(e)}
                           />
-                          {
                             <FormText color="danger">
                               {updaterequestDataErrors.reasonForLeaveError}
                             </FormText>
-                          }
                         </FormGroup>
                       </Col>
                     </Row>

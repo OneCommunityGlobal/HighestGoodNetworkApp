@@ -48,6 +48,7 @@ import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { useParams } from 'react-router-dom';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -126,6 +127,7 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const { userId: paramsUserId } = useParams();
+  const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
 
   const displayUserId = paramsUserId || authUser.userid;
   const isAuthUser = authUser.userid === displayUserId;
@@ -221,6 +223,10 @@ const Timelog = props => {
   };
 
   const toggle = () => {
+    if(isNotAllowedToEdit){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     setTimeLogState({ ...timeLogState, timeEntryFormModal: !timeLogState.timeEntryFormModal });
   };
 
@@ -328,7 +334,7 @@ const Timelog = props => {
     })
     disPlayUserTasks.forEach(task => {
       const { projectId, wbsId, _id: taskId, resources } = task;
-      const isTaskCompletedForTimeEntryUser = resources.find(resource => resource.userID === displayUserProfile._id).completedTask;
+      const isTaskCompletedForTimeEntryUser = resources.find(resource => resource.userID === displayUserProfile._id)?.completedTask;
       if (!isTaskCompletedForTimeEntryUser) {
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
       }
@@ -414,7 +420,9 @@ const Timelog = props => {
           <br />
         </Container>
       ) : (
-        <div className="text-center">
+      
+        <Container fluid="md" style={{textAlign: 'right'}}>
+       
         <EditableInfoModal
           areaName="DashboardTimelog"
           areaTitle="Timelog"
@@ -422,7 +430,8 @@ const Timelog = props => {
           isPermissionPage={true}
           role={authUser.role}
         />
-        </div>
+        </Container>
+   
       )}
 
       {timeLogState.isTimeEntriesLoading ? (
@@ -440,7 +449,7 @@ const Timelog = props => {
           <Row>
             <Col md={12}>
               <Card>
-                <CardHeader>
+                <CardHeader className='card-header-shadow'>
                   <Row>
                     <Col md={11}>
                       <CardTitle tag="h4">
@@ -449,12 +458,12 @@ const Timelog = props => {
                         <EditableInfoModal
                           areaName="TasksAndTimelogInfoPoint"
                           areaTitle="Tasks and Timelogs"
-                          fontSize={22}
+                          fontSize={24}
                           isPermissionPage={true}
                           role={authUser.role} // Pass the 'role' prop to EditableInfoModal
                         />
-                      </div>
-                        <span style={{ padding: '0 5px' }}>
+                      
+                        <span className="mr-2" style={{padding: '1px'}}>
                           <ActiveCell
                             isActive={displayUserProfile.isActive}
                             user={displayUserProfile}
@@ -470,7 +479,8 @@ const Timelog = props => {
                             }}
                           />
                         </span>
-                        <ProfileNavDot userId={displayUserId} />
+                        <ProfileNavDot userId={displayUserId} style={{marginLeft: '2px', padding: '1px'}} />
+                        </div>
                       </CardTitle>
                       <CardSubtitle tag="h6" className="text-muted">
                         Viewing time entries logged in the last 3 weeks
@@ -574,7 +584,7 @@ const Timelog = props => {
                     </Col>
                   </Row>
                 </CardHeader>
-                <CardBody>
+                <CardBody className="card-body-shadow">
                   <Nav tabs className="mb-1">
                     <NavItem>
                       <NavLink

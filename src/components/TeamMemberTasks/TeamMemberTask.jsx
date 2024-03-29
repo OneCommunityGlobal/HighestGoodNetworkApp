@@ -1,19 +1,23 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useRef} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck, faTimes, faExpandArrowsAlt, faCompressArrowsAlt} from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
-import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import './style.css';
 import { boxStyle } from 'styles';
-import ReviewButton from './ReviewButton';
-import { useDispatch, useSelector } from 'react-redux';
-import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
+
+import Warning from 'components/Warnings/Warnings';
+import { useDispatch } from 'react-redux';
 import moment from 'moment-timezone';
+
+import ReviewButton from './ReviewButton';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
+import GoogleDocIcon from '../common/GoogleDocIcon'
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -27,14 +31,13 @@ const TeamMemberTask = React.memo(
     userRole,
     userId,
     updateTaskStatus,
-    userPermission,
     showWhoHasTimeOff,
     onTimeOff,
     goingOnTimeOff,
   }) => {
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
@@ -45,14 +48,16 @@ const TeamMemberTask = React.memo(
       return total;
     }, 0);
 
-    const activeTasks = user.tasks.filter(task => !task.resources?.some(
-        resource => resource.userID === user.personId && resource.completedTask,
-      ),
+    const activeTasks = user.tasks.filter(
+      task =>
+        !task.resources?.some(
+          resource => resource.userID === user.personId && resource.completedTask,
+        ),
     );
-    
+
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
-    const [detailModalIsOpen, setDetailModalIsOpen] = useState(false);
+    const [expandTimeOffIndicator, setExpandTimeOffIndicator] = useState({});
 
     const thisWeekHours = user.totaltangibletime_hrs;
 
@@ -61,8 +66,9 @@ const TeamMemberTask = React.memo(
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
-    //^^^
+    // ^^^
 
+    const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
@@ -81,22 +87,40 @@ const TeamMemberTask = React.memo(
       dispatch(showTimeOffRequestModal(request));
     };
 
+    const userGoogleDocLink = user.adminLinks?.reduce((targetLink, currentElement) => {
+      if (currentElement.Name === 'Google Doc') {
+        targetLink = currentElement.Link
+      }
+      return targetLink;
+    }, undefined);
+
     return (
       <>
         <tr ref={ref} className="table-row" key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
-          <td>
-            <div className="committed-hours-circle">
-              <FontAwesomeIcon
-                style={{
-                  color: user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
-                }}
-                icon={faCircle}
-                data-testid="icon"
-              />
+          <td colSpan={1}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="committed-hours-circle">
+                <FontAwesomeIcon
+                  style={{
+                    color:
+                      user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
+                  }}
+                  icon={faCircle}
+                  data-testid="icon"
+                />
+              </div>
+              <Link to={`/timelog/${user.personId}`}>
+                <i
+                  className="fa fa-clock-o"
+                  aria-hidden="true"
+                  style={{ fontSize: 24, cursor: 'pointer', color: 'black' }}
+                  title="Click to see user's timelog"
+                />
+              </Link>
             </div>
           </td>
-          <td>
+          <td colSpan={2}>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
                 <tr>
@@ -113,20 +137,27 @@ const TeamMemberTask = React.memo(
                             : undefined,
                       }}
                     >{`${user.name}`}</Link>
+                    {canGetWeeklySummaries && (<GoogleDocIcon link={userGoogleDocLink}/>)}
+
+                    <Warning
+                      username={user.name}
+                      userName={user}
+                      userId={userId}
+                      user={user}
+                      userRole={userRole}
+                      personId={user.personId}
+                    />
                   </td>
                   <td data-label="Time" className="team-clocks">
                     <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
-                    <font color="red">
-                      {' '}
-                      {totalHoursRemaining.toFixed(1)}
-                    </font>
+                    <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                   </td>
                 </tr>
               </tbody>
             </Table>
           </td>
-          <td>
+          <td colSpan={3}>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
                 {user.tasks &&
@@ -202,7 +233,6 @@ const TeamMemberTask = React.memo(
                           <div>
                             <ReviewButton
                               user={user}
-                              userPermission={userPermission}
                               userId={userId}
                               task={task}
                               updateTask={updateTaskStatus}
@@ -223,9 +253,9 @@ const TeamMemberTask = React.memo(
                             )}
                             <div>
                               <span data-testid={`times-${task.taskName}`}>
-                                {
-                                  `${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(task.estimatedHours.toFixed(2))}`
-                                }
+                                {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
+                                  task.estimatedHours.toFixed(2),
+                                )}`}
                               </span>
                               <Progress
                                 color={getProgressColor(
@@ -244,7 +274,7 @@ const TeamMemberTask = React.memo(
                 {canTruncate && (
                   <tr key="truncate-button-row" className="task-break">
                     <td className="task-align">
-                      <button onClick={handleTruncateTasksButtonClick}>
+                      <button type="button" onClick={handleTruncateTasksButtonClick}>
                         {isTruncated ? `Show All (${activeTasks.length}) Tasks` : 'Truncate Tasks'}
                       </button>
                     </td>
@@ -252,15 +282,34 @@ const TeamMemberTask = React.memo(
                 )}
               </tbody>
             </Table>
-          </td>
-          {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
-            <td className="taking-time-off-table-column">
+            {showWhoHasTimeOff &&
+              (onTimeOff || goingOnTimeOff) &&
+              (expandTimeOffIndicator[user.personId] ? (
+                <button
+                  type="button"
+                  className="expand-time-off-detail-button"
+                  onClick={() => {
+                    setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: false }));
+                  }}
+                >
+                  <FontAwesomeIcon icon={faExpandArrowsAlt} data-testid="icon" />
+                </button>
+            ) : (
               <div className="taking-time-off-content-div">
-                <p className="taking-time-off-content-text">
+                <button
+                  className="compress-time-off-detail-button"
+                  onClick={() => {
+                    setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                </button>
+
+                <span className="taking-time-off-content-text">
                   {onTimeOff
                     ? `${user.name} Is Not Available this Week`
                     : `${user.name} Is Not Available Next Week`}
-                </p>
+                </span>
                 <button
                   type="button"
                   className="taking-time-off-content-btn"
@@ -275,8 +324,8 @@ const TeamMemberTask = React.memo(
                   Details ?
                 </button>
               </div>
-            </td>
-          )}
+            ))}
+          </td>
         </tr>
       </>
     );

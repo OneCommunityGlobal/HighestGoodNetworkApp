@@ -60,9 +60,8 @@ const Badge = props => {
       ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
       : '';
 
-    return `Bravo! You have earned ${totalBadge} ${
-      totalBadge === 1 ? 'badge' : 'badges'
-    }${personalMaxText}! `;
+    return `Bravo! You have earned ${totalBadge} ${totalBadge === 1 ? 'badge' : 'badges'
+      }${personalMaxText}! `;
   };
 
   useEffect(() => {
@@ -79,10 +78,9 @@ const Badge = props => {
       setTotalBadge(Math.round(count));
     }
   }, [props.userProfile.badgeCollection, totalBadge]);
-
   return (
     <>
-      <Container className="right-padding-temp-fix">
+      <Container className="right-padding-temp-fix bagde-box-shadow">
         <Row>
           <Col md={12}>
             <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
