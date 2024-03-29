@@ -5,20 +5,120 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
 import {
-  authMock,
-  userProfileMock,
-  timeEntryMock,
-  userProjectMock,
-  rolesMock,
+  authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock,
 } from '../../../../__tests__/mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../../../../__tests__/utils';
 import TimeEntryForm from '../TimeEntryForm';
+import mockAxios from "axios";
 import * as actions from '../../../../actions/timeEntries';
 
 const mockStore = configureStore([thunk]);
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+jest.mock("axios");
+mockAxios.get.mockImplementation(() => Promise.resolve());
+
+describe('<TimeEntryForm Unit test rendering test/>', () => {
+  let store;
+  let toggle;
+  let sendStop;
+  const data = timeEntryMock.weeks[0][0];
+  beforeEach(() => {
+    store = mockStore({
+      auth: authMock,
+      role: rolesMock.role,
+    });
+    sendStop = jest.fn();
+    toggle = jest.fn();
+  });
+  it('should render TimeEntryForm without crashing when the modal is not open', () => {
+    renderWithProvider(
+      <TimeEntryForm 
+      from='TimeLog'//'Timer'//'WeeklyTab'
+      sendStop
+      edit={true}
+      data={data} 
+      toggle={toggle} 
+      isOpen={false}
+      tab={0} />,
+      {store}
+    );
+  });
+}
+);
+
+describe('<TimeEntryForm Unit test/>', () => {
+  let store;
+  let toggle;
+  let sendStop;
+  const data = timeEntryMock.weeks[0][0];
+  
+  beforeEach(() => {
+    store = mockStore({
+      auth: authMock,
+      role: rolesMock.role,
+    });
+    sendStop = jest.fn();
+    toggle = jest.fn();
+    
+  });
+  it('should render TimeEntryForm without crashing when the modal is open', async () => {
+    await renderWithProvider(
+      <TimeEntryForm 
+      from='TimeLog'//'Timer'//'WeeklyTab'
+      sendStop
+      edit={true}
+      data={data} 
+      toggle={toggle} 
+      isOpen={true}
+      tab={0} />,
+      {store}
+    );
+  });
+
+  it('should render with the correct placeholder first', async () => {
+    await renderWithProvider(
+      <TimeEntryForm 
+      from='TimeLog'//'Timer'//'WeeklyTab'
+      sendStop
+      edit={true}
+      data={data} 
+      toggle={toggle} 
+      isOpen={true}
+      tab={0} />,
+      {store}
+    );
+    expect(screen.getAllByRole('spinbutton')).toHaveLength(2);
+    expect(screen.getAllByRole('spinbutton')[0]).toHaveValue(parseInt(data.hours, 10));
+    expect(screen.getAllByRole('spinbutton')[1]).toHaveValue(parseInt(data.minutes, 10));
+    expect(screen.getByLabelText('Date')).toHaveValue(data.dateOfWork);
+  });
+
+  it('should render with the correct placeholder first', async () => {
+    await renderWithProvider(
+      <TimeEntryForm 
+      from='TimeLog'//'Timer'//'WeeklyTab'
+      sendStop
+      edit={true}
+      data={data} 
+      toggle={toggle} 
+      isOpen={true}
+      tab={0} />,
+      {store}
+    );
+    const hours = screen.getByPlaceholderText('Hours');
+    const minutes = screen.getByPlaceholderText('Minutes');
+    fireEvent.change(hours, { target: { value: 456 } });
+    await sleep(1000);
+    fireEvent.change(minutes, { target: { value: 13 } });
+    expect(hours).toHaveValue(456);
+    expect(minutes).toHaveValue(13);
+  });
+  
+}
+);
+
 xdescribe('<TimeEntryForm edit/>', () => {
   let store;
   let toggle;
