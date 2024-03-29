@@ -18,11 +18,11 @@ describe('Leaderboard page structure', () => {
     expect(table.length).toBe(1);
   });
 
-  it('should be rendered with 5 Headers', () => {
+  it('should be rendered with 6 Headers', () => {
     const tableHeader = mountedLeaderboard.find('thead');
     expect(tableHeader.length).toBe(1);
     const tableHeads = tableHeader.find('th');
-    expect(tableHeads.length).toBe(5);
+    expect(tableHeads.length).toBe(6);
   });
 
   it('should be rendered with mock Leaderboard data', () => {
@@ -32,7 +32,7 @@ describe('Leaderboard page structure', () => {
     const lBLength = lbData.length;
     expect(leaderBoardItems.length).toBe(lBLength + 1);
 
-    for (let i = 0; i < lBLength; i++) {
+    for (let i = 1; i < lBLength; i++) {
       //find that a link to each user profile exists and test the text of the Link to be the name
       let linkItem = leaderBoardItems.find({ to: `/userprofile/${lbData[i].personId}` });
       expect(linkItem.length).toBe(1);

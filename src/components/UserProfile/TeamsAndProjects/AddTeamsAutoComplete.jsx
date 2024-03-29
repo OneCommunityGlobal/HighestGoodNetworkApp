@@ -21,6 +21,7 @@ const AddTeamsAutoComplete = React.memo(props => {
       <Input
         type="text"
         value={props.searchText}
+        autoFocus={true}
         onChange={e => {
           props.setSearchText(e.target.value);
           props.setNewTeamName(e.target.value);
@@ -45,6 +46,7 @@ const AddTeamsAutoComplete = React.memo(props => {
             .slice(0, 10)
             .map(item => (
               <div
+                key={item._id}
                 className="team-auto-complete"
                 key={item._id}
                 onClick={() => {
@@ -56,18 +58,23 @@ const AddTeamsAutoComplete = React.memo(props => {
                 {item.teamName}
               </div>
             ))}
+
+
+          {props.teamsData.allTeams.every(
+            team => team.teamName.toLowerCase() !== props.searchText.toLowerCase(),
+          ) && (
+            <div
+              className="team-auto-complete"
+              onClick={() => {
+                toggle(false);
+                props.onCreateNewTeam(props.searchText);
+              }}
+            >
+              Create new team: {props.searchText}
+            </div>
+          )}
             
-            {!props.addLostHour && props.teamsData.allTeams.every(team => team.teamName.toLowerCase() !== props.searchText.toLowerCase()) && (
-              <div
-                className="team-auto-complete"
-                onClick={() => {
-                  toggle(false);
-                  props.onCreateNewTeam(props.searchText);
-                }}
-              >
-                Create new team: {props.searchText}
-              </div>
-            )}
+            
         </div>
       ) : (
         <></>

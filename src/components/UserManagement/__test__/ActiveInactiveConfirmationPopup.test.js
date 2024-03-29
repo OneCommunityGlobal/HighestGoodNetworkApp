@@ -63,3 +63,34 @@ describe('Active Inactive confirmation popup', () => {
     });
   });
 });
+
+describe('Active Inactive confirmation popup More unit tests', () => {
+  const onClose = jest.fn();
+  const setActiveInactive = jest.fn();
+  const isActive = true;
+  const fullname = "Test User";
+  beforeEach(() => {
+    render(
+      <ActiveInactiveConfirmationPopup
+        open
+        fullName={fullname}
+        onClose={onClose}
+        setActiveInactive={setActiveInactive}
+        isActive={isActive}
+      />,
+    );
+  });
+  describe('Structure', () => {
+    it('should render user name', () => {
+      expect(screen.getByText(new RegExp(fullname, "i"))).toBeInTheDocument();
+    });
+  });
+  describe('More Behaviors', () => {
+    it('should not fire onClose() when no clicking close buttons', () => {
+      expect(onClose).toHaveBeenCalledTimes(0);
+    });
+    it('should not fire setActiveInactive() when no clicking ok button', () => {
+      expect(setActiveInactive).toHaveBeenCalledTimes(0);
+    });
+  });
+});

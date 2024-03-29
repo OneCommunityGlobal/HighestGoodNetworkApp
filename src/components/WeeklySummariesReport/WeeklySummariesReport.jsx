@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
@@ -29,6 +30,8 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
+import PasswordInputModal from './PasswordInputModal';
+import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -53,6 +56,9 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: navItems[1],
+      passwordModalOpen: false,
+      summaryRecepientsPopupOpen: false,
+      isValidPwd: true,
       badges: [],
       loadBadges: false,
       hasSeeBadgePermission: false,
@@ -62,6 +68,9 @@ export class WeeklySummariesReport extends Component {
       teamCodes: [],
       colorOptions: [],
       auth: [],
+      selectedOverTime: false,
+      selectedBioStatus: false,
+      // weeklyRecipientAuthPass: '',
     };
   }
 
@@ -82,7 +91,6 @@ export class WeeklySummariesReport extends Component {
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
-
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
@@ -193,6 +201,68 @@ export class WeeklySummariesReport extends Component {
     sessionStorage.removeItem('tabSelection');
   }
 
+  onSummaryRecepientsPopupClose = () => {
+    this.setState({ summaryRecepientsPopupOpen: false });
+  };
+
+  setSummaryRecepientsPopup = val => {
+    this.setState({ summaryRecepientsPopupOpen: val });
+  };
+
+  popUpElements = () => {
+    return (
+      <WeeklySummaryRecipientsPopup
+        open={this.state.summaryRecepientsPopupOpen}
+        onClose={this.onSummaryRecepientsPopupClose}
+        summaries={this.props.summaries}
+      />
+    );
+  };
+
+  onpasswordModalClose = () => {
+    this.setState({
+      passwordModalOpen: false,
+    });
+  };
+
+  checkForValidPwd = booleanVal => {
+    this.setState({ isValidPwd: booleanVal });
+  };
+
+  passwordInputModalToggle = () => {
+    return (
+      <PasswordInputModal
+        open={this.state.passwordModalOpen}
+        onClose={this.onpasswordModalClose}
+        checkForValidPwd={this.checkForValidPwd}
+        isValidPwd={this.state.isValidPwd}
+        setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
+        setAuthpassword={this.setAuthpassword}
+        authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
+      />
+    );
+  };
+
+  // Authorization for the weeklySummary Recipients is required once
+  setAuthpassword = authPass => {
+    this.setState({
+      weeklyRecipientAuthPass: authPass,
+    });
+  };
+
+  onClickRecepients = () => {
+    if (this.state.weeklyRecipientAuthPass) {
+      this.setState({
+        summaryRecepientsPopupOpen: true,
+      });
+    } else {
+      this.setState({
+        passwordModalOpen: true,
+      });
+      this.checkForValidPwd(true);
+    }
+  };
+
   /**
    * Sort the summaries in alphabetixal order
    * @param {*} summaries
@@ -258,22 +328,45 @@ export class WeeklySummariesReport extends Component {
   toggleTab = tab => {
     const { activeTab } = this.state;
     if (activeTab !== tab) {
-      this.setState({ activeTab: tab });
+      this.setState({ activeTab: tab }, () => this.filterWeeklySummaries());
       sessionStorage.setItem('tabSelection', tab);
     }
   };
 
   filterWeeklySummaries = () => {
-    const { selectedCodes, selectedColors, summaries } = this.state;
+    const {
+      selectedCodes,
+      selectedColors,
+      summaries,
+      selectedOverTime,
+      selectedBioStatus,
+    } = this.state;
 
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
-    const temp = summaries.filter(
-      summary =>
+
+    const temp = summaries.filter(summary => {
+      const { activeTab } = this.state;
+      const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+      const isMeetCriteria =
+        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
+
+      const isBio = !selectedBioStatus || isMeetCriteria;
+
+      const isOverHours =
+        !selectedOverTime ||
+        (hoursLogged > 0 &&
+          hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+
+      return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
-          selectedColorsArray.includes(summary.weeklySummaryOption)),
-    );
+          selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+        isOverHours &&
+        isBio
+      );
+    });
     this.setState({ filteredSummaries: temp });
   };
 
@@ -283,6 +376,28 @@ export class WeeklySummariesReport extends Component {
 
   handleSelectColorChange = event => {
     this.setState({ selectedColors: event }, () => this.filterWeeklySummaries());
+  };
+
+  handleOverHoursToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedOverTime: !prevState.selectedOverTime,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
+  };
+
+  handleBioStatusToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedBioStatus: !prevState.selectedBioStatus,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
   };
 
   render() {
@@ -302,6 +417,10 @@ export class WeeklySummariesReport extends Component {
       auth,
     } = this.state;
     const { error } = this.props;
+    const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+    const { authEmailWeeklySummaryRecipient } = this.props;
+    const authorizedUser1 = process.env.REACT_APP_JAE;
+    const authorizedUser2 = process.env.REACT_APP_SARA;
 
     if (error) {
       return (
@@ -326,6 +445,8 @@ export class WeeklySummariesReport extends Component {
     }
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
+        {this.passwordInputModalToggle()}
+        {this.popUpElements()}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <h3 className="mt-3 mb-5">
@@ -343,6 +464,20 @@ export class WeeklySummariesReport extends Component {
             </h3>
           </Col>
         </Row>
+        {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
+          authEmailWeeklySummaryRecipient === authorizedUser2) && (
+          <Row className="d-flex justify-content-center mb-3">
+            <Button
+              color="primary"
+              className="permissions-management__button"
+              type="button"
+              onClick={() => this.onClickRecepients()}
+              style={boxStyle}
+            >
+              Weekly Summary Report Recipients
+            </Button>
+          </Row>
+        )}
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
@@ -365,6 +500,44 @@ export class WeeklySummariesReport extends Component {
                 this.handleSelectColorChange(e);
               }}
             />
+          </Col>
+        </Row>
+        <Row style={{ marginBottom: '10px' }}>
+          <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+            <div className="filter-container">
+              {(hasPermissionToFilter || this.canSeeBioHighlight) && (
+                <div className="filter-style margin-right">
+                  <span>Filter by Bio Status</span>
+                  <div className="custom-control custom-switch custom-control-smaller">
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="bio-status-toggle"
+                      onChange={this.handleBioStatusToggleChange}
+                    />
+                    <label className="custom-control-label" htmlFor="bio-status-toggle">
+                      {}
+                    </label>
+                  </div>
+                </div>
+              )}
+              {hasPermissionToFilter && (
+                <div className="filter-style">
+                  <span>Filter by Over Hours</span>
+                  <div className="custom-control custom-switch custom-control-smaller">
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="over-hours-toggle"
+                      onChange={this.handleOverHoursToggleChange}
+                    />
+                    <label className="custom-control-label" htmlFor="over-hours-toggle">
+                      {}
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
           </Col>
         </Row>
         <Row>
@@ -457,6 +630,7 @@ const mapStateToProps = state => ({
   infoCollections: state.infoCollections.infos,
   role: state.userProfile.role,
   auth: state.auth,
+  authEmailWeeklySummaryRecipient: state.userProfile.email, // capturing the user email through Redux store - Sucheta
 });
 
 const mapDispatchToProps = dispatch => ({
