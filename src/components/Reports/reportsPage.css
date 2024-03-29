@@ -15,6 +15,17 @@
   margin: 0px;
 }
 
+.category-data-container {
+  min-height: 100%;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  justify-content: center;
+  align-content: start;
+  background-color: #faf7fc;
+  margin: 0px;
+}
+
 .container-component-category {
   width: 720px;
   display: flex;
