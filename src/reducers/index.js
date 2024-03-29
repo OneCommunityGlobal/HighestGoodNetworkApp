@@ -29,6 +29,7 @@ import { infoCollectionsReducer } from './informationReducer';
 import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import {weeklySummaryRecipientsReducer} from "./weeklySummaryRecipientsReducer";
+import notificationReducer from './notificationReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -66,7 +67,8 @@ const localReducers = {
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients:weeklySummaryRecipientsReducer,
-
+  notification: notificationReducer,
+  
   // bmdashboard
   materials: materialsReducer,
   bmProjects: bmProjectReducer,

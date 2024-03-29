@@ -41,17 +41,21 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Container
 } from 'reactstrap';
 import Logout from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import { getUnreadUserNotifications, markNotificationAsRead, resetNotificationError } from '../../actions/notificationAction';
+import { toast } from 'react-toastify';
+import NotificationCard from '../Notification/notificationCard';
 
 export function Header(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
-
+  
   // Reports
   const canGetReports = props.hasPermission('getReports');
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
@@ -100,7 +104,7 @@ export function Header(props) {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
-
+  const unreadNotifications = props.notification.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -116,7 +120,19 @@ export function Header(props) {
     if (roles.length === 0 && isAuthenticated) {
       props.getAllRoles();
     }
+    // Fetch unread notification
+    if ( isAuthenticated && userId) {
+      dispatch(getUnreadUserNotifications(userId));
+    }
   }, []);
+
+  useEffect(() => {
+    if(props.notification.error) {
+      toast.error(props.notification.error.message);
+      dispatch(resetNotificationError());
+    }
+  }, [props.notification.error]);
+
   const roles = props.role?.roles;
 
   const toggle = () => {
@@ -371,6 +387,10 @@ export function Header(props) {
             <div className="card-content">{modalContent}</div>
           </Card>
         )}
+      {/* Only render one unread message at a time */}
+      {props.auth.isAuthenticated && unreadNotifications.length > 0 ? 
+       <NotificationCard notification={unreadNotifications[0]} /> : null} 
+   
     </div>
   );
 }
@@ -380,7 +400,9 @@ const mapStateToProps = state => ({
   userProfile: state.userProfile,
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
+  notification: state.notification,
 });
+
 export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
