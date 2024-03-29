@@ -3,6 +3,7 @@
 export const RoutePermissions = {
   reports: 'getReports',
   weeklySummariesReport: 'getWeeklySummaries',
+  overviewReport: 'getOverviewReport',
   userManagement: [
     'getUserProfiles',
     'postUserProfile',
