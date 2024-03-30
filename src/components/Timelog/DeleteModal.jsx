@@ -29,6 +29,7 @@ const DeleteModal = ({ timeEntry, projectCategory, taskClassification,userProfil
       fixDiscrepancy(userProfile);
 
       const deleteTimeStatus = await dispatch(deleteTimeEntry({...timeEntry,role:userProfile?.role}));
+     // Added appropriate response to restrict permission of volunteer to delete time entry of admin/owner and Manager
       if(deleteTimeStatus == 403)
       {
         throw new Error ('Unauthorized to perform the action');
