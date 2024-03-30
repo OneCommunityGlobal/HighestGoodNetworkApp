@@ -63,7 +63,6 @@ const TeamMemberTasks = React.memo(props => {
     };
     submitTasks(newTask);
     dispatch(fetchTeamMembersTask(displayUser._id));
-    props.handleUpdateTask();
   }, []);
 
   const submitTasks = async updatedTasks => {
@@ -87,7 +86,6 @@ const TeamMemberTasks = React.memo(props => {
       toast.error('Failed to update task');
     }
     dispatch(fetchTeamMembersTask(displayUser._id));
-    props.handleUpdateTask();
   }, []);
 
   const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
