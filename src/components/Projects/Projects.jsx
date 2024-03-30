@@ -15,9 +15,7 @@ import {
   deleteProject,
   modifyProject,
 } from '../../actions/projects';
-import { deleteTask, fetchAllTasks } from '../../actions/task';
 import { getPopupById } from '../../actions/popupEditorAction';
-import { deleteWbs, fetchAllWBS } from '../../actions/wbs';
 import Overview from './Overview';
 import AddProject from './AddProject';
 import ProjectTableHeader from './ProjectTableHeader';
@@ -122,16 +120,6 @@ handleSort = (e)=>{
     let { projectId } = this.state.projectTarget;
     // request delete on db
     this.props.deleteProject(projectId);
-    // request delete wbs and tasks of the project on db
-    this.props.fetchAllWBS(projectId);
-
-    this.props.state.wbs.WBSItems.forEach(wbs => {
-      this.props.fetchAllTasks(wbs._id)
-      this.props.state.tasks.fetchedData[0]?.forEach(task => {
-        this.props.deleteTask(task._id)
-      })
-      this.props.deleteWbs(wbs._id)
-    })
     // disable modal
     this.setState({ showModalDelete: false });
   };
@@ -375,10 +363,6 @@ export default connect(mapStateToProps, {
   postNewProject,
   deleteProject,
   modifyProject,
-  deleteTask,
-  fetchAllTasks,
   getPopupById,
-  deleteWbs,
-  fetchAllWBS,
   hasPermission,
 })(Projects);
