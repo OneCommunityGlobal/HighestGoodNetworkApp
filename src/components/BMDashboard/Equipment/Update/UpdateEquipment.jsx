@@ -34,7 +34,6 @@ export default function UpdateEquipment() {
   const [updateDate, setUpdateDate] = useState('');
   const [status, setStatus] = useState('');
   const [notes, setNotes] = useState('');
-  const [itemOwnership] = useState('');
   const toolDetails = useSelector(state => state.bmTools.toolDetails);
 
   const dispatch = useDispatch(); // Use this if you're using Redux
