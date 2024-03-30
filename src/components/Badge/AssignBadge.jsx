@@ -154,7 +154,7 @@ const AssignBadge = props => {
         >
           Search by Name
         </Label>
-        <i className="fa fa-info-circle" id="NameInfo" style={{ marginRight: '5px' }} />
+        <i className="fa fa-info-circle" id="NameInfo" data-testid="NameInfo" style={{ marginRight: '5px' }} />
         <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '5px' }}>
           <UncontrolledTooltip
             placement="right"
@@ -226,7 +226,7 @@ const AssignBadge = props => {
         <FormText color="muted">Please select a badge from the badge list.</FormText>
         <Alert color="dark" className="assign-badge-margin-top">
           {' '}
-          {props.selectedBadges ? props.selectedBadges.length : '0'} bagdes selected
+          {props.selectedBadges ? props.selectedBadges.length : '0'} badges selected
         </Alert>
       </FormGroup>
       {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
