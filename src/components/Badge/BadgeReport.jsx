@@ -40,6 +40,7 @@ const BadgeReport = props => {
   let [numFeatured, setNumFeatured] = useState(0);
   let [showModal, setShowModal] = useState(false);
   let [badgeToDelete, setBadgeToDelete] = useState([]);
+  const [savingChanges, setSavingChanges] = useState(false);
 
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
@@ -198,7 +199,7 @@ const BadgeReport = props => {
       toast.error('Error: Invalid badge count or the badge is not exist in the badge records. Please fresh the page. If the problem persists, please contact the administrator.');
       return;
     }
-    
+
     const recordBeforeUpdate = props.badges.filter(item => item.badge._id === badge.badge._id);
     // New requirement: We want to keep to the earned date so that there's still a record
     // that badges were earned. hasBadgeDeletionImpact indicates a deletion has occured.
@@ -223,7 +224,7 @@ const BadgeReport = props => {
         // new < prev && new > exsiting OR new < pre && new === existing: remove earned date. Case: increase then decrease. Remove temp added earned dates. 
         // new > prev && new === exsiting: remove temp asterisk
         copyOfExisitingBadges = copyOfExisitingBadges.map(item => {
-          if(item.badge._id === badge.badge._id){
+          if(item._id === badge._id){
             if(newValue > badgePrevState.count && newValue >= badgeCountFromExsitingRecord){
               if(recordBeforeUpdate[0].hasBadgeDeletionImpact === false){
                 item.hasBadgeDeletionImpact = false;
@@ -282,7 +283,7 @@ const BadgeReport = props => {
   };
 
   const deleteBadge = () => {
-    let newBadges = sortBadges.filter(badge => badge.badge._id !== badgeToDelete.badge._id);
+    let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
     if (badgeToDelete.featured) {
       setNumFeatured(--numFeatured);
     }
@@ -292,12 +293,11 @@ const BadgeReport = props => {
   };
 
   const saveChanges = async () => {
+    setSavingChanges(true);
     let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
     }
-    // Update: we will compare the original count with the new count to detect badge deletion
-
 
     await props.changeBadgesByUserID(props.userId, newBadgeCollection);
     await props.getUserProfile(props.userId);
@@ -365,8 +365,8 @@ const BadgeReport = props => {
                     <td style={{ display: 'flex', alignItems: 'center' }} >
                       <>
                       {' '}
-                      <UncontrolledDropdown className="me-2" direction="down" >
-                        <DropdownToggle caret color="primary" style={boxStyle} >
+                      <UncontrolledDropdown className="me-2" direction="down">
+                        <DropdownToggle caret color="primary" style={boxStyle}>
                           Dates
                         </DropdownToggle>
                         <DropdownMenu className='badge_dropdown'>
@@ -452,6 +452,7 @@ const BadgeReport = props => {
         <Button
           className="btn--dark-sea-green float-right"
           style={{ ...boxStyle, margin: 5 }}
+          disabled={savingChanges}
           onClick={e => {
             saveChanges();
           }}
@@ -667,7 +668,6 @@ const BadgeReport = props => {
             <span>Export Selected/Featured Badges to PDF</span>
           </Button>
         </div>
-       
         <Modal isOpen={showModal}>
           <ModalBody>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
