@@ -53,18 +53,20 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
-import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesList/ConsumablesView';
 import EquipmentList from './components/BMDashboard/Equipment/List';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 
-const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
-const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
+const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
+const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
+const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
+const PurchaseMaterials = lazy(() => import('./components/BMDashboard/PurchaseRequests/MaterialPurchaseRequest'));
+const PurchaseReusables = lazy(() => import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'));
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
-const PurchaseTools = lazy(() => import ('./components/BMDashboard/ToolPurchaseRequest'));
+const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 
 // Code-Splitting
@@ -214,21 +216,21 @@ export default (
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
-
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
-          
         <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
+        <BMProtectedRoute path="/bmdashboard/reusables/purchase" fallback component={PurchaseReusables} />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
-        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
         <BMProtectedRoute path="/bmdashboard/lessonlist/" component={LessonList} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
-        <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
+        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialListView} />
+        <BMProtectedRoute path="/bmdashboard/consumables" fallback component={ConsumableListView} />
+        <BMProtectedRoute path="/bmdashboard/reusables" fallback component={ReusableListView} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />

@@ -37,7 +37,7 @@ const SummaryBar = props => {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
-  const { authUser, displayUserProfile, displayUserTask } = props;
+  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit } = props;
 
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;

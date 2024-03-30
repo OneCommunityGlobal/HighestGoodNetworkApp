@@ -80,6 +80,7 @@ function UserProfile(props) {
   const [isProjectsEqual, setIsProjectsEqual] = useState(true);
   const [projects, setProjects] = useState([]);
   const [originalProjects, setOriginalProjects] = useState([]);
+  const [resetProjects, setResetProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [formValid, setFormValid] = useState(initialFormValid);
@@ -315,6 +316,7 @@ function UserProfile(props) {
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
+      setResetProjects(newUserProfile.projects);
       setUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
@@ -453,6 +455,10 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+    if (targetIsDevAdminUneditable){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     setType(type);
     setShowModal(status);
 
@@ -517,7 +523,7 @@ function UserProfile(props) {
     }
     try {
       await props.updateUserProfile(userProfileRef.current);
-
+      
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -526,6 +532,7 @@ function UserProfile(props) {
       setSaved(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
+      return err.message;
     }
   };
  
@@ -891,6 +898,7 @@ function UserProfile(props) {
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
+                user={props.auth.user}
                 isUserSelf={isUserSelf}
                 canEdit={canEdit}
               />
@@ -994,7 +1002,7 @@ function UserProfile(props) {
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(userProfile.role)}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
@@ -1013,7 +1021,7 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="4">
-                <ProjectsTab
+                <ProjectsTab 
                   userProjects={userProfile.projects || []}
                   userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
@@ -1103,7 +1111,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1118,6 +1126,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1160,7 +1169,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1175,6 +1184,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1228,7 +1238,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1243,6 +1253,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1289,7 +1300,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1304,6 +1315,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1338,7 +1350,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1353,6 +1365,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1401,11 +1414,11 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && (activeTab === '1' || activeTab === '2' || activeTab === '3') && (
+              {canEdit && (activeTab) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
-                    handleSubmit={handleSubmit}
+                    handleSubmit={async () => await handleSubmit()}
                     disabled={
                       !formValid.firstName ||
                       !formValid.lastName ||
@@ -1424,6 +1437,7 @@ function UserProfile(props) {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
                         setTeams(originalTeams);
+                        setProjects(resetProjects);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
                       style={boxStyle}

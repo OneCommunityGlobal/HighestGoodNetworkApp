@@ -32,6 +32,7 @@ import {weeklySummaryRecipientsReducer} from "./weeklySummaryRecipientsReducer";
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
+import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { lessonsReducer } from './bmdashboard/lessonsReducer';
@@ -76,6 +77,7 @@ const localReducers = {
   bmTools: toolReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
+  bmReusables: reusablesReducer
 };
 
 const sessionReducers = {
@@ -91,4 +93,3 @@ const sessionReducers = {
 };
 
 export { localReducers, sessionReducers };
-

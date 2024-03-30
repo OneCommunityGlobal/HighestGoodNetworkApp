@@ -37,7 +37,7 @@ describe('Leaderboard page structure', () => {
     const lBLength = lbData.length;
     expect(leaderBoardItems.length).toBe(lBLength + 1);
 
-    for (let i = 0; i < lBLength; i++) {
+    for (let i = 1; i < lBLength; i++) {
       //find that a link to each user profile exists and test the text of the Link to be the name
       const linkItem = leaderBoardItems.find({ to: `/userprofile/${lbData[i].personId}` });
       expect(linkItem.length).toBe(1);

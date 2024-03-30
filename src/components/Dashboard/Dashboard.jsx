@@ -8,19 +8,25 @@ import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
-
+  
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
     viewingUser ? viewingUser.userId : authUser.userid,
   );
+  const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
 
   const toggle = () => {
+    if (isNotAllowedToEdit) {
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     setPopup(!popup);
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
@@ -50,6 +56,7 @@ export function Dashboard(props) {
         toggleSubmitForm={toggle}
         role={authUser.role}
         summaryBarData={summaryBarData}
+        isNotAllowedToEdit={isNotAllowedToEdit}
       />
 
       <Row>
@@ -68,6 +75,7 @@ export function Dashboard(props) {
                 isPopup={popup}
                 userRole={authUser.role}
                 displayUserId={displayUserId}
+                isNotAllowedToEdit={isNotAllowedToEdit}
               />
             </div>
           </div>
@@ -75,7 +83,7 @@ export function Dashboard(props) {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard displayUserId={displayUserId} />
+          <Leaderboard displayUserId={displayUserId} isNotAllowedToEdit={isNotAllowedToEdit} />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
@@ -85,23 +93,29 @@ export function Dashboard(props) {
                   displayUserId={displayUserId}
                   setPopup={setPopup}
                   userRole={authUser.role}
+                  isNotAllowedToEdit={isNotAllowedToEdit}
                 />
               </div>
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            <Timelog isDashboard passSummaryBarData={setSummaryBarData} />
+            <Timelog isDashboard passSummaryBarData={setSummaryBarData} isNotAllowedToEdit={isNotAllowedToEdit} />
           </div>
-          <Badge userId={displayUserId} role={authUser.role} />
+          <Badge
+            userId={displayUserId}
+            role={authUser.role}
+            isNotAllowedToEdit={isNotAllowedToEdit}
+          />
         </Col>
       </Row>
-      <TimeOffRequestDetailModal />
+      <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />
     </Container>
   );
 }
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
+  displayUserProfile: state.userProfile,
 });
 
 export default connect(mapStateToProps)(Dashboard);
