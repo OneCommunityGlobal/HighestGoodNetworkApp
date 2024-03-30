@@ -8,8 +8,8 @@ import {
  } from 'reactstrap';
 
 const RoleInfoModal = ({info}) => {
-  console.log("showing information")
-  console.log(info)
+  // console.log("showing information")
+  // console.log(info)
     const [isOpen, setOpen] = useState(false);
     const {infoContent, CanRead} = {...info};
     const handleMouseOver = () => {

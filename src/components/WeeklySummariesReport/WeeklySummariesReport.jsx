@@ -3,7 +3,6 @@
 /* eslint-disable react/forbid-prop-types */
 
 import { useState, useEffect } from 'react';
-
 import PropTypes from 'prop-types';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import {
@@ -51,13 +50,14 @@ const weekDates = Array.from({ length: 4 }).map((_, index) => ({
 
 function WeeklySummariesReport() {
   const props = useSelector(state => state);
-  console.log('props', props);
+  // console.log('props', props);
 
   const error = useSelector(state => state?.weeklySummariesReport?.error);
   const allBadgeData = useSelector(state => state?.badge?.allBadgeData);
   const authUser = useSelector(state => state?.auth?.user);
   const infoCollections = useSelector(state => state?.infoCollections?.infos);
   const role = useSelector(state => state?.userProfile?.role);
+  const authEmailWeeklySummaryRecipient = useSelector(state => state?.userProfile?.email);
 
   const [bioEditPermission, setBioEditPermission] = useState(false);
   const [canEditSummaryCount, setCanEditSummaryCount] = useState(false);
@@ -84,6 +84,7 @@ function WeeklySummariesReport() {
   const [allRoleInfo, setAllRoleInfo] = useState([]);
   const [selectedOverTime, setSelectedOverTime] = useState([false]);
   const [selectedBioStatus, setSelectedBioStatus] = useState([false]);
+  const [weeklyRecipientAuthPass, setWeeklyRecipientAuthPass] = useState(null);
   // const [role, setRole] = useState('');
 
   const dispatch = useDispatch();
@@ -99,6 +100,19 @@ function WeeklySummariesReport() {
     const uniqueRoleNames = [...new Set(roleNames)];
     return uniqueRoleNames;
   };
+
+  /**
+   * Sort the summaries in alphabetixal order
+   * @param {*} summaries
+   * @returns
+   */
+  const alphabetize = summaries => {
+    const temp = [...summaries];
+    return temp.sort((a, b) =>
+      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
+    );
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await dispatch(getWeeklySummariesReport());
@@ -107,14 +121,15 @@ function WeeklySummariesReport() {
       setLoading(false);
       // console.log('RES:', res);
 
-      const canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
-      const bioEditPermission = canPutUserProfileImportantInfo;
-      const canEditSummaryCount = canPutUserProfileImportantInfo;
-      const codeEditPermission =
-        hasPermission('editTeamCode') ||
-        auth.user.role === 'Owner' ||
-        auth.user.role === 'Administrator';
-      const canSeeBioHighlight = hasPermission('highlightEligibleBios');
+      const canPutUserProfileImportantInfo = dispatch(hasPermission('putUserProfileImportantInfo'));
+      setBioEditPermission(canPutUserProfileImportantInfo);
+      setCanEditSummaryCount(canPutUserProfileImportantInfo);
+      setCodeEditPermission(
+        dispatch(hasPermission('editTeamCode')) ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
+      );
+      setCanSeeBioHighlight(dispatch(hasPermission('highlightEligibleBios')));
 
       //     // 2. shallow copy and sort
       let summariesCopy = [...res.data];
@@ -204,19 +219,8 @@ function WeeklySummariesReport() {
       setAllRoleInfo(allRoleInfo);
     };
     fetchData();
-    console.log('useffect being called');
+    // console.log('useffect being called');
   }, []);
-  /**
-   * Sort the summaries in alphabetixal order
-   * @param {*} summaries
-   * @returns
-   */
-  const alphabetize = summaries => {
-    const temp = [...summaries];
-    return temp.sort((a, b) =>
-      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
-    );
-  };
 
   /**
    * This function calculates the hours promised by a user by a given end date of the week.
@@ -330,9 +334,11 @@ function WeeklySummariesReport() {
     setSelectedBioStatus(!selectedBioStatus);
   };
 
-  // componentWillUnmount() {
-  //   sessionStorage.removeItem('tabSelection');
-  // }
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem('tabSelection');
+    };
+  }, []);
 
   const onSummaryRecepientsPopupClose = () => {
     setSummaryRecepientsPopupOpen(false);
@@ -342,59 +348,51 @@ function WeeklySummariesReport() {
     setSummaryRecepientsPopupOpen(val);
   };
 
-  popUpElements = () => {
+  const popUpElements = () => {
     return (
       <WeeklySummaryRecipientsPopup
         open={summaryRecepientsPopupOpen}
         onClose={onSummaryRecepientsPopupClose}
-        summaries={props.summaries}
+        summaries={summaries}
       />
     );
   };
 
-  // onpasswordModalClose = () => {
-  //   this.setState({
-  //     passwordModalOpen: false,
-  //   });
-  // };
+  const onpasswordModalClose = () => {
+    setPasswordModalOpen(false);
+  };
 
-  // checkForValidPwd = booleanVal => {
-  //   this.setState({ isValidPwd: booleanVal });
-  // };
+  const checkForValidPwd = booleanVal => {
+    setIsValidPwd(booleanVal);
+  };
 
-  // passwordInputModalToggle = () => {
-  //   return (
-  //     <PasswordInputModal
-  //       open={this.state.passwordModalOpen}
-  //       onClose={this.onpasswordModalClose}
-  //       checkForValidPwd={this.checkForValidPwd}
-  //       isValidPwd={this.state.isValidPwd}
-  //       setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
-  //       setAuthpassword={this.setAuthpassword}
-  //       authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
-  //     />
-  //   );
-  // };
+  // Authorization for the weeklySummary Recipients is required once
+  const setAuthpassword = authPass => {
+    setWeeklyRecipientAuthPass(authPass);
+  };
 
-  // // Authorization for the weeklySummary Recipients is required once
-  // setAuthpassword = authPass => {
-  //   this.setState({
-  //     weeklyRecipientAuthPass: authPass,
-  //   });
-  // };
+  const passwordInputModalToggle = () => {
+    return (
+      <PasswordInputModal
+        open={passwordModalOpen}
+        onClose={onpasswordModalClose}
+        checkForValidPwd={checkForValidPwd}
+        isValidPwd={isValidPwd}
+        setSummaryRecepientsPopup={setSummaryRecepientsPopup}
+        setAuthpassword={setAuthpassword}
+        authEmailWeeklySummaryRecipient={authEmailWeeklySummaryRecipient}
+      />
+    );
+  };
 
-  // onClickRecepients = () => {
-  //   if (this.state.weeklyRecipientAuthPass) {
-  //     this.setState({
-  //       summaryRecepientsPopupOpen: true,
-  //     });
-  //   } else {
-  //     this.setState({
-  //       passwordModalOpen: true,
-  //     });
-  //     this.checkForValidPwd(true);
-  //   }
-  // };
+  const onClickRecepients = () => {
+    if (weeklyRecipientAuthPass) {
+      setSummaryRecepientsPopupOpen(true);
+    } else {
+      setPasswordModalOpen(true);
+    }
+    checkForValidPwd(true);
+  };
 
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const authorizedUser1 = process.env.REACT_APP_JAE;
@@ -423,8 +421,8 @@ function WeeklySummariesReport() {
 
   return (
     <Container fluid className="bg--white-smoke py-3 mb-5">
-      {/* {this.passwordInputModalToggle()}
-        {this.popUpElements()} */}
+      {passwordInputModalToggle()}
+      {popUpElements()}
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
@@ -442,20 +440,20 @@ function WeeklySummariesReport() {
           </h3>
         </Col>
       </Row>
-      {/* {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
-          authEmailWeeklySummaryRecipient === authorizedUser2) && (
-          <Row className="d-flex justify-content-center mb-3">
-            <Button
-              color="primary"
-              className="permissions-management__button"
-              type="button"
-              onClick={() => this.onClickRecepients()}
-              style={boxStyle}
-            >
-              Weekly Summary Report Recipients
-            </Button>
-          </Row>
-        )} */}
+      {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
+        authEmailWeeklySummaryRecipient === authorizedUser2) && (
+        <Row className="d-flex justify-content-center mb-3">
+          <Button
+            color="primary"
+            className="permissions-management__button"
+            type="button"
+            onClick={() => onClickRecepients()}
+            style={boxStyle}
+          >
+            Weekly Summary Report Recipients
+          </Button>
+        </Row>
+      )}
       <Row style={{ marginBottom: '10px' }}>
         <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
           Select Team Code
@@ -480,10 +478,10 @@ function WeeklySummariesReport() {
           />
         </Col>
       </Row>
-      {/* <Row style={{ marginBottom: '10px' }}>
+      <Row style={{ marginBottom: '10px' }}>
         <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
           <div className="filter-container">
-            {(hasPermissionToFilter || this.canSeeBioHighlight) && (
+            {(hasPermissionToFilter || canSeeBioHighlight) && (
               <div className="filter-style margin-right">
                 <span>Filter by Bio Status</span>
                 <div className="custom-control custom-switch custom-control-smaller">
@@ -491,7 +489,7 @@ function WeeklySummariesReport() {
                     type="checkbox"
                     className="custom-control-input"
                     id="bio-status-toggle"
-                    onChange={this.handleBioStatusToggleChange}
+                    onChange={handleBioStatusToggleChange}
                   />
                   <label className="custom-control-label" htmlFor="bio-status-toggle">
                     {}
@@ -507,7 +505,7 @@ function WeeklySummariesReport() {
                     type="checkbox"
                     className="custom-control-input"
                     id="over-hours-toggle"
-                    onChange={this.handleOverHoursToggleChange}
+                    onChange={handleOverHoursToggleChange}
                   />
                   <label className="custom-control-label" htmlFor="over-hours-toggle">
                     {}
@@ -517,7 +515,7 @@ function WeeklySummariesReport() {
             )}
           </div>
         </Col>
-      </Row> */}
+      </Row>
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <Nav tabs>
