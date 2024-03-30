@@ -8,7 +8,6 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 
 const UserTeamsTable = props => {
-  console.log(props);
   const [tooltipOpen, setTooltip] = useState(false);
   const [teamCode, setTeamCode] = useState(props.userProfile? props.userProfile.teamCode: props.teamCode);
 

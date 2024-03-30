@@ -2,8 +2,12 @@ import { Provider } from 'react-redux';
 import UserTeamsTable from '../UserTeamsTable';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within, getByText } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates.js';
+
+jest.mock('utils/permissions', () => ({
+  hasPermission: jest.fn((a) => true), // 
+}));
 
 const mockStore = configureStore([thunk]);
 
@@ -15,8 +19,17 @@ const mockUserProfile = {
 userProfile: userProfileMock
 };
 
+
 const renderComponent = mockProps => {
   const store = mockStore({
+    auth: {
+      user: {
+        role: 'Owner', // set user role to "owner"
+        permissions: {
+          frontPermissions: [], // or appropriate mock data
+        },
+      },
+    },
       canEditTeamCode: false,
       canEditVisibility: false,
       codeValid: true,
@@ -28,7 +41,7 @@ const renderComponent = mockProps => {
        ...mockProps.userProfile,
        teamCode: ""
       },
-      UserTeamsById: mockProps.userTeams
+      hasPermission: jest.fn((a) => true),
   });
 
   return render(
@@ -44,6 +57,7 @@ const renderComponent = mockProps => {
         canEditTeamCode={mockProps.canEditTeamCode}
         userProfile={mockProps.userProfile}
         codeValid={mockProps.codeValid}
+        hasPermission={jest.fn((a) => true)}
       />
     </Provider>,
   );
@@ -57,21 +71,18 @@ describe('User Teams Table Component', () => {
 
   it('renders correct number of teams the user is assigned to', () => {
     renderComponent(mockUserProfile);
-   // console.log(screen.getAllByRole('row').length);
-    expect(screen.getAllByRole('row').length).toBe(3); // 2 teams + 1 header
+    expect(within(screen.getByTestId('userTeamTest')).getAllByRole('row').length).toBe(2); // 2 teams + 1 header
   });
 
- /* // Test for correct rendering of team names
+  // Test for correct rendering of team names
   it('renders correct team names', () => {
-    const teamRows = component.find('tr').slice(1); // Skip the header row
-    expect(teamRows.length).toBe(3); // Ensure we have 2 team rows
+    renderComponent(mockUserProfile);
+    const teamRows = within(screen.getByTestId('userTeamTest')).getAllByRole('row'); // Skip the header row
+    expect(teamRows.length).toBe(2); // Ensure we have 2 team rows
 
     const teamNames = teamRows.map(row => {
-      const nameCell = row.find('td').at(0);
-      expect(nameCell.exists()).toBe(true); // Check if the cell exists
-      return nameCell.text();
+      return row.cells[1].textContent;
     });
-
     expect(teamNames).toEqual(['Team1', 'Team2']);
   });
 
