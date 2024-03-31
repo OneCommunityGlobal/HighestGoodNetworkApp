@@ -36,9 +36,7 @@ import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
-import WeeklySummariesPagination from './components/WeeklySummariesPagination';
 import GoogleDocIcon from '../common/GoogleDocIcon';
-import LimitSelection from './components/LimitSelection';
 
 const textColors = {
   Default: '#000000',
@@ -70,69 +68,12 @@ function FormattedReport({
 }) {
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [newSummary, setNewSummary] = useState([]);
 
-  const totalPages = Math.ceil(summaries.length / limit);
-
-  let pageNo;
-  if (page <= totalPages) {
-    pageNo = page;
-  } else {
-    setPage(totalPages);
-    pageNo = page;
-  }
-
-  const getSummaries = (customPage, customLimit) => {
-    const array = [];
-    for (
-      let i = (customPage - 1) * customLimit;
-      i < customPage * customLimit && summaries[i];
-      i += 1
-    ) {
-      array.push(summaries[i]);
-    }
-    return array;
-  };
-
-  useEffect(() => {
-    // Initialize the page with 10 summaries
-    if (newSummary[0] === undefined && summaries[0]) {
-      const data = summaries.slice(0, 10);
-      setNewSummary(data);
-    } else {
-      const data = getSummaries(page, limit);
-      setNewSummary(data);
-    }
-  }, [summaries, page, limit]);
-
-  const handlePageChange = value => {
-    if (value === '&laquo;' || value === '... ') {
-      setPage(1);
-    } else if (value === '&lsaquo;') {
-      if (page !== 1) {
-        setPage(page - 1);
-      }
-    } else if (value === '&rsaquo;') {
-      if (page !== totalPages) {
-        setPage(page + 1);
-      }
-    } else if (value === '&raquo;' || value === ' ...') {
-      setPage(totalPages);
-    } else {
-      setPage(value);
-    }
-  };
-
-  const onLimitChange = customLimit => {
-    setLimit(customLimit);
-  };
   return (
     <>
-      {newSummary[0] !== undefined && (
+      {summaries !== undefined && (
         <ListGroup flush>
-          {newSummary.map(summary => (
+          {summaries.map(summary => (
             <ReportDetails
               key={summary._id}
               summary={summary}
@@ -149,16 +90,6 @@ function FormattedReport({
         </ListGroup>
       )}
       <EmailsList summaries={summaries} auth={auth} />
-      <div className="weekly-summaries-pagination-container">
-        <LimitSelection onLimitChange={onLimitChange} />
-        <WeeklySummariesPagination
-          handlePageChange={handlePageChange}
-          totalPages={totalPages}
-          page={pageNo}
-          limit={limit}
-          siblings={1}
-        />
-      </div>
     </>
   );
 }
