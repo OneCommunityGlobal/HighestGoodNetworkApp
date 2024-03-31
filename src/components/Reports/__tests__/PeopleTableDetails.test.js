@@ -1,50 +1,68 @@
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import PeopleTableDetails from '../PeopleTableDetails';
 
-describe('PeopleTableDetails', () => {
+describe('PeopleTableDetails component', () => {
   const taskData = [
     {
       _id: '1',
       taskName: 'Task 1',
       priority: 'High',
-      status: 'In Progress',
+      status: 'Completed',
       resources: [{ name: 'Resource 1' }, { name: 'Resource 2' }],
       active: 'Yes',
-      assign: 'Yes',
-      estimatedHours: '10',
-      startDate: '2024-03-15',
-      endDate: '2024-03-20',
-      whyInfo: 'This task is important because...',
-      intentInfo: 'The design intent is...',
-      endstateInfo: 'The end state should be...',
+      assign: 'No',
+      estimatedHours: '5h',
+      startDate: '2022-01-01',
+      endDate: '2022-01-10',
     },
-    // Add more sample tasks as needed
+    {
+      _id: '2',
+      taskName: 'Task 2',
+      priority: 'Low',
+      status: 'In Progress',
+      resources: [{ name: 'Resource 3' }, { name: 'Resource 4' }, { name: 'Resource 5' }],
+      active: 'Yes',
+      assign: 'Yes',
+      estimatedHours: '10h',
+      startDate: '2022-02-01',
+      endDate: '2022-02-10',
+    },
   ];
 
-  it('renders the component without crashing', () => {
-    render(<PeopleTableDetails taskData={taskData} />);
+  it('should render filtered tasks correctly', () => {
+    const { getByText } = render(<PeopleTableDetails taskData={taskData} />);
+    expect(getByText('Task 1')).toBeInTheDocument();
+    expect(getByText('High')).toBeInTheDocument();
+    expect(getByText('Completed')).toBeInTheDocument();
   });
 
-  it('filters tasks correctly based on input', () => {
-    const { getByLabelText, getAllByTestId } = render(<PeopleTableDetails taskData={taskData} />);
-
-    // Enter values into filters
-    fireEvent.change(getByLabelText('Search Task Name'), { target: { value: 'Task 1' } });
-    fireEvent.change(getByLabelText('Search Priority'), { target: { value: 'High' } });
-    fireEvent.change(getByLabelText('Search Status'), { target: { value: 'In Progress' } });
-    fireEvent.change(getByLabelText('Search Resources'), { target: { value: 'Resource 1' } });
-    fireEvent.change(getByLabelText('Search Active'), { target: { value: 'Yes' } });
-    fireEvent.change(getByLabelText('Search Assign'), { target: { value: 'Yes' } });
-    fireEvent.change(getByLabelText('Search Estimated Hours'), { target: { value: '10' } });
-
-    // Get the filtered tasks
-    const filteredTasks = getAllByTestId('filtered-task');
-
-    // Assert that only one task is visible after filtering
-    expect(filteredTasks.length).toBe(1);
-    expect(filteredTasks[0].textContent).toContain('Task 1');
+  it('should render task details modal when task is clicked', () => {
+    const { getByText } = render(<PeopleTableDetails taskData={taskData} />);
+    fireEvent.click(getByText('Task 1'));
+    expect(getByText('Why This Task is important')).toBeInTheDocument();
   });
 
-  // Add more test cases as needed
+  it('should reset filters when resetFilters function is called', () => {
+    const { getByLabelText } = render(<PeopleTableDetails taskData={taskData} />);
+    fireEvent.change(getByLabelText('Search by Task Name'), { target: { value: 'Task 1' } });
+    expect(getByLabelText('Search by Task Name').value).toBe('Task 1');
+    fireEvent.click(getByLabelText('Reset Filters'));
+    expect(getByLabelText('Search by Task Name').value).toBe('');
+  });
+
+  it('should toggle display of more resources when "More" button is clicked', () => {
+    const { getByText, getByTestId } = render(<PeopleTableDetails taskData={taskData} />);
+    fireEvent.click(getByTestId('1'));
+    fireEvent.click(getByText('More'));
+    expect(getByTestId('1')).toHaveStyle('display: table-cell');
+    fireEvent.click(getByText('More'));
+    expect(getByTestId('1')).toHaveStyle('display: none');
+  });
+
+  it('should filter tasks based on search criteria', () => {
+    const { getByLabelText, queryByText } = render(<PeopleTableDetails taskData={taskData} />);
+    fireEvent.change(getByLabelText('Search by Task Name'), { target: { value: 'Task 2' } });
+    expect(queryByText('Task 1')).not.toBeInTheDocument();
+    expect(getByLabelText('Search by Task Name').value).toBe('Task 2');
+  });
 });
