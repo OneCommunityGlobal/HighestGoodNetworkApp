@@ -11,7 +11,6 @@ const mockStore = configureMockStore();
 
 describe('Header Component', () => {
   let store;
-  const mockStore = configureMockStore([]);
   const initialState = {
     auth: {
       isAuthenticated: true,
