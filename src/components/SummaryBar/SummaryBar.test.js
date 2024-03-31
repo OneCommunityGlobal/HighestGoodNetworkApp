@@ -1,6 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
 import SummaryBar from './SummaryBar';
+
+const mockStore = configureMockStore();
+const store = mockStore({});
 
 describe('SummaryBar Component', () => {
   let wrapper;
@@ -24,7 +29,11 @@ describe('SummaryBar Component', () => {
   };
 
   beforeEach(() => {
-    wrapper = shallow(<SummaryBar {...props} />);
+    wrapper = shallow(
+      <Provider store={store}>
+        <SummaryBar {...props} />
+      </Provider>
+    );
   });
 
   it('should render without crashing', () => {
