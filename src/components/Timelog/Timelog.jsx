@@ -35,7 +35,6 @@ import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/ti
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
 import { getUserProjects, getUserWBSs } from '../../actions/userProjects';
 import { getAllRoles } from '../../actions/role';
-import PopUpBar from '../PopUpBar';
 import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
@@ -47,7 +46,6 @@ import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { useParams } from 'react-router-dom';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
@@ -125,10 +123,15 @@ const Timelog = props => {
   const [periodEntries, setPeriodEntries] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
-  const { userId: paramsUserId } = useParams();
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
 
-  const displayUserId = paramsUserId || authUser.userid;
+
+  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  const [displayUserId, setDisplayUserId] = useState(
+    viewingUser ? viewingUser.userId : authUser.userid,
+  );
+
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
@@ -374,6 +377,16 @@ const Timelog = props => {
     makeBarData(userId)
   };
 
+  const handleUpdateTask = useCallback(() => {
+    setShouldFetchData(true);
+  }, []);
+
+  const handleStorageEvent = () =>{
+    const sessionStorageData = checkSessionStorage();
+    setViewingUser(sessionStorageData || false);
+    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+  }
+
   /*---------------- useEffects -------------- */
   useEffect(() => {
     changeTab(initialTab);
@@ -384,7 +397,7 @@ const Timelog = props => {
     if (!timeLogState.isTimeEntriesLoading) {
       generateTimeLogItems(displayUserId);
     }
-  }, [timeLogState.isTimeEntriesLoading, timeEntries]);
+  }, [timeLogState.isTimeEntriesLoading, timeEntries, displayUserId]);
 
   useEffect(() => {
       loadAsyncData(displayUserId);
@@ -395,11 +408,18 @@ const Timelog = props => {
     updateTimeEntryItems();
   }, [timeLogState.projectsSelected]);
 
+  useEffect(() => {
+    // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  },[]);
+
   return (
     <div>
       {!props.isDashboard ? (
         <Container fluid>
-          {!isAuthUser && <PopUpBar component="timelog" />}
           <SummaryBar
             displayUserId={displayUserId}
             toggleSubmitForm={() => showSummary(isAuthUser)}
@@ -533,7 +553,7 @@ const Timelog = props => {
                           </div>
                         </div>
                       ) : (
-                        canPutUserProfileImportantInfo && (
+                        !(viewingUser && viewingUser.role === 'Owner' && authUser.role !== 'Owner') && (canPutUserProfileImportantInfo) && (
                           <div className="float-right">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
