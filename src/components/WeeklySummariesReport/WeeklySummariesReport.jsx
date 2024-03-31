@@ -126,13 +126,14 @@ function WeeklySummariesReport() {
       setCanEditSummaryCount(canPutUserProfileImportantInfo);
       setCodeEditPermission(
         dispatch(hasPermission('editTeamCode')) ||
-          auth.user.role === 'Owner' ||
-          auth.user.role === 'Administrator',
+          auth.user?.role === 'Owner' ||
+          auth.user?.role === 'Administrator',
       );
       setCanSeeBioHighlight(dispatch(hasPermission('highlightEligibleBios')));
 
       //     // 2. shallow copy and sort
-      let summariesCopy = [...res.data];
+      // let summariesCopy = [...res.data];
+      let summariesCopy = [...(res?.data ?? [])];
       summariesCopy = alphabetize(summariesCopy);
 
       //     // 3. add new key of promised hours by week
@@ -297,10 +298,10 @@ function WeeklySummariesReport() {
   };
 
   useEffect(() => {
-    if (props.weeklySummariesReport.loading !== loading) {
-      setLoading(props.weeklySummariesReport.loading);
+    if (props.weeklySummariesReport?.loading !== loading) {
+      setLoading(props.weeklySummariesReport?.loading);
     }
-  }, [props.weeklySummariesReport.loading, loading]);
+  }, [props.weeklySummariesReport?.loading, loading]);
 
   useEffect(() => {
     if (selectedCodes !== null) {

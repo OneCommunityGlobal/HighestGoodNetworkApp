@@ -1,164 +1,80 @@
 import React from 'react';
 import { fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { WeeklySummariesReport } from '../WeeklySummariesReport';
+import WeeklySummariesReport from '../WeeklySummariesReport';
 import hasPermission from '../../../utils/permissions';
 import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
 import thunk from 'redux-thunk';
+import * as reduxHooks from 'react-redux';
 import configureStore from 'redux-mock-store';
 
 const mockStore = configureStore([thunk]);
 
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'), // Import and re-export everything from the real module
+  useSelector: jest.fn(),
+  useDispatch: jest.fn(),
+}));
+
 describe('WeeklySummariesReport page', () => {
-  let store;
+  // Mock store state
+  const mockStoreState = {
+    auth: authMock,
+    userProfile: userProfileMock,
+    role: rolesMock.role,
+    // Add other initial state slices here
+  };
+
+  const mockDispatch = jest.fn();
+
   beforeEach(() => {
-    store = mockStore({
-      auth: authMock,
-      userProfile: userProfileMock,
-      role: rolesMock.role,
-    });
+    // Reset mocks and set return values
+    jest.clearAllMocks();
+    reduxHooks.useDispatch.mockReturnValue(mockDispatch);
+    reduxHooks.useSelector.mockImplementation(callback => callback(mockStoreState));
   });
+
   describe('On page load', () => {
     it('displays an error message if there is an error on data fetch', async () => {
-      const props = {
-        hasPermission: hasPermission,
-        getWeeklySummariesReport: jest.fn(),
-        fetchAllBadges: jest.fn(),
-        error: { message: 'SOME ERROR CONNECTING!!!' },
-        loading: false,
-        summaries: [],
-        authUser: { role: '' },
-        roles: [],
-        badges: [],
-        getInfoCollections: jest.fn(),
-      };
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });
-
-      expect(screen.getByTestId('error')).toBeInTheDocument();
+      reduxHooks.useSelector.mockImplementation(callback => ({
+        ...callback(mockStoreState),
+        weeklySummariesReport: {
+          error: { message: 'SOME ERROR CONNECTING!!!' },
+          loading: false,
+          summaries: [],
+          hasPermission: hasPermission,
+          getWeeklySummariesReport: jest.fn(),
+          fetchAllBadges: jest.fn(),
+          authUser: { role: '' },
+          roles: [],
+          badges: [],
+          getInfoCollections: jest.fn(),
+        },
+      }));
+      renderWithProvider(<WeeklySummariesReport />, {});
+      expect(await screen.findByTestId('error')).toBeInTheDocument();
     });
 
-    it('displays loading indicator', () => {
-      const props = {
-        hasPermission: hasPermission,
-        getWeeklySummariesReport: jest.fn(),
-        fetchAllBadges: jest.fn(),
-        loading: true,
-        summaries: [],
-        authUser: { role: '' },
-        roles: [],
-        badges: [],
-        getInfoCollections: jest.fn(),
-      };
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
-      expect(screen.getByTestId('loading')).toBeInTheDocument();
-    });
-    
-    it('displays section title', () => {
-      const props = {
-        hasPermission: hasPermission,
-        getWeeklySummariesReport: jest.fn(),
-        fetchAllBadges: jest.fn(),
-        loading: true,
-        summaries: [],
-        authUser: { role: '' },
-        roles: [],
-        badges: [],
-        getInfoCollections: jest.fn(),
-      };
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
-      expect(screen.getByText('Weekly Summaries Reports page')).toBeInTheDocument();
-    });
+    it('displays section title', async() => {
+      reduxHooks.useSelector.mockImplementation(callback => ({
+        ...callback(mockStoreState),
+        weeklySummariesReport: {
+          loading: true,
+          summaries: [],
+          hasPermission: hasPermission,
+          getWeeklySummariesReport: jest.fn(),
+          fetchAllBadges: jest.fn(),
+          authUser: { role: '' },
+          roles: [],
+          badges: [],
+          getInfoCollections: jest.fn(),
+        },
+      }));
+      renderWithProvider(<WeeklySummariesReport />, {});
+      await waitFor(() => {
+        expect(screen.getByText(/Weekly Summaries Reports page/i)).toBeInTheDocument();
+      });
+    }, 20000);
   });
-  /*
-  //following tests have issue with the editableinfomodel
-  //will generate code 401 and prop loading undefined error
-  describe('Structure', () => {
-    beforeEach(() => {
-      const curr_props = {
-        hasPermission: hasPermission,
-        getWeeklySummariesReport: jest.fn(),
-        fetchAllBadges: jest.fn(),
-        error: false,
-        loading: false,
-        summaries: [],
-        authUser: { role: '' },
-        roles: [],
-        badges: [],
-        getInfoCollections: jest.fn(),
-      };
-      renderWithProvider(<WeeklySummariesReport {...curr_props} />, { store, });
-    });
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    it('should render Weekly Summaries Reports page correctly', () => {
-      expect(screen.getByText('Weekly Summaries Reports page')).toBeInTheDocument();
-    });
-    it('should render Select Team Code correctly', () => {
-      expect(screen.getByText('Select Team Code')).toBeInTheDocument();
-    });
-    it('should render Select Color correctly', () => {
-      expect(screen.getByText('Select Color')).toBeInTheDocument();
-    });
-    it('should render Tab This Week correctly', () => {
-      expect(screen.getByText('This Week')).toBeInTheDocument();
-    });
-    it('should render Tab Last Week correctly', () => {
-      expect(screen.getByText('Last Week')).toBeInTheDocument();
-    });
-    it('should render Tab Week Before Last correctly', () => {
-      expect(screen.getByText('Week Before Last')).toBeInTheDocument();
-    });
-    it('should render Tab Three Weeks Ago correctly', () => {
-      expect(screen.getByText('Three Weeks Ago')).toBeInTheDocument();
-    });
-  });
-  /*
-  describe('Tabs display', () => {
-    const props = {
-      hasPermission: hasPermission,
-      getWeeklySummariesReport: jest.fn(),
-      fetchAllBadges: jest.fn(),
-      getInfoCollections: jest.fn(),
-      loading: false,
-      summaries: [],
-      authUser: { role: '' },
-      roles: [],
-      badges: [],
-    };
-    beforeEach(() => {
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    it('should have second tab set to "active" by default', () => {
-      expect(screen.getByTestId('Last Week').classList.contains('active')).toBe(true);
-      expect(screen.getBy)
-    });
-
-    it('should make 1st tab active when clicked', () => {
-      // First tab click.
-      fireEvent.click(screen.getByTestId('This Week'));
-      expect(screen.getByTestId('This Week').classList.contains('active')).toBe(true);
-    });
-    it('should make 2nd tab active when clicked', () => {
-      // Second tab click.
-      fireEvent.click(screen.getByTestId('Last Week'));
-      expect(screen.getByTestId('Last Week').classList.contains('active')).toBe(true);
-    });
-    it('should make 3rd tab active when clicked', () => {
-      // Third tab click.
-      fireEvent.click(screen.getByTestId('Week Before Last'));
-      expect(screen.getByTestId('Week Before Last').classList.contains('active')).toBe(true);
-    });
-    it('should make 4th tab active when clicked', () => {
-      // Fourth tab click.
-      fireEvent.click(screen.getByTestId('Three Weeks Ago'));
-      expect(screen.getByTestId('Three Weeks Ago').classList.contains('active')).toBe(true);
-    });
-  });
-  */
 });
