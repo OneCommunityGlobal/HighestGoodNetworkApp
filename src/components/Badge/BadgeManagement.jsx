@@ -63,7 +63,7 @@ const BadgeManagement = props => {
         <TabPane tabId="1">
           <AssignBadge allBadgeData={props.allBadgeData} />
         </TabPane>
-        <TabPane tabId="2">
+        <TabPane tabId="2" className="h-100">
           <BadgeDevelopment allBadgeData={props.allBadgeData} />
         </TabPane>
       </TabContent>
