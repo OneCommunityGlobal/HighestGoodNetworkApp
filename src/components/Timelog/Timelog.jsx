@@ -85,6 +85,7 @@ const endOfWeek = offset => {
 
 const Timelog = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
+
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
@@ -407,8 +408,16 @@ const Timelog = props => {
     updateTimeEntryItems();
   }, [timeLogState.projectsSelected]);
 
+  useEffect(() => {
+    const rootElement = document.getElementById('root');
+
+    if (rootElement) {
+      rootElement.style.setProperty('--background-color', darkMode ? '#1B2A41' : '#f0f0f0');
+    }
+  }, [darkMode]);
+
   return (
-    <div className={(darkMode ? "bg-oxford-blue" : "")} style={{minHeight: "100vh"}}>
+    <div className={(darkMode ? "bg-oxford-blue" : "")}>
       {!props.isDashboard ? (
         <Container fluid>
           {!isAuthUser && <PopUpBar component="timelog" />}
