@@ -1,28 +1,27 @@
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Container } from 'reactstrap';
-import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import PopUpBar from '../PopUpBar';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 
 export function Dashboard(props) {
-  const dispatch = useDispatch();
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { match, authUser, displayUserProfile } = props;
-  const displayUserId = match.params.userId || authUser.userid;
-  const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
+  const { authUser } = props;
+  
+  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  const [displayUserId, setDisplayUserId] = useState(
+    viewingUser ? viewingUser.userId : authUser.userid,
+  );
+  const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const isAuthUser = displayUserId === authUser.userid;
 
   const toggle = () => {
     if (isNotAllowedToEdit) {
@@ -38,9 +37,21 @@ export function Dashboard(props) {
     }, 150);
   };
 
+  const handleStorageEvent = () => {
+    const sessionStorageData = checkSessionStorage();
+    setViewingUser(sessionStorageData || false);
+    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+  };
+
+  useEffect(() => {
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, []);
+
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
-      {!isAuthUser ? <PopUpBar component="dashboard" /> : ''}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -95,12 +106,7 @@ export function Dashboard(props) {
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            <Timelog
-              isDashboard
-              passSummaryBarData={setSummaryBarData}
-              match={match}
-              isNotAllowedToEdit={isNotAllowedToEdit}
-            />
+            <Timelog isDashboard passSummaryBarData={setSummaryBarData} isNotAllowedToEdit={isNotAllowedToEdit} />
           </div>
           <Badge
             userId={displayUserId}

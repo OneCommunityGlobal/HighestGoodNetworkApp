@@ -15,6 +15,8 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { getUserProfile } from 'actions/userProfile';
+import { useDispatch } from 'react-redux';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -48,13 +50,14 @@ function LeaderBoard({
   showTimeOffRequestModal,
   darkMode,
 }) {
-  const userId = displayUserId || loggedInUser.userId;
+  const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getMouseoverText();
@@ -67,7 +70,7 @@ function LeaderBoard({
   useDeepEffect(() => {
     getLeaderboardData(userId);
     getOrgData();
-  }, [timeEntries]);
+  }, [timeEntries, userId]);
 
   useDeepEffect(() => {
     try {
@@ -98,12 +101,21 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
-    dashboardClose();
-    window.open(
-      `/dashboard/${item.personId}`,
-      'Popup',
-      'toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=580, height=600, top=30',
-    );
+    dispatch(getUserProfile(item.personId)).then(user => {
+      const { _id, role, firstName, lastName, profilePic, email } = user;
+      const viewingUser = {
+        userId: _id,
+        role,
+        firstName,
+        lastName,
+        email,
+        profilePic: profilePic || '/pfp-default-header.png',
+      };
+
+      sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
+      window.dispatchEvent(new Event('storage'));
+      dashboardClose();
+    });
   };
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
