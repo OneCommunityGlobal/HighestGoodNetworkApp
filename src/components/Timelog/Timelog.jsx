@@ -417,7 +417,7 @@ const Timelog = props => {
   }, [darkMode]);
 
   return (
-    <div className={(darkMode ? "bg-oxford-blue" : "")}>
+    <div>
       {!props.isDashboard ? (
         <Container fluid>
           {!isAuthUser && <PopUpBar component="timelog" />}
