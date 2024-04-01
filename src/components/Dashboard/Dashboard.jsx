@@ -38,7 +38,7 @@ export function Dashboard(props) {
   }, []);
 
   return (
-    <Container fluid className='pad'>
+    <Container fluid className="pad">
       {!isAuthUser ? <PopUpBar component="dashboard" /> : ''}
       <SummaryBar
         displayUserId={displayUserId}
