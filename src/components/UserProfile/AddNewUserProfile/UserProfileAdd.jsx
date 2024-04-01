@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { StickyContainer } from 'react-sticky';
 import {
   Container,
@@ -12,19 +12,17 @@ import {
   Button,
   TabPane,
   TabContent,
-  NavItem,
-  NavLink,
-  Nav,
 } from 'reactstrap';
+import CommonInput from 'components/common/Input';
 import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
-import { createUser, resetPassword } from '../../../services/userProfileService';
+import { createUser } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import { assign, get } from 'lodash';
+import { get } from 'lodash';
 import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
@@ -40,7 +38,6 @@ import 'react-phone-input-2/lib/style.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
-import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
@@ -85,6 +82,7 @@ class AddUserProfile extends Component {
         createdDate: nextDay,
         actualEmail: '',
         actualPassword: '',
+        actualConfirmedPassword: '',
       },
       formValid: {},
       formErrors: {
@@ -94,6 +92,7 @@ class AddUserProfile extends Component {
         phoneNumber: 'Phone Number is required',
         actualEmail: 'Actual Email is required',
         actualPassword: 'Actual Password is required',
+        actualConfirmedPassword: 'Actual Confirmed Password is required',
       },
       timeZoneFilter: '',
       formSubmitted: false,
@@ -131,6 +130,7 @@ class AddUserProfile extends Component {
       role,
       actualEmail,
       actualPassword,
+      actualConfirmedPassword,
       jobTitle,
     } = this.state.userProfile;
     const phoneNumberEntered =
@@ -344,16 +344,35 @@ class AddUserProfile extends Component {
                       </Col>
                       <Col md="6">
                         <FormGroup>
-                          <Input
+                          <CommonInput
                             type="password"
                             name="actualPassword"
                             id="actualPassword"
                             value={actualPassword}
                             onChange={this.handleUserProfile}
                             placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword}
+                            invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
+                            className="d-flex justify-start items-start"
                           />
-                          <FormFeedback>{this.state.formErrors.actualPassword}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row className="user-add-row">
+                      <Col md={{ size: 4 }} className="text-md-right my-2">
+                        <Label>Confirm Actual Password</Label>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <CommonInput
+                            type="password"
+                            name="actualConfirmedPassword"
+                            id="actualConfirmedPassword"
+                            value={actualConfirmedPassword}
+                            onChange={this.handleUserProfile}
+                            placeholder="Confirm Actual Password"
+                            invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
+                            className="d-flex justify-start items-start"
+                          />
                         </FormGroup>
                       </Col>
                     </Row>
@@ -686,6 +705,7 @@ class AddUserProfile extends Component {
       createdDate,
       actualEmail,
       actualPassword,
+      actualConfirmedPassword
     } = that.state.userProfile;
 
     const userData = {
@@ -715,6 +735,11 @@ class AddUserProfile extends Component {
     };
 
     this.setState({ formSubmitted: true });
+
+    if (actualPassword != actualConfirmedPassword) {
+      toast.error('Your passwords do not match!');
+      return;
+    }
 
     if (googleDoc) {
       if (isValidGoogleDocsUrl(googleDoc)) {
@@ -1135,6 +1160,18 @@ class AddUserProfile extends Component {
           formErrors: {
             ...formErrors,
             actualPassword: event.target.value.length > 0 ? '' : 'Actual Password is required',
+          },
+        });
+        break;
+      case 'actualConfirmedPassword':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            actualConfirmedPassword: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
           },
         });
         break;
