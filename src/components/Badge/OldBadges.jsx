@@ -18,13 +18,19 @@ const OldBadges = props => {
 
   return (
     <>
-      <Card style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
+      <Card
+        style={{
+          backgroundColor: props.darkMode ? '#3A506B' : '#f6f6f3',
+          marginTop: 20,
+          marginBottom: 20,
+        }}
+      >
         <CardBody>
           <CardTitle
             style={{
               fontWeight: 'bold',
               fontSize: 18,
-              color: '#285739',
+              color: props.darkMode ? '#1B2A41' : '#285739',
               marginBottom: 15,
             }}
           >

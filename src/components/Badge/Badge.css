@@ -48,7 +48,10 @@
   z-index: 10;
 }
 .bagde-box-shadow {
-  box-shadow: 2px 2px 4px 1px lightgray
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+.badge-box-shadow-dark {
+  box-shadow: 2px 2px 4px 1px black;
 }
 /* This is just only for displaying 'Personal Max hours' badge hours position */
 .badge_count_personalmax {

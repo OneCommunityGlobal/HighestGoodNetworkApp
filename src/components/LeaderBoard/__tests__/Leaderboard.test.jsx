@@ -10,7 +10,7 @@ describe('Leaderboard page structure', () => {
     props.organizationData = { weeklyCommittedHours: 0, tangibletime: 0, totaltime: 0 };
     props.getLeaderboardData = jest.fn();
     props.loggedInUser = jest.fn();
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = shallow(<Leaderboard {...props} darkMode={true} />);
   });
 
   it('should be rendered with a table', () => {

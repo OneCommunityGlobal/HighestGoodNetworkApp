@@ -6,8 +6,10 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { boxStyle } from 'styles';
 import './style.css';
 import { infoTaskIconContent } from './infoTaskIconContent';
+import { useSelector } from 'react-redux';
 
 const TeamMemberTaskInfo = React.memo(() => {
+    const darkMode = useSelector(state => state.theme.darkMode)
     const [infoTaskIconModal, setInfoTaskIconModal] = useState(false);
 
     const toggleInfoTaskIconModal = () => {
@@ -25,6 +27,7 @@ const TeamMemberTaskInfo = React.memo(() => {
             icon={faInfoCircle}
             title="Click this icon to learn about the task icons"
             onClick={handleModalOpen}
+            color={darkMode ? 'grey' : ''}
         />
         <Modal backdropClassName="task-info-modal-backdrop" isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
             <ModalHeader toggle={toggleInfoTaskIconModal}>

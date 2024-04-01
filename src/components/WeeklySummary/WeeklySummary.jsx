@@ -36,7 +36,7 @@ import Joi from 'joi';
 import { toast } from 'react-toastify';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import SkeletonLoading from '../common/SkeletonLoading';
 import DueDateTime from './DueDateTime';
@@ -630,7 +630,7 @@ export class WeeklySummary extends Component {
       editPopup,
       movePopup,
     } = this.state;
-    const { isDashboard, isPopup, isModal, isNotAllowedToEdit } = this.props;
+    const { isDashboard, isPopup, isModal, isNotAllowedToEdit, darkMode } = this.props;
 
     // Create an object containing labels for each summary tab:
     // - 'This Week' for the current week's tab
@@ -676,13 +676,25 @@ export class WeeklySummary extends Component {
     }
 
     if (isDashboard) {
-      return <DueDateTime isShow={isPopup} dueDate={moment(dueDate)} />;
+      return <DueDateTime isShow={isPopup} dueDate={moment(dueDate)} darkMode={darkMode} />;
     }
 
     const { userRole, displayUserId } = this.props;
 
+    const getBoxStyle = () => {
+      return {
+        ...(darkMode && boxStyleDark),
+        ...(!darkMode && boxStyle),
+      };
+    };
+
     return (
-      <Container fluid={!!isModal} className="bg--white-smoke py-3 mb-5">
+      <Container
+        fluid={!!isModal}
+        className={`py-3 mb-5 ${
+          darkMode ? 'bg-space-cadet text-azure box-shadow-dark' : 'bg--white-smoke'
+        }`}
+      >
         <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
         <Row>
@@ -691,13 +703,17 @@ export class WeeklySummary extends Component {
             {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
-            <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyle}>
+            <Button
+              className="btn--dark-sea-green"
+              onClick={this.handleClose}
+              style={getBoxStyle()}
+            >
               Close this window
             </Button>
           </Col>
         </Row>
         <Form className="mt-4">
-          <Nav tabs>
+          <Nav tabs className="border-0">
             {Object.values(summariesLabels).map((weekName, i) => {
               const tId = String(i + 1);
               return (
@@ -715,7 +731,10 @@ export class WeeklySummary extends Component {
               );
             })}
           </Nav>
-          <TabContent activeTab={activeTab} className="p-2 weeklysummarypane">
+          <TabContent
+            activeTab={activeTab}
+            className={`p-2 weeklysummarypane ${darkMode ? ' bg-yinmn-blue border-light' : ''}`}
+          >
             {Object.keys(summariesLabels).map((summaryName, i) => {
               const tId = String(i + 1);
               return (
@@ -724,7 +743,7 @@ export class WeeklySummary extends Component {
                     <Col>
                       <FormGroup>
                         <Label for={summaryName} className="summary-instructions-row">
-                          <div>
+                          <div className={darkMode ? 'text-light' : ''}>
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
@@ -733,39 +752,51 @@ export class WeeklySummary extends Component {
                               <DropdownToggle
                                 className="px-5 btn--dark-sea-green"
                                 caret
-                                style={boxStyle}
+                                style={getBoxStyle()}
                               >
                                 Move This Summary
                               </DropdownToggle>
-                              <DropdownMenu>
+                              <DropdownMenu className={darkMode ? 'bg-oxford-blue' : ''}>
                                 <DropdownItem
                                   disabled={activeTab === '1'}
                                   onClick={() => this.handleMoveSelect('1')}
+                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  className={darkMode ? 'text-light' : ''}
                                 >
                                   This Week
                                 </DropdownItem>
                                 <DropdownItem
                                   disabled={activeTab === '2'}
                                   onClick={() => this.handleMoveSelect('2')}
+                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  className={darkMode ? 'text-light' : ''}
                                 >
                                   Last Week
                                 </DropdownItem>
                                 <DropdownItem
                                   disabled={activeTab === '3'}
                                   onClick={() => this.handleMoveSelect('3')}
+                                  className={darkMode ? 'text-light' : ''}
+                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
                                 >
                                   Week Before Last
                                 </DropdownItem>
                                 <DropdownItem
                                   disabled={activeTab === '4'}
                                   onClick={() => this.handleMoveSelect('4')}
+                                  className={darkMode ? 'text-light' : ''}
+                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
                                 >
                                   Three Weeks Ago
                                 </DropdownItem>
                               </DropdownMenu>
                             </UncontrolledDropdown>
                           )}
-                          <CurrentPromptModal userRole={userRole} userId={displayUserId} />
+                          <CurrentPromptModal
+                            userRole={userRole}
+                            userId={displayUserId}
+                            darkMode={darkMode}
+                          />
                         </Label>
                         <Editor
                           init={{
@@ -814,7 +845,7 @@ export class WeeklySummary extends Component {
                   </FormGroup>
                 ) : (
                   <Col>
-                    <Label for="mediaUrl" className="mt-1">
+                    <Label for="mediaUrl" className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
                       Dropbox link to your weekly media files. (required)
                       <MediaURLTooltip />
                     </Label>
@@ -839,12 +870,12 @@ export class WeeklySummary extends Component {
                             Update this if you are SURE your new link is correct.
                           </ModalBody>
                           <ModalFooter>
-                            <Button onClick={this.handleMediaChange} style={boxStyle}>
+                            <Button onClick={this.handleMediaChange} style={getBoxStyle()}>
                               Confirm
                             </Button>
                             <Button
                               onClick={() => this.toggleShowPopup(editPopup)}
-                              style={boxStyle}
+                              style={getBoxStyle()}
                             >
                               Close
                             </Button>
@@ -878,10 +909,10 @@ export class WeeklySummary extends Component {
                     <ModalHeader> Warning!</ModalHeader>
                     <ModalBody>Are you SURE you want to move the summary?</ModalBody>
                     <ModalFooter>
-                      <Button onClick={this.handleMoveSave} style={boxStyle}>
+                      <Button onClick={this.handleMoveSave} style={getBoxStyle()}>
                         Confirm and Save
                       </Button>
-                      <Button onClick={this.toggleMovePopup} style={boxStyle}>
+                      <Button onClick={this.toggleMovePopup} style={getBoxStyle()}>
                         Close
                       </Button>
                     </ModalFooter>
@@ -889,18 +920,21 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup>
+                    <FormGroup className="d-flex">
                       <CustomInput
                         id="mediaConfirm"
                         data-testid="mediaConfirm"
                         name="mediaConfirm"
                         type="checkbox"
-                        label="I have provided a minimum of 4 screenshots (6-10 preferred) of this week's work. (required)"
                         htmlFor="mediaConfirm"
                         checked={formElements.mediaConfirm}
                         valid={formElements.mediaConfirm}
                         onChange={this.handleCheckboxChange}
                       />
+                      <div className={darkMode ? 'text-light' : 'text-dark'}>
+                        I have provided a minimum of 4 screenshots (6-10 preferred) of this
+                        week&apos;s work. (required)
+                      </div>
                     </FormGroup>
                     {errors.mediaConfirm && (
                       <Alert color="danger">
@@ -911,18 +945,20 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup>
+                    <FormGroup className="d-flex">
                       <CustomInput
                         id="editorConfirm"
                         data-testid="editorConfirm"
                         name="editorConfirm"
                         type="checkbox"
-                        label="I used GPT (or other AI editor) with the most current prompt."
                         htmlFor="editorConfirm"
                         checked={formElements.editorConfirm}
                         valid={formElements.editorConfirm}
                         onChange={this.handleCheckboxChange}
                       />
+                      <div className={darkMode ? 'text-light' : 'text-dark'}>
+                        I used GPT (or other AI editor) with the most current prompt.
+                      </div>
                     </FormGroup>
                     {errors.editorConfirm && (
                       <Alert color="danger">
@@ -933,18 +969,20 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup>
+                    <FormGroup className="d-flex">
                       <CustomInput
                         id="proofreadConfirm"
                         name="proofreadConfirm"
                         data-testid="proofreadConfirm"
                         type="checkbox"
-                        label="I proofread my weekly summary."
                         htmlFor="proofreadConfirm"
                         checked={formElements.proofreadConfirm}
                         valid={formElements.proofreadConfirm}
                         onChange={this.handleCheckboxChange}
                       />
+                      <div className={darkMode ? 'text-light' : 'text-dark'}>
+                        I proofread my weekly summary.
+                      </div>
                     </FormGroup>
                     {errors.proofreadConfirm && (
                       <Alert color="danger">
@@ -960,7 +998,7 @@ export class WeeklySummary extends Component {
                         className="px-5 btn--dark-sea-green"
                         disabled={Boolean(this.validate())}
                         onClick={this.handleSave}
-                        style={boxStyle}
+                        style={getBoxStyle()}
                       >
                         Save
                       </Button>

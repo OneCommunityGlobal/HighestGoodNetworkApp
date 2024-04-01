@@ -11,6 +11,15 @@
   box-shadow: 2px 2px 4px 1px lightgray;
   margin-bottom:1px;
 }
+
+.card-body-shadow-dark {
+  box-shadow: 2px 2px 4px 1px black;
+}
+.card-header-shadow-dark {
+  box-shadow: 2px 2px 4px 1px black;
+  margin-bottom:1px;
+}
+
 .buttons {
   right: 0;
   bottom: 0;

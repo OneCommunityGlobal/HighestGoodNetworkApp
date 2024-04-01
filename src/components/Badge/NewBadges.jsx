@@ -24,19 +24,19 @@ const NewBadges = props => {
 
   return (
     <>
-      <Card style={{ backgroundColor: '#f6f6f3' }}>
+      <Card style={{ backgroundColor: props.darkMode ? '#3A506B' : '#f6f6f3' }}>
         <CardBody>
           <CardTitle
             style={{
               fontWeight: 'bold',
               fontSize: 18,
-              color: '#285739',
+              color: props.darkMode ? '#1B2A41' : '#285739',
               marginBottom: 15,
             }}
           >
             New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
-          <div className="new_badges">
+          <div className={`new_badges ${props.darkMode ? 'text-light' : ''}`}>
             {filteredBadges.length == 0 ? (
               <strong style={{ opacity: 0.7 }}>
                 Get yourself a herd of new badges! New badges are earned at the close of each epic

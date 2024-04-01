@@ -96,6 +96,50 @@ body {
   /*  90%to100%-red */
 }
 
+.bg-oxford-blue{
+  background-color: #1B2A41 !important;
+}
+
+.bg-space-cadet{
+  background-color: #1C2541 !important;
+}
+
+.bg-yinmn-blue{
+  background-color: #3A506B !important;
+}
+
+.bg-azure{
+  background-color: #007BFF !important;
+}
+
+.text-oxford-blue{
+  color: #1B2A41 !important;
+}
+
+.text-space-cadet{
+  color: #1C2541 !important;
+}
+
+.text-yinmn-blue{
+  color: #3A506B !important;
+}
+
+.text-azure{
+  color: #007BFF !important;
+}
+
+.text-dark-green{
+  background-color: #193D31 !important;
+}
+
+.box-shadow-dark {
+  box-shadow: 2px 2px 4px 1px black;
+}
+
+.box-shadow-light{
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+
 nav ul.navbar-nav li:last-child > div {
   transform: translate3d(-26px, 40px, 0px) !important;
 }

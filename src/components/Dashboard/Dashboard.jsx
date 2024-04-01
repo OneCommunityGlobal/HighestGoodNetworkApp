@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Container } from 'reactstrap';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -20,6 +20,7 @@ export function Dashboard(props) {
   const { match, authUser, displayUserProfile } = props;
   const displayUserId = match.params.userId || authUser.userid;
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const isAuthUser = displayUserId === authUser.userid;
 
@@ -38,7 +39,7 @@ export function Dashboard(props) {
   };
 
   return (
-    <Container fluid>
+    <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
       {!isAuthUser ? <PopUpBar component="dashboard" /> : ''}
       <SummaryBar
         displayUserId={displayUserId}
@@ -65,6 +66,7 @@ export function Dashboard(props) {
                 userRole={authUser.role}
                 displayUserId={displayUserId}
                 isNotAllowedToEdit={isNotAllowedToEdit}
+                darkMode={darkMode}
               />
             </div>
           </div>
@@ -72,7 +74,11 @@ export function Dashboard(props) {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard displayUserId={displayUserId} isNotAllowedToEdit={isNotAllowedToEdit} />
+          <Leaderboard
+            displayUserId={displayUserId}
+            isNotAllowedToEdit={isNotAllowedToEdit}
+            darkMode={darkMode}
+          />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
@@ -83,6 +89,7 @@ export function Dashboard(props) {
                   setPopup={setPopup}
                   userRole={authUser.role}
                   isNotAllowedToEdit={isNotAllowedToEdit}
+                  darkMode={darkMode}
                 />
               </div>
             </div>

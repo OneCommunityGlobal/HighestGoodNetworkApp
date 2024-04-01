@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import {
   updateDashboardData,
   updateCopiedPromptDate,
@@ -25,7 +25,7 @@ function CurrentPromptModal(props) {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { userRole, userId } = props;
+  const { userRole, userId, darkMode } = props;
   const toggle = () => setModal(!modal);
 
   const fallbackPrompt = `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format.
@@ -124,7 +124,14 @@ function CurrentPromptModal(props) {
   return (
     <div>
       {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
-        <Button color="info" onClick={toggle} style={boxStyle}>
+        <Button
+          color="info"
+          onClick={toggle}
+          style={{
+            ...(darkMode && boxStyleDark),
+            ...(!darkMode && boxStyle),
+          }}
+        >
           View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} /> AI
           Prompt
           <i
@@ -138,7 +145,14 @@ function CurrentPromptModal(props) {
           />
         </Button>
       ) : (
-        <Button color="info" onClick={toggle} style={boxStyle}>
+        <Button
+          color="info"
+          onClick={toggle}
+          style={{
+            ...(darkMode && boxStyleDark),
+            ...(!darkMode && boxStyle),
+          }}
+        >
           View and Copy Current AI Prompt
           <i
             className="fa fa-info-circle"
