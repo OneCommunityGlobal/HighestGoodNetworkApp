@@ -23,9 +23,7 @@ export function ProjectReport({ match }) {
   const [activeMemberCount, setActiveMemberCount] = useState(0);
   const [nonActiveMemberCount, setNonActiveMemberCount] = useState(0);
   const [hoursCommitted, setHoursCommitted] = useState(0);
-
   const dispatch = useDispatch();
-  const [memberCount, setMemberCount] = useState(0);
 
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator';
   const checkAnyPermission = permissions => {
