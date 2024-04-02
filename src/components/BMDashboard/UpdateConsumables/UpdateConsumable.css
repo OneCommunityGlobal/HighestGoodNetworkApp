@@ -2,3 +2,88 @@
   overflow-y: scroll;
   height: 75vh;
 }
+
+.updateConsumableContainer {
+  padding: 0% !important;
+
+}
+
+.updateConsumablePage {
+  width: 100%;
+  height: auto;
+  margin: 0px;
+  padding: 1rem 2rem;
+  font-size: 15px;
+}
+
+.updateConsumable {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: auto;
+}
+
+.consumableImage {
+  height: 10rem;
+  width: 10rem;
+  margin-bottom: 1rem;
+}
+
+.consumableFormField {
+  margin-bottom: .5rem;
+}
+
+.consumableFormLabel {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1C8BCC;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.consumableFormError {
+  font-weight: 500;
+  font-size: 12px !important;
+  color: red;
+}
+
+.consumableFormErrorClr {
+  color: red;
+}
+
+.consumableFormValue {
+  font-weight: 400;
+  font-size: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.consumableButtonOutline {
+  color: #2E5061 !important;
+}
+
+.consumableButtonOutline:hover {
+  background-color: #2E5061 !important;
+  color: white !important
+}
+
+.consumableButtonBg {
+  background-color: #2E5061 !important
+}
+
+.consumableButtonBg:hover {
+  background-color: white !important;
+  color: #2E5061 !important;
+}
+
+.updateModalContainer {
+  overflow-y: scroll;
+  height: 75vh;
+}
+
+
+@media (max-width: 992px) {
+  .modal-body {
+    padding: 0 !important;
+  }   
+}
