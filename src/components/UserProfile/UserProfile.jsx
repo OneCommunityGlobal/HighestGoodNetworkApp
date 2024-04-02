@@ -721,7 +721,6 @@ function UserProfile(props) {
   };
 
   return (
-    <Profiler id='UserProfile' onRender={onRenderProfiler}>
     <div>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
@@ -1468,7 +1467,6 @@ function UserProfile(props) {
         </Row>
       </Container>
     </div>
-    </Profiler>
   );
 }
 
