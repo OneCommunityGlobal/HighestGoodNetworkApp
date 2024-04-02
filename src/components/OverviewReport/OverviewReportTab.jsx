@@ -1,4 +1,4 @@
-import { Button, Container } from 'reactstrap';
+import { Button, Container, Row, Col } from 'reactstrap';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import './OverviewReportTab.css';
 import { useState } from 'react';
@@ -9,21 +9,23 @@ import TasksProjectsStats from './TasksProjectsStats';
 import BlueSquareStats from './BlueSquareStats';
 
 export default function OverviewReportTab(props) {
+  // eslint-disable-next-line no-unused-vars
   const { activeTab, userRole } = props;
   const [currentStats, setCurrentStats] = useState('showVolunteerStats');
+
   return (
     <Container fluid className="py-3 mb-5">
-      <div className="overview-report-container">
-        <div className="overview-report-item">
+      <Row>
+        <Col className="col" xs="12" sm="6" md="4" lg="2">
           <Button
-            className="p-3"
+            className="button"
             color="info"
             style={currentStats === 'showVolunteerStats' ? { backgroundColor: '#004A56' } : {}}
             onClick={() => setCurrentStats('showVolunteerStats')}
           >
-            Show Volunteer Stats
+            Volunteer Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showVolunteerStats"
               areaTitle="Show Volunteer Stats"
@@ -32,17 +34,17 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-        <div className="overview-report-item">
+        </Col>
+        <Col className="col" xs="12" sm="6" md="4" lg="2">
           <Button
-            className="p-3"
+            className="button"
             color="info"
             style={currentStats === 'showVolunteerHoursStats' ? { backgroundColor: '#004A56' } : {}}
             onClick={() => setCurrentStats('showVolunteerHoursStats')}
           >
-            Show Volunteer Hours Stats
+            Volunteer Hours Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showVolunteerHoursStats"
               areaTitle="Show Volunteer Hours Stats"
@@ -51,17 +53,17 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-        <div className="overview-report-item">
+        </Col>
+        <Col className="col" xs="12" sm="6" md="4" lg="2">
           <Button
-            className="p-3"
+            className="button"
             color="info"
             style={currentStats === 'showVolunteerRoleStats' ? { backgroundColor: '#004A56' } : {}}
             onClick={() => setCurrentStats('showVolunteerRoleStats')}
           >
-            Show Volunteer Role Stats
+            Volunteer Role Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showVolunteerRoleStats"
               areaTitle="Show Volunteer Role Stats"
@@ -70,17 +72,17 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-        <div className="overview-report-item">
+        </Col>
+        <Col className="col" xs="12" sm="6" md="4" lg="2">
           <Button
-            className="p-3"
+            className="button"
             color="info"
             style={currentStats === 'showTasksProjectsStats' ? { backgroundColor: '#004A56' } : {}}
             onClick={() => setCurrentStats('showTasksProjectsStats')}
           >
-            Show Tasks&Projects Stats
+            Tasks & Projects Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showTasksProjectsStats"
               areaTitle="Show Tasks&Projects Stats"
@@ -89,17 +91,17 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-        <div className="overview-report-item">
+        </Col>
+        <Col className="col" xs="12" sm="6" md="4" lg="2">
           <Button
-            className="p-3"
+            className="button"
             color="info"
             style={currentStats === 'showBlueSquareStats' ? { backgroundColor: '#004A56' } : {}}
             onClick={() => setCurrentStats('showBlueSquareStats')}
           >
-            Show Blue Square Stats
+            Blue Square Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showBlueSquareStats"
               areaTitle="Show Blue Square Stats"
@@ -108,9 +110,8 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-      </div>
-      <p>Active Tab: {activeTab}</p>
+        </Col>
+      </Row>
       {currentStats === 'showVolunteerStats' && <VolunteerStats />}
       {currentStats === 'showVolunteerHoursStats' && <VolunteeringHoursStats />}
       {currentStats === 'showVolunteerRoleStats' && <VolunteerRoleStats />}
