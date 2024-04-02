@@ -409,14 +409,6 @@ const Timelog = props => {
     // Filter the time entries
     updateTimeEntryItems();
   }, [timeLogState.projectsSelected]);
-
-  useEffect(() => {
-    const rootElement = document.getElementById('root');
-
-    if (rootElement) {
-      rootElement.style.setProperty('--background-color', darkMode ? '#1B2A41' : '#f0f0f0');
-    }
-  }, [darkMode]);
   
   useEffect(() => {
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
@@ -427,7 +419,7 @@ const Timelog = props => {
   },[]);
 
   return (
-    <div>
+    <div className={darkMode ? (!props.isDashboard ? 'bg-oxford-blue h-100' : 'bg-oxford-blue') : ''}>
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
