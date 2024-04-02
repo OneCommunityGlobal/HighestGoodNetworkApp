@@ -12,8 +12,11 @@
   "eslint.alwaysShowStatus": true,
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll": "explicit"
   },
+  "eslint.validate": [
+    "javascript"
+  ],
   "files.exclude": {
     "**/.classpath": true,
     "**/.project": true,
