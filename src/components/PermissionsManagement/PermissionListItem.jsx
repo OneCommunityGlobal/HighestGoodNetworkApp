@@ -29,7 +29,7 @@ const PermissionListItem = (props) => {
     rolePermissions.includes(permission) || immutablePermissions.includes(permission)
       ? setPermissions(previous => previous.filter(perm => perm !== permission))
       : setPermissions(previous => [...previous, permission]);
-    console.log('here')
+    console.log('here what ')
     props.onChange();
   };
 
