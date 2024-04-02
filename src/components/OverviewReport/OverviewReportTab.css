@@ -1,15 +1,25 @@
-.overview-report-container {
+.col {
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 8px;
+  align-items: center;
+  gap: 10px;
+  margin: 10px auto;
 }
 
-.overview-report-item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin: 25px 25px 0 0;
+.button {
+  padding: 12px;
+  height: 70px;
+  max-height: 70px;
+  min-height: 70px;
+  width: 100%;
+  min-width: 160px;
+}
+
+@media (max-width: 991px) {
+  .col {
+    margin: 10px 0px;
+  }
+
+  .button {
+    max-width: none;
+  }
 }

@@ -28,7 +28,7 @@ export class OverviewReport extends Component {
     return (
       <Container fluid className="bg--white-smoke py-3 mb-5">
         <Row>
-          <Col lg={{ size: 10, offset: 1 }}>
+          <Col lg={{ size: 12 }}>
             <h3 className="mt-3 mb-5">
               <div className="d-flex align-items-center">
                 <span className="mr-2">Overview Report Page</span>
@@ -45,7 +45,7 @@ export class OverviewReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col lg={{ size: 10, offset: 1 }}>
+          <Col lg={{ size: 12 }}>
             <Nav tabs>
               {navItems.map(item => (
                 <NavItem key={item}>
