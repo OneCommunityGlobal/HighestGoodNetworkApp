@@ -11,17 +11,29 @@ import { ReportPage } from '../sharedComponents/ReportPage';
 import { Paging } from '../../common/Paging';
 import { TasksTable } from '../TasksTable';
 import { WbsTable } from '../WbsTable';
+import hasPermission from '../../../utils/permissions';
+import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequired';
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
 
-export const ProjectReport = ({ match }) => {
+// eslint-disable-next-line import/prefer-default-export
+export function ProjectReport({ match }) {
   const [memberCount, setMemberCount] = useState(0);
   const [activeMemberCount, setActiveMemberCount] = useState(0);
   const [nonActiveMemberCount, setNonActiveMemberCount] = useState(0);
   const [hoursCommitted, setHoursCommitted] = useState(0);
+
   const dispatch = useDispatch();
-  const { wbs, projectMembers, isActive, projectName, wbsTasksID, isLoading } = useSelector(
+  const [memberCount, setMemberCount] = useState(0);
+
+  const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator';
+  const checkAnyPermission = permissions => {
+    return permissions.some(permission => dispatch(hasPermission(permission)));
+  };
+  const canViewWBS = isAdmin || checkAnyPermission(viewWBSpermissionsRequired);
+
+  const { wbs, projectMembers, isActive, projectName, wbsTasksID } = useSelector(
     projectReportViewData,
   );
   const tasks = useSelector(state => state.tasks);
@@ -81,7 +93,7 @@ export const ProjectReport = ({ match }) => {
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
           <Paging totalElementsCount={wbs.WBSItems.length}>
-            <WbsTable wbs={wbs} />
+            <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} />
           </Paging>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
@@ -94,10 +106,10 @@ export const ProjectReport = ({ match }) => {
         </ReportPage.ReportBlock>
       </div>
       <div className="tasks-block">
-      <ReportPage.ReportBlock>
-        <TasksTable WbsTasksID={wbsTasksID} />
-      </ReportPage.ReportBlock>
+        <ReportPage.ReportBlock>
+          <TasksTable WbsTasksID={wbsTasksID} />
+        </ReportPage.ReportBlock>
       </div>
     </ReportPage>
   );
-};
+}
