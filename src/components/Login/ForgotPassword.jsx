@@ -135,7 +135,9 @@ const ForgotPassword = React.memo(() => {
   return (
     <div className="container mt-5">
       <form className="col-md-6 xs-12">
-        <label htmlFor="email">Email</label>
+        <label htmlFor="email" className="mt-3">
+          Email
+        </label>
         <Input
           id="email"
           type="text"
@@ -146,7 +148,9 @@ const ForgotPassword = React.memo(() => {
         />
         {message.email && <div className="alert alert-danger">{message.email}</div>}
 
-        <label htmlFor="firstName">First Name</label>
+        <label htmlFor="firstName" className="mt-3">
+          First Name
+        </label>
         <Input
           id="firstName"
           type="text"
@@ -157,7 +161,9 @@ const ForgotPassword = React.memo(() => {
         />
         {message.firstName && <div className="alert alert-danger">{message.firstName}</div>}
 
-        <label htmlFor="lastName">Last Name</label>
+        <label htmlFor="lastName" className="mt-3">
+          Last Name
+        </label>
         <Input
           id="lastName"
           type="text"

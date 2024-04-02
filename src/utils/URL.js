@@ -107,6 +107,29 @@ export const ENDPOINTS = {
   VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
+  // emails endpoint
+  POST_EMAILS: `${APIEndpoint}/send-emails`,
+  BROADCAST_EMAILS: `${APIEndpoint}/broadcast-emails`,
+  UPDATE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/update-email-subsriptions`,
+  NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
+  CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
+  REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
+  //reasons endpoints
+  CREATEREASON: () => {
+    return `${APIEndpoint}/reason/`;
+  },
+  GETALLUSERREASONS: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+  GETSINGLEREASONBYID: userId => {
+    return `${APIEndpoint}/reason/single/${userId}`;
+  },
+  PATCHUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+  DELETEUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
 
   //reasons endpoints
   CREATEREASON: () => {
@@ -137,6 +160,9 @@ export const ENDPOINTS = {
   BM_MATERIAL_TYPE: `${APIEndpoint}/bm/invtypes/material`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
+  BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
+  BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
+  BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
