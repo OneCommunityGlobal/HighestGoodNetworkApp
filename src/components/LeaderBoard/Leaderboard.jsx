@@ -84,9 +84,6 @@ function LeaderBoard({
   const [toggleButtonText, setToggleButtonText] = useState('View All');
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [userRole, setUserRole] = useState();
-  const [openModal, setOpenModal] = useState();
-
-  const dashboardToggleTeams = item => setOpenModal(item._id);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -120,11 +117,14 @@ function LeaderBoard({
     try {
       setIsLoadingTeams(true);
       const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
-      setUsersSelectedTeam(response.data);
       setIsLoadingTeams(false);
 
       const teamName = `${team.teamName.substring(0, 30)}...`;
       setSelectedTeamName(team.teamName.length >= 30 ? teamName : team.teamName);
+      const idUsers = response.data.map(item => item._id);
+      const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
+      //console.log(usersTaks);
+      setUsersSelectedTeam(usersTaks);
     } catch (error) {
       toast.error('Error fetching team members:', error);
       setIsLoadingTeams(false);
@@ -551,20 +551,20 @@ function LeaderBoard({
                   </span>
                 </th>
 
+                <th className="align-middle">Tangible Time</th>
+                <th className="align-middle">Progress</th>
                 <th className="align-middle">Total Time</th>
               </tr>
             </thead>
             <tbody>
               {usersSelectedTeam.map(item => {
                 return (
-                  <Fragment key={item._id}>
-                    <Modal isOpen={openModal === item._id} toggle={dashboardToggleTeams}>
-                      <ModalHeader toggle={dashboardToggleTeams}>
-                        Jump to personal Dashboard
-                      </ModalHeader>
+                  <Fragment key={item.personId}>
+                    <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
+                      <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
                       <ModalBody>
                         <p>
-                          Are you sure you wish to view this {item.firstName} {item.lastName}{' '}
+                          Are you sure you wish to view this {item.name}
                           dashboard?
                         </p>
                       </ModalBody>
@@ -572,7 +572,7 @@ function LeaderBoard({
                         <Button variant="primary" onClick={() => showDashboard(item)}>
                           Ok
                         </Button>{' '}
-                        <Button variant="secondary" onClick={dashboardToggleTeams}>
+                        <Button variant="secondary" onClick={dashboardToggle}>
                           Cancel
                         </Button>
                       </ModalFooter>
@@ -583,22 +583,22 @@ function LeaderBoard({
                           role="button"
                           tabIndex={0}
                           onClick={() => {
-                            dashboardToggleTeams(item);
+                            dashboardToggle(item);
                           }}
                           onKeyDown={e => {
                             if (e.key === 'Enter') {
-                              dashboardToggleTeams(item);
+                              dashboardToggle(item);
                             }
                           }}
                         >
-                          {hasLeaderboardPermissions(loggedInUser.role) &&
-                          showStar(item.totalIntangibleHrs, item.weeklycommittedHours) ? (
+                          {hasLeaderboardPermissions(item.role) &&
+                          showStar(item.tangibletime, item.weeklycommittedHours) ? (
                             <i
                               className="fa fa-star"
                               title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                               style={{
                                 color: assignStarDotColors(
-                                  item.totalIntangibleHrs,
+                                  item.tangibletime,
                                   item.weeklycommittedHours,
                                 ),
                                 fontSize: '20px',
@@ -612,7 +612,7 @@ function LeaderBoard({
                               title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
                               style={{
                                 backgroundColor:
-                                  item.totalTangibleHrs >= item.weeklycommittedHours
+                                  item.tangibletime >= item.weeklycommittedHours
                                     ? '#32CD32'
                                     : 'red',
                                 width: 15,
@@ -627,13 +627,30 @@ function LeaderBoard({
                       </th>
 
                       <th scope="row" className="align-middle">
-                        <Link to={`/userprofile/${item._id}`}>
-                          {item.firstName} {item.lastName}
+                        <Link to={`/userprofile/${item.personId}`}>{item.name}</Link>
+                      </th>
+
+                      <th className="align-middle">
+                        <p>{item.tangibletime}</p>
+                      </th>
+
+                      <th className="align-middle">
+                        <Link
+                          to={`/timelog/${item.personId}`}
+                          title={`TangibleEffort: ${item.tangibletime} hours`}
+                        >
+                          <Progress value={item.barprogress} color={item.barcolor} />
                         </Link>
                       </th>
 
                       <th className="align-middle">
-                        <p>{item.totalTangibleHrs}</p>
+                        <span
+                          title={mouseoverTextValue}
+                          id="Total time"
+                          className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                        >
+                          <p>{item.totaltime}</p>
+                        </span>
                       </th>
                     </tr>
                   </Fragment>

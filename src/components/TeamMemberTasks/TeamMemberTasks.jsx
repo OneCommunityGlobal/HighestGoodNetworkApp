@@ -234,10 +234,12 @@ const TeamMemberTasks = React.memo(props => {
       try {
         setLoading(true);
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
-        setUsersSelectedTeam(response.data);
         setLoading(false);
         const teamName = team.teamName.substring(0, 15) + '...';
         setSelectedTeamName(team.teamName.length >= 15 ? teamName : team.teamName);
+        const idUsers = response.data.map(item => item._id);
+        const usersTaks = usersWithTasks.filter(item => idUsers.includes(item.personId));
+        setUsersSelectedTeam(usersTaks);
       } catch (error) {
         toast.error('Error fetching team members:', error);
       }
@@ -424,191 +426,170 @@ const TeamMemberTasks = React.memo(props => {
       <div className="task_table-container">
         <Table>
           <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
-            {toggleButtonText === 'View All' ? (
-              <tr>
-                {/* Empty column header for hours completed icon */}
-                <th colSpan={1} />
-                <th colSpan={2} className="team-member-tasks-headers">
-                  <Table borderless className="team-member-tasks-subtable">
-                    <thead>
-                      <tr>
-                        <th className="team-member-tasks-headers team-member-tasks-user-name">
-                          Team Member
-                        </th>
-                        <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                          <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                          /
-                          <FontAwesomeIcon
-                            style={{ color: 'green' }}
-                            icon={faClock}
-                            title="Total Hours Completed this Week"
-                          />
-                          /
-                          <FontAwesomeIcon
-                            style={{ color: 'red' }}
-                            icon={faClock}
-                            title="Total Remaining Hours"
-                          />
-                        </th>
-                      </tr>
-                    </thead>
-                  </Table>
-                </th>
-                <th colSpan={3} className="team-member-tasks-headers">
-                  <Table borderless className="team-member-tasks-subtable">
-                    <thead>
-                      <tr>
-                        <th>Tasks(s)</th>
-                        <th className="team-task-progress">Progress</th>
-                        {displayUser.role === 'Administrator' ? <th>Status</th> : null}
-                      </tr>
-                    </thead>
-                  </Table>
-                </th>
-              </tr>
-            ) : usersSelectedTeam.length === 0 ? (
-              <tr>
-                <th className="team-member-tasks-headers">
-                  <Table borderless>
-                    <thead>
-                      <th>
-                        {' '}
-                        <h4>Error</h4>
+            <tr>
+              {/* Empty column header for hours completed icon */}
+              <th colSpan={1} />
+              <th colSpan={2} className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th className="team-member-tasks-headers team-member-tasks-user-name">
+                        Team Member
                       </th>
-                    </thead>
-                  </Table>
-                </th>
-              </tr>
-            ) : (
-              <tr>
-                <th className="team-member-tasks-headers table-row d-flex justify-content-between d-flex align-items-center">
-                  <Table borderless className="team-member-tasks-subtable">
-                    <thead>
-                      <tr>
-                        <th></th>
-
-                        <th className="team-member-tasks-headers team-member-tasks-user-name">
-                          Team Member
-                        </th>
-                        <th
-                          className="team-member-tasks-headers team-clocks team-clocks-header "
-                          style={{ gap: 4 }}
-                        >
-                          <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
-                          /
-                          <FontAwesomeIcon
-                            style={{ color: 'green' }}
-                            icon={faClock}
-                            title="Total Hours Completed this Week"
-                          />
-                          /
-                          <FontAwesomeIcon
-                            style={{ color: 'red' }}
-                            icon={faClock}
-                            title="Total Remaining Hours"
-                          />
-                        </th>
-                      </tr>
-                    </thead>
-                  </Table>
-                </th>
-              </tr>
-            )}
+                      <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                        <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'green' }}
+                          icon={faClock}
+                          title="Total Hours Completed this Week"
+                        />
+                        /
+                        <FontAwesomeIcon
+                          style={{ color: 'red' }}
+                          icon={faClock}
+                          title="Total Remaining Hours"
+                        />
+                      </th>
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+              <th colSpan={3} className="team-member-tasks-headers">
+                <Table borderless className="team-member-tasks-subtable">
+                  <thead>
+                    <tr>
+                      <th>Tasks(s)</th>
+                      <th className="team-task-progress">Progress</th>
+                      {displayUser.role === 'Administrator' ? <th>Status</th> : null}
+                    </tr>
+                  </thead>
+                </Table>
+              </th>
+            </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
               <>
-                {toggleButtonText === 'View All' ? (
-                  teamList.map(user => {
-                    if (!isTimeFilterActive) {
-                      return (
-                        <TeamMemberTask
-                          user={user}
-                          userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                            'putReviewStatus',
-                          )}
-                          key={user.personId}
-                          handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                          handleMarkAsDoneModal={handleMarkAsDoneModal}
-                          handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                          handleTaskModalOption={handleTaskModalOption}
-                          userRole={displayUser.role}
-                          updateTaskStatus={updateTaskStatus}
-                          userId={displayUser._id}
-                          showWhoHasTimeOff={showWhoHasTimeOff}
-                          onTimeOff={userOnTimeOff[user.personId]}
-                          goingOnTimeOff={userGoingOnTimeOff[user.personId]}
-                        />
-                      );
-                    } else {
-                      return (
-                        <Fragment key={user.personId}>
+                {toggleButtonText === 'View All'
+                  ? teamList.map(user => {
+                      if (!isTimeFilterActive) {
+                        return (
                           <TeamMemberTask
                             user={user}
+                            userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
+                              'putReviewStatus',
+                            )}
                             key={user.personId}
                             handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                             handleMarkAsDoneModal={handleMarkAsDoneModal}
                             handleRemoveFromTaskModal={handleRemoveFromTaskModal}
                             handleTaskModalOption={handleTaskModalOption}
-                            showWhoHasTimeOff={showWhoHasTimeOff}
-                            onTimeOff={userOnTimeOff[user.personId]}
-                            goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                             userRole={displayUser.role}
                             updateTaskStatus={updateTaskStatus}
                             userId={displayUser._id}
+                            showWhoHasTimeOff={showWhoHasTimeOff}
+                            onTimeOff={userOnTimeOff[user.personId]}
+                            goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                           />
-                          {timeEntriesList.length > 0 &&
-                            timeEntriesList
-                              .filter(timeEntry => timeEntry.personId === user.personId)
-                              .map(timeEntry => (
-                                <tr className="table-row" key={timeEntry._id}>
-                                  <td colSpan={6} style={{ padding: 0 }}>
-                                    <TimeEntry
-                                      from="TaskTab"
-                                      data={timeEntry}
-                                      displayYear
-                                      key={timeEntry._id}
-                                      timeEntryUserProfile={timeEntry.userProfile}
-                                    />
-                                  </td>
-                                </tr>
-                              ))}
-                        </Fragment>
-                      );
-                    }
-                  })
-                ) : usersSelectedTeam.length === 0 ? (
-                  <Table>
-                    <tbody>
-                      <tr>
-                        <th>
-                          The team currently has no members. Please add a member to this team or
-                          select another team.
-                        </th>
-                      </tr>
-                    </tbody>
-                  </Table>
-                ) : (
-                  usersSelectedTeam.map(user => {
-                    return (
-                      <MyTeamMember
-                        key={user._id}
-                        user={user}
-                        usersWithTasks={usersWithTasks}
-                        handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
-                        handleMarkAsDoneModal={handleMarkAsDoneModal}
-                        handleRemoveFromTaskModal={handleRemoveFromTaskModal}
-                        handleTaskModalOption={handleTaskModalOption}
-                        showWhoHasTimeOff={showWhoHasTimeOff}
-                        onTimeOff={userOnTimeOff[user._id]}
-                        goingOnTimeOff={userGoingOnTimeOff[user._id]}
-                        updateTaskStatus={updateTaskStatus}
-                      />
-                    );
-                  })
-                )}
+                        );
+                      } else {
+                        return (
+                          <Fragment key={user.personId}>
+                            <TeamMemberTask
+                              user={user}
+                              key={user.personId}
+                              handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                              handleMarkAsDoneModal={handleMarkAsDoneModal}
+                              handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                              handleTaskModalOption={handleTaskModalOption}
+                              showWhoHasTimeOff={showWhoHasTimeOff}
+                              onTimeOff={userOnTimeOff[user.personId]}
+                              goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                              userRole={displayUser.role}
+                              updateTaskStatus={updateTaskStatus}
+                              userId={displayUser._id}
+                            />
+                            {timeEntriesList.length > 0 &&
+                              timeEntriesList
+                                .filter(timeEntry => timeEntry.personId === user.personId)
+                                .map(timeEntry => (
+                                  <tr className="table-row" key={timeEntry._id}>
+                                    <td colSpan={6} style={{ padding: 0 }}>
+                                      <TimeEntry
+                                        from="TaskTab"
+                                        data={timeEntry}
+                                        displayYear
+                                        key={timeEntry._id}
+                                        timeEntryUserProfile={timeEntry.userProfile}
+                                      />
+                                    </td>
+                                  </tr>
+                                ))}
+                          </Fragment>
+                        );
+                      }
+                    })
+                  : usersSelectedTeam.map(user => {
+                      if (!isTimeFilterActive) {
+                        return (
+                          <MyTeamMember
+                            user={user}
+                            userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
+                              'putReviewStatus',
+                            )}
+                            key={user.personId}
+                            handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                            handleMarkAsDoneModal={handleMarkAsDoneModal}
+                            handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                            handleTaskModalOption={handleTaskModalOption}
+                            userRole={displayUser.role}
+                            updateTaskStatus={updateTaskStatus}
+                            userId={displayUser._id}
+                            showWhoHasTimeOff={showWhoHasTimeOff}
+                            onTimeOff={userOnTimeOff[user.personId]}
+                            goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                          />
+                        );
+                      } else {
+                        return (
+                          <Fragment key={user.personId}>
+                            <MyTeamMember
+                              user={user}
+                              key={user.personId}
+                              handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
+                              handleMarkAsDoneModal={handleMarkAsDoneModal}
+                              handleRemoveFromTaskModal={handleRemoveFromTaskModal}
+                              handleTaskModalOption={handleTaskModalOption}
+                              showWhoHasTimeOff={showWhoHasTimeOff}
+                              onTimeOff={userOnTimeOff[user.personId]}
+                              goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                              userRole={displayUser.role}
+                              updateTaskStatus={updateTaskStatus}
+                              userId={displayUser._id}
+                            />
+                            {timeEntriesList.length > 0 &&
+                              timeEntriesList
+                                .filter(timeEntry => timeEntry.personId === user.personId)
+                                .map(timeEntry => (
+                                  <tr className="table-row" key={timeEntry._id}>
+                                    <td colSpan={6} style={{ padding: 0 }}>
+                                      <TimeEntry
+                                        from="TaskTab"
+                                        data={timeEntry}
+                                        displayYear
+                                        key={timeEntry._id}
+                                        timeEntryUserProfile={timeEntry.userProfile}
+                                      />
+                                    </td>
+                                  </tr>
+                                ))}
+                          </Fragment>
+                        );
+                      }
+                    })}
               </>
             )}
           </tbody>
