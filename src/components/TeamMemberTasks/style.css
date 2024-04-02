@@ -7,12 +7,12 @@
   font-size: 20px;
 }
 
-.table-container {
+.task_table-container {
   position: relative;
   overflow-x: auto;
 }
 
-.table-container table{
+.task_table-container table{
   table-layout: fixed;
   width: 100%;
 }
@@ -257,7 +257,27 @@
   border: 1px solid #ccc;
   border-radius: 10px;
   margin: 10px;
+  max-height: 500px;
+  overflow-y: auto;
 }
+
+.time-off-detail-modal::-webkit-scrollbar {
+  width: 12px;
+}
+
+.time-off-detail-modal::-webkit-scrollbar-track {
+  border-radius: 4px;
+  background-color: #e7e7e7;
+  border: 1px solid #cacaca;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+}
+
+.time-off-detail-modal::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #007BFF ;
+  box-shadow: inset 0 0 3px #e7e7e7;
+}
+
 
 .time-off-detail-modal-section {
   margin-bottom: 10px;
@@ -275,7 +295,6 @@
 
 .compress-time-off-detail-button:hover,.expand-time-off-detail-button:hover{
   background-color: rgba(0, 0, 25, 0.6);
-  
 }
 
 .expand-time-off-detail-button{
@@ -287,6 +306,11 @@
   border-radius: 5px;
 }
 
+.time-off-detail-modal-card-container{
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
 
 @media only screen and (max-width: 768px) {
   .pc-component {

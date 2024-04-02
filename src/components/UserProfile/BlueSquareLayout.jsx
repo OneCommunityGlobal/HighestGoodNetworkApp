@@ -1,42 +1,23 @@
-import React from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { Button , Modal } from 'react-bootstrap';
+import { boxStyle } from 'styles';
 import BlueSquare from './BlueSquares';
 import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
-import './UserProfile.scss';
-import { Button } from 'react-bootstrap';
 import ScheduleExplanationModal from './ScheduleExplanationModal/ScheduleExplanationModal';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
-import { useState } from 'react';
 import hasPermission from '../../utils/permissions';
-import { Modal } from 'react-bootstrap';
-import { boxStyle } from 'styles';
+import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
-const BlueSquareLayout = props => {
+const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user }) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
 
-  const { userProfile, handleUserProfile, handleBlueSquare, canEdit, user } = props;
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
-
-  const checkIfUserCanScheduleTimeOff = () => {
-    let scheduledVacation = 0;
-    allRequests[userProfile._id]?.forEach(element => {
-      scheduledVacation = scheduledVacation + Number(element.duration);
-    });
-    const blueSquares = Number(userProfile.infringements?.length) || 0;
-
-    const infringementAndTimeOff = scheduledVacation + blueSquares;
-    const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
-
-    if (infringementAndTimeOff >= 5 && !hasRolePermission && !canManageTimeOffRequests) {
-      return false;
-    }
-    return true;
-  };
 
   const handleOpen = () => {
     setShow(true);
@@ -55,6 +36,21 @@ const BlueSquareLayout = props => {
     setShowExplanation(false);
   };
 
+  const checkIfUserCanScheduleTimeOff = () => {
+    let scheduledVacation = 0;
+    allRequests[userProfile._id]?.forEach(element => {
+      scheduledVacation += Number(element.duration);
+    });
+    const blueSquares = Number(userProfile.infringements?.length) || 0;
+    const infringementAndTimeOff = scheduledVacation + blueSquares;
+    const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
+    if (infringementAndTimeOff >= 5 && !hasRolePermission && !canManageTimeOffRequests) {
+      return false;
+    }
+    return true;
+  };
+
+  // ===============================================================
   if (canEdit) {
     return (
       <div data-testid="blueSqaure-field">
@@ -69,6 +65,7 @@ const BlueSquareLayout = props => {
             />
           ) : null}
         </div>
+
         <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
@@ -81,21 +78,23 @@ const BlueSquareLayout = props => {
                 style={boxStyle}
                 id="stopSchedulerButton"
               >
-                <span>Can't Schedule Time Off</span>
+                <span>{`Can't Schedule Time Off`}</span>
                 <br />
-                <span className="mt-0" style={{ fontSize: '.8em' }}>
+                <span className="mt-0" style={{ fontSize: ".8em" }}>
                   Click to learn why
                 </span>
               </Button>
-              {allRequests[userProfile._id]?.length > 0 &&<Button
-                variant="primary"
-                onClick={handleOpen}
-                className="w-100 mt-3"
-                size="md"
-                style={boxStyle}
-              >
-                View scheduled Blue Square Reasons
-              </Button>}
+              {allRequests[userProfile._id]?.length > 0 && (
+                <Button
+                  variant="primary"
+                  onClick={handleOpen}
+                  className="w-100 mt-3"
+                  size="md"
+                  style={boxStyle}
+                >
+                  View scheduled Blue Square Reasons
+                </Button>
+              )}
             </>
           ) : (
             <Button
@@ -109,7 +108,6 @@ const BlueSquareLayout = props => {
             </Button>
           )}
         </div>
-
         <Modal show={showExplanation} onHide={closeExplanationModal}>
           <ScheduleExplanationModal
             onHide={closeExplanationModal}
@@ -119,7 +117,6 @@ const BlueSquareLayout = props => {
             infringements={userProfile.infringements}
           />
         </Modal>
-
         {show && (
           <Modal show={show} onHide={handleClose}>
             <ScheduleReasonModal

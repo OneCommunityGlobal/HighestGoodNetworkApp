@@ -33,7 +33,7 @@ function BadgeTableFilter({
       <td id="badge_name">
         <TextSearchBox id="badge_name_search" searchCallback={onBadgeNameSearch} value={name} />
       </td>
-      <td id="badge_description">
+      <td id="badge_description" className="d-xl-table-cell d-none">
         <TextSearchBox
           id="badge_description_search"
           searchCallback={onBadgeDescriptionSearch}
@@ -48,7 +48,7 @@ function BadgeTableFilter({
           value={type}
         />
       </td>
-      <td id="badge_details" />
+      <td id="badge_details" className="d-xl-table-cell d-none" />
       <td id="badge_ranking">
         <DropDownSearchBox
           id="badge_ranking_sort"

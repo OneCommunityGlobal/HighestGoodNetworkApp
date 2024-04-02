@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
-import { Button, Card } from 'reactstrap';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getHeaderData } from '../../actions/authActions';
@@ -27,6 +26,7 @@ import {
   LOGOUT,
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
+  SEND_EMAILS,
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -40,17 +40,28 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Button,
+  Card,
 } from 'reactstrap';
 import Logout from '../Logout/Logout';
+import PopUpBar from 'components/PopUpBar';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
-export const Header = props => {
+export function Header(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
-  const { isAuthenticated, user, firstName, profilePic } = props.auth;
-
+  const { isAuthenticated, user } = props.auth;
+  const [firstName, setFirstName] = useState(props.auth.firstName);
+  const [profilePic, setProfilePic] = useState(props.auth.profilePic);
+  const [displayUserId, setDisplayUserId] = useState(user.userid);
+  const [popup, setPopup] = useState(false);
+  const [isAuthUser, setIsAuthUser] = useState(true);
   // Reports
   const canGetReports = props.hasPermission('getReports');
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
@@ -103,6 +114,34 @@ export const Header = props => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const handleStorageEvent = () => {
+      const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+      if (sessionStorageData) {
+        setDisplayUserId(sessionStorageData.userId);
+        setFirstName(sessionStorageData.firstName);
+        setProfilePic(sessionStorageData.profilePic);
+        setIsAuthUser(false);
+      } else {
+        setDisplayUserId(user.userid);
+        setFirstName(props.auth.firstName);
+        setProfilePic(props.auth.profilePic);
+        setIsAuthUser(true);
+      }
+    };
+  
+    // Set the initial state when the component mounts
+    handleStorageEvent();
+  
+    // Add the event listener
+    window.addEventListener('storage', handleStorageEvent);
+  
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  }, [user.userid, props.auth.firstName]);
+
+  useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
       if (props.auth.user.role === 'Owner' || props.auth.user.role === 'Administrator') {
@@ -125,6 +164,12 @@ export const Header = props => {
   const openModal = () => {
     setLogoutPopup(true);
   };
+
+  const removeViewingUser = () => {
+    setPopup(false);
+    sessionStorage.removeItem('viewingUser');
+    window.dispatchEvent(new Event('storage'));
+  }
 
   const closeModal = () => {
     setModalVisible(false);
@@ -267,7 +312,7 @@ export const Header = props => {
               </NavItem>
             }
               <NavItem>
-                <NavLink tag={Link} to={`/timelog/${user.userid}`}>
+                <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                   <i className="fa fa-bell i-large">
                     <i className="badge badge-pill badge-danger badge-notify">
                       {/* Pull number of unread messages */}
@@ -312,6 +357,11 @@ export const Header = props => {
                       </DropdownItem>
                     )}
                     {(canAccessPermissionsManagement) && (
+                      <DropdownItem tag={Link} to="/announcements">
+                        {SEND_EMAILS}
+                      </DropdownItem>
+                    )}
+                    {canAccessPermissionsManagement && (
                       <>
                         <DropdownItem divider />
                         <DropdownItem tag={Link} to="/permissionsmanagement">
@@ -323,7 +373,7 @@ export const Header = props => {
                 </UncontrolledDropdown>
               )}
               <NavItem>
-                <NavLink tag={Link} to={`/userprofile/${user.userid}`}>
+                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
                     alt=""
@@ -341,11 +391,11 @@ export const Header = props => {
                 <DropdownMenu>
                   <DropdownItem header>Hello {firstName}</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${user.userid}`}>
+                  <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`}>
                     {VIEW_PROFILE}
                   </DropdownItem>
                   {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                    <DropdownItem tag={Link} to={`/updatepassword/${user.userid}`}>
+                    <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`}>
                       {UPDATE_PASSWORD}
                     </DropdownItem>
                   )}
@@ -357,6 +407,23 @@ export const Header = props => {
           </Collapse>
         )}
       </Navbar>
+      {!isAuthUser && <PopUpBar onClickClose={()=> setPopup(prevPopup=> !prevPopup)} viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))}/> }
+      <div>
+        <Modal isOpen={popup} >
+          <ModalHeader >Return to your Dashboard</ModalHeader>
+          <ModalBody>
+            <p>Are you sure you wish to return to your own dashboard?</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant='primary' onClick={removeViewingUser}>
+              Ok
+            </Button>{' '}
+            <Button variant='secondary' onClick={()=> setPopup(prevPopup=> !prevPopup)}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </div>
       {props.auth.isAuthenticated && isModalVisible && (
           <Card color="primary">
             <div className="close-button">
@@ -365,9 +432,10 @@ export const Header = props => {
             <div className="card-content">{modalContent}</div>
           </Card>
         )}
+
     </div>
   );
-};
+}
 
 const mapStateToProps = state => ({
   auth: state.auth,

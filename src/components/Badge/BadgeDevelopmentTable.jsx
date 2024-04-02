@@ -11,7 +11,6 @@ import {
   CardImg,
   CardText,
   UncontrolledPopover,
-  Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { boxStyle } from 'styles';
@@ -101,8 +100,8 @@ function BadgeDevelopmentTable(props) {
     setType(text);
   };
 
-  const onBadgeRankingSort = RankingOrder => {
-    setOrder(RankingOrder);
+  const onBadgeRankingSort = rankingOrder => {
+    setOrder(rankingOrder);
   };
 
   const resetFilters = () => {
@@ -156,7 +155,7 @@ function BadgeDevelopmentTable(props) {
     const checkValue = !!badgeValue.showReport;
     return (
       <div className="badge_check">
-        <Input
+        <input
           type="checkbox"
           id={badgeValue._id}
           name="reportable"
@@ -164,6 +163,15 @@ function BadgeDevelopmentTable(props) {
           onChange={() => {
             const updatedValue = { ...badgeValue, showReport: !checkValue };
             props.updateBadge(badgeValue._id, updatedValue);
+          }}
+          style={{
+            display: 'inline-block',
+            width: '20px',
+            height: '20px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            backgroundColor: checkValue ? '#007bff' : 'transparent',
+            cursor: 'pointer',
           }}
         />
       </div>
@@ -213,9 +221,9 @@ function BadgeDevelopmentTable(props) {
                 </UncontrolledPopover>
               </td>
               <td>{value.badgeName}</td>
-              <td>{value.description || ''}</td>
+              <td className="d-xl-table-cell d-none">{value.description || ''}</td>
               <td>{value.type || ''}</td>
-              <td>{detailsText(value)}</td>
+              <td className="d-xl-table-cell d-none">{detailsText(value)}</td>
               <td>{value.ranking || 0}</td>
               <td>
                 <span className="badgemanagement-actions-cell">

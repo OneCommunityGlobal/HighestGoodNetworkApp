@@ -8,15 +8,16 @@ import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 
-function BadgeManagement({ role, allBadgeData }) {
+function BadgeManagement(props) {
   const [activeTab, setActiveTab] = useState('1');
 
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
+  const { role } = props; // Access the 'role' prop
   useEffect(() => {
-    fetchAllBadges();
+    props.fetchAllBadges();
   }, []);
 
   return (
@@ -60,10 +61,10 @@ function BadgeManagement({ role, allBadgeData }) {
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">
-          <AssignBadge allBadgeData={allBadgeData} />
+          <AssignBadge allBadgeData={props.allBadgeData} />
         </TabPane>
-        <TabPane tabId="2">
-          <BadgeDevelopment allBadgeData={allBadgeData} />
+        <TabPane tabId="2" className="h-100">
+          <BadgeDevelopment allBadgeData={props.allBadgeData} />
         </TabPane>
       </TabContent>
     </div>

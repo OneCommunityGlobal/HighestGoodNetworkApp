@@ -77,7 +77,7 @@ function Badge(props) {
   }, [props.userProfile.badgeCollection, totalBadge]);
   return (
     <>
-      <Container className="right-padding-temp-fix">
+      <Container className="right-padding-temp-fix bagde-box-shadow">
         <Row>
           <Col md={12}>
             <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">

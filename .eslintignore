@@ -36,4 +36,6 @@ src/components/Timelog/**
 src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
+src/components/Announcements/**
+src/components/EmailSubscribeForm/**
 src/components/Dashboard/**

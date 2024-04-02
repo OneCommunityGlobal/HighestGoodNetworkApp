@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, CardBody, Row, Col, Button } from 'reactstrap';
 import moment from 'moment-timezone';
 
@@ -22,7 +22,7 @@ function ScheduleReasonModalCard({ request , handleDeleteRequest }) {
               <strong>Duration: </strong>
               {request.duration}{Number(request.duration) > 1 ? ` weeks`: ` week`}
             </p>
-          
+
           </Col>
         </Row>
         <Row>
