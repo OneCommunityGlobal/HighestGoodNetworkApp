@@ -35,7 +35,7 @@ export function ProjectReport({ match }) {
     projectReportViewData,
   );
   const tasks = useSelector(state => state.tasks);
-  
+
   useEffect(() => {
     if (match) {
       dispatch(getProjectDetail(match.params.projectId));
