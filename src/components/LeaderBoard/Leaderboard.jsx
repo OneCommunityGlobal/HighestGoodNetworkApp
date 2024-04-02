@@ -123,7 +123,6 @@ function LeaderBoard({
       setSelectedTeamName(team.teamName.length >= 30 ? teamName : team.teamName);
       const idUsers = response.data.map(item => item._id);
       const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
-      //console.log(usersTaks);
       setUsersSelectedTeam(usersTaks);
     } catch (error) {
       toast.error('Error fetching team members:', error);
