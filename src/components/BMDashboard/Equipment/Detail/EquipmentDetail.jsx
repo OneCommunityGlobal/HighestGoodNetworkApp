@@ -64,7 +64,7 @@ function EquipmentDetail() {
   }, [dispatch, equipmentId]);
 
   const lastLogRecord = equipment?.logRecord?.[equipment.logRecord.length - 1];
-  let currentUsage = 'Unkown';
+  let currentUsage = 'Unknown';
 
   if (lastLogRecord?.type === 'Check In') {
     currentUsage = 'Checked In';
