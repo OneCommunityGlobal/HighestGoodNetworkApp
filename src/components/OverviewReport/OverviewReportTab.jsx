@@ -1,17 +1,30 @@
-import { Button, Container } from 'reactstrap';
+import { Button, Col, Container, Row } from 'reactstrap';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import './OverviewReportTab.css';
 
 export default function OverviewReportTab(props) {
+  // eslint-disable-next-line no-unused-vars
   const { activeTab, userRole } = props;
+
   return (
     <Container fluid className="py-3 mb-5">
-      <div className="overview-report-container">
-        <div className="overview-report-item">
-          <Button className="p-3" color="info">
-            Show Volunteer Stats
+      <Row style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+        <Col xs="12" sm="4" md="2" className="overview-report-item">
+          <Button
+            className="p-3"
+            color="info"
+            style={{
+              minWidth: '120px',
+              maxWidth: '150px',
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justify: 'center',
+            }}
+          >
+            Volunteer Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showVolunteerStats"
               areaTitle="Show Volunteer Stats"
@@ -20,12 +33,23 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-        <div className="overview-report-item">
-          <Button className="p-3" color="info">
-            Show Volunteer Hours Stats
+        </Col>
+        <Col xs="12" sm="4" md="2" className="overview-report-item">
+          <Button
+            className="p-3"
+            color="info"
+            style={{
+              minWidth: '120px',
+              maxWidth: '150px',
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justify: 'center',
+            }}
+          >
+            Volunteer Hours Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showVolunteerHoursStats"
               areaTitle="Show Volunteer Hours Stats"
@@ -34,12 +58,23 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-        <div className="overview-report-item">
-          <Button className="p-3" color="info">
-            Show Volunteer Role Stats
+        </Col>
+        <Col xs="12" sm="4" md="2" className="overview-report-item">
+          <Button
+            className="p-3"
+            color="info"
+            style={{
+              minWidth: '120px',
+              maxWidth: '150px',
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justify: 'center',
+            }}
+          >
+            Volunteer Role Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showVolunteerRoleStats"
               areaTitle="Show Volunteer Role Stats"
@@ -48,12 +83,23 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-        <div className="overview-report-item">
-          <Button className="p-3" color="info">
-            Show Tasks&Projects Stats
+        </Col>
+        <Col xs="12" sm="4" md="2" className="overview-report-item">
+          <Button
+            className="p-3"
+            color="info"
+            style={{
+              minWidth: '120px',
+              maxWidth: '150px',
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justify: 'center',
+            }}
+          >
+            Tasks & Projects Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showTasksProjectsStats"
               areaTitle="Show Tasks&Projects Stats"
@@ -62,12 +108,23 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-        <div className="overview-report-item">
-          <Button className="p-3" color="info">
-            Show Blue Square Stats
+        </Col>
+        <Col xs="12" sm="4" md="2" className="overview-report-item">
+          <Button
+            className="p-3"
+            color="info"
+            style={{
+              minWidth: '120px',
+              maxWidth: '150px',
+              height: '70px',
+              display: 'flex',
+              alignItems: 'center',
+              justify: 'center',
+            }}
+          >
+            Blue Square Stats
           </Button>
-          <div style={{ display: 'inline-block', marginLeft: 10 }}>
+          <div>
             <EditableInfoModal
               areaName="showBlueSquareStats"
               areaTitle="Show Blue Square Stats"
@@ -76,9 +133,8 @@ export default function OverviewReportTab(props) {
               isPermissionPage
             />
           </div>
-        </div>
-      </div>
-      <p>Active Tab: {activeTab}</p>
+        </Col>
+      </Row>
     </Container>
   );
 }

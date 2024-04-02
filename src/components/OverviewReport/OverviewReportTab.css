@@ -8,8 +8,7 @@
 
 .overview-report-item {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin: 25px 25px 0 0;
+  gap: 5px;
 }

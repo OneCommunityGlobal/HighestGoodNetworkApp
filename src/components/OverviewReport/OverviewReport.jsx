@@ -7,8 +7,9 @@ import OverviewReportPanel from './OverviewReportTab';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
-function OverviewReport({ role }) {
+function OverviewReport(props) {
   const [activeTab, setActiveTab] = useState(sessionStorage.getItem('tabSelection') || navItems[0]);
+  const { role } = props;
 
   const toggleTab = tab => {
     if (activeTab !== tab) {
