@@ -62,7 +62,8 @@ class UserProfileEdit extends Component {
   };
 
   async componentDidMount() {
-    this.props.getAllUserTeams();
+    // this.props.getAllUserTeams();
+    this.props.getAllTeamCode();
     // this.props.getAllUserProfile();
 
     if (this.props.match) {
@@ -929,7 +930,8 @@ class UserProfileEdit extends Component {
                   <TabPane tabId="3">
                     <TeamsTab
                       userTeams={this.state ? this.state.userProfile.teams : []}
-                      teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                      // teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                      teamsData={this.props ? this.props.allTeams.allteamCode : []}
                       onAssignTeam={this.onAssignTeam}
                       onDeleteTeam={this.onDeleteTeam}
                       role={requestorRole}

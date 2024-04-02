@@ -12,6 +12,8 @@ import {
   FETCH_TEAM_USERS_ERROR,
   TEAM_MEMBER_DELETE,
   TEAM_MEMBER_ADD,
+  FETCH_ALL_TEAM_CODE_SUCCESS,
+  FETCH_ALL_TEAM_CODE_FAILURE,
 } from '../constants/allTeamsConstants';
 
 /**
@@ -20,6 +22,15 @@ import {
  */
 export const teamMembersFectchACtion = (payload) => ({
   type: RECEIVE_ALL_USER_TEAMS,
+  payload,
+});
+
+/**
+ * Set allTeamCode in store
+ */
+
+export const fetchAllTeamCodeSucess = (payload) => ({
+  type: FETCH_ALL_TEAM_CODE_SUCCESS,
   payload,
 });
 
@@ -119,6 +130,28 @@ export const getAllUserTeams = () => {
       });
   };
 };
+
+/**
+ * 
+ * @param {*} name 
+ * @param {*} status 
+ * @returns 
+ */
+
+export const getAllTeamCode = () => {
+  const userTeamsPromise = axios.get(ENDPOINTS.TEAM_ALL_CODE);
+  return async (dispatch) => {
+        return userTeamsPromise
+          .then((res) => {
+              dispatch(fetchAllTeamCodeSucess(res.data));
+          })
+          .catch((err) => {
+            dispatch({
+                type: FETCH_ALL_TEAM_CODE_FAILURE, 
+            });
+          });
+        }
+    };
 
 /**
  * posting new team

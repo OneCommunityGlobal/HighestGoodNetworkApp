@@ -4,7 +4,7 @@ import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
+import { postNewTeam, getAllTeamCode } from '../../../../src/actions/allTeamsAction';
 
 const AddTeamPopup = React.memo(props => {
   const dispatch = useDispatch();
@@ -54,7 +54,7 @@ const AddTeamPopup = React.memo(props => {
         setDuplicateTeam(false);
   
         // Get updated teams list and select the new team
-        await dispatch(getAllUserTeams());
+        await dispatch(getAllTeamCode());
         const newTeam = response.data; // Assuming response contains the new team data
         onSelectTeam(newTeam);
         setSearchText(newTeam.teamName); // Update search text to reflect new team name
@@ -76,8 +76,9 @@ const AddTeamPopup = React.memo(props => {
   }, [props.open]);
 
   useEffect(() => {
-    dispatch(getAllUserTeams());
-  }, [newTeamName, newTeamIsActive, dispatch]);
+    // dispatch(getAllUserTeams());
+    dispatch(getAllTeamCode())
+  }, [newTeamIsActive]);
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>

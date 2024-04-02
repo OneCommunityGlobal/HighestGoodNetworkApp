@@ -48,7 +48,6 @@ const AddTeamsAutoComplete = React.memo(props => {
               <div
                 key={item._id}
                 className="team-auto-complete"
-                key={item._id}
                 onClick={() => {
                   props.setSearchText(item.teamName);
                   toggle(false);

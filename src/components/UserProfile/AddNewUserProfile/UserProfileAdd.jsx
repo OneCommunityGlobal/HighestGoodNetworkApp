@@ -27,7 +27,7 @@ import { connect } from 'react-redux';
 import { assign, get } from 'lodash';
 import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
-  getAllUserTeams,
+  // getAllUserTeams,
   updateTeam,
   deleteTeamMember,
   addTeamMember,
@@ -1140,7 +1140,7 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   getUserProfile,
   clearUserProfile,
-  getAllUserTeams,
+  // getAllUserTeams,
   updateTeam,
   deleteTeamMember,
   addTeamMember,

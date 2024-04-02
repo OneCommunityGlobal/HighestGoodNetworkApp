@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useId } from 'react';
+import React, { useState, useEffect, useRef, useId, Profiler } from 'react';
+import onRenderProfiler from 'utils/profilerCallBack';
 import {
   Row,
   Input,
@@ -53,12 +54,25 @@ import { connect, useDispatch } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
+import { getAllTeamCode  } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
 
+
+/**
+  auth: state.auth,
+  userProfile: state.userProfile,
+  userProjects: state.userProjects,
+  allProjects: get(state, 'allProjects'),
+  allTeams: state,
+  role: state.role,
+  taskItems: state.tasks.taskItems,
+ */
 function UserProfile(props) {
+  /* Destructure redux state from props */
+  // const { auth, userProfile, userProjects, allProjects, role, taskItems, auth } = props;
   /* Constant values */
+
   const initialFormValid = {
     firstName: true,
     lastName: true,
@@ -113,17 +127,20 @@ function UserProfile(props) {
 
   /* useEffect functions */
   useEffect(() => {
+    // debugger;
     loadUserProfile();
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
-    dispatch(getAllUserTeams());
+    dispatch(getAllTeamCode());
+    getTeamMembersWeeklySummary(); 
   }, []);
 
   useEffect(() => {
     userProfileRef.current = userProfile;
-  });
+  }, [userProfile]);
 
   useEffect(() => {
+    // debugger
     checkIsTeamsEqual();
     checkIsProjectsEqual();
     setUserProfile({ ...userProfile, teams, projects });
@@ -141,6 +158,13 @@ function UserProfile(props) {
     setBlueSquareChanged(false);
     handleSubmit();
   }, [blueSquareChanged]);
+
+
+  useEffect(() => {
+    if (!shouldRefresh) return;
+    setShouldRefresh(false);
+    loadUserProfile();
+  }, [shouldRefresh]);
 
   const checkIsTeamsEqual = () => {
     setOriginalTeams(teams);
@@ -579,17 +603,7 @@ function UserProfile(props) {
     setActiveInactivePopupOpen(false);
   };
 
-  /* useEffect functions */
-  useEffect(() => {
-    getTeamMembersWeeklySummary(); 
-    loadUserProfile();
-  }, []);
 
-  useEffect(() => {
-    if (!shouldRefresh) return;
-    setShouldRefresh(false);
-    loadUserProfile();
-  }, [shouldRefresh]);
 
   /**
    *
@@ -707,6 +721,7 @@ function UserProfile(props) {
   };
 
   return (
+    <Profiler id='UserProfile' onRender={onRenderProfiler}>
     <div>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
@@ -995,7 +1010,7 @@ function UserProfile(props) {
               <TabPane tabId="3">
                 <TeamsTab
                   userTeams={teams || []}
-                  teamsData={props?.allTeams?.allTeamsData || []}
+                  teamsData={props?.allTeams || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
                   edit={canEdit}
@@ -1207,7 +1222,8 @@ function UserProfile(props) {
                 <ModalBody>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
-                    teamsData={props?.allTeams?.allTeamsData || []}
+                    // teamsData={props?.allTeams?.allTeamsData || []}
+                    teamsData={props?.allTeams?.allTeamCode || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
                     edit={canEdit}
@@ -1452,6 +1468,7 @@ function UserProfile(props) {
         </Row>
       </Container>
     </div>
+    </Profiler>
   );
 }
 

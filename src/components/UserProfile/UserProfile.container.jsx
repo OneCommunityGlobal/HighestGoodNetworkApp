@@ -10,10 +10,9 @@ import UserProfile from './UserProfile';
 const mapStateToProps = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
-  user: get(state, 'user', {}),
   userProjects: state.userProjects,
   allProjects: get(state, 'allProjects'),
-  allTeams: state,
+  allTeams: state.allTeamsData,
   role: state.role,
   taskItems: state.tasks.taskItems,
 });

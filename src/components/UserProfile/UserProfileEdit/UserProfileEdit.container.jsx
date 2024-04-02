@@ -3,7 +3,8 @@ import { get } from 'lodash';
 import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
 
 import {
-  getAllUserTeams,
+  // getAllUserTeams,
+  getAllTeamCode,
   updateTeam,
   deleteTeamMember,
   addTeamMember,
@@ -27,7 +28,8 @@ export default connect(mapStateToProps, {
   getUserProfile,
   clearUserProfile,
   updateUserProfile,
-  getAllUserTeams,
+  // getAllUserTeams,
+  getAllTeamCode,
   updateTeam,
   deleteTeamMember,
   addTeamMember,

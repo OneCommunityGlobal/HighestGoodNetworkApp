@@ -77,6 +77,8 @@ export function getMonthlyDashboardData(userId, fromDate, toDate) {
 };
 
 export function getLeaderboardData(userId) {
+
+  debugger;
   const request = httpService.get(`${APIEndpoint}/dashboard/leaderboard/${userId}`);
 
   return dispatch => {

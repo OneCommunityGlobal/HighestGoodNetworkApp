@@ -51,14 +51,15 @@ const TeamsTab = props => {
     if(isTeamSaved) isTeamSaved(false);
   };
 
-  const onSelectAssignTeam = team => {
-    if(userProfile._id){
-      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-      if(isTeamSaved) isTeamSaved(true);
-    }
-    onAssignTeam(team);
-    setRenderedOn(Date.now());
-  };
+  // Remove this. Use the POST /user/:id endpoint to update the user profile rather than seperate endpoints for the team field
+  // const onSelectAssignTeam = team => {
+  //   if(userProfile._id){
+  //     addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
+  //     if(isTeamSaved) isTeamSaved(true);
+  //   }
+  //   onAssignTeam(team);
+  //   setRenderedOn(Date.now());
+  // };
 
   return (
     <React.Fragment>
@@ -67,7 +68,7 @@ const TeamsTab = props => {
         onClose={onAddTeamPopupClose}
         teamsData={teamsData}
         userTeamsById={userTeams}
-        onSelectAssignTeam={onSelectAssignTeam}
+        onSelectAssignTeam={onAssignTeam}
         handleSubmit={handleSubmit}
       />
       <UserTeamsTable
@@ -91,4 +92,4 @@ const TeamsTab = props => {
     </React.Fragment>
   );
 };
-export default TeamsTab;
+export default React.memo(TeamsTab);

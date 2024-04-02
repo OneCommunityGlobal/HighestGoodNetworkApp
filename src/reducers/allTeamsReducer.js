@@ -4,7 +4,8 @@ const userTeamsInitial = {
   fetching: false,
   fetched: false,
   allTeams: [],
-  status: 404,
+  allTeamCode: [],
+  status: 200,
 };
 
 export const updateObject = (oldObject, updatedProperties) => ({
@@ -18,7 +19,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
       return { ...allTeams, fetching: true, status: '200' };
 
     case types.FETCH_USER_TEAMS_ERROR:
-      return { ...allTeams, fetching: false, status: '404' };
+      return { ...allTeams, fetching: false, status: '500' };
 
     case types.RECEIVE_ALL_USER_TEAMS:
       return updateObject(allTeams, {
@@ -69,6 +70,24 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: '200',
       });
+
+    case types.FETCH_ALL_TEAM_CODE_SUCCESS:
+      const payload = action.payload;
+      return {
+        ...allTeams,
+        allTeamCode: payload,
+        fetching: false,
+        fetched: true,
+        status: '200',
+      };
+
+    case types.FETCH_ALL_TEAM_CODE_FAILURE:
+      return {
+        ...allTeams,
+        fetching: false,
+        fetched: false,
+        status: '500',
+      };
 
     default:
       return allTeams;

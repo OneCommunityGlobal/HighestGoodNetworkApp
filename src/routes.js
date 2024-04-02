@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, Profiler } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
@@ -48,7 +48,6 @@ import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 
 
-
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -87,6 +86,7 @@ const BadgeManagement = lazy(() => import('./components/Badge/BadgeManagement'))
 const PermissionsManagement = lazy(() => import('./components/PermissionsManagement/PermissionsManagement'));
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
+
 
 export default (
   <Switch>
