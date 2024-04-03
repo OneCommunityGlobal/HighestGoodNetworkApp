@@ -1,9 +1,21 @@
 import React from 'react';
-import { configure, shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import ForgotPassword from './ForgotPassword';
 
+const mockStore = configureMockStore([thunk]);
+const store = mockStore({ theme: { darkMode: false } });
 
-const forgotPassword = shallow(<ForgotPassword />);
+const forgotPassword = mount(
+  <Provider store={store}>
+    <Router>
+      <ForgotPassword />
+    </Router>
+  </Provider>,
+);
 describe('ForgotPassword', () => {
   it('should render ForgotPassword with 3 input', () => {
     const inputs = forgotPassword.find('Input');
@@ -25,6 +37,4 @@ describe('ForgotPassword', () => {
     const lastNameInput = forgotPassword.find('Input').at(2);
     lastNameInput.simulate('change', { target: { value: 'Admin' } });
   });
-
 });
-

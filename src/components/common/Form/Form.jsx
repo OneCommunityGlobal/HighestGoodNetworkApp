@@ -9,7 +9,7 @@ import FileUpload from '../FileUpload';
 import { Link } from 'react-router-dom';
 import TinyMCEEditor from '../TinyceEditor/tinymceEditor';
 import CheckboxCollection from '../CheckboxCollection';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 /* const Form = () => {
   const [data, setData] = useState({});
@@ -331,9 +331,9 @@ class Form extends Component {
     this.doSubmit();
   };
 
-  renderButton(label) {
+  renderButton({label, darkMode}) {
     return (
-      <button disabled={this.validateForm()} className="btn btn-primary" style={boxStyle}>
+      <button disabled={this.validateForm()} className="btn btn-primary" style={darkMode ? boxStyleDark: boxStyle}>
         {label}
       </button>
     );
