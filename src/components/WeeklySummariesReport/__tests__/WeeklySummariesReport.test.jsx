@@ -75,6 +75,6 @@ describe('WeeklySummariesReport page', () => {
       await waitFor(() => {
         expect(screen.getByText(/Weekly Summaries Reports page/i)).toBeInTheDocument();
       });
-    }, 20000);
+    }, 3000);
   });
 });

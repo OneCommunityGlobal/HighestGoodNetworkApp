@@ -398,7 +398,16 @@ function WeeklySummariesReport() {
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
   const authorizedUser1 = process.env.REACT_APP_JAE;
   const authorizedUser2 = process.env.REACT_APP_SARA;
-
+  // console.log('error:', error);
+  if (loading) {
+    return (
+      <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
+        <Row className="text-center" data-testid="loading">
+          <SkeletonLoading template="WeeklySummariesReport" />
+        </Row>
+      </Container>
+    );
+  }
   if (error) {
     return (
       <Container>
@@ -410,20 +419,11 @@ function WeeklySummariesReport() {
       </Container>
     );
   }
-  if (loading) {
-    return (
-      <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
-        <Row className="text-center" data-testid="loading">
-          <SkeletonLoading template="WeeklySummariesReport" />
-        </Row>
-      </Container>
-    );
-  }
 
   return (
     <Container fluid className="bg--white-smoke py-3 mb-5">
       {passwordInputModalToggle()}
-      {popUpElements()}
+      {summaryRecepientsPopupOpen && popUpElements()}
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
