@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect, useSelector } from 'react-redux';
 import {
   Container,

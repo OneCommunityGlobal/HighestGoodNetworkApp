@@ -1,12 +1,12 @@
 import { Card, CardTitle, CardBody, UncontrolledTooltip } from 'reactstrap';
 import BadgeHistory from './BadgeHistory';
 
-function OldBadges({ personalBestMaxHrs, badges }) {
+function OldBadges({ personalBestMaxHrs, badges, darkMode }) {
   return (
     <>
       <Card
         style={{
-          backgroundColor: props.darkMode ? '#3A506B' : '#f6f6f3',
+          backgroundColor: darkMode ? '#3A506B' : '#f6f6f3',
           marginTop: 20,
           marginBottom: 20,
         }}
@@ -16,7 +16,7 @@ function OldBadges({ personalBestMaxHrs, badges }) {
             style={{
               fontWeight: 'bold',
               fontSize: 18,
-              color: props.darkMode ? '#1B2A41' : '#285739',
+              color: darkMode ? '#1B2A41' : '#285739',
               marginBottom: 15,
             }}
           >
