@@ -449,10 +449,10 @@ function AddTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                <td scope="col" className="w-100">
                   Hours
                 </td>
-                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                <td scope="col" className="w-100">
                   <div className="py-2 flex-responsive">
                     <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Best-case

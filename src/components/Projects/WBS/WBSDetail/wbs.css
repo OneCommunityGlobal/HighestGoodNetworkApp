@@ -159,6 +159,17 @@
   display: flex;
   flex-direction: row;
   margin-right: 10px;
+  min-width: 100px;
+}
+
+@media (max-width: 250px) {
+  .flex-responsive{
+    flex-direction: column;
+  }
+
+  .text-nowrap{
+    text-wrap: wrap !important;
+  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -179,5 +190,6 @@
   .flex-responsive {
     display: flex;
     flex-direction: row;
+
   }
 }
