@@ -1,7 +1,22 @@
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import GET_TOOL_BY_ID from 'constants/bmdashboard/toolsConstants';
+import GET_TOOL_BY_ID, { GET_TOOLS } from 'constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from 'constants/errors';
+
+
+export const fetchTools = () => {
+  const url = ENDPOINTS.BM_TOOLS;
+  return async dispatch => {
+    axios.get(url)
+      .then(res => {
+        console.log("fetch all tools result: ", res)
+        dispatch(setTools(res.data));
+      })
+      .catch(error => {
+        dispatch(setErrors(error));
+      })
+  }
+}
 
 
 export const fetchToolById = (toolId) => {
@@ -26,6 +41,13 @@ export const purchaseTools = async body => {
       if (err.request) return err.request;
       return err.message;
     });
+};
+
+export const setTools = payload => {
+  return {
+    type: GET_TOOLS,
+    payload,
+  };
 };
 
 export const setTool = payload => {

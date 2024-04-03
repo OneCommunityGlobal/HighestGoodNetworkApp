@@ -155,7 +155,7 @@ export default function ItemsTable({
               sortedData.map(el => {
                 return (
                   <tr key={el._id}>
-                    <td>{el.project?.name}</td>
+                    <td>{el.project?.name}Building 1</td>
                     <td>{el/*.itemType?*/.name}</td>
                     {/* {dynamicColumns.map(({ label, key }) => (
                       <td key={label}>{getNestedValue(el, key)}</td>
@@ -163,6 +163,9 @@ export default function ItemsTable({
                     <td>{el.available.length + el.using.length}</td>
                     <td>{el.using.length}</td>
                     <td>{el.available.length}</td>
+                    {/* <td>0</td>
+                    <td>0</td>
+                    <td>0</td> */}
                     <td>0</td>
                     <td className="items_cell">
                       <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>

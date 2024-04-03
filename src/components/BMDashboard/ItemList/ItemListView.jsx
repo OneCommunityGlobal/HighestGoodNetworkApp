@@ -56,7 +56,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
         <span style={{ display: 'flex', margin: '5px' }}>
           {items && (
             <>
-              <SelectForm
+               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
                 setSelectedItem={setSelectedItem}
