@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
 import BMError from '../shared/BMError';
+import SelectForm from '../ItemList/SelectForm';
+import SelectItem from '../ItemList/SelectItem';
 import ToolSelectForm from './ToolSelectForm';
 import ToolSelectItem from './ToolSelectItem';
 import ToolItemsTable from './ToolItemsTable';
@@ -13,14 +14,7 @@ export function ToolItemListView({ itemType, items, errors, UpdateItemModal, dyn
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
 
-///TEMP
-    // useEffect(() => {
-    //   console.log("itemType: ", itemType, ", items: ", items, ", errors: ", errors, ", dynamicColumns: ", dynamicColumns)
-    // }, []);
 
-//  useEffect(() => {
-//   console.log("filteredItems: ", filteredItems)
-//  }, [filteredItems]);
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -70,12 +64,23 @@ export function ToolItemListView({ itemType, items, errors, UpdateItemModal, dyn
         <span style={{ display: 'flex', margin: '5px' }}>
           {items && (
             <>
-              <ToolSelectForm
+              {/* <ToolSelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
                 setSelectedItem={setSelectedItem}
               />
               <ToolSelectItem
+                items={items}
+                selectedProject={selectedProject}
+                selectedItem={selectedItem}
+                setSelectedItem={setSelectedItem}
+              /> */}
+              <SelectForm
+                items={items}
+                setSelectedProject={setSelectedProject}
+                setSelectedItem={setSelectedItem}
+              />
+              <SelectItem
                 items={items}
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}

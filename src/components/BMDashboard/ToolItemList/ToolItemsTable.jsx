@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import ToolRecordsModal from './ToolRecordsModal';
 
-export default function ItemsTable({
+export default function ToolItemsTable({
   selectedProject,
   selectedItem,
   filteredItems,
@@ -107,12 +107,13 @@ export default function ItemsTable({
   //   { label: 'Waste', key: 'stockWasted' },
   // ];
 
-  const getNestedValue = (obj, path) => {
-    // console.log("obj: ", obj, ", path: ", path);
-    // console.log("path: ", path.split('.'));
-    
-    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
-  };
+  // const getNestedValue = (obj, path) => {
+  //   console.log("obj: ", obj, ", path: ", path);
+  //   console.log("path: ", path.split('.'));//now it's an array
+  //   // console.log("return: ",path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj));
+  //   //{ label: 'Unit', key: 'itemType.unit' }, ["itemType", "unit"]
+  //   return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
+  // };
 
   return (
     <>
@@ -155,18 +156,16 @@ export default function ItemsTable({
               sortedData.map(el => {
                 return (
                   <tr key={el._id}>
-                    <td>{el.project?.name}Building 1</td>
-                    <td>{el/*.itemType?*/.name}</td>
+                    <td>{el.project?.name}</td>
+                    <td>{el.itemType?.name}</td>
                     {/* {dynamicColumns.map(({ label, key }) => (
                       <td key={label}>{getNestedValue(el, key)}</td>
                     ))} */}
-                    <td>{el.available.length + el.using.length}</td>
-                    <td>{el.using.length}</td>
-                    <td>{el.available.length}</td>
-                    {/* <td>0</td>
-                    <td>0</td>
-                    <td>0</td> */}
-                    <td>0</td>
+                    <td>{el.purchaseStatus}</td>
+                    <td>{el.itemType.using.includes(el._id) ? 'YES' : 'NO'}</td>
+                    <td>{el.itemType.available.includes(el._id) ? 'YES' : 'NO'}</td>
+                    <td>n/a</td>
+                    <td>{el.code}</td>
                     <td className="items_cell">
                       <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>
                         <BiPencil />
