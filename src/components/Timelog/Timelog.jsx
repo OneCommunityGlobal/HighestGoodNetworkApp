@@ -334,14 +334,22 @@ const Timelog = props => {
     displayUserWBSs.forEach(WBS => {
       const { projectId, _id: wbsId } = WBS;
       WBS.taskObject = [];
-      projectsObject[projectId].WBSObject[wbsId] = WBS;
+      if(projectsObject[projectId]){
+        projectsObject[projectId].WBSObject[wbsId] = WBS;
+      }
     })
     disPlayUserTasks.forEach(task => {
       const { projectId, wbsId, _id: taskId, resources } = task;
       const isTaskCompletedForTimeEntryUser = resources.find(resource => resource.userID === displayUserProfile._id)?.completedTask;
-      if (!isTaskCompletedForTimeEntryUser) {
+      if (!isTaskCompletedForTimeEntryUser && projectsObject[projectId]) {
+        if (!projectsObject[projectId].WBSObject) {
+          projectsObject[projectId].WBSObject = {};
+        }
+        if (!projectsObject[projectId].WBSObject[wbsId]) {
+          projectsObject[projectId].WBSObject[wbsId] = { taskObject: {} };
+        }
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
-      }
+      }     
     });
     
     for (const [projectId, project] of Object.entries(projectsObject)) {
@@ -419,7 +427,8 @@ const Timelog = props => {
   },[]);
 
   return (
-    <div className={darkMode ? (!props.isDashboard ? 'bg-oxford-blue h-100' : 'bg-oxford-blue') : ''}>
+    <div className={darkMode ? 'bg-oxford-blue' : ''} 
+         style={darkMode ? (!props.isDashboard ? {paddingBottom: "300px"} : {}) : {}}>
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar

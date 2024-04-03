@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Form,
   FormGroup,
   Label,
   FormText,
-  Row,
-  Col,
   Modal,
   ModalHeader,
   ModalBody,
@@ -14,6 +12,9 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { connect } from 'react-redux';
+import Autosuggest from 'react-autosuggest';
+import { boxStyle } from 'styles';
+import { searchWithAccent } from 'utils/search';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,
@@ -26,11 +27,8 @@ import {
   getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
-import Autosuggest from 'react-autosuggest';
-import { boxStyle } from 'styles';
-import { searchWithAccent } from 'utils/search';
 
-const AssignBadge = props => {
+function AssignBadge(props) {
   const [isOpen, setOpen] = useState(false);
   const [firstSuggestions, setFirstSuggestions] = useState([]);
   const [lastSuggestions, setLastSuggestions] = useState([]);
@@ -43,11 +41,11 @@ const AssignBadge = props => {
 
   const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
 
-  //const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
   const getSuggestions = value => {
-    //const escapedValue = escapeRegexCharacters(value.trim());
-    //const regex = new RegExp('^' + escapedValue, 'i');
+    // const escapedValue = escapeRegexCharacters(value.trim());
+    // const regex = new RegExp('^' + escapedValue, 'i');
     return activeUsers.filter(
       user =>
         searchWithAccent(user.firstName, value.trim()) ||
@@ -101,10 +99,6 @@ const AssignBadge = props => {
     props.getUserId(suggestion._id);
   };
 
-  const submit = () => {
-    toggle(true);
-  };
-
   const toggle = (didSubmit = false) => {
     const { selectedBadges, firstName, lastName, userId } = props;
     if (isOpen && didSubmit === true) {
@@ -114,15 +108,17 @@ const AssignBadge = props => {
       } else {
         props.assignBadges(firstName, lastName, selectedBadges);
       }
-      setOpen(isOpen => !isOpen);
+      setOpen(prevIsOpen => !prevIsOpen);
       props.clearNameAndSelected();
+    } else if (firstName && lastName) {
+      setOpen(prevIsOpen => !prevIsOpen);
     } else {
-      if (firstName && lastName) {
-        setOpen(isOpen => !isOpen);
-      } else {
-        props.validateBadges(firstName, lastName);
-      }
+      props.validateBadges(firstName, lastName);
     }
+  };
+
+  const submit = () => {
+    toggle(true);
   };
 
   const FirstInputProps = {
@@ -154,7 +150,12 @@ const AssignBadge = props => {
         >
           Search by Name
         </Label>
-        <i className="fa fa-info-circle" id="NameInfo" data-testid="NameInfo" style={{ marginRight: '5px' }} />
+        <i
+          className="fa fa-info-circle"
+          id="NameInfo"
+          data-testid="NameInfo"
+          style={{ marginRight: '5px' }}
+        />
         <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '5px' }}>
           <UncontrolledTooltip
             placement="right"
@@ -232,7 +233,7 @@ const AssignBadge = props => {
       {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
     </Form>
   );
-};
+}
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
