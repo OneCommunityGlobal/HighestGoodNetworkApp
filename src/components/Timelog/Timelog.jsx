@@ -427,7 +427,8 @@ const Timelog = props => {
   },[]);
 
   return (
-    <div className={darkMode ? (!props.isDashboard ? 'bg-oxford-blue h-100' : 'bg-oxford-blue') : ''}>
+    <div className={darkMode ? 'bg-oxford-blue' : ''} 
+         style={darkMode ? (!props.isDashboard ? {paddingBottom: "300px"} : {}) : {}}>
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
