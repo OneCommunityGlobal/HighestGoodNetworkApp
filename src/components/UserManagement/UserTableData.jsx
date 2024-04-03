@@ -11,6 +11,7 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import { useSelector } from 'react-redux';
 /**
  * The body row of the user table
  */
@@ -25,18 +26,27 @@ const UserTableData = React.memo(props => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
+  const [isOwner,setIsOwner] = useState(false);
+  const { user } = useSelector(state => state.auth);
+  useEffect(() => {
+    if (user.role === 'Owner') {
+      setIsOwner(true)
+    } else {
+      setIsOwner(false)
+    }
+  },[])
 
   /**
    * Checks whether users should be able to change the record of other users.
-   * @returns {boolean} true if the target user record has a owner role, the logged in 
+   * @returns {boolean} true if the target user record has a owner role, the logged in
    * user does not have the addDeleteEditOwners permission, or the target user is only
    * editable by Jae's account.
    */
   const checkPermissionsOnOwner = () => {
     const recordEmail = props.user.email;
     const loginUserEmail = props.authEmail;
-    
-    return (props.user.role === 'Owner' && !canAddDeleteEditOwners) 
+
+    return (props.user.role === 'Owner' && !canAddDeleteEditOwners)
       || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
 
@@ -90,6 +100,7 @@ const UserTableData = React.memo(props => {
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
+          disabled={isOwner? false : true}
           onClick={e => {
             if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
@@ -111,6 +122,7 @@ const UserTableData = React.memo(props => {
           className={`btn btn-outline-primary btn-sm${
             props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
           }`}
+          disabled={isOwner? false : true}
           onClick={e => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
           style={boxStyle}
@@ -142,6 +154,7 @@ const UserTableData = React.memo(props => {
       <td>
         <button
           type="button"
+          disabled={isOwner? false : true}
           className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
             if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
@@ -164,12 +177,13 @@ const UserTableData = React.memo(props => {
           : ''}
       </td>
       <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
-      
+
        <td className="email_cell">
       {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
+
           onClick={() => {
             navigator.clipboard.writeText(props.user.endDate ? formatDate(props.user.endDate) : 'N/A');
             toast.success('End Date Copied!');
@@ -181,6 +195,7 @@ const UserTableData = React.memo(props => {
           <span className="usermanagement-actions-cell">
             <button
               type="button"
+              disabled={isOwner? false : true}
               className="btn btn-outline-danger btn-sm"
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
@@ -190,9 +205,9 @@ const UserTableData = React.memo(props => {
               {DELETE}
             </button>
           </span>
-          <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton />
-          </span>
+          {isOwner? <span className="usermanagement-actions-cell">
+             <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton    />
+           </span>:null}
         </td>
       )}
     </tr>
