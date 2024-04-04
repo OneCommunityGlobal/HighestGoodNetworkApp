@@ -354,6 +354,11 @@ export const permissionLabels = [
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
+      {
+        label: 'See All Users in Dashboard and Leaderboard',
+        key: 'seeUsersInDashboard',
+        description: 'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
     ],
   },
 ];
