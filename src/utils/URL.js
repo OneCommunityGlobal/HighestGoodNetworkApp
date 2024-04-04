@@ -72,6 +72,7 @@ export const ENDPOINTS = {
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
 
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
+  TEAMMATE_FOR_USER: userId => `${APIEndpoint}/team/${userId}/teammates`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,

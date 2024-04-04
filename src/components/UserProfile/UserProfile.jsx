@@ -132,7 +132,7 @@ function UserProfile(props) {
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllTeamCode());
-    getTeamMembersWeeklySummary(); 
+    getTeammateListForTeamWeeklySummary(); 
   }, []);
 
   useEffect(() => {
@@ -375,26 +375,26 @@ function UserProfile(props) {
     }
   };
 
-  const getTeamMembersWeeklySummary = async () => {
+  const getTeammateListForTeamWeeklySummary = async () => {
     const userId = props?.match?.params?.userId;
 
     if (!userId) return;
 
     try {
-      const response = await axios.get(ENDPOINTS.LEADER_BOARD(userId));
-      const leaderBoardData = response.data;
+      const response = await axios.get(ENDPOINTS.TEAMMATE_FOR_USER(userId));
+      const teammateData = response.data;
       const allSummaries = [];
 
-      for (let i = 0; i < leaderBoardData.length; i++) {
+      for (let i = 0; i < teammateData.length; i++) {
         allSummaries.push({
-          value: [leaderBoardData[i].name, leaderBoardData[i].personId],
-          label: `View ${leaderBoardData[i].name}'s summary.`,
+          value: [teammateData[i].name, teammateData[i].personId],
+          label: `View ${teammateData[i].name}'s summary.`,
         });
       }
       setSummaries(allSummaries);
       return;
     } catch (err) {
-      console.log('Could not load leaderBoard data.', err);
+      toast.error('Error while getting teammate list for team weekly summary');
     }
   };
 
