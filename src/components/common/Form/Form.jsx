@@ -221,11 +221,17 @@ class Form extends Component {
     testDropdown: Joi.string().required(),
     testRadio: Joi.string().required(),
     testCheckbox: Joi.boolean(),
-    testCollection: Joi.array().items(Joi.string()).min(1).required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().min(6).required(),
+    testCollection: Joi.array()
+      .items(Joi.string())
+      .min(1)
+      .required(),
+    email: Joi.string()
+      .email()
+      .required(),
+    password: Joi.string()
+      .min(6)
+      .required(),
     someField: Joi.string().required(),
-    
   };
 
   resetForm = () => this.setState(cloneDeep(this.initialState));
@@ -321,7 +327,7 @@ class Form extends Component {
   doSubmit = () => {
     // Here you would typically handle the form submission.
     //console.log("Form submitted with data");
-};
+  };
   handleSubmit = e => {
     e.preventDefault();
     e.stopPropagation();
