@@ -1,0 +1,163 @@
+diff --git a/Dockerfile b/Dockerfile
+index 8e2770b9..bd987a42 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -1,16 +1,16 @@
+-# Define a imagem base
+-FROM node:14-alpine
+-# Set the working directory to /app
+-WORKDIR /app
+-# Copy the package.json and yarn.lock files to the container
+-COPY package.json yarn.lock ./
+-# Install dependencies
+-RUN yarn install
+-# Copy the rest of the app files to the container
+-COPY . ./
+-# Build the app
+-RUN yarn build
+-# Expose port 3000
+-EXPOSE 3000
+-# Set the startup command to run the app using Node.js
++# Define a imagem base
++FROM node:14-alpine
++# Set the working directory to /app
++WORKDIR /app
++# Copy the package.json and yarn.lock files to the container
++COPY package.json yarn.lock ./
++# Install dependencies
++RUN yarn install
++# Copy the rest of the app files to the container
++COPY . ./
++# Build the app
++RUN yarn build
++# Expose port 3000
++EXPOSE 3000
++# Set the startup command to run the app using Node.js
+ CMD ["yarn", "start:local"]
+\ No newline at end of file
+diff --git a/images/logo.png b/images/logo.png
+index 577a0ca9..37c2a0b6 100644
+Binary files a/images/logo.png and b/images/logo.png differ
+diff --git a/images/screenshot.png b/images/screenshot.png
+index 1592ebe7..34016805 100644
+Binary files a/images/screenshot.png and b/images/screenshot.png differ
+diff --git a/public/pfp-default-header.png b/public/pfp-default-header.png
+index eca987ed..295589fa 100644
+Binary files a/public/pfp-default-header.png and b/public/pfp-default-header.png differ
+diff --git a/public/pfp-default.png b/public/pfp-default.png
+index d120aca1..a9466a4d 100644
+Binary files a/public/pfp-default.png and b/public/pfp-default.png differ
+diff --git a/src/assets/images/logo.png b/src/assets/images/logo.png
+index 80c15265..ac4d741d 100644
+Binary files a/src/assets/images/logo.png and b/src/assets/images/logo.png differ
+diff --git a/src/components/Badge/BadgeReport.css b/src/components/Badge/BadgeReport.css
+index 17506d1a..51e1a434 100644
+--- a/src/components/Badge/BadgeReport.css
++++ b/src/components/Badge/BadgeReport.css
+@@ -1,13 +1,13 @@
+-.tablet {
+-  display: none;
+-}
+-
+-@media (max-width: 1024px) {
+-  .desktop {
+-    display: none;
+-  }
+-
+-  .tablet {
+-    display: block;
+-  }
+-}
++.tablet {
++  display: none;
++}
++
++@media (max-width: 1024px) {
++  .desktop {
++    display: none;
++  }
++
++  .tablet {
++    display: block;
++  }
++}
+diff --git a/src/components/OwnerMessage/assets/Delete-Icon-HGN-48x48px-2.png b/src/components/OwnerMessage/assets/Delete-Icon-HGN-48x48px-2.png
+index e36e1432..97d0b779 100644
+Binary files a/src/components/OwnerMessage/assets/Delete-Icon-HGN-48x48px-2.png and b/src/components/OwnerMessage/assets/Delete-Icon-HGN-48x48px-2.png differ
+diff --git a/src/components/OwnerMessage/assets/delete.png b/src/components/OwnerMessage/assets/delete.png
+index 9e857680..19b8a990 100644
+Binary files a/src/components/OwnerMessage/assets/delete.png and b/src/components/OwnerMessage/assets/delete.png differ
+diff --git a/src/components/OwnerMessage/assets/edit.png b/src/components/OwnerMessage/assets/edit.png
+index 089844a5..dd3461af 100644
+Binary files a/src/components/OwnerMessage/assets/edit.png and b/src/components/OwnerMessage/assets/edit.png differ
+diff --git a/src/components/Reports/sharedComponents/ReportPage/components/ReportCard/ReportCard 2.css b/src/components/Reports/sharedComponents/ReportPage/components/ReportCard/ReportCard 2.css
+index aa0018f8..a441084d 100644
+--- a/src/components/Reports/sharedComponents/ReportPage/components/ReportCard/ReportCard 2.css	
++++ b/src/components/Reports/sharedComponents/ReportPage/components/ReportCard/ReportCard 2.css	
+@@ -1,7 +1,7 @@
+-.report-card {
+-  display: flex;
+-  height: 120px;
+-  width: 100%;
+-  align-items: center;
+-  justify-content: center;
+-}
++.report-card {
++  display: flex;
++  height: 120px;
++  width: 100%;
++  align-items: center;
++  justify-content: center;
++}
+diff --git a/src/components/Reports/sharedComponents/ReportPage/components/ReportCard/ReportCard 2.jsx b/src/components/Reports/sharedComponents/ReportPage/components/ReportCard/ReportCard 2.jsx
+index 2af8082f..9356e1f9 100644
+--- a/src/components/Reports/sharedComponents/ReportPage/components/ReportCard/ReportCard 2.jsx	
++++ b/src/components/Reports/sharedComponents/ReportPage/components/ReportCard/ReportCard 2.jsx	
+@@ -1,13 +1,13 @@
+-import { ReportBlock } from '../ReportBlock';
+-import './ReportCard.css';
+-
+-export function ReportCard() {
+-  return (
+-    <ReportBlock>
+-      <div className="report-card">
+-        <h3>100</h3>
+-        <p>Here is the card name</p>
+-      </div>
+-    </ReportBlock>
+-  );
+-}
++import { ReportBlock } from '../ReportBlock';
++import './ReportCard.css';
++
++export function ReportCard() {
++  return (
++    <ReportBlock>
++      <div className="report-card">
++        <h3>100</h3>
++        <p>Here is the card name</p>
++      </div>
++    </ReportBlock>
++  );
++}
+diff --git a/src/components/SummaryBar/badges_icon.png b/src/components/SummaryBar/badges_icon.png
+index c1685776..434c9159 100644
+Binary files a/src/components/SummaryBar/badges_icon.png and b/src/components/SummaryBar/badges_icon.png differ
+diff --git a/src/components/SummaryBar/bluesquare_icon.png b/src/components/SummaryBar/bluesquare_icon.png
+index 7951a7a2..2321b095 100644
+Binary files a/src/components/SummaryBar/bluesquare_icon.png and b/src/components/SummaryBar/bluesquare_icon.png differ
+diff --git a/src/components/SummaryBar/report_icon.png b/src/components/SummaryBar/report_icon.png
+index 847a6778..3d53be83 100644
+Binary files a/src/components/SummaryBar/report_icon.png and b/src/components/SummaryBar/report_icon.png differ
+diff --git a/src/components/SummaryBar/suggestions_icon.png b/src/components/SummaryBar/suggestions_icon.png
+index e3c8172c..d663e9ef 100644
+Binary files a/src/components/SummaryBar/suggestions_icon.png and b/src/components/SummaryBar/suggestions_icon.png differ
+diff --git a/src/components/SummaryBar/task_icon.png b/src/components/SummaryBar/task_icon.png
+index c6ec28ba..786d4710 100644
+Binary files a/src/components/SummaryBar/task_icon.png and b/src/components/SummaryBar/task_icon.png differ
+diff --git a/src/components/WeeklySummariesReport/google_doc_icon.png b/src/components/WeeklySummariesReport/google_doc_icon.png
+index 2163aca4..c67c03a8 100644
+Binary files a/src/components/WeeklySummariesReport/google_doc_icon.png and b/src/components/WeeklySummariesReport/google_doc_icon.png differ
+diff --git a/src/components/WeeklySummariesReport/google_doc_icon_gray.png b/src/components/WeeklySummariesReport/google_doc_icon_gray.png
+index 62e21b9f..c2576c2b 100644
+Binary files a/src/components/WeeklySummariesReport/google_doc_icon_gray.png and b/src/components/WeeklySummariesReport/google_doc_icon_gray.png differ
