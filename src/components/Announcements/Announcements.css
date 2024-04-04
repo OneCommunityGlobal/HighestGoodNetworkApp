@@ -1,6 +1,5 @@
 /* EmailUpdateComponent.css */
 
-
 h2,
 h3 {
   color: #4285f4;
@@ -13,7 +12,7 @@ label {
   color: #333;
 }
 
-input[type="text"],
+.input-text-for-announcement,
 textarea {
   width: 100%;
   padding: 10px;

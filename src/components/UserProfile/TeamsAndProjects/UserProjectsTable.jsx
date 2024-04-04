@@ -13,7 +13,7 @@ const UserProjectsTable = React.memo(props => {
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUpdateTask = props.hasPermission('updateTask');
   const canDeleteProjects = props.hasPermission('deleteProject');
-  const canDeleteTasks = props.hasPermission('deleteTask')
+  const canDeleteTasks = props.hasPermission('deleteTask');
 
   const userProjects = props.userProjectsById;
   const userTasks = props.userTasks;
@@ -42,8 +42,9 @@ const UserProjectsTable = React.memo(props => {
       return userProjects?.map(project => {
         const filteredTasks = sortedTasksByNumber.filter(task => {
           const isTaskForProject = task.projectId.includes(project._id);
-          const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
-  
+          const isCompletedTask = task.resources?.find(user => user.userID === props.userId)
+            ?.completedTask;
+
           if (isTaskForProject) {
             if (situation === 'active' && !isCompletedTask) {
               return true;
@@ -55,7 +56,7 @@ const UserProjectsTable = React.memo(props => {
           }
           return false;
         });
-  
+
         return { ...project, tasks: filteredTasks };
       });
     }
@@ -74,6 +75,7 @@ const UserProjectsTable = React.memo(props => {
           task.status = 'Complete';
           return { ...resource, completedTask: true };
         } else if (method === 'add') {
+          task.status = 'Started';
           return { ...resource, completedTask: false };
         }
       }
@@ -85,14 +87,13 @@ const UserProjectsTable = React.memo(props => {
   };
 
   //For updating tasks visually but not saving until user clicks save changes
-  const deleteTasksTemporarily = (project_id) => {
-    setFilteredTasks(filteredTasks?.filter(project => project._id !== project_id ));
-  }
+  const deleteTasksTemporarily = project_id => {
+    setFilteredTasks(filteredTasks?.filter(project => project._id !== project_id));
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     setFilteredTasks(() => filterTasksByUserTaskSituation('active'));
-  }, [props.userProjectsById])
-
+  }, [props.userProjectsById]);
 
   return (
     <div>
@@ -100,45 +101,53 @@ const UserProjectsTable = React.memo(props => {
         <div className="projecttable-container">
           <div className="container">
             <div className="row mr-auto">
-              <Col
-                md='12'
-                className='projects-and-tasks-header d-flex'
-              >
+              <Col md="12" className="projects-and-tasks-header d-flex">
                 <span className="projects-span mr-auto pt-2">Projects</span>
                 {props.edit && props.role && canAssignProjectToUsers && (
-                <Col md="4" className='p-0'>
-                  {props.disabled ? (
-                    <>
-                      <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignproject" toggle={toggleTooltip}>
-                        Please save changes before assign project
-                      </Tooltip>
-                      <Button className="btn-addproject mt-2" id="btn-assignproject" color="primary" style={boxStyle} disabled>
+                  <Col md="4" className="p-0">
+                    {props.disabled ? (
+                      <>
+                        <Tooltip
+                          placement="bottom"
+                          isOpen={tooltipOpen}
+                          target="btn-assignproject"
+                          toggle={toggleTooltip}
+                        >
+                          Please save changes before assign project
+                        </Tooltip>
+                        <Button
+                          className="btn-addproject mt-2"
+                          id="btn-assignproject"
+                          color="primary"
+                          style={boxStyle}
+                          disabled
+                        >
+                          Assign Project
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        className="btn-addproject mt-2"
+                        color="primary"
+                        onClick={() => {
+                          props.onButtonClick();
+                        }}
+                        style={boxStyle}
+                      >
                         Assign Project
                       </Button>
-                    </>
-                  ) : (
-                    <Button
-                    className="btn-addproject mt-2"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                    style={boxStyle}
-                   >
-                    Assign Project
-                  </Button>
-                  )}
-                </Col>
-              )}
+                    )}
+                  </Col>
+                )}
               </Col>
             </div>
           </div>
-          <div className='table-container'>
+          <div className="table-container">
             <table className="table table-bordered table-responsive-sm">
               <thead>
                 {props.role && (
                   <tr>
-                    <th className='table-header'>#</th>
+                    <th className="table-header">#</th>
                     <th>Project Name</th>
                     {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
                   </tr>
@@ -150,8 +159,8 @@ const UserProjectsTable = React.memo(props => {
                     <tr key={project._id}>
                       <td>{index + 1}</td>
                       <td>{project.projectName}</td>
-                      {props.edit && props.role && canDeleteProjects &&(
-                        <td className='table-cell'>
+                      {props.edit && props.role && canDeleteProjects && (
+                        <td className="table-cell">
                           <Button
                             color="danger"
                             disabled={!canUpdateTask}
@@ -166,7 +175,6 @@ const UserProjectsTable = React.memo(props => {
                         </td>
                       )}
                     </tr>
-
                   ))
                 ) : (
                   <></>
@@ -178,15 +186,9 @@ const UserProjectsTable = React.memo(props => {
         {!isUserProfilePage && (
           <>
             <div className="projecttable-container">
-              <Col
-                md={'12'}
-                className='projects-and-tasks-header d-flex flex-row'
-              >
+              <Col md={'12'} className="projects-and-tasks-header d-flex flex-row">
                 <span className="projects-span py-2 mr-auto">Tasks</span>
-                <div
-                className="justify-content-end d-flex py-2"
-                style={{ gap: '4px'}}
-                >
+                <div className="justify-content-end d-flex py-2" style={{ gap: '4px' }}>
                   <button
                     type="button"
                     className="btn btn-primary btn-sm"
@@ -214,14 +216,14 @@ const UserProjectsTable = React.memo(props => {
                 </div>
               </Col>
             </div>
-            <div className='table-container'>
+            <div className="table-container">
               <table className="table table-bordered table-responsive-sm">
                 <thead>
                   {props.role && (
                     <tr>
-                      <th className='table-header'>#</th>
+                      <th className="table-header">#</th>
                       <th>Task Name</th>
-                      {canAssignProjectToUsers ? <th className='table-cell'>{}</th> : null}
+                      {canAssignProjectToUsers ? <th className="table-cell">{}</th> : null}
                     </tr>
                   )}
                 </thead>
@@ -236,9 +238,11 @@ const UserProjectsTable = React.memo(props => {
                           <tr key={task._id}>
                             <td>{task.num}</td>
                             <td>
-                              <span className='opacity-70'>{project.projectName} </span>
+                              <span className="opacity-70">{project.projectName} </span>
                               <br />
-                              <span className="fs-18">{task.taskName && `\u2003 ↳ ${task.taskName}`}</span>
+                              <span className="fs-18">
+                                {task.taskName && `\u2003 ↳ ${task.taskName}`}
+                              </span>
                             </td>
                             {!isCompletedTask && props.edit && props.role && canDeleteTasks && (
                               <td>
@@ -280,20 +284,15 @@ const UserProjectsTable = React.memo(props => {
       <div className="tablet">
         <div className="projecttable-container">
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <Col
-              md="12"
-              className='d-flex projects-and-tasks-header'
-            >
+            <Col md="12" className="d-flex projects-and-tasks-header">
               <span className="projects-span mr-auto pt-2">Projects</span>
               {props.edit && props.role && (
-              <div
-                className="pt-2"
-              >
-                {canAssignProjectToUsers && (
+                <div className="pt-2">
+                  {canAssignProjectToUsers && (
                     <div
                       className="div-addproject"
                       title="Please save changes before assign project"
-                      display={props.disabled ? "none" : "block"}
+                      display={props.disabled ? 'none' : 'block'}
                     >
                       <Button
                         className="btn-addproject"
@@ -303,21 +302,21 @@ const UserProjectsTable = React.memo(props => {
                           props.onButtonClick();
                         }}
                         style={boxStyle}
-                        >
+                      >
                         Assign Project
                       </Button>
                     </div>
                   )}
-              </div>
-            )}
+                </div>
+              )}
             </Col>
           </div>
-          <div className='table-container'>
+          <div className="table-container">
             <table className="table table-bordered">
               <thead>
                 {props.role && (
                   <tr>
-                    <th className='table-header'>#</th>
+                    <th className="table-header">#</th>
                     <th>Project Name</th>
                     {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
                   </tr>
@@ -330,7 +329,7 @@ const UserProjectsTable = React.memo(props => {
                       <td>{index + 1}</td>
                       <td>{`${project.projectName}`}</td>
                       {props.edit && props.role && canDeleteProjects && (
-                        <td className='table-cell'>
+                        <td className="table-cell">
                           <Button
                             color="danger"
                             disabled={!canUpdateTask}
@@ -357,10 +356,7 @@ const UserProjectsTable = React.memo(props => {
           <>
             <div className="projecttable-container">
               <div>
-                <Col
-                  md={'12'}
-                  className='projects-and-tasks-header d-flex'
-                >
+                <Col md={'12'} className="projects-and-tasks-header d-flex">
                   <span className="projects-span mr-auto pt-2">Tasks</span>
                   <div className="justify-content-end d-flex py-2" style={{ gap: '4px' }}>
                     <button
@@ -391,12 +387,12 @@ const UserProjectsTable = React.memo(props => {
                 </Col>
               </div>
             </div>
-            <div className='table-container'>
+            <div className="table-container">
               <table className="table table-bordered">
                 <thead>
                   {props.role && (
                     <tr>
-                      <th className='table-header'>#</th>
+                      <th className="table-header">#</th>
                       <th>Task Name</th>
                       {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
                     </tr>
@@ -413,9 +409,11 @@ const UserProjectsTable = React.memo(props => {
                           <tr key={task._id}>
                             <td>{task.num}</td>
                             <td>
-                              <span className='opacity-70'>{project.projectName}</span>
+                              <span className="opacity-70">{project.projectName}</span>
                               <br />
-                              <span className='fs-18'>{task.taskName && `\u2003 ↳ ${task.taskName}`}</span>
+                              <span className="fs-18">
+                                {task.taskName && `\u2003 ↳ ${task.taskName}`}
+                              </span>
                             </td>
                             {!isCompletedTask && props.edit && props.role && canDeleteTasks && (
                               <td>
@@ -459,4 +457,3 @@ const UserProjectsTable = React.memo(props => {
 });
 
 export default connect(null, { hasPermission })(UserProjectsTable);
-

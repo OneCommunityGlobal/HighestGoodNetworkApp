@@ -225,23 +225,41 @@ function ReportDetails({
                 canEditSummaryCount={canEditSummaryCount}
               />
             </ListGroupItem>
-            <ListGroupItem>
-              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
-                Hours logged:
-              </b>
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
+            {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+              <ListGroupItem>
                 <p>
+                  <b
+                    style={{
+                      color: textColors[summary?.weeklySummaryOption] || textColors['Default'],
+                    }}
+                  >
+                    Hours logged:{' '}
+                  </b>
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </p>
-              ) : (
-                <span className="ml-2">
+              </ListGroupItem>
+            )}
+            {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+              <ListGroupItem>
+                <b
+                  className="hours-not-fulfilled"
+                  // style={{
+                  //   color:
+                  //     textColors[summary?.weeklySummaryOption] || textColors['hoursNotFullfiled'],
+                  // }}
+                >
+                  Hours logged:
+                </b>
+                <span className="ml-2 hours-not-fulfilled">
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </span>
-              )}
-            </ListGroupItem>
-            <ListGroupItem>
-              <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
-            </ListGroupItem>
+              </ListGroupItem>
+            )}
+            {summary.badgeCollection.length > 0 && (
+              <ListGroupItem>
+                <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+              </ListGroupItem>
+            )}
           </Col>
           <Col xs="6">
             {loadBadges && summary.badgeCollection?.length > 0 && (

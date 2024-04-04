@@ -16,10 +16,10 @@ function Announcements() {
     const emails = e.target.value.split(',');
     setEmailList(emails);
   };
-  
+
   const handleHeaderContentChange = e => {
     setHeaderContent(e.target.value);
-  }
+  };
 
   const convertImageToBase64 = (file, callback) => {
     const reader = new FileReader();
@@ -46,11 +46,11 @@ function Announcements() {
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-      const editor = tinymce.get('email-editor');
-      if (editor) {
-        editor.insertContent(imageTag);
-        setEmailContent(editor.getContent());
-      }
+    const editor = tinymce.get('email-editor');
+    if (editor) {
+      editor.insertContent(imageTag);
+      setEmailContent(editor.getContent());
+    }
   };
   const handleSendEmails = () => {
     const htmlContent = emailContent;
@@ -143,7 +143,11 @@ function Announcements() {
         </div>
         <div className="emails">
           Email List (comma-separated):
-          <input type="text" onChange={handleEmailListChange} />
+          <input
+            type="text"
+            onChange={handleEmailListChange}
+            className="input-text-for-announcement"
+          />
           <button type="button" className="send-button" onClick={handleSendEmails}>
             Send Email to specific user
           </button>
@@ -151,7 +155,11 @@ function Announcements() {
             <hr />
             <p>Insert header or footer image link</p>
             <div style={{ overflow: 'hidden' }}>
-              <input type="text" onChange={handleHeaderContentChange}/>
+              <input
+                type="text"
+                onChange={handleHeaderContentChange}
+                className="input-text-for-announcement"
+              />
             </div>
             <button type="button" className="send-button" onClick={addHeaderToEmailContent}>
               Insert
@@ -175,4 +183,3 @@ function Announcements() {
 }
 
 export default Announcements;
-
