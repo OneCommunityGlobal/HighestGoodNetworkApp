@@ -29,7 +29,7 @@ const UserTableData = React.memo(props => {
   const [isOwner,setIsOwner] = useState(false);
   const { user } = useSelector(state => state.auth);
   useEffect(() => {
-    if (user.role === 'Owner') {
+    if (user.role === 'Owner'||user.role === 'Administrator') {
       setIsOwner(true)
     } else {
       setIsOwner(false)
