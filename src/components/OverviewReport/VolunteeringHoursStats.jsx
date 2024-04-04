@@ -6,7 +6,7 @@ import { ENDPOINTS } from 'utils/URL';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from 'components/common/Loading';
-import { Button } from 'reactstrap';
+import { Button, Col, Row } from 'reactstrap';
 import DonutChart from './DonutChart';
 
 export default function VolunteeringHoursStats(props) {
@@ -28,27 +28,31 @@ export default function VolunteeringHoursStats(props) {
     }
   }, []);
 
+  // we want to fetch the data on page load
+  // also whenever the start/end date changes.
+  // i.e the user has switched the weeks tab.
   useEffect(() => {
     fetchData();
   }, [startDate, endDate]);
 
   console.log(data);
 
+  // format data for donut chart
   const donutData = [];
   if (data) {
     for (let i = 0; i < 6; i++) {
       const group = i * 10;
       const groupString = `${group}-${group + 9}`;
-      console.log(i, group, groupString);
+
       const dataObj = {};
       dataObj.label = `${group} to ${group + 9} hours - ${data[groupString]}`;
       dataObj.value = data[groupString];
       donutData.push(dataObj);
     }
+    // there is one outlier case in which a volunteer has worked 60+ hours.
+    // handle this case after the loop
     donutData.push({ label: `60+ hours - ${data['60+']}`, value: data['60+'] });
   }
-
-  console.log('donut data: ', donutData);
 
   if (loading) {
     return (
@@ -79,11 +83,14 @@ export default function VolunteeringHoursStats(props) {
       {startDate}
       <br />
       {endDate}
-      <div>
-        {data && (
-          <DonutChart data={donutData} width={800} height={400} total={data.numberOfUsers} />
-        )}
-      </div>
+      <Row>
+        <Col>
+          {data && (
+            <DonutChart data={donutData} width={800} height={400} total={data.numberOfUsers} />
+          )}
+        </Col>
+        <Col>asdf</Col>
+      </Row>
     </div>
   );
 }

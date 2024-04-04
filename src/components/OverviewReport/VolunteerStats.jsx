@@ -1,3 +1,4 @@
+import { Col, Row } from 'reactstrap';
 import HorizontalBarChart from './HorizontalBarChart';
 import DonutChart from './DonutChart';
 
@@ -15,13 +16,21 @@ export default function VolunteerStats() {
   ];
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div>
+    <Row>
+      <Col>
         <HorizontalBarChart data={data} width={600} height={300} />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+      </Col>
+      <Col>
         <DonutChart data={pieData} width={800} height={400} />
-      </div>
-    </div>
+      </Col>
+    </Row>
+    // <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    //   <div>
+    //     <HorizontalBarChart data={data} width={600} height={300} />
+    //   </div>
+    //   <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+    //     <DonutChart data={pieData} width={800} height={400} />
+    //   </div>
+    // </div>
   );
 }
