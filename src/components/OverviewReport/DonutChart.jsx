@@ -56,7 +56,7 @@ function DonutChart({ data, width, height, total }) {
     const legend = svg
       .append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(-400,${-height / 2 + radius})`);
+      .attr('transform', `translate(-400,${-height + radius * 1.6})`);
 
     const legends = legend
       .selectAll('.legend')
