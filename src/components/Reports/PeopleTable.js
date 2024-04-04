@@ -2,15 +2,16 @@ import '../Teams/Team.css';
 import { Link } from 'react-router-dom';
 import './reports.css';
 import moment from 'moment';
+import { boxStyle, boxStyleDark } from 'styles';
 
-function PeopleTable({ userProfiles }) {
+function PeopleTable({ userProfiles, darkMode }) {
   let PeopleList = [];
   if (userProfiles.length > 0) {
     PeopleList = userProfiles
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
       .map((person, index) => (
-        <tr className="teams__tr" id={`tr_${person._id}`} key={person._id}>
-          <th className="teams__order--input" scope="row">
+        <tr className={`teams__tr ${darkMode ? 'hover-effect-reports-page-dark-mode' : ''}`} id={`tr_${person._id}`} key={person._id}>
+          <th className={`teams__order--input ${darkMode ? 'text-light' : ''}`} scope="row">
             <div>{index + 1}</div>
           </th>
           <td>
@@ -43,10 +44,10 @@ function PeopleTable({ userProfiles }) {
               )}
             </div>
           </td>
-          <td className="hide-mobile-start-end" style={{ width: '110px' }}>
+          <td className={`hide-mobile-start-end ${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
             {moment(person.createdDate).format('MM-DD-YY')}
           </td>
-          <td className="hide-mobile-start-end" style={{ width: '110px' }}>
+          <td className={`hide-mobile-start-end ${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
             {moment(person.endDate).format('MM-DD-YY') || 'N/A'}
           </td>
         </tr>
@@ -54,9 +55,9 @@ function PeopleTable({ userProfiles }) {
   }
 
   return (
-    <table className="table table-bordered">
-      <thead>
-        <tr>
+    <table className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`} style={darkMode ? boxStyleDark : boxStyle}>
+      <thead className={darkMode ? "bg-space-cadet text-light" : ""}>
+        <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
           <th scope="col" id="projects__order">
             #
           </th>

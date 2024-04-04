@@ -24,6 +24,7 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
 import { searchWithAccent } from 'utils/search';
+import { boxStyle, boxStyleDark } from 'styles';
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
@@ -367,6 +368,7 @@ class ReportsPage extends Component {
   
 
   render() {
+    const darkMode = this.props.state.theme.darkMode;
     const userRole = this.props.state.userProfile.role;
     const myRole = this.props.state.auth.user.role;
     const { projects } = this.props.state.allProjects;
@@ -394,7 +396,7 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
     return (
-      <Container fluid className="mb-5 container-component-wrapper">
+      <Container fluid className={`mb-5 container-component-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <div className="container-component-category">
         <h2 className="mt-3 mb-5">
           <div className="d-flex align-items-center">
@@ -409,13 +411,14 @@ class ReportsPage extends Component {
             />
           </div>
         </h2>
-          <div>
+          <div className={darkMode ? 'text-light' : ''}>
             <p>Select a Category</p>
           </div>
           <div className="container-box-shadow">
             <div className="category-container">
               <button
-                className={`card-category-item ${this.state.showProjects ? 'selected' : ''}`}
+                className={`card-category-item ${this.state.showProjects ? 'selected' : ''} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+                style={darkMode ? boxStyleDark : boxStyle}
                 onClick={this.showProjectTable}
               >
                 <h3 className="card-category-item-title"> Projects</h3>
@@ -423,7 +426,8 @@ class ReportsPage extends Component {
                 <img src={projectsImage} alt="Image that representes the projects" />
               </button>
               <button
-                className={`card-category-item ${this.state.showPeople ? 'selected' : ''}`}
+                className={`card-category-item ${this.state.showPeople ? 'selected' : ''} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+                style={darkMode ? boxStyleDark : boxStyle}
                 onClick={this.showPeopleTable}
               >
                 <h3 className="card-category-item-title"> People </h3>
@@ -431,7 +435,8 @@ class ReportsPage extends Component {
                 <img src={peopleImage} alt="Image that representes the people" />
               </button>
               <button
-                className={`card-category-item ${this.state.showTeams ? 'selected' : ''}`}
+                className={`card-category-item ${this.state.showTeams ? 'selected' : ''} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+                style={darkMode ? boxStyleDark : boxStyle}
                 onClick={this.showTeamsTable}
               >
                 <h3 className="card-category-item-title"> Teams </h3>
@@ -460,7 +465,9 @@ class ReportsPage extends Component {
                 {this.state.teamSearchData?.length}
               </button> */}
             </div>
-            <div className="mt-4 bg-white p-3 rounded-5">
+            <div 
+              className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'}`} 
+              style={darkMode ? boxStyleDark : boxStyle}>
               <div>
                 <a>Select a Filter</a>
               </div>
@@ -499,7 +506,7 @@ class ReportsPage extends Component {
               </div>
               <div className="date-picker-container">
                 <div id="task_startDate" className="date-picker-item">
-                  <label htmlFor="task_startDate" className="date-picker-label">
+                  <label htmlFor="task_startDate" className={`date-picker-label ${darkMode ? 'text-light' : ''}`}>
                     {' '}
                     Start Date
                   </label>
@@ -517,7 +524,7 @@ class ReportsPage extends Component {
                   />
                 </div>
                 <div id="task_EndDate" className="date-picker-item">
-                  <label htmlFor="task_EndDate" className="date-picker-label">
+                  <label htmlFor="task_EndDate" className={`date-picker-label ${darkMode ? 'text-light' : ''}`}>
                     {' '}
                     End Date
                   </label>
@@ -637,7 +644,10 @@ class ReportsPage extends Component {
               )}
             </div>
             {myRole === 'Owner' && (
-              <div className="mt-4 bg-white p-3 rounded-5">
+              <div 
+                className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
                 <div className='lost-time-container'>
                   <div className='lost-time-item'>
                     <Button color='success' onClick={this.setAddTime} >
@@ -708,19 +718,16 @@ class ReportsPage extends Component {
             )}
         </div>
         <div className="table-data-container mt-5">
-          {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
-          {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} />}
-          {this.state.showTeams && 
-            <TeamTable 
-              allTeams={this.state.teamSearchData}
-            />
-          }
+          {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode}/>}
+          {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} darkMode={darkMode}/>}
+          {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} darkMode={darkMode}/>}
           {this.state.showTotalProject && (
             <TotalProjectReport
               startDate={this.state.startDate}
               endDate={this.state.endDate}
               userProfiles={userProfiles}
               projects={projects}
+              darkMode={darkMode}
             />
           )}
           {this.state.showTotalPeople && (
@@ -728,6 +735,7 @@ class ReportsPage extends Component {
               startDate={this.state.startDate}
               endDate={this.state.endDate}
               userProfiles={userProfiles}
+              darkMode={darkMode}
             />
           )}
           {this.state.showTotalTeam && (
@@ -738,6 +746,7 @@ class ReportsPage extends Component {
               allTeamsData={allTeams}
               passTeamMemberList={this.setTeamMemberList}
               savedTeamMemberList={this.state.teamMemberList}
+              darkMode={darkMode}
             />
           )}
           {(this.state.showAddTimeForm && myRole === 'Owner') && 
@@ -756,6 +765,7 @@ class ReportsPage extends Component {
               startDate={this.state.startDate}
               endDate={this.state.endDate}
               allData = {userProfiles}
+              darkMode={darkMode}
             />
           )}
           {this.state.showAddTeamHistory && (
@@ -765,6 +775,7 @@ class ReportsPage extends Component {
               startDate={this.state.startDate}
               endDate={this.state.endDate}
               allData = {allTeams}
+              darkMode={darkMode}
             />
           )}
           {this.state.showAddProjHistory && (
@@ -774,6 +785,7 @@ class ReportsPage extends Component {
               startDate={this.state.startDate}
               endDate={this.state.endDate}
               allData = {projects}
+              darkMode={darkMode}
             />
           )}
         </div>

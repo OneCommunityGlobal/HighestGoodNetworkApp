@@ -19,7 +19,7 @@ function TotalProjectReport(props) {
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
 
-  const { startDate, endDate, userProfiles, projects } = props;
+  const { startDate, endDate, userProfiles, projects, darkMode } = props;
 
   const fromDate = startDate.toLocaleDateString('en-CA');
   const toDate = endDate.toLocaleDateString('en-CA');
@@ -240,8 +240,8 @@ function TotalProjectReport(props) {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-container">
-        <div className="total-title">Total Project Report</div>
+      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Project Report</div>
         <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
@@ -288,7 +288,7 @@ function TotalProjectReport(props) {
   return (
     <div>
       {dataLoading ? (
-        <Loading />
+        <Loading align="center" darkMode={darkMode}/>
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>

@@ -9,7 +9,7 @@ import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 
 function TotalPeopleReport(props) {
-  const { startDate, endDate, userProfiles } = props;
+  const { startDate, endDate, userProfiles, darkMode } = props;
 
   const [dataLoading, setDataLoading] = useState(true);
   const [dataRefresh, setDataRefresh] = useState(false);
@@ -226,8 +226,8 @@ function TotalPeopleReport(props) {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-container">
-        <div className="total-title">Total People Report</div>
+      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total People Report</div>
         <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
@@ -273,7 +273,7 @@ function TotalPeopleReport(props) {
   return (
     <div>
       {dataLoading ? (
-        <Loading />
+        <Loading align="center" darkMode={darkMode}/>
       ) : (
         <div>
           <div>{totalPeopleInfo(allPeople)}</div>
