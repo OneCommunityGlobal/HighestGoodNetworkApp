@@ -10,7 +10,7 @@ import BlueSquareStats from './BlueSquareStats';
 
 export default function OverviewReportTab(props) {
   // eslint-disable-next-line no-unused-vars
-  const { activeTab, userRole } = props;
+  const { activeTab, userRole, startDate, endDate } = props;
   const [currentStats, setCurrentStats] = useState('showVolunteerStats');
 
   return (
@@ -113,7 +113,9 @@ export default function OverviewReportTab(props) {
         </Col>
       </Row>
       {currentStats === 'showVolunteerStats' && <VolunteerStats />}
-      {currentStats === 'showVolunteerHoursStats' && <VolunteeringHoursStats />}
+      {currentStats === 'showVolunteerHoursStats' && (
+        <VolunteeringHoursStats startDate={startDate} endDate={endDate} />
+      )}
       {currentStats === 'showVolunteerRoleStats' && <VolunteerRoleStats />}
       {currentStats === 'showTasksProjectsStats' && <TasksProjectsStats />}
       {currentStats === 'showBlueSquareStats' && <BlueSquareStats />}
