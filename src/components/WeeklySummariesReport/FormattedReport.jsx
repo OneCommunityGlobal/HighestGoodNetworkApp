@@ -261,6 +261,7 @@ function ReportDetails({
               </ListGroupItem>
             )}
           </Col>
+
           <Col xs="6">
             {loadBadges && summary.badgeCollection?.length > 0 && (
               <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
