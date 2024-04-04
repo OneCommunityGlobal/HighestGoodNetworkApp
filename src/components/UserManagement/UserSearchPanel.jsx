@@ -24,7 +24,7 @@ const UserSearchPanel = props => {
   },[])
   return (
     <div className="input-group mt-3" id="new_usermanagement">
-      <button disabled={isOwner ? false : true} type="button" className="btn btn-info mr-2"
+      <button disabled={isOwner ? false : !hasRole} type="button" className="btn btn-info mr-2"
               onClick={props.handleNewUserSetupPopup}>
         {SEND_SETUP_LINK}
       </button>
