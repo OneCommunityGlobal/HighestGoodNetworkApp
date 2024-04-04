@@ -19,7 +19,6 @@ const AddTeamPopup = React.memo(props => {
 
   // states and onrs for the new team form
   const [newTeamName, setNewTeamName] = useState('');
-  const [newTeamIsActive, setNewTeamIsActive] = useState(true);
   const [isDuplicateTeam, setDuplicateTeam] = useState(false);
 
   const onAssignTeam = () => {
@@ -45,12 +44,11 @@ const AddTeamPopup = React.memo(props => {
 
   const onCreateTeam = async () => {
     if (newTeamName !== '') {
-      const response = await dispatch(postNewTeam(newTeamName, newTeamIsActive));
+      const response = await dispatch(postNewTeam(newTeamName, true));
         
       if (response.status === 200) {
         toast.success('Team created successfully');
         setNewTeamName('');
-        setNewTeamIsActive(true);
         setDuplicateTeam(false);
   
         // Get updated teams list and select the new team
@@ -75,10 +73,6 @@ const AddTeamPopup = React.memo(props => {
     onNewTeamValidation(true);
   }, [props.open]);
 
-  useEffect(() => {
-    // dispatch(getAllUserTeams());
-    dispatch(getAllTeamCode())
-  }, [newTeamIsActive]);
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>

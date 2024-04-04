@@ -52,22 +52,11 @@ import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
 import { connect, useDispatch } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
-import EditableInfoModal from './EditableModal/EditableInfoModal';
+import EditableInfoModal from './EditableModal/EditableInfoModalWithMemo';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllTeamCode  } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
-import { setCurrentUser } from '../../actions/authActions';
 
-
-/**
-  auth: state.auth,
-  userProfile: state.userProfile,
-  userProjects: state.userProjects,
-  allProjects: get(state, 'allProjects'),
-  allTeams: state,
-  role: state.role,
-  taskItems: state.tasks.taskItems,
- */
 function UserProfile(props) {
   /* Destructure redux state from props */
   // const { auth, userProfile, userProjects, allProjects, role, taskItems, auth } = props;
@@ -127,12 +116,11 @@ function UserProfile(props) {
 
   /* useEffect functions */
   useEffect(() => {
-    // debugger;
     loadUserProfile();
-    getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllTeamCode());
     getTeammateListForTeamWeeklySummary(); 
+    loadUserTasks();
   }, []);
 
   useEffect(() => {
@@ -140,12 +128,17 @@ function UserProfile(props) {
   }, [userProfile]);
 
   useEffect(() => {
-    // debugger
     checkIsTeamsEqual();
+    setUserProfile({ ...userProfile, teams });
+    setOriginalUserProfile({ ...originalUserProfile, teams });
+    getTeammateListForTeamWeeklySummary();
+  }, [teams]);
+
+  useEffect(() => {
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile, teams, projects });
-    setOriginalUserProfile({ ...originalUserProfile, teams, projects });
-  }, [teams, projects]);
+    setUserProfile({ ...userProfile, projects });
+    setOriginalUserProfile({ ...originalUserProfile, projects });
+  }, [projects]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -164,6 +157,8 @@ function UserProfile(props) {
     if (!shouldRefresh) return;
     setShouldRefresh(false);
     loadUserProfile();
+    getTeammateListForTeamWeeklySummary(); 
+    loadUserTasks();
   }, [shouldRefresh]);
 
   const checkIsTeamsEqual = () => {
@@ -277,49 +272,6 @@ function UserProfile(props) {
       .catch(err => console.log(err));
   };
 
-  // const loadSummaryIntroDetails = async teamId => {
-  //   const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
-  //   const { data } = res;
-
-  //   const memberSubmitted = [];
-  //   const memberNotSubmitted = [];
-  //   let manager = '';
-
-  //   data.forEach(member => {
-  //     if (member.role === 'Manager') {
-  //       manager = `${member.firstName} ${member.lastName}`;
-  //     }
-  //     member.weeklySummaries[0].summary !== ''
-  //       ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
-  //       : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
-  //   });
-
-  //   manager = manager === '' ? '<Your Name>' : manager;
-  //   const memberSubmittedString =
-  //     memberSubmitted.length !== 0
-  //       ? memberSubmitted.join(', ')
-  //       : '<list all team members names included in the summary>.';
-  //   const memberDidntSubmitString =
-  //     memberNotSubmitted.length !== 0
-  //       ? memberSubmitted.join(', ')
-  //       : '<list all team members names NOT included in the summary>';
-
-  //   const summaryIntroString = `This week’s summary was managed by ${manager} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
-
-  //   setSummaryIntro(summaryIntroString);
-  // };
-
-  const getCurretLoggedinUserEmail = async () => {
-    const userId = props?.auth?.user?.userid;
-    try{
-      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const currentUserEmail = response.data.email;
-      dispatch(setCurrentUser({...props.auth.user, email: currentUserEmail}));
-    }catch (err) {
-      toast.error('Error while getting current logged in user email');
-    }
-  };
-
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
 
@@ -364,7 +316,7 @@ function UserProfile(props) {
     try {
       setSummarySelected('');
       setShowSummary(false);
-      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const response = await axios.get(ENDPOINTS.USER_WEEKLY_SUMMARRIES(userId));
       const user = response.data;
       const userSummaries = user.weeklySummaries;
 
@@ -547,12 +499,10 @@ function UserProfile(props) {
     }
     try {
       await props.updateUserProfile(userProfileRef.current);
-      
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
-      await loadUserProfile();
-      await loadUserTasks();
+      setShouldRefresh(true);
       setSaved(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
@@ -867,8 +817,10 @@ function UserProfile(props) {
                   options={summaries}
                   styles={customStyles}
                   onChange={e => {
-                    setSummaryName(e.value[0]);
-                    getWeeklySummary(e.value[1]);
+                    const fullname = e.value[0];
+                    const userId = e.value[1];
+                    setSummaryName(fullname);
+                    getWeeklySummary(userId);
                   }}
                 />
               </div>
@@ -1221,7 +1173,6 @@ function UserProfile(props) {
                 <ModalBody>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
-                    // teamsData={props?.allTeams?.allTeamsData || []}
                     teamsData={props?.allTeams?.allTeamCode || []}
                     onAssignTeam={onAssignTeam}
                     onDeleteTeam={onDeleteTeam}
@@ -1235,7 +1186,9 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual 
+                        // && isTeamsEqual 
+                        && isProjectsEqual)
                     }
                     canEditTeamCode={
                       props.hasPermission('editTeamCode') || requestorRole === 'Owner' ||requestorRole === 'Administrator'
