@@ -7,8 +7,7 @@ function DonutChart({ data, width, height, total }) {
   useEffect(() => {
     const svg = d3
       .select(svgRef.current)
-      .attr('width', width)
-      .attr('height', height)
+      .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
