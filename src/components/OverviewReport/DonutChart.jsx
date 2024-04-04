@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
-function DonutChart({ data, width, height }) {
+function DonutChart({ data, width, height, total }) {
   const svgRef = useRef();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ function DonutChart({ data, width, height }) {
       .style('text-anchor', 'middle')
       .style('font-size', 12);
 
-    const sum = d3.sum(data, d => d.value);
+    const sum = total || d3.sum(data, d => d.value);
     svg
       .append('text')
       .text(`Total: ${sum}`)
