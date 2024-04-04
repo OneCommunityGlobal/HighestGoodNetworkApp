@@ -291,6 +291,8 @@ class PeopleReport extends Component {
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
     const { tangibleHoursReportedThisWeek, auth, match } = this.props;
 
+    console.log(tangibleHoursReportedThisWeek);
+
 
     let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
@@ -501,7 +503,7 @@ class PeopleReport extends Component {
     return (
       <div className="container-people-wrapper">
         <ReportPage renderProfile={renderProfileInfo}>
-          <div className="people-report-time-logs-wrapper">
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -543,7 +545,9 @@ class PeopleReport extends Component {
           </div>
 
           <PeopleTasksPieChart />
-          {tangibleHoursReportedThisWeek !== 0 && (
+          {tangibleHoursReportedThisWeek === 0 ? (
+            <div className="report-no-log-message">No task has been logged this week...</div>
+          ) : (
             <div className="mobile-people-table">
               <ReportPage.ReportBlock>
                 <div className="intro_date">
