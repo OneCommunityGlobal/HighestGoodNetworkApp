@@ -80,7 +80,8 @@ function LeaderBoard({
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedTeamName, setSelectedTeamName] = useState();
+  const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
+  const [textButton, setTextButton] = useState('My Team');
   const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [userRole, setUserRole] = useState();
@@ -121,7 +122,6 @@ function LeaderBoard({
       try {
         setIsLoadingTeams(true);
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
-
         const teamName = `${team.teamName.substring(0, 30)}...`;
         setSelectedTeamName(team.teamName.length >= 30 ? teamName : team.teamName);
         const idUsers = response.data.map(item => item._id);
@@ -136,13 +136,13 @@ function LeaderBoard({
   };
 
   const handleToggleButtonClick = () => {
-    if (isLoadingTeams) {
-      toast.warning('Please wait while the teams are loading.');
-    } else if (!usersSelectedTeam) {
-      renderTeamsList(usersSelectedTeam);
+    if (textButton === 'View All') {
+      setTextButton('My Team');
+      renderTeamsList(null);
     } else if (usersSelectedTeam.length === 0) {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
     } else {
+      setTextButton('View All');
       renderTeamsList(usersSelectedTeam);
     }
   };
@@ -212,14 +212,10 @@ function LeaderBoard({
   };
 
   const TeamSelected = team => {
-    if (team) {
-      const teamName = `${team.teamName.substring(0, 15)}...`;
-      setSelectedTeamName(team.teamName.length >= 15 ? teamName : team.teamName);
-      setUsersSelectedTeam(team);
-    } else {
-      setSelectedTeamName('View All');
-      setUsersSelectedTeam(null);
-    }
+    const teamName = `${team.teamName.substring(0, 15)}...`;
+    setSelectedTeamName(team.teamName.length >= 15 ? teamName : team.teamName);
+    setUsersSelectedTeam(team);
+    setTextButton('My Team');
   };
 
   return (
@@ -252,7 +248,7 @@ function LeaderBoard({
           <section className="d-flex flex-row flex-wrap mb-3">
             <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=" mr-3">
               <DropdownToggle caret>
-                {selectedTeamName || 'Select a Team'} {/* Display selected team or default text */}
+                {selectedTeamName} {/* Display selected team or default text */}
               </DropdownToggle>
               <DropdownMenu>
                 {teams.length === 0 ? (
@@ -262,28 +258,31 @@ function LeaderBoard({
                     Please, create a team to use the filter.
                   </DropdownItem>
                 ) : (
-                  /* eslint-disable */
-                  <>
-                    <DropdownItem onClick={() => TeamSelected(null)}>{'View All'}</DropdownItem>
-                    {teams.map(team => (
-                      <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                        {team.teamName}
-                      </DropdownItem>
-                    ))}
-                  </>
-                  /* eslint-disable */
+                  teams.map(team => (
+                    <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
+                      {team.teamName}
+                    </DropdownItem>
+                  ))
                 )}
               </DropdownMenu>
             </Dropdown>
 
-            <Button
-              color="primary"
-              onClick={handleToggleButtonClick}
-              disabled={teams.length === 0}
-              boxstyle={boxStyle}
-            >
-              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : 'My Team'}
-            </Button>
+            {teams.length === 0 ? (
+              <Link to="/teams">
+                <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                  Create Team
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                color="primary"
+                onClick={handleToggleButtonClick}
+                disabled={isLoadingTeams}
+                boxstyle={boxStyle}
+              >
+                {isLoadingTeams ? <Spinner animation="border" size="sm" /> : textButton}
+              </Button>
+            )}
           </section>
         ) : null}
       </div>

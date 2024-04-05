@@ -27,6 +27,8 @@ import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+
+import { Link } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
 
 const TeamMemberTasks = React.memo(props => {
@@ -54,19 +56,20 @@ const TeamMemberTasks = React.memo(props => {
   const [teams, setTeams] = useState(displayUser.teams);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
-  const [selectedTeamName, setSelectedTeamName] = useState('');
+  const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
   const [userRole, setUserRole] = useState(displayUser.role);
   const [loading, setLoading] = useState(false);
+  const [textButton, setTextButton] = useState('My Team');
 
   const handleToggleButtonClick = () => {
-    if (loading) {
-      toast.warning('Please wait while the teams are loading.');
-    } else if (!usersSelectedTeam) {
-      renderTeamsList(usersSelectedTeam);
+    if (textButton === 'View All') {
+      renderTeamsList(null);
+      setTextButton('My Team');
     } else if (usersSelectedTeam.length === 0) {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
     } else {
       renderTeamsList(usersSelectedTeam);
+      setTextButton('View All');
     }
   };
 
@@ -281,14 +284,10 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const TeamSelected = team => {
-    if (team) {
-      const teamName = `${team.teamName.substring(0, 15)}...`;
-      setSelectedTeamName(team.teamName.length >= 15 ? teamName : team.teamName);
-      setUsersSelectedTeam(team);
-    } else {
-      setSelectedTeamName('View All');
-      setUsersSelectedTeam(null);
-    }
+    const teamName = `${team.teamName.substring(0, 15)}...`;
+    setSelectedTeamName(team.teamName.length >= 15 ? teamName : team.teamName);
+    setUsersSelectedTeam(team);
+    setTextButton('My Team');
   };
 
   return (
@@ -309,7 +308,7 @@ const TeamMemberTasks = React.memo(props => {
           ) : !isLoading && (userRole === 'Administrator' || userRole === 'Owner') ? (
             <section className="d-flex flex-row mr-xl-2">
               <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="mb-3">
-                <DropdownToggle caret>{selectedTeamName || 'Select a Team'}</DropdownToggle>
+                <DropdownToggle caret>{selectedTeamName}</DropdownToggle>
                 <DropdownMenu>
                   {teams.length === 0 ? (
                     <DropdownItem
@@ -318,28 +317,33 @@ const TeamMemberTasks = React.memo(props => {
                       {'Please, create a team to use the filter.'}
                     </DropdownItem>
                   ) : (
-                    <>
-                      <DropdownItem onClick={() => TeamSelected(null)}>{'View All'}</DropdownItem>
-                      {teams.map(team => (
-                        <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                          {team.teamName}
-                        </DropdownItem>
-                      ))}
-                    </>
+                    teams.map(team => (
+                      <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
+                        {team.teamName}
+                      </DropdownItem>
+                    ))
                   )}
                 </DropdownMenu>
               </Dropdown>
               &nbsp; &nbsp;
-              <Button
-                color="primary"
-                onClick={handleToggleButtonClick}
-                style={{ width: '7rem' }}
-                className="mb-3 mb-0-md-end"
-                disabled={teams.length === 0}
-                boxstyle={boxStyle}
-              >
-                {loading ? <Spinner animation="border" size="sm" /> : 'My Team'}
-              </Button>
+              {teams.length === 0 ? (
+                <Link to="/teams">
+                  <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                    Create Team
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  color="primary"
+                  onClick={handleToggleButtonClick}
+                  style={{ width: '7rem' }}
+                  className="mb-3 mb-0-md-end"
+                  boxstyle={boxStyle}
+                  disabled={loading}
+                >
+                  {loading ? <Spinner animation="border" size="sm" /> : textButton}
+                </Button>
+              )}
             </section>
           ) : !isLoading && userRole !== 'Administrator' && userRole !== 'Owner' ? null : null}
         </section>
