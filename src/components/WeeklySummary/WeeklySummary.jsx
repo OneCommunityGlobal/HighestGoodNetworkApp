@@ -733,7 +733,7 @@ export class WeeklySummary extends Component {
                               <DropdownToggle
                                 className="px-5 btn--dark-sea-green"
                                 caret
-                                style={boxStyle}
+                                style={{ ...boxStyle, marginRight: '10px' }}
                               >
                                 Move This Summary
                               </DropdownToggle>
