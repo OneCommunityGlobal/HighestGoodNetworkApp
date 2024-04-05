@@ -70,7 +70,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
-      // weeklyRecipientAuthPass: '',
+      weeklyRecipientAuthPass: '',
     };
   }
 
@@ -419,8 +419,8 @@ export class WeeklySummariesReport extends Component {
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
     const { authEmailWeeklySummaryRecipient } = this.props;
-    const authorizedUser1 = process.env.REACT_APP_JAE;
-    const authorizedUser2 = process.env.REACT_APP_SARA;
+    const authorizedUser1 = 'sucheta_mu@test.com';
+    const authorizedUser2 = 'sucheta.prtester@test.com';
 
     if (error) {
       return (
