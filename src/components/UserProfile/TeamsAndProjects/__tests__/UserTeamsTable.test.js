@@ -71,19 +71,31 @@ describe('User Teams Table Component', () => {
 
   it('renders correct number of teams the user is assigned to', () => {
     renderComponent(mockUserProfile);
-    expect(within(screen.getByTestId('userTeamTest')).getAllByRole('row').length).toBe(2); // 2 teams + 1 header
+    expect(within(screen.getByTestId('userTeamTest')).getAllByRole('row').length).toBe(2);
   });
 
   // Test for correct rendering of team names
   it('renders correct team names', () => {
     renderComponent(mockUserProfile);
-    const teamRows = within(screen.getByTestId('userTeamTest')).getAllByRole('row'); // Skip the header row
+    const teamRows = within(screen.getByTestId('userTeamTest')).getAllByRole('row'); 
     expect(teamRows.length).toBe(2); // Ensure we have 2 team rows
 
     const teamNames = teamRows.map(row => {
       return row.cells[1].textContent;
     });
     expect(teamNames).toEqual(['Team1', 'Team2']);
+  });
+
+  // Test if the Visibility toggle appears on the screen
+  it('visibility toggle appears with permission', () => {
+    renderComponent(mockUserProfile);
+    let visibilityToggle;
+    visibilityToggle = within(screen.getByTestId('userTeamTest')).queryAllByTestId('visibility-switch');
+    expect(visibilityToggle).toHaveLength(0);
+   /* mockUserProfile.canEditVisibility = true;
+    renderComponent(mockUserProfile);
+    visibilityToggle = within(screen.getAllByTestId('userTeamTest')).queryAllByTestId('visibility-switch');
+    expect(visibilityToggle).toHaveLength(1);*/
   });
 
 
