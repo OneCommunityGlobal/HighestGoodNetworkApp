@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import moment from 'moment';
 import './OverviewReportTab.css';
-import { useState } from 'react';
 import VolunteerStats from './VolunteerStats';
 import VolunteeringHoursStats from './VolunteeringHoursStats';
 import VolunteerRoleStats from './VolunteerRoleStats';
@@ -15,6 +16,11 @@ export default function OverviewReportTab(props) {
 
   return (
     <Container fluid className="py-3 mb-5">
+      <p>
+        Viewing Overview Reports from{' '}
+        <strong>{moment(startDate, 'YYYY-MM-DD').format('MMM-DD-YY')}</strong> to{' '}
+        <strong>{moment(endDate, 'YYYY-MM-DD').format('MMM-DD-YY')}</strong>
+      </p>
       <Row>
         <Col className="col" xs="12" sm="6" md="4" lg="2">
           <Button
