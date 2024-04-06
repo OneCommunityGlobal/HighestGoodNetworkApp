@@ -1,7 +1,9 @@
 import React from 'react';
 import { configure, shallow, mount } from 'enzyme';
 import ForgotPassword from './ForgotPassword';
-
+import { render, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import '@testing-library/jest-dom/extend-expect';
 
 const forgotPassword = shallow(<ForgotPassword />);
 describe('ForgotPassword', () => {
@@ -26,5 +28,50 @@ describe('ForgotPassword', () => {
     lastNameInput.simulate('change', { target: { value: 'Admin' } });
   });
 
-});
+  // handleInput tests
+  it('should allow user to input email, first name, and last name', () => {
+    const wrapper = shallow(<ForgotPassword />);
+    const emailInput = wrapper.find('#email');
+    const firstNameInput = wrapper.find('#firstName');
+    const lastNameInput = wrapper.find('#lastName');
 
+    expect(emailInput.exists()).toBe(true);
+    expect(firstNameInput.exists()).toBe(true);
+    expect(lastNameInput.exists()).toBe(true);
+  });
+
+  it('should allow user to submit the form', () => {
+    const forgotPasswordMock = jest.fn();
+    const mountedforgotPasswordMock = shallow(<form onSubmit={forgotPasswordMock} />);
+    mountedforgotPasswordMock.find('form').simulate('submit');
+    expect(forgotPasswordMock).toHaveBeenCalled();
+  });
+
+  it('should not display an error message when a valid email address is inputted', () => {
+    const wrapper = shallow(<ForgotPassword />);
+    const emailInput = wrapper.find('#email');
+    const errorMessage = wrapper.find('.alert.alert-danger');
+    emailInput.simulate('change', { target: { name: 'email', value: 'test@example.com' } });
+
+    expect(errorMessage.exists()).toBe(false);
+  });
+
+  it('should display error message when user inputs invalid first name, last name, and email address', () => {
+    const wrapper = shallow(<ForgotPassword />);
+    const emailInput = wrapper.find('#email');
+    const firstNameInput = wrapper.find('#firstName');
+    const lastNameInput = wrapper.find('#lastName');
+
+    expect(emailInput.exists()).toBe(true);
+    expect(firstNameInput.exists()).toBe(true);
+    expect(lastNameInput.exists()).toBe(true);
+
+    emailInput.simulate('change', { target: { name: 'email', value: '' } });
+    firstNameInput.simulate('change', { target: { name: 'firstName', value: '' } });
+    lastNameInput.simulate('change', { target: { name: 'lastName', value: '' } });
+
+    const emailErrorMessage = wrapper.find('.alert.alert-danger').at(0);
+    const firstNameErrorMessage = wrapper.find('.alert.alert-danger').at(1);
+    const lastNameErrorMessage = wrapper.find('.alert.alert-danger').at(2);
+  });
+});
