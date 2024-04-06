@@ -130,7 +130,6 @@ function UserProfile(props) {
     checkIsTeamsEqual();
     setUserProfile({ ...userProfile, teams });
     setOriginalUserProfile({ ...originalUserProfile, teams });
-    getTeammateListForTeamWeeklySummary();
   }, [teams]);
 
   useEffect(() => {
@@ -140,6 +139,7 @@ function UserProfile(props) {
   }, [projects]);
 
   useEffect(() => {
+    if((userProfileRef.current && userProfileRef.current._id) === props?.match?.params?.userId) {return;}
     setShowLoading(true);
     loadUserProfile();
     loadUserTasks();

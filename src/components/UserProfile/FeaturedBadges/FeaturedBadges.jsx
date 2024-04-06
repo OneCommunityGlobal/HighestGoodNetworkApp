@@ -34,14 +34,18 @@ const FeaturedBadges = props => {
   };
 
   useEffect(() => {
-    preCacheImages(props.badges);
-    setFilteredBadges(filterBadges(props.badges));
+    if ( props.badges && props.badges.length > 0 ) {
+      const filteredBadges = filterBadges(props.badges);
+      
+      preCacheImages(filteredBadges);
+      setFilteredBadges(filteredBadges);
+    }
   }, [props.badges]);
 
   return (
     <div data-testid="badge_featured_container" className="badge_featured_container">
       {filteredBadges.map((value, index) => (
-        <BadgeImage personalBestMaxHrs={props.personalBestMaxHrs} count={value.count} badgeData={value.badge} index={index} key={index} />
+        <BadgeImage personal BestMaxHrs={props.personalBestMaxHrs} count={value.count} badgeData={value.badge} index={index} key={index} />
       ))}
     </div>
   );
