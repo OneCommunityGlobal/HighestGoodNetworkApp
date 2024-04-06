@@ -10,14 +10,14 @@ import {
   showStar,
   viewZeroHouraMembers,
 } from 'utils/leaderboardPermissions';
-import moment from 'moment';
+// import moment from 'moment';
 import 'moment-timezone';
 import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import hasPermission from 'utils/permissions';
 import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import moment from 'moment-timezone';
+// import moment from 'moment-timezone';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
 

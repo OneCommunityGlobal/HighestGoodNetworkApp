@@ -602,7 +602,6 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
 function Index({ summary, weekIndex, allRoleInfo }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-
   const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
     if (currentElement.Name === 'Google Doc') {
       // eslint-disable-next-line no-param-reassign
