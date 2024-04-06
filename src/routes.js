@@ -1,4 +1,4 @@
-import { lazy, Profiler } from 'react';
+import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
