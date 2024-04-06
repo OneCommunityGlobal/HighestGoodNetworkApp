@@ -610,6 +610,7 @@ class AddUserProfile extends Component {
     this.setState({ projects: initialUserProject });
   };
 
+
   // Function to call TimeZoneService with location
   onClickGetTimeZone = () => {
     const location = this.state.userProfile.location.userProvided;
@@ -1032,6 +1033,7 @@ class AddUserProfile extends Component {
         } else if (val < 0) {
           val = 0
         }
+
         this.setState({
           userProfile: {
             ...userProfile,
