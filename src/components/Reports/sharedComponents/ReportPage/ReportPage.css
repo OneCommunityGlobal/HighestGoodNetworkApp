@@ -1,10 +1,13 @@
 .report-page-wrapper {
   display: grid;
   grid-template-columns: 1fr 256px;
+  grid-template-rows: auto;
   column-gap: 24px;
-  height: auto;
+  min-height: 100vh;
   background-color: #faf7fd;
   padding: 40px 0 0 24px;
+  align-items: start;
+  padding: 2vh 7vw;
 }
 
 .report-page-content {
@@ -12,8 +15,9 @@
   flex-direction: column;
   grid-row-start: 1;
   row-gap: 32px;
-  padding-bottom: 24px;
+  /* padding-bottom: 24px; */
 }
+
 
 .report-page-profile {
   padding: 24px;
@@ -43,5 +47,17 @@
   .report-page-content {
     justify-content: center;
     align-items: center;
+  }
+}
+
+
+@media (max-width: 435px) {
+
+  .report-page-content {
+    padding: 0px;
+  }
+
+  .report-page-wrapper {
+    padding: 20px;
   }
 }

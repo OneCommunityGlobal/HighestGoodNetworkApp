@@ -8,6 +8,7 @@ const AddProjectsAutoComplete = React.memo(props => {
 
   useEffect(() => {
     if (!props.selectedProject) onInputChange('');
+    else onInputChange(props.selectedProject.projectName);
   }, [props.selectedProject]);
 
   return (
@@ -21,6 +22,7 @@ const AddProjectsAutoComplete = React.memo(props => {
       <Input
         type="text"
         value={searchText}
+        autoFocus={true}
         onChange={e => {
           onInputChange(e.target.value);
           toggle(true);
@@ -45,6 +47,7 @@ const AddProjectsAutoComplete = React.memo(props => {
             .map(item => (
               <div
                 className="project-auto-complete"
+                key={item._id}
                 onClick={() => {
                   onInputChange(item.projectName);
                   toggle(false);

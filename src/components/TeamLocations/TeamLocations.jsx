@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import { useState, useEffect} from 'react';
+import { MapContainer, TileLayer, CircleMarker, Popup, useMapEvent } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
 import './TeamLocations.css';
@@ -9,11 +9,13 @@ import { Button, Container } from 'reactstrap';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import { SEARCH } from 'languages/en/ui';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
 import ListUsersPopUp from './ListUsersPopUp';
 import AddOrEditPopup from './AddOrEditPopup';
-import { getTimeZoneAPIKey } from 'actions/timezoneAPIActions';
+import MarkerPopup from './MarkerPopup';
+
+
 
 function TeamLocations() {
   const [userProfiles, setUserProfiles] = useState([]);
@@ -23,9 +25,10 @@ function TeamLocations() {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [searchText, setSearchText] = useState('');
+  const [popupsOpen, setPopupsOpen] = useState(false);
+  const [mapMarkers,setMapMarkers] =useState([])
   const role = useSelector(state => state.auth.user.role);
-  const apiKey = useSelector(state => state.timeZoneAPI.userAPIKey);
-  const dispatch = useDispatch();
+
 
   const isAbleToEdit = role === 'Owner';
 
@@ -38,15 +41,25 @@ function TeamLocations() {
 
         setUserProfiles(users);
         setManuallyAddedProfiles(mUsers);
+        const allMapMarkers = [...users, ...mUsers];
+        const allMapMarkersOffset = allMapMarkers.map(ele =>({
+          ...ele,
+          location: {
+              ...ele.location,
+              coords: {
+                  ...ele.location.coords,
+                  lat: randomLocationOffset(ele.location.coords.lat), 
+                  lng: randomLocationOffset(ele.location.coords.lng),
+              },
+          },
+      }))
+        setMapMarkers(allMapMarkersOffset)
+
       } catch (error) {
         toast.error(error.message);
       }
     }
     getUserProfiles();
-
-    if(!apiKey)
-      getTimeZoneAPIKey()(dispatch);
-
   }, []);
 
   // We don't need the back to top button on this page
@@ -61,6 +74,7 @@ function TeamLocations() {
   const searchHandler = e => {
     setSearchText(e.target.value);
   };
+
   const removeLocation = async id => {
     try {
       const res = await axios.delete(`${ApiEndpoint}/mapLocations/${id}`);
@@ -74,10 +88,12 @@ function TeamLocations() {
       toast.error(error.message);
     }
   };
+
   const editHandler = profile => {
     setEditingUser(profile);
     setEditIsOpen(true);
   };
+
   const toggleListPopUp = () => {
     setListIsOpen(prev => !prev);
   };
@@ -90,10 +106,19 @@ function TeamLocations() {
       setAddNewIsOpen(false);
     }
   };
+
+  const randomLocationOffset = c => {
+    const randomOffset = (Math.random() - 0.5) * 2 * 0.05;
+    const newLongitude = Number(c) + randomOffset;
+
+    const modifiedLongitude = Number(newLongitude.toFixed(7));
+    return modifiedLongitude;
+  };
+
   // Get an array of all users' non-null countries (some locations may not be associated with a country)
   // Get the number of unique countries
+
   
-  let mapMarkers = [...userProfiles, ...manuallyAddedProfiles];
   const countries = mapMarkers.map(user => user.location.country);
   const totalUniqueCountries = [...new Set(countries)].length;
   if (searchText) {
@@ -111,6 +136,7 @@ function TeamLocations() {
   if (searchText) {
     dropdown = true;
   }
+
   return (
     <Container fluid className="mb-4">
       {isAbleToEdit ? (
@@ -125,7 +151,6 @@ function TeamLocations() {
             isAdd={!editIsOpen && addNewIsOpen}
             title={isEditing ? 'Edit User Profile' : 'Adding New User'}
             submitText={isEditing ? 'Save Changes' : 'Save To Map'}
-            apiKey={apiKey}
           />
           <ListUsersPopUp
             open={listIsOpen}
@@ -241,6 +266,7 @@ function TeamLocations() {
         ) : null}
       </div>
       <MapContainer
+        id='map-container'
         center={[51.505, -0.09]}
         maxBounds={[
           [-90, -225],
@@ -251,13 +277,15 @@ function TeamLocations() {
         scrollWheelZoom
         style={{ border: '1px solid grey' }}
       >
+        <EventComponent setPopupsOpen={setPopupsOpen}  />
+      
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           minZoom={2}
           maxZoom={15}
         />
-        <MarkerClusterGroup chunkedLoading>
+        <MarkerClusterGroup disableClusteringAtZoom={13} spiderfyOnMaxZoom={true} chunkedLoading>
           {mapMarkers.map(profile => {
             let userName = '';
             if (profile.firstName && profile.lastName) {
@@ -268,50 +296,33 @@ function TeamLocations() {
             }
 
             return (
-              <CircleMarker
-                center={[profile.location.coords.lat, profile.location.coords.lng]}
+              
+                <MarkerPopup
                 key={profile._id}
-                color={profile.isActive ? 'green' : 'gray'}
-              >
-                <Popup>
-                  <div>
-                    {profile.title && profile.title}
-                    {userName && <div>Name: {userName}</div>}
-                    {profile.jobTitle && <div>{`Title: ${profile.jobTitle}`}</div>}
-                    <div>
-                      {`Location: ${profile.location.city || profile.location.userProvided}`}
-                    </div>
-                    {isAbleToEdit ? (
-                      <div className="mt-3">
-                        <Button
-                          color="Primary"
-                          className="btn btn-outline-success mr-1 btn-sm"
-                          onClick={() => editHandler(profile)}
-                          style={boxStyle}
-                        >
-                          Edit
-                        </Button>
-                        {profile.type === 'm_user' && profile._id ? (
-                          <Button
-                            color="danger"
-                            className="btn btn-outline-error mr-1 btn-sm"
-                            onClick={() => removeLocation(profile._id)}
-                            style={boxStyle}
-                          >
-                            Remove
-                          </Button>
-                        ) : null}
-                      </div>
-                    ) : null}
-                  </div>
-                </Popup>
-              </CircleMarker>
+                  profile={profile}
+                  userName={userName}
+                  isAbleToEdit={isAbleToEdit}
+                  editHandler={editHandler}
+                  removeLocation={removeLocation}
+                  isOpen={popupsOpen}
+                /> 
             );
           })}
         </MarkerClusterGroup>
       </MapContainer>
     </Container>
   );
+}
+
+function EventComponent({ setPopupsOpen }) {
+  const map = useMapEvent('zoomend', () => {
+    if (map.getZoom() >= 13) {
+      setPopupsOpen(true);
+    } else {
+      setPopupsOpen(false);
+    }
+  });
+  return null;
 }
 
 export default TeamLocations;

@@ -5,25 +5,32 @@ import './PeopleReport/PeopleReport.css';
 import { boxStyle } from '../../styles';
 
 function InfringementsViz({ infringements, fromDate, toDate }) {
-  const [show, setShow] = React.useState(false);
-  const [modalShow, setModalShow] = React.useState(false);
+  const [graphVisible, setGraphVisible] = React.useState(false);
+  const [modalVisible, setModalVisible] = React.useState(false);
   const [focusedInf, setFocusedInf] = React.useState({});
 
   const handleModalClose = () => {
-    setModalShow(false);
+    setModalVisible(false);
     setFocusedInf({});
   };
+
   const handleModalShow = d => {
     setFocusedInf(d);
-    setModalShow(true);
+    if (graphVisible === false) {
+      setModalVisible(!modalVisible);
+    }
+    setGraphVisible(!graphVisible); // Open the graph when opening the modal
   };
   function displayGraph(bsCount, maxSquareCount) {
-    if (!show) {
+    if (!graphVisible) {
       d3.selectAll('#infplot > *').remove();
     } else {
       d3.selectAll('#infplot > *').remove();
-      const margin = { top: 10, right: 30, bottom: 30, left: 60 };
-      const width = 1000 - margin.left - margin.right;
+      const margin = { top: 30, right: 20, bottom: 30, left: 20 };
+      const containerWidth = '1000';
+      // Adjusted width based on the available space
+      const width = Math.min(containerWidth - margin.left - margin.right, 1000);
+
       const height = 400 - margin.top - margin.bottom;
 
       const tooltipEl = function(d) {
@@ -61,8 +68,9 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       const svg = d3
         .select('#infplot')
         .append('svg')
-        .attr('width', width + margin.left + margin.right)
+        .attr('width', '100%')
         .attr('height', height + margin.top + margin.bottom)
+        .attr('viewBox', `0 0 ${containerWidth} ${height + margin.top + margin.bottom}`)
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -175,11 +183,7 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       const legend = d3
         .select('#infplot')
         .append('div')
-        .attr('class', 'legendContainer')
-        .style('position', 'relative')
-        .style('top', `-450px`)
-        .style('left', `980px`);
-
+        .attr('class', 'legendContainer');
       legend.html(legendEl());
 
       legend.select('.infLabelsOff').on('click', function() {
@@ -198,7 +202,6 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
       });
     }
   }
-
   const generateGraph = () => {
     const dict = {};
     const value = [];
@@ -258,43 +261,45 @@ function InfringementsViz({ infringements, fromDate, toDate }) {
     }
 
     // eslint-disable-next-line no-console
-    console.log('INFvalues', value);
+    // console.log('INFvalues', value);
 
     displayGraph(value, maxSquareCount);
   };
 
   React.useEffect(() => {
     generateGraph();
-  }, [show, fromDate, toDate]);
+  }, [graphVisible, fromDate, toDate, focusedInf]);
 
   return (
     <div>
-      <Button onClick={() => setShow(!show)} aria-expanded={show} style={boxStyle}>
-        Show Infringements Graph
+      <Button onClick={handleModalShow} aria-expanded={graphVisible} style={boxStyle}>
+        {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div id="infplot" />
+      <div className="kaitest" id="infplot" />
 
-      <Modal size="lg" show={modalShow} onHide={handleModalClose}>
+      <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>{focusedInf.date ? focusedInf.date.toString() : 'Infringement'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <table id="inf">
+          <div id="inf">
             <thead>
               <tr>
                 <th>Descriptions</th>
               </tr>
-              <tbody>
-                {focusedInf.des
-                  ? focusedInf.des.map(desc => (
+            </thead>
+            <tbody>
+              {focusedInf.des
+                ? focusedInf.des.map(desc => {
+                    return (
                       <tr>
                         <td>{desc}</td>
                       </tr>
-                    ))
-                  : focusedInf.des}
-              </tbody>
-            </thead>
-          </table>
+                    );
+                  })
+                : null}
+            </tbody>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>

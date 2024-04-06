@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Form,
   FormGroup,
   Label,
   FormText,
-  Row,
-  Col,
   Modal,
   ModalHeader,
   ModalBody,
@@ -14,20 +12,23 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { connect } from 'react-redux';
+import Autosuggest from 'react-autosuggest';
+import { boxStyle } from 'styles';
+import { searchWithAccent } from 'utils/search';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,
   getLastName,
   assignBadges,
+  assignBadgesByUserID,
   clearNameAndSelected,
   closeAlert,
   validateBadges,
+  getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
-import Autosuggest from 'react-autosuggest';
-import { boxStyle } from 'styles';
 
-const AssignBadge = props => {
+function AssignBadge(props) {
   const [isOpen, setOpen] = useState(false);
   const [firstSuggestions, setFirstSuggestions] = useState([]);
   const [lastSuggestions, setLastSuggestions] = useState([]);
@@ -40,12 +41,16 @@ const AssignBadge = props => {
 
   const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
 
-  const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
   const getSuggestions = value => {
-    const escapedValue = escapeRegexCharacters(value.trim());
-    const regex = new RegExp('^' + escapedValue, 'i');
-    return activeUsers.filter(user => regex.test(user.firstName) || regex.test(user.lastName));
+    // const escapedValue = escapeRegexCharacters(value.trim());
+    // const regex = new RegExp('^' + escapedValue, 'i');
+    return activeUsers.filter(
+      user =>
+        searchWithAccent(user.firstName, value.trim()) ||
+        searchWithAccent(user.lastName, value.trim()),
+    );
   };
 
   const getSuggestionFirst = suggestion => suggestion.firstName;
@@ -78,6 +83,7 @@ const AssignBadge = props => {
 
   const onFirstSuggestionSelected = (event, { suggestion }) => {
     props.getLastName(suggestion.lastName);
+    props.getUserId(suggestion._id);
   };
 
   const onLastSuggestionsFetchRequested = ({ value }) => {
@@ -90,25 +96,29 @@ const AssignBadge = props => {
 
   const onLastSuggestionSelected = (event, { suggestion }) => {
     props.getFirstName(suggestion.firstName);
+    props.getUserId(suggestion._id);
+  };
+
+  const toggle = (didSubmit = false) => {
+    const { selectedBadges, firstName, lastName, userId } = props;
+    if (isOpen && didSubmit === true) {
+      // If user is selected from dropdown suggestions
+      if (userId) {
+        props.assignBadgesByUserID(userId, selectedBadges);
+      } else {
+        props.assignBadges(firstName, lastName, selectedBadges);
+      }
+      setOpen(prevIsOpen => !prevIsOpen);
+      props.clearNameAndSelected();
+    } else if (firstName && lastName) {
+      setOpen(prevIsOpen => !prevIsOpen);
+    } else {
+      props.validateBadges(firstName, lastName);
+    }
   };
 
   const submit = () => {
     toggle(true);
-  }
-
-  const toggle = (didSubmit = false) => {
-    const { firstName, lastName, selectedBadges } = props;
-    if (isOpen && didSubmit === true) {
-      props.assignBadges(firstName, lastName, selectedBadges);
-      setOpen(isOpen => !isOpen);
-      props.clearNameAndSelected();
-    } else {
-      if (firstName && lastName) {
-        setOpen(isOpen => !isOpen);
-      } else {
-        props.validateBadges(firstName, lastName);
-      }
-    }
   };
 
   const FirstInputProps = {
@@ -140,7 +150,12 @@ const AssignBadge = props => {
         >
           Search by Name
         </Label>
-        <i className="fa fa-info-circle" id="NameInfo" style={{ marginRight: '5px' }} />
+        <i
+          className="fa fa-info-circle"
+          id="NameInfo"
+          data-testid="NameInfo"
+          style={{ marginRight: '5px' }}
+        />
         <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '5px' }}>
           <UncontrolledTooltip
             placement="right"
@@ -202,24 +217,29 @@ const AssignBadge = props => {
         <Modal isOpen={isOpen} toggle={toggle} backdrop="static">
           <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
           <ModalBody>
-            <AssignBadgePopup allBadgeData={props.allBadgeData} submit={submit} selectedBadges={props.selectedBadges}/>
+            <AssignBadgePopup
+              allBadgeData={props.allBadgeData}
+              submit={submit}
+              selectedBadges={props.selectedBadges}
+            />
           </ModalBody>
         </Modal>
         <FormText color="muted">Please select a badge from the badge list.</FormText>
         <Alert color="dark" className="assign-badge-margin-top">
           {' '}
-          {props.selectedBadges ? props.selectedBadges.length : '0'} bagdes selected
+          {props.selectedBadges ? props.selectedBadges.length : '0'} badges selected
         </Alert>
       </FormGroup>
       {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
     </Form>
   );
-};
+}
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
   firstName: state.badge.firstName,
   lastName: state.badge.lastName,
+  userId: state.badge.userId,
   message: state.badge.message,
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
@@ -229,10 +249,12 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   getFirstName: firstName => dispatch(getFirstName(firstName)),
   getLastName: lastName => dispatch(getLastName(lastName)),
+  getUserId: userId => dispatch(getUserId(userId)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-  assignBadges: (fisrtName, lastName, selectedBadge) =>
-    dispatch(assignBadges(fisrtName, lastName, selectedBadge)),
+  assignBadgesByUserID: (id, selectedBadge) => dispatch(assignBadgesByUserID(id, selectedBadge)),
+  assignBadges: (firstName, lastName, selectedBadge) =>
+    dispatch(assignBadges(firstName, lastName, selectedBadge)),
   validateBadges: (firstName, lastName) => dispatch(validateBadges(firstName, lastName)),
   closeAlert: () => dispatch(closeAlert()),
 });
