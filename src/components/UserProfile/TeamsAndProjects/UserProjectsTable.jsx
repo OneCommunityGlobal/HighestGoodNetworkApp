@@ -8,6 +8,7 @@ import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 const UserProjectsTable = React.memo(props => {
+  console.log(props);
   const [tooltipOpen, setTooltip] = useState(false);
 
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
