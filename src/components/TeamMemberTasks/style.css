@@ -334,7 +334,7 @@
   justify-self: center;
 }
 
-.folloup-tooltip-container {
+.followup-tooltip-container {
   grid-column: 3 / span 1;
   grid-row: 1 / span 1;
   align-self: center;

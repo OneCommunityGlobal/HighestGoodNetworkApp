@@ -27,6 +27,7 @@ import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 import GoogleDocIcon from '../common/GoogleDocIcon';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
+import * as messages from '../../constants/followUpConstants'
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -107,13 +108,13 @@ const TeamMemberTask = React.memo(
     const followUpMouseoverText = task => {
       const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
       if (progressPersantage < 50) {
-        return 'Check this box once you’ve checked in for the first time with this team member to make sure they are clear on their task.';
+        return messages.MOUSE_OVER_TEXT_UNDER_50
       } else if (progressPersantage >= 50 && progressPersantage < 75) {
-        return 'Your team member’s task should be at least 50% complete. Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed.';
+        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75
       } else if (progressPersantage >= 75 && progressPersantage < 90) {
-        return 'Your team member’s task should be at least 75% complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
+        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90
       } else if (progressPersantage >= 90) {
-        return 'Your team member’s task should be almost complete! Check this box once you’ve confirmed they are on track to meet their deadline. Request additional time be added to their task if it is needed';
+        return messages.MOUSE_OVER_TEXT_OVER_90
       }
     };
 

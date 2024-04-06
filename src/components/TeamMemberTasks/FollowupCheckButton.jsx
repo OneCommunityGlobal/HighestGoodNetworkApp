@@ -14,7 +14,7 @@ const FollowupCheckButton = ({ moseoverText, user, task }) => {
   const [needFollowUp, setNeedFollowUp] = useState(false)
 
   useEffect(()=>{
-    CheckNeedFollowUp()
+    checkNeedFollowUp()
   },[followUpPercentageDeadline])
 
   const handleCheckboxFollowUp = () => {
@@ -29,7 +29,7 @@ const FollowupCheckButton = ({ moseoverText, user, task }) => {
     dispatch(setUserFollowUp(user.personId, task._id, data));
   };
 
-  const CheckNeedFollowUp = () => {
+  const checkNeedFollowUp = () => {
     const taskProgressPercentage =
       Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
     

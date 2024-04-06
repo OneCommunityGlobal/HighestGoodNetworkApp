@@ -1,8 +1,8 @@
-.folloup-tooltip-container {
+.followup-tooltip-container {
   display: inline-block;
 }
 
-.folloup-tooltip {
+.followup-tooltip {
   visibility: hidden;
   background-color: #333333;
   color: white;
@@ -16,12 +16,12 @@
   width: 40vw;
 }
 
-.folloup-tooltip-button {
+.followup-tooltip-button {
   background: none;
   border: none;
   cursor: pointer;
 }
 
-.folloup-tooltip-container:hover .folloup-tooltip {
+.followup-tooltip-container:hover .followup-tooltip {
   visibility: visible;
 }
