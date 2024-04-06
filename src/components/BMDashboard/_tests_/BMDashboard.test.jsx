@@ -2,11 +2,15 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter, Router } from 'react-router-dom'; 
+import { BrowserRouter, Router } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { createMemoryHistory } from 'history'; 
+import { createMemoryHistory } from 'history';
 import BMDashboard from '../BMDashboard';
 
+// Import the fetchBMProjects action creator
+import { fetchBMProjects as mockFetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+
+jest.mock('../../../actions/bmdashboard/projectActions');
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
@@ -21,7 +25,7 @@ const mockProjects = [
       stockWasted: 50,
       itemType: { unit: 'kg', name: 'Material A' },
     },
-    members: [{}, {}], 
+    members: [{}, {}],
     mostMaterialBought: {
       stockBought: 100,
       itemType: { unit: 'kg', name: 'Material B' },
@@ -41,7 +45,7 @@ const mockProjects = [
       stockWasted: 30,
       itemType: { unit: 'kg', name: 'Material A' },
     },
-    members: [{}, {}], 
+    members: [{}, {}],
     mostMaterialBought: {
       stockBought: 50,
       itemType: { unit: 'kg', name: 'Material B' },
@@ -51,7 +55,6 @@ const mockProjects = [
       itemType: { unit: 'kg', name: 'Material C' },
     },
   },
-  
 ];
 
 describe('BMDashboard Tests', () => {
@@ -59,59 +62,67 @@ describe('BMDashboard Tests', () => {
 
   beforeEach(() => {
     const initialState = {
-      bmProjects: mockProjects, 
+      bmProjects: mockProjects,
       errors: {},
     };
     store = mockStore(initialState);
   });
-  //Test Case 1: 
+
+  // Mock the fetchBMProjects action to return mock data
+  beforeEach(() => {
+    mockFetchBMProjects.mockReturnValue(() => ({
+      type: 'FETCH_PROJECTS_SUCCESS',
+      payload: mockProjects,
+    }));
+  });
+
+  //Test Case 1:
   it('Renders BMDashboard and checks for header', () => {
     render(
       <Provider store={store}>
-        <BMDashboard />
-      </Provider>
+          <BMDashboard />
+      </Provider>,
     );
-
     expect(screen.getByText('Building and Inventory Management Dashboard')).toBeInTheDocument();
   });
-  //Test Case 2: 
+  //Test Case 2:
   it('Renders dropdown with project options', async () => {
     render(
       <Provider store={store}>
         <BMDashboard />
-      </Provider>
+      </Provider>,
     );
-  
+
     const dropdown = screen.getByRole('combobox');
     userEvent.click(dropdown);
-  
+
     expect(screen.getByText('Project 1')).toBeInTheDocument();
     expect(screen.getByText('Project 2')).toBeInTheDocument();
     expect(screen.queryByText('Project 3')).toBeNull();
   });
-  //Test Case 3: 
+  //Test Case 3:
   it('Shows an error message if no project is selected and the button is clicked', async () => {
     render(
       <Provider store={store}>
         <BrowserRouter>
           <BMDashboard />
         </BrowserRouter>
-      </Provider>
+      </Provider>,
     );
 
     const button = screen.getByRole('button', { name: /go to project dashboard/i });
     userEvent.click(button);
-  
+
     expect(screen.getByText(/please select a project/i)).toBeInTheDocument();
   });
-  //Test Case 4: 
+  //Test Case 4:
   it('Displays the correct number of project summaries and verifies project summary content', () => {
     render(
       <Provider store={store}>
         <BrowserRouter>
           <BMDashboard />
         </BrowserRouter>
-      </Provider>
+      </Provider>,
     );
 
     // number of project summaries
@@ -130,13 +141,12 @@ describe('BMDashboard Tests', () => {
       'Stock:',
     ];
 
-    expectedLabels.forEach((label) => {
-      expect(screen.getAllByText(new RegExp(label, "i")).length).toEqual(mockProjects.length);
+    expectedLabels.forEach(label => {
+      expect(screen.getAllByText(new RegExp(label, 'i')).length).toEqual(mockProjects.length);
     });
-    
   });
-  
-  //Test Case 5:  
+
+  //Test Case 5:
   it('Navigates to the correct project dashboard upon selecting a project and clicking the button', async () => {
     const history = createMemoryHistory();
     render(
@@ -144,17 +154,17 @@ describe('BMDashboard Tests', () => {
         <Router history={history}>
           <BMDashboard />
         </Router>
-      </Provider>
+      </Provider>,
     );
 
     const selectDropdown = screen.getByRole('combobox');
-    userEvent.selectOptions(selectDropdown, '1'); 
+    userEvent.selectOptions(selectDropdown, '1');
 
     const goToDashboardButton = screen.getByRole('button', { name: /go to project dashboard/i });
     userEvent.click(goToDashboardButton);
- 
+
     await waitFor(() => {
       expect(history.location.pathname).toBe(`/bmdashboard/projects/1`);
     });
-  });  
+  });
 });
