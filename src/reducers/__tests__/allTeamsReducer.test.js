@@ -23,7 +23,7 @@ describe('Teams Reducer', () => {
     const result = allUserTeamsReducer({}, { type: types.FETCH_USER_TEAMS_ERROR });
     expect(result).toMatchObject({
       fetching: false,
-      status: '404',
+      status: '500',
     });
   });
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useId, Profiler } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react';
 import onRenderProfiler from 'utils/profilerCallBack';
 import {
   Row,
@@ -58,8 +58,7 @@ import { getAllTeamCode  } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 
 function UserProfile(props) {
-  /* Destructure redux state from props */
-  // const { auth, userProfile, userProjects, allProjects, role, taskItems, auth } = props;
+ 
   /* Constant values */
 
   const initialFormValid = {

@@ -40,7 +40,7 @@ const FeaturedBadges = props => {
 
   return (
     <div data-testid="badge_featured_container" className="badge_featured_container">
-      {loading ? 'loading...' : filteredBadges.map((value, index) => (
+      {filteredBadges.map((value, index) => (
         <BadgeImage personalBestMaxHrs={props.personalBestMaxHrs} count={value.count} badgeData={value.badge} index={index} key={index} />
       ))}
     </div>

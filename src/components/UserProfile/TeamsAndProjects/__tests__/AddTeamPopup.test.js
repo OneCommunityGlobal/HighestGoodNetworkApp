@@ -42,6 +42,28 @@ const store = mockStore({
       isActive: false,
     },
   ],
+  allTeamCode: [
+    {
+      teamName: 'team11',
+      _id: 'aaa123',
+      isActive: true,
+    },
+    {
+      teamName: 'team12',
+      _id: 'bbb456',
+      isActive: true,
+    },
+    {
+      teamName: 'team13',
+      _id: 'ccc789',
+      isActive: true,
+    },
+    {
+      teamName: 'team24',
+      _id: 'ddd056',
+      isActive: false,
+    },
+  ],
   fetched: true,
   fetching: false,
   status: '200',
@@ -93,6 +115,7 @@ describe('AddTeamPopup component', () => {
     });
     const teamsData = {
       allTeams: [],
+      allTeamCode: []
     };
     renderComponent(false, teamsData, userTeams);
     expect(screen.queryByText('Add Team')).not.toBeInTheDocument();
@@ -107,6 +130,7 @@ describe('AddTeamPopup component', () => {
     });
     const teamsData = {
       allTeams: store.getState().allTeams,
+      allTeamCode: store.getState().allTeamCode
     };
     toast.success = jest.fn();
     renderComponent(true, teamsData, userTeams);
@@ -150,6 +174,7 @@ describe('AddTeamPopup component', () => {
     });
     const teamsData = {
       allTeams: store.getState().allTeams,
+      allTeamCode: store.getState().allTeamCode,
     };
     renderComponent(true, teamsData, userTeams);
     expect(screen.queryByText('Add to Team')).toBeInTheDocument();
@@ -176,6 +201,7 @@ describe('AddTeamPopup component', () => {
     });
     const teamsData = {
       allTeams: store.getState().allTeams,
+      allTeamCode: store.getState().allTeamCode,
     };
     renderComponent(true, teamsData, userTeams);
     expect(screen.queryByText('Add to Team')).toBeInTheDocument();
