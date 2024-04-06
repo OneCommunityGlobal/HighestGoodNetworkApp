@@ -156,6 +156,7 @@ export const ENDPOINTS = {
 
   TROPHY_ICON: (userId, trophyFollowedUp) => `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
 
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
