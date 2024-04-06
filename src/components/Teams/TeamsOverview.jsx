@@ -1,5 +1,6 @@
 import React from 'react';
 import { TOTAL_TEAMS, ACTIVE_TEAMS } from '../../languages/en/ui';
+import "./TeamsOverview.css"
 
 export const TeamsOverview = props => {
   return (
