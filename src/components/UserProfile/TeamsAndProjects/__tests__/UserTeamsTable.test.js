@@ -2,7 +2,7 @@ import { Provider } from 'react-redux';
 import UserTeamsTable from '../UserTeamsTable';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import { render, screen, fireEvent, waitFor, within, getByText } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { userProfileMock } from '../../../../__tests__/mockStates.js';
 
 jest.mock('utils/permissions', () => ({
@@ -24,9 +24,9 @@ const renderComponent = mockProps => {
   const store = mockStore({
     auth: {
       user: {
-        role: 'Owner', // set user role to "owner"
+        role: 'Owner', 
         permissions: {
-          frontPermissions: [], // or appropriate mock data
+          frontPermissions: [],
         },
       },
     },
@@ -67,6 +67,7 @@ const renderComponent = mockProps => {
 describe('User Teams Table Component', () => {
   it('render without crashing', () => {
     renderComponent(mockUserProfile);
+
   });
 
   it('renders correct number of teams the user is assigned to', () => {
@@ -88,24 +89,9 @@ describe('User Teams Table Component', () => {
 
   // Test if the Visibility toggle appears on the screen
   it('visibility toggle appears with permission', () => {
+    mockUserProfile.canEditVisibility = true;
     renderComponent(mockUserProfile);
-    let visibilityToggle;
-    visibilityToggle = within(screen.getByTestId('userTeamTest')).queryAllByTestId('visibility-switch');
-    expect(visibilityToggle).toHaveLength(0);
-   /* mockUserProfile.canEditVisibility = true;
-    renderComponent(mockUserProfile);
-    visibilityToggle = within(screen.getAllByTestId('userTeamTest')).queryAllByTestId('visibility-switch');
-    expect(visibilityToggle).toHaveLength(1);*/
+    const visibilityToggle = within(screen.getByTestId('userTeamTest')).queryAllByTestId('visibility-switch');
+    expect(visibilityToggle).toHaveLength(1);
   });
-
-
-  // Test edit team code interaction
-  /*it('allows editing team code if permitted', () => {
-    // Assuming 'editTeamCode' permission allows editing the team code
-    const firstTeamInput = component.find('Input').first();
-    firstTeamInput.simulate('change', { target: { value: 'New-Code' } });
-
-    // Verify the input value change
-    expect(firstTeamInput.prop('value')).toBe('A-123');
-  });*/
 });
