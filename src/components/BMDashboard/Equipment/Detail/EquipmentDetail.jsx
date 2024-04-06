@@ -81,7 +81,7 @@ function EquipmentDetail() {
   const formattedRentedDueDate = formatDateString(equipment?.rentalDueDate);
 
   const details = [
-    { label: 'Belongs to project', value: equipment?.project?.name },
+    { label: 'Belongs to Project', value: equipment?.project?.name },
     { label: 'Class', value: equipment?.itemType?.category },
     { label: 'Name', value: equipment?.itemType?.name },
     { label: 'Number', value: equipment?.code },
@@ -92,10 +92,10 @@ function EquipmentDetail() {
     { label: 'Current Usage', value: currentUsage },
     { label: 'Dashed Line' },
     { label: 'Input Invoice No or ID', value: 'No123ABC' },
-    { label: 'Price', value: '150USD' },
+    { label: 'Price', value: '$150' },
     { label: 'Add Condition', value: 'New' },
-    { label: 'Shipping Fee', value: '25USD' },
-    { label: 'Taxes', value: '15USD' },
+    { label: 'Shipping Fee', value: '$25' },
+    { label: 'Taxes', value: '$15' },
     { label: 'Supplier Phone Number', value: '555-33-3333' },
     {
       label: 'Link To Buy/Rent',
