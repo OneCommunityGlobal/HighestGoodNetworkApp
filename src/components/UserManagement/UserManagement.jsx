@@ -247,7 +247,7 @@ class UserManagement extends React.PureComponent {
 
   filteredUserList = userProfiles => {
     return userProfiles.filter(user => {
-      console.log('user', user);
+      // console.log('user', user);
       // Applying the search filters before creating each table data element
       return (
         // Check if the user matches the search criteria
@@ -258,14 +258,14 @@ class UserManagement extends React.PureComponent {
           user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
           user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
           (this.state.weeklyHrsSearchText === '' || user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
-          
+
           // Check the isActive state only if 'all' is not selected
           ((this.state.allSelected && true) || (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
-          
+
           // Check the isPaused state only if 'all' is not selected
           ((this.state.allSelected && true) || (this.state.isPaused === false || (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
         ) &&
-          
+
           (
             searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
             searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
@@ -277,8 +277,8 @@ class UserManagement extends React.PureComponent {
       );
     });
   };
-  
-  
+
+
   /**
    * reload user list and close user creation popup
    */
@@ -309,7 +309,13 @@ class UserManagement extends React.PureComponent {
    * Call back on log time off button click
    */
   onLogTimeOffClick = user => {
+    // Check if target user is Jae's related user and authroized to manage time off requests
+    if(cantUpdateDevAdminDetails(user.email , this.authEmail)){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
+    
     const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
     if(canManageTimeOffRequests || hasRolePermission){
       this.setState({
@@ -319,7 +325,7 @@ class UserManagement extends React.PureComponent {
     }else{
       toast.warn(`You do not have permission to manage time-off requests.`)
     }
-  
+
   };
 
   /**
@@ -337,7 +343,7 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
-    if(cantUpdateDevAdminDetails(user.email , this.props.state.userProfile.email)) {
+    if(cantUpdateDevAdminDetails(user.email , this.authEmail)) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }

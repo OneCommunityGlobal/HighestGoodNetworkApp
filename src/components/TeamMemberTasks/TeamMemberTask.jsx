@@ -1,36 +1,23 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useRef} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faBell,
-  faCircle,
-  faCheck,
-  faTimes,
-  faExpandArrowsAlt,
-  faCompressArrowsAlt,
-} from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faCheck, faTimes, faExpandArrowsAlt, faCompressArrowsAlt} from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
-import { Table, Progress, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
 import './style.css';
 import { boxStyle } from 'styles';
-// <<<<<<< HEAD
-// import { useDispatch } from 'react-redux';
+
 import Warning from 'components/Warnings/Warnings';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import moment from 'moment-timezone';
-// <<<<<<< HEAD
+
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
-// import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
-// =======
-// import ReviewButton from './ReviewButton';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
-// >>>>>>> development
-// =======
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
-// >>>>>>> development
+import GoogleDocIcon from '../common/GoogleDocIcon'
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -44,7 +31,6 @@ const TeamMemberTask = React.memo(
     userRole,
     userId,
     updateTaskStatus,
-    userPermission,
     showWhoHasTimeOff,
     onTimeOff,
     goingOnTimeOff,
@@ -53,28 +39,11 @@ const TeamMemberTask = React.memo(
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
 
-    // <<<<<<< HEAD
-    //     // console.log('user user inside team memebr task', user);
-    //     const [totalHoursRemaining, activeTasks] = useMemo(() => {
-    //       let totalHoursRemaining = 0;
-
-    //       if (user.tasks) {
-    //         totalHoursRemaining = user.tasks.reduce((total, task) => {
-    //           task.hoursLogged = task.hoursLogged || 0;
-    //           task.estimatedHours = task.estimatedHours || 0;
-
-    //           if (task.status !== 'Complete' && task.isAssigned !== 'false') {
-    //             return total + (task.estimatedHours - task.hoursLogged);
-    //           }
-    //           return total;
-    //         }, 0);
-    // =======
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
       task.estimatedHours = task.estimatedHours || 0;
       if (task.status !== 'Complete' && task.isAssigned !== 'false') {
         return total + Math.max(0, task.estimatedHours - task.hoursLogged);
-        // >>>>>>> development
       }
       return total;
     }, 0);
@@ -95,10 +64,11 @@ const TeamMemberTask = React.memo(
     // these need to be changed to actual permissions...
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
-    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
+    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     // ^^^
 
+    const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
@@ -116,6 +86,13 @@ const TeamMemberTask = React.memo(
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
     };
+
+    const userGoogleDocLink = user.adminLinks?.reduce((targetLink, currentElement) => {
+      if (currentElement.Name === 'Google Doc') {
+        targetLink = currentElement.Link
+      }
+      return targetLink;
+    }, undefined);
 
     return (
       <>
@@ -160,6 +137,8 @@ const TeamMemberTask = React.memo(
                             : undefined,
                       }}
                     >{`${user.name}`}</Link>
+                    {canGetWeeklySummaries && (<GoogleDocIcon link={userGoogleDocLink}/>)}
+
                     <Warning
                       username={user.name}
                       userName={user}
@@ -295,7 +274,7 @@ const TeamMemberTask = React.memo(
                 {canTruncate && (
                   <tr key="truncate-button-row" className="task-break">
                     <td className="task-align">
-                      <button onClick={handleTruncateTasksButtonClick}>
+                      <button type="button" onClick={handleTruncateTasksButtonClick}>
                         {isTruncated ? `Show All (${activeTasks.length}) Tasks` : 'Truncate Tasks'}
                       </button>
                     </td>
@@ -307,44 +286,45 @@ const TeamMemberTask = React.memo(
               (onTimeOff || goingOnTimeOff) &&
               (expandTimeOffIndicator[user.personId] ? (
                 <button
+                  type="button"
                   className="expand-time-off-detail-button"
-                  onClick={e => {
+                  onClick={() => {
                     setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: false }));
                   }}
                 >
                   <FontAwesomeIcon icon={faExpandArrowsAlt} data-testid="icon" />
                 </button>
-              ) : (
-                <div className="taking-time-off-content-div">
-                  <button
-                    className="compress-time-off-detail-button"
-                    onClick={e => {
-                      setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
-                  </button>
+            ) : (
+              <div className="taking-time-off-content-div">
+                <button
+                  className="compress-time-off-detail-button"
+                  onClick={() => {
+                    setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                </button>
 
-                  <span className="taking-time-off-content-text">
-                    {onTimeOff
-                      ? `${user.name} Is Not Available this Week`
-                      : `${user.name} Is Not Available Next Week`}
-                  </span>
-                  <button
-                    type="button"
-                    className="taking-time-off-content-btn"
-                    onClick={() => {
-                      const request = onTimeOff
-                        ? { ...onTimeOff, onVacation: true, name: user.name }
-                        : { ...goingOnTimeOff, onVacation: false, name: user.name };
+                <span className="taking-time-off-content-text">
+                  {onTimeOff
+                    ? `${user.name} Is Not Available this Week`
+                    : `${user.name} Is Not Available Next Week`}
+                </span>
+                <button
+                  type="button"
+                  className="taking-time-off-content-btn"
+                  onClick={() => {
+                    const request = onTimeOff
+                      ? { ...onTimeOff, onVacation: true, name: user.name }
+                      : { ...goingOnTimeOff, onVacation: false, name: user.name };
 
-                      openDetailModal(request);
-                    }}
-                  >
-                    Details ?
-                  </button>
-                </div>
-              ))}
+                    openDetailModal(request);
+                  }}
+                >
+                  Details ?
+                </button>
+              </div>
+            ))}
           </td>
         </tr>
       </>

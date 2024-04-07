@@ -1,18 +1,17 @@
-import React from 'react';
+import React,{ useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { Container, Row, Col, Modal as NestedModal, ModalBody, ModalFooter } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import moment from 'moment-timezone';
-import { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import { boxStyle } from 'styles';
 import ScheduleReasonModalCard from './ScheduleReasonModalCard';
 import {
   addTimeOffRequestThunk,
   deleteTimeOffRequestThunk,
 } from '../../../actions/timeOffRequestAction';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { boxStyle } from 'styles';
 import './ScheduleReasonModal.css';
 
 const ScheduleReasonModal = ({
@@ -30,7 +29,6 @@ const ScheduleReasonModal = ({
     .isoWeekday(7)
     .startOf('day');
   const nextSunday = new Date(nextSundayStr.year(), nextSundayStr.month(), nextSundayStr.date());
-
   const initialRequestData = {
     dateOfLeave: nextSunday,
     numberOfWeeks: 1,
@@ -51,6 +49,7 @@ const ScheduleReasonModal = ({
 
   const [requestData, setRequestData] = useState(initialRequestData);
   const [requestDataErrors, setRequestDataErrors] = useState(initialRequestDataErrors);
+
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [confirmationModalData, setConfirmationModalData] = useState(initialConfirmationData);
   const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
@@ -60,18 +59,56 @@ const ScheduleReasonModal = ({
 
   const ContainerMaxHeight = checkIfUserCanScheduleTimeOff() ? '160px' : '600px';
 
+  const checkIfUserIsAllowedToscheduleForTheDuration = data => {
+    if (!data) return false;
+    const blueSquares = Number(infringements?.length) || 0;
+    const numberOfWeeks = Number(data);
+    let scheduledVacation = 0;
+
+    allRequests[userId]?.forEach(element => {
+      scheduledVacation += Number(element.duration);
+    });
+
+    const infringementsAndScheduledTimeOff = scheduledVacation + blueSquares;
+    const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
+
+    if (
+      infringementsAndScheduledTimeOff + numberOfWeeks > 5 &&
+      !hasRolePermission &&
+      !canManageTimeOffRequests
+    ) {
+      setAllowedDurationData({
+        numberOfScheduledReasons: allRequests[userId]?.length || 0,
+        durationOfScheduledReasons: scheduledVacation,
+        blueSquares: blueSquares || 0,
+      });
+      setAllowedDurationModal(true);
+      return true;
+    }
+    return false;
+  };
+
   const handleAddRequestDataChange = e => {
     e.preventDefault();
-    const key = e.target.name;
-    const value = e.target.value;
-    if (key === 'numberOfWeeks') {
+    const { name , value} = e.target
+    if (name === 'numberOfWeeks') {
       if (checkIfUserIsAllowedToscheduleForTheDuration(value)) return;
     }
     setRequestData(prev => ({
       ...prev,
-      [key]: value,
+      [name]: value,
     }));
   };
+
+  const getDateWithoutTimeZone = date => {
+    const newDateObject = new Date(date);
+    const day = newDateObject.getDate();
+    const month = newDateObject.getMonth() + 1;
+    const year = newDateObject.getFullYear();
+    return moment(`${month}-${day}-${year}`, 'MM-DD-YYYY').format('YYYY-MM-DD');
+  };
+
+  
 
   // checks if date value is not empty
   const validateDateOfLeave = data => {
@@ -115,10 +152,10 @@ const ScheduleReasonModal = ({
         const requestEndingDate = moment(request.endingDate.split('T')[0]).startOf('day');
 
         if (
-          (dataStartingDate.isSameOrAfter(requestStartingDate) &&
-            dataStartingDate.isSameOrBefore(requestEndingDate)) ||
-          (dataEndingDate.isSameOrAfter(requestStartingDate) &&
-            dataEndingDate.isSameOrBefore(requestEndingDate))
+          (requestStartingDate.isSameOrAfter(dataStartingDate) &&
+          requestStartingDate.isSameOrBefore(dataEndingDate)) ||
+          (requestEndingDate.isSameOrAfter(dataStartingDate) &&
+          requestEndingDate.isSameOrBefore(dataEndingDate))
         ) {
           return true;
         }
@@ -170,7 +207,6 @@ const ScheduleReasonModal = ({
       }));
       return false;
     }
-
     return true;
   };
 
@@ -235,13 +271,6 @@ const ScheduleReasonModal = ({
     toggleConfirmationModal();
   };
 
-  const getDateWithoutTimeZone = date => {
-    const newDateObject = new Date(date);
-    const day = newDateObject.getDate();
-    const month = newDateObject.getMonth() + 1;
-    const year = newDateObject.getFullYear();
-    return moment(`${month}-${day}-${year}`, 'MM-DD-YYYY').format('YYYY-MM-DD');
-  };
 
   const handleDeleteRequest = id => {
     toggleDeleteConfirmationModal();
@@ -260,37 +289,8 @@ const ScheduleReasonModal = ({
     return momentA - momentB;
   };
 
-  const checkIfUserIsAllowedToscheduleForTheDuration = data => {
-    if (!data) return false;
-    const blueSquares = Number(infringements?.length) || 0;
-    const numberOfWeeks = Number(data);
-    let scheduledVacation = 0;
-
-    allRequests[userId]?.forEach(element => {
-      scheduledVacation = scheduledVacation + Number(element.duration);
-    });
-
-    const infringementsAndScheduledTimeOff = scheduledVacation + blueSquares;
-    const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
-
-    if (
-      infringementsAndScheduledTimeOff + numberOfWeeks > 5 &&
-      !hasRolePermission &&
-      !canManageTimeOffRequests
-    ) {
-      setAllowedDurationData({
-        numberOfScheduledReasons: allRequests[userId]?.length || 0,
-        durationOfScheduledReasons: scheduledVacation,
-        blueSquares: blueSquares || 0,
-      });
-      setAllowedDurationModal(true);
-      return true;
-    }
-    return false;
-  };
 
   const durationExplanationText = data => {
-
     const { numberOfScheduledReasons, blueSquares, durationOfScheduledReasons } = data;
 
     const transitionWord = numberOfScheduledReasons > 0 && blueSquares > 0 ? ` and ` : '';
@@ -303,20 +303,21 @@ const ScheduleReasonModal = ({
           }`
         : '';
 
-    const blueSquaresText = blueSquares > 0 ? ` ${blueSquares} blue ${
-      blueSquares > 1 ? 'squares' : 'square'
-    }` : ''
+    const blueSquaresText =
+      blueSquares > 0 ? ` ${blueSquares} blue ${blueSquares > 1 ? 'squares' : 'square'}` : '';
 
     const allowedPeriodText = `. Therefore,  you are only allowed to schedule a reason for no more than ${5 -
-      blueSquares - durationOfScheduledReasons} ${
-      5 - blueSquares - durationOfScheduledReasons > 1
-        ? 'weeks'
-        : 'week'
-    }` 
+      blueSquares -
+      durationOfScheduledReasons} ${
+      5 - blueSquares - durationOfScheduledReasons > 1 ? 'weeks' : 'week'
+    }`;
 
-    const finalText = (scheduledReasonsText === '' && blueSquaresText === '') ? `You are only allowed to schedule reason for no more than 5 Weeks.` : `You have ${scheduledReasonsText} ${transitionWord} ${blueSquaresText}${allowedPeriodText}.`;
+    const finalText =
+      scheduledReasonsText === '' && blueSquaresText === ''
+        ? `You are only allowed to schedule reason for no more than 5 Weeks.`
+        : `You have ${scheduledReasonsText} ${transitionWord} ${blueSquaresText}${allowedPeriodText}.`;
 
-    return finalText
+    return finalText;
   };
 
   return (
@@ -332,22 +333,22 @@ const ScheduleReasonModal = ({
             <Modal.Body>
               <Form.Group className="mb-0" controlId="exampleForm.ControlTextarea1">
                 <Form.Label className="mb-3">
-                  {/* Schedule a reason to be used on this weekend's blue square for {user.firstName} */}
-                  Need to take time off for an emergency or vacation? That's no problem. The
-                  system will still issue you a blue square but scheduling here will note this
-                  reason on it so it's clear you chose to use one (vs receiving one for missing
-                  something) and let us know in advance. Blue squares are meant for situations like
-                  this and we allow 5 a year.
+                 {` Need to take time off for an emergency or vacation? That's no problem. The system
+                  will still issue you a blue square but scheduling here will note this reason on it
+                  so it's clear you chose to use one (vs receiving one for missing something) and
+                  let us know in advance. Blue squares are meant for situations like this and we
+                  allow 5 a year.`}
                 </Form.Label>
                 <Form.Label>
-                Select the Sunday of the week you'll be leaving ( If you'll be absent this week, choose the Sunday of current week ):
+                  {`Select the Sunday of the week you'll be leaving ( If you'll be absent this week,
+                  choose the Sunday of current week ):`}
                 </Form.Label>
                 <DatePicker
                   selected={requestData.dateOfLeave}
                   onChange={date => {
                     setRequestData(prev => ({
                       ...prev,
-                      ['dateOfLeave']: date,
+                      dateOfLeave: date,
                     }));
                   }}
                   filterDate={filterSunday}
@@ -465,9 +466,7 @@ const ScheduleReasonModal = ({
               <NestedModal isOpen={allowedDurationModal} toggle={toggleDurationInfoModal}>
                 <ModalBody>
                   <Container>
-                    <Row>
-                      {durationExplanationText(allowedDurationData)}
-                    </Row>
+                    <Row>{durationExplanationText(allowedDurationData)}</Row>
                   </Container>
                 </ModalBody>
                 <ModalFooter>
@@ -486,13 +485,19 @@ const ScheduleReasonModal = ({
             closeButton={!checkIfUserCanScheduleTimeOff()}
             style={{ borderTop: '1px solid #dee2e6' }}
           >
+            {' '}
             <Modal.Title className="centered-container">
               <div className="centered-text mt-0">Scheduled Time Off</div>
             </Modal.Title>
           </Modal.Header>
           <Modal.Footer>
             <Container
-              style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: ContainerMaxHeight, paddingLeft : '0px' }}
+              style={{
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                maxHeight: ContainerMaxHeight,
+                paddingLeft: '0px',
+              }}
               id="user-time-off-request-list"
             >
               {allRequests[userId]
@@ -515,11 +520,12 @@ const ScheduleReasonModal = ({
                     </Col>
                   </Row>
                   <Row>
+                    {' '}
                     <Col className="mb-1">
                       Once you confirm, an email will be sent to you and your manager to notify them
                       of the update.
                     </Col>
-                  </Row>
+                  </Row>{' '}
                 </Container>
               </ModalBody>
               <ModalFooter>

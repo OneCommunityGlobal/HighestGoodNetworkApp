@@ -18,7 +18,6 @@ src/__tests__/**
 
 src/components/App.jsx
 src/components/AutoReload/**
-src/components/Badge/**
 src/components/common/**
 src/components/Header/**
 src/components/Inventory/**
@@ -27,7 +26,6 @@ src/components/MonthlyEffort/**
 src/components/NewProfileLink/**
 
 src/components/PermissionsManagement/**
-# src/components/PopUpBar/**
 src/components/ProfileLinks/**
 src/components/Projects/**
 src/components/Reports/**
@@ -42,3 +40,4 @@ src/components/Timelog/**
 src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
+src/components/Announcements/**

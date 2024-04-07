@@ -82,7 +82,7 @@ export default function Timer() {
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
-  const isWSOpenRef = useRef(true);
+  const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
 
@@ -212,7 +212,7 @@ export default function Timer() {
   useEffect(() => {
     // Exclude heartbeat message
     if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
-      isWSOpenRef.current = true;
+      isWSOpenRef.current = 0;
       return;
     }
     /**
@@ -235,11 +235,11 @@ export default function Timer() {
   useEffect(() => {
     // This useEffect is to make sure that the WS is open and send a heartbeat every 60 seconds
     const interval = setInterval(() => {
-      if (running && isWSOpenRef.current) {
-        isWSOpenRef.current = false;
+      if (running) {
+        isWSOpenRef.current += 1;
         sendHeartbeat();
         setTimeout(() => {
-          if (!isWSOpenRef.current) {
+          if (isWSOpenRef.current > 3) {
             setRunning(false);
             setInacModal(true);
             getWebSocket().close();
