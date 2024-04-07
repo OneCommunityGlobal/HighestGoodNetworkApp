@@ -16,7 +16,7 @@ const ShowCollapse = props => {
       <div>{props.resources[0].name}</div>
 
       {props.resources.slice(1).map(resource => (
-        <Collapse in={open}>
+        <Collapse in={open} key={resource._id}>
           <div key={resource._id} className="new-line">
             {resource.name}
           </div>
@@ -86,9 +86,9 @@ export const TasksDetail = props => {
 
       <div className="tasks-detail-center-cells">
         {task.isActive ? (
-          <tasks className="isActive">
+          <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
-          </tasks>
+          </div>
         ) : (
           <div className="isNotActive">
             <i className="fa fa-circle-o" aria-hidden="true"></i>

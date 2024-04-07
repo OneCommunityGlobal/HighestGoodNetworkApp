@@ -12,6 +12,7 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkM
     <div
       onClick={() => setCurrentPage(pageNumber)}
       className={classnames(`${darkMode ? 'page-index-button-dark' : 'page-index-button'}`, darkMode ? { 'active-button-dark': pageNumber === currentPage } : { 'active-button': pageNumber === currentPage })}
+      key={pageNumber}
     >
       {pageNumber}
     </div>

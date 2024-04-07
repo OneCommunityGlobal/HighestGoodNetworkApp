@@ -54,7 +54,6 @@
   background-color: #2affa1;
 }
 
-
 /* DARK MODE */
 .report-header-profile-pic-dark {
   width: 6rem;
@@ -87,4 +86,7 @@
 
 .report-header-activity-dark.active {
   background-color: #2affa1;
+}
+.report-header-entity-other-info{
+  font-size: 15px;
 }
