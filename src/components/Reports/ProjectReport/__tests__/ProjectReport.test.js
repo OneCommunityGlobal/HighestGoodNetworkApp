@@ -10,6 +10,7 @@ import { getProjectDetail } from 'actions/project';
 import { fetchAllMembers, foundUsers, getProjectActiveUser } from 'actions/projectMembers';
 import { fetchAllWBS } from 'actions/wbs';
 import viewWBSpermissionsRequired from 'utils/viewWBSpermissionsRequired';
+import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 const store = mockStore({
@@ -21,6 +22,7 @@ const store = mockStore({
   wbs: { WBSItems: [] },
   projectMembers: { members: [], foundUsers: [], fetched: true },
   tasks: [],
+  theme: themeMock,
   projectReport: {
     project: {
       projectName: 'project 1',
