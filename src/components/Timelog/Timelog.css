@@ -132,3 +132,7 @@
       text-align: right;
   }
 }
+
+.container-timelog-wrapper{
+  min-height: 100%;
+}
