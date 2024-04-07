@@ -16,7 +16,6 @@ import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequire
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
-import { fetchAllTasks } from 'actions/task';
 
 // eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
