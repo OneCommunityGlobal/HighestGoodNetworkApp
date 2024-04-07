@@ -19,7 +19,7 @@ const DarkModeButton = () => {
   return (
     <>
       <Tooltip 
-        placement="bottom" 
+        placement="auto" 
         isOpen={tooltipOpen} 
         target="darkModeTooltip" 
         toggle={toggleTooltip}
