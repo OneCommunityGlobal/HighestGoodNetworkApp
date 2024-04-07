@@ -10,8 +10,8 @@ const BlueSquare = props => {
 
   return (
     <div className="blueSquareContainer">
-      <div className={`blueSquares ${blueSquares ? '' : 'NoBlueSquares'}`}>
-        {blueSquares
+      <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
+        {blueSquares?.length > 0
           ? blueSquares
               .sort((a, b) => (a.date > b.date ? 1 : -1))
               .map((blueSquare, index) => (

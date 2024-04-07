@@ -1,10 +1,11 @@
 #wrapper .report {
   position: absolute;
-  left: -140px;
+  left: -207px;
   top: 0;
   width: 200px;
   overflow-y: auto;
   visibility: hidden;
+  font-weight: normal;
 }
 
 #wrapper:hover .report {
@@ -50,6 +51,7 @@
 
 .blueSquareContainer::-webkit-scrollbar-thumb {
   background-color: #007BFF ;
+  box-shadow: inset 0 5px 3px -3px rgba(255, 255, 255, .6), inset 0 -5px 3px -3px rgba(255, 255, 255, .6);
 }
 
 .blueSquares {

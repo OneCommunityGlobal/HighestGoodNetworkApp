@@ -26,7 +26,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize ,toggleCl
         );
       }
       return (
-        <div className="blueSqare">
+        <div className={`blueSqare ${toggleClass ? toggleClass : ''}`}>
           <div className={style.switchSection}>
             {/* <div> Blue Squares: </div> */}
             <div className={style.switchContainer}>
