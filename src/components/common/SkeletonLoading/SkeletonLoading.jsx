@@ -2,7 +2,7 @@ import React from 'react';
 import './SkeletonLoading.css';
 import { Container } from 'reactstrap';
 
-const SkeletonLoading = ({ template }) => {
+const SkeletonLoading = ({ template, className }) => {
   const renderSkeletonTemplate = () => {
     switch (template) {
       case 'Timelog':
@@ -67,7 +67,7 @@ const SkeletonLoading = ({ template }) => {
               <h3 style={{ textAlign: 'left', paddingBottom: '2rem' }}>
                 Weekly Summaries Reports page
               </h3>
-              <div className="skeleton-loading-weekly-summaries-report">{reportItems}</div>
+              <div className={`skeleton-loading-weekly-summaries-report ${className}`}>{reportItems}</div>
             </div>
           </Container>
         );

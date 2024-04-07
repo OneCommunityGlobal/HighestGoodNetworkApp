@@ -51,8 +51,8 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-function ListGroupItem({ children }) {
-  return <LGI className="px-0 border-0 py-1">{children}</LGI>;
+function ListGroupItem({ children, darkMode }) {
+  return <LGI className={`px-0 border-0 py-1 ${darkMode ? 'bg-yinmn-blue' : ''}`}>{children}</LGI>;
 }
 
 function FormattedReport({
@@ -65,6 +65,7 @@ function FormattedReport({
   canEditTeamCode,
   auth,
   canSeeBioHighlight,
+  darkMode,
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
   const dispatch = useDispatch();
@@ -85,6 +86,7 @@ function FormattedReport({
             badges={badges}
             loadBadges={loadBadges}
             canSeeBioHighlight={canSeeBioHighlight}
+            darkMode={darkMode}
           />
         ))}
       </ListGroup>
@@ -183,6 +185,7 @@ function ReportDetails({
   loadBadges,
   canEditTeamCode,
   canSeeBioHighlight,
+  darkMode,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -199,17 +202,17 @@ function ReportDetails({
   }, []);
 
   return (
-    <li className="list-group-item px-0" ref={ref}>
+    <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
-        <ListGroupItem>
+        <ListGroupItem darkMode={darkMode}>
           <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
                 <Bio
                   bioCanEdit={bioCanEdit}
@@ -219,13 +222,13 @@ function ReportDetails({
                 />
               </div>
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
                 summary={summary}
                 canEditSummaryCount={canEditSummaryCount}
               />
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
                 Hours logged:
               </b>
@@ -239,7 +242,7 @@ function ReportDetails({
                 </span>
               )}
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
@@ -388,7 +391,7 @@ function MediaUrlLink({ summary }) {
         href={summary.mediaUrl}
         target="_blank"
         rel="noopener noreferrer"
-        style={{ paddingLeft: '5px' }}
+        style={{ paddingLeft: '5px', color: '#007BFF' }}
       >
         Open link to media files
       </a>
@@ -621,7 +624,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
             currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
             currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
-              : undefined,
+              : '#007BFF',
         }}
         title="View Profile"
       >

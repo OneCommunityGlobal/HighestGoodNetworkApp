@@ -4,9 +4,9 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
-function GeneratePdfReport({ summaries, weekIndex, weekDates }) {
+function GeneratePdfReport({ summaries, weekIndex, weekDates, darkMode }) {
   const generateFormattedReport = () => {
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
     // Replace any style copied into the weekly summary message.
@@ -125,7 +125,11 @@ function GeneratePdfReport({ summaries, weekIndex, weekDates }) {
   };
 
   return (
-    <Button className="btn--dark-sea-green" onClick={generateAndDownloadPdf} style={boxStyle}>
+    <Button
+      className="btn--dark-sea-green"
+      onClick={generateAndDownloadPdf}
+      style={darkMode ? boxStyleDark : boxStyle}
+    >
       Open PDF
     </Button>
   );
