@@ -7,14 +7,19 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
 import hasPermission from 'utils/permissions';
+import './AddWBS.css';
 
 const AddWBS = props => {
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
   const canPostWBS = props.hasPermission('postWbs');
 
-  const toggleSort = () => {
-    props.toggleSort(); // Notify parent component about the sorting order change
+  const toggleSortAscending = () => {
+    props.toggleSortAscending(); // Notify parent component about the ascending sorting order change
+  };
+
+  const toggleSortDescending = () => {
+    props.toggleSortDescending(); // Notify parent component about the descending sorting order change
   };
 
   const changeNewName = newName => {
@@ -24,6 +29,12 @@ const AddWBS = props => {
       setShowAddButton(false);
     }
     setNewName(newName);
+  };
+
+  const handleAddWBS = () => {
+    props.addNewWBS(newName, props.projectId);
+    setNewName(''); // Clear input field after adding
+    setShowAddButton(false); // Hide add button after adding
   };
 
   return (
@@ -42,15 +53,18 @@ const AddWBS = props => {
             placeholder="WBS Name"
             onChange={e => changeNewName(e.target.value)}
           />
-          <button className="btn btn-primary" type="button" onClick={toggleSort}>
-            Name
-          </button>
+          <button className="btn btn-primary btn-border" type="button" onClick={toggleSortAscending}>
+              &uarr;
+            </button>
+            <button className="btn btn-primary btn-border" type="button" onClick={toggleSortDescending}>
+              &darr;
+            </button>
           <div className="input-group-append">
             {showAddButton ? (
               <button
                 className="btn btn-outline-primary"
                 type="button"
-                onClick={e => props.addNewWBS(newName, props.projectId)}
+                onClick={handleAddWBS}
               >
                 <i className="fa fa-plus" aria-hidden="true"></i>
               </button>

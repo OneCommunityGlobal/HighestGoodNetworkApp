@@ -17,7 +17,8 @@ const WBS = props => {
   const { allProjects } = props;
   const projectId = props.match.params.projectId;
   const [sortBy, setSortBy] = useState('default');
-  const [clickCount, setClickCount] = useState(0);
+  const [clickCountAscending, setClickCountAscending] = useState(0);
+  const [clickCountDescending, setClickCountDescending] = useState(0);
   const [sortedItems, setSortedItems] = useState([]);
 
   const projectName = allProjects.find(project => project._id === projectId).projectName;
@@ -36,29 +37,48 @@ const WBS = props => {
     }
   }, [props.state.wbs.WBSItems, sortBy]);
 
-  const toggleSort = () => {
+  const toggleSortAscending = () => {
     let newSortBy;
-    if (clickCount === 0) {
+    if (clickCountAscending === 0) {
       newSortBy = 'asc';
-    } else if (clickCount === 1) {
+    } else {
+      newSortBy = 'default';
+    }
+    setSortBy(newSortBy);
+    setClickCountAscending((clickCountAscending + 1) % 2); // Toggle between 0 and 1
+  };
+
+  const toggleSortDescending = () => {
+    let newSortBy;
+    if (clickCountDescending === 0) {
       newSortBy = 'desc';
     } else {
       newSortBy = 'default';
     }
     setSortBy(newSortBy);
-    setClickCount((clickCount + 1) % 3); // Cycle through 0, 1, 2
+    setClickCountDescending((clickCountDescending + 1) % 2); // Toggle between 0 and 1
   };
 
   const sortWBSItems = (sortOrder = sortBy) => {
     const itemsCopy = [...props.state.wbs.WBSItems];
-    if (sortOrder === 'asc') {
-      return itemsCopy.sort((a, b) => a.wbsName.localeCompare(b.wbsName));
-    } else if (sortOrder === 'desc') {
-      return itemsCopy.sort((a, b) => b.wbsName.localeCompare(a.wbsName));
-    }
-    // Default sorting order, maintain the order in which items were created
-    return itemsCopy;
-  };
+    const comparator = (a, b, reverse = 1) => {
+        const nameA = a.wbsName.toLowerCase();
+        const nameB = b.wbsName.toLowerCase();
+        const specialChars = /^[^\w\s]|_/; // Include space in special characters
+
+        return (
+            (specialChars.test(nameA) && specialChars.test(nameB)) ? reverse * nameA.localeCompare(nameB) :
+            (specialChars.test(nameA) || specialChars.test(nameB)) ? reverse * (specialChars.test(nameA) ? -1 : 1) :
+            (!isNaN(nameA) && !isNaN(nameB)) ? reverse * (parseFloat(nameA) - parseFloat(nameB)) :
+            reverse * nameA.localeCompare(nameB)
+        );
+    };
+
+    return (sortOrder === 'asc') ? itemsCopy.sort(comparator) :
+           (sortOrder === 'desc') ? itemsCopy.sort((a, b) => comparator(a, b, -1)) :
+           itemsCopy;
+};
+
 
   return (
     <React.Fragment>
@@ -76,7 +96,7 @@ const WBS = props => {
           </ol>
         </nav>
 
-        <AddWBS projectId={projectId} toggleSort={toggleSort} />
+        <AddWBS projectId={projectId} toggleSortAscending={toggleSortAscending} toggleSortDescending={toggleSortDescending}  />
 
         <table className="table table-bordered table-responsive-sm">
           <thead>
