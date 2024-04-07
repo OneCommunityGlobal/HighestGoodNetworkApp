@@ -422,7 +422,7 @@ export class WeeklySummariesReport extends Component {
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
     const { authEmailWeeklySummaryRecipient } = this.props;
     const authorizedUser1 = 'jae@onecommunityglobal.org';
-    const authorizedUser2 = 'sucheta.prtester@test.com'; // To test please include your email here
+    const authorizedUser2 = 'sucheta_mu@test.com'; // To test please include your email here
 
     if (error) {
       return (
