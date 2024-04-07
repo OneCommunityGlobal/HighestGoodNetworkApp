@@ -15,7 +15,7 @@ function ProjectTable({ projects, darkMode }) {
           <div>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/projectreport/${project._id}`}>{project.projectName}</Link>
+          <Link to={`/projectreport/${project._id}`} className={darkMode ? 'text-light' : ''}>{project.projectName}</Link>
         </td>
         <td>
           {project.isActive ? (

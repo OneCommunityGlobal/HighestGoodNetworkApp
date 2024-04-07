@@ -15,9 +15,12 @@ import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequire
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
+import { fetchAllTasks } from 'actions/task';
 
 // eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const dispatch = useDispatch();
   const [memberCount, setMemberCount] = useState(0);
 
@@ -50,31 +53,35 @@ export function ProjectReport({ match }) {
   };
 
   return (
+    <div className={`container-project-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
     <ReportPage
       renderProfile={() => (
-        <ReportPage.ReportHeader isActive={isActive} avatar={<FiBox />} name={projectName} />
+        <ReportPage.ReportHeader isActive={isActive} avatar={<FiBox />} name={projectName} darkMode={darkMode}/>
       )}
+      darkMode={darkMode}
     >
       <div className="wbs-and-members-blocks-wrapper">
-        <ReportPage.ReportBlock className="wbs-and-members-blocks">
-          <Paging totalElementsCount={wbs.WBSItems.length}>
-            <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} />
+        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
+          <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
+            <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} darkMode={darkMode}/>
           </Paging>
         </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock className="wbs-and-members-blocks">
-          <Paging totalElementsCount={memberCount}>
+        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
+          <Paging totalElementsCount={memberCount} darkMode={darkMode}>
             <ProjectMemberTable
               projectMembers={projectMembers}
               handleMemberCount={handleMemberCount}
+              darkMode={darkMode}
             />
           </Paging>
         </ReportPage.ReportBlock>
       </div>
       <div className="tasks-block">
-        <ReportPage.ReportBlock>
-          <TasksTable WbsTasksID={wbsTasksID} />
+        <ReportPage.ReportBlock darkMode={darkMode}>
+          <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
         </ReportPage.ReportBlock>
       </div>
     </ReportPage>
+    </div>
   );
 }

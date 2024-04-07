@@ -209,7 +209,7 @@ function TotalProjectReport(props) {
             </th>
             <td>
               {project.projectId ? (
-                <Link to={`/projectReport/${project.projectId}`}>{project.projectName}</Link>
+                <Link to={`/projectReport/${project.projectId}`} className={darkMode ? 'text-light' : ''}>{project.projectName}</Link>
               ) : (
                 'Unrecorded Project'
               )}

@@ -196,7 +196,7 @@ function TotalPeopleReport(props) {
               <div>{index + 1}</div>
             </th>
             <td>
-              <Link to={`/userProfile/${person.userId}`}>
+              <Link to={`/userProfile/${person.userId}`} className={darkMode ? 'text-light' : ''}>
                 {person.firstName} {person.lastName}
               </Link>
             </td>

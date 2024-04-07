@@ -10,6 +10,7 @@ function TeamReportLogs({
   teamTotalBlueSquares,
   teamWeeklyCommittedHours,
   totalTeamWeeklyWorkedHours,
+  darkMode
 }) {
   return (
     <section>
@@ -21,32 +22,36 @@ function TeamReportLogs({
           firstColor="#ff5e82"
           secondColor="#e25cb2"
           className="team-report-time-log-block"
+          darkMode={darkMode}
         >
-          <h3>{teamMembers.length}</h3>
+          <h3 className='text-light'>{teamMembers.length}</h3>
           <p>Number of Members</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
           firstColor="#64b7ff"
           secondColor="#928aef"
           className="team-report-time-log-block"
+          darkMode={darkMode}
         >
-          <h3>{teamTotalBlueSquares}</h3>
+          <h3 className='text-light'>{teamTotalBlueSquares}</h3>
           <p>Total Team Blue Squares</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
           firstColor="#b368d2"
           secondColor="#831ec4"
           className="team-report-time-log-block"
+          darkMode={darkMode}
         >
-          <h3>{teamWeeklyCommittedHours}</h3>
+          <h3 className='text-light'>{teamWeeklyCommittedHours}</h3>
           <p>Weekly Committed Hours</p>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock
           firstColor="#ffdb56"
           secondColor="#ff9145"
           className="team-report-time-log-block"
+          darkMode={darkMode}
         >
-          <h3>{totalTeamWeeklyWorkedHours}</h3>
+          <h3 className='text-light'>{totalTeamWeeklyWorkedHours}</h3>
           <p>Total Worked Hours This Week</p>
         </ReportPage.ReportBlock>
       </div>

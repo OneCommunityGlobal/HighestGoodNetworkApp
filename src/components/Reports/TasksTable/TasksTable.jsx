@@ -8,9 +8,9 @@ import './TasksTable.css';
 import DropDownSearchBox from 'components/UserManagement/DropDownSearchBox';
 import { Checkbox } from 'components/common/Checkbox';
 import TextSearchBox from 'components/UserManagement/TextSearchBox';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
-export const TasksTable = ({ WbsTasksID }) => {
+export const TasksTable = ({ WbsTasksID, darkMode }) => {
   const { get_tasks } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
 
   const [isActive, setActive] = useState(true);
@@ -68,7 +68,7 @@ export const TasksTable = ({ WbsTasksID }) => {
   };
 
   return (
-    <div>
+    <div className={darkMode ? 'text-light' : ''}>
       <div>
         <h4 className="tasks-table-header">Tasks</h4>
       </div>
@@ -104,7 +104,7 @@ export const TasksTable = ({ WbsTasksID }) => {
         <button
           className="tasks-table-clear-filter-button"
           onClick={() => resetAllFilters()}
-          style={boxStyle}
+          style={darkMode ? boxStyleDark : boxStyle}
         >
           Clear filters
         </button>
@@ -118,6 +118,7 @@ export const TasksTable = ({ WbsTasksID }) => {
         status={filters.status}
         classification={filters.classification}
         users={filters.users}
+        darkMode={darkMode}
       />
     </div>
   );

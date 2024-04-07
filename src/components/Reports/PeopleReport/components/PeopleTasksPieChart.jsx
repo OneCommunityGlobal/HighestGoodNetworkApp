@@ -6,7 +6,7 @@ import { ReportPage } from '../../sharedComponents/ReportPage';
 import { NewModal } from '../../../common/NewModal';
 import './PeopleTasksPieChart.css';
 
-export const PeopleTasksPieChart = () => {
+export const PeopleTasksPieChart = ({darkMode}) => {
   const {
     tasksWithLoggedHoursById,
     showTasksPieChart,
@@ -31,20 +31,21 @@ export const PeopleTasksPieChart = () => {
 
 
   return (
-    <div className="people-pie-charts-wrapper">
+    <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
       {showProjectsPieChart && (
-        <ReportPage.ReportBlock>
+        <ReportPage.ReportBlock darkMode={darkMode}>
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
           <PieChart
             pieChartId={'projectsPieChart'}
             data={projectsWithLoggedHoursById}
             dataLegend={projectsWithLoggedHoursLegend}
             dataLegendHeader="Hours"
+            darkMode={darkMode}
           />
         </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
-        <ReportPage.ReportBlock>
+        <ReportPage.ReportBlock darkMode={darkMode}>
           <h5 className="people-pie-charts-header">{`${
             showViewAllTasksButton ? 'Last ' : ''
           }Tasks With Completed Hours`}</h5>
@@ -53,6 +54,7 @@ export const PeopleTasksPieChart = () => {
             data={displayedTasksWithLoggedHoursById}
             dataLegend={displayedTasksLegend}
             dataLegendHeader="Hours"
+            darkMode={darkMode}
           />}
           {showViewAllTasksButton && (
          <div>               
@@ -61,6 +63,7 @@ export const PeopleTasksPieChart = () => {
                 data={tasksWithLoggedHoursById}
                 dataLegend={tasksLegend}
                 dataLegendHeader="Hours"
+                darkMode={darkMode}
               />}
                <div onClick={handleViewAll} className="show-all-tasks-button">
                   {showAllTasks ? "Collapse":  "View all"}

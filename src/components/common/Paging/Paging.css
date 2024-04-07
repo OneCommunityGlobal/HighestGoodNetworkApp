@@ -45,3 +45,40 @@
 .page-index-button.active-button:hover {
   background-color: rgb(179, 104, 210);
 }
+
+/* DARK MODE */
+.page-index-button-dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #ffffff;
+}
+
+.page-index-button-dark:not(.disabled):hover {
+  background-color: #007BFF;
+}
+
+.page-index-button-dark.disabled {
+  cursor: unset;
+  color: #c6c6c6;
+}
+
+.active-button-dark {
+  background-color: #1C2541;
+  color: white;
+}
+
+.page-index-button-dark.active-button:hover {
+  background-color: #007BFF;
+}
+
+.pagination-buttons-dark {
+  display: flex;
+  align-items: baseline;
+  color: white;
+}

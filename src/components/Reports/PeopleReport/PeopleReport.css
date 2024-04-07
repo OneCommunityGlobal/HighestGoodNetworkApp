@@ -231,10 +231,6 @@ body {
 }
 .container-people-wrapper {
   min-height: 100%;
-  max-width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
   background-color: #faf7fc;
   margin: 0;
 }

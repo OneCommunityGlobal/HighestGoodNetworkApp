@@ -15,7 +15,7 @@ function PeopleTable({ userProfiles, darkMode }) {
             <div>{index + 1}</div>
           </th>
           <td>
-            <Link to={`/peoplereport/${person._id}`}>
+            <Link to={`/peoplereport/${person._id}`} className={darkMode ? 'text-light' : ''}>
               {person.firstName}{' '}
               {person.lastName.length > 15 ? `${person.lastName.slice(0, 15)}...` : person.lastName}
             </Link>

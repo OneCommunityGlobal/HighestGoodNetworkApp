@@ -19,7 +19,7 @@ import {
   DropdownItem,
   UncontrolledTooltip
 } from 'reactstrap';
-import { boxStyle } from '../../styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';
 import { useSelector } from 'react-redux';
@@ -51,22 +51,19 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
     <div>
       <Button
         onClick={toggle}
-        style={{
-          ...(darkMode && { boxShadow: "2px 2px 4px 1px black" }),
-          ...(!darkMode && boxStyle)
-        }}
+        style={darkMode ? boxStyleDark : boxStyle}
         className={`${dashboard && 'btn--dark-sea-green float-right'}`}
       >
         {dashboard ? 'Badge Report' : 'Show Badges'}
       </Button>
       <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-        <ModalHeader className={darkMode && "bg-oxford-blue text-azure"}>Badge Summary</ModalHeader>
-        <ModalBody  className={darkMode && "bg-oxford-blue text-azure"}>
+        <ModalHeader>Badge Summary</ModalHeader>
+        <ModalBody>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}
             <div className="desktop">
               <div style={{ overflowY: 'scroll', height: '75vh' }}>
-                <Table className={darkMode && 'text-azure'}>
+                <Table>
                   <thead style={{ zIndex: '10' }}>
                     <tr style={{ zIndex: '10' }}>
                       <th style={{ width: '93px' }}>Badge</th>
@@ -100,7 +97,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                   style={{
                                     fontWeight: 'bold',
                                     fontSize: 18,
-                                    color: darkMode ? '#007BFF' : '#285739',
+                                    color: '#285739',
                                     marginBottom: 15,
                                   }}
                                 >
@@ -167,7 +164,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             {/* --- TABLET VERSION OF MODAL --- */}
             <div className="tablet">
               <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table className={darkMode && 'text-azure'}>
+                <Table>
                   <thead style={{ zIndex: '10' }}>
                     <tr style={{ zIndex: '10' }}>
                       <th style={{ width: '25%' }}>Badge</th>
@@ -197,7 +194,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                   style={{
                                     fontWeight: 'bold',
                                     fontSize: 18,
-                                    color: darkMode ? '#007BFF' : '#285739',
+                                    color: '#285739',
                                     marginBottom: 15,
                                   }}
                                 >
@@ -229,7 +226,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             </div>
           </div>
         </ModalBody>
-        <ModalFooter className={darkMode && "bg-oxford-blue text-azure"}>
+        <ModalFooter>
           <div className="badge_summary_viz_footer">
             <ReactStrapButton
               className="btn--dark-sea-green badge_summary_viz_button"

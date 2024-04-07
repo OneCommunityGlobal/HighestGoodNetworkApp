@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
 
-export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount }) => {
+export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount, darkMode }) => {
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
@@ -37,7 +37,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile">
+      <Link to={`/userprofile/${member._id}`} title="View Profile"  className={darkMode ? "text-light" : ""}>
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
         </div>
@@ -62,7 +62,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile">
+      <Link to={`/userprofile/${member._id}`} title="View Profile" className={darkMode ? 'text-light' : ''}>
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
         </div>
@@ -83,7 +83,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
   ));
 
   return (
-    <div className="project-member-table test">
+    <div className={`project-member-table ${darkMode ? 'text-light' : ''}`}>
       <h5 className="project-member-table-title">Members</h5>
       <div className="project-member-count-head">
         <div className="filter-members-mobile"
@@ -92,11 +92,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           }}
         >
           <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
-          <label htmlFor="active" id="project-active-member-count" className="project-member-count">
+          <label htmlFor="active" id="project-active-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
             ACTIVE: {foundUsers.length}
           </label>
           <input type="radio" name="memberFilter" value="all-time" id="all-time" />
-          <label htmlFor="all-time" id="project-all-member-count" className="project-member-count">
+          <label htmlFor="all-time" id="project-all-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
             ALL-TIME: {members.length}
           </label>
           {memberFilter == 'all-time'
@@ -104,7 +104,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
             : handleMemberCount(activeMemberList.length)}
         </div>
       </div>
-      <div className="reports-table-head-members">
+      <div className={`reports-table-head-members ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className="reports-table-head-cell">#</div>
         <div className="reports-table-head-cell">Name</div>
         <div className="reports-table-head-cell">Active</div>
@@ -120,7 +120,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
         ) : activeMemberTable.length > 0 ? (
           activeMemberTable
         ) : (
-          <Stub />
+          <Stub color={darkMode ? 'white' : ''}/>
         )}
       </div>
     </div>

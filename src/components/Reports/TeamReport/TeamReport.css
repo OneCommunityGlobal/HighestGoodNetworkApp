@@ -52,12 +52,12 @@
   text-align: left;
 }
 
-.tableHeader {
-  background-color: #eee7f7;
-}
-
 .table-row {
   background: white;
+}
+
+.table-hover-dark:hover{
+  background-color: #162e4c !important;
 }
 
 .input-wrapper {

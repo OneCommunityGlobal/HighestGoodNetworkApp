@@ -53,3 +53,38 @@
 .report-header-activity.active {
   background-color: #2affa1;
 }
+
+
+/* DARK MODE */
+.report-header-profile-pic-dark {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #5b0ac6;
+  border: 3px solid #a45bed;
+}
+
+.report-header-profile-pic-dark svg {
+  width: 50px;
+  height: 50px;
+  color: #c489ff;
+}
+
+.report-header-activity-dark {
+  position: absolute;
+  right: -6px;
+  bottom: -1px;
+  width: 20px;
+  height: 20px;
+  background-color: #3A506B;
+  border-radius: 50%;
+  border: 2px solid rgb(40, 39, 39);
+}
+
+.report-header-activity-dark.active {
+  background-color: #2affa1;
+}

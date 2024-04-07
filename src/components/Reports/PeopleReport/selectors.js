@@ -22,6 +22,7 @@ export const getPeopleReportData = state => ({
   priorityList: state.priorityList,
   statusList: state.statusList,
   tangibleHoursReportedThisWeek: parseFloat(state.userProfile.tangibleHoursReportedThisWeek),
+  darkMode: state.theme.darkMode,
 });
 
 const getRounded = number => {

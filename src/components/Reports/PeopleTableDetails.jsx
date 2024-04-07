@@ -94,11 +94,11 @@ function PeopleTableDetails(props) {
     }
     toggleMoreResourcesStatus = !toggleMoreResourcesStatus;
   };
-  const { taskData } = props;
+  const { taskData, darkMode } = props;
   const filteredTasks = filterTasks(taskData);
 
   const renderFilteredTask = value => (
-    <div key={value._id} className="people-table-row people-table-body-row">
+    <div key={value._id} className={`people-table-row people-table-body-row ${darkMode ? "people-table-row-dark people-table-body-row-dark" : ""}`}>
       <div>{value.taskName}</div>
       <div>{value.priority}</div>
       <div>{value.status}</div>
@@ -127,7 +127,7 @@ function PeopleTableDetails(props) {
               className="name resourceMoreToggle"
               onClick={() => toggleMoreResources(value._id)}
             >
-              <span className="dot">{res.length - 2}+</span>
+              <span className={`dot ${darkMode ? 'text-light' : ''}`}>{res.length - 2}+</span>
             </button>
           ) : null,
         )}
@@ -165,7 +165,7 @@ function PeopleTableDetails(props) {
   );
 
   return (
-    <Container fluid className="wrapper">
+    <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>
       <TableFilter
         onTaskNameSearch={onTaskNameSearch}
         searchPriority={searchPriority}
@@ -186,7 +186,7 @@ function PeopleTableDetails(props) {
         startDate={startDate}
         EndDate={endDate}
       />
-      <div className="people-table-row reports-table-head">
+      <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div>Task</div>
         <div>Priority</div>
         <div>Status</div>

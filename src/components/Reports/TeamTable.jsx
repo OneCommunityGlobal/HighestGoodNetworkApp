@@ -72,7 +72,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
           <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/teamreport/${team._id}`}>{team.teamName}</Link>
+          <Link to={`/teamreport/${team._id}`} className={darkMode ? 'text-light' : ''}>{team.teamName}</Link>
         </td>
         <td className="projects__active--input">
           {team.isActive ? (
