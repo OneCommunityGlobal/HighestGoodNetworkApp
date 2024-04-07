@@ -3,29 +3,12 @@
   position: relative;
   width: 50px;
   height: 50px;
-  border-radius: 50%;
-  background-color: #e0e0e0;
-  border: 2px solid #666;
+  border-radius: 25%;
   cursor: pointer;
-  transition: background-color 0.3s, border-color 0.3s;
   margin-right: 10px;
   padding: 0;
 }
 
 .dark-mode-button .icon {
   font-size: 34px;
-  line-height: 30px;
-}
-
-.dark-mode-button:hover {
-  background-color: #ffffff;
-}
-
-.dark-mode-button.dark-mode {
-  background-color: #e0e0e0;
-  border-color: #666;
-}
-
-.dark-mode-button.dark-mode .icon {
-  color: #666;
 }
