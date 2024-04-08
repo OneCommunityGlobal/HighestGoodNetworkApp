@@ -5,11 +5,9 @@ import { GET_ERRORS } from 'constants/errors';
 
 export const fetchEquipmentById = (equipmentId) => {
   const url = ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId);
-  console.log('equipmentid',equipmentId)
   return async dispatch => {
     axios.get(url)
       .then(res => {
-        console.log(res.data)
         dispatch(setEquipment(res.data))
       })
       .catch(error => {
