@@ -319,7 +319,9 @@ const TeamMemberTasks = React.memo(props => {
                   ) : (
                     teams.map(team => (
                       <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                        {team.teamName}
+                        {team.teamName.length >= 50
+                          ? team.teamName.substring(0, 50) + '...'
+                          : team.teamName}
                       </DropdownItem>
                     ))
                   )}

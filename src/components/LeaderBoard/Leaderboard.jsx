@@ -86,6 +86,7 @@ function LeaderBoard({
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
+  const [controlUseEfffect, setControlUseEfffect] = useState(true);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -103,8 +104,10 @@ function LeaderBoard({
   }, []);
 
   useEffect(() => {
-    if (!isEqual(leaderBoardData, teamsUsers)) {
-      setTeamsUsers(leaderBoardData);
+    if (controlUseEfffect) {
+      if (!isEqual(leaderBoardData, teamsUsers)) {
+        setTeamsUsers(leaderBoardData);
+      }
     }
   }, [leaderBoardData]);
 
@@ -122,8 +125,6 @@ function LeaderBoard({
       try {
         setIsLoadingTeams(true);
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
-        const teamName = `${team.teamName.substring(0, 30)}...`;
-        setSelectedTeamName(team.teamName.length >= 30 ? teamName : team.teamName);
         const idUsers = response.data.map(item => item._id);
         const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
         setTeamsUsers(usersTaks);
@@ -202,7 +203,15 @@ function LeaderBoard({
   };
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
-    await getLeaderboardData(userId);
+    if (isEqual(leaderBoardData, teamsUsers)) {
+      await getLeaderboardData(userId);
+    } else {
+      setControlUseEfffect(false);
+      await getLeaderboardData(userId);
+      renderTeamsList(usersSelectedTeam);
+      setTextButton('View All');
+      setControlUseEfffect(true);
+    }
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
   };
@@ -260,7 +269,9 @@ function LeaderBoard({
                 ) : (
                   teams.map(team => (
                     <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                      {team.teamName}
+                      {team.teamName.length >= 50
+                        ? `${team.teamName.substring(0, 50)}...`
+                        : team.teamName}
                     </DropdownItem>
                   ))
                 )}
