@@ -1,8 +1,8 @@
 import { UncontrolledTooltip } from 'reactstrap';
 
-function BadgeTableHeader() {
+function BadgeTableHeader({ darkMode }) {
   return (
-    <tr>
+    <tr className={darkMode ? 'bg-space-cadet' : ''}>
       <th>Badge</th>
       <th>Name</th>
       <th className="d-xl-table-cell d-none">Description</th>

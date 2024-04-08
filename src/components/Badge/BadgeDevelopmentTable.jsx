@@ -182,9 +182,9 @@ function BadgeDevelopmentTable(props) {
 
   return (
     <Container fluid>
-      <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
+      <table className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <thead>
-          <BadgeTableHeader />
+          <BadgeTableHeader darkMode={darkMode} />
           <BadgeTableFilter
             onBadgeNameSearch={onBadgeNameSearch}
             onBadgeDescriptionSearch={onBadgeDescriptionSearch}
