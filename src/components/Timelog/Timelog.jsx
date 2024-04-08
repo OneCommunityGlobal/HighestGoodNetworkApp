@@ -46,6 +46,7 @@ import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {

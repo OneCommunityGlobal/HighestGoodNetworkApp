@@ -480,7 +480,6 @@ const LogTimeOffPopUp = React.memo(props => {
                             id="numberOfWeeks"
                             onChange={e => handleUpdateRequestDataChange(e)}
                           />
-
                           <FormText color="danger">
                             {updaterequestDataErrors.numberOfWeeksError}
                           </FormText>

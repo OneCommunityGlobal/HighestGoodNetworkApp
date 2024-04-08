@@ -38,6 +38,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
       }
     };
     getRecipients();
+    // Need a return
   }, [open, updatedRecipients]);
 
   const closePopup = () => {
