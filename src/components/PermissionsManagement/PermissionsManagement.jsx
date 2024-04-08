@@ -25,9 +25,9 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
   const canPutRole = hasPermission('putRole');
   const canManageUserPermissions = hasPermission('putUserProfilePermissions');
 
-   // Added permissionChangeLogs state management
-   const [changeLogs, setChangeLogs] = useState([])
-   const [loading, setLoading] = useState(true);
+  // Added permissionChangeLogs state management
+  const [changeLogs, setChangeLogs] = useState([])
+  const [loading, setLoading] = useState(true);
 
   const history = useHistory();
   const togglePopUpNewRole = () => {
@@ -42,7 +42,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     getAllRoles();
     getInfoCollections();
     getUserRole(auth?.user.userid);
-    
+
     const getChangeLogs = async () => {
       try {
         const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid))
@@ -67,58 +67,58 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     <>
       <div key={`${role}+permission`} className="permissions-management">
         <h1 className="permissions-management__title">User Roles</h1>
-        <div key={`${role}_header`} className="permissions-management__header">
+        <div key={`${role}_header`} className="permissions-management__header" >
           {canPutRole &&
             <div key={`${role}_name`} className="role-name-container">
-            {roleNames?.map(roleName => {
-              const roleNameLC = roleName.toLowerCase().replace(' ', '-');
-              return (
-                <div key={roleNameLC} className="role-name">
-                  <button
-                    onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
-                    key={roleName}
-                    className="role-btn"
-                  >
-                    {roleName}
-                  </button>
-                  <div className="infos">
-                    <EditableInfoModal
-                      role={role}
-                      areaName={`${roleName}` + 'Info'}
-                      areaTitle={`${roleName}` + ' User Role'}
-                      fontSize={18}
-                      isPermissionPage
-                    />
+              {roleNames?.map(roleName => {
+                const roleNameLC = roleName.toLowerCase().replace(' ', '-');
+                return (
+                  <div key={roleNameLC} className="role-name" >
+                    <button
+                      onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
+                      key={roleName}
+                      className="role-btn"
+                    >
+                      {roleName}
+                    </button>
+                    <div className="infos">
+                      <EditableInfoModal
+                        role={role}
+                        areaName={`${roleName}` + 'Info'}
+                        areaTitle={`${roleName}` + ' User Role'}
+                        fontSize={18}
+                        isPermissionPage
+                      />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
           }
           {(canPostRole || canManageUserPermissions) && (
             <div className="buttons-container">
               {canPostRole &&
-              <Button
-                className="permissions-management__button"
-                type="button"
-                color="success"
-                onClick={() => togglePopUpNewRole()}
-                style={boxStyle}
-              >
-                Add New Role
-              </Button>}
+                <Button
+                  className="permissions-management__button"
+                  type="button"
+                  color="success"
+                  onClick={() => togglePopUpNewRole()}
+                  style={boxStyle}
+                >
+                  Add New Role
+                </Button>}
               {(canManageUserPermissions) &&
-              <Button
-                color="primary"
-                className="permissions-management__button"
-                type="button"
-                onClick={() => {
-                  togglePopUpUserPermissions();
-                }}
-                style={boxStyle}
-              >
-                Manage User Permissions
-              </Button>}
+                <Button
+                  color="primary"
+                  className="permissions-management__button"
+                  type="button"
+                  onClick={() => {
+                    togglePopUpUserPermissions();
+                  }}
+                  style={boxStyle}
+                >
+                  Manage User Permissions
+                </Button>}
             </div>
           )}
         </div>

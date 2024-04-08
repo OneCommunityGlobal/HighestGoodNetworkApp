@@ -23,7 +23,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
     setUserPermissions([]);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
   }, [actualUserProfile]);
 
@@ -40,6 +40,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
       const roleIndex = roles?.findIndex(({ roleName }) => roleName === actualUserProfile?.role);
       const permissions = roleIndex !== -1 ? roles[roleIndex].permissions : [];
       setActualUserRolePermission(permissions);
+
     }
   }, [actualUserProfile]);
 
@@ -49,7 +50,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
 
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = { ...allUserInfo, permissions: {frontPermissions: userPermissions} };
+    const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
 
     await axios
       .put(url, newUserInfo)
@@ -78,110 +79,112 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) =
   }, []);
   return (
     <>
-    <Form
-      id="manage__user-permissions"
-      onSubmit={e => {
-        updateProfileOnSubmit(e);
-      }}
-    >
-      <div style={{display: 'flex', justifyContent: 'space-between', paddingBottom: '5px'}}>
-        <h4 className="user-permissions-pop-up__title">User name:</h4>
-        <Button
-          type="button"
-          color="success"
-          onClick={e => {
-            setToDefault();
-          }}
-          disabled={actualUserProfile ? false : true}
-          style={boxStyle}
-        >
-          Reset to Default
-        </Button>
-      </div>
-      <Dropdown
-        isOpen={isOpen}
-        toggle={() => {
-          setIsOpen(!isOpen);
-        }}
-        style={{ width: '100%', marginRight: '5px' }}
-      >
-        <Input
-          type="text"
-          value={searchText}
-          innerRef={refInput}
-          onFocus={e => {
-            setIsInputFocus(true);
-            setIsOpen(true);
-          }}
-          onChange={e => {
-            onInputChange(e.target.value);
-            setIsOpen(true);
-          }}
-          placeholder="Shows only ACTIVE users"
-        />
-        {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
-          <div
-            tabIndex="-1"
-            role="menu"
-            aria-hidden="false"
-            className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''}`}
-            style={{ marginTop: '0px', width: '100%' }}
-          >
-            {allUserProfiles
-              .filter(user => {
-                if (
-                  user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-                  user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-                  `${user.firstName} ${user.lastName}`
-                    .toLowerCase()
-                    .includes(searchText.toLowerCase())
-                ) {
-                  if (user.isActive) {
-                    return user;
-                  }
-                }
-              })
-              .map(user => (
-                <div
-                  className="user__auto-complete"
-                  key={user._id}
-                  onClick={() => {
-                    onInputChange(`${user.firstName} ${user.lastName}`);
-                    setIsOpen(false);
-                    setActualUserProfile(user);
-                    getUserData(user._id);
-                  }}
-                >
-                  {`${user.firstName} ${user.lastName}`}
-                </div>
-              ))}
-          </div>
-        ) : (
-          <></>
-        )}
-      </Dropdown>
-      <div>
-        <h4 className="user-permissions-pop-up__title">Permissions:</h4>
-        <ul className="user-role-tab__permission-list">
-          <PermissionList
-            rolePermissions={userPermissions}
-            immutablePermissions={actualUserRolePermission}
-            editable={!!actualUserProfile}
-            setPermissions={setUserPermissions}
-          />
-        </ul>
-      </div>
-      <Button
-        type="submit"
+      <Form
         id="manage__user-permissions"
-        color="primary"
-        size="lg"
-        block
-        style={{ ...boxStyle, marginTop: '1rem' }}
+        onSubmit={e => {
+          updateProfileOnSubmit(e);
+        }}
       >
-        Submit
-      </Button>
-    </Form>
+        <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}>
+          <h4 className="user-permissions-pop-up__title">User name:</h4>
+          <Button
+            type="button"
+            color="success"
+            onClick={e => {
+              setToDefault();
+            }}
+            disabled={actualUserProfile ? false : true}
+            style={boxStyle}
+          >
+            Reset to Default
+          </Button>
+        </div>
+        <Dropdown
+          isOpen={isOpen}
+          toggle={() => {
+            setIsOpen(!isOpen);
+          }}
+          style={{ width: '100%', marginRight: '5px' }}
+        >
+          <Input
+            type="text"
+            value={searchText}
+            innerRef={refInput}
+            onFocus={e => {
+              setIsInputFocus(true);
+              setIsOpen(true);
+            }}
+            onChange={e => {
+              onInputChange(e.target.value);
+              setIsOpen(true);
+            }}
+            placeholder="Shows only ACTIVE users"
+          />
+          {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
+            <div
+              tabIndex="-1"
+              role="menu"
+              aria-hidden="false"
+              className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''}`}
+              style={{ marginTop: '0px', width: '100%' }}
+            >
+              {allUserProfiles
+                .filter(user => {
+                  if (
+                    user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
+                    user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
+                    `${user.firstName} ${user.lastName}`
+                      .toLowerCase()
+                      .includes(searchText.toLowerCase())
+                  ) {
+                    if (user.isActive) {
+                      return user;
+                    }
+                  }
+                })
+                .map(user => (
+                  <div
+                    className="user__auto-complete"
+                    key={user._id}
+                    onClick={() => {
+                      onInputChange(`${user.firstName} ${user.lastName}`);
+                      setIsOpen(false);
+                      setActualUserProfile(user);
+                      getUserData(user._id);
+                    }}
+                  >
+                    {`${user.firstName} ${user.lastName}`}
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <></>
+          )}
+        </Dropdown>
+        <div >
+
+          <h4 className="user-permissions-pop-up__title">Permissions:</h4>
+          <ul className="user-role-tab__permission-list" >
+
+            <PermissionList
+              rolePermissions={userPermissions}
+              immutablePermissions={actualUserRolePermission}
+              editable={!!actualUserProfile}
+              setPermissions={setUserPermissions}
+            />
+          </ul>
+        </div>
+        <Button
+          type="submit"
+          id="manage__user-permissions"
+          color="primary"
+          size="lg"
+          block
+          style={{ ...boxStyle, marginTop: '1rem' }}
+        >
+          Submit
+        </Button>
+      </Form>
     </>
   );
 };

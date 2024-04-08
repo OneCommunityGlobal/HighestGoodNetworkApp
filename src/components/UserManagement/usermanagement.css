@@ -12,6 +12,7 @@ thead {
   box-sizing: border-box;
   width: calc(100vw - 45px);
 }
+
 #user-management-table {
   width: calc(100vw - 45px);
 }
@@ -31,6 +32,7 @@ thead {
 #usermanagement_resume_date {
   min-width: 125px;
 }
+
 .usermanagement__tr {
   text-align: center;
 }
@@ -48,21 +50,21 @@ thead {
 
 #card_project {
   /* background: #1d62f0; */
-  background: linear-gradient(to right bottom,  rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
+  background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
   background-color: #1d62f0;
   border-radius: 8px;
-  border:#08397e;
+  border: #08397e;
   color: white;
   align-items: center;
   justify-content: center;
   text-align: center;
 }
 
-#card_team{
+#card_team {
   background: linear-gradient(to right bottom, rgb(100, 183, 255) 5%, rgb(146, 138, 239) 100%);
   background-color: dodgerblue;
   border-radius: 8px;
-  border:#08397e;
+  border: #08397e;
   color: white;
   align-items: center;
   justify-content: center;
@@ -74,9 +76,9 @@ thead {
   background: linear-gradient(to right bottom, #ffdb56 5%, #ff9145 100%);
   background-color: #fac17b;
   border-radius: 8px;
-  border:#ff9145;
+  border: #ff9145;
   color: white;
-  align-items: center; 
+  align-items: center;
   justify-content: center;
   text-align: center;
 
@@ -84,7 +86,7 @@ thead {
 
 .email_cell {
   position: relative;
- 
+
 }
 
 .copy_icon {
@@ -162,13 +164,15 @@ tr:hover {
 }
 
 .add-user-modal {
-  min-width: 50vw; /* Occupy the 90% of the screen width */
+  min-width: 50vw;
+  /* Occupy the 90% of the screen width */
   max-width: 90vw !important;
 }
 
 .noWrap {
   white-space: nowrap;
 }
+
 .setup-new-user-popup-section {
   display: grid;
   width: 80%;
@@ -185,12 +189,15 @@ tr:hover {
   font-weight: 400;
   color: #212529;
 }
+
 .setup-new-user-popup-input {
   height: 36px;
 }
+
 #setup-new-user-popup-btn {
   width: fit-content;
 }
+
 .setup-new-user-popup-success {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
@@ -200,6 +207,7 @@ tr:hover {
   height: 36px;
   padding: 5px;
 }
+
 .setup-new-user-popup-error {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
@@ -235,6 +243,7 @@ tr:hover {
 #requested-time-off-btn:hover {
   background-color: #95c0fe;
 }
+
 .requested-time-off-calender-svg {
   fill: #0d6efd;
 }
@@ -257,9 +266,11 @@ tr:hover {
   height: 100%;
   fill: currentColor;
 }
+
 .requested-time-off-clock-icon-svg path {
   fill: #0d6efd;
 }
+
 .Logged-time-off-cards-container {
   overflow: auto;
   overflow-x: hidden;
@@ -279,7 +290,7 @@ tr:hover {
 
 .Logged-time-off-cards-container::-webkit-scrollbar-thumb {
   border-radius: 8px;
-  background-color: #007BFF ;
+  background-color: #007BFF;
   box-shadow: inset 0 0 3px #e7e7e7;
 }
 
@@ -296,6 +307,7 @@ tr:hover {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
+
 .date-of-leave-datepicker:focus {
   color: #495057;
   background-color: #fff;

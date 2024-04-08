@@ -36,6 +36,10 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { toast } from 'react-toastify';
+import RolePermissions from 'components/PermissionsManagement/RolePermissions';
+
+import { useDispatch, useSelector } from 'react-redux';
+
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -51,7 +55,7 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: '',
       selectedPage: 1,
       pageSize: 10,
-      allSelected:undefined,
+      allSelected: undefined,
       isActive: undefined,
       isSet: undefined,
       activationDateOpen: false,
@@ -76,6 +80,10 @@ class UserManagement extends React.PureComponent {
     const { requests: timeOffRequests } = this.props.state.timeOffRequests;
     let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests);
     let roles = [...new Set(userProfiles.map(item => item.role))];
+
+
+
+
     return (
       <Container fluid>
         {fetching ? (
@@ -89,8 +97,12 @@ class UserManagement extends React.PureComponent {
               onActiveFiter={this.onActiveFiter}
               onNewUserClick={this.onNewUserClick}
               handleNewUserSetupPopup={this.handleNewUserSetupPopup}
+              state={this.props.state}
+            // getState={this.props.getState}
+
             />
-            <div className="table-responsive" id="user-management-table">
+
+            <div className="table-responsive" id="user-management-table"  >
               <Table className="table table-bordered noWrap">
                 <thead>
                   <UserTableHeader
@@ -191,6 +203,7 @@ class UserManagement extends React.PureComponent {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
       let that = this;
+
       /* Builiding the table body for users based on the page size and selected page number and returns
        * the rows for currently selected page .
        * Applying the Default sort in the order of created date as well
@@ -254,7 +267,7 @@ class UserManagement extends React.PureComponent {
 
           // Check the isPaused state only if 'all' is not selected
           ((this.state.allSelected && true) || (this.state.isPaused === false || (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
-        ) &&
+          ) &&
 
           (
             searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
@@ -301,12 +314,12 @@ class UserManagement extends React.PureComponent {
   onLogTimeOffClick = user => {
     const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
     const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
-    if(canManageTimeOffRequests || hasRolePermission){
+    if (canManageTimeOffRequests || hasRolePermission) {
       this.setState({
         logTimeOffPopUpOpen: true,
         userForTimeOff: user,
       });
-    }else{
+    } else {
       toast.warn(`You do not have permission to manage time-off requests.`)
     }
 
@@ -317,7 +330,7 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
-    if(cantUpdateDevAdminDetails(user.email , this.props.state.userProfile.email)) {
+    if (cantUpdateDevAdminDetails(user.email, this.props.state.userProfile.email)) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
