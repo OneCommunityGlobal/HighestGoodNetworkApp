@@ -1,67 +1,104 @@
 .page {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
 .page .row {
-    flex-wrap: nowrap;
+  flex-wrap: nowrap;
 }
 
 .log-form-container {
-    margin: 0 auto;
-    max-width: 100vw;
-    max-height: 100vh;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    padding: 50px;
-}   
+  margin: 0 auto;
+  max-width: 100vw;
+  max-height: 100vh;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 50px;
+}
 
 .title-label {
-    font-size: large;
-    font-weight: bold;
+  font-size: large;
+  font-weight: bold;
 }
 
 .subtitle-row {
-    background-color: aqua;
-    text-align: center;
-    width: 300px;
+  background-color: aqua;
+  text-align: center;
+}
+
+.subtitle-row span {
+  display: inline-block;
+  width: 33.33%;
 }
 
 .log-form-cancel-button {
-    font-size: 20px;
-    background-color: #ffffff !important;
-    color: #2e5061 !important;
-    border-color: #2e5061 !important; 
+  font-size: 20px;
+  background-color: #ffffff !important;
+  color: #2e5061 !important;
+  border-color: #2e5061 !important;
 }
 
 .log-form-submit-button {
-    background-color: #2e5061 !important;
-    color: #ffffff !important;
-    border-color: #2e5061 !important;
-    font-size: 20px;
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #2e5061 !important;
+  font-size: 20px;
 }
 
 .input-group-div {
-    border-radius: 10px; 
-    padding: 5px;
-    border: 1px solid #ccc;
-    width: 100%;
+  border-radius: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  width: 80vw;
+  max-width: 300px;
+  transition: height 0.3s ease;
+  overflow: hidden;
+}
+
+.input-group-div.expanded {
+  height: 200px;
 }
 
 .input-item-div {
-    position: relative;
-    display: inline-block;
-    height: auto;
+  position: relative;
+  display: inline-block;
+  height: auto;
+}
+
+.input-dropdown-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2em;
 }
 
 .span-and-input-box {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .span-text {
-    margin-right: 8px;
+  margin-right: 8px;
+}
+
+.transparent-dropdown-caret {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: inherit !important;
+}
+
+.transparent-dropdown-toggle:focus {
+  outline: none;
+}
+
+.working-column {
+  width: 10px;
 }

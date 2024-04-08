@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import React, {
+import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
@@ -12,6 +12,8 @@ import React, {
 import './Log.css';
 import { CloseButton } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons'; // Import the caret down icon
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function Log() {
   const [isProjectDropdownOpen, setIsProjectDropdownOpen] = useState(false);
@@ -47,16 +49,23 @@ function Log() {
     // Add more projects as needed
   ]);
 
-  const onProjectDropdownItemClick = projectName => {
-    console.log(`projectName: ${projectName}`);
-    console.log(JSON.stringify(dummyDataMap.get(projectName)));
-    setProjectDropdownCaretText(projectName);
-  };
+  const [dataIdToExpandBoolMap, setDataIdToExpandBoolMap] = useState(new Map());
 
-  const handleButtonClick = (id, key) => {
-    console.log(`id: ${typeof id}`);
-    console.log(`key: ${typeof key}`);
-    addIdToSetIfNotExists(id, key);
+  useEffect(() => {
+    // Initialize dataIdToExpandBoolMap with default values
+    const newDataIdToExpandBoolMap = new Map();
+    dummyDataMap.forEach(project => {
+      project.projectData.forEach(item => {
+        if (item.id) {
+          newDataIdToExpandBoolMap.set(item.id, false);
+        }
+      });
+    });
+    setDataIdToExpandBoolMap(newDataIdToExpandBoolMap);
+  }, []); // Empty dependency array means this effect will run once after the initial render
+
+  const onProjectDropdownItemClick = projectName => {
+    setProjectDropdownCaretText(projectName);
   };
 
   function addIdToSetIfNotExists(key, id) {
@@ -65,16 +74,12 @@ function Log() {
 
       if (!updatedState[key]) {
         updatedState[key] = new Set([id]);
-        console.log('added id');
-        console.log(`updatedState[key]: ${updatedState[key].has(id)}`);
       } else {
         const currentSet = updatedState[key];
 
         if (currentSet.has(id)) {
           currentSet.delete(id);
-          console.log('delete');
         } else {
-          console.log('add');
           currentSet.add(id);
         }
       }
@@ -83,8 +88,19 @@ function Log() {
     });
   }
 
+  const handleButtonClick = (id, key) => {
+    addIdToSetIfNotExists(id, key);
+  };
+
   const handleCancel = () => history.goBack();
 
+  const dropdownToggleClicked = dataId => {
+    setDataIdToExpandBoolMap(prevState => {
+      const newState = { ...prevState };
+      newState[dataId] = !newState[dataId];
+      return newState;
+    });
+  };
 
   // Check in shows Using
   // Check out shows Available
@@ -101,72 +117,68 @@ function Log() {
     <div className="page">
       <div className="log-form-container">
         <Table>
-          {/* <thead>
-            <tr>
-              <th>{logFormHeading}</th>
-            </tr>
-          </thead> */}
-          <colgroup>
-            <col style={{ width: '100px' }} />
-            <col style={{ width: '200px' }} />
-            <col style={{ width: '200px' }} />
-            <col style={{ width: '100px' }} />
-            <col style={{ width: '100px' }} />
-            <col style={{ width: '200px' }} />
-          </colgroup>
+          <div className="title-label">
+            <span>{logFormHeading}</span>
+          </div>
           <tbody>
             <tr>
-              <td>
-                <div className='span-and-input-box'>
-                <span className='span-text'>Date:</span>
-                <Input type="date" defaultValue={today} disabled />
+              <td colSpan="2">
+                <div className="span-and-input-box">
+                  <span className="span-text">Date:</span>
+                  <Input type="date" defaultValue={today} disabled />
                 </div>
               </td>
 
-              <td>
-                <div className='span-and-input-box'>
-                <span className='span-text'>Project:</span>
-                <Dropdown isOpen={isProjectDropdownOpen} toggle={toggleProjectDowndown}>
-                  <DropdownToggle caret>{projectDropdownCaretText}</DropdownToggle>
-                  <DropdownMenu>
-                    {[...dummyDataMap.keys()].map(projectName => (
-                      <DropdownItem
-                        key={projectName}
-                        onClick={() => onProjectDropdownItemClick(projectName)}
-                      >
-                        {projectName}
-                      </DropdownItem>
-                    ))}
-                  </DropdownMenu>
-                </Dropdown>
+              <td colSpan="2">
+                <div className="span-and-input-box">
+                  <span className="span-text">Project:</span>
+                  <Dropdown isOpen={isProjectDropdownOpen} toggle={toggleProjectDowndown}>
+                    <DropdownToggle caret>{projectDropdownCaretText}</DropdownToggle>
+                    <DropdownMenu>
+                      {[...dummyDataMap.keys()].map(projectName => (
+                        <DropdownItem
+                          key={projectName}
+                          onClick={() => onProjectDropdownItemClick(projectName)}
+                        >
+                          {projectName}
+                        </DropdownItem>
+                      ))}
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </td>
-              <td>
-                <div className='span-and-input-box'>
-                <span className='span-text'>Check in or Out:</span>
-                <Dropdown isOpen={isCheckInOutDropdownOpen} toggle={toggleCheckInOutDropdown}>
-                  <DropdownToggle caret>Check out</DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem>Check In</DropdownItem>
-                    <DropdownItem>Check Out</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
+
+              <td colSpan="2">
+                <div className="span-and-input-box">
+                  <span className="span-text">Check in or Out:</span>
+                  <Dropdown isOpen={isCheckInOutDropdownOpen} toggle={toggleCheckInOutDropdown}>
+                    <DropdownToggle caret>Check out</DropdownToggle>
+                    <DropdownMenu>
+                      <DropdownItem>Check In</DropdownItem>
+                      <DropdownItem>Check Out</DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </td>
             </tr>
+
             <tr className="subtitle-row">
-              <td>Item </td>
-              <td>Quantity</td>
-              <td>Daily Log Input </td>
+              <td colSpan="6">
+                <span>Item</span>
+                <span>Quantity</span>
+                <span>Daily Log Input</span>
+              </td>
             </tr>
+
             <tr>
               <td>ID </td>
               <td>Name </td>
               <td>Working </td>
-              <td>Avaialable </td>
+              <td>Available </td>
               <td>Using </td>
               <td>Tool/Equipment Number </td>
             </tr>
+
             {dummyDataMap.get('Project 1')?.projectData.map(data => (
               <tr key={data.id}>
                 <td>{data.id}</td>
@@ -175,10 +187,16 @@ function Log() {
                 <td>{data.available}</td>
                 <td>{data.using}</td>
                 <td>
-                      <div className="input-group-div">
-                      <InputGroup>
-                        {data.workingItems &&
-                          data.workingItems.map(workingItem => (
+                  <div
+                    className={`input-group-div ${
+                      dataIdToExpandBoolMap[data.id] ? 'expanded' : ''
+                    }`}
+                  >
+                    <InputGroup>
+                      {data.workingItems &&
+                        data.workingItems
+                          .slice(0, dataIdToExpandBoolMap[data.id] ? data.workingItems.length : 3) // Show all items if expanded, otherwise show first 3
+                          .map(workingItem => (
                             <div className="input-item-div">
                               <Button
                                 tdor="secondary"
@@ -198,19 +216,23 @@ function Log() {
                               />
                             </div>
                           ))}
-                          <DropdownToggle caret />
-                          </InputGroup>
-                      </div>
+                      <FontAwesomeIcon
+                        className="input-dropdown-toggle"
+                        icon={faCaretDown}
+                        onClick={() => dropdownToggleClicked(data.id)}
+                      />
+                    </InputGroup>
+                  </div>
                 </td>
               </tr>
             ))}
             <tr>
-              <td>
+              <td colSpan="5">
                 <Button className="log-form-cancel-button" onClick={handleCancel}>
                   Cancel
                 </Button>
               </td>
-              <td>
+              <td colSpan="5">
                 <Button className="log-form-submit-button">Submit</Button>
               </td>
             </tr>
