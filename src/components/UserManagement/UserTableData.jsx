@@ -7,7 +7,7 @@ import hasPermission from 'utils/permissions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faCalendarDay, faCheck, faClock } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
@@ -15,6 +15,8 @@ import { cantUpdateDevAdminDetails } from 'utils/permissions';
  * The body row of the user table
  */
 const UserTableData = React.memo(props => {
+  const darkMode = props.darkMode;
+
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
@@ -41,7 +43,7 @@ const UserTableData = React.memo(props => {
   };
 
   return (
-    <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
+    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : '' }`} id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
@@ -52,7 +54,7 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td className="email_cell">
-      <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
+      <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.firstName} </a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -63,7 +65,7 @@ const UserTableData = React.memo(props => {
         />
       </td>
        <td className="email_cell">
-       <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+       <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.lastName}</a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -101,7 +103,7 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={boxStyle}
+          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
@@ -113,7 +115,7 @@ const UserTableData = React.memo(props => {
           }`}
           onClick={e => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={boxStyle}
+          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -153,7 +155,7 @@ const UserTableData = React.memo(props => {
               props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
             );
           }}
-          style={boxStyle}
+          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
         >
           {props.isSet ? CANCEL : SET_FINAL_DAY}
         </button>
@@ -185,13 +187,13 @@ const UserTableData = React.memo(props => {
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={boxStyle}
+              style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"} : boxStyle}
             >
               {DELETE}
             </button>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton />
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton />
           </span>
         </td>
       )}

@@ -1,24 +1,24 @@
 import React from 'react';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 /**
  * The search panel stateless component for user management grid
  */
-const UserSearchPanel = props => {
+const UserSearchPanel = ({handleNewUserSetupPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
   // console.log('UserSearchPanel props', props);
 
   return (
     <div className="input-group mt-3" id="new_usermanagement">
-      <button type="button" className="btn btn-info mr-2" onClick={props.handleNewUserSetupPopup}>
+      <button type="button" className="btn btn-info mr-2" onClick={handleNewUserSetupPopup} style={darkMode ? boxStyleDark : boxStyle}>
         {SEND_SETUP_LINK}
       </button>
       <button
         type="button"
         className="btn btn-info mr-2"
         onClick={e => {
-          props.onNewUserClick();
+          onNewUserClick();
         }}
-        style={boxStyle}
+        style={darkMode ? boxStyleDark : boxStyle}
       >
         {CREATE_NEW_USER}
       </button>
@@ -32,9 +32,9 @@ const UserSearchPanel = props => {
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
-        value={props.searchText}
+        value={searchText}
         onChange={e => {
-          props.onSearch(e.target.value);
+          onSearch(e.target.value);
         }}
       />
       <div className="input-group-prepend ml-2">
@@ -42,7 +42,7 @@ const UserSearchPanel = props => {
         <select
           id="active-filter-dropdown"
           onChange={e => {
-            props.onActiveFiter(e.target.value);
+            onActiveFiter(e.target.value);
           }}
         >
           <option value="all">All</option>

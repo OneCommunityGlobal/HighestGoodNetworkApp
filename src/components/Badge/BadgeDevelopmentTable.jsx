@@ -22,6 +22,8 @@ import DeleteBadgePopup from './DeleteBadgePopup';
 import './Badge.css';
 
 function BadgeDevelopmentTable(props) {
+  const { darkMode } = props;
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('');
@@ -180,7 +182,7 @@ function BadgeDevelopmentTable(props) {
 
   return (
     <Container fluid>
-      <table className="table table-bordered">
+      <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
         <thead>
           <BadgeTableHeader />
           <BadgeTableFilter
@@ -193,6 +195,7 @@ function BadgeDevelopmentTable(props) {
             description={description}
             type={type}
             order={order}
+            darkMode={darkMode}
           />
         </thead>
         <tbody>
@@ -231,7 +234,7 @@ function BadgeDevelopmentTable(props) {
                     outline
                     color="info"
                     onClick={() => onEditButtonClick(value)}
-                    style={boxStyle}
+                    style={darkMode ? {} : boxStyle}
                   >
                     Edit
                   </Button>{' '}
@@ -241,7 +244,7 @@ function BadgeDevelopmentTable(props) {
                     outline
                     color="danger"
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
-                    style={boxStyle}
+                    style={darkMode ? {} : boxStyle}
                   >
                     Delete
                   </Button>
@@ -278,6 +281,7 @@ const mapStateToProps = state => ({
   message: state.badge.message,
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

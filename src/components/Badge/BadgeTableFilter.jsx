@@ -13,6 +13,7 @@ function BadgeTableFilter({
   type,
   order,
   resetFilters,
+  darkMode,
 }) {
   const badgeTypes = [
     'No Infringement Streak',
@@ -58,7 +59,13 @@ function BadgeTableFilter({
         />
       </td>
       <td id="badge_action">
-        <Button outline color="secondary" size="sm" onClick={() => resetFilters()} style={boxStyle}>
+        <Button
+          outline
+          color={darkMode ? 'primary' : 'secondary'}
+          size="sm"
+          onClick={() => resetFilters()}
+          style={darkMode ? {} : boxStyle}
+        >
           Reset Filters
         </Button>
       </td>

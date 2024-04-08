@@ -1,5 +1,5 @@
 import React from 'react';
-import { rolesMock } from '../../__tests__/mockStates';
+import { rolesMock, themeMock } from '../../__tests__/mockStates';
 import PermissionsManagement from './PermissionsManagement';
 import thunk from 'redux-thunk';
 import { Route } from 'react-router-dom';
@@ -27,6 +27,7 @@ describe('permissions management page structure', () => {
     store = mockStore({
       role: rolesMock.role,
       roleInfo: { roleInfo: {} },
+      theme: themeMock,
     });
     store.dispatch = jest.fn();
 

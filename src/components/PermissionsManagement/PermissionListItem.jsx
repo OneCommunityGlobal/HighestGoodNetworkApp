@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import './UserRoleTab.css';
@@ -10,7 +10,7 @@ import './UserRoleTab.css';
 
 
 const PermissionListItem = (props) => {
-  const {rolePermissions, immutablePermissions, label, permission, subperms, description, editable, depth, setPermissions} = props;
+  const {rolePermissions, immutablePermissions, label, permission, subperms, description, editable, depth, setPermissions, darkMode} = props;
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
@@ -80,7 +80,7 @@ const PermissionListItem = (props) => {
           style={{
             color: isCategory ?
               howManySubpermsInRole === 'All' ? 'green' :
-              howManySubpermsInRole === 'Some' ? 'black' : 'red'
+              howManySubpermsInRole === 'Some' ? (darkMode ? 'white' : 'black') : 'red'
               : hasThisPermission ? 'green' : 'red',
             fontSize: isCategory && '20px',
             textIndent: 50*depth+'px',
@@ -113,7 +113,7 @@ const PermissionListItem = (props) => {
                 props.onChange();
               }}
               disabled={!props.hasPermission('putRole')}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
             </Button> :
@@ -122,7 +122,7 @@ const PermissionListItem = (props) => {
               color={hasThisPermission ? 'danger' : 'success'}
               onClick={() => {togglePermission(permission)}}
               disabled={!props.hasPermission('putRole') || immutablePermissions.includes(permission)}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               {hasThisPermission ? 'Delete' : 'Add'}
             </Button>
@@ -145,6 +145,7 @@ const PermissionListItem = (props) => {
             setPermissions={setPermissions}
             onChange={props.onChange}
             depth={depth+1}
+            darkMode={darkMode}
           />
         </li> : <></>}
       <Modal

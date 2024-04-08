@@ -4,10 +4,12 @@ import { connect } from 'react-redux';
 import './UserRoleTab.css';
 import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 
 const UserRoleTab = props => {
+  const darkMode = props.darkMode;
+
   useEffect(() => {
     props.getUserRole(props.auth?.user.userid);
   }, []);
@@ -35,21 +37,24 @@ const UserRoleTab = props => {
   const roleId = actualRole._id;
 
   return (
-    <div className="userRoleTab__container">
-      <button
-        onClick={() => history.push('/permissionsmanagement')}
-        className="userRoleTab__backBtn"
-        style={boxStyle}
-      >
-        Back
-      </button>
-      <RolePermissions
-        userRole={props.userProfile.role}
-        role={roleName}
-        roleId={roleId}
-        header={`${roleName} Permissions:`}
-        permissions={permissions}
-      />
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+      <div className={`userRoleTab__container`}>
+        <button
+          onClick={() => history.push('/permissionsmanagement')}
+          className="userRoleTab__backBtn"
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Back
+        </button>
+        <RolePermissions
+          userRole={props.userProfile.role}
+          role={roleName}
+          roleId={roleId}
+          header={`${roleName} Permissions:`}
+          permissions={permissions}
+          darkMode={darkMode}
+        />
+      </div>
     </div>
   );
 };
@@ -59,6 +64,7 @@ const mapStateToProps = state => ({
   roles: state.role.roles,
   auth: state.auth,
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import axios from 'axios';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
+import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -27,6 +28,7 @@ beforeEach(() => {
     role: mockAdminState.role,
     userProfile: { _id: 'abc123', firstName: 'test', lastName: 'one', role: 'Test' },
     rolePreset: { presets: mockAdminState.role.roles[3].permissions },
+    theme: themeMock,
   });
 });
 
@@ -103,6 +105,7 @@ describe('UserRoleTab component when the role does exist', () => {
       role: mockAdminState.role,
       userProfile: { _id: 'abc123', firstName: 'test', lastName: 'manager', role: 'Manager' },
       rolePreset: { presets: mockAdminState.role.roles[3].permissions },
+      theme: themeMock,
     });
     axios.get.mockResolvedValue({
       status: 200,

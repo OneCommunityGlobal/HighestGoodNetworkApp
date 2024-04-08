@@ -6,7 +6,9 @@ import userTableDataPermissions from 'utils/userTableDataPermissions';
 /**
  * The header row of the user table.
  */
-const UserTableSearchHeader = React.memo(props => {
+const UserTableSearchHeader = React.memo((props) => {
+  const darkMode = props.darkMode;
+
   const onFirstNameSearch = text => {
     props.onFirstNameSearch(text);
   };
@@ -28,7 +30,7 @@ const UserTableSearchHeader = React.memo(props => {
   };
 
   return (
-    <tr>
+    <tr className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
       <td id="user_active"></td>
       <td id="user_first">
         <TextSearchBox id={'firts_name_search'} searchCallback={onFirstNameSearch} />

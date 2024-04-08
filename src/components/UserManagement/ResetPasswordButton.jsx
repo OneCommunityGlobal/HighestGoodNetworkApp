@@ -4,7 +4,7 @@ import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { resetPassword } from '../../services/userProfileService';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 class ResetPasswordButton extends React.PureComponent {
   constructor(props) {
@@ -26,7 +26,7 @@ class ResetPasswordButton extends React.PureComponent {
           outline
           color="primary"
           className={'btn  btn-outline-success mr-1' + (this.props.isSmallButton ? ' btn-sm' : '')}
-          style={{ ...boxStyle, minWidth: '115px' }}
+          style={this.props.darkMode ? {boxShadow: "0 0 0 0", minWidth: '115px', fontWeight: "bold"} : { ...boxStyle, minWidth: '115px' }}
           onClick={this.onResetClick}
         >
           {'Reset Password'}
