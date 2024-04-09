@@ -690,11 +690,8 @@ class AddUserProfile extends Component {
       createdDate,
       actualEmail,
       actualPassword,
-<<<<<<< HEAD
       startDate,
-=======
       actualConfirmedPassword
->>>>>>> c9648a699f2752a16b807c07417129ba475e2c47
     } = that.state.userProfile;
 
     const userData = {
