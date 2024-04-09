@@ -19,7 +19,6 @@ const SetupProfile = ({ match }) => {
     httpService
       .post(ENDPOINTS.VALIDATE_TOKEN(), { token })
       .then(res => {
-        debugger
         if (res.status === 200) {
           setIsValidToken(true);
           setEmail(res.data.email);
@@ -27,7 +26,6 @@ const SetupProfile = ({ match }) => {
         setLoading(false);
       })
       .catch(err => {
-        debugger
         let res = err.response;
         if(res.data) {
           setInValidMessage(res.data);

@@ -46,7 +46,6 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
-    debugger;
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
