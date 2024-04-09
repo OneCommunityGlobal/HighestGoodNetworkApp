@@ -70,7 +70,7 @@ function DonutChart({ legendHeading, data, width, height, total }) {
     legend
       .append('text')
       .text(legendHeading)
-      .attr('transform', 'translate(40, -10)')
+      .attr('transform', 'translate(65, -10)')
       .style('text-anchor', 'middle')
       .style('font-size', 16)
       .style('font-weight', 'bold');
