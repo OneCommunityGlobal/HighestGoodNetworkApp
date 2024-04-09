@@ -291,8 +291,6 @@ class PeopleReport extends Component {
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
     const { tangibleHoursReportedThisWeek, auth, match } = this.props;
 
-    console.log(tangibleHoursReportedThisWeek);
-
 
     let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
