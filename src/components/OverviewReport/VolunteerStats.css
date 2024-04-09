@@ -1,0 +1,7 @@
+.team-members-div {
+    border: 1px solid black;
+              border-radius: 6px;
+              font-family: Noto Sans;
+              padding: 1rem;
+              font-weight: 700;
+}

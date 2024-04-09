@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
 
-function DonutChart({ data, width, height, total }) {
+function DonutChart({ legendHeading, data, width, height, total }) {
   const svgRef = useRef();
 
   useEffect(() => {
@@ -42,7 +42,8 @@ function DonutChart({ data, width, height, total }) {
       .text(d => `${((d.data.value / d3.sum(data, d2 => d2.value)) * 100).toFixed(2)}%`)
       .attr('transform', d => `translate(${arc.centroid(d)})`)
       .style('text-anchor', 'middle')
-      .style('font-size', 12);
+      .style('font-size', 12)
+      .style('fill', 'white');
 
     const sum = total || d3.sum(data, d => d.value);
     svg
@@ -50,7 +51,8 @@ function DonutChart({ data, width, height, total }) {
       .text(`Total: ${sum}`)
       .attr('transform', 'translate(0, 20)')
       .style('text-anchor', 'middle')
-      .style('font-size', 16);
+      .style('font-size', 40)
+      .style('font-weight', 600);
 
     const legend = svg
       .append('g')
@@ -67,24 +69,26 @@ function DonutChart({ data, width, height, total }) {
 
     legend
       .append('text')
-      .text(`Volunteers`)
-      .attr('transform', 'translate(80, -40)')
+      .text(legendHeading)
+      .attr('transform', 'translate(40, -10)')
       .style('text-anchor', 'middle')
       .style('font-size', 16)
       .style('font-weight', 'bold');
 
     legends
       .append('rect')
-      .attr('width', legendRectSize)
+      .attr('width', legendRectSize + 10)
       .attr('height', legendRectSize)
       .style('fill', color)
-      .style('stroke', color);
+      .style('stroke', color)
+      .style('border-radius', '6px');
 
     legends
       .append('text')
-      .attr('x', legendRectSize + legendSpacing)
+      .attr('x', legendRectSize + legendSpacing + 10)
       .attr('y', legendRectSize - legendSpacing)
-      .text(d => d);
+      .data(data)
+      .text(d => `${d.label} - ${d.value}`);
   }, [data, height, width]);
 
   return <svg ref={svgRef} style={{ marginRight: '-200px' }} />;
