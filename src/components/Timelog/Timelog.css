@@ -4,7 +4,13 @@
   justify-content: center;
   text-align: center;
 }
-
+.card-body-shadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+.card-header-shadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+  margin-bottom:1px;
+}
 .buttons {
   right: 0;
   bottom: 0;
@@ -70,10 +76,50 @@
   padding-right: 0px !important;
 }
 
+.button {
+  margin-left: 10px; /* Add space between buttons */
+  padding: 5px 10px; /* Add padding to the buttons */
+  border: curved;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.edit-button {
+  background-color: blue; /* Blue for the Edit button */
+  color: white;
+}
+
+.save-button {
+  background-color: green; /* Green for the Save button */
+  color: white;
+}
+
+.cancel-button {
+  background-color: red; /* Red for the Cancel button */
+  color: white;
+}
+
+.edit-textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
 .activeUser {
   color: lawngreen;
 }
 
 .notActiveUser {
   color: #dee2e6;
+}
+
+
+.custom-text-alignment {
+  text-align: center;
+}
+
+@media (min-width: 992px) { 
+  .custom-text-alignment {
+      text-align: right;
+  }
 }
