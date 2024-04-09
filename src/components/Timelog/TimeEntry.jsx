@@ -15,8 +15,7 @@ import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
 import { hrsFilterBtnColorMap } from 'constants/colors';
 
-
-import checkNegativeNumber from 'utils/checkNegativeHours';
+import { toast } from 'react-toastify';
 
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
@@ -85,58 +84,24 @@ const TimeEntry = (props) => {
   //permission to Delete time entry from other user's Dashboard
   const canDelete = dispatch(hasPermission('deleteTimeEntryOthers')) ||
     //permission to delete any time entry on their own time logs tab
-    dispatch(hasPermission('deleteTimeEntry')) ||
+    (isAuthUser && dispatch(hasPermission('deleteTimeEntry'))) ||
     //default permission: delete own sameday tangible entry
     isAuthUserAndSameDayEntry;
 
   const toggleTangibility = () => {
-    //Update intangible hours property in userprofile
-    const formattedHours = parseFloat(hours) + parseFloat(minutes) / 60;
-    const { hoursByCategory } = timeEntryUserProfile;
-    if (projectName) {
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
-      //change tangible to intangible
-      if (isTangible) {
-        timeEntryUserProfile.totalIntangibleHrs += formattedHours;
-        isFindCategory
-          ? (hoursByCategory[projectCategory] -= formattedHours)
-          : (hoursByCategory['unassigned'] -= formattedHours);
-      } else {
-        //change intangible to tangible
-        timeEntryUserProfile.totalIntangibleHrs -= formattedHours;
-        isFindCategory
-          ? (hoursByCategory[projectCategory] += formattedHours)
-          : (hoursByCategory['unassigned'] += formattedHours);
-      }
-    } else {
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === taskClassification);
-      //change tangible to intangible
-      if (isTangible) {
-        timeEntryUserProfile.totalIntangibleHrs += formattedHours;
-        isFindCategory
-          ? (hoursByCategory[taskClassification] -= formattedHours)
-          : (hoursByCategory['unassigned'] -= formattedHours);
-      } else {
-        //change intangible to tangible
-        timeEntryUserProfile.totalIntangibleHrs -= formattedHours;
-        isFindCategory
-          ? (hoursByCategory[taskClassification] += formattedHours)
-          : (hoursByCategory['unassigned'] += formattedHours);
-      }
-    }
-    checkNegativeNumber(timeEntryUserProfile);
-
     const newData = {
       ...data,
       isTangible: !isTangible,
     };
-
-    if (from === 'TaskTab') {
-      dispatch(editTeamMemberTimeEntry(newData));
-    } else if (from === 'WeeklyTab') {
-      dispatch(editTimeEntry(timeEntryId, newData));
-      dispatch(updateUserProfile(timeEntryUserProfile));
-      dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
+    try {
+      if (from === 'TaskTab') {
+        dispatch(editTeamMemberTimeEntry(newData));
+      } else if (from === 'WeeklyTab') {
+        dispatch(editTimeEntry(timeEntryId, newData));
+        dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
+      }
+    } catch (error) {
+      toast.error(`Error: ${error.message}`);
     }
   };
   let filteredColor;
@@ -221,12 +186,7 @@ const TimeEntry = (props) => {
               )}
               {canDelete && from === 'WeeklyTab' && (
                 <button className='text-primary'>
-                  <DeleteModal
-                    timeEntry={data}
-                    userProfile={timeEntryUserProfile}
-                    projectCategory={projectCategory}
-                    taskClassification={taskClassification}
-                  />
+                  <DeleteModal timeEntry={data} />
                 </button>
               )}
             </div>
