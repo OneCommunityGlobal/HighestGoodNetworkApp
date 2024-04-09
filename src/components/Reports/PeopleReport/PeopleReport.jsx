@@ -506,7 +506,7 @@ class PeopleReport extends Component {
     return (
       <div className="container-people-wrapper">
         <ReportPage renderProfile={renderProfileInfo}>
-          <div className="people-report-time-logs-wrapper">
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper": ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
