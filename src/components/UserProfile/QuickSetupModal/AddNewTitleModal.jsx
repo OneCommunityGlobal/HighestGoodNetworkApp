@@ -11,11 +11,10 @@ import {
   Input,
 } from 'reactstrap';
 import { addTitle } from '../../../actions/title';
-import PropTypes from 'prop-types';
 import AddTeamsAutoComplete from '../TeamsAndProjects/AddTeamsAutoComplete';
 import AddProjectsAutoComplete from '../TeamsAndProjects/AddProjectsAutoComplete';
 
-function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData }) {
+function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData,setWarningMessage, setShowMessage }) {
   const [titleData, setTitleData] = useState({
     titleName: '',
     mediaFolder: '',
@@ -56,9 +55,14 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   // confirm and save
   const confirmOnClick = () => {
     addTitle(titleData)
-      .then(() => {
-        setIsOpen(false);
-        refreshModalTitles();
+      .then((resp) => {
+        if (resp.status !== 200){
+          setWarningMessage({title:"Error", content:resp.message});
+          setShowMessage(true);
+        }else{
+          setIsOpen(false);
+          refreshModalTitles();
+        };
       })
       .catch(e => {
         console.log(e);
@@ -71,7 +75,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
       <ModalBody>
         <Form>
           <FormGroup>
-            <Label>Title Name: </Label>
+            <Label>Title Name<span className='qsm-modal-required'>*</span>: </Label>
             <Input
               type="text"
               name="text"
@@ -82,7 +86,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               }}
             />
 
-            <Label>Media Folder: </Label>
+            <Label>Media Folder<span className='qsm-modal-required'>*</span>: </Label>
             <Input
               type="text"
               name="text"
@@ -92,7 +96,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
                 setTitleData(prev => ({ ...prev, mediaFolder: e.target.value }));
               }}
             />
-            <Label>Team Code:</Label>
+            <Label>Team Code<span className='qsm-modal-required'>*</span>:</Label>
             <Input
               type="text"
               placeholder="X-XXX"
@@ -101,7 +105,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
                 setTitleData(prev => ({ ...prev, teamCode: e.target.value }));
               }}
             />
-            <Label>Project Assignment:</Label>
+            <Label>Project Assignment<span className='qsm-modal-required'>*</span>:</Label>
             <AddProjectsAutoComplete
               projectsData={projectsData}
               onDropDownSelect={selectProject}

@@ -25,3 +25,7 @@
 .setup-title-name{
     max-height: 30px;
 }
+
+.qsm-modal-required{
+  color: red;
+}

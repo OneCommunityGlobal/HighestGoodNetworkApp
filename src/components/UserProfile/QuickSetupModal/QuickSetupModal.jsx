@@ -21,7 +21,7 @@ import SaveButton from '../UserProfileEdit/SaveButton';
 import AddNewTitleModal from './AddNewTitleModal';
 import { getAllTitle } from '../../../actions/title';
 
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './QuickSetupModal.css';
 
 function QuickSetupModal({
@@ -40,12 +40,17 @@ function QuickSetupModal({
   const [curtitle, setTitleOnClick] = useState('');
   const [titleOnSet, setTitleOnSet] = useState(true);
 
+  const [showMessage, setShowMessage] = useState(false);
+  const [warningMessage, setWarningMessage] = useState({});
+
   useEffect(() => {
     getAllTitle()
       .then(res => {
         setTitles(res.data);
       })
       .catch(err => console.log(err));
+    
+
   }, []);
 
   // refresh the QSCs after CREATE/DELETE operations on titles
@@ -107,6 +112,8 @@ function QuickSetupModal({
           isOpen={showAddTitle}
           setIsOpen={setShowAddTitle}
           refreshModalTitles={refreshModalTitles}
+          setWarningMessage={setWarningMessage}
+          setShowMessage={setShowMessage}
         />
       ) : (
         ''
@@ -126,6 +133,17 @@ function QuickSetupModal({
         />
       ) : (
         ''
+      )}
+      {showMessage && (
+        <Modal isOpen={showMessage} toggle={() => setShowMessage(false)}>
+          <ModalHeader toggle={() => setShowMessage(false)}>{warningMessage.title}</ModalHeader>
+          <ModalBody>{warningMessage.content}</ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={() => setShowMessage(false)}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
       )}
     </div>
   );

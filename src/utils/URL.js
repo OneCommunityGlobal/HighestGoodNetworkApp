@@ -156,9 +156,11 @@ export const ENDPOINTS = {
 
   //titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
+  // TITLES: () => `${APIEndpoint}/title/deleteAll`,
   TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
   CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
   DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
