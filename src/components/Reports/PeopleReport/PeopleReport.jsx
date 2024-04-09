@@ -420,7 +420,12 @@ class PeopleReport extends Component {
         peopleData.taskData.push(task);
       }
 
-      return <PeopleTableDetails taskData={peopleData.taskData} />;
+      return (
+        <PeopleTableDetails
+          taskData={peopleData.taskData}
+          showFilter={tangibleHoursReportedThisWeek !== 0}
+        />
+      );
     };
 
     const renderProfileInfo = () => {
@@ -503,7 +508,7 @@ class PeopleReport extends Component {
     return (
       <div className="container-people-wrapper">
         <ReportPage renderProfile={renderProfileInfo}>
-          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
+          <div className="people-report-time-logs-wrapper">
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -545,7 +550,50 @@ class PeopleReport extends Component {
           </div>
 
           <PeopleTasksPieChart />
-          {tangibleHoursReportedThisWeek === 0 ? (
+          <div className="mobile-people-table">
+            <ReportPage.ReportBlock>
+              <div className="intro_date">
+                <h4>Tasks contributed</h4>
+              </div>
+
+              <PeopleDataTable />
+
+              <div className="Infringementcontainer">
+                <div className="InfringementcontainerInner">
+                  <UserProject userProjects={userProjects} />
+                  <Infringements
+                    infringements={infringements}
+                    fromDate={fromDate}
+                    toDate={toDate}
+                    timeEntries={timeEntries}
+                  />
+                  <div className="visualizationDiv">
+                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                  </div>
+                  <div className="visualizationDiv">
+                    <InfringementsViz
+                      infringements={infringements}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                    />
+                  </div>
+                  <div className="visualizationDivRow">
+                    <div className="BadgeSummaryDiv">
+                      <BadgeSummaryViz
+                        authId={auth.user.userid}
+                        userId={match.params.userId}
+                        badges={userProfile.badgeCollection}
+                      />
+                    </div>
+                    <div className="BadgeSummaryPreviewDiv">
+                      <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ReportPage.ReportBlock>
+          </div>
+          {/* {tangibleHoursReportedThisWeek === 0 ? (
             <div className="report-no-log-message">No task has been logged this week...</div>
           ) : (
             <div className="mobile-people-table">
@@ -591,7 +639,7 @@ class PeopleReport extends Component {
                 </div>
               </ReportPage.ReportBlock>
             </div>
-          )}
+          )} */}
         </ReportPage>
       </div>
     );
