@@ -24,7 +24,7 @@ import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
-import { searchWithAccent } from '../../utils/search'
+import { searchWithAccent } from '../../utils/search';
 
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
@@ -39,7 +39,6 @@ import { toast } from 'react-toastify';
 import RolePermissions from 'components/PermissionsManagement/RolePermissions';
 
 import { useDispatch, useSelector } from 'react-redux';
-
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -80,10 +79,7 @@ class UserManagement extends React.PureComponent {
     const { requests: timeOffRequests } = this.props.state.timeOffRequests;
     let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests);
     let roles = [...new Set(userProfiles.map(item => item.role))];
-
-
-
-
+    const canPostNewUser = this.props.hasPermission('postUserProfile');
     return (
       <Container fluid>
         {fetching ? (
@@ -98,11 +94,11 @@ class UserManagement extends React.PureComponent {
               onNewUserClick={this.onNewUserClick}
               handleNewUserSetupPopup={this.handleNewUserSetupPopup}
               state={this.props.state}
-            // getState={this.props.getState}
-
+              canPostNewUser={canPostNewUser}
+              // getState={this.props.getState}
             />
 
-            <div className="table-responsive" id="user-management-table"  >
+            <div className="table-responsive" id="user-management-table">
               <Table className="table table-bordered noWrap">
                 <thead>
                   <UserTableHeader
@@ -194,7 +190,6 @@ class UserManagement extends React.PureComponent {
     );
   };
 
-
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
@@ -254,33 +249,29 @@ class UserManagement extends React.PureComponent {
       // Applying the search filters before creating each table data element
       return (
         // Check if the user matches the search criteria
-        (
-          // Regular search criteria
-          user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
-          user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
-          user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
-          user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
-          (this.state.weeklyHrsSearchText === '' || user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
-
-          // Check the isActive state only if 'all' is not selected
-          ((this.state.allSelected && true) || (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
-
-          // Check the isPaused state only if 'all' is not selected
-          ((this.state.allSelected && true) || (this.state.isPaused === false || (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
-          ) &&
-
-          (
-            searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
-            searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
-            user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.weeklycommittedHours === Number(this.state.wildCardSearchText)
-          )
-        )
+        // Regular search criteria
+        user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
+        user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
+        user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
+        user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
+        (this.state.weeklyHrsSearchText === '' ||
+          user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
+        // Check the isActive state only if 'all' is not selected
+        ((this.state.allSelected && true) ||
+          this.state.isActive === undefined ||
+          user.isActive === this.state.isActive) &&
+        // Check the isPaused state only if 'all' is not selected
+        ((this.state.allSelected && true) ||
+          this.state.isPaused === false ||
+          (user.reactivationDate && new Date(user.reactivationDate) > new Date())) &&
+        (searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
+          searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
+          user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+          user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+          user.weeklycommittedHours === Number(this.state.wildCardSearchText))
       );
     });
   };
-
 
   /**
    * reload user list and close user creation popup
@@ -312,17 +303,19 @@ class UserManagement extends React.PureComponent {
    * Call back on log time off button click
    */
   onLogTimeOffClick = user => {
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
-    const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
+
+    const hasRolePermission =
+      this.props.state.auth.user.role === 'Administrator' ||
+      this.props.state.auth.user.role === 'Owner';
     if (canManageTimeOffRequests || hasRolePermission) {
       this.setState({
         logTimeOffPopUpOpen: true,
         userForTimeOff: user,
       });
     } else {
-      toast.warn(`You do not have permission to manage time-off requests.`)
+      toast.warn(`You do not have permission to manage time-off requests.`);
     }
-
   };
 
   /**
@@ -558,7 +551,6 @@ class UserManagement extends React.PureComponent {
     let active = undefined;
     let paused = false;
     let allSelected = false;
-
 
     switch (value) {
       case 'active':
