@@ -15,7 +15,7 @@ const setupHistoryTooltip = (
 )
 
 const UserSearchPanel = props => {
-  console.log('UserSearchPanel props', props);
+  // console.log('UserSearchPanel props', props);
 
   return (
     <div className="input-group mt-3" id="new_usermanagement">
