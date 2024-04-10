@@ -1255,6 +1255,6 @@ export const createAuthMocks = (permissions) => {
     profilePic:''
   };
   const onlyPermissions = {...authTemplate, permissions: {frontPermissions: permissions}};
-  const allOtherPermissions = {...authTemplate, permissions: {frontPermissions: [...allPermissionsExcept(permissions)]}};
+  const allOtherPermissions = {...authTemplate, permissions: {frontPermissions: allPermissionsExcept(permissions)}};
   return [onlyPermissions, allOtherPermissions];
 };
