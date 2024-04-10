@@ -11,8 +11,9 @@ import { RoutePermissions } from 'utils/routePermissions';
 // import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
-
+import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
+import Announcements from 'components/Announcements';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 // import Reports from './components/Reports';
@@ -43,30 +44,31 @@ import ForgotPassword from './components/Login/ForgotPassword';
 // import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
 // import BadgeManagement from './components/Badge/BadgeManagement';
+import EmailSubscribeForm from './components/EmailSubscribeForm';
+import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+
 
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
-import ConsumablesView from './components/BMDashboard/Consumables/ConsumablesList/ConsumablesView';
-
 import EquipmentList from './components/BMDashboard/Equipment/List';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
-// import MaterialsList from './components/BMDashboard/MaterialsList';
-// import PurchaseMaterials from './components/BMDashboard/MaterialPurchaseRequest';
-// import ProjectDetails from './components/BMDashboard/Projects/ProjectDetails/ProjectDetails';
+import AddTool from './components/BMDashboard/Tools/AddTool';
 
-const MaterialsList = lazy(() => import('./components/BMDashboard/MaterialsList'));
-const PurchaseMaterials = lazy(() => import('./components/BMDashboard/MaterialPurchaseRequest'));
+const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
+const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
+const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
+const PurchaseMaterials = lazy(() => import('./components/BMDashboard/PurchaseRequests/MaterialPurchaseRequest'));
+const PurchaseReusables = lazy(() => import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'));
 const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
 const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
-const PurchaseTools = lazy(() => import ('./components/BMDashboard/ToolPurchaseRequest'));
+const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
-// const EquipmentList = lazy(() => import('./components/BMDashboard/EquipmentList'))
-
+const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/AddConsumable'));
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
@@ -151,12 +153,7 @@ export default (
           component={Projects}
           fallback
           allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
-          routePermissions={[
-            RoutePermissions.projects,
-            RoutePermissions.projectManagement_fullFunctionality,
-            RoutePermissions.projectManagement_addTeamMembersUploadNewWBS,
-            RoutePermissions.updateTask
-          ].flat()}
+          routePermissions={RoutePermissions.projects}
         />
         <ProtectedRoute
           path="/projects"
@@ -192,14 +189,14 @@ export default (
           routePermissions={[
             RoutePermissions.permissionsManagement,
             RoutePermissions.userPermissionsManagement,
-          ]}
+          ].flat()}
         />
         <ProtectedRoute
           path="/permissionsmanagement/:userRole"
           exact
           component={UserRoleTab}
           fallback
-          routePermissions={RoutePermissions.permissionsManagementRole}
+          routePermissions={RoutePermissions.permissionsManagement}
         />
         <ProtectedRoute
           path="/teams"
@@ -210,26 +207,37 @@ export default (
           routePermissions={RoutePermissions.teams}
         />
 
-        {/* ----- BEGIN BM Dashboard Routing ----- */}
+        <ProtectedRoute
+          path="/announcements"
+          exact
+          component={Announcements}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
+        />
 
+        {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
         <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
+        <BMProtectedRoute path="/bmdashboard/reusables/purchase" fallback component={PurchaseReusables} />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
+        <BMProtectedRoute path="/bmdashboard/lessonlist/" component={LessonList} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
-
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
-        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
-        <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
+        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialListView} />
+        <BMProtectedRoute path="/bmdashboard/consumables/add" fallback component={AddConsumable} />
+        <BMProtectedRoute path="/bmdashboard/consumables" fallback component={ConsumableListView} />
+        <BMProtectedRoute path="/bmdashboard/reusables" fallback component={ReusableListView} />
+        <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
-
         <BMProtectedRoute path="/bmdashboard/inventorytypes" fallback component={InventoryTypesList} />
+
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
@@ -238,6 +246,8 @@ export default (
 
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
+        <Route path="/email-subscribe" component={EmailSubscribeForm} />
+        <Route path="/email-unsubscribe" component={UnsubscribeForm} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />

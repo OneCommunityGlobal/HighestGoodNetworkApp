@@ -6,21 +6,23 @@ import PhoneInput from 'react-phone-input-2';
 // import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { useSelector } from 'react-redux';
-import getUserTimeZone from 'services/timezoneApiService';
+import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle } from 'styles';
-import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { formatDate } from 'utils/formatDate';
-import { isString, set } from 'lodash';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
+import { isString } from 'lodash';
 import { toast } from 'react-toastify';
+
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
   const { firstName, lastName } = userProfile;
+
   if (canEdit) {
     return (
       <>
@@ -108,7 +110,7 @@ const Title = props => {
 
 const Email = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
-  const { email, privacySettings } = userProfile;
+  const { email, privacySettings, emailSubscriptions } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
 
@@ -120,6 +122,12 @@ const Email = props => {
             <ToggleSwitch
               switchType="email"
               state={privacySettings?.email}
+              handleUserProfile={props.handleUserProfile}
+            />
+
+            <ToggleSwitch
+              switchType="email-subcription"
+              state={emailSubscriptions? emailSubscriptions : false}
               handleUserProfile={props.handleUserProfile}
             />
 
@@ -298,7 +306,7 @@ const BasicInformationTab = props => {
   if (isUserSelf) {
     topMargin = '0px';
   }
-  const key = useSelector(state => state.timeZoneAPI.userAPIKey);
+
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const handleLocation = e => {
     setUserProfile({
@@ -316,35 +324,17 @@ const BasicInformationTab = props => {
       alert('Please enter valid location');
       return;
     }
-    if (key) {
-      getUserTimeZone(userProfile.location.userProvided, key)
-        .then(response => {
-          if (
-            response.data.status.code === 200 &&
-            response.data.results &&
-            response.data.results.length
-          ) {
-            let timezone = response.data.results[0].annotations.timezone.name;
-            let currentLocation = {
-              userProvided: userProfile.location.userProvided,
-              coords: {
-                lat: response.data.results[0].geometry.lat,
-                lng: response.data.results[0].geometry.lng,
-              },
-              country: response.data.results[0].components.country,
-              city: response.data.results[0].components.city,
-            };
 
-            setTimeZoneFilter(timezone);
-            setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
-            if (errorOccurred) setErrorOccurred(false);
-          } else {
-            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
-            `);
-          }
-        })
-        .catch(err => console.log(err));
-    }
+    axios.get(ENDPOINTS.TIMEZONE_LOCATION(userProfile.location.userProvided)).then(res => {
+      if (res.status === 200) {
+        const {timezone, currentLocation } = res.data;
+        setTimeZoneFilter(timezone);
+        setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
+      } 
+    }).catch(err => {
+      toast.error(`An error occurred : ${err.response.data}`);
+      if (errorOccurred) setErrorOccurred(false);
+    });
   };
 
   function locationCheckValue(loc) {
@@ -538,8 +528,8 @@ const BasicInformationTab = props => {
       </Col>
       {desktopDisplay ? (
         <Col md="1">
-          <div style={{ marginTop: topMargin }}>
-            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={30} />
+          <div style={{ marginTop: topMargin, marginLeft: '-20px' }}>
+            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={20}/>
           </div>
         </Col>
       ) : (
@@ -556,7 +546,7 @@ const BasicInformationTab = props => {
             <Label>Location</Label>
           </Col>
           {desktopDisplay ? (
-            <Col>
+            <Col md='6'>
               <Row className="ml-0">
                 <Col className="p-0" style={{ marginRight: '10px' }}>
                   <Input
@@ -564,7 +554,7 @@ const BasicInformationTab = props => {
                     value={locationCheckValue(userProfile.location || '')}
                   />
                 </Col>
-                <Col className="p-0">
+                <Col>
                   <Button
                     color="secondary"
                     block
@@ -724,23 +714,23 @@ const BasicInformationTab = props => {
           <>
             <Row>
               {nameComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>
               {titleComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>
               {emailComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>
               {phoneComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>
               {videoCallPreferenceComponent}
-              <Col md="1"></Col>
+              <Col md="1" lg="1"></Col>
             </Row>
             <Row>{roleComponent}</Row>
             <Row>

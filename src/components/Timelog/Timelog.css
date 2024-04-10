@@ -4,7 +4,13 @@
   justify-content: center;
   text-align: center;
 }
-
+.card-body-shadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+.card-header-shadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+  margin-bottom:1px;
+}
 .buttons {
   right: 0;
   bottom: 0;
@@ -105,4 +111,15 @@
 
 .notActiveUser {
   color: #dee2e6;
+}
+
+
+.custom-text-alignment {
+  text-align: center;
+}
+
+@media (min-width: 992px) { 
+  .custom-text-alignment {
+      text-align: right;
+  }
 }
