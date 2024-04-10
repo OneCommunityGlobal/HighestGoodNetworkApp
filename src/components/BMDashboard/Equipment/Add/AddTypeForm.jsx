@@ -97,7 +97,7 @@ export default function AddTypeForm() {
           onChange={handleChange}
         />
         <div class="form-footer" style={{ color: desc.length > 150 ? '#dc3545' : 'black' }}>
-          Character {desc.replace(/\s/g, '').length}/150
+          Character {desc.length}/150
         </div>
         {/* {!errInput && <FormText>Max 150 characters</FormText>} */}
         <FormFeedback>
@@ -126,7 +126,7 @@ export default function AddTypeForm() {
         <Button color="secondary" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button color="primary" disabled={!name}>
+        <Button color="primary" disabled={!name && !desc}>
           Submit
         </Button>
       </div>
