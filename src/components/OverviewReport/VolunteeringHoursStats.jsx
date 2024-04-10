@@ -7,10 +7,19 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from 'components/common/Loading';
 import { Button, Col, Row } from 'reactstrap';
+import moment from 'moment';
 import DonutChart from './DonutChart';
 
 export default function VolunteeringHoursStats(props) {
   const { startDate, endDate } = props;
+  const lastWeekStartDate = moment(startDate)
+    .subtract(1, 'week')
+    .startOf('week')
+    .format('YYYY-MM-DD');
+  const lastWeekEndDate = moment(endDate)
+    .subtract(1, 'week')
+    .endOf('week')
+    .format('YYYY-MM-DD');
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,7 +27,9 @@ export default function VolunteeringHoursStats(props) {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await axios.get(ENDPOINTS.GET_VOLUNTEER_HOUR_STATS(startDate, endDate));
+      const res = await axios.get(
+        ENDPOINTS.GET_VOLUNTEER_HOUR_STATS(startDate, endDate, lastWeekStartDate, lastWeekEndDate),
+      );
       setData(res.data);
       setLoading(false);
     } catch (_) {
@@ -45,13 +56,16 @@ export default function VolunteeringHoursStats(props) {
       const groupString = `${group}-${group + 9}`;
 
       const dataObj = {};
-      dataObj.label = `${group} to ${group + 9} hours - ${data[groupString]}`;
-      dataObj.value = data[groupString];
+      dataObj.label = `${group} to ${group + 9} hours - ${data.volunteerHoursStats[groupString]}`;
+      dataObj.value = data.volunteerHoursStats[groupString];
       donutData.push(dataObj);
     }
     // there is one outlier case in which a volunteer has worked 60+ hours.
     // handle this case after the loop
-    donutData.push({ label: `60+ hours - ${data['60+']}`, value: data['60+'] });
+    donutData.push({
+      label: `60+ hours - ${data.volunteerHoursStats['60+']}`,
+      value: data.volunteerHoursStats['60+'],
+    });
   }
 
   if (loading) {

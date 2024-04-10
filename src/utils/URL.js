@@ -60,7 +60,7 @@ export const ENDPOINTS = {
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
   SAVE_SUMMARY_RECEPIENTS: (userid) => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: ()=>`${APIEndpoint}/reports/getrecepients`,
-  GET_VOLUNTEER_HOUR_STATS: (startDate, endDate) => `${APIEndpoint}/reports/overviewsummaries/volunteerhoursstats?startDate=${startDate}&endDate=${endDate}`,
+  GET_VOLUNTEER_HOUR_STATS: (startDate, endDate, lastWeekStartDate, lastWeekEndDate) => `${APIEndpoint}/reports/overviewsummaries/volunteerhoursstats?startDate=${startDate}&endDate=${endDate}&lastWeekStartDate=${lastWeekStartDate}&lastWeekEndDate=${lastWeekEndDate}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () => `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
