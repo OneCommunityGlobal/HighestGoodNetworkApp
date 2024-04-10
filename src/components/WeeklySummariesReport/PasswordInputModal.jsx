@@ -53,7 +53,7 @@ export default function PasswordInputModal({
             dispatch(authorizeWeeklySummaries(response.data.message));
             checkForValidPwd(true);
             toast.success('Authorization successful! Please wait to see Recipients table!');
-            setAuthpassword(`${response.data.password}`);
+            setAuthpassword(response.data.password);
             setSummaryRecepientsPopup(true);
             onClose();
           }

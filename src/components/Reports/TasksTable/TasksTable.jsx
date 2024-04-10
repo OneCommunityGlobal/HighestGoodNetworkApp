@@ -1,21 +1,16 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable camelcase */
-/* eslint-disable import/prefer-default-export */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
-// eslint-disable-next-line import/order
+import { TasksDetail } from '../TasksDetail';
 import { getTasksTableData } from './selectors';
 import './TasksTable.css';
 import DropDownSearchBox from 'components/UserManagement/DropDownSearchBox';
 import { Checkbox } from 'components/common/Checkbox';
 import TextSearchBox from 'components/UserManagement/TextSearchBox';
 import { boxStyle } from 'styles';
-import { TasksDetail } from '../TasksDetail';
 
-export function TasksTable({ WbsTasksID }) {
+export const TasksTable = ({ WbsTasksID }) => {
   const { get_tasks } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
 
   const [isActive, setActive] = useState(true);
@@ -42,8 +37,8 @@ export function TasksTable({ WbsTasksID }) {
     setFilters(prevState => ({ ...prevState, [filterName]: value }));
   };
 
-  function FilterOptions({ filterName, width }) {
-    const filtersOptions = [...Array.from(new Set(get_tasks.map(item => item[filterName]))).sort()];
+  const FilterOptions = ({ filterName, width }) => {
+    var filtersOptions = [...Array.from(new Set(get_tasks.map(item => item[filterName]))).sort()];
     return (
       <DropDownSearchBox
         items={filtersOptions}
@@ -54,9 +49,9 @@ export function TasksTable({ WbsTasksID }) {
         value={filters[filterName]}
       />
     );
-  }
+  };
 
-  function UserOptions({ tasks }) {
+  const UserOptions = ({ tasks }) => {
     let users = [];
     tasks.forEach(task => task.resources?.forEach(resource => users.push(resource.name)));
 
@@ -64,13 +59,13 @@ export function TasksTable({ WbsTasksID }) {
     return (
       <DropDownSearchBox
         items={users}
-        placeholder="Any user"
+        placeholder={`Any user`}
         searchCallback={value => setOneFilter('users', value)}
         className="tasks-table-filter-item tasks-table-filter-input"
         value={filters.users}
       />
     );
-  }
+  };
 
   return (
     <div>
@@ -80,9 +75,9 @@ export function TasksTable({ WbsTasksID }) {
       <div className="tasks-table-filters-wrapper">
         <div className="tasks-table-filters">
           <UserOptions tasks={get_tasks} />
-          <FilterOptions filterName="classification" width="180px" />
-          <FilterOptions filterName="priority" />
-          <FilterOptions filterName="status" />
+          <FilterOptions filterName={'classification'} width="180px" />
+          <FilterOptions filterName={'priority'} />
+          <FilterOptions filterName={'status'} />
 
           <TextSearchBox
             placeholder="Estimated hours"
@@ -93,14 +88,14 @@ export function TasksTable({ WbsTasksID }) {
           <Checkbox
             value={isActive}
             onChange={() => setActive(!isActive)}
-            id="active_checkbox"
+            id="active"
             wrapperClassname="tasks-table-filter-item"
             label="Active"
           />
           <Checkbox
             value={isAssigned}
             onChange={() => setAssigned(!isAssigned)}
-            id="assign_checkbox"
+            id="assign"
             wrapperClassname="tasks-table-filter-item"
             label="Assign"
           />
@@ -126,4 +121,4 @@ export function TasksTable({ WbsTasksID }) {
       />
     </div>
   );
-}
+};

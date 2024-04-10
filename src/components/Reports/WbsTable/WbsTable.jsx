@@ -22,9 +22,9 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS }) {
         </div>
         <div className="projects__active--input">
           {item.isActive ? (
-            <div className="isActive">
+            <tasks className="isActive">
               <i className="fa fa-circle" aria-hidden="true"></i>
-            </div>
+            </tasks>
           ) : (
             <div className="isNotActive">
               <i className="fa fa-circle-o" aria-hidden="true" />

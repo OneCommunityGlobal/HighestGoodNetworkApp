@@ -54,7 +54,7 @@ function BadgeSummaryPreview({ badges }) {
                 {sortedBadges?.length === 0 && <div>No badges to show</div>}
                 {sortedBadges &&
                   sortedBadges.map((value, index) => (
-                    <div key={value._id} className="badge_image_md">
+                    <div className="badge_image_md">
                       <img
                         src={value.badge.imageUrl}
                         id={`popover_${index.toString()}`}
@@ -87,7 +87,7 @@ function BadgeSummaryPreview({ badges }) {
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {sortedBadges &&
                   sortedBadges.map((value, index) => (
-                    <div key={value._id} className="badge_image_sm">
+                    <div className="badge_image_sm">
                       <img
                         src={value.badge.imageUrl}
                         id={`popover1_${index.toString()}`}

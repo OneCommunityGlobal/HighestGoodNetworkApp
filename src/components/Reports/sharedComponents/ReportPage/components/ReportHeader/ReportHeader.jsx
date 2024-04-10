@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import { ReportBlock } from '../ReportBlock';
 import './ReportHeader.css';
 
-export const ReportHeader = ({ children, isActive, src, avatar, name, counts, hoursCommitted }) => {
+export const ReportHeader = ({ children, isActive, src, avatar, name }) => {
   return (
     <ReportBlock>
       <header className="report-header">
@@ -20,30 +20,6 @@ export const ReportHeader = ({ children, isActive, src, avatar, name, counts, ho
             <div className={classnames('report-header-activity', { active: isActive })} />
           </div>
           <div className="report-header-entity-name">{name}</div>
-          <div className="report-header-entity-other-info">
-            <span style={{fontSize: "20px"}}>{hoursCommitted}</span> 
-            {hoursCommitted != null && (
-              <>
-                {hoursCommitted === 1 ? <> hour committed</> : <> hours committed</>}
-              </>
-            )}
-          </div>
-          <div className="report-header-entity-other-info">
-            <span style={{fontSize: "20px"}}>{counts?.activeMemberCount}</span> 
-            {counts?.activeMemberCount != null && (
-              <>
-                {counts.activeMemberCount === 1 ? <> active member</> : <> active members</>}
-              </>
-            )}
-          </div>
-          <div className="report-header-entity-other-info">
-            <span style={{fontSize: "20px"}}>{counts?.memberCount}</span> 
-            {counts?.memberCount != null && (
-              <>
-                {counts.memberCount === 1 ? <> total contributor</> : <> total contributors</>}
-              </>
-            )}
-          </div>
           {children}
         </div>
       </header>

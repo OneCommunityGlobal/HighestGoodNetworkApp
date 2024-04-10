@@ -14,7 +14,7 @@ class DropDownSearchBox extends React.PureComponent {
         onChange={this.onSelectionChange}
         value={this.props.value}
         id={'search_' + this.props.id}
-        style={{ padding: '0 0 0 6px', cursor: 'pointer', width: this.props.width, height: '1.81em' }}
+        style={{ padding: '0 0 0 6px', cursor: 'pointer', width: this.props.width }}
         className={this.props.className}
       >
         <option value={''} style={{ color: '#9b9b9b' }}>

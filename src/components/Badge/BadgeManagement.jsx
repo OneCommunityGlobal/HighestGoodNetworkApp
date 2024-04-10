@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
-import { boxStyle } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges } from '../../actions/badgeManagement';
+import { boxStyle } from 'styles';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
-function BadgeManagement(props) {
+const BadgeManagement = props => {
   const [activeTab, setActiveTab] = useState('1');
 
   const toggle = tab => {
@@ -26,15 +26,15 @@ function BadgeManagement(props) {
         margin: 20,
       }}
     >
-      <div className="text-center">
+    <div className="text-center">
         <EditableInfoModal
           areaName="BadgeManagement"
           areaTitle="Badge Management"
           fontSize={24}
-          isPermissionPage
+          isPermissionPage={true}
           role={role} // Pass the 'role' prop to EditableInfoModal
         />
-      </div>
+        </div>
       <Nav pills>
         <NavItem>
           <NavLink
@@ -69,12 +69,13 @@ function BadgeManagement(props) {
       </TabContent>
     </div>
   );
-}
+};
 
 const mapStateToProps = state => ({
   allBadgeData: state.badge.allBadgeData,
   role: state.userProfile.role,
 });
+
 
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),

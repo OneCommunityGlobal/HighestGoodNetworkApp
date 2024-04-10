@@ -1,10 +1,11 @@
+import React from 'react';
 import { Card, CardTitle, CardBody, UncontrolledTooltip } from 'reactstrap';
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
 
-function NewBadges(props) {
+const NewBadges = props => {
   const filterBadges = allBadges => {
-    const filteredList = allBadges.filter(
+    let filteredList = allBadges.filter(
       value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
     );
 
@@ -15,12 +16,11 @@ function NewBadges(props) {
       if (a.badge.ranking < b.badge.ranking) return -1;
       if (a.badge.badgeName > b.badge.badgeName) return 1;
       if (a.badge.badgeName < b.badge.badgeName) return -1;
-      return 0;
     });
     return filteredList;
   };
 
-  const filteredBadges = filterBadges(props.badges);
+  let filteredBadges = filterBadges(props.badges);
 
   return (
     <>
@@ -37,7 +37,7 @@ function NewBadges(props) {
             New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
           <div className="new_badges">
-            {filteredBadges.length === 0 ? (
+            {filteredBadges.length == 0 ? (
               <strong style={{ opacity: 0.7 }}>
                 Get yourself a herd of new badges! New badges are earned at the close of each epic
                 week. Newest badges are placed here at the top for a week after you earn them so
@@ -73,6 +73,6 @@ function NewBadges(props) {
       </UncontrolledTooltip>
     </>
   );
-}
+};
 
 export default NewBadges;

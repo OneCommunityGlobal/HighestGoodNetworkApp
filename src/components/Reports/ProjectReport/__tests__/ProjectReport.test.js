@@ -20,7 +20,7 @@ const store = mockStore({
   },
   wbs: { WBSItems: [] },
   projectMembers: { members: [], foundUsers: [], fetched: true },
-  tasks: { taskItems: [] },
+  tasks: [],
   projectReport: {
     project: {
       projectName: 'project 1',
@@ -47,19 +47,16 @@ describe('ProjectReport component', () => {
       </Provider>,
     );
   });
-  it('should render the project name twice', async () => {
+  it('check if project name is displaying', () => {
     axios.get.mockResolvedValue({
       status: 200,
     });
-
     render(
       <Provider store={store}>
         <ProjectReport />
-      </Provider>
+      </Provider>,
     );
-
-    const projectNameElements = screen.getAllByText('project 1');
-    expect(projectNameElements).toHaveLength(2);
+    expect(screen.getByText('project 1')).toBeInTheDocument();
   });
   it('check if getProjectDetail works as expected', async () => {
     const mockProjectDetail = { projectId: 'abc456', projectName: 'project 2', isActive: false };

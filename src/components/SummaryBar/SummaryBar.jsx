@@ -238,8 +238,6 @@ const SummaryBar = props => {
       : '';
   };
 
-  const canEditData = () => !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') && canPutUserProfileImportantInfo;
-
   useEffect(() => {
     setUserProfile(userProfile);
   }, [userProfile]);
@@ -266,10 +264,10 @@ const SummaryBar = props => {
 
   return (
     displayUserProfile !== undefined && summaryBarData !== undefined 
-    ? <Container
+      ? <Container
           fluid
           className={
-            isAuthUser || canEditData()
+            isAuthUser || canPutUserProfileImportantInfo
               ? 'px-lg-0 bg--bar'
               : 'px-lg-0 bg--bar disabled-bar'
           }
@@ -335,7 +333,7 @@ const SummaryBar = props => {
                 {!weeklySummary ? (
                   <div className="border-red col-4 bg--white-smoke no-gutters">
                     <div className="py-1"> </div>
-                    { isAuthUser || canEditData()  ? (
+                    {isAuthUser || canPutUserProfileImportantInfo ? (
                       <p
                         className={
                           'text-center summary-toggle large_text_summary text--black text-danger'
@@ -402,7 +400,7 @@ const SummaryBar = props => {
                   <div className="redBackgroup">
                     <span>{tasks}</span>
                   </div>
-                  {isAuthUser || canEditData() ? (
+                  {isAuthUser ? (
                     <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
                   ) : (
                     <img className="sum_img" src={task_icon} alt=""></img>
@@ -410,7 +408,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser || canEditData() ? (
+                  {isAuthUser ? (
                     <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
                   ) : (
                     <img className="sum_img" src={badges_icon} alt="" />
@@ -421,7 +419,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser || canEditData() ? (
+                  {isAuthUser ? (
                     <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
                       <img className="sum_img" src={bluesquare_icon} alt="" />
                       <div className="redBackgroup">
@@ -439,7 +437,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser || canEditData() ? (
+                  {isAuthUser ? (
                     <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
                   ) : (
                     <img className="sum_img" src={report_icon} alt="" />
@@ -447,7 +445,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser || canEditData() ? (
+                  {isAuthUser ? (
                     <img
                       className="sum_img"
                       src={suggestions_icon}

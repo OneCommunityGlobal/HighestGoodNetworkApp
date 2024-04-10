@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
 import { getProjectDetail } from '../../../actions/project';
 import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
-import { fetchAllTasks } from 'actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -19,11 +18,8 @@ import './ProjectReport.css';
 
 // eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
-  const [memberCount, setMemberCount] = useState(0);
-  const [activeMemberCount, setActiveMemberCount] = useState(0);
-  const [nonActiveMemberCount, setNonActiveMemberCount] = useState(0);
-  const [hoursCommitted, setHoursCommitted] = useState(0);
   const dispatch = useDispatch();
+  const [memberCount, setMemberCount] = useState(0);
 
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator';
   const checkAnyPermission = permissions => {
@@ -34,7 +30,6 @@ export function ProjectReport({ match }) {
   const { wbs, projectMembers, isActive, projectName, wbsTasksID } = useSelector(
     projectReportViewData,
   );
-  const tasks = useSelector(state => state.tasks);
 
   useEffect(() => {
     if (match) {
@@ -45,29 +40,8 @@ export function ProjectReport({ match }) {
   }, []);
 
   useEffect(() => {
-    if(wbs.fetching === false){
-      wbs.WBSItems.forEach(wbs => {
-        dispatch(fetchAllTasks(wbs._id));
-      });
-    }
-  }, [wbs]);
-  
-  useEffect(() => {
-    if (tasks.taskItems.length > 0) {
-      setHoursCommitted(tasks.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
-    }
-  }, [tasks]);
-
-  useEffect(() => {
     if (projectMembers.members) {
       dispatch(getProjectActiveUser());
-      const { activeCount, nonActiveCount } = projectMembers.members.reduce((counts, member) => {
-        member.isActive ? counts.activeCount++ : counts.nonActiveCount++;
-        return counts;
-       }, { activeCount: 0, nonActiveCount: 0 });
-
-      setActiveMemberCount(activeCount);
-      setNonActiveMemberCount(nonActiveCount);
     }
   }, [projectMembers.members]);
 
@@ -78,16 +52,9 @@ export function ProjectReport({ match }) {
   return (
     <ReportPage
       renderProfile={() => (
-        <ReportPage.ReportHeader 
-          isActive={isActive} 
-          avatar={<FiBox />} 
-          name={projectName} 
-          counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }} 
-          hoursCommitted={hoursCommitted.toFixed(0)}
-        />
+        <ReportPage.ReportHeader isActive={isActive} avatar={<FiBox />} name={projectName} />
       )}
     >
-      <div className='project-header'>{projectName}</div> 
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
           <Paging totalElementsCount={wbs.WBSItems.length}>

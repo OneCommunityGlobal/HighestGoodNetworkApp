@@ -215,8 +215,6 @@ export class WeeklySummariesReport extends Component {
         open={this.state.summaryRecepientsPopupOpen}
         onClose={this.onSummaryRecepientsPopupClose}
         summaries={this.props.summaries}
-        password={this.state.weeklyRecipientAuthPass}
-        authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
       />
     );
   };
@@ -421,8 +419,8 @@ export class WeeklySummariesReport extends Component {
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
     const { authEmailWeeklySummaryRecipient } = this.props;
-    const authorizedUser1 = 'jae@onecommunityglobal.org';
-    const authorizedUser2 = 'sucheta_mu@test.com'; // To test please include your email here
+    const authorizedUser1 = process.env.REACT_APP_JAE;
+    const authorizedUser2 = process.env.REACT_APP_SARA;
 
     if (error) {
       return (

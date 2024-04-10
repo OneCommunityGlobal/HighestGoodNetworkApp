@@ -1,19 +1,10 @@
-import { Button } from 'reactstrap';
-import { boxStyle } from 'styles';
+import React from 'react';
 import TextSearchBox from '../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../UserManagement/DropDownSearchBox';
+import { Button } from 'reactstrap';
+import { boxStyle } from 'styles';
 
-function BadgeTableFilter({
-  onBadgeNameSearch,
-  onBadgeDescriptionSearch,
-  onBadgeTypeSearch,
-  onBadgeRankingSort,
-  name,
-  description,
-  type,
-  order,
-  resetFilters,
-}) {
+const BadgeTableFilter = props => {
   const badgeTypes = [
     'No Infringement Streak',
     'Minimum Hours Multiple',
@@ -24,46 +15,70 @@ function BadgeTableFilter({
     'Total Hrs in Category',
     'Custom',
   ];
+  const onBadgeNameSearch = text => {
+    props.onBadgeNameSearch(text);
+  };
 
   const orders = ['Ascending', 'Descending'];
 
+  const onBadgeDescriptionSearch = text => {
+    props.onBadgeDescriptionSearch(text);
+  };
+
+  const onBadgeTypeSearch = text => {
+    props.onBadgeTypeSearch(text);
+  };
+  const onBadgeRankingSort = order => {
+    props.onBadgeRankingSort(order);
+  };
+
   return (
     <tr>
-      <td id="badge_image" />
+      <td id="badge_image"></td>
       <td id="badge_name">
-        <TextSearchBox id="badge_name_search" searchCallback={onBadgeNameSearch} value={name} />
-      </td>
-      <td id="badge_description" className="d-xl-table-cell d-none">
         <TextSearchBox
-          id="badge_description_search"
+          id={'badge_name_search'}
+          searchCallback={onBadgeNameSearch}
+          value={props.name}
+        />
+      </td>
+      <td id="badge_description" className='d-xl-table-cell d-none'>
+        <TextSearchBox
+          id={'badge_description_search'}
           searchCallback={onBadgeDescriptionSearch}
-          value={description}
+          value={props.description}
         />
       </td>
       <td id="badge_type">
         <DropDownSearchBox
-          id="badge_types_search"
+          id={'badge_types_search'}
           items={badgeTypes}
           searchCallback={onBadgeTypeSearch}
-          value={type}
+          value={props.type}
         />
       </td>
-      <td id="badge_details" className="d-xl-table-cell d-none" />
+      <td id="badge_details" className='d-xl-table-cell d-none'></td>
       <td id="badge_ranking">
         <DropDownSearchBox
-          id="badge_ranking_sort"
+          id={'badge_ranking_sort'}
           items={orders}
           searchCallback={onBadgeRankingSort}
-          value={order}
+          value={props.order}
         />
       </td>
       <td id="badge_action">
-        <Button outline color="secondary" size="sm" onClick={() => resetFilters()} style={boxStyle}>
+        <Button
+          outline
+          color="secondary"
+          size="sm"
+          onClick={() => props.resetFilters()}
+          style={boxStyle}
+        >
           Reset Filters
         </Button>
       </td>
     </tr>
   );
-}
+};
 
 export default BadgeTableFilter;
