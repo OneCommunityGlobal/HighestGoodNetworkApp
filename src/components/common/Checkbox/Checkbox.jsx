@@ -11,7 +11,7 @@ export const Checkbox = ({ onChange, value, label, id, wrapperClassname }) => {
         checked={value}
         onChange={onChange}
       />
-      <label className="checkbox-label" htmlFor={id}>
+      <label className="checkbox-label" htmlFor="assign">
         {label}
       </label>
     </div>

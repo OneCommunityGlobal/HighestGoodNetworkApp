@@ -13,7 +13,3 @@
   overflow: hidden;
   max-height: 300px;
 }
-
-#map-container {
-  height: calc(100vh - 225px);
-}

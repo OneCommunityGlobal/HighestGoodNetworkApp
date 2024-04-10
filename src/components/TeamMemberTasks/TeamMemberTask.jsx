@@ -64,7 +64,7 @@ const TeamMemberTask = React.memo(
     // these need to be changed to actual permissions...
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
-    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
+    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     // ^^^
 

@@ -12,12 +12,6 @@ function Logout({ setLogoutPopup, open }) {
   };
 
   const onLogout = () => {
-    const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
-    if (sessionStorageData) {
-      sessionStorage.removeItem('viewingUser');
-      window.dispatchEvent(new Event('storage'));
-    }
-
     closePopup();
     dispatch(logoutUser());
     return <Redirect to="/login" auth={false} />;

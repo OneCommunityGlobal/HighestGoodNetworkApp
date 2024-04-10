@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   Container,
@@ -14,40 +14,43 @@ import {
   ModalHeader,
 } from 'reactstrap';
 import './Badge.css';
-import BadgeSummaryViz from 'components/Reports/BadgeSummaryViz';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
+import BadgeSummaryViz from 'components/Reports/BadgeSummaryViz';
 import { WEEK_DIFF } from '../../constants/badge';
+import { getUserProfile } from '../../actions/userProfile';
+import { boxStyle } from 'styles';
 
-function Badge(props) {
-  // const [isOpen, setOpen] = useState(false);
+const Badge = props => {
+  const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
 
-  // const toggle = () => {
-  //   if (isOpen) {
-  //     let count = 0;
-  //     if (props.userProfile.badgeCollection) {
-  //       props.userProfile.badgeCollection.forEach(badge => {
-  //         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-  //           count += 1;
-  //         } else {
-  //           count += Number(badge.count);
-  //         }
-  //       });
-  //       setTotalBadge(Math.round(count));
-  //     }
-  //   }
-  //   setOpen(isOpen => !isOpen);
-  // };
-
-  const toggleTypes = () => {
-    setOpenTypes(prevIsOpen => !prevIsOpen);
+  const toggle = () => {
+    if (isOpen) {
+      const userId = props.userId;
+      let count = 0;
+      if (props.userProfile.badgeCollection) {
+        props.userProfile.badgeCollection.forEach(badge => {
+          if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+            count += 1;
+          } else {
+            count += Number(badge.count);
+          }
+        });
+        setTotalBadge(Math.round(count));
+      }
+    }
+    setOpen(isOpen => !isOpen);
   };
 
-  const generateBadgeText = (totalBadges, badgeCollection, personalBestMaxHrs) => {
-    if (!totalBadges) return 'You have no badges. ';
+  const toggleTypes = () => {
+    setOpenTypes(isOpenTypes => !isOpenTypes);
+  };
 
+  const generateBadgeText = (totalBadge, badgeCollection, personalBestMaxHrs) => {
+    if (!totalBadge) return 'You have no badges. ';
+    
     const newBadges = badgeCollection.filter(
       value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
     );
@@ -57,12 +60,12 @@ function Badge(props) {
       ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
       : '';
 
-    return `Bravo! You have earned ${totalBadges} ${
-      totalBadges === 1 ? 'badge' : 'badges'
-    }${personalMaxText}! `;
+    return `Bravo! You have earned ${totalBadge} ${totalBadge === 1 ? 'badge' : 'badges'
+      }${personalMaxText}! `;
   };
 
   useEffect(() => {
+    const userId = props.userId;
     let count = 0;
     if (props.userProfile.badgeCollection) {
       props.userProfile.badgeCollection.forEach(badge => {
@@ -81,8 +84,8 @@ function Badge(props) {
         <Row>
           <Col md={12}>
             <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
-              <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
-                Badges <i className="fa fa-info-circle" id="BadgeInfo" />
+              <CardHeader tag="h3">
+                Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
               </CardHeader>
               <CardBody>
                 <NewBadges
@@ -107,7 +110,7 @@ function Badge(props) {
                   )}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
-                <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard />
+                <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard={true} />
               </CardBody>
             </Card>
           </Col>
@@ -181,7 +184,7 @@ function Badge(props) {
       </Modal>
     </>
   );
-}
+};
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,

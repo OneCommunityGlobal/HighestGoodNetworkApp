@@ -143,7 +143,7 @@ function Announcements() {
         </div>
         <div className="emails">
           Email List (comma-separated):
-          <input type="text" onChange={handleEmailListChange} className='input-text-for-announcement' />
+          <input type="text" onChange={handleEmailListChange} />
           <button type="button" className="send-button" onClick={handleSendEmails}>
             Send Email to specific user
           </button>
@@ -151,7 +151,7 @@ function Announcements() {
             <hr />
             <p>Insert header or footer image link</p>
             <div style={{ overflow: 'hidden' }}>
-              <input type="text" onChange={handleHeaderContentChange} className='input-text-for-announcement'/>
+              <input type="text" onChange={handleHeaderContentChange}/>
             </div>
             <button type="button" className="send-button" onClick={addHeaderToEmailContent}>
               Insert

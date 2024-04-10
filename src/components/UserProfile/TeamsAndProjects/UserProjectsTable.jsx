@@ -74,7 +74,6 @@ const UserProjectsTable = React.memo(props => {
           task.status = 'Complete';
           return { ...resource, completedTask: true };
         } else if (method === 'add') {
-          task.status = "Started"
           return { ...resource, completedTask: false };
         }
       }
