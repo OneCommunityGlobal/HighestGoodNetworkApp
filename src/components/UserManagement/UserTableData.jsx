@@ -9,6 +9,7 @@ import { faCopy, faCalendarDay, faCheck, faClock } from '@fortawesome/free-solid
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+// import { useHistory } from "react-router-dom";
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 /**
@@ -16,11 +17,15 @@ import { cantUpdateDevAdminDetails } from 'utils/permissions';
  */
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
+  // const history = useHistory();
+  // const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
+  console.log("user table", props)
   /**
    * reset the changing state upon rerender with new isActive status
    */
+
   useEffect(() => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
@@ -38,6 +43,7 @@ const UserTableData = React.memo(props => {
     
     return (props.user.role === 'Owner' && !canAddDeleteEditOwners) 
       || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
+
   };
 
   return (
@@ -51,6 +57,7 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
       </td>
+
       <td className="email_cell">
       <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
         <FontAwesomeIcon
@@ -72,6 +79,7 @@ const UserTableData = React.memo(props => {
             toast.success('Last Name Copied!');
           }}
         />
+
       </td>
       <td>{props.user.role}</td>
       <td className="email_cell">
@@ -178,25 +186,30 @@ const UserTableData = React.memo(props => {
       </td>
       {checkPermissionsOnOwner() ? null : (
         <td>
+        {
+          props.auth?.user.userid === props.user._id ? '': 
+                  <><span className="usermanagement-actions-cell">
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={e => {
+                          props.onDeleteClick(props.user, 'archive');
+                        }}
+                        style={boxStyle}
+                      >
+                        {DELETE}
+                      </button>
+                    </span>
+                    
+                    </>
+          }
           <span className="usermanagement-actions-cell">
-            <button
-              type="button"
-              className="btn btn-outline-danger btn-sm"
-              onClick={e => {
-                props.onDeleteClick(props.user, 'archive');
-              }}
-              style={boxStyle}
-            >
-              {DELETE}
-            </button>
-          </span>
-          <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton />
-          </span>
+                      <ResetPasswordButton user={props.user} isSmallButton />
+                    </span>
         </td>
       )}
     </tr>
   );
 });
 
-export default connect(null, { hasPermission })(UserTableData);
+export default connect(null, {hasPermission})(UserTableData);
