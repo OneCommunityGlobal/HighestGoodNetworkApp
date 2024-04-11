@@ -50,7 +50,7 @@ const Project = props => {
         {(canPutProject) ? (
           <input
             type="text"
-            className={`form-control ${darkMode ? 'bg-space-cadet text-light' : ''}`}
+            className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
             value={name}
             onChange={e => setName(e.target.value)}
             onBlur={updateProject}
@@ -66,7 +66,7 @@ const Project = props => {
             onChange={e => {
               setCategory(e.target.value);
             }}
-            className={darkMode ? 'bg-space-cadet text-light' : ''}
+            className={darkMode ? 'bg-yinmn-blue border-primary text-light' : ''}
           >
             <option default value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
