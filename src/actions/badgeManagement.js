@@ -44,7 +44,7 @@ export const getBadgeCount = userId => {
   return async dispatch => {
     try {
       const response = await axios.get(ENDPOINTS.BADGE_COUNT(userId));
-      dispatch(getBadgeCountSuccess(response.data.badgeCount));
+      dispatch(getBadgeCountSuccess(response.data.count));
     } catch (err) {
       return err.response.status;
     }
@@ -53,11 +53,12 @@ export const getBadgeCount = userId => {
 
 export const resetBadgeCount = userId => async dispatch => {
   try {
-    const response = await axios.put(ENDPOINTS.BADGE_COUNT_RESET(userId));
-    if (response.status === 200) {
+    const updatedBadgeCountResponse = await axios.put(ENDPOINTS.BADGE_COUNT_RESET(userId));
+    const updatedBadgeCount = updatedBadgeCountResponse.data.count;
+    if (updatedBadgeCountResponse.status === 201) {
       dispatch({
         type: RESET_BADGE_COUNT,
-        payload: 0,
+        payload: updatedBadgeCount,
       });
     }
   } catch (error) {
@@ -271,7 +272,7 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
 
       newBadgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
-          if (!included) { 
+          if (!included) {
             // Only update the first instance
             // Increment count only for the first instance found
             badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1;

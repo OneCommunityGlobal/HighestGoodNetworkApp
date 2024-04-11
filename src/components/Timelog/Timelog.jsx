@@ -99,6 +99,7 @@ const Timelog = props => {
     displayUserProjects,
     displayUserWBSs,
     disPlayUserTasks,
+
   } = props;
 
   const initialState = {
@@ -112,7 +113,7 @@ const Timelog = props => {
     information: '',
     currentWeekEffort: 0,
     isTimeEntriesLoading: true,
-    BadgeCount: 3,
+    badgeCount: 3,
   };
 
   const intangibletimeEntryFormData = {
