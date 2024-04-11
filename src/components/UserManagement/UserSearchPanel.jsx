@@ -1,21 +1,19 @@
 import React, { useEffect,useState } from 'react';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
 import { boxStyle } from 'styles';
-import { useSelector } from 'react-redux';
 /**
  * The search panel stateless component for user management grid
  */
 const UserSearchPanel = props => {
   const [hasRole, setHasRole] = useState(false);
-  const [isOwner,setIsOwner] = useState(false);
-  const { user } = useSelector(state => state.auth);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
-    if (user.role === 'Owner'||user.role === 'Administrator') {
+    if (props.user?.role === 'Owner'||props.user?.role === 'Administrator') {
       setIsOwner(true)
     } else {
       setIsOwner(false)
-      const hasValue = user.permissions.frontPermissions.some(value => value === 'postUserProfile');
+      const hasValue =props.user?.permissions.frontPermissions.some(value => value === 'postUserProfile');
       if (hasValue) {
         setHasRole(true);
       } else {
@@ -30,7 +28,7 @@ const UserSearchPanel = props => {
         {SEND_SETUP_LINK}
       </button>
       <button
-        disabled={isOwner?false:!hasRole}
+        disabled={isOwner ? false : !hasRole}
         type="button"
         className="btn btn-info mr-2"
         onClick={e => {

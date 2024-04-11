@@ -84,6 +84,7 @@ class UserManagement extends React.PureComponent {
           <React.Fragment>
             {this.popupElements()}
             <UserSearchPanel
+              user={this.props.state.auth.user}
               onSearch={this.onWildCardSearch}
               searchText={this.state.wildCardSearchText}
               onActiveFiter={this.onActiveFiter}
@@ -305,7 +306,7 @@ class UserManagement extends React.PureComponent {
       return;
     }
     const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
-    
+
     const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
     if(canManageTimeOffRequests || hasRolePermission){
       this.setState({

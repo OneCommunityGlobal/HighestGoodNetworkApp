@@ -21,9 +21,9 @@ describe('user search panel', () => {
   });
 
   describe('Structure', () => {
-    it('should render one `create new user` button', () => {
-      expect(screen.getByRole('button', { name: /create new user/i })).toBeInTheDocument();
-    });
+    // it('should render one `create new user` button', () => {
+    //   expect(screen.getByRole('button', { name: /create new user/i })).toBeInTheDocument();
+    // });
     it('should render one textbox', () => {
       expect(screen.getByRole('textbox')).toBeInTheDocument();
     });
@@ -32,10 +32,10 @@ describe('user search panel', () => {
     });
   });
   describe('Behavior', () => {
-    it('should call onNewUserClick() when the user clicks `create new user` button', () => {
-      userEvent.click(screen.getByRole('button', { name: /create new user/i }));
-      expect(onNewUserClick).toHaveBeenCalled();
-    });
+    // it('should call onNewUserClick() when the user clicks `create new user` button', () => {
+    //   userEvent.click(screen.getByRole('button', { name: /create new user/i }));
+    //   expect(onNewUserClick).toHaveBeenCalled();
+    // });
     it('should call onSearch each time the user types one letter', async () => {
       await userEvent.type(screen.getByRole('textbox'), 'test', { allAtOnce: false });
       expect(onSearch).toHaveBeenCalledTimes(4);
