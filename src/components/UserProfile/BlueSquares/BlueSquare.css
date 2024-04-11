@@ -1,11 +1,13 @@
 #wrapper .report {
   position: absolute;
-  left: -207px;
+  right: 103%;
   top: 0;
   width: 200px;
   overflow-y: auto;
   visibility: hidden;
   font-weight: normal;
+  border: 2px solid black;
+  background-color: slategray;
 }
 
 #wrapper:hover .report {
@@ -14,27 +16,16 @@
 
 .title {
   padding: 5px;
-  background-color: slategray;
-  outline-width: 2px;
-  outline-style: solid;
-  outline-color: black;
-  margin: 2px;
+  border-bottom: 2px solid black;
 }
 
 .summary {
   padding: 5px;
-  background-color: slategray;
-  outline-width: 2px;
-  outline-style: solid;
-  outline-color: black;
-  margin: 2px;
 }
 
 .blueSquareContainer {
-  /* display: flex; */
   text-decoration: none;
   justify-content: center;
-  /* margin: 10px; */
   max-height: 120px;
   overflow: auto;
 }
@@ -76,7 +67,6 @@
   background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
   background-color: dodgerblue;
   border-radius: 4px;
-
   cursor: pointer;
   color: #ffffff;
   font-family: Arial;
@@ -91,10 +81,9 @@
 }
 
 @media (max-width: 1420px) {
-
   #wrapper .report { 
-     left: 60px;
-     top: -280px; 
+     left: 102%;
+     top: 0px; 
      z-index: 1;
      overflow: visible;
    }
@@ -103,25 +92,14 @@
    }
  }
 
- @media (max-width: 768px) {
+ @media (max-width: 767px) {
   #wrapper .report { 
-    position: fixed;
     left: 50%;
-    top: 60%;
-    transform: translate(-50%, -50%);
+    top: 102%;
+    transform: translate(-50%);
+    width: 300px;
+  }
+  .summary {
+    min-height: auto;
   }
  }
-
- @media (max-height: 850px) {
-  #wrapper .report {
-    position: fixed;
-      top:5%;
-  }
-}
-
-@media (max-width: 768px) and (max-height: 850px) {
-  #wrapper .report {
-    position: fixed;
-      top:35%;
-  }
-}

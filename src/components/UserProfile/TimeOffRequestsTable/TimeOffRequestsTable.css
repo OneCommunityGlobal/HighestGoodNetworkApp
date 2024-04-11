@@ -92,11 +92,9 @@
   border-radius: 50%;
 }
 
-
-
 .user-profile-time-off-div-table-entry-tooltip {
   position: absolute;
-  left: -207px;
+  right: 103%;
   top: 2px;
   width: 200px;
   overflow-y: auto;
@@ -106,6 +104,7 @@
   outline-color: black;
   font-size: 1rem;
   color: white;
+  box-sizing: border-box;
   padding: 5px;
   font-weight: normal;
   visibility: hidden;
@@ -123,4 +122,21 @@
 .user-profile-time-off-div-table-entry-icon-tooltip-wrapper:hover
   .user-profile-time-off-div-table-entry-icon {
   fill: #096472;
+}
+
+@media (max-width: 1420px) {
+  .user-profile-time-off-div-table-entry-tooltip {
+    left: 102%;
+    top: 0px;
+    z-index: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  .user-profile-time-off-div-table-entry-tooltip {
+    left: 50%;
+    top: 103%;
+    transform: translate(-50%);
+    width: 300px;
+  }
 }
