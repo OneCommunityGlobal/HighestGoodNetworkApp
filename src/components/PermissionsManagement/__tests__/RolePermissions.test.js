@@ -149,8 +149,9 @@ describe('RolePermissions component', () => {
 
     const createNewPresetElement = screen.getByText('Create New Preset');
     fireEvent.click(createNewPresetElement);
-    await waitFor(() => {});
-    expect(toast.success).toHaveBeenCalledWith('Preset created successfully');
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith('Preset created successfully');
+    });
   });
   it('check if clicking on Create New Preset displays toast error message when the post request fails', async () => {
     axios.get.mockResolvedValue({
@@ -166,8 +167,9 @@ describe('RolePermissions component', () => {
 
     const createNewPresetElement = screen.getByText('Create New Preset');
     fireEvent.click(createNewPresetElement);
-    await waitFor(() => {});
-    expect(toast.error).toHaveBeenCalledWith('Error creating preset');
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Error creating preset');
+    });
   });
   it('check if clicking on Load Presets opens modal', async () => {
     axios.get.mockResolvedValue({
@@ -190,9 +192,10 @@ describe('RolePermissions component', () => {
 
     const saveButton = screen.getByText('Save');
     fireEvent.click(saveButton);
-    await waitFor(() => {});
-    expect(toast.success).toHaveBeenCalledWith('Role updated successfully');
-    expect(history.location.pathname).toBe('/permissionsmanagement');
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith('Role updated successfully');
+      expect(history.location.pathname).toBe('/permissionsmanagement');
+    });
   });
 
   it('check delete role button works as expected', async () => {
