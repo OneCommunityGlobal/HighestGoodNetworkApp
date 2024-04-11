@@ -60,6 +60,8 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
+const flushAllPromises = () => new Promise(setImmediate);
+
 const renderComponent = (newStore, history, newRoleName, newRoleId) => {
   return render(
     <Router history={history}>
@@ -204,27 +206,25 @@ describe('RolePermissions component', () => {
     fireEvent.click(deleteRole);
     expect(screen.getByText(`Delete ${roleName} Role`)).toBeInTheDocument();
   });
-  it('check delete role modal', () => {
+  it('check if delete role modal content displays as expected', () => {
     axios.get.mockResolvedValue({
       data: {},
     });
 
     const history = createMemoryHistory();
-    const { container } = renderComponent(store, history, roleName, roleId);
+    renderComponent(store, history, roleName, roleId);
     const deleteRole = screen.getByText('Delete Role');
     fireEvent.click(deleteRole);
 
     const modalElement = screen.getByRole('dialog');
     const modalDialog = modalElement.querySelector('.modal-dialog');
     const modalContent = modalDialog.querySelector('.modal-content');
-    const modalHeader = modalContent.querySelector('.modal-header');
     const modalBody = modalContent.querySelector('.modal-body');
-    //console.log(modalBody.outerHTML);
 
     expect(screen.getByText(`Delete ${roleName} Role`)).toBeInTheDocument();
-    //expect(screen.getByText(`/Are you sure you want to delete/`)).toBeInTheDocument();
+    expect(modalBody.textContent).toBe('Are you sure you want to delete Owner role?');
   });
-  it('check edit role modal', async () => {
+  it('check if edit role modal content displays as expected', async () => {
     axios.get.mockResolvedValue({
       data: {},
     });
