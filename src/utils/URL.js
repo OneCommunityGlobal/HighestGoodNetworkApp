@@ -1,6 +1,5 @@
 const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
-const GeocodeAPIEndpoint = 'https://api.opencagedata.com/geocode/v1/json';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
@@ -59,6 +58,10 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
+  SAVE_SUMMARY_RECEPIENTS: (userid) => `${APIEndpoint}/reports/recepients/${userid}`,
+  GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
+  AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () => `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
+
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: id => `${APIEndpoint}/backup/popupeditor/${id}`,
@@ -87,9 +90,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
   TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
-  TIMEZONE_KEY: `${APIEndpoint}/timezone`,
-  GEOCODE_URI: (location, key) =>
-    `${GeocodeAPIEndpoint}?key=${key}&q=${encodeURIComponent(location)}&pretty=1&limit=1`,
+  TIMEZONE_LOCATION: (location) => `${APIEndpoint}/timezone/${location}`,
 
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
@@ -100,15 +101,35 @@ export const ENDPOINTS = {
   OWNERMESSAGE: () => `${APIEndpoint}/ownerMessage`,
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
-
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
 
   SETUP_NEW_USER: () => `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
-  TIMEZONE_KEY_BY_TOKEN: () => `${APIEndpoint}/getTimeZoneAPIKeyByToken`,
-  MAP_LOCATIONS_BY_TOKEN: () => `${APIEndpoint}/mapLocationsToken`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
+  // emails endpoint
+  POST_EMAILS: `${APIEndpoint}/send-emails`,
+  BROADCAST_EMAILS: `${APIEndpoint}/broadcast-emails`,
+  UPDATE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/update-email-subsriptions`,
+  NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
+  CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
+  REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
+  //reasons endpoints
+  CREATEREASON: () => {
+    return `${APIEndpoint}/reason/`;
+  },
+  GETALLUSERREASONS: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+  GETSINGLEREASONBYID: userId => {
+    return `${APIEndpoint}/reason/single/${userId}`;
+  },
+  PATCHUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
+  DELETEUSERREASONBYID: userId => {
+    return `${APIEndpoint}/reason/${userId}`;
+  },
 
   //reasons endpoints
   CREATEREASON: () => {
@@ -139,6 +160,9 @@ export const ENDPOINTS = {
   BM_MATERIAL_TYPE: `${APIEndpoint}/bm/invtypes/material`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
+  BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
+  BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
+  BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
@@ -152,6 +176,7 @@ export const ENDPOINTS = {
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
+  BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
