@@ -601,32 +601,6 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
 }
 
 function Index({ summary, weekIndex, auth }) {
-  const handleGoogleDocClick = googleDocLink => {
-    const toastGoogleLinkDoesNotExist = 'toast-on-click';
-    if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
-      window.open(googleDocLink.Link);
-    } else {
-      toast.error(
-        'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
-        {
-          toastId: toastGoogleLinkDoesNotExist,
-          pauseOnFocusLoss: false,
-          autoClose: 3000,
-        },
-      );
-    }
-  };
-
-  // eslint-disable-next-line no-shadow
-  const getGoogleDocLink = summary => {
-    if (!summary.adminLinks) {
-      return undefined;
-    }
-    const googleDocLink = summary.adminLinks.find(link => link.Name === 'Google Doc');
-    return googleDocLink;
-  };
-
-
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
@@ -640,7 +614,6 @@ function Index({ summary, weekIndex, auth }) {
 
   return (
     <>
-
       <div style={{ display: 'flex' }}>
         <b>Name: </b>
         <Link
@@ -657,10 +630,6 @@ function Index({ summary, weekIndex, auth }) {
         >
           {summary.firstName} {summary.lastName}
         </Link>
-
-        <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-          <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
-        </span>
         <span>
           <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
         </span>
@@ -674,7 +643,10 @@ function Index({ summary, weekIndex, auth }) {
           className="p-2" // Add Bootstrap padding class to the EditableInfoModal
         />
       </div>
-
+      <GoogleDocIcon link={googleDocLink} />
+      <span>
+        <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+      </span>
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"
