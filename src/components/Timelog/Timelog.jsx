@@ -428,6 +428,7 @@ const Timelog = props => {
     props.getBadgeCount(displayUserId);
   }, [displayUserId, props]);
 
+  useEffect(() => {
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
     window.addEventListener('storage', handleStorageEvent);
     return () => {
