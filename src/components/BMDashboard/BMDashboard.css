@@ -48,3 +48,96 @@
   font-size: clamp(0.9em, 2.5vw, 1em);
 }
 
+.project-summary_item {
+  padding: 10px;
+  align-items: center;
+}
+
+.project-summary_label {
+  margin-right: 5px;
+}
+
+.project-summary_span {
+  color: #3ea0cb;
+  font-weight: bold;
+  margin-left: 1em;
+  display: inline-block;
+  white-space: no-wrap;
+}
+
+/* error page */
+
+.bm-error-page {
+  width: 100%;
+  max-width: 1536px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.bm-error-page section {
+  margin-top: 2rem;
+}
+
+/* forms */
+
+.inv-form-page-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 40px;
+}
+
+.inv-form {
+  margin: 2rem auto;
+}
+
+.inv-form-info {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.inv-form-group {
+  margin: 1.5rem auto;
+}
+
+.inv-form input,
+.inv-form select,
+.inv-form textarea {
+  background-color: rgb(249, 249, 249);
+}
+
+.inv-form-btn-group {
+  display: flex;
+  gap: 1rem;
+  margin: 4rem auto 2rem;
+}
+
+.inv-form-btn-group button {
+  width: 50%;
+}
+
+.inv-form-required::after {
+  content: '*';
+  color: red;
+}
+
+@media screen and (max-width: 800px) {
+  .inv-form-page-container {
+    width: 95%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .inv-form-page-container h2 {
+    font-size: 1.7rem;
+  }
+}
+
+.form-footer {
+font-size: 0.875em;
+margin-top:3px;
+}

@@ -48,7 +48,6 @@ import WeeklySummaries from './WeeklySummaries';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { useParams } from 'react-router-dom';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import Badge from '../Badge';
 
@@ -129,10 +128,15 @@ const Timelog = props => {
   const [periodEntries, setPeriodEntries] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
-  const { userId: paramsUserId } = useParams();
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
 
-  const displayUserId = paramsUserId || authUser.userid;
+
+  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  const [displayUserId, setDisplayUserId] = useState(
+    viewingUser ? viewingUser.userId : authUser.userid,
+  );
+
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
@@ -336,14 +340,22 @@ const Timelog = props => {
     displayUserWBSs.forEach(WBS => {
       const { projectId, _id: wbsId } = WBS;
       WBS.taskObject = [];
-      projectsObject[projectId].WBSObject[wbsId] = WBS;
+      if(projectsObject[projectId]){
+        projectsObject[projectId].WBSObject[wbsId] = WBS;
+      }
     })
     disPlayUserTasks.forEach(task => {
       const { projectId, wbsId, _id: taskId, resources } = task;
       const isTaskCompletedForTimeEntryUser = resources.find(resource => resource.userID === displayUserProfile._id)?.completedTask;
-      if (!isTaskCompletedForTimeEntryUser) {
+      if (!isTaskCompletedForTimeEntryUser && projectsObject[projectId]) {
+        if (!projectsObject[projectId].WBSObject) {
+          projectsObject[projectId].WBSObject = {};
+        }
+        if (!projectsObject[projectId].WBSObject[wbsId]) {
+          projectsObject[projectId].WBSObject[wbsId] = { taskObject: {} };
+        }
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
-      }
+      }     
     });
 
     for (const [projectId, project] of Object.entries(projectsObject)) {
@@ -381,6 +393,16 @@ const Timelog = props => {
     makeBarData(userId)
   };
 
+  const handleUpdateTask = useCallback(() => {
+    setShouldFetchData(true);
+  }, []);
+
+  const handleStorageEvent = () =>{
+    const sessionStorageData = checkSessionStorage();
+    setViewingUser(sessionStorageData || false);
+    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+  }
+
   /*---------------- useEffects -------------- */
   useEffect(() => {
     changeTab(initialTab);
@@ -391,7 +413,7 @@ const Timelog = props => {
     if (!timeLogState.isTimeEntriesLoading) {
       generateTimeLogItems(displayUserId);
     }
-  }, [timeLogState.isTimeEntriesLoading, timeEntries]);
+  }, [timeLogState.isTimeEntriesLoading, timeEntries, displayUserId]);
 
   useEffect(() => {
     loadAsyncData(displayUserId);
@@ -406,11 +428,17 @@ const Timelog = props => {
     props.getBadgeCount(displayUserId);
   }, [displayUserId, props]);
 
+    // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
+    window.addEventListener('storage', handleStorageEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorageEvent);
+    };
+  },[]);
+
   return (
     <div>
       {!props.isDashboard ? (
         <Container fluid>
-          {!isAuthUser && <PopUpBar component="timelog" />}
           <SummaryBar
             displayUserId={displayUserId}
             toggleSubmitForm={() => showSummary(isAuthUser)}
@@ -544,7 +572,7 @@ const Timelog = props => {
                           </div>
                         </div>
                       ) : (
-                        canPutUserProfileImportantInfo && (
+                        !(viewingUser && viewingUser.role === 'Owner' && authUser.role !== 'Owner') && (canPutUserProfileImportantInfo) && (
                           <div className="float-right">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
