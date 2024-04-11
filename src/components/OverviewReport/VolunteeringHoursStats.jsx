@@ -9,6 +9,7 @@ import Loading from 'components/common/Loading';
 import { Button, Col, Row } from 'reactstrap';
 import moment from 'moment';
 import DonutChart from './DonutChart';
+import MultiHorizontalBarChart from './MultiHorizontalBarChart';
 
 export default function VolunteeringHoursStats(props) {
   const { startDate, endDate } = props;
@@ -68,6 +69,30 @@ export default function VolunteeringHoursStats(props) {
     });
   }
 
+  // format data for multi horizontal bar chart
+  const barChartData = [];
+  let dataKeys;
+  if (data) {
+    const { thisWeek, lastWeek } = data.percentageWorkedStats;
+    const totalNumberCurrent = Object.values(thisWeek).reduce((acc, x) => acc + x, 0);
+    const totalNumberPrevious = Object.values(lastWeek).reduce((acc, x) => acc + x, 0);
+
+    dataKeys = Object.keys(thisWeek).filter(key => key !== 'label');
+    const thisWeekObject = { label: 'This Week' };
+    const lastWeekObject = { label: 'Last Week' };
+    dataKeys.forEach(key => {
+      thisWeekObject[key] = {
+        total: thisWeek[key],
+        percentage: Math.ceil((thisWeek[key] / totalNumberCurrent) * 100),
+      };
+      lastWeekObject[key] = {
+        total: lastWeek[key],
+        percentage: Math.ceil((lastWeek[key] / totalNumberPrevious) * 100),
+      };
+    });
+    barChartData.push(thisWeekObject, lastWeekObject);
+  }
+
   if (loading) {
     return (
       <div
@@ -97,14 +122,18 @@ export default function VolunteeringHoursStats(props) {
       {startDate}
       <br />
       {endDate}
-      <Row>
-        <Col>
-          {data && (
-            <DonutChart data={donutData} width={800} height={400} total={data.numberOfUsers} />
-          )}
-        </Col>
-        <Col>asdf</Col>
-      </Row>
+      {data && (
+        <Row>
+          <Col>
+            {data && (
+              <DonutChart data={donutData} width={800} height={400} total={data.numberOfUsers} />
+            )}
+          </Col>
+          <Col>
+            <MultiHorizontalBarChart data={barChartData} dataKeys={dataKeys} />
+          </Col>
+        </Row>
+      )}
     </div>
   );
 }
