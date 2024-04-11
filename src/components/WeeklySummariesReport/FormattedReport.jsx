@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -33,10 +33,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
-import googleDocIconGray from './google_doc_icon_gray.png';
-import googleDocIconPng from './google_doc_icon.png';
+import GoogleDocIcon from '../common/GoogleDocIcon';
 
 const textColors = {
   Default: '#000000',
@@ -59,7 +59,6 @@ function FormattedReport({
   summaries,
   weekIndex,
   bioCanEdit,
-  canEditSummaryCount,
   allRoleInfo,
   badges,
   loadBadges,
@@ -68,6 +67,8 @@ function FormattedReport({
   canSeeBioHighlight,
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
+  const dispatch = useDispatch();
+  const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
   return (
     <>
@@ -78,7 +79,7 @@ function FormattedReport({
             summary={summary}
             weekIndex={weekIndex}
             bioCanEdit={bioCanEdit}
-            canEditSummaryCount={canEditSummaryCount}
+            canEditSummaryCount={isEditCount}
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
@@ -185,6 +186,7 @@ function ReportDetails({
   canSeeBioHighlight,
   auth,
 }) {
+  const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
@@ -193,6 +195,10 @@ function ReportDetails({
     summary.totalTangibleHrs > 80 &&
     summary.daysInTeam > 60 &&
     summary.bioPosted !== 'posted';
+
+  useEffect(() => {
+    setFilteredBadges(badges.filter(badge => badge.showReport === true));
+  }, []);
 
   return (
     <li className="list-group-item px-0" ref={ref}>
@@ -222,17 +228,17 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem>
-              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
-                Hours logged:
-              </b>
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
-                <p>
+              {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+                <p style={{ color: 'red' }}>
+                  Hours logged: {''}
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </p>
-              ) : (
-                <span className="ml-2">
+              )}
+              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+                <p>
+                  Hours logged: {''}
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
+                </p>
               )}
             </ListGroupItem>
             <ListGroupItem>
@@ -241,7 +247,7 @@ function ReportDetails({
           </Col>
           <Col xs="6">
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
             )}
           </Col>
         </Row>
@@ -415,8 +421,8 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    // eslint-disable-next-line radix
-    parseInt(summary.weeklySummariesCount),
+    // parseInt() returns an integer or NaN, convert to 0 if it's NaM
+    parseInt(summary.weeklySummariesCount, 10) || 0,
   );
 
   const handleOnChange = async (userProfileSummary, count) => {
@@ -564,25 +570,29 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
           // eslint-disable-next-line react/no-array-index-key
           <div className="badge-td" key={`${weekIndex}_${summary._id}_${index}`}>
             {' '}
-            <img src={value.imageUrl} id={`popover_${value._id}`} alt='""' />
-            <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-              <Card className="text-center">
-                <CardImg className="badge_image_lg" src={value?.imageUrl} />
-                <CardBody>
-                  <CardTitle
-                    style={{
-                      fontWeight: 'bold',
-                      fontSize: 18,
-                      color: '#285739',
-                      marginBottom: 15,
-                    }}
-                  >
-                    {value?.badgeName}
-                  </CardTitle>
-                  <CardText>{value?.description}</CardText>
-                </CardBody>
-              </Card>
-            </UncontrolledPopover>
+            {value && value.imageUrl && value._id && (
+              <>
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                  <Card className="text-center">
+                    <CardImg className="badge_image_lg" src={value.imageUrl} />
+                    <CardBody>
+                      <CardTitle
+                        style={{
+                          fontWeight: 'bold',
+                          fontSize: 18,
+                          color: '#285739',
+                          marginBottom: 15,
+                        }}
+                      >
+                        {value.badgeName}
+                      </CardTitle>
+                      <CardText>{value.description}</CardText>
+                    </CardBody>
+                  </Card>
+                </UncontrolledPopover>
+              </>
+            )}
           </div>
         ))}
       </ListGroupItem>
@@ -616,16 +626,21 @@ function Index({ summary, weekIndex, auth }) {
     return googleDocLink;
   };
 
+
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
-  const googleDocLink = getGoogleDocLink(summary);
-  // Determine whether to use grayscale or color icon based on googleDocLink
-  const googleDocIcon =
-    googleDocLink && googleDocLink.Link.trim() !== '' ? googleDocIconPng : googleDocIconGray;
+  const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
+    if (currentElement.Name === 'Google Doc') {
+      // eslint-disable-next-line no-param-reassign
+      targetLink = currentElement.Link;
+    }
+    return targetLink;
+  }, undefined);
 
   return (
     <>
+
       <div style={{ display: 'flex' }}>
         <b>Name: </b>
         <Link
@@ -659,6 +674,7 @@ function Index({ summary, weekIndex, auth }) {
           className="p-2" // Add Bootstrap padding class to the EditableInfoModal
         />
       </div>
+
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"
