@@ -159,7 +159,7 @@ function Task(props) {
               props.isNew ? 'newTask' : ''
             } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${
               props.parentId3
-            } mother_${props.mother} lv_${props.level}`}
+            } mother_${props.mother} lv_${props.level} ${darkMode ? 'bg-yinmn-blue' : ''}`}
             id={props.taskId}
           >
             <td

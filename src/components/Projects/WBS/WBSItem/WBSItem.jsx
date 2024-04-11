@@ -25,7 +25,7 @@ const WBSItem = props => {
 
   return (
     <React.Fragment>
-      <tr>
+      <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
         <th scope="row">
           <div>{props.index}</div>
         </th>

@@ -294,7 +294,7 @@ function WBSTasks(props) {
 
         <table className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`} ref={myRef}>
           <thead>
-            <tr>
+            <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th scope="col" data-tip="Action" colSpan="2">
                 Action
               </th>

@@ -27,7 +27,7 @@ const WBS = props => {
           <nav aria-label="breadcrumb">
             <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
               <NavItem tag={Link} to={`/projects/`}>
-                <button type="button" className="btn btn-secondary" style={darkMode ? {} : boxStyle}>
+                <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
                   <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
                 </button>
               </NavItem>
@@ -40,7 +40,7 @@ const WBS = props => {
 
           <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light' : '' }`}>
             <thead>
-              <tr>
+              <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <th scope="col" id="members__order">
                   #
                 </th>
