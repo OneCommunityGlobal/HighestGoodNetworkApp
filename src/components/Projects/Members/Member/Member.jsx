@@ -11,18 +11,19 @@ import { boxStyle } from 'styles';
 import PropTypes from 'prop-types'; 
 
 const Member = props => {
+  const {darkMode} = props;
   const canGetUserProfiles = props.hasPermission('getUserProfiles');
   //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
   return (
     <React.Fragment>
-      <tr className="members__tr">
+      <tr className={`members__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}>
         <th scope="row">
           <div>{typeof props.index === 'number' ? props.index + 1 : null}</div>
         </th>
         <td className="members__name">
           {canGetUserProfiles ? (
-            <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
+            <a href={`/userprofile/${props.uid}`} className={darkMode ? 'text-azure' : ''}>{props.fullName}</a>
           ) : (
             props.fullName
           )}

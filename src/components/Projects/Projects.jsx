@@ -143,6 +143,8 @@ handleSort = (e)=>{
   };
 
   render() {
+    const {darkMode} = this.props.state.theme;
+    
     let { showModalDelete, projectTarget, trackModelMsg, projectInfoModal } = this.state;
     let { projects, status, fetching, fetched } = this.props.state.allProjects;
 
@@ -204,6 +206,7 @@ handleSort = (e)=>{
               onUpdateProjectName={this.onUpdateProjectName}
               onClickDelete={this.onClickDelete}
               confirmDelete={this.confirmDelete}
+              darkMode={darkMode}
             />)
             }
           })
@@ -221,6 +224,7 @@ handleSort = (e)=>{
               onUpdateProjectName={this.onUpdateProjectName}
               onClickDelete={this.onClickDelete}
               confirmDelete={this.confirmDelete}
+              darkMode={darkMode}
             />)
             }
           })
@@ -239,6 +243,7 @@ handleSort = (e)=>{
               onUpdateProjectName={this.onUpdateProjectName}
               onClickDelete={this.onClickDelete}
               confirmDelete={this.confirmDelete}
+              darkMode={darkMode}
             />)
             }
           })
@@ -258,6 +263,7 @@ handleSort = (e)=>{
             onUpdateProjectName={this.onUpdateProjectName}
             onClickDelete={this.onClickDelete}
             confirmDelete={this.confirmDelete}
+            darkMode={darkMode}
           />)
           }
         })
@@ -276,6 +282,7 @@ handleSort = (e)=>{
             onUpdateProjectName={this.onUpdateProjectName}
             onClickDelete={this.onClickDelete}
             confirmDelete={this.confirmDelete}
+            darkMode={darkMode}
           />)
           }
         })
@@ -293,6 +300,7 @@ handleSort = (e)=>{
             onUpdateProjectName={this.onUpdateProjectName}
             onClickDelete={this.onClickDelete}
             confirmDelete={this.confirmDelete}
+            darkMode={darkMode}
           />
         ))
         }
@@ -300,56 +308,65 @@ handleSort = (e)=>{
 
     return (
       <React.Fragment>
-        <div className="container mt-3">
-          {fetching || !fetched ? <Loading /> : null}
-          <div className="d-flex align-items-center">
-          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <EditableInfoModal
-            areaName="projectsInfoModal"
-            areaTitle="Projects"
-            fontSize={30}
-            isPermissionPage={true}
-            role={role}
+        <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+          <div className="container py-3">
+            {fetching || !fetched ? <Loading /> : null}
+            <div className="d-flex align-items-center">
+            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+            <EditableInfoModal
+              areaName="projectsInfoModal"
+              areaTitle="Projects"
+              fontSize={30}
+              isPermissionPage={true}
+              role={role}
+            />
+          </div>
+
+            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+            {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
+
+            <table className="table table-bordered table-responsive-sm">
+              <thead>
+              <ProjectTableHeader 
+                onChange={this.onChangeCategory} 
+                selectedValue= {categorySelectedForSort} 
+                showStatus={showStatus} 
+                selectStatus={this.onSelectStatus} 
+                handleSort = {this.handleSort}
+                darkMode={darkMode}
+              />
+              </thead>
+              <tbody>{ProjectsList}</tbody>
+            </table>
+          </div>
+
+          <ModalDelete
+            isOpen={showModalDelete}
+            closeModal={() => {
+              this.setState({ showModalDelete: false });
+            }}
+            confirmModal={() => this.confirmDelete()}
+            setInactiveModal={() => this.setInactiveProject()}
+            modalMessage={
+              (this.props.state.popupEditor.currPopup.popupContent
+                ? this.props.state.popupEditor.currPopup.popupContent.replace(
+                    '[project_name]',
+                    this.state.projectTarget.projectName,
+                  )
+                : '') || ''
+            }
+            modalTitle={Message.CONFIRM_DELETION}
+          />
+
+          <ModalMsg
+            isOpen={showModalMsg}
+            closeModal={() => {
+              this.setState({ showModalMsg: false, trackModelMsg: false });
+            }}
+            modalMessage={Message.THIS_PROJECT_NAME_IS_ALREADY_TAKEN}
+            modalTitle={NOTICE}
           />
         </div>
-
-          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
-
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-            <ProjectTableHeader onChange={this.onChangeCategory} selectedValue= {categorySelectedForSort} showStatus={showStatus} selectStatus={this.onSelectStatus} handleSort = {this.handleSort}/>
-            </thead>
-            <tbody>{ProjectsList}</tbody>
-          </table>
-        </div>
-
-        <ModalDelete
-          isOpen={showModalDelete}
-          closeModal={() => {
-            this.setState({ showModalDelete: false });
-          }}
-          confirmModal={() => this.confirmDelete()}
-          setInactiveModal={() => this.setInactiveProject()}
-          modalMessage={
-            (this.props.state.popupEditor.currPopup.popupContent
-              ? this.props.state.popupEditor.currPopup.popupContent.replace(
-                  '[project_name]',
-                  this.state.projectTarget.projectName,
-                )
-              : '') || ''
-          }
-          modalTitle={Message.CONFIRM_DELETION}
-        />
-
-        <ModalMsg
-          isOpen={showModalMsg}
-          closeModal={() => {
-            this.setState({ showModalMsg: false, trackModelMsg: false });
-          }}
-          modalMessage={Message.THIS_PROJECT_NAME_IS_ALREADY_TAKEN}
-          modalTitle={NOTICE}
-        />
       </React.Fragment>
     );
   }

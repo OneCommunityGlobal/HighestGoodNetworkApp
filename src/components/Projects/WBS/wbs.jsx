@@ -10,9 +10,10 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 const WBS = props => {
+  const darkMode = props.state.theme.darkMode;
   const projectId = props.match.params.projectId;
 
   useEffect(() => {
@@ -21,47 +22,50 @@ const WBS = props => {
 
   return (
     <React.Fragment>
-      <div className="container">
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
-            <NavItem tag={Link} to={`/projects/`}>
-              <button type="button" className="btn btn-secondary" style={boxStyle}>
-                <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-              </button>
-            </NavItem>
+      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+        <div className="container pt-2">
+          <nav aria-label="breadcrumb">
+            <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+              <NavItem tag={Link} to={`/projects/`}>
+                <button type="button" className="btn btn-secondary" style={darkMode ? {} : boxStyle}>
+                  <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                </button>
+              </NavItem>
 
-            <div id="member_project__name">Projects</div>
-          </ol>
-        </nav>
+              <div id="member_project__name">Projects</div>
+            </ol>
+          </nav>
 
-        <AddWBS projectId={projectId} />
+          <AddWBS projectId={projectId} />
 
-        <table className="table table-bordered table-responsive-sm">
-          <thead>
-            <tr>
-              <th scope="col" id="members__order">
-                #
-              </th>
-              <th scope="col" id="members__name">
-                Name
-              </th>
-              <th scope="col" id="members__name"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {props.state.wbs.WBSItems.map((item, i) =>
-              item ? (
-                <WBSItem
-                  index={i + 1}
-                  key={item._id}
-                  wbsId={item._id}
-                  projectId={projectId}
-                  name={item.wbsName}
-                />
-              ) : null,
-            )}
-          </tbody>
-        </table>
+          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light' : '' }`}>
+            <thead>
+              <tr>
+                <th scope="col" id="members__order">
+                  #
+                </th>
+                <th scope="col" id="members__name">
+                  Name
+                </th>
+                <th scope="col" id="members__name"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {props.state.wbs.WBSItems.map((item, i) =>
+                item ? (
+                  <WBSItem
+                    index={i + 1}
+                    key={item._id}
+                    wbsId={item._id}
+                    projectId={projectId}
+                    name={item.wbsName}
+                    darkMode={darkMode}
+                  />
+                ) : null,
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </React.Fragment>
   );

@@ -19,14 +19,14 @@ import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 function WBSTasks(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { tasks, fetched } = props;
+  const { tasks, fetched, darkMode } = props;
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
@@ -173,13 +173,13 @@ function WBSTasks(props) {
   }, [isDeleted]);
 
   return (
-    <>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
       <ReactTooltip delayShow={300} />
-      <div className="container-tasks">
+      <div className={`container-tasks m-0 p-2`}>
         <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
+          <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
             <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-secondary" style={boxStyle}>
+              <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
             </NavItem>
@@ -196,6 +196,7 @@ function WBSTasks(props) {
               projectId={projectId}
               load={load}
               pageLoadTime={pageLoadTime}
+              darkMode={darkMode}
             />
           ) : null}
 
@@ -205,6 +206,7 @@ function WBSTasks(props) {
               projectId={projectId}
               load={load}
               setIsLoading={setIsLoading}
+              darkMode={darkMode}
             />
           ) : null}
           <Button
@@ -212,12 +214,12 @@ function WBSTasks(props) {
             className="ml-2"
             size="sm"
             onClick={refresh}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             Refresh{' '}
           </Button>
           {isLoading ? (
-            <Button color="warning" size="sm" className="ml-3" style={boxStyle}>
+            <Button color="warning" size="sm" className="ml-3" style={darkMode ? boxStyleDark : boxStyle}>
               {' '}
               Task Loading......{' '}
             </Button>
@@ -229,7 +231,7 @@ function WBSTasks(props) {
               size="sm"
               className="ml-2 mr-4"
               onClick={() => setOpenAll(!openAll)}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               {openAll ? 'fold All' : 'Unfold All'}
             </Button>
@@ -238,7 +240,7 @@ function WBSTasks(props) {
               size="sm"
               className="ml-3"
               onClick={() => setFilterState('all')}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               All
             </Button>
@@ -247,7 +249,7 @@ function WBSTasks(props) {
               size="sm"
               onClick={() => setFilterState('assigned')}
               className="ml-2"
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Assigned
             </Button>
@@ -256,7 +258,7 @@ function WBSTasks(props) {
               size="sm"
               onClick={() => setFilterState('unassigned')}
               className="ml-2"
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Unassigned
             </Button>
@@ -265,7 +267,7 @@ function WBSTasks(props) {
               size="sm"
               onClick={() => setFilterState('active')}
               className="ml-2"
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Active
             </Button>
@@ -274,7 +276,7 @@ function WBSTasks(props) {
               size="sm"
               onClick={() => setFilterState('inactive')}
               className="ml-2"
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Inactive
             </Button>
@@ -283,14 +285,14 @@ function WBSTasks(props) {
               size="sm"
               onClick={() => setFilterState('complete')}
               className="ml-2"
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Complete
             </Button>
           </div>
         </div>
 
-        <table className="table table-bordered tasks-table" ref={myRef}>
+        <table className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`} ref={myRef}>
           <thead>
             <tr>
               <th scope="col" data-tip="Action" colSpan="2">
@@ -383,18 +385,20 @@ function WBSTasks(props) {
                 load={load}
                 pageLoadTime={pageLoadTime}
                 setIsLoading={setIsLoading}
+                darkMode={darkMode}
               />
             ))}
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 }
 
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
   fetched: state.tasks.fetched,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {

@@ -72,13 +72,14 @@ class Teams extends React.PureComponent {
   render() {
     // debugger;
     const { allTeams, fetching } = this.props.state.allTeamsData;
+    const { darkMode } = this.props.state.theme;
 
-    this.state.teams = this.teamTableElements(allTeams);
+    this.state.teams = this.teamTableElements(allTeams, darkMode);
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
 
     return (
-      <Container fluid className="teams-container">
+      <Container fluid className={`teams-container ${darkMode ? 'bg-oxford-blue text-light' : ''}`} style={{minHeight: "100%"}}>
         {fetching ? (
           <Loading />
         ) : (
@@ -92,6 +93,7 @@ class Teams extends React.PureComponent {
               <TeamTableSearchPanel
                 onSearch={this.onWildCardSearch}
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
+                darkMode={darkMode}
               />
 
               < table className="table table-bordered table-responsive-sm">
@@ -101,13 +103,14 @@ class Teams extends React.PureComponent {
                     onTeamActiveSort={this.toggleTeamActiveSort} 
                     sortTeamNameState={this.state.sortTeamNameState}
                     sortTeamActiveState={this.state.sortTeamActiveState} 
+                    darkMode={darkMode}
                     />
                 </thead>
                 {
                   this.state.teamNameSearchText === '' && this.state.wildCardSearchText === '' ? (
-                    <tbody>{this.state.teamsTable}</tbody>
+                    <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>{this.state.teamsTable}</tbody>
                   ) : (
-                    <tbody>{this.state.teams}</tbody>
+                    <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>{this.state.teams}</tbody>
                   )
                 }
               </table>
@@ -121,7 +124,7 @@ class Teams extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  teamTableElements = allTeams => {
+  teamTableElements = (allTeams, darkMode) => {
     if (allTeams && allTeams.length > 0) {
       const teamSearchData = this.filteredTeamList(allTeams);
       /*
@@ -149,6 +152,7 @@ class Teams extends React.PureComponent {
             onEditTeam={this.onEidtTeam}
             onClickActive={this.onClickActive}
             team={team}
+            darkMode={darkMode}
           />
         ));
     }
