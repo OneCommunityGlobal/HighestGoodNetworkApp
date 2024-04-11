@@ -50,7 +50,7 @@ const Project = props => {
         {(canPutProject) ? (
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${darkMode ? 'bg-space-cadet text-light' : ''}`}
             value={name}
             onChange={e => setName(e.target.value)}
             onBlur={updateProject}
