@@ -26,16 +26,9 @@ const Members = props => {
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
   const [lastTimeoutId, setLastTimeoutId] = useState(null);
 
-  const canGetProjectMembers =
-    props.hasPermission('getProjectMembers') ||
-    props.hasPermission('seeProjectManagement') ||
-    props.hasPermission('seeProjectManagementTab');
-  const canAssignProjectToUsers =
-    props.hasPermission('assignProjectToUsers') ||
-    props.hasPermission('seeProjectManagement') ||
-    props.hasPermission('seeProjectManagementTab');
-  const canUnassignUserInProject =
-    props.hasPermission('unassignUserInProject') || props.hasPermission('seeProjectManagement');
+  const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
+  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
   useEffect(() => {
     props.fetchAllMembers(projectId);
