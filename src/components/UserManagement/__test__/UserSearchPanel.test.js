@@ -2,21 +2,63 @@ import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UserSearchPanel from '../UserSearchPanel';
+import thunk from 'redux-thunk';
+import configureStore from 'redux-mock-store';
+import { renderWithProvider } from '../../../__tests__/utils';
+const mockStore = configureStore([thunk]);
+const nonJaeAccountMock = {
+  _id: '5edf141c78f1380017b829a6',
+  isAdmin: true,
+  user: {
+    expiryTimestamp: '2023-08-22T22:51:06.544Z',
+    iat: 1597272666,
+    userid: '5edf141c78f1380017b829a6',
+    role: 'Administrator',
+    email: 'non_jae@hgn.net'
+  },
+  firstName: 'Non',
+  lastName: 'Petterson',
+  role: 'Administrator',
+  weeklycommittedHours: 10,
+  email: 'non_jae@hgn.net'
+}
+
+const ownerAccountMock = {
+  _id: '5edf141c78f1380017b829a6',
+  isAdmin: true,
+  user: {
+    expiryTimestamp: '2023-08-22T22:51:06.544Z',
+    iat: 1597272666,
+    userid: '5edf141c78f1380017b829a6',
+    role: 'Owner',
+    email: 'devadmin@hgn.net'
+  },
+  firstName: 'Dev',
+  lastName: 'Admin',
+  weeklycommittedHours: 10,
+  email: 'devadmin@hgn.net'
+}
 
 describe('user search panel', () => {
   let onNewUserClick;
   let onSearch;
   let onActiveFilter;
+  let store;
   beforeEach(() => {
+    store = mockStore({
+      auth: ownerAccountMock,
+      userProfile: nonJaeAccountMock,
+      role: nonJaeAccountMock.role
+    });
     onNewUserClick = jest.fn();
     onSearch = jest.fn();
     onActiveFilter = jest.fn();
-    render(
+    renderWithProvider(
       <UserSearchPanel
         onSearch={onSearch}
         onActiveFiter={onActiveFilter}
         onNewUserClick={onNewUserClick}
-      />,
+      />, { store, }
     );
   });
 

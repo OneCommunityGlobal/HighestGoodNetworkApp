@@ -1,6 +1,8 @@
 import React from 'react';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
 import { boxStyle } from 'styles';
+import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 /**
  * The search panel stateless component for user management grid
  */
@@ -57,5 +59,4 @@ const UserSearchPanel = props => {
     </div>
   );
 };
-
-export default UserSearchPanel;
+export default connect(null, { hasPermission })(UserSearchPanel);

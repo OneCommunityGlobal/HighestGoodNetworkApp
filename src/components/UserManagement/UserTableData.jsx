@@ -11,7 +11,6 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import { useSelector } from 'react-redux';
 /**
  * The body row of the user table
  */
@@ -25,7 +24,6 @@ const UserTableData = React.memo(props => {
   useEffect(() => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
-
 
 
   /**
@@ -197,7 +195,7 @@ const UserTableData = React.memo(props => {
               {DELETE}
             </button>
           </span>
-          {canCreateUsers? <span className="usermanagement-actions-cell">
+          {canCreateUsers?<span className="usermanagement-actions-cell">
              <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton    />
            </span>:null}
         </td>
