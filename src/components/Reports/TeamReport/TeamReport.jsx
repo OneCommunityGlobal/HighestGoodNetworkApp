@@ -163,6 +163,45 @@ export function TeamReport({ match }) {
 
     return getFormattedDate(date);
   }
+  // possible modification dated April 12 2024
+  // useEffect(() => {
+  //   setSelectedInput('isManager');
+
+  //   if (!match || !match.params.teamId) return;
+  
+  //   dispatch(getTeamDetail(match.params.teamId));
+  //   dispatch(getTeamMembers(match.params.teamId)).then(result => setTeamMembers(result));
+  
+  // }, [match.params.teamId]);
+  
+  // useEffect(() => {
+  //   dispatch(getAllUserTeams())
+  //     .then(result => {
+  //       setAllTeams(result);
+  //       return result;
+  //     })
+  //     .then(teams => {
+  //       const allTeamMembersPromises = teams.map(team => dispatch(getTeamMembers(team._id)));
+  //       Promise.all(allTeamMembersPromises).then(results => {
+  //         setAllTeamsMembers(results.flatten());
+  //       });
+  //     });
+  
+  //   return () => {
+  //     setTeamMembers([]);
+  //     setAllTeams([]);
+  //     setAllTeamsMembers([]);
+  //     setSearchParams({
+  //       teamName: '',
+  //       createdAt: moment('01-01-2015', 'MM-DD-YYYY').toDate(),
+  //       modifiedAt: moment('01-01-2015', 'MM-DD-YYYY').toDate(),
+  //       isActive: false,
+  //       isInactive: false,
+  //     });
+
+  //     setSelectedTeams([]);
+  //   }
+  // }, []);
 
   useEffect(() => {
 
