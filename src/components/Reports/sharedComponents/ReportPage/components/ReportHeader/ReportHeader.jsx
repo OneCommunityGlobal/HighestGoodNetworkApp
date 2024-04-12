@@ -5,7 +5,7 @@ import './ReportHeader.css';
 export const ReportHeader = ({ children, isActive, src, avatar, name, counts, hoursCommitted, darkMode }) => {
   return (
     <ReportBlock darkMode={darkMode}>
-      <header className="report-header">
+      <header className={`report-header ${darkMode ? 'text-light' : ''}`}>
         <div className="report-header-details">
           <div className="report-header-profile-pic-wrapper">
             {avatar ? (
@@ -19,7 +19,7 @@ export const ReportHeader = ({ children, isActive, src, avatar, name, counts, ho
             )}
             <div className={classnames(`${darkMode ? 'report-header-activity-dark' :'report-header-activity'}`, { active: isActive })} />
           </div>
-          <div className={`report-header-entity-name ${darkMode ? 'text-light' : ''}`}>{name}</div>
+          <div className='report-header-entity-name'>{name}</div>
           <div className="report-header-entity-other-info">
             <span style={{fontSize: "20px"}}>{hoursCommitted}</span> 
             {hoursCommitted != null && (
