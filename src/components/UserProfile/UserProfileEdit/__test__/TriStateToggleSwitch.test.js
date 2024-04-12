@@ -30,26 +30,15 @@ describe('TriStateToggleSwitch Component', () => {
 
   it('updates background color correctly based on position', () => {
     const { container } = render(<TriStateToggleSwitch pos="default" />);
-
-    // Ensure initial background color is dark gray
     expect(container.querySelector('.bg-darkgray')).toBeInTheDocument();
 
-    // Click on 'posted' area to change position
     fireEvent.click(container.querySelector('.knob-area > div:nth-child(1)'));
-
-    // Check if background color changes to blue
     expect(container.querySelector('.bg-blue')).toBeInTheDocument();
 
-    // Click on 'default' area to change position again
     fireEvent.click(container.querySelector('.knob-area > div:nth-child(2)'));
-
-    // Check if background color changes back to dark gray
     expect(container.querySelector('.bg-darkgray')).toBeInTheDocument();
 
-    // Click on 'requested' area to change position again
     fireEvent.click(container.querySelector('.knob-area > div:nth-child(3)'));
-
-    // Check if background color changes to green
     expect(container.querySelector('.bg-green')).toBeInTheDocument();
   });
 
@@ -57,16 +46,10 @@ describe('TriStateToggleSwitch Component', () => {
     const onChangeMock = jest.fn();
     const { container } = render(<TriStateToggleSwitch pos="default" onChange={onChangeMock} />);
 
-    // Click on 'posted' area to change position
     fireEvent.click(container.querySelector('.knob-area > div:nth-child(1)'));
-
-    // Check if onChange function is called with 'posted'
     expect(onChangeMock).toHaveBeenCalledWith('posted');
 
-    // Click on 'requested' area to change position
     fireEvent.click(container.querySelector('.knob-area > div:nth-child(3)'));
-
-    // Check if onChange function is called with 'requested'
     expect(onChangeMock).toHaveBeenCalledWith('requested');
   });
 

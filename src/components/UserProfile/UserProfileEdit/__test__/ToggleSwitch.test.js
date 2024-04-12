@@ -8,7 +8,7 @@ describe('ToggleSwitch Component', () => {
     const { getByTestId } = render(<ToggleSwitch switchType="bluesquares" state={true} />);
     const blueSwitch = getByTestId('blue-switch');
     expect(blueSwitch).toBeInTheDocument();
-    expect(blueSwitch.checked).toEqual(false); // Use 'toEqual' instead of 'toHaveProperty'
+    expect(blueSwitch.checked).toEqual(false);
   });
 
 
@@ -17,7 +17,7 @@ describe('ToggleSwitch Component', () => {
     const { getByTestId } = render(<ToggleSwitch switchType="email" state={false} />);
     const emailSwitch = getByTestId('email-switch');
     expect(emailSwitch).toBeInTheDocument();
-    expect(emailSwitch.checked).toEqual(true); // Use 'toEqual' instead of 'toHaveProperty'
+    expect(emailSwitch.checked).toEqual(true);
   });
 
 
@@ -30,7 +30,6 @@ describe('ToggleSwitch Component', () => {
     expect(handleUserProfile).toHaveBeenCalledTimes(1);
   });
 
-  // Write similar tests for other switch types
 
   it('renders an error message when an invalid switch type is provided', () => {
     const { getByText } = render(<ToggleSwitch switchType="invalid" />);
@@ -78,23 +77,19 @@ describe('ToggleSwitch Component', () => {
   });
 
   it('triggers handleUserProfile when TriStateToggleSwitch is clicked for switch type bio', () => {
-    // Mock handleUserProfile function
+
     const handleUserProfile = jest.fn();
 
-    // Render the TriStateToggleSwitch component with appropriate props
     const { container } = render(
       <TriStateToggleSwitch pos="default" onChange={handleUserProfile} />
     );
 
-    // Find the clickable areas for 'posted', 'default', and 'requested' states
     const postedArea = container.querySelector('.knob-area > div:nth-child(1)');
     const defaultArea = container.querySelector('.knob-area > div:nth-child(2)');
     const requestedArea = container.querySelector('.knob-area > div:nth-child(3)');
 
-    // Simulate a click event on the 'requested' area
     fireEvent.click(requestedArea);
 
-    // Expect handleUserProfile to be called with the correct parameter
     expect(handleUserProfile).toHaveBeenCalledWith('requested');
   });
 
