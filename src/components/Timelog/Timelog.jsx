@@ -125,7 +125,7 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
-  const { userId } = useParams();
+  const { userId = authUser.userId } = useParams();
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
