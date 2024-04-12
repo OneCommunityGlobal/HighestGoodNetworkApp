@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+import { generateArrayOfUniqColors } from 'components/common/PieChart/colorsGenerator';
 
 /**
  *
@@ -13,6 +14,7 @@ import * as d3 from 'd3';
  */
 function MultiHorizontalBarChart({ data, dataKeys }) {
   const svgRef = useRef(null);
+  const colors = generateArrayOfUniqColors(dataKeys.length);
 
   useEffect(() => {
     const margin = { top: 30, right: 50, bottom: 70, left: 80 };
@@ -66,7 +68,7 @@ function MultiHorizontalBarChart({ data, dataKeys }) {
         .attr('y', d => y(d.label) + (index * y.bandwidth()) / dataKeys.length)
         .attr('height', y.bandwidth() / dataKeys.length)
         .attr('width', d => x(d[key].percentage))
-        .attr('fill', index % 2 === 0 ? 'green' : 'red')
+        .attr('fill', colors[index])
         .attr('transform', () => `translate(0, ${y.bandwidth() / 10})`);
 
       barGroup
@@ -84,7 +86,7 @@ function MultiHorizontalBarChart({ data, dataKeys }) {
         .append('rect')
         .attr('width', 20)
         .attr('height', 20)
-        .attr('fill', index % 2 === 0 ? 'green' : 'red')
+        .attr('fill', colors[index])
         .attr('x', 0 + 100 * index);
 
       legend
