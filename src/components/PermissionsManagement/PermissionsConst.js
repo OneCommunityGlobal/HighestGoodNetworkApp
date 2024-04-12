@@ -1,3 +1,23 @@
+// returns an array of all the keys for permissions
+export const getAllPermissionKeys = () => {
+  return getAllSubpermissionKeys(permissionLabels);
+};
+
+// recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
+const getAllSubpermissionKeys = (permissions) => {
+  const keys = [];
+  permissions.forEach((permission) => {
+    // recursive call for nested permissions
+    if(permission.subperms){
+      keys.push(...getAllSubpermissionKeys(permission.subperms))
+    }
+    else {
+      keys.push(permission.key)
+    }
+  });
+  return keys;
+};
+
 export const permissionLabels = [
   {
     label: 'Reports',
@@ -70,6 +90,11 @@ export const permissionLabels = [
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
+      },
+      {
+        label: 'Change Rehireable Status',
+        key: 'changeUserRehireableStatus',
+        description: 'Gives the user permission to change the user status of rehireable or not.',
       },
     ],
   },

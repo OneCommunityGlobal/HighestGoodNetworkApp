@@ -28,6 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
+import {updateRehireableStatus} from '../../../actions/userManagement'
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -162,7 +163,7 @@ class PeopleReport extends Component {
     });
 
     try {
-      await updateUserProfileProperty(userProfile, 'isRehireable', rehireValue);
+      await updateRehireableStatus(userProfile, rehireValue);
       toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
     } catch (err) {
       // eslint-disable-next-line no-alert
@@ -442,7 +443,7 @@ class PeopleReport extends Component {
             <p>Role: {role}</p>
             <p>Title: {jobTitle}</p>
 
-            {endDate ? (
+            {/* {endDate ? ( */}
               <div className="rehireable">
                 <Checkbox
                   value={isRehireable}
@@ -450,9 +451,9 @@ class PeopleReport extends Component {
                   label="Rehireable"
                 />
               </div>
-            ) : (
+            {/* ) : (
               ''
-            )}
+            )} */}
 
             <div className="stats">
               <div>
