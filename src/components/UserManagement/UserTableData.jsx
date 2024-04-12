@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-
+  const canCreateUsers = props.hasPermission('postUserProfile');
   /**
    * reset the changing state upon rerender with new isActive status
    */
@@ -26,14 +26,7 @@ const UserTableData = React.memo(props => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
-  const [isOwner,setIsOwner] = useState(false);
-  useEffect(() => {
-    if ( props.user?.role === 'Owner'|| props.user?.role === 'Administrator') {
-      setIsOwner(true)
-    } else {
-      setIsOwner(false)
-    }
-  },[])
+
 
   /**
    * Checks whether users should be able to change the record of other users.
@@ -99,7 +92,7 @@ const UserTableData = React.memo(props => {
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
-          disabled={isOwner? false : true}
+          disabled={!canCreateUsers}
           onClick={e => {
             if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
@@ -121,7 +114,7 @@ const UserTableData = React.memo(props => {
           className={`btn btn-outline-primary btn-sm${
             props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
           }`}
-          disabled={isOwner? false : true}
+          disabled={!canCreateUsers}
           onClick={e => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
           style={boxStyle}
@@ -153,7 +146,7 @@ const UserTableData = React.memo(props => {
       <td>
         <button
           type="button"
-          disabled={isOwner? false : true}
+          disabled={!canCreateUsers}
           className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
             if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
@@ -194,7 +187,7 @@ const UserTableData = React.memo(props => {
           <span className="usermanagement-actions-cell">
             <button
               type="button"
-              disabled={isOwner? false : true}
+              disabled={!canCreateUsers}
               className="btn btn-outline-danger btn-sm"
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
@@ -204,7 +197,7 @@ const UserTableData = React.memo(props => {
               {DELETE}
             </button>
           </span>
-          {isOwner? <span className="usermanagement-actions-cell">
+          {canCreateUsers? <span className="usermanagement-actions-cell">
              <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton    />
            </span>:null}
         </td>

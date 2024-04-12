@@ -1,34 +1,19 @@
-import React, { useEffect,useState } from 'react';
+import React from 'react';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
 import { boxStyle } from 'styles';
 /**
  * The search panel stateless component for user management grid
  */
 const UserSearchPanel = props => {
-  const [hasRole, setHasRole] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
-
-  useEffect(() => {
-    if (props.user?.role === 'Owner'||props.user?.role === 'Administrator') {
-      setIsOwner(true)
-    } else {
-      setIsOwner(false)
-      const hasValue =props.user?.permissions.frontPermissions.some(value => value === 'postUserProfile');
-      if (hasValue) {
-        setHasRole(true);
-      } else {
-        setHasRole(false);
-      }
-    }
-  },[])
+  const canCreateUsers = props.hasPermission('postUserProfile');
   return (
     <div className="input-group mt-3" id="new_usermanagement">
-      <button disabled={isOwner ? false : !hasRole} type="button" className="btn btn-info mr-2"
+      <button disabled={!canCreateUsers} type="button" className="btn btn-info mr-2"
               onClick={props.handleNewUserSetupPopup}>
         {SEND_SETUP_LINK}
       </button>
       <button
-        disabled={isOwner ? false : !hasRole}
+        disabled={!canCreateUsers}
         type="button"
         className="btn btn-info mr-2"
         onClick={e => {

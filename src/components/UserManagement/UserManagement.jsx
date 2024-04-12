@@ -84,7 +84,7 @@ class UserManagement extends React.PureComponent {
           <React.Fragment>
             {this.popupElements()}
             <UserSearchPanel
-              user={this.props.state.auth.user}
+              hasPermission={ this.props.hasPermission}
               onSearch={this.onWildCardSearch}
               searchText={this.state.wildCardSearchText}
               onActiveFiter={this.onActiveFiter}
