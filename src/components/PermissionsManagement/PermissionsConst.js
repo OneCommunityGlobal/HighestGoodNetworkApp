@@ -91,6 +91,11 @@ export const permissionLabels = [
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
       },
+      {
+        label: 'Change Rehireable Status',
+        key: 'changeUserRehireableStatus',
+        description: 'Gives the user permission to change the user status of rehireable or not.',
+      },
     ],
   },
   {
