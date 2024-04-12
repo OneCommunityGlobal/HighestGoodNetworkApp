@@ -26,11 +26,30 @@ const PermissionListItem = (props) => {
   };
 
   const togglePermission = (permission) => {
-    rolePermissions.includes(permission) || immutablePermissions.includes(permission)
-      ? setPermissions(previous => previous.filter(perm => perm !== permission))
-      : setPermissions(previous => [...previous, permission]);
+    let updatedPermissions = [...rolePermissions];
+
+    // Check if 'Assign Project to Users' permission is being toggled
+    if (permission === 'assignProjectToUsers') {
+        const findUserPermission = 'getProjectMembers';
+        const addingAssignPermission = !updatedPermissions.includes(permission);
+
+        if (addingAssignPermission && !updatedPermissions.includes(findUserPermission)) {
+            updatedPermissions.push(findUserPermission);
+        } else if (!addingAssignPermission && updatedPermissions.includes(findUserPermission)) {
+            updatedPermissions = updatedPermissions.filter(perm => perm !== findUserPermission);
+        }
+    }
+
+    // Add or remove the clicked permission
+    if (updatedPermissions.includes(permission)) {
+        updatedPermissions = updatedPermissions.filter(perm => perm !== permission);
+    } else {
+        updatedPermissions.push(permission);
+    }
+
+    setPermissions(updatedPermissions);
     props.onChange();
-  };
+};
 
   const setSubpermissions = (subperms, adding) => {
     for(const subperm of subperms) {
