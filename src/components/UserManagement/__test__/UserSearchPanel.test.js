@@ -13,12 +13,15 @@ const nonJaeAccountMock = {
     expiryTimestamp: '2023-08-22T22:51:06.544Z',
     iat: 1597272666,
     userid: '5edf141c78f1380017b829a6',
-    role: 'Administrator',
-    email: 'non_jae@hgn.net'
+    role: 'Volunteer',
+    email: 'non_jae@hgn.net',
+    permissions:["getUserProfiles"]
   },
   firstName: 'Non',
   lastName: 'Petterson',
-  role: 'Administrator',
+  role: {
+    roles:[]
+  },
   weeklycommittedHours: 10,
   email: 'non_jae@hgn.net'
 }
@@ -36,17 +39,20 @@ const ownerAccountMock = {
   firstName: 'Dev',
   lastName: 'Admin',
   weeklycommittedHours: 10,
-  email: 'devadmin@hgn.net'
+  email: 'devadmin@hgn.net',
+  role: {
+    roles:[]
+  }
 }
 
-describe('user search panel', () => {
+describe('user search panel not admin', () => {
   let onNewUserClick;
   let onSearch;
   let onActiveFilter;
   let store;
   beforeEach(() => {
     store = mockStore({
-      auth: ownerAccountMock,
+      auth: nonJaeAccountMock,
       userProfile: nonJaeAccountMock,
       role: nonJaeAccountMock.role
     });
@@ -63,9 +69,9 @@ describe('user search panel', () => {
   });
 
   describe('Structure', () => {
-    // it('should render one `create new user` button', () => {
-    //   expect(screen.getByRole('button', { name: /create new user/i })).toBeInTheDocument();
-    // });
+    it('should render one Disable `create new user` button', () => {
+      expect(screen.getByRole('button', { name: /create new user/i })).toBeDisabled();
+    });
     it('should render one textbox', () => {
       expect(screen.getByRole('textbox')).toBeInTheDocument();
     });
