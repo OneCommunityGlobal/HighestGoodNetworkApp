@@ -45,6 +45,7 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
+import WriteItForMeModal from './WriteItForMeModal';
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -440,6 +441,19 @@ export class WeeklySummary extends Component {
     this.setState({ formElements, errors });
   };
 
+  pasteResponse = response => {
+    const { errors: _errors, formElements: _formElements } = this.state;
+    const errors = { ..._errors };
+    const errorMessage = this.validateEditorProperty(response, 'summary');
+
+    if (errorMessage) errors.summary = errorMessage;
+    else delete errors.summary;
+
+    const formElements = { ..._formElements };
+    formElements.summary = response;
+    this.setState({ formElements, errors });
+  };
+
   handleCheckboxChange = event => {
     const { errors: _errors, formElements: _formElements } = this.state;
     event.persist();
@@ -680,7 +694,6 @@ export class WeeklySummary extends Component {
     }
 
     const { userRole, displayUserId } = this.props;
-
     return (
       <Container fluid={!!isModal} className="bg--white-smoke py-3 mb-5">
         <h3>Weekly Summaries</h3>
@@ -765,7 +778,10 @@ export class WeeklySummary extends Component {
                               </DropdownMenu>
                             </UncontrolledDropdown>
                           )}
-                          <CurrentPromptModal userRole={userRole} userId={displayUserId} />
+                          <div style={{ width: '10rem' }}>
+                            <CurrentPromptModal userRole={userRole} userId={displayUserId} />
+                            <WriteItForMeModal pasteResponse={this.pasteResponse} />
+                          </div>
                         </Label>
                         <Editor
                           init={{

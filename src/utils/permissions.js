@@ -19,6 +19,13 @@ const hasPermission = (action) => {
   }
 };
 
+export const getUserInfo = (action)=>{
+  return (dispatch,getState)=>{
+    const state= getState()
+    return state.auth.user;
+  }
+}
+
 // others cannot change the details for devadmin@hgn.net
 /**
  * 
