@@ -10,10 +10,9 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import {toast} from 'react-toastify';
 
-const DeleteModal = ({ timeEntry, projectCategory, taskClassification }) => {
+const DeleteModal = ({ timeEntry, projectCategory, taskClassification,userProfile}) => {
   const [isOpen, setOpen] = useState(false);
   const dispatch = useDispatch();
-
   const toggle = () => setOpen(isOpen => !isOpen);
 
   const deleteEntry = async event => {
@@ -29,7 +28,12 @@ const DeleteModal = ({ timeEntry, projectCategory, taskClassification }) => {
 
       fixDiscrepancy(userProfile);
 
-      const deleteTimeStatus = await dispatch(deleteTimeEntry(timeEntry));
+      const deleteTimeStatus = await dispatch(deleteTimeEntry({...timeEntry,role:userProfile?.role}));
+      if(deleteTimeStatus == 403)
+      {
+        throw new Error ('Unauthorized to perform the action');
+      }
+      
       if (deleteTimeStatus != 200){
         throw new Error ('error occurred while dispatching delete time entry action');
       }

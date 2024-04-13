@@ -409,6 +409,7 @@ const TeamMemberTasks = React.memo(props => {
                             <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={6} style={{ padding: 0 }}>
                                 <TimeEntry
+                                  isOwnTask={false}
                                   from="TaskTab"
                                   data={timeEntry}
                                   displayYear
