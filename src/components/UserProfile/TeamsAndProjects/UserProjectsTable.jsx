@@ -8,7 +8,6 @@ import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 const UserProjectsTable = React.memo(props => {
-  console.log(props);
   const [tooltipOpen, setTooltip] = useState(false);
 
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
@@ -97,7 +96,7 @@ const UserProjectsTable = React.memo(props => {
 
   return (
     <div>
-      <div className="desktop">
+      <div className="desktop" data-testid='userProjectTest'>
         <div className="projecttable-container">
           <div className="container">
             <div className="row mr-auto">

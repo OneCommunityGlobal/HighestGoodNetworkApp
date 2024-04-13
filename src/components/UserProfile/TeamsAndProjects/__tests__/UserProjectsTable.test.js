@@ -1,18 +1,30 @@
 import { Provider } from 'react-redux';
-import UserTeamsTable from '../UserTeamsTable';
+import UserProjectsTable from '../UserProjectsTable';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { render, screen, within } from '@testing-library/react';
-import { userProfileMock } from '../../../../__tests__/mockStates.js';
+import { userProfileMock, userTaskMock } from '../../../../__tests__/mockStates.js';
+
+jest.mock('utils/permissions', () => ({
+  hasPermission: jest.fn((a) => true),
+}));
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useLocation: () => ({
+    pathname: "localhost:3000/userprofile/1"
+  })
+}));
 
 const mockStore = configureStore([thunk]);
 
 const mockUserProfile = {
-  userTeams: [
-  { _id: '1', teamName: 'Team1' },
-  { _id: '2', teamName: 'Team2' }
+  userProjects: [
+  { _id: '1', category: 'Society', projectName: 'Project1' },
+  { _id: '2', category: 'Test', projectName: 'Project2' }
 ],
-userProfile: userProfileMock
+userProfile: userProfileMock,
+userTasks: []
 };
 
 
@@ -26,30 +38,27 @@ const renderComponent = mockProps => {
         },
       },
     },
-      canEditTeamCode: false,
-      canEditVisibility: false,
-      codeValid: true,
       disabled: false,
       edit: true,
-      isVisible: false,
       role: "Administrator",
       userProfile: {
        ...mockProps.userProfile,
-       teamCode: ""
       },
+      hasPermission: jest.fn((a) => true),
+      userTasks: []
   });
 
   return render(
     <Provider store={store}>
       <UserProjectsTable
-        userTasks={mockProps.userTasks}
         userProjectsById={mockProps.userProjects}
         renderedOn={Date.now()}
         edit={mockProps.edit}
         role={mockProps.role}
-        updateTask={mockProps.updateTask}
-        userId={mockProps.userId}
         disabled={mockProps.disabled}
+        userId={mockProps.userProfile._id}
+        hasPermission={jest.fn((a) => true)}
+        userTasks={[]}
       />
     </Provider>,
   );
@@ -58,24 +67,24 @@ const renderComponent = mockProps => {
 
 describe('User Projects Table Component', () => {
   it('render without crashing', () => {
-    //renderComponent(mockUserProfile);
+    renderComponent(mockUserProfile);
 
   });
 
   it('renders correct number of projects the user is assigned to', () => {
-    //renderComponent(mockUserProfile);
-    //expect(within(screen.getByTestId('userTeamTest')).getAllByRole('row').length).toBe(2);
+    renderComponent(mockUserProfile);
+    expect(within(screen.getByTestId('userProjectTest')).getAllByRole('row').length).toBe(2);
   });
 
-  // Test for correct rendering of team names
+  // Test for correct rendering of project names
   it('renders correct project names', () => {
-    /*renderComponent(mockUserProfile);
-    const teamRows = within(screen.getByTestId('userTeamTest')).getAllByRole('row'); 
-    expect(teamRows.length).toBe(2); // Ensure we have 2 team rows
+    renderComponent(mockUserProfile);
+    const projectRows = within(screen.getByTestId('userProjectTest')).getAllByRole('row'); 
+    expect(projectRows.length).toBe(2); // Ensure we have 2 project rows
 
-    const teamNames = teamRows.map(row => {
+    const projectNames = projectRows.map(row => {
       return row.cells[1].textContent;
     });
-    expect(teamNames).toEqual(['Team1', 'Team2']);*/
+    expect(projectNames).toEqual(['Project1', 'Project2']);
   });
 });
