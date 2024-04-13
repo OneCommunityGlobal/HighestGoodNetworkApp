@@ -1,4 +1,4 @@
-export const getTaskEditSuggestionsData = state => {
+const getTaskEditSuggestionsData = state => {
   return {
     userRole: state.auth.user.role,
     isLoading: state.taskEditSuggestions.isLoading,
@@ -7,3 +7,4 @@ export const getTaskEditSuggestionsData = state => {
     dateSuggestedSortDirection: state.taskEditSuggestions.dateSuggestedSortDirection,
   };
 };
+export default getTaskEditSuggestionsData;
