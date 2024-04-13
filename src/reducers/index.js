@@ -28,9 +28,11 @@ import { warningsByUserIdReducer } from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+import {weeklySummaryRecipientsReducer} from "./weeklySummaryRecipientsReducer";
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
+import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { lessonsReducer } from './bmdashboard/lessonsReducer';
@@ -39,6 +41,7 @@ import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { equipmentsReducer } from './bmdashboard/equipmentsReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer"
 
 
@@ -64,6 +67,7 @@ const localReducers = {
   ownerMessage: ownerMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
+  weeklySummaryRecipients:weeklySummaryRecipientsReducer,
 
   // bmdashboard
   materials: materialsReducer,
@@ -73,9 +77,11 @@ const localReducers = {
   lessons: lessonsReducer,
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
+  bmEquipments: equipmentReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmEquipments: equipmentsReducer,
+  bmReusables: reusablesReducer
 };
 
 const sessionReducers = {

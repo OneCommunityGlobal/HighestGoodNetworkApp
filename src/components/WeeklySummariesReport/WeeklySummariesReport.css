@@ -18,11 +18,6 @@
   border-bottom: 1px solid #828282;
 }
 
-.google-doc-icon {
-  height: 20px;
-  margin-left: 10px;
-}
-
 .bio-toggle {
   display: inline-block;
 }
@@ -128,4 +123,8 @@
 
 .custom-control-label {
   margin-left: 8px;
+}
+
+.hours-not-fulfilled {
+  color: red;
 }

@@ -1,8 +1,20 @@
 import axios from "axios";
-
 import { ENDPOINTS } from "utils/URL";
-import { SET_EQUIPMENTS } from "constants/bmdashboard/equipmentsConstants";
-import { GET_ERRORS } from "constants/errors";
+import GET_EQUIPMENT_BY_ID from 'constants/bmdashboard/equipmentConstants';
+import { GET_ERRORS } from 'constants/errors';
+
+export const fetchEquipmentById = (equipmentId) => {
+  const url = ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId);
+  return async dispatch => {
+    axios.get(url)
+      .then(res => {
+        dispatch(setEquipment(res.data))
+      })
+      .catch(error => {
+        dispatch(setErrors(error))
+      })
+  }
+}
 
 export const addEquipmentType = async (body) => {
   return axios.post(`${ENDPOINTS.BM_INVTYPE_ROOT}/equipment`, body)
@@ -17,6 +29,9 @@ export const addEquipmentType = async (body) => {
 export const setEquipments = payload => {
   return {
     type: SET_EQUIPMENTS,
+export const setEquipment = payload => {
+  return {
+    type: GET_EQUIPMENT_BY_ID,
     payload
   }
 }
@@ -38,4 +53,5 @@ export const fetchAllEquipments = () => {
         dispatch(setErrors(err))
       })
   }
+}
 }
