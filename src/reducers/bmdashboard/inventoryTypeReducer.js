@@ -9,6 +9,7 @@ import GET_MATERIAL_TYPES, {
   RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
   GET_INV_BY_TYPE,
   GET_TOOL_TYPES,
+  GET_CONSUMABLE_TYPES,
 } from '../../constants/bmdashboard/inventoryTypeConstants';
 
 const defaultState = {
