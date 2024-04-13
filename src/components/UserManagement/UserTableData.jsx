@@ -44,8 +44,8 @@ const UserTableData = React.memo(props => {
   const checkPermissionsOnOwner = () => {
     const recordEmail = props.user.email;
     const loginUserEmail = props.authEmail;
-    
-    return (props.user.role === 'Owner' && !canAddDeleteEditOwners) 
+
+    return (props.user.role === 'Owner' && !canAddDeleteEditOwners)
       || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
 
@@ -191,7 +191,7 @@ const UserTableData = React.memo(props => {
           : ''}
       </td>
       <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
-      
+
        <td className="email_cell">
       {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
         <FontAwesomeIcon
@@ -213,6 +213,7 @@ const UserTableData = React.memo(props => {
                 props.onDeleteClick(props.user, 'archive');
               }}
               style={boxStyle}
+              disabled={props.auth?.user.userid === props.user._id}
             >
               {DELETE}
             </button>
@@ -226,4 +227,8 @@ const UserTableData = React.memo(props => {
   );
 });
 
-export default connect(null, { hasPermission })(UserTableData);
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, { hasPermission })(UserTableData);
