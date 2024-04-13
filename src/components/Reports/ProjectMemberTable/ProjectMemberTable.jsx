@@ -110,7 +110,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
         <div className="reports-table-head-cell">Active</div>
         <div className="reports-table-head-cell">ID</div>
       </div>
-      <div>
+      <div >
         {memberFilter == 'all-time' ? (
           allMemberTable.length > 0 ? (
             allMemberTable
