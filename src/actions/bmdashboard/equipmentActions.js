@@ -29,8 +29,6 @@ export const addEquipmentType = async (body) => {
 export const setEquipments = payload => {
   return {
     type: SET_EQUIPMENTS,
-export const setEquipment = payload => {
-  return {
     type: GET_EQUIPMENT_BY_ID,
     payload
   }
@@ -53,5 +51,4 @@ export const fetchAllEquipments = () => {
         dispatch(setErrors(err))
       })
   }
-}
 }
