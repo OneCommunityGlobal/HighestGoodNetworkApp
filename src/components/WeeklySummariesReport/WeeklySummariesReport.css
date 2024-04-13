@@ -124,3 +124,7 @@
 .custom-control-label {
   margin-left: 8px;
 }
+
+.hours-not-fulfilled {
+  color: red;
+}
