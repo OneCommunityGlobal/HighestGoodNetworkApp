@@ -217,10 +217,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
-
         <BMProtectedRoute path="/bmdashboard/equipments" component={EquipmentsView} />
-        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
-
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumablesView} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
