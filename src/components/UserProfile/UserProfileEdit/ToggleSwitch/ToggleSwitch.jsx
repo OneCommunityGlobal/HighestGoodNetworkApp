@@ -2,12 +2,12 @@ import React from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
-const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
+const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize ,toggleClass }) => {
   switch (switchType) {
     case 'bluesquares':
       if (state) {
         return (
-          <div className="blueSqare">
+          <div className={`blueSqare ${toggleClass ? toggleClass : ''}`}>
             <div className={style.switchSection}>
               {/* <div> Blue Squares: </div> */}
               <div className={style.switchContainer}>
@@ -26,7 +26,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
         );
       }
       return (
-        <div className="blueSqare">
+        <div className={`blueSqare ${toggleClass ? toggleClass : ''}`}>
           <div className={style.switchSection}>
             {/* <div> Blue Squares: </div> */}
             <div className={style.switchContainer}>
@@ -84,6 +84,50 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize }) => {
                 onChange={handleUserProfile}
               />
               private
+            </div>
+          </div>
+        </div>
+      );
+    case 'email-subcription':
+      if (state) {
+        return (
+          <div className="blueSqare">
+            <div className={style.switchSection}>
+              <div className="icon">
+                <i className="fa fa-envelope-o" aria-hidden="true" />
+              </div>
+              <div className={style.switchContainer}>
+                subscribed
+                <input
+                  id="emailSubscriptionConfig"
+                  data-testid="email-subcription-switch"
+                  type="checkbox"
+                  className={style.toggle}
+                  onChange={handleUserProfile}
+                />
+                unsubscribed
+              </div>
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className="blueSqare">
+          <div className={style.switchSection}>
+            <div className="icon">
+              <i className="fa fa-envelope-o" aria-hidden="true" />
+            </div>
+            <div className={style.switchContainer}>
+              subscribed
+              <input
+                id="emailSubscriptionConfig"
+                data-testid="email-subcription-switch"
+                type="checkbox"
+                className={style.toggle}
+                defaultChecked
+                onChange={handleUserProfile}
+              />
+              unsubscribed
             </div>
           </div>
         </div>

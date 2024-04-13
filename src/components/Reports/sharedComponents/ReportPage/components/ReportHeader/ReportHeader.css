@@ -53,3 +53,7 @@
 .report-header-activity.active {
   background-color: #2affa1;
 }
+
+.report-header-entity-other-info{
+  font-size: 15px;
+}

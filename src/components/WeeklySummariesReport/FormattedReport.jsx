@@ -36,8 +36,7 @@ import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
-import googleDocIconGray from './google_doc_icon_gray.png';
-import googleDocIconPng from './google_doc_icon.png';
+import GoogleDocIcon from '../common/GoogleDocIcon';
 
 const textColors = {
   Default: '#000000',
@@ -227,17 +226,17 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem>
-              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
-                Hours logged:
-              </b>
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
-                <p>
+              {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+                <p style={{ color: 'red' }}>
+                  Hours logged: {''}
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </p>
-              ) : (
-                <span className="ml-2">
+              )}
+              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+                <p>
+                  Hours logged: {''}
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
+                </p>
               )}
             </ListGroupItem>
             <ListGroupItem>
@@ -420,8 +419,8 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount }) {
   };
 
   const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    // eslint-disable-next-line radix
-    parseInt(summary.weeklySummariesCount),
+    // parseInt() returns an integer or NaN, convert to 0 if it's NaM
+    parseInt(summary.weeklySummariesCount, 10) || 0,
   );
 
   const handleOnChange = async (userProfileSummary, count) => {
@@ -600,38 +599,16 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
 }
 
 function Index({ summary, weekIndex, allRoleInfo }) {
-  const handleGoogleDocClick = googleDocLink => {
-    const toastGoogleLinkDoesNotExist = 'toast-on-click';
-    if (googleDocLink && googleDocLink.Link && googleDocLink.Link.trim() !== '') {
-      window.open(googleDocLink.Link);
-    } else {
-      toast.error(
-        'Uh oh, no Google Doc is present for this user! Please contact an Admin to find out why.',
-        {
-          toastId: toastGoogleLinkDoesNotExist,
-          pauseOnFocusLoss: false,
-          autoClose: 3000,
-        },
-      );
-    }
-  };
-
-  // eslint-disable-next-line no-shadow
-  const getGoogleDocLink = summary => {
-    if (!summary.adminLinks) {
-      return undefined;
-    }
-    const googleDocLink = summary.adminLinks.find(link => link.Name === 'Google Doc');
-    return googleDocLink;
-  };
-
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
-  const googleDocLink = getGoogleDocLink(summary);
-  // Determine whether to use grayscale or color icon based on googleDocLink
-  const googleDocIcon =
-    googleDocLink && googleDocLink.Link.trim() !== '' ? googleDocIconPng : googleDocIconGray;
+  const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
+    if (currentElement.Name === 'Google Doc') {
+      // eslint-disable-next-line no-param-reassign
+      targetLink = currentElement.Link;
+    }
+    return targetLink;
+  }, undefined);
 
   return (
     <>
@@ -651,9 +628,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
         {summary.firstName} {summary.lastName}
       </Link>
 
-      <span onClick={() => handleGoogleDocClick(googleDocLink)}>
-        <img className="google-doc-icon" src={googleDocIcon} alt="google_doc" />
-      </span>
+      <GoogleDocIcon link={googleDocLink} />
       <span>
         <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
       </span>

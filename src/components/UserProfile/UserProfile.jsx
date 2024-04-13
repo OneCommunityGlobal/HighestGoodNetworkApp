@@ -44,7 +44,7 @@ import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus } from '../../actions/userManagement';
+import { updateUserStatus, updateRehireableStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
@@ -55,7 +55,8 @@ import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
-import { setCurrentUser } from '../../actions/authActions';
+import { GiConsoleController } from 'react-icons/gi';
+import { setCurrentUser } from '../../actions/authActions'
 
 function UserProfile(props) {
   /* Constant values */
@@ -80,6 +81,7 @@ function UserProfile(props) {
   const [isProjectsEqual, setIsProjectsEqual] = useState(true);
   const [projects, setProjects] = useState([]);
   const [originalProjects, setOriginalProjects] = useState([]);
+  const [resetProjects, setResetProjects] = useState([]);
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [formValid, setFormValid] = useState(initialFormValid);
@@ -99,6 +101,9 @@ function UserProfile(props) {
   const [saved, setSaved] = useState(false);
   const [isTeamSaved, setIsTeamSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
+  const [isRehireable, setIsRehireable] = useState(null); 
 
   const userProfileRef = useRef();
 
@@ -209,35 +214,36 @@ function UserProfile(props) {
 
   const loadSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
+    try {
+      const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
+      const { data } = res;
 
-    const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
-    const { data } = res;
+      const activeMembers = data.filter(member => member._id !== currentManager._id && member.isActive);
 
-    const memberSubmitted = [];
-    const memberNotSubmitted = [];
+      const memberSubmitted = activeMembers
+        .filter(member => member.weeklySummaries[0].summary !== '')
+        .map(member => `${member.firstName} ${member.lastName}`);
 
-    data.forEach(member => {
-      if (member._id !== currentManager._id) {
-        if (member.weeklySummaries[0].summary !== '') {
-          memberSubmitted.push(`${member.firstName} ${member.lastName}`);
-        } else {
-          memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
-        }
-      }
-    });
+      const memberNotSubmitted = activeMembers
+        .filter(member => member.weeklySummaries[0].summary === '')
+        .map(member => `${member.firstName} ${member.lastName}`);
 
-    const memberSubmittedString =
-      memberSubmitted.length !== 0
-        ? memberSubmitted.join(', ')
-        : '<list all team members names included in the summary>';
-    const memberDidntSubmitString =
-      memberNotSubmitted.length !== 0
-        ? memberNotSubmitted.join(', ')
-        : '<list all team members names NOT included in the summary>';
+      const memberSubmittedString =
+        memberSubmitted.length !== 0
+          ? memberSubmitted.join(', ')
+          : '<list all team members names included in the summary>';
 
-    const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+      const memberDidntSubmitString =
+        memberNotSubmitted.length !== 0
+          ? memberNotSubmitted.join(', ')
+          : '<list all team members names NOT included in the summary>';
 
-    setSummaryIntro(summaryIntroString);
+      const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+
+      setSummaryIntro(summaryIntroString);
+    } catch (error) {
+      console.error('Error fetching team users:', error);
+    }
   };
 
   const loadUserTasks = async () => {
@@ -302,6 +308,8 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
+      // Assuming newUserProfile contains isRehireable attribute
+      setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
 
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
@@ -314,6 +322,7 @@ function UserProfile(props) {
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
+      setResetProjects(newUserProfile.projects);
       setUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
@@ -452,6 +461,10 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+    if (targetIsDevAdminUneditable){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     setType(type);
     setShowModal(status);
 
@@ -516,7 +529,7 @@ function UserProfile(props) {
     }
     try {
       await props.updateUserProfile(userProfileRef.current);
-
+      
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -525,6 +538,7 @@ function UserProfile(props) {
       setSaved(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');
+      return err.message;
     }
   };
  
@@ -571,7 +585,28 @@ function UserProfile(props) {
     setActiveInactivePopupOpen(false);
   };
 
-  /* useEffect functions */
+  const handleRehireableChange = () => {
+    const newRehireableStatus = !isRehireable;
+    setPendingRehireableStatus(newRehireableStatus);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmChange = () => {
+    setShowConfirmDialog(false);
+    const updatedUserProfile = {
+      ...userProfile,
+      isRehireable: pendingRehireableStatus,
+    };
+    updateRehireableStatus(updatedUserProfile, pendingRehireableStatus)
+    setIsRehireable(pendingRehireableStatus);
+    setUserProfile(updatedUserProfile);
+    setOriginalUserProfile(updatedUserProfile);
+  };
+
+  const handleCancelChange = () => {
+    setShowConfirmDialog(false);
+  };
+
   useEffect(() => {
     getTeamMembersWeeklySummary(); 
     loadUserProfile();
@@ -598,6 +633,12 @@ function UserProfile(props) {
             ...userProfile.privacySettings,
             email: !userProfile.privacySettings?.email,
           },
+        });
+        break;
+      case 'emailSubscriptionConfig':
+        setUserProfile({
+          ...userProfile,
+          emailSubscriptions: !userProfile.emailSubscriptions,
         });
         break;
       case 'phonePubliclyAccessible':
@@ -654,6 +695,7 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus')
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
  
@@ -797,6 +839,17 @@ function UserProfile(props) {
                 />
                 </span>
               )}
+              {canChangeRehireableStatus && (
+                <span className='mr-2'>
+                  <i 
+                    className={isRehireable ? "fa fa-check-square-o": "fa fa-square-o"}
+                    aria-hidden="true"
+                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }} 
+                    title="Click to change rehirable status" 
+                    onClick={handleRehireableChange}
+                  />
+                </span>
+              )}
               <Button
                 onClick={() => {
                   setShowSelect(!showSelect);
@@ -884,6 +937,7 @@ function UserProfile(props) {
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
+                user={props.auth.user}
                 isUserSelf={isUserSelf}
                 canEdit={canEdit}
               />
@@ -987,7 +1041,7 @@ function UserProfile(props) {
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(userProfile.role)}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
@@ -1006,7 +1060,7 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="4">
-                <ProjectsTab
+                <ProjectsTab 
                   userProjects={userProfile.projects || []}
                   userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
@@ -1045,6 +1099,16 @@ function UserProfile(props) {
               >
                 Basic Information
               </Button>
+              <Modal isOpen={showConfirmDialog} toggle={handleCancelChange}>
+                <ModalHeader toggle={handleCancelChange}>Confirm Status Change</ModalHeader>
+                <ModalBody>
+                  {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'}?`}
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="primary" onClick={handleConfirmChange}>Confirm</Button>{' '}
+                  <Button color="secondary" onClick={handleCancelChange}>Cancel</Button>
+                </ModalFooter>
+              </Modal>
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
@@ -1096,7 +1160,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1111,6 +1175,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1153,7 +1218,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1168,6 +1233,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1221,7 +1287,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1236,6 +1302,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1282,7 +1349,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1297,6 +1364,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1331,7 +1399,7 @@ function UserProfile(props) {
                         <>
                           <SaveButton
                             className="mr-1 btn-bottom"
-                            handleSubmit={handleSubmit}
+                            handleSubmit={async () => await handleSubmit()}
                             disabled={
                               !formValid.firstName ||
                               !formValid.lastName ||
@@ -1346,6 +1414,7 @@ function UserProfile(props) {
                             onClick={() => {
                               setUserProfile(originalUserProfile);
                               setTasks(originalTasks);
+                              setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
                           >
@@ -1394,11 +1463,11 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && (activeTab === '1' || activeTab === '2' || activeTab === '3') && (
+              {canEdit && (activeTab) && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
-                    handleSubmit={handleSubmit}
+                    handleSubmit={async () => await handleSubmit()}
                     disabled={
                       !formValid.firstName ||
                       !formValid.lastName ||
@@ -1417,6 +1486,7 @@ function UserProfile(props) {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
                         setTeams(originalTeams);
+                        setProjects(resetProjects);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
                       style={boxStyle}
