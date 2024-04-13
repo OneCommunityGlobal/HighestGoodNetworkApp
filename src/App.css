@@ -128,3 +128,7 @@ tr {
 input[type="radio"]:hover {
   cursor: pointer;
 }
+
+input[type="checkbox"]:not([disabled]):hover {
+  cursor: pointer;
+}
