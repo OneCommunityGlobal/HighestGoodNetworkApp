@@ -1,15 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
-import { Popup ,CircleMarker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import './TeamLocations.css';
+import { useEffect, useRef } from 'react';
+import { CircleMarker, Popup } from 'react-leaflet';
 import { Button } from 'reactstrap';
 import { boxStyle } from 'styles';
+import './TeamLocations.css';
 
 const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocation, isOpen ,randomLocationOffset}) => {
   const popupRef = useRef();
 
   useEffect(() => {
-  
     if ( popupRef.current !== undefined) {
         if(isOpen){
             popupRef.current.openPopup();
