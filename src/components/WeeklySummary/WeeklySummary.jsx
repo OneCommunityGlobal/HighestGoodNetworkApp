@@ -681,13 +681,6 @@ export class WeeklySummary extends Component {
 
     const { userRole, displayUserId } = this.props;
 
-    const getBoxStyle = () => {
-      return {
-        ...(darkMode && boxStyleDark),
-        ...(!darkMode && boxStyle),
-      };
-    };
-
     return (
       <Container
         fluid={!!isModal}
@@ -706,7 +699,7 @@ export class WeeklySummary extends Component {
             <Button
               className="btn--dark-sea-green"
               onClick={this.handleClose}
-              style={getBoxStyle()}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Close this window
             </Button>
@@ -752,7 +745,7 @@ export class WeeklySummary extends Component {
                               <DropdownToggle
                                 className="px-5 btn--dark-sea-green"
                                 caret
-                                style={getBoxStyle()}
+                                style={darkMode ? boxStyleDark : boxStyle}
                               >
                                 Move This Summary
                               </DropdownToggle>
@@ -870,12 +863,15 @@ export class WeeklySummary extends Component {
                             Update this if you are SURE your new link is correct.
                           </ModalBody>
                           <ModalFooter>
-                            <Button onClick={this.handleMediaChange} style={getBoxStyle()}>
+                            <Button
+                              onClick={this.handleMediaChange}
+                              style={darkMode ? boxStyleDark : boxStyle}
+                            >
                               Confirm
                             </Button>
                             <Button
                               onClick={() => this.toggleShowPopup(editPopup)}
-                              style={getBoxStyle()}
+                              style={darkMode ? boxStyleDark : boxStyle}
                             >
                               Close
                             </Button>
@@ -909,10 +905,16 @@ export class WeeklySummary extends Component {
                     <ModalHeader> Warning!</ModalHeader>
                     <ModalBody>Are you SURE you want to move the summary?</ModalBody>
                     <ModalFooter>
-                      <Button onClick={this.handleMoveSave} style={getBoxStyle()}>
+                      <Button
+                        onClick={this.handleMoveSave}
+                        style={darkMode ? boxStyleDark : boxStyle}
+                      >
                         Confirm and Save
                       </Button>
-                      <Button onClick={this.toggleMovePopup} style={getBoxStyle()}>
+                      <Button
+                        onClick={this.toggleMovePopup}
+                        style={darkMode ? boxStyleDark : boxStyle}
+                      >
                         Close
                       </Button>
                     </ModalFooter>
@@ -998,7 +1000,7 @@ export class WeeklySummary extends Component {
                         className="px-5 btn--dark-sea-green"
                         disabled={Boolean(this.validate())}
                         onClick={this.handleSave}
-                        style={getBoxStyle()}
+                        style={darkMode ? boxStyleDark : boxStyle}
                       >
                         Save
                       </Button>
