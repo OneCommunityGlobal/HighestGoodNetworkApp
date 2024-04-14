@@ -2,13 +2,9 @@ import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
-
-// import SameFolderTasks from 'components/Projects/WBS/SameFolderTasks';
 import AutoUpdate from 'components/AutoUpdate';
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import { RoutePermissions } from 'utils/routePermissions';
-// import PermissionsManagement from 'components/PermissionsManagement/PermissionsManagement';
-// import UserRoleTab from 'components/PermissionsManagement/UserRoleTab';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/roleInfoModal';
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
@@ -16,8 +12,6 @@ import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentT
 import Announcements from 'components/Announcements';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
-// import Reports from './components/Reports';
-// import UserProfile from './components/UserProfile';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
@@ -26,28 +20,14 @@ import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
 import Header from './components/Header';
-// import Projects from './components/Projects';
-// Teams from './components/Teams/Teams';
-// import UserManagement from './components/UserManagement';
-// import Members from './components/Projects/Members';
-// import WBS from './components/Projects/WBS';
-// import WBSDetail from './components/Projects/WBS/WBSDetail';
-// import SingleTask from './components/Projects/WBS/SingleTask';
-// import WeeklySummariesReport from './components/WeeklySummariesReport';
 import TeamLocations from './components/TeamLocations';
 import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
-// import { PeopleReport } from './components/Reports/PeopleReport';
-// import { ProjectReport } from './components/Reports/ProjectReport';
-// import { TeamReport } from './components/Reports/TeamReport';
 import Inventory from './components/Inventory';
-// import BadgeManagement from './components/Badge/BadgeManagement';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
-
-
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -62,10 +42,18 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
-const PurchaseMaterials = lazy(() => import('./components/BMDashboard/PurchaseRequests/MaterialPurchaseRequest'));
-const PurchaseReusables = lazy(() => import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'));
-const ProjectDetails = lazy(() => import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'));
-const UpdateMaterialsBulk = lazy(() => import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'));
+const PurchaseMaterials = lazy(() =>
+  import('./components/BMDashboard/PurchaseRequests/MaterialPurchaseRequest'),
+);
+const PurchaseReusables = lazy(() =>
+  import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
+);
+const ProjectDetails = lazy(() =>
+  import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
+);
+const UpdateMaterialsBulk = lazy(() =>
+  import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
+);
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
 const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
@@ -85,7 +73,9 @@ const SameFolderTasks = lazy(() => import('./components/Projects/WBS/SameFolderT
 const UserManagement = lazy(() => import('./components/UserManagement'));
 const UserProfile = lazy(() => import('./components/UserProfile'));
 const BadgeManagement = lazy(() => import('./components/Badge/BadgeManagement'));
-const PermissionsManagement = lazy(() => import('./components/PermissionsManagement/PermissionsManagement'));
+const PermissionsManagement = lazy(() =>
+  import('./components/PermissionsManagement/PermissionsManagement'),
+);
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
@@ -143,11 +133,7 @@ export default (
           fallback
           routePermissions={RoutePermissions.reports}
         />
-        <ProtectedRoute
-          path="/teamlocations"
-          exact
-          component={TeamLocations}
-        />
+        <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
         <ProtectedRoute
           path="/projects"
           exact
@@ -163,7 +149,11 @@ export default (
           fallback
           routePermissions={RoutePermissions.projects}
         />
-        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId/:wbsName" component={WBSDetail} fallback />
+        <ProtectedRoute
+          path="/wbs/tasks/:wbsId/:projectId/:wbsName"
+          component={WBSDetail}
+          fallback
+        />
         <ProtectedRoute path="/project/wbs/:projectId" component={WBS} fallback />
         <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} fallback />
         <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} fallback />
@@ -220,12 +210,28 @@ export default (
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
 
-        <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
-        <BMProtectedRoute path="/bmdashboard/reusables/purchase" fallback component={PurchaseReusables} />
+        <BMProtectedRoute
+          path="/bmdashboard/materials/purchase"
+          fallback
+          component={PurchaseMaterials}
+        />
+        <BMProtectedRoute
+          path="/bmdashboard/reusables/purchase"
+          fallback
+          component={PurchaseReusables}
+        />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
-        <BMProtectedRoute path="/bmdashboard/projects/:projectId" fallback component={ProjectDetails} />
+        <BMProtectedRoute
+          path="/bmdashboard/projects/:projectId"
+          fallback
+          component={ProjectDetails}
+        />
         <BMProtectedRoute path="/bmdashboard/lessonlist/" component={LessonList} />
-        <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
+        <BMProtectedRoute
+          path="/bmdashboard/materials/update"
+          fallback
+          component={UpdateMaterialsBulk}
+        />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
@@ -236,7 +242,12 @@ export default (
         <BMProtectedRoute path="/bmdashboard/consumables/add" fallback component={AddConsumable} />
         <BMProtectedRoute path="/bmdashboard/consumables" fallback component={ConsumableListView} />
         <BMProtectedRoute path="/bmdashboard/reusables" fallback component={ReusableListView} />
-        <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" fallback exact component={EquipmentDetail} />
+        <BMProtectedRoute
+          path="/bmdashboard/equipment/:equipmentId"
+          fallback
+          exact
+          component={EquipmentDetail}
+        />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumableListView} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
         <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumableListView} />
@@ -244,8 +255,11 @@ export default (
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />
-        <BMProtectedRoute path="/bmdashboard/inventorytypes" fallback component={InventoryTypesList} />
-
+        <BMProtectedRoute
+          path="/bmdashboard/inventorytypes"
+          fallback
+          component={InventoryTypesList}
+        />
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
@@ -264,8 +278,6 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
-
-
       </Switch>
     </>
   </Switch>
