@@ -52,6 +52,7 @@ import PopUpBar from 'components/PopUpBar';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import { tr } from 'date-fns/locale';
 
 export function Header(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -110,7 +111,7 @@ export function Header(props) {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
-
+  const [isSelectImgModalVisible, setSelectImgModalVisible] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -432,7 +433,23 @@ export function Header(props) {
             <div className="card-content">{modalContent}</div>
           </Card>
         )}
-
+      {isSelectImgModalVisible && (
+        <Card color="primary">
+        {props?.userProfile?.storedPics?.length > 0 && (
+          <>
+            <div className="close-button">
+              <Button close onClick={()=>{setSelectImgModalVisible(false)}} />
+            </div>
+            <p></p>
+            <Link to={`/userprofile/${props.userProfile._id}`}>
+              <div className='card-content'>We found multiple pictures for you on our website.
+              Please choose one of them in Profile page</div>
+            </Link>
+            <p></p>
+          </>
+        )}
+        </Card>
+      )}
     </div>
   );
 }
