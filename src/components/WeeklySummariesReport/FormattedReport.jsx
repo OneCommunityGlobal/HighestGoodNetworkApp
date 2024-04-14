@@ -226,17 +226,17 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem>
-              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
-                Hours logged:
-              </b>
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
-                <p>
+              {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+                <p style={{ color: 'red' }}>
+                  Hours logged: {''}
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </p>
-              ) : (
-                <span className="ml-2">
+              )}
+              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+                <p>
+                  Hours logged: {''}
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
+                </p>
               )}
             </ListGroupItem>
             <ListGroupItem>

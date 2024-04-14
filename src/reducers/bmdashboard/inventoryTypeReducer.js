@@ -1,3 +1,4 @@
+
 import GET_MATERIAL_TYPES, {
   GET_REUSABLE_TYPES,
   POST_BUILDING_MATERIAL_INVENTORY_TYPE,
@@ -8,13 +9,14 @@ import GET_MATERIAL_TYPES, {
   RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
   GET_INV_BY_TYPE,
   GET_TOOL_TYPES,
+  GET_CONSUMABLE_TYPES,
 } from '../../constants/bmdashboard/inventoryTypeConstants';
 
 const defaultState = {
   list: [],
   invTypeList: {
     "All": null, "Materials": null, "Consumables": null, "Equipments": null,
-    "Reusables": null, "Tools": null
+    "Reusables": null, "Tools:": null
   },
   postedResult: {
     result: null,
@@ -46,6 +48,11 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
         ...state
       };
     case GET_TOOL_TYPES:
+      state.list = action.payload;
+      return {
+        ...state
+      };
+    case GET_CONSUMABLE_TYPES:
       state.list = action.payload;
       return {
         ...state

@@ -9,7 +9,6 @@ import { connect } from 'react-redux';
 
 const UserProjectsTable = React.memo(props => {
   const [tooltipOpen, setTooltip] = useState(false);
-
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUpdateTask = props.hasPermission('updateTask');
   const canDeleteProjects = props.hasPermission('deleteProject');
@@ -80,7 +79,7 @@ const UserProjectsTable = React.memo(props => {
       }
       return resource;
     });
-
+  
     const updatedTask = { ...task, resources: newResources };
     props.updateTask(task._id, updatedTask, method);
   };
