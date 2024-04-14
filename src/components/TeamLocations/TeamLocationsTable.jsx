@@ -126,6 +126,7 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser }) {
                   <span className='column-content'>{`${user.location.country}`}</span>
                 )}
               </td>
+              <td></td>
             </tr>
           ))}
         </tbody>
