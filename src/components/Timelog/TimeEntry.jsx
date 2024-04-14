@@ -54,13 +54,18 @@ const TimeEntry = (props) => {
 
   let projectName, projectCategory, taskName, taskClassification;
 
+   // Prevent update time entry if user has been removed from the project ONLY IN WeeklyTab.
+   // Default to false. Will re-assign shouldPreventTimeEntryUpdateInWeeklyTab value if current tab is WeeklyTab
+  let shouldPreventTimeEntryUpdateInWeeklyTab = false;
+
   if (from === 'TaskTab') {
     // Time Entry rendered under Tasks tab
     ({ projectName, projectCategory, taskName, taskClassification } = data)
   } else {
-    // Time Entry rendered under weekly tabs
-    const timeEntryProject = displayUserProjects.find(project => project.projectId === projectId);
-    ({ projectName, projectCategory } = timeEntryProject);
+    // Time Entry rendered under weekly tabs    
+    // check if user has been removed from the project. Will prevent update time entry if true
+    shouldPreventTimeEntryUpdateInWeeklyTab = !displayUserProjects.find(project => project._id === projectId);
+    ({ projectName, projectCategory } = data);
     if (taskId) {
       const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
       console.log('timeEntryTask', timeEntryTask)
@@ -89,6 +94,7 @@ const TimeEntry = (props) => {
     //default permission: delete own sameday tangible entry
     isAuthUserAndSameDayEntry;
 
+ 
   const toggleTangibility = () => {
     //Update intangible hours property in userprofile
     const formattedHours = parseFloat(hours) + parseFloat(minutes) / 60;
@@ -191,7 +197,7 @@ const TimeEntry = (props) => {
             </p>
             <div className='mb-3'>
             {
-              canEdit 
+              (canEdit && (from === 'WeeklyTab' ? !shouldPreventTimeEntryUpdateInWeeklyTab : true))
                 ? ( 
                     <>
                       <span className="text-muted">Tangible:&nbsp;</span>
@@ -212,14 +218,14 @@ const TimeEntry = (props) => {
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {(canEdit || isAuthUserAndSameDayEntry) 
+              {((canEdit || isAuthUserAndSameDayEntry) && (from === 'WeeklyTab' ? !shouldPreventTimeEntryUpdateInWeeklyTab : true)) 
                 && from === 'WeeklyTab' 
                 && (
                   <button className="mr-3 text-primary">
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
                   </button>
               )}
-              {canDelete && from === 'WeeklyTab' && (
+              {canDelete && (from === 'WeeklyTab' ? !shouldPreventTimeEntryUpdateInWeeklyTab : true) && (
                 <button className='text-primary'>
                   <DeleteModal
                     timeEntry={data}
@@ -230,6 +236,11 @@ const TimeEntry = (props) => {
                 </button>
               )}
             </div>
+            {(from === 'WeeklyTab' ? shouldPreventTimeEntryUpdateInWeeklyTab : false) && (
+              <div className="text-danger">
+                <small>Warning: The user has been removed from the project. You should not update the time entry.</small>
+              </div>
+            )}
           </Col>
         </Row>
       </Card>
