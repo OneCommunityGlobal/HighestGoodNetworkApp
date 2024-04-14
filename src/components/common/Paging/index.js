@@ -1,1 +1,3 @@
-export { Paging } from './Paging';
+import Paging from './Paging';
+
+export default Paging;

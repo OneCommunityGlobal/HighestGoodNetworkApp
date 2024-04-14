@@ -16,7 +16,7 @@ src/__tests__/**
 
 src/components/App.jsx
 src/components/AutoReload/**
-src/components/common/**
+
 src/components/Header/**
 src/components/BMDashboard/BMHeader/**
 src/components/MonthlyEffort/**

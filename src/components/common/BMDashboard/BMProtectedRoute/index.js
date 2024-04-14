@@ -1,1 +1,3 @@
-export { default } from './BMProtectedRoute'
+import BMProtectedRoute from './BMProtectedRoute';
+
+export default BMProtectedRoute;

@@ -1,5 +1,6 @@
-import React from 'react';
 
+
+// eslint-disable-next-line react/function-component-definition
 const Radio = ({ name, label, options, error, value, ...rest }) => {
   return (
     <div className="form-group">
@@ -12,6 +13,7 @@ const Radio = ({ name, label, options, error, value, ...rest }) => {
             name={name}
             className="form-check-input"
             defaultChecked={item.value === value ? true : null}
+            // eslint-disable-next-line react/jsx-props-no-spreading
             {...rest}
           />
           <label htmlFor={item.value.toString()} className="form-check-label">

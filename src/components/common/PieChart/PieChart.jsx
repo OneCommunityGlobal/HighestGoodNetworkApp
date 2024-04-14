@@ -4,12 +4,13 @@ import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
 
+// eslint-disable-next-line import/prefer-default-export, react/function-component-definition
 export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => {
   const [totalHours, setTotalHours] = useState(0);
 
   // create the pie chart
   const getCreateSvgPie = totalValue => {
-    var svg = d3
+    const svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
       .append('svg')
       .attr('id', `pie-chart-${pieChartId}`)
@@ -31,9 +32,10 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   const pie = d3.pie().value(d => d[1]);
 
   useEffect(() => {
+    // eslint-disable-next-line camelcase
     const data_ready = pie(Object.entries(data));
 
-    let totalValue = data_ready
+    const totalValue = data_ready
       .map(obj => obj.value)
       .reduce((a, c) => {
         return a + c;

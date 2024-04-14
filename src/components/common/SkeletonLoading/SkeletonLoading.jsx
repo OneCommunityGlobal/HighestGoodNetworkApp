@@ -1,18 +1,22 @@
-import React from 'react';
+/* eslint-disable no-plusplus */
+
 import './SkeletonLoading.css';
 import { Container } from 'reactstrap';
 
 const SkeletonLoading = ({ template }) => {
   const renderSkeletonTemplate = () => {
+    const rows = [];
+    const reportItems = [];
+    const userManagementItems = [];
     switch (template) {
       case 'Timelog':
         return (
           <Container fluid="sm">
             <div className="skeleton-loading-timelog">
-              <div className="skeleton-loading-item-timelog"></div>
-              <div className="skeleton-loading-item-timelog"></div>
+              <div className="skeleton-loading-item-timelog" />
+              <div className="skeleton-loading-item-timelog" />
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <div className="skeleton-loading-item-add-intangible"></div>
+                <div className="skeleton-loading-item-add-intangible" />
               </div>
             </div>
           </Container>
@@ -20,18 +24,18 @@ const SkeletonLoading = ({ template }) => {
       case 'TimelogFilter':
         return (
           <div className="skeleton-loading-timelog-filter">
-            <div className="skeleton-loading-timelog-filter-item"></div>
-            <div className="skeleton-loading-timelog-filter-item"></div>
-            <div className="skeleton-loading-timelog-filter-item"></div>
-            <div className="skeleton-loading-timelog-filter-item"></div>
+            <div className="skeleton-loading-timelog-filter-item" />
+            <div className="skeleton-loading-timelog-filter-item" />
+            <div className="skeleton-loading-timelog-filter-item" />
+            <div className="skeleton-loading-timelog-filter-item" />
           </div>
         );
       case 'TeamMemberTasks':
-        const rows = [];
+
         for (let i = 0; i < 15; i++) {
           rows.push(
             <tr key={i}>
-              <td colSpan={6} className="skeleton-loading-team-member-tasks-row"></td>
+              <td colSpan={6} className="skeleton-loading-team-member-tasks-row" />
             </tr>,
           );
         }
@@ -39,23 +43,23 @@ const SkeletonLoading = ({ template }) => {
       case 'WeeklySummary':
         return (
           <Container fluid="sm">
-            <div className="skeleton-loading-weekly-summary"></div>
+            <div className="skeleton-loading-weekly-summary" />
           </Container>
         );
       case 'WeeklySummariesReport':
-        const reportItems = [];
+
 
         for (let i = 0; i < 10; i++) {
           reportItems.push(
             <div key={i}>
-              <div className="skeleton-loading-weekly-summaries-report-item"></div>
-              <div className="skeleton-loading-weekly-summaries-report-item mt-5"></div>
-              <div className="skeleton-loading-weekly-summaries-report-item"></div>
-              <div className="skeleton-loading-weekly-summaries-report-item"></div>
-              <div className="skeleton-loading-weekly-summaries-report-item"></div>
-              <div className="skeleton-loading-weekly-summaries-report-item"></div>
-              <div className="skeleton-loading-weekly-summaries-report-item"></div>
-              <div className="skeleton-loading-weekly-summaries-report-item"></div>
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item mt-5" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
               <hr />
             </div>,
           );
@@ -78,36 +82,36 @@ const SkeletonLoading = ({ template }) => {
               <div
                 className="skeleton-loading-user-profile-picture"
                 style={{ marginBottom: '16rem' }}
-              ></div>
-              <div className="skeleton-loading-user-profile-picture"></div>
+              />
+              <div className="skeleton-loading-user-profile-picture" />
             </div>
             <div className="mx-5" style={{ marginTop: '6rem' }}>
-              <div className="skeleton-loading-user-profile-item"></div>
-              <div className="skeleton-loading-user-profile-item mt-5"></div>
-              <div className="skeleton-loading-user-profile-item" style={{ height: '16rem' }}></div>
+              <div className="skeleton-loading-user-profile-item" />
+              <div className="skeleton-loading-user-profile-item mt-5" />
+              <div className="skeleton-loading-user-profile-item" style={{ height: '16rem' }} />
               <div
                 className="skeleton-loading-user-profile-item"
                 style={{ marginTop: '4rem' }}
-              ></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
-              <div className="skeleton-loading-user-profile-item mt-3"></div>
+              />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
+              <div className="skeleton-loading-user-profile-item mt-3" />
             </div>
           </Container>
         );
       case 'UserManagement':
-        const userManagementItems = [];
+
         for (let i = 0; i < 17; i++) {
           userManagementItems.push(
-            <div key={i} className="skeleton-loading-user-management-item"></div>,
+            <div key={i} className="skeleton-loading-user-management-item" />,
           );
         }
         return <div>{userManagementItems}</div>;

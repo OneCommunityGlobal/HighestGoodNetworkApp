@@ -1,5 +1,5 @@
-import React from 'react';
 
+// eslint-disable-next-line react/function-component-definition
 const ShowSaveWarning = () => {
   return (
     <div className="border bg-danger text-white form-row mt-2 mb-2">
