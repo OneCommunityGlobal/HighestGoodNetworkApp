@@ -9,7 +9,7 @@ const BlueSquare = props => {
   const { blueSquares, handleBlueSquare, darkMode } = props;
 
   return (
-    <div className="blueSquareContainer">
+    <div className={`blueSquareContainer ${darkMode ? 'bg-space-cadet' : ''}`}>
       <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length > 0
           ? blueSquares

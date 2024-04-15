@@ -1086,6 +1086,7 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
+                  darkMode={darkMode}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -1093,7 +1094,8 @@ function UserProfile(props) {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   role={requestorRole}
-                  isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} // 
+                  isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable}
+                  darkMode={darkMode}
                 />
               </TabPane>
             </TabContent>
@@ -1104,7 +1106,7 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Basic Information')}
                 color="primary"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Basic Information
               </Button>
@@ -1119,8 +1121,8 @@ function UserProfile(props) {
                 </ModalFooter>
               </Modal>
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
-                <ModalBody>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Basic Information</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <BasicInformationTab
                   role={requestorRole}
                   userProfile={userProfile}
@@ -1133,9 +1135,10 @@ function UserProfile(props) {
                   canEdit={canEdit}
                   canEditRole={canEditUserProfile}
                   roles={roles}
+                  darkMode={darkMode}
                 />
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canUpdatePassword && canEdit && !isUserSelf && (
@@ -1159,7 +1162,7 @@ function UserProfile(props) {
                             }
                           }}
                         >
-                          <Button className="mr-1 btn-bottom" color="primary">
+                          <Button className="mr-1 btn-bottom" color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                             {' '}
                             Update Password
                           </Button>
@@ -1179,6 +1182,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1187,13 +1191,14 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -1203,13 +1208,13 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Volunteering Times')}
                 color="secondary"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Volunteering Times
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Volunteering Times'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Volunteering Times</ModalHeader>
-                <ModalBody>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Volunteering Times</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <VolunteeringTimeTab
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
@@ -1218,9 +1223,10 @@ function UserProfile(props) {
                     onEndDate={handleEndDate}
                     canEdit={canEdit}
                     onStartDate={handleStartDate}
+                    darkMode={darkMode}
                   />
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
@@ -1237,6 +1243,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1245,24 +1252,25 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary" style={boxStyle}>
+              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
                 Teams
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Teams</ModalHeader>
-                <ModalBody>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Teams</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
                     teamsData={props?.allTeams?.allTeamsData || []}
@@ -1287,9 +1295,10 @@ function UserProfile(props) {
                     userProfile={userProfile}
                     codeValid={codeValid}
                     setCodeValid={setCodeValid}
+                    darkMode={darkMode}
                   />
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
@@ -1306,6 +1315,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1314,24 +1324,25 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary" style={boxStyle}>
+              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
                 Projects
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Projects</ModalHeader>
-                <ModalBody>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Projects</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <ProjectsTab
                     userProjects={userProfile.projects || []}
                     userTasks={tasks}
@@ -1349,9 +1360,10 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
+                    darkMode={darkMode}
                   />
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
@@ -1368,6 +1380,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1376,13 +1389,14 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -1392,16 +1406,16 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Edit History')}
                 color="secondary"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Edit History
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Edit History</ModalHeader>
-                <ModalBody>
-                  <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile} />
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Edit History</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile} darkMode={darkMode} tabletView={true}/>
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
@@ -1418,6 +1432,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1426,13 +1441,14 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -1466,7 +1482,7 @@ function UserProfile(props) {
                     }
                   }}
                 >
-                  <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
+                  <Button className="mr-1 btn-bottom" color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                     {' '}
                     Update Password
                   </Button>
@@ -1488,6 +1504,7 @@ function UserProfile(props) {
                     }
                     userProfile={userProfile}
                     setSaved={() => setSaved(true)}
+                    darkMode={darkMode}
                   />
                   {activeTab !== '3' && (
                     <span
@@ -1498,7 +1515,7 @@ function UserProfile(props) {
                         setProjects(resetProjects);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
-                      style={boxStyle}
+                      style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Cancel
                     </span>

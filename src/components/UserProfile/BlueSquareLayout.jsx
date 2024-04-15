@@ -61,8 +61,9 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
           isPrivate={privacySettings?.blueSquares}
           handleUserProfile={handleUserProfile}
           handleBlueSquare={handleBlueSquare}
+          darkMode={darkMode}
         />
-        <TimeOffRequestsTable requests={allRequests[userProfile._id]} openModal={handleOpen} />
+        <TimeOffRequestsTable requests={allRequests[userProfile._id]} openModal={handleOpen} darkMode={darkMode}/>
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
           {!checkIfUserCanScheduleTimeOff() ? (
