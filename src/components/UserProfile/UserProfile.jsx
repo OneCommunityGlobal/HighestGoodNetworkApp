@@ -305,6 +305,7 @@ function UserProfile(props) {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
 
+
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       const teamId = newUserProfile?.teams[0]?._id;
@@ -586,6 +587,7 @@ function UserProfile(props) {
     setShouldRefresh(false);
     loadUserProfile();
   }, [shouldRefresh]);
+
 
   /**
    *

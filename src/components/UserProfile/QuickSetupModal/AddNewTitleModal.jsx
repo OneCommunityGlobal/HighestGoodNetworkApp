@@ -22,6 +22,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     projectAssigned: '',
     teamAssiged: '',
   });
+
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
   const [isValidProject, onValidation] = useState(false);
@@ -68,6 +69,9 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
         console.log(e);
       });
   };
+
+
+
 
   return (
     <Modal isOpen={isOpen} toggle={() => setIsOpen(false)}>

@@ -48,9 +48,7 @@ function QuickSetupModal({
       .then(res => {
         setTitles(res.data);
       })
-      .catch(err => console.log(err));
-    
-
+      .catch(err => console.log(err)); 
   }, []);
 
   // refresh the QSCs after CREATE/DELETE operations on titles
@@ -62,7 +60,7 @@ function QuickSetupModal({
       .catch(err => console.log(err));
   };
 
-  //handle
+  //handle save changes
   const handleSaveChanges = () => {
     handleSubmit()
       .then(() => {
