@@ -219,7 +219,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
       return (
         <div className="blueSqare">
           <div className={style.switchSection} style={{fontSize:fontSize}}>
-            <div style={{ wordBreak: 'keep-all', color: fontColor}} className={style.switchContainer}>
+            <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}} className={style.switchContainer}>
             posted
             <TriStateToggleSwitch  
             pos={state || 'default'} 
