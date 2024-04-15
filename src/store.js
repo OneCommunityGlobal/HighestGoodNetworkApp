@@ -26,10 +26,9 @@ const sessionPersistReducer = persistReducer({
 }, combineReducers(sessionReducers));
 
 const filteredReducer = (reducer) => {
-  // console.log(reducer);
   return (state, action) => {
     let knownKeys = Object.keys(reducer(undefined, { type: '@@FILTER/INIT' }));
-    
+
       let filteredState = state;
       if (knownKeys.length && state !== undefined) {
           filteredState = knownKeys.reduce((current, key) => Object.assign(current, { [key]: state[key] }), {});
