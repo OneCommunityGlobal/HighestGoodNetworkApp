@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button , Modal } from 'react-bootstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import BlueSquare from './BlueSquares';
 import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import ScheduleExplanationModal from './ScheduleExplanationModal/ScheduleExplanationModal';
@@ -9,8 +9,9 @@ import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 import hasPermission from '../../utils/permissions';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
+import { color } from 'd3';
 
-const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user }) => {
+const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user, darkMode }) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
@@ -55,18 +56,19 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
     return (
       <div data-testid="blueSqaure-field">
         <div className="blueSquare-toggle">
-          <div style={{ display: 'inline-block' }}>BLUE SQUARES</div>
+          <div style={{ display: 'inline-block' }}  className={darkMode ? 'text-light' : ''}>BLUE SQUARES</div>
           {canEdit ? (
             <ToggleSwitch
               style={{ display: 'inline-block' }}
               switchType="bluesquares"
               state={privacySettings?.blueSquares}
               handleUserProfile={handleUserProfile}
+              darkMode={darkMode}
             />
           ) : null}
         </div>
 
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
+        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode}/>
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
           {!checkIfUserCanScheduleTimeOff() ? (
@@ -75,7 +77,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
                 onClick={openExplanationModal}
                 className="w-100 text-success-emphasis"
                 size="md"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
                 id="stopSchedulerButton"
               >
                 <span>{`Can't Schedule Time Off`}</span>
@@ -90,7 +92,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
                   onClick={handleOpen}
                   className="w-100 mt-3"
                   size="md"
-                  style={boxStyle}
+                  style={darkMode ? boxStyleDark : boxStyle}
                 >
                   View scheduled Blue Square Reasons
                 </Button>
@@ -102,7 +104,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
               onClick={handleOpen}
               className="w-100"
               size="md"
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Schedule Blue Square Reason
             </Button>
@@ -135,10 +137,10 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
   return (
     <div>
       {!privacySettings?.blueSquares ? (
-        <p>Blue Square Info is Private</p>
+        <p className={darkMode ? 'text-light' : ''}>Blue Square Info is Private</p>
       ) : (
         <div>
-          <p>BLUE SQUARES</p>
+          <p className={darkMode ? 'text-light' : ''}>BLUE SQUARES</p>
           <BlueSquare
             blueSquares={userProfile?.infringements}
             handleBlueSquare={handleBlueSquare}

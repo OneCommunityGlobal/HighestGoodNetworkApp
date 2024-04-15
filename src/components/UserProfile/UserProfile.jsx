@@ -48,8 +48,8 @@ import { updateUserStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
-import { boxStyle } from 'styles';
-import { connect, useDispatch } from 'react-redux';
+import { boxStyle, boxStyleDark } from 'styles';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
@@ -58,6 +58,8 @@ import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
 
 function UserProfile(props) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -707,7 +709,7 @@ function UserProfile(props) {
   };
 
   return (
-    <div>
+    <div className={darkMode ? 'bg-oxford-blue' : ''} style={{minHeight: "100%"}}>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
         fullName={`${userProfile.firstName} ${userProfile.lastName}`}
@@ -732,7 +734,7 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      <Container className="emp-profile">
+      <Container className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <Row>
           <Col md="4" id="profileContainer">
             <div className="profile-img">
@@ -740,13 +742,13 @@ function UserProfile(props) {
                 src={profilePic || '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
-                className="profilePicture"
+                className="profilePicture bg-white"
               />
               {canEdit ? (
-                <div className="image-button file btn btn-lg btn-primary" style={boxStyle}>
+                <div className="image-button file btn btn-lg btn-primary" style={darkMode ? boxStyleDark : boxStyle}>
                   Change Photo
                   <Input
-                    style={{ width: '100%', height: '100%', zIndex: '2' }}
+                    style={{ width: '100%', height: '100%', zIndex: '2', cursor: 'pointer' }}
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
@@ -767,7 +769,7 @@ function UserProfile(props) {
               <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
             ) : null}
             <div className="profile-head">
-              <h5 className="mr-2">{`${firstName} ${lastName}`}</h5>
+              <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
               <div style={{marginTop: '6px'}} >
               <EditableInfoModal
                 areaName="UserProfileInfoModal"
@@ -819,7 +821,7 @@ function UserProfile(props) {
                 }}
                 color="primary"
                 size="sm"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
@@ -832,7 +834,7 @@ function UserProfile(props) {
                   color="primary"
                   size="sm"
                   title="Generates the summary intro for your team and copies it to your clipboard for easy use."
-                  style={boxStyle}
+                  style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Generate Summary Intro
                 </Button>
@@ -840,16 +842,17 @@ function UserProfile(props) {
                 ''
               )}
             </div>
-            <h6 className="job-title">{jobTitle}</h6>
-            <p className="proile-rating">
-              From : <span>{formatDate(userProfile.createdDate)}</span>
+            <h6 className="text-azure">{jobTitle}</h6>
+            <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
+              From : <span className={darkMode ? 'text-light' : ''}>{formatDate(userProfile.createdDate)}</span>
               {'   '}
-              To: <span>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
+              To: <span className={darkMode ? 'text-light' : ''}>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
               <div>
                 <Select
+                  className={darkMode ? 'text-azure' : ''}
                   options={summaries}
                   styles={customStyles}
                   onChange={e => {
@@ -866,7 +869,7 @@ function UserProfile(props) {
               showSummary &&
               summarySelected.map((data, i) => {
                 return (
-                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} />
+                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} darkMode={darkMode}/>
                 );
               })}
             <Badges
@@ -877,7 +880,8 @@ function UserProfile(props) {
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleBadgeSubmit}
-              isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} //
+              isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable}
+              darkMode={darkMode}
             />
           </Col>
         </Row>
@@ -892,6 +896,7 @@ function UserProfile(props) {
                 handleSubmit={handleSubmit}
                 role={requestorRole}
                 canEdit={canEdit}
+                darkMode={darkMode}
               />
               <BlueSquareLayout
                 userProfile={userProfile}
@@ -901,6 +906,7 @@ function UserProfile(props) {
                 user={props.auth.user}
                 isUserSelf={isUserSelf}
                 canEdit={canEdit}
+                darkMode={darkMode}
               />
             </div>
           </Col>
@@ -909,7 +915,7 @@ function UserProfile(props) {
               <Nav tabs>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '1' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '1', }, 'nav-link', (darkMode && activeTab === '1' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
                   >
@@ -918,7 +924,7 @@ function UserProfile(props) {
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '2' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '2' }, 'nav-link', (darkMode && activeTab === '2' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
                   >
@@ -927,7 +933,7 @@ function UserProfile(props) {
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '3' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '3' }, 'nav-link', (darkMode && activeTab === '3' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
                   >
@@ -936,7 +942,7 @@ function UserProfile(props) {
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '4' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '4' }, 'nav-link', (darkMode && activeTab === '4' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
                   >
@@ -945,7 +951,7 @@ function UserProfile(props) {
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '5' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '5' }, 'nav-link', (darkMode && activeTab === '5' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={e => {
                       e.preventDefault();
                       toggleTab('5');
@@ -959,7 +965,7 @@ function UserProfile(props) {
             </div>
             <TabContent
               activeTab={activeTab}
-              className="tab-content profile-tab"
+              className={`tab-content profile-tab ${darkMode ? 'bg-yinmn-blue' : ''}`}
               id="myTabContent"
               style={{ border: 0 }}
             >
@@ -976,6 +982,7 @@ function UserProfile(props) {
                   canEdit={canEdit}
                   canEditRole={canEditUserProfile}
                   roles={roles}
+                  darkMode={darkMode}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -989,6 +996,7 @@ function UserProfile(props) {
                     loadUserProfile={loadUserProfile}
                     canEdit={canEditUserProfile}
                     onStartDate={handleStartDate}
+                    darkMode={darkMode}
                   />
                 }
               </TabPane>
@@ -1018,6 +1026,7 @@ function UserProfile(props) {
                   setCodeValid={setCodeValid}
                   saved={saved}
                   isTeamSaved={(isSaved) => setIsTeamSaved(isSaved)}
+                  darkMode={darkMode}
                 />
               </TabPane>
               <TabPane tabId="4">

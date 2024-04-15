@@ -7,7 +7,7 @@ const BlueSquare = props => {
 
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare} = props;
+  const { blueSquares, handleBlueSquare, darkMode } = props;
 
   return (
     <div className="blueSquareContainer">
@@ -21,7 +21,7 @@ const BlueSquare = props => {
                   role="button"
                   id="wrapper"
                   data-testid="blueSquare"
-                  className="blueSquareButton"
+                  className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
                   onClick={() => {
                     if (!blueSquare._id) {
                       handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
@@ -59,7 +59,7 @@ const BlueSquare = props => {
           onClick={() => {
             handleBlueSquare(true, 'addBlueSquare', '');
           }}
-          className="blueSquareButton"
+          className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
           color="primary"
           data-testid="addBlueSquare"
         >
