@@ -64,13 +64,18 @@ const TimeEntry = (props) => {
   } else {
     // Time Entry rendered under weekly tabs    
     // check if user has been removed from the project. Will prevent update time entry if true
-    shouldPreventTimeEntryUpdateInWeeklyTab = !displayUserProjects.find(project => project._id === projectId);
+    shouldPreventTimeEntryUpdateInWeeklyTab = !displayUserProjects.find(project => project.projectId === projectId);
+
+    // Temporary fix for time entry of task/project not associated with current user 
     ({ projectName, projectCategory } = data);
-    if (taskId) {
-      const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
-      console.log('timeEntryTask', timeEntryTask)
-      if (timeEntryTask) ({ taskName, taskClassification = '' } = timeEntryTask); // temporary fix for timeentry of tasks not have current user as resource
-    }
+    ({ taskName, taskClassification }  = data);
+
+    // SET projectName, projectCategory, taskName, and taskClassification to '' if not exist
+    if (!projectCategory) projectCategory = '';
+    if (!projectName) projectName = '';
+    if (!taskName) taskName = '';
+    if (!taskClassification) taskClassification = '';
+
   }
   
   const toggle = () => setTimeEntryFormModal(modal => !modal);
