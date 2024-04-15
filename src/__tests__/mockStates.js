@@ -1,3 +1,5 @@
+import { getAllPermissionKeys } from '../components/PermissionsManagement/PermissionsConst.js';
+
 export const allTeamsMock = {
   fetching: false,
   fetched: true,
@@ -489,6 +491,7 @@ export const userProfileMock = {
   _id: '5edf141c78f1380017b829a6',
   emailPubliclyAccessible: true,
   phoneNumberPubliclyAccessible: true,
+  personalBestMaxHrs: 50,
   badgeCollection: [],
   infringements: [
     {
@@ -590,6 +593,9 @@ export const userProfileMock = {
   },
   mediaUrl: 'http://dropbox.com',
   weeklySummariesCount: 0,
+  savedTangibleHrs:[
+    0,0,0,0,0,0,0,0
+  ],
 };
 
 export const timeEntryMock = {
@@ -627,7 +633,7 @@ export const timeEntryMock = {
       {
         _id: '5f2e1c7ab0186f202baf9d20',
         notes:
-        '<p>d g g sg sd gs dg ag dg c jh&nbsp;</p>\n<p><a href="https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit">https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit#</a></p>\n<p>&nbsp;</p>',
+          '<p>d g g sg sd gs dg ag dg c jh&nbsp;</p>\n<p><a href="https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit">https://docs.google.com/document/d/1AQVluo0JNhAsqul-Zv1aNMhjX2eGuHKMCoGcvCI7XU4/edit#</a></p>\n<p>&nbsp;</p>',
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5e606e4f37477100173680ac',
@@ -1271,10 +1277,40 @@ export const rolesMock = {
           'editTeamCode',
         ],
       },
+      {
+        roleName: 'Fake Test Role',
+        permissions: [],
+      },
     ]
   }
 }
 
 describe('Stop Error', () => {
-  it('should not error out due to no tests (mockStates.js)', () => {});
+  it('should not error out due to no tests (mockStates.js)', () => { });
 });
+
+// takes a list of permissions and returns a list of all other permissions
+const allPermissionsExcept = (permissions) => {
+  return getAllPermissionKeys().filter(perm => !permissions.includes(perm))
+}
+
+// takes a list of relevant permissions and returns two auth objects, one with the permissions and the other with all permissions not listed
+export const createAuthMocks = (permissions) => {
+  var authTemplate = {
+    // isAdmin: true,
+    user: {
+      userid: '5edf141c78f1380017b829a6',
+      role: 'Fake Test Role',
+      expiryTimestamp: '2020-08-22T22:51:06.544Z',
+      iat: 1597272666,
+    },
+    permissions: {
+      frontPermissions: []
+    },
+    firstName: 'Dev',
+    profilePic:''
+  };
+  const onlyPermissions = {...authTemplate, permissions: {frontPermissions: permissions}};
+  const allOtherPermissions = {...authTemplate, permissions: {frontPermissions: allPermissionsExcept(permissions)}};
+  return [onlyPermissions, allOtherPermissions];
+};

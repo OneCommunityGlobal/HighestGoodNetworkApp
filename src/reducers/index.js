@@ -21,22 +21,28 @@ import { managingTeamsReducer } from './managingTeamsReducer';
 import { teamUsersReducer } from './teamsTeamMembersReducer';
 import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
-import { timeZoneAPIReducer } from './timezoneApiReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
-import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
+import { warningsByUserIdReducer } from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
+import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+import {weeklySummaryRecipientsReducer} from "./weeklySummaryRecipientsReducer";
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
+import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
+import { lessonsReducer } from './bmdashboard/lessonsReducer';
+import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer"
+
 
 const localReducers = {
   auth: authReducer,
@@ -54,22 +60,26 @@ const localReducers = {
   errors: errorsReducer,
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
-  timeZoneAPI: timeZoneAPIReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
   role: roleReducer,
   rolePreset: rolePresetReducer,
   ownerMessage: ownerMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
+  weeklySummaryRecipients:weeklySummaryRecipientsReducer,
 
   // bmdashboard
   materials: materialsReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
+  lessons: lessonsReducer,
+  project: bmProjectByIdReducer,
   bmTools: toolReducer,
+  bmEquipments: equipmentReducer,
   bmInvUnits: bmInvUnitReducer,
-  bmConsumables: consumablesReducer
+  bmConsumables: consumablesReducer,
+  bmReusables: reusablesReducer
 };
 
 const sessionReducers = {
@@ -81,6 +91,7 @@ const sessionReducers = {
   teamsTeamMembers: teamUsersReducer,
   timeEntries: timeEntriesReducer,
   teamMemberTasks: teamMemberTasksReducer,
+  warning: warningsByUserIdReducer,
 };
 
 export { localReducers, sessionReducers };

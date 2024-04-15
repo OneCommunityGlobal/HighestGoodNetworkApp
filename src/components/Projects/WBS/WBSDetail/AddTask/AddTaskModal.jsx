@@ -222,6 +222,7 @@ function AddTaskModal(props) {
   };
 
   const addNewTask = async () => {
+    setIsLoading(true);
     const newTask = {
       taskName,
       wbsId: props.wbsId,
@@ -250,8 +251,9 @@ function AddTaskModal(props) {
       endstateInfo,
     };
     await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
-    props.load();
     toggle();
+    setIsLoading(false);
+    props.load();
   };
 
   /*
@@ -447,12 +449,12 @@ function AddTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours - Best-case">
+                <td scope="col" className="w-100">
                   Hours
                 </td>
-                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                <td scope="col" className="w-100">
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
+                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Best-case
                     </label>
                     <input
@@ -472,7 +474,7 @@ function AddTaskModal(props) {
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
+                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Worst-case
                     </label>
                     <input
@@ -491,7 +493,7 @@ function AddTaskModal(props) {
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
+                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Most-case
                     </label>
                     <input
@@ -510,7 +512,7 @@ function AddTaskModal(props) {
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
+                    <label htmlFor="Estimated" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Estimated
                     </label>
                     <input
@@ -677,15 +679,9 @@ function AddTaskModal(props) {
           </table>
         </ModalBody>
         <ModalFooter>
-          {taskName !== '' ? (
-            isLoading ? (
-              ' Adding...'
-            ) : (
-              <Button color="primary" onClick={addNewTask} disabled={hoursWarning} style={boxStyle}>
-                Save
-              </Button>
-            )
-          ) : null}
+          <Button color="primary" onClick={addNewTask} disabled={taskName === '' || hoursWarning || isLoading} style={boxStyle}>
+            {isLoading ? "Adding Task..." : "Save"}
+          </Button>
         </ModalFooter>
       </Modal>
       <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={boxStyle}>

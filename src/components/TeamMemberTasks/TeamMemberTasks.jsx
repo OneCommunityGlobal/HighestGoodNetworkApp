@@ -61,7 +61,6 @@ const TeamMemberTasks = React.memo(props => {
     };
     submitTasks(newTask);
     dispatch(fetchTeamMembersTask(displayUser._id));
-    props.handleUpdateTask();
   }, []);
 
   const submitTasks = async updatedTasks => {
@@ -85,7 +84,6 @@ const TeamMemberTasks = React.memo(props => {
       toast.error('Failed to update task');
     }
     dispatch(fetchTeamMembersTask(displayUser._id));
-    props.handleUpdateTask();
   }, []);
 
   const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
@@ -317,13 +315,13 @@ const TeamMemberTasks = React.memo(props => {
           taskModalOption={taskModalOption}
         />
       )}
-      <div className="table-container">
+      <div className="task_table-container">
         <Table>
           <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
             <tr>
               {/* Empty column header for hours completed icon */}
-              <th />
-              <th className="team-member-tasks-headers">
+              <th colSpan={1}/>
+              <th colSpan={2} className="team-member-tasks-headers">
                 <Table borderless className="team-member-tasks-subtable">
                   <thead>
                     <tr>
@@ -349,7 +347,7 @@ const TeamMemberTasks = React.memo(props => {
                   </thead>
                 </Table>
               </th>
-              <th className="team-member-tasks-headers">
+              <th colSpan={3} className="team-member-tasks-headers">
                 <Table borderless className="team-member-tasks-subtable">
                   <thead>
                     <tr>
@@ -409,7 +407,7 @@ const TeamMemberTasks = React.memo(props => {
                           .filter(timeEntry => timeEntry.personId === user.personId)
                           .map(timeEntry => (
                             <tr className="table-row" key={timeEntry._id}>
-                              <td colSpan={3} style={{ padding: 0 }}>
+                              <td colSpan={6} style={{ padding: 0 }}>
                                 <TimeEntry
                                   from="TaskTab"
                                   data={timeEntry}

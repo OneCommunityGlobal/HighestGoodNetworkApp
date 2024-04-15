@@ -37,6 +37,7 @@ const TimeEntry = (props) => {
   const { authUser } = props;
 
   const { _id: timeEntryUserId } = timeEntryUserProfile;
+  const { _id: timeEntryId } = data;
 
   const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
   const dispatch = useDispatch();
@@ -62,7 +63,8 @@ const TimeEntry = (props) => {
     ({ projectName, projectCategory } = timeEntryProject);
     if (taskId) {
       const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
-      ({ taskName, taskClassification = '' } = timeEntryTask);
+      console.log('timeEntryTask', timeEntryTask)
+      if (timeEntryTask) ({ taskName, taskClassification = '' } = timeEntryTask); // temporary fix for timeentry of tasks not have current user as resource
     }
   }
   
@@ -132,7 +134,7 @@ const TimeEntry = (props) => {
     if (from === 'TaskTab') {
       dispatch(editTeamMemberTimeEntry(newData));
     } else if (from === 'WeeklyTab') {
-      dispatch(editTimeEntry(timeEntryUserId, newData));
+      dispatch(editTimeEntry(timeEntryId, newData));
       dispatch(updateUserProfile(timeEntryUserProfile));
       dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
     }
@@ -166,7 +168,7 @@ const TimeEntry = (props) => {
           backgroundColor: taskId ? filteredColor : 'white',
         }}
       ></div>
-      <Card className="mb-1 p-2" style={{ backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF', flexGrow: 1 }}>
+      <Card className="mb-1 p-2" style={{ backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF', flexGrow: 1, maxWidth: "calc(100% - 12px)" }}>
         <Row className="mx-0">
           <Col md={3} className="date-block px-0">
             <div className="date-div">
@@ -246,8 +248,6 @@ const TimeEntry = (props) => {
 
 const mapStateToProps = (state) => ({
   authUser: state.auth.user,
-  // displayUserProjects: state.userProjects.projects,
-  // displayUserTasks: state.userTask,
 })
 
 export default connect(mapStateToProps, null)(TimeEntry);

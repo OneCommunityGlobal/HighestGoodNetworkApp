@@ -1,0 +1,57 @@
+.purchase-tool-form {
+    margin-top: 2rem;
+}
+
+.purchase-tool-form input,
+.purchase-tool-form select {
+    background-color: rgb(249, 249, 249);
+}
+
+.purchase-tool-flex-group {
+    display: flex;
+    gap: 2rem;
+}
+
+.purchase-tool-flex-group input {
+    width: 100px;
+}
+
+.flex-group-qty {
+    width: 10%;
+}
+
+.flex-group-qty-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.purchase-tool-buttons {
+    display: flex;
+    gap: 1rem;
+    margin: 0 auto 2rem;
+}
+
+.purchase-tool-buttons button {
+    width: 50%;
+}
+
+.purchase-tool-error {
+    height: 2.5rem;
+    color: red;
+}
+
+@media screen and (max-width: 640px) {
+    .purchase-tool-flex-group {
+        display: block;
+    }
+
+    .flex-group-qty {
+        width: auto;
+    }
+}
+
+.mandatory {
+    color: red;
+    margin-left: 2px; 
+  }
