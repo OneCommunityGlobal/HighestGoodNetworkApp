@@ -52,6 +52,7 @@ import PopUpBar from 'components/PopUpBar';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import DarkModeButton from './DarkModeButton';
 
 export function Header(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -403,6 +404,8 @@ export function Header(props) {
                   <DropdownItem onClick={openModal}>{LOGOUT}</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
+            <DarkModeButton />
+
             </Nav>
           </Collapse>
         )}
