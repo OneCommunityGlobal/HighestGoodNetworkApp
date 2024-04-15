@@ -7,6 +7,16 @@
   margin-bottom: 12px;
 }
 
+.project-member-table-id-column {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.project-member-table-name-column {
+  overflow-wrap: anywhere;
+}
+
 .reports-table-head-members {
   background-color: #eee7f8;  
   display: grid;

@@ -1,6 +1,7 @@
 import React from "react";
 import { Stub } from "components/common/Stub";
 import "./WbsTable.css";
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 
 // eslint-disable-next-line import/prefer-default-export
 export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
@@ -13,7 +14,7 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
         <div>{skip + index + 1}</div>
         <div>
           {canViewWBS ? (
-            <a href={`/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`} className={darkMode ? "text-light" : ""}>
+            <a href={`/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`} className={`wbs-table-name-column ${darkMode ? "text-light" : ""}`}>
               {item.wbsName}
             </a>
           ) : (
@@ -31,9 +32,10 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
             </div>
           )}
         </div>
-        <div>
-          {window.innerWidth >= 1100 ? item._id : item._id.substring(0, 10)}
-        </div>
+        <div className='wbs-table-id-column'>
+          <CopyToClipboard writeText={item._id} message={`Copied "${item._id}".`} />
+          {item._id}
+      </div>  
       </div>
     ));
   }

@@ -1,14 +1,14 @@
 .paging-wrapper {
-  height: calc(100% - 40px);
+  height: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .pagination-buttons-wrapper {
   display: flex;
   align-items: center;
-
-  position: absolute;
-  bottom: -40px;
 }
 
 .pagination-buttons {
@@ -22,7 +22,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  margin: 8px;
+  margin: 4px;
   cursor: pointer;
   border-radius: 4px;
   color: #a1a1a1;
