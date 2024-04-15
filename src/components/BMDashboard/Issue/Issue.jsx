@@ -3,7 +3,7 @@ import { Button, Label, Input, Form, FormGroup, Row, Col } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import './Issue.css';
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 
 function Issue() {
   const ISSUE_FORM_HEADER = 'ISSUE LOG';
@@ -48,23 +48,30 @@ function Issue() {
 
   const [checkboxOptions, setCheckboxOption] = useState([]);
   const [characterCount, setCharacterCount] = useState(0);
-  const handleCheckboxChange = useCallback(
-    option => () => {
-      setFormData(prevFormData => {
-        const newCheckboxes = new Set(prevFormData.checkboxes);
 
-        if (newCheckboxes.has(option)) {
-          newCheckboxes.delete(option);
-        } else {
-          newCheckboxes.add(option);
-        }
+  const handleCheckboxChange = option => {
+    setFormData(prevFormData => {
+      const newCheckboxes = new Set(prevFormData.checkboxes);
 
-        return { ...prevFormData, checkboxes: newCheckboxes };
-      });
-    },
-    [],
-  );
+      if (newCheckboxes.has(option)) {
+        newCheckboxes.delete(option);
+      } else {
+        newCheckboxes.add(option);
+      }
 
+      return { ...prevFormData, checkboxes: newCheckboxes };
+    });
+  };
+
+  const handleOtherInputChange = (e, option) => {
+    setFormData({ ...formData, other: e.target.value });
+
+    if (e.target.value.length > 0 && e.target.value.trim() && !formData.checkboxes.has(option)) {
+      handleCheckboxChange(option);
+    } else if (formData.checkboxes.has(option) && e.target.value.trim().length === 0) {
+      handleCheckboxChange(option);
+    }
+  };
   const handleDescriptionChange = e => {
     let currentDescription = e.target.value;
 
@@ -73,7 +80,7 @@ function Issue() {
     }
 
     setFormData({ ...formData, description: currentDescription });
-    setCharacterCount(currentDescription.length);
+    setCharacterCount(currentDescription.trim().length);
   };
 
   const handleCancel = e => {
@@ -82,8 +89,20 @@ function Issue() {
   };
 
   const validateData = currentFormData => {
+    // Declaring date vars with current device time to check if issue date is in the future.
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
+
     if (!currentFormData.issueDate) {
       toast.error('Issue Date is required.');
+      return false;
+    }
+
+    if (currentFormData.issueDate > todayStr) {
+      toast.error('Issue Date cannot be in the future.');
       return false;
     }
 
@@ -99,10 +118,10 @@ function Issue() {
 
     if (
       currentFormData.checkboxes &&
-      currentFormData.checkboxes.has('Other') &&
-      currentFormData.other.trim().length === 0
+      ((currentFormData.checkboxes.has('Other') && currentFormData.other.trim().length <= 0) ||
+        (!currentFormData.checkboxes.has('Other') && currentFormData.other.trim().length > 0))
     ) {
-      toast.error('Other is required.');
+      toast.error('Tick "Other" checkbox or remove text from "Other" input box.');
       return false;
     }
 
@@ -234,7 +253,7 @@ function Issue() {
                     <Input
                       type="checkbox"
                       checked={formData.checkboxes.has(option) || false}
-                      onChange={handleCheckboxChange(option)}
+                      onChange={() => handleCheckboxChange(option)}
                     />
                     {option}
                   </Label>
@@ -245,7 +264,7 @@ function Issue() {
                       rows="1"
                       placeholder="If other is selected, please specify."
                       value={formData.other}
-                      onChange={e => setFormData({ ...formData, other: e.target.value })}
+                      onChange={e => handleOtherInputChange(e, option)}
                     />
                   )}
                 </Col>
