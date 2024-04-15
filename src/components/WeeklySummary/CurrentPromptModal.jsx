@@ -124,14 +124,7 @@ function CurrentPromptModal(props) {
   return (
     <div>
       {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
-        <Button
-          color="info"
-          onClick={toggle}
-          style={{
-            ...(darkMode && boxStyleDark),
-            ...(!darkMode && boxStyle),
-          }}
-        >
+        <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
           View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} /> AI
           Prompt
           <i
@@ -145,14 +138,7 @@ function CurrentPromptModal(props) {
           />
         </Button>
       ) : (
-        <Button
-          color="info"
-          onClick={toggle}
-          style={{
-            ...(darkMode && boxStyleDark),
-            ...(!darkMode && boxStyle),
-          }}
-        >
+        <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
           View and Copy Current AI Prompt
           <i
             className="fa fa-info-circle"

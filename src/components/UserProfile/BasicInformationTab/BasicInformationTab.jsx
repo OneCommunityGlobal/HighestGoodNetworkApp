@@ -20,13 +20,14 @@ import { toast } from 'react-toastify';
 
 
 const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, darkMode } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
+
   const { firstName, lastName } = userProfile;
 
   if (canEdit) {
     return (
       <>
-        <Col md="3">
+        <Col md={desktopDisplay ? '3' : ''}>
           <FormGroup>
             <Input
               type="text"
@@ -44,7 +45,7 @@ const Name = props => {
             <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
           </FormGroup>
         </Col>
-        <Col md="3">
+        <Col md={desktopDisplay ? '3' : ''}>
           <FormGroup>
             <Input
               type="text"
@@ -69,20 +70,21 @@ const Name = props => {
   return (
     <>
       <Col>
-        <p className={darkMode ? 'text-light' : ''}>{`${firstName} ${lastName}`}</p>
+        <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</p>
       </Col>
     </>
   );
 };
 
 const Title = props => {
-  const { userProfile, setUserProfile, canEdit, darkMode } = props;
+  const { userProfile, setUserProfile, canEdit, desktopDisplay, darkMode } = props;
+
   const { jobTitle } = userProfile;
 
   if (canEdit) {
     return (
       <>
-        <Col md="6">
+        <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
             <Input
               type="text"
@@ -102,14 +104,15 @@ const Title = props => {
   return (
     <>
       <Col>
-        <p className={darkMode ? 'text-light' : ''}>{`${jobTitle}`}</p>
+        <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{`${jobTitle}`}</p>
       </Col>
     </>
   );
 };
 
 const Email = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, darkMode } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
+
   const { email, privacySettings, emailSubscriptions } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
@@ -117,7 +120,7 @@ const Email = props => {
   if (canEdit) {
     return (
       <>
-        <Col md="6">
+        <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
             <ToggleSwitch
               switchType="email"
@@ -155,7 +158,7 @@ const Email = props => {
     <>
       {privacySettings?.email && (
         <Col>
-          <p className={darkMode ? 'text-light' : ''}>{email}</p>
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{email}</p>
         </Col>
       )}
     </>
@@ -193,12 +196,12 @@ const formatPhoneNumber = str => {
   return str;
 };
 const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, canEdit, darkMode} = props;
+  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay, darkMode} = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
     return (
       <>
-        <Col md="6">
+        <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
             <ToggleSwitch
               switchType="phone"
@@ -223,7 +226,7 @@ const Phone = props => {
     <>
       {privacySettings?.phoneNumber && (
         <Col>
-          <p className={darkMode ? 'text-light' : ''}>{formatPhoneNumber(phoneNumber)}</p>
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{formatPhoneNumber(phoneNumber)}</p>
         </Col>
       )}
     </>
@@ -231,7 +234,8 @@ const Phone = props => {
 };
 
 const TimeZoneDifference = props => {
-  const { isUserSelf, errorOccurred, setErrorOccurred, darkMode } = props;
+  const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay, darkMode } = props;
+
   const [signedOffset, setSignedOffset] = useState('');
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -271,8 +275,8 @@ const TimeZoneDifference = props => {
   if (!isUserSelf) {
     return (
       <>
-        <Col md="7">
-          <p className={darkMode ? 'text-light' : ''}>{signedOffset} hours</p>
+        <Col md="6">
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{signedOffset} hours</p>
         </Col>
       </>
     );
@@ -280,8 +284,8 @@ const TimeZoneDifference = props => {
 
   return (
     <>
-      <Col md="7">
-        <p className={darkMode ? 'text-light' : ''}>This is your own profile page</p>
+      <Col md={desktopDisplay ? '6' : ''}>
+        <p className={`${darkMode ? 'text-light' : ''} ${desktopDisplay ? 'text-right' : 'text-left'}`}>This is your own profile page</p>
       </Col>
     </>
   );
@@ -382,6 +386,7 @@ const BasicInformationTab = props => {
         role={props.role}
         canEdit={canEdit}
         darkMode={darkMode}
+        desktopDisplay={desktopDisplay}
       />
     </>
   );
@@ -409,6 +414,7 @@ const BasicInformationTab = props => {
         role={props.role}
         canEdit={canEdit}
         darkMode={darkMode}
+        desktopDisplay={desktopDisplay}
       />
     </>
   );
@@ -437,6 +443,7 @@ const BasicInformationTab = props => {
         role={props.role}
         canEdit={canEdit}
         darkMode={darkMode}
+        desktopDisplay={desktopDisplay}
       />
     </>
   );
@@ -464,6 +471,7 @@ const BasicInformationTab = props => {
         role={props.role}
         canEdit={canEdit}
         darkMode={darkMode}
+        desktopDisplay={desktopDisplay}
       />
     </>
   );
@@ -579,7 +587,7 @@ const BasicInformationTab = props => {
             <Col className="cols">
               <Input onChange={handleLocation} value={userProfile.location.userProvided || ''} />
               <div>
-                <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
+                <Button color="secondary" block size="sm" onClick={onClickGetTimeZone} className="mt-2">
                   Get Time Zone
                 </Button>
               </div>
@@ -612,7 +620,7 @@ const BasicInformationTab = props => {
 
   const timeZoneDifferenceComponent = (
     <>
-      <Col md={desktopDisplay ? '5' : null}>
+      <Col md={desktopDisplay ? '5' : ''}>
         <label className={darkMode ? 'text-light' : ''}>Difference in this Time Zone from Your Local</label>
       </Col>
       <TimeZoneDifference
@@ -624,14 +632,15 @@ const BasicInformationTab = props => {
         errorOccurred={errorOccurred}
         setErrorOccurred={setErrorOccurred}
         darkMode={darkMode}
+        desktopDisplay={desktopDisplay}
       />
     </>
   );
 
   const endDateComponent = (
     <>
-      <Col>
-        <Label className={darkMode ? 'text-light' : ''}>
+      <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
+        <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
           {userProfile.endDate
             ? 'End Date ' + formatDate(userProfile.endDate)
             : 'End Date ' + 'N/A'}
@@ -647,7 +656,7 @@ const BasicInformationTab = props => {
         )}
       </Col>
       {desktopDisplay && canEdit && (
-        <Col md="6">
+        <Col>
           <SetUpFinalDayButton
             loadUserProfile={loadUserProfile}
             setUserProfile={setUserProfile}
@@ -664,7 +673,7 @@ const BasicInformationTab = props => {
     <>
       {desktopDisplay ? (
         <>
-          <Col>
+          <Col md="8" className="mr-5">
             <Label className={darkMode ? 'text-light' : ''}>Status</Label>
           </Col>
           <Col md="6">
@@ -689,7 +698,7 @@ const BasicInformationTab = props => {
         </>
       ) : (
         <>
-          <Col style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <Col>
             <Label className={darkMode ? 'text-light' : ''}>Status</Label>
             <div>
               <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
