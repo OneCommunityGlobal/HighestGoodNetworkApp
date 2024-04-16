@@ -86,7 +86,7 @@ function LeaderBoard({
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
-  const [controlUseEfffect, setControlUseEfffect] = useState(true);
+  const [innerWidth, setInnerWidth] = useState();
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -104,12 +104,22 @@ function LeaderBoard({
   }, []);
 
   useEffect(() => {
-    if (controlUseEfffect) {
-      if (!isEqual(leaderBoardData, teamsUsers)) {
+    if (!isEqual(leaderBoardData, teamsUsers)) {
+      if (selectedTeamName === 'Select a Team') {
         setTeamsUsers(leaderBoardData);
       }
     }
   }, [leaderBoardData]);
+
+  useEffect(() => {
+    const updateWindowWidth = () => {
+      setInnerWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', updateWindowWidth);
+
+    return () => window.removeEventListener('resize', updateWindowWidth);
+  }, []);
 
   const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
 
@@ -140,7 +150,8 @@ function LeaderBoard({
     if (textButton === 'View All') {
       setTextButton('My Team');
       renderTeamsList(null);
-    } else if (usersSelectedTeam.length === 0) {
+      setSelectedTeamName('Select a Team');
+    } else if (usersSelectedTeam.length === 0 || selectedTeamName === 'Select a Team') {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
     } else {
       setTextButton('View All');
@@ -205,12 +216,11 @@ function LeaderBoard({
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
       await getLeaderboardData(userId);
+      setTeamsUsers(leaderBoardData);
     } else {
-      setControlUseEfffect(false);
       await getLeaderboardData(userId);
       renderTeamsList(usersSelectedTeam);
       setTextButton('View All');
-      setControlUseEfffect(true);
     }
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
@@ -220,9 +230,20 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
+  const teamName = (name, maxLength) =>
+    setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
+
+  const dropdownName = (name, maxLength) => {
+    if (innerWidth > 457) {
+      return maxLength > 50 ? `${name.substring(0, 50)}...` : name;
+    }
+    return maxLength > 27 ? `${name.substring(0, 27)}...` : name;
+  };
+
   const TeamSelected = team => {
-    const teamName = `${team.teamName.substring(0, 15)}...`;
-    setSelectedTeamName(team.teamName.length >= 15 ? teamName : team.teamName);
+    if (team.teamName.length !== undefined) {
+      teamName(team.teamName, team.teamName.length);
+    }
     setUsersSelectedTeam(team);
     setTextButton('My Team');
   };
@@ -269,9 +290,7 @@ function LeaderBoard({
                 ) : (
                   teams.map(team => (
                     <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                      {team.teamName.length >= 50
-                        ? `${team.teamName.substring(0, 50)}...`
-                        : team.teamName}
+                      {dropdownName(team.teamName, team.teamName.length)}
                     </DropdownItem>
                   ))
                 )}

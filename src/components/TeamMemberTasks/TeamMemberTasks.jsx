@@ -60,18 +60,24 @@ const TeamMemberTasks = React.memo(props => {
   const [userRole, setUserRole] = useState(displayUser.role);
   const [loading, setLoading] = useState(false);
   const [textButton, setTextButton] = useState('My Team');
+  const [innerWidth, setInnerWidth] = useState();
 
   const handleToggleButtonClick = () => {
     if (textButton === 'View All') {
       renderTeamsList(null);
       setTextButton('My Team');
-    } else if (usersSelectedTeam.length === 0) {
+      setSelectedTeamName('Select a Team');
+    } else if (usersSelectedTeam.length === 0 || selectedTeamName === 'Select a Team') {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
     } else {
       renderTeamsList(usersSelectedTeam);
       setTextButton('View All');
     }
   };
+
+  useEffect(() => {
+    setInnerWidth(window.innerWidth);
+  }, [window.innerWidth]);
 
   const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
 
@@ -270,7 +276,11 @@ const TeamMemberTasks = React.memo(props => {
 
   useEffect(() => {
     if (!isLoading) {
-      renderTeamsList();
+      renderTeamsList(
+        selectedTeamName === 'Select a Team' || usersSelectedTeam.length === 0
+          ? null
+          : usersSelectedTeam,
+      );
       closeMarkAsDone();
     }
   }, [usersWithTasks]);
@@ -284,10 +294,20 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const TeamSelected = team => {
-    const teamName = `${team.teamName.substring(0, 15)}...`;
-    setSelectedTeamName(team.teamName.length >= 15 ? teamName : team.teamName);
+    team.teamName.length !== undefined ? teamName(team.teamName, team.teamName.length) : null;
     setUsersSelectedTeam(team);
     setTextButton('My Team');
+  };
+
+  const teamName = (name, maxLength) =>
+    setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
+
+  const dropdownName = (name, maxLength) => {
+    if (innerWidth >= 455) {
+      return maxLength > 50 ? `${name.substring(0, 50)}...` : name;
+    } else {
+      return maxLength > 15 ? `${name.substring(0, 15)}...` : name;
+    }
   };
 
   return (
@@ -319,9 +339,7 @@ const TeamMemberTasks = React.memo(props => {
                   ) : (
                     teams.map(team => (
                       <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                        {team.teamName.length >= 50
-                          ? team.teamName.substring(0, 50) + '...'
-                          : team.teamName}
+                        {dropdownName(team.teamName, team.teamName.length)}
                       </DropdownItem>
                     ))
                   )}
