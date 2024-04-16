@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Button,
   Modal,
@@ -11,8 +11,8 @@ import {
   Input,
 } from 'reactstrap';
 import { addTitle } from '../../../actions/title';
-import AddTeamsAutoComplete from '../TeamsAndProjects/AddTeamsAutoComplete';
-import AddProjectsAutoComplete from '../TeamsAndProjects/AddProjectsAutoComplete';
+import AssignProjectField from './AssignProjectField';
+import AssignTeamField from './AssignTeamField';
 
 function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData,setWarningMessage, setShowMessage }) {
   const [titleData, setTitleData] = useState({
@@ -41,6 +41,13 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     onValidation(true);
   };
 
+  const cleanProjectAssign = () => {
+    setTitleData(prev => ({
+      ...prev,
+      projectAssigned: "",
+    }));
+  };
+
   const selectTeam = team => {
     onSelectTeam(team);
     setTitleData(prev => ({
@@ -52,6 +59,25 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     }));
     onValidation(true);
   };
+
+  const cleanTeamAssigned = () => {
+    // if clean all input field -> no team selected
+    setTitleData(prev => ({
+      ...prev,
+      teamAssiged: "",
+    }));
+  };
+
+  const undoTeamAssigned = () => {
+    setTitleData(prev => ({
+      ...prev,
+      teamAssiged: {
+        teamName: searchText,
+        _id: "N/A",
+      },
+    }));
+  };
+
 
   // confirm and save
   const confirmOnClick = () => {
@@ -110,19 +136,24 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               }}
             />
             <Label>Project Assignment<span className='qsm-modal-required'>*</span>:</Label>
-            <AddProjectsAutoComplete
+            <AssignProjectField
               projectsData={projectsData}
               onDropDownSelect={selectProject}
               selectedProject={selectedProject}
+              cleanProjectAssign={cleanProjectAssign}
+              onSelectProject={onSelectProject}
             />
             <Label>Team Assignment:</Label>
-            <AddTeamsAutoComplete
+            <AssignTeamField
               teamsData={teamsData}
               onDropDownSelect={selectTeam}
               selectedTeam={selectedTeam}
               setSearchText={setSearchText}
               searchText={searchText}
               setNewTeamName={() => console.log('test')}
+              cleanTeamAssigned={cleanTeamAssigned}
+              onSelectTeam={onSelectTeam}
+              undoTeamAssigned={undoTeamAssigned}
             />
           </FormGroup>
         </Form>

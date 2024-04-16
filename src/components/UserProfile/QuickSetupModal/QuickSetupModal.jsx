@@ -1,20 +1,4 @@
-// import {
-//     Button,
-//     Modal,
-//     ModalBody,
-//     ModalFooter,
-//     ModalHeader,
-//   } from 'reactstrap';
-//   import styles from './QuickSetupModal.css';
-
-// function QuickSetupModal({pop}) {
-//     return (  );
-// }
-
-// export default QuickSetupModal;
-
 import { useState, useEffect } from 'react';
-// import AddNewTitle from './AddNewTitle';
 import AssignSetUpModal from './AssignSetupModal';
 import QuickSetupCodes from './QuickSetupCodes';
 import SaveButton from '../UserProfileEdit/SaveButton';
