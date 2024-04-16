@@ -16,7 +16,7 @@ class UpdatePassword extends Form {
     errors: {},
     showPassword: { currentpassword: false, newpassword: false, confirmnewpassword: false }
   };
-  
+
   togglePasswordVisibility = (field) => {
     this.setState(prevState => ({
       showPassword: {
@@ -25,9 +25,9 @@ class UpdatePassword extends Form {
       }
     }));
   }
-  
 
-  componentDidMount() {}
+
+  componentDidMount() { }
 
   componentDidUpdate(prevProps) {
     if (prevProps.errors.error !== this.props.errors.error) {
@@ -97,35 +97,35 @@ class UpdatePassword extends Form {
 
   render() {
     return (
-        <div className="container mt-5">
-            <h2 className="text-2xl font-bold mb-5">Change Password</h2>
-            <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
-                <div className="mb-4">
-                    <div className="flex justify-between items-center">
-                        <label htmlFor="currentpassword" className="text-sm font-medium text-gray-700 mr-2">Current Password:</label>
-                    </div>
-                    {this.renderInput({ name: 'currentpassword', type: this.state.showPassword.currentpassword ? 'text' : 'password' })}
-                </div>
+      <div className="container mt-5">
+        <h2 className="text-2xl font-bold mb-5">Change Password</h2>
+        <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
+          <div className="mb-4">
+            <div className="flex justify-between items-center">
+              <label htmlFor="currentpassword" className="text-sm font-medium text-gray-700 mr-2">Current Password:</label>
+            </div>
+            {this.renderInput({ name: 'currentpassword', type: this.state.showPassword.currentpassword ? 'text' : 'password', label: 'Current Password' })}
+          </div>
 
-                <div className="mb-4">
-                    <div className="flex justify-between items-center">
-                        <label htmlFor="newpassword" className="text-sm font-medium text-gray-700 mr-2">New Password:</label>
-                    </div>
-                    {this.renderInput({ name: 'newpassword', type: this.state.showPassword.newpassword ? 'text' : 'password' })}
-                </div>
+          <div className="mb-4">
+            <div className="flex justify-between items-center">
+              <label htmlFor="newpassword" className="text-sm font-medium text-gray-700 mr-2">New Password:</label>
+            </div>
+            {this.renderInput({ name: 'newpassword', type: this.state.showPassword.newpassword ? 'text' : 'password', label: 'New Password' })}
+          </div>
 
-                <div className="mb-4">
-                    <div className="flex justify-between items-center">
-                        <label htmlFor="confirmnewpassword" className="text-sm font-medium text-gray-700 mr-2">Confirm Password:</label>
-                    </div>
-                    {this.renderInput({ name: 'confirmnewpassword', type: this.state.showPassword.confirmnewpassword ? 'text' : 'password' })}
-                </div>
+          <div className="mb-4">
+            <div className="flex justify-between items-center">
+              <label htmlFor="confirmnewpassword" className="text-sm font-medium text-gray-700 mr-2">Confirm Password:</label>
+            </div>
+            {this.renderInput({ name: 'confirmnewpassword', type: this.state.showPassword.confirmnewpassword ? 'text' : 'password', label: 'Confirm Password' })}
+          </div>
 
-                {this.renderButton('Submit')}
-            </form>
-        </div>
+          {this.renderButton('Submit')}
+        </form>
+      </div>
     );
-}
+  }
 
 }
 

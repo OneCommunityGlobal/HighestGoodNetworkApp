@@ -24,6 +24,16 @@ body {
   margin-bottom: 30px;
 }
 
+
+.people-report-time-log-block h3{
+  color: #fff;
+}
+
+.auto-width-report-time-logs-wrapper{
+  gap:40px
+}
+
+
 /*profile style changes ends*/
 
 .btn--dark-sea-green {
