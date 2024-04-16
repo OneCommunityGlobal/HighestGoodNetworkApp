@@ -19,7 +19,6 @@ import { permissions } from 'utils/constants';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
 
-
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
   const prevDeps = useRef(deps);
@@ -52,7 +51,6 @@ function LeaderBoard({
   showTimeOffRequestModal,
   darkMode,
 }) {
-
   const hasSummaryIndicatorPermission = hasPermission(permissions.seeSummaryIndicator); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission(permissions.seeVisibilityIcon); // ??? this permission doesn't exist?
   const userId = displayUserId;

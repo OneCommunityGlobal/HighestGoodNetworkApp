@@ -69,7 +69,9 @@ function FormattedReport({
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
   const dispatch = useDispatch();
-  const isEditCount = dispatch(hasPermission(permissions.weeklySummariesReport.totalValidWeeklySummaries));
+  const isEditCount = dispatch(
+    hasPermission(permissions.weeklySummariesReport.totalValidWeeklySummaries),
+  );
 
   return (
     <>
