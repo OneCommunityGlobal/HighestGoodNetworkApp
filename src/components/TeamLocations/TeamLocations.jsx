@@ -266,6 +266,7 @@ function TeamLocations() {
         ) : null}
       </div>
       <MapContainer
+        id='map-container'
         center={[51.505, -0.09]}
         maxBounds={[
           [-90, -225],

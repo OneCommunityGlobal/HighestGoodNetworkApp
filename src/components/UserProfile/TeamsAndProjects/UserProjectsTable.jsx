@@ -11,13 +11,12 @@ import { permissions } from 'utils/constants';
 
 const UserProjectsTable = React.memo(props => {
   const [tooltipOpen, setTooltip] = useState(false);
-  
+
   const canAssignProjectToUsers = props.hasPermission(permissions.projects.assignProjectToUsers);
   const canUpdateTask = props.hasPermission(permissions.projects.updateTask);
-
-  
   const canDeleteProjects = props.hasPermission(permissions.projects.deleteProject);
   const canDeleteTasks = props.hasPermission(permissions.projects.deleteTask)
+
 
   const userProjects = props.userProjectsById;
   const userTasks = props.userTasks;
@@ -78,12 +77,13 @@ const UserProjectsTable = React.memo(props => {
           task.status = 'Complete';
           return { ...resource, completedTask: true };
         } else if (method === 'add') {
+          task.status = "Started"
           return { ...resource, completedTask: false };
         }
       }
       return resource;
     });
-
+  
     const updatedTask = { ...task, resources: newResources };
     props.updateTask(task._id, updatedTask, method);
   };

@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchMaterialTypes } from 'actions/bmdashboard/invTypeActions';
+import { fetchConsumableTypes } from 'actions/bmdashboard/invTypeActions';
+import { BsInfoCircle } from 'react-icons/bs';
 import BMError from '../shared/BMError';
 import PurchaseForm from './PurchaseForm';
-import './PurchaseMaterials.css';
+import './PurchaseConsumable.css';
 
-export default function PurchaseMaterials() {
+export default function PurchaseConsumable() {
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
-    dispatch(fetchMaterialTypes());
+    dispatch(fetchConsumableTypes());
   }, []);
 
   // trigger error state if an error object is added to props
@@ -26,20 +27,21 @@ export default function PurchaseMaterials() {
   // error state
   if (isError) {
     return (
-      <main className="materials_list_container">
-        <h2>Materials List</h2>
+      <main className="consumables_list_container">
+        <h2>Consumables List</h2>
         <BMError errors={errors} />
       </main>
     );
   }
 
   return (
-    <main className="purchase-material-container">
-      <header className="purchase-materials-header">
-        <h2>Purchase Request: Materials</h2>
-        <p>
-          Important: This form initiates a purchase request for approval/action by project admins.
-        </p>
+    <main className="purchase-consumable-container">
+      <header className="purchase-consumable-header">
+        <h2>Purchase Request: Consumables</h2>
+        <div className="inv-form-info">
+          <BsInfoCircle />
+          Initiate a purchase request for approval/action by project admins.
+        </div>
       </header>
       <PurchaseForm />
     </main>

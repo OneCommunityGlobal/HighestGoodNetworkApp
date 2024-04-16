@@ -20,27 +20,57 @@ const getRandomMessage = () => {
 
 const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab';
 const validTeamCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+const stillSavingMessage = 'Saving, will take just a second...';
 
 /**
  *
  * @param {func} props.handleSubmit
  * @param {bool} props.disabled
  * @param {*} props.userProfile
+ * @param {func} props.setSaved
  * @returns
  */
 const SaveButton = props => {
   const { handleSubmit, disabled, userProfile, setSaved } = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
+  const [isLoading,setIsLoading] = useState(false);
+  const [isErr, setIsErr] = useState(false);
 
-  const handleSave = () => {
-    handleSubmit();
-    setSaved();
+  const handleSave = async () => {
     setModal(true);
+    setIsLoading(true);
+    try {
+      const getReturnVal = await handleSubmit();
+      if (getReturnVal) throw new Error(getReturnVal); // shouldn't return anything if save was success but should return error if it fails
+
+      setIsLoading(false);
+      setIsErr(false);
+      setSaved();
+    } catch (err) {
+      setIsErr(true);
+      setIsLoading(false);
+    }
   };
 
   const closeModal = () => {
     setModal(false);
+  };
+
+  const getMessage = (type) => {
+    if (type == 'message') {
+      if (!isErr) {
+        return isLoading ? stillSavingMessage : randomMessage;
+      }
+  
+      return 'Sorry an error occured while trying to save. Please try again another time.';
+    } else {
+      if (!isErr){
+        return isLoading ? 'Saving...' : 'Success!';
+      }
+
+      return 'Error occured';
+    }
   };
 
   useEffect(() => {
@@ -61,14 +91,15 @@ const SaveButton = props => {
         isOpen={modal}
         closeModal={closeModal}
         userProfile={userProfile}
-        modalTitle="Success!"
-        modalMessage={randomMessage}
+        modalTitle={getMessage('title')}
+        modalMessage={getMessage('message')}
+        disabled={isLoading}
       />
       <Button
         outline
-        color="primary"
+        color='primary'
         // to={`/userprofile/${this.state.userProfile._id}`}
-        className="btn btn-outline-primary mr-1"
+        className='btn btn-outline-primary mr-1'
         onClick={handleSave}
         disabled={disabled}
         style={boxStyle}

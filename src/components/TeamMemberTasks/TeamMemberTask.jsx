@@ -9,10 +9,9 @@ import hasPermission from 'utils/permissions';
 import { permissions } from 'utils/constants';
 
 import './style.css';
-import { boxStyle } from 'styles';
 
 import Warning from 'components/Warnings/Warnings';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
 
 import ReviewButton from './ReviewButton';
@@ -37,6 +36,7 @@ const TeamMemberTask = React.memo(
     onTimeOff,
     goingOnTimeOff,
   }) => {
+    const darkMode = useSelector(state => state.theme.darkMode);
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
@@ -66,7 +66,7 @@ const TeamMemberTask = React.memo(
     // these need to be changed to actual permissions...
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
-    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole);
+    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     // ^^^
 
@@ -116,7 +116,7 @@ const TeamMemberTask = React.memo(
                 <i
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', color: 'black' }}
+                  style={{ fontSize: 24, cursor: 'pointer', color: darkMode ? 'white' : 'black' }}
                   title="Click to see user's timelog"
                 />
               </Link>
@@ -150,8 +150,8 @@ const TeamMemberTask = React.memo(
                       personId={user.personId}
                     />
                   </td>
-                  <td data-label="Time" className="team-clocks">
-                    <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
+                  <td data-label="Time" className={"team-clocks " + (darkMode ? "text-light" : "")}>
+                    <u className={darkMode ? "text-azure" : ""}>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                     <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                   </td>
@@ -238,7 +238,6 @@ const TeamMemberTask = React.memo(
                               userId={userId}
                               task={task}
                               updateTask={updateTaskStatus}
-                              style={boxStyle}
                             />
                           </div>
                         </td>
@@ -254,7 +253,7 @@ const TeamMemberTask = React.memo(
                               </span>
                             )}
                             <div>
-                              <span data-testid={`times-${task.taskName}`}>
+                              <span data-testid={`times-${task.taskName}`} className={darkMode ? 'text-light' : ''}>
                                 {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
                                   task.estimatedHours.toFixed(2),
                                 )}`}
