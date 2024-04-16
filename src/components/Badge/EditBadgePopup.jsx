@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -15,11 +15,12 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.css';
-import { updateBadge, closeAlert } from '../../actions/badgeManagement';
-import { badgeTypes } from './BadgeTypes';
 import { boxStyle } from 'styles';
+import { updateBadge, closeAlert } from '../../actions/badgeManagement';
+import badgeTypes from './BadgeTypes';
 
-const EditBadgePopup = props => {
+function EditBadgePopup(props) {
+  // eslint-disable-next-line
   const [badgeValues, setBadgeValues] = useState('');
   const [badgeId, setBadgeId] = useState('');
   const [badgeName, setBadgeName] = useState('');
@@ -40,34 +41,6 @@ const EditBadgePopup = props => {
   const [multiple, setMultiple] = useState(0);
   const [showPeople, setShowPeople] = useState(false);
   const [people, setPeople] = useState(0);
-
-  useEffect(() => {
-    setBadgeValues(props.badgeValues);
-    setBadgeId(props.badgeValues ? props.badgeValues._id : null);
-    setBadgeName(props.badgeValues ? props.badgeValues.badgeName : '');
-    setImageUrl(props.badgeValues ? props.badgeValues.imageUrl : '');
-    setDescription(props.badgeValues ? props.badgeValues.description : '');
-    setRanking(props.badgeValues ? props.badgeValues.ranking : 0);
-    setType(props.badgeValues ? props.badgeValues.type : 'Custom');
-    setCategory(props.badgeValues ? props.badgeValues.category : 'Unspecified');
-    setTotalHrs(props.badgeValues ? props.badgeValues.totalHrs : 0);
-    setWeeks(props.badgeValues ? props.badgeValues.weeks : 0);
-    setMonths(props.badgeValues ? props.badgeValues.months : 0);
-    setMultiple(props.badgeValues ? props.badgeValues.multiple : 0);
-    setPeople(props.badgeValues ? props.badgeValues.people : 0);
-    displayTypeRelatedFields(props.badgeValues ? props.badgeValues.type : 'Custom');
-  }, [props.badgeValues]);
-
-  const validRanking = ranking => {
-    const pattern = /^[0-9]*$/;
-    return pattern.test(ranking);
-  };
-
-  const enableButton =
-    badgeName.length === 0 ||
-    imageUrl.length === 0 ||
-    description.length === 0 ||
-    !validRanking(ranking);
 
   const resetTypeFieldDisplay = () => {
     setShowCategory(false);
@@ -99,15 +72,44 @@ const EditBadgePopup = props => {
         setShowCategory(true);
         break;
       default:
-        return;
     }
   };
+
+  useEffect(() => {
+    setBadgeValues(props.badgeValues);
+    setBadgeId(props.badgeValues ? props.badgeValues._id : null);
+    setBadgeName(props.badgeValues ? props.badgeValues.badgeName : '');
+    setImageUrl(props.badgeValues ? props.badgeValues.imageUrl : '');
+    setDescription(props.badgeValues ? props.badgeValues.description : '');
+    setRanking(props.badgeValues ? props.badgeValues.ranking : 0);
+    setType(props.badgeValues ? props.badgeValues.type : 'Custom');
+    setCategory(props.badgeValues ? props.badgeValues.category : 'Unspecified');
+    setTotalHrs(props.badgeValues ? props.badgeValues.totalHrs : 0);
+    setWeeks(props.badgeValues ? props.badgeValues.weeks : 0);
+    setMonths(props.badgeValues ? props.badgeValues.months : 0);
+    setMultiple(props.badgeValues ? props.badgeValues.multiple : 0);
+    setPeople(props.badgeValues ? props.badgeValues.people : 0);
+    displayTypeRelatedFields(props.badgeValues ? props.badgeValues.type : 'Custom');
+  }, [props.badgeValues]);
+
+  const validRanking = badgeRanking => {
+    const pattern = /^[0-9]*$/;
+    return pattern.test(badgeRanking);
+  };
+
+  const enableButton =
+    badgeName.length === 0 ||
+    imageUrl.length === 0 ||
+    description.length === 0 ||
+    !validRanking(ranking);
 
   const closePopup = () => {
     props.setEditPopup(false);
   };
 
   const handleChange = event => {
+    let selectedCategoryValue;
+    let selectedType;
     switch (event.target.id) {
       case 'badgeName':
         setBadgeName(event.target.value);
@@ -119,7 +121,7 @@ const EditBadgePopup = props => {
         setDescription(event.target.value);
         break;
       case 'category':
-        const selectedCategoryValue = event.target.value;
+        selectedCategoryValue = event.target.value;
         if (selectedCategoryValue.length === 0) {
           setCategory('Unspecified');
         } else {
@@ -127,7 +129,7 @@ const EditBadgePopup = props => {
         }
         break;
       case 'badgeType':
-        const selectedType = event.target.value;
+        selectedType = event.target.value;
         setType(selectedType);
         if (selectedType.length === 0) {
           setType('Custom');
@@ -153,23 +155,22 @@ const EditBadgePopup = props => {
         setPeople(Number(event.target.value));
         break;
       default:
-        return;
     }
   };
 
   const handleSubmit = () => {
     const badgeData = {
-      badgeName: badgeName,
-      imageUrl: imageUrl,
-      description: description,
-      ranking: ranking,
-      type: type,
-      category: category,
-      totalHrs: totalHrs,
-      weeks: weeks,
-      months: months,
-      multiple: multiple,
-      people: people,
+      badgeName,
+      imageUrl,
+      description,
+      ranking,
+      type,
+      category,
+      totalHrs,
+      weeks,
+      months,
+      multiple,
+      people,
     };
     props.updateBadge(badgeId, badgeData).then(() => {
       closePopup();
@@ -239,7 +240,7 @@ const EditBadgePopup = props => {
               value={type}
               onChange={handleChange}
             >
-              <option value={'Custom'}>{'Custom'}</option>
+              <option value="Custom">Custom</option>
               {badgeTypes.map((element, i) => (
                 <option key={i}>{element}</option>
               ))}
@@ -264,7 +265,8 @@ const EditBadgePopup = props => {
                 value={category}
                 onChange={handleChange}
               >
-                <option value={''}>{''}</option>
+                {/* eslint-disable-next-line */}
+                <option value="" />
                 <option>Food</option>
                 <option>Energy</option>
                 <option>Housing</option>
@@ -437,7 +439,7 @@ const EditBadgePopup = props => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 const mapStateToProps = state => ({
   allProjects: state.allProjects.projects,
@@ -447,7 +449,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchAllProjects: () => dispatch(fetchAllProjects()),
   updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
   closeAlert: () => dispatch(closeAlert()),
 });

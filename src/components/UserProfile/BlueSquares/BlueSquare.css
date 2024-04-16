@@ -1,10 +1,13 @@
 #wrapper .report {
   position: absolute;
-  left: -140px;
+  right: 103%;
   top: 0;
   width: 200px;
   overflow-y: auto;
   visibility: hidden;
+  font-weight: normal;
+  border: 2px solid black;
+  background-color: slategray;
 }
 
 #wrapper:hover .report {
@@ -13,37 +16,47 @@
 
 .title {
   padding: 5px;
-  background-color: slategray;
-  outline-width: 2px;
-  outline-style: solid;
-  outline-color: black;
-  margin: 2px;
+  border-bottom: 2px solid black;
 }
 
 .summary {
   padding: 5px;
-  background-color: slategray;
-  outline-width: 2px;
-  outline-style: solid;
-  outline-color: black;
-  margin: 2px;
 }
 
 .blueSquareContainer {
-  /* display: flex; */
   text-decoration: none;
   justify-content: center;
-  /* margin: 10px; */
   max-height: 120px;
   overflow: auto;
 }
 
+.blueSquareContainer::-webkit-scrollbar {
+  width: 12px;
+}
+
+.blueSquareContainer::-webkit-scrollbar-track {
+  background-color: #f8faff;
+  border: 1px solid #cad9ff;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, .3);
+}
+
+.blueSquareContainer::-webkit-scrollbar-thumb {
+  background-color: #007BFF ;
+  box-shadow: inset 0 5px 3px -3px rgba(255, 255, 255, .6), inset 0 -5px 3px -3px rgba(255, 255, 255, .6);
+}
+
 .blueSquares {
   width: 100%;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  gap: 2px;
+  padding: 5px;
+  grid-template-columns: repeat(auto-fill, minmax(25px, 1fr) ) ;
   align-items: center;
-  /* justify-content: center; */
+  justify-items: center;
+}
+.NoBlueSquares{
+  grid-template-columns: auto 1fr;
+  justify-items: left;
 }
 
 .blueSquareButton {
@@ -54,7 +67,6 @@
   background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
   background-color: dodgerblue;
   border-radius: 4px;
-
   cursor: pointer;
   color: #ffffff;
   font-family: Arial;
@@ -67,3 +79,27 @@
   background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
   background-color: #0061a7;
 }
+
+@media (max-width: 1420px) {
+  #wrapper .report { 
+     left: 102%;
+     top: 0px; 
+     z-index: 1;
+     overflow: visible;
+   }
+   .summary {
+     min-height: 300px;
+   }
+ }
+
+ @media (max-width: 767px) {
+  #wrapper .report { 
+    left: 50%;
+    top: 102%;
+    transform: translate(-50%);
+    width: 300px;
+  }
+  .summary {
+    min-height: auto;
+  }
+ }

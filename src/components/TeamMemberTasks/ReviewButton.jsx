@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, Dro
 import { useSelector } from 'react-redux';
 import './style.css';
 import './reviewButton.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
@@ -13,11 +13,9 @@ const ReviewButton = ({
   user,
   task,
   updateTask,
-  userPermission
+  userPermission, 
 }) => {
- 
-
-
+  const darkMode = useSelector(state => state.theme.darkMode)
 
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
@@ -38,6 +36,16 @@ const ReviewButton = ({
     setLink(e.target.value);
   };
 
+  const validURL = (url) => {
+    try {
+      const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
+      return pattern.test(url);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  }
+
   const reviewStatus = function() {
     let status = "Unsubmitted";
     for(let resource of task.resources) {
@@ -57,15 +65,19 @@ const ReviewButton = ({
       return newResource;
     });
     let updatedTask = { ...task, resources: newResources };
-
     //Add relatedWorkLinks to existing tasks
     if(!Array.isArray(task.relatedWorkLinks)) {
       task.relatedWorkLinks = [];
     }
   
     if (newStatus === 'Submitted' && link) {
-      updatedTask = {...updatedTask, relatedWorkLinks: [...task.relatedWorkLinks, link] };
-      setLink("");
+      if (validURL(link)) {
+        updatedTask = {...updatedTask, relatedWorkLinks: [...task.relatedWorkLinks, link] };
+        setLink("");
+      } else {
+        alert('Invalid URL. Please enter a valid URL of at least 20 characters');
+        return;
+      }
     }
     updateTask(task._id, updatedTask);
     setModal(false);
@@ -73,14 +85,14 @@ const ReviewButton = ({
 
   const buttonFormat = () => {
     if (user.personId == myUserId && reviewStatus == "Unsubmitted") {
-      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={boxStyle}>
+      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={darkMode ? boxStyleDark : boxStyle}>
         Submit for Review
       </Button>;
      } else if (reviewStatus == "Submitted")  {
       if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || userPermission) {
         return (
           <UncontrolledDropdown>
-            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={boxStyle}>
+            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
               Ready for Review
             </DropdownToggle>
             <DropdownMenu>

@@ -20,6 +20,8 @@ const WeeklySummaries = ({ userProfile }) => {
     
   }, [userProfile]);
 
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   // Initialize state variables for editing and original summaries
   
   const [editing, setEditing] = useState([false, false, false]);
@@ -164,7 +166,7 @@ const WeeklySummaries = ({ userProfile }) => {
   };
 
   return (
-    <div>
+    <div className={"p-2 " + (darkMode ? 'bg-yinmn-blue text-light' : '')}>
       {renderSummary("This week's summary", userProfile.weeklySummaries[0]?.summary, 0)}
       {renderSummary("Last week's summary", userProfile.weeklySummaries[1]?.summary, 1)}
       {renderSummary("The week before last's summary",userProfile.weeklySummaries[2]?.summary,2)}

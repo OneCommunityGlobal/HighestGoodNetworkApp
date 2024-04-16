@@ -12,6 +12,7 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     <div
       onClick={() => setCurrentPage(pageNumber)}
       className={classnames('page-index-button', { 'active-button': pageNumber === currentPage })}
+      key={pageNumber}
     >
       {pageNumber}
     </div>
