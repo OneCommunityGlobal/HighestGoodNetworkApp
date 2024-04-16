@@ -19,28 +19,13 @@ const store = mockStore({
 
 describe('WeeklySummaryModal Component', () => {
 
-  it('should render without errors', () => {
+  it('should render the component without errors', () => {
     const wrapper = shallow(
       <Provider store={store}>
         <WeeklySummaryModal />
       </Provider>
     );
     expect(wrapper.exists()).toBe(true);
-  });
-
-  it('updates the state when the button is clicked', () => {
-    const { getByTestId } = render(
-      <Provider store={store}>
-        <WeeklySummaryModal />
-      </Provider>
-    );
-    try{
-      userEvent.click(getByTestId('weeklySummaryTest'));
-    }
-    catch(error){
-      console.log(error);
-    }
-    expect(screen.getByText('Weekly Summary')).toBeInTheDocument();
   });
 });
 

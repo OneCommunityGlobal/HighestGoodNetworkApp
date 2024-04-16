@@ -11,7 +11,6 @@ function WeeklySummaryModal() {
     <div>
       <div className="row justify-content-center">
         <div
-          data-testid="weeklySummaryTest"
           role="button"
           className="mt-3 mb-5 text-center"
           onClick={toggle}
