@@ -56,6 +56,7 @@ import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks'
 import { getUnreadUserNotifications, markNotificationAsRead, resetNotificationError } from '../../actions/notificationAction';
 import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
+import DarkModeButton from './DarkModeButton';
 
 export function Header(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -419,6 +420,8 @@ export function Header(props) {
                   <DropdownItem onClick={openModal}>{LOGOUT}</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
+            <DarkModeButton />
+
             </Nav>
           </Collapse>
         )}
