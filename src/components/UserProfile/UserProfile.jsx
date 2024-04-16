@@ -28,7 +28,6 @@ import hasPermission, {
   cantUpdateDevAdminDetails,
 } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
-import { ENDPOINTS } from '../../utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
@@ -56,6 +55,7 @@ import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
+import { ENDPOINTS } from '../../utils/URL';
 
 function UserProfile(props) {
   /* Constant values */
@@ -110,6 +110,8 @@ function UserProfile(props) {
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
 
+  const [inputAutoComplete, setInputAutoComplete] = useState([]);
+  const [inputAutoStatus, setInputAutoStatus] = useState();
 
   /* useEffect functions */
   useEffect(() => {
@@ -117,6 +119,21 @@ function UserProfile(props) {
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
+    const fetchInitial = async () => {
+      const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+      try {
+        const response = await axios.get(url);
+        const test = response.data.map(item => item.teamCode).filter(Boolean);
+        const test2 = test
+          .map(item => item)
+          .filter((item, index, array) => array.indexOf(item) === index);
+        setInputAutoComplete(test2);
+        setInputAutoStatus(response.status);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchInitial();
   }, []);
 
   useEffect(() => {
@@ -214,7 +231,9 @@ function UserProfile(props) {
       const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
       const { data } = res;
 
-      const activeMembers = data.filter(member => member._id !== currentManager._id && member.isActive);
+      const activeMembers = data.filter(
+        member => member._id !== currentManager._id && member.isActive,
+      );
 
       const memberSubmitted = activeMembers
         .filter(member => member.weeklySummaries[0].summary !== '')
@@ -287,11 +306,11 @@ function UserProfile(props) {
 
   const getCurretLoggedinUserEmail = async () => {
     const userId = props?.auth?.user?.userid;
-    try{
+    try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const currentUserEmail = response.data.email;
-      dispatch(setCurrentUser({...props.auth.user, email: currentUserEmail}));
-    }catch (err) {
+      dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail }));
+    } catch (err) {
       toast.error('Error while getting current logged in user email');
     }
   };
@@ -455,7 +474,7 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
-    if (targetIsDevAdminUneditable){
+    if (targetIsDevAdminUneditable) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
@@ -482,7 +501,14 @@ function UserProfile(props) {
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
-      const newBlueSquare = { date: dateStamp, description: summary , createdDate: moment.tz('America/Los_Angeles').toISOString().split('T')[0]};
+      const newBlueSquare = {
+        date: dateStamp,
+        description: summary,
+        createdDate: moment
+          .tz('America/Los_Angeles')
+          .toISOString()
+          .split('T')[0],
+      };
       setOriginalUserProfile({
         ...originalUserProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
@@ -523,7 +549,7 @@ function UserProfile(props) {
     }
     try {
       await props.updateUserProfile(userProfileRef.current);
-      
+
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -535,9 +561,9 @@ function UserProfile(props) {
       return err.message;
     }
   };
- 
-  // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit. 
-  // AssignBadgePopup already has onSubmit action to call an API to update the user badges. 
+
+  // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit.
+  // AssignBadgePopup already has onSubmit action to call an API to update the user badges.
   // Using handleSubmit will trigger actopms to call the assignBadge API and updateUserProfile API, which is redundant.
   const handleBadgeSubmit = async () => {
     try {
@@ -581,7 +607,7 @@ function UserProfile(props) {
 
   /* useEffect functions */
   useEffect(() => {
-    getTeamMembersWeeklySummary(); 
+    getTeamMembersWeeklySummary();
     loadUserProfile();
   }, []);
 
@@ -670,7 +696,7 @@ function UserProfile(props) {
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
- 
+
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner'
@@ -758,7 +784,10 @@ function UserProfile(props) {
             </div>
           </Col>
           <Col md="8">
-            {!isProfileEqual || !isTasksEqual || (!isTeamsEqual && !isTeamSaved) || !isProjectsEqual ? (
+            {!isProfileEqual ||
+            !isTasksEqual ||
+            (!isTeamsEqual && !isTeamSaved) ||
+            !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
@@ -768,47 +797,47 @@ function UserProfile(props) {
             ) : null}
             <div className="profile-head">
               <h5 className="mr-2">{`${firstName} ${lastName}`}</h5>
-              <div style={{marginTop: '6px'}} >
-              <EditableInfoModal
-                areaName="UserProfileInfoModal"
-                areaTitle="User Profile"
-                fontSize={24}
-                isPermissionPage={true}
-                role={requestorRole} // Pass the 'role' prop to EditableInfoModal
-              />
+              <div style={{ marginTop: '6px' }}>
+                <EditableInfoModal
+                  areaName="UserProfileInfoModal"
+                  areaTitle="User Profile"
+                  fontSize={24}
+                  isPermissionPage={true}
+                  role={requestorRole} // Pass the 'role' prop to EditableInfoModal
+                />
               </div>
               <span className="mr-2">
-              <ActiveCell
-                isActive={userProfile.isActive}
-                user={userProfile}
-                canChange={canChangeUserStatus}
-                onClick={() => {
-                  if (cantDeactivateOwner(userProfile, requestorRole)) {
-                    //Owner user cannot be deactivated by another user that is not an Owner.
-                    alert('You are not authorized to deactivate an owner.');
-                    return;
-                  }
-                  setActiveInactivePopupOpen(true);
-                }}
-              />
+                <ActiveCell
+                  isActive={userProfile.isActive}
+                  user={userProfile}
+                  canChange={canChangeUserStatus}
+                  onClick={() => {
+                    if (cantDeactivateOwner(userProfile, requestorRole)) {
+                      //Owner user cannot be deactivated by another user that is not an Owner.
+                      alert('You are not authorized to deactivate an owner.');
+                      return;
+                    }
+                    setActiveInactivePopupOpen(true);
+                  }}
+                />
               </span>
               {canEdit && (
                 <span className="mr-2">
-                <i
-                  data-toggle="tooltip"
-                  className="fa fa-clock-o"
-                  aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                  title="Click to see user's timelog"
-                  onClick={e => {
-                    if (e.metaKey || e.ctrlKey) {
-                      window.open(`/timelog/${targetUserId}`, '_blank');
-                    } else {
-                      e.preventDefault();
-                      props.history.push(`/timelog/${targetUserId}`);
-                    }
-                  }}
-                />
+                  <i
+                    data-toggle="tooltip"
+                    className="fa fa-clock-o"
+                    aria-hidden="true"
+                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                    title="Click to see user's timelog"
+                    onClick={e => {
+                      if (e.metaKey || e.ctrlKey) {
+                        window.open(`/timelog/${targetUserId}`, '_blank');
+                      } else {
+                        e.preventDefault();
+                        props.history.push(`/timelog/${targetUserId}`);
+                      }
+                    }}
+                  />
                 </span>
               )}
               <Button
@@ -877,7 +906,7 @@ function UserProfile(props) {
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleBadgeSubmit}
-              isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} //
+              isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable} //
             />
           </Col>
         </Row>
@@ -1008,20 +1037,26 @@ function UserProfile(props) {
                     !formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
-                    !isTeamSaved
+                    (!(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
+                      !isTeamSaved)
                   }
-                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner' || targetIsDevAdminUneditable}
+                  canEditTeamCode={
+                    props.hasPermission('editTeamCode') ||
+                    requestorRole == 'Owner' ||
+                    targetIsDevAdminUneditable
+                  }
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
                   setCodeValid={setCodeValid}
                   saved={saved}
-                  isTeamSaved={(isSaved) => setIsTeamSaved(isSaved)}
+                  isTeamSaved={isSaved => setIsTeamSaved(isSaved)}
+                  inputAutoComplete={inputAutoComplete}
+                  inputAutoStatus={inputAutoStatus}
                 />
               </TabPane>
               <TabPane tabId="4">
-                <ProjectsTab 
+                <ProjectsTab
                   userProjects={userProfile.projects || []}
                   userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
@@ -1045,7 +1080,7 @@ function UserProfile(props) {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   role={requestorRole}
-                  isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} // 
+                  isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable} //
                 />
               </TabPane>
             </TabContent>
@@ -1063,19 +1098,19 @@ function UserProfile(props) {
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
-                <BasicInformationTab
-                  role={requestorRole}
-                  userProfile={userProfile}
-                  setUserProfile={setUserProfile}
-                  loadUserProfile={loadUserProfile}
-                  handleUserProfile={handleUserProfile}
-                  formValid={formValid}
-                  setFormValid={setFormValid}
-                  isUserSelf={isUserSelf}
-                  canEdit={canEdit}
-                  canEditRole={canEditUserProfile}
-                  roles={roles}
-                />
+                  <BasicInformationTab
+                    role={requestorRole}
+                    userProfile={userProfile}
+                    setUserProfile={setUserProfile}
+                    loadUserProfile={loadUserProfile}
+                    handleUserProfile={handleUserProfile}
+                    formValid={formValid}
+                    setFormValid={setFormValid}
+                    isUserSelf={isUserSelf}
+                    canEdit={canEdit}
+                    canEditRole={canEditUserProfile}
+                    roles={roles}
+                  />
                 </ModalBody>
                 <ModalFooter>
                   <Row>
@@ -1089,7 +1124,9 @@ function UserProfile(props) {
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
                         <Link
-                          to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
+                          to={
+                            targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`
+                          }
                           onClick={() => {
                             if (targetIsDevAdminUneditable) {
                               alert(
@@ -1199,7 +1236,12 @@ function UserProfile(props) {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary" style={boxStyle}>
+              <Button
+                className="list-button"
+                onClick={() => toggle('Teams')}
+                color="secondary"
+                style={boxStyle}
+              >
                 Teams
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle}>
@@ -1223,12 +1265,16 @@ function UserProfile(props) {
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     canEditTeamCode={
-                      props.hasPermission('editTeamCode') || requestorRole === 'Owner' ||requestorRole === 'Administrator'
+                      props.hasPermission('editTeamCode') ||
+                      requestorRole === 'Owner' ||
+                      requestorRole === 'Administrator'
                     }
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
                     codeValid={codeValid}
                     setCodeValid={setCodeValid}
+                    inputAutoComplete={inputAutoComplete}
+                    inputAutoStatus={inputAutoStatus}
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -1268,7 +1314,12 @@ function UserProfile(props) {
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary" style={boxStyle}>
+              <Button
+                className="list-button"
+                onClick={() => toggle('Projects')}
+                color="secondary"
+                style={boxStyle}
+              >
                 Projects
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle}>
@@ -1414,7 +1465,7 @@ function UserProfile(props) {
                   </Button>
                 </Link>
               )}
-              {canEdit && (activeTab) && (
+              {canEdit && activeTab && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"

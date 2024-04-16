@@ -24,17 +24,19 @@ const TeamsTab = props => {
     setCodeValid,
     saved,
     isTeamSaved,
+    inputAutoComplete,
+    inputAutoStatus,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
   const [removedTeams, setRemovedTeams] = useState([]);
 
   useEffect(() => {
-    if(saved && removedTeams.length > 0){
+    if (saved && removedTeams.length > 0) {
       removedTeams.forEach(teamId => {
         deleteTeamMember(teamId, userProfile._id);
         setRemovedTeams([]);
-      })
+      });
     }
   }, [saved]);
 
@@ -48,13 +50,13 @@ const TeamsTab = props => {
   const onSelectDeleteTeam = teamId => {
     setRemovedTeams([...removedTeams, teamId]);
     onDeleteTeam(teamId);
-    if(isTeamSaved) isTeamSaved(false);
+    if (isTeamSaved) isTeamSaved(false);
   };
 
   const onSelectAssignTeam = team => {
-    if(userProfile._id){
+    if (userProfile._id) {
       addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-      if(isTeamSaved) isTeamSaved(true);
+      if (isTeamSaved) isTeamSaved(true);
     }
     onAssignTeam(team);
     setRenderedOn(Date.now());
@@ -87,6 +89,8 @@ const TeamsTab = props => {
         codeValid={codeValid}
         setCodeValid={setCodeValid}
         onAssignTeamCode={onAssignTeamCode}
+        inputAutoComplete={inputAutoComplete}
+        inputAutoStatus={inputAutoStatus}
       />
     </React.Fragment>
   );
