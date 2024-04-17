@@ -90,7 +90,6 @@ const TimeEntry = (props) => {
     dispatch(hasPermission('deleteTimeEntry')) ||
     //default permission: delete own sameday tangible entry
     isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord;
-  debugger;
   const toggleTangibility = () => {
     //Update intangible hours property in userprofile
     const formattedHours = parseFloat(hours) + parseFloat(minutes) / 60;
