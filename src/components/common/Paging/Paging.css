@@ -9,6 +9,7 @@
 .pagination-buttons-wrapper {
   display: flex;
   align-items: center;
+  margin: auto;
 }
 
 .pagination-buttons {
