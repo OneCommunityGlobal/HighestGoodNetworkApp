@@ -14,12 +14,9 @@ const DeleteModal = ({ timeEntry }) => {
 
   const deleteEntry = async () => {
     try {
-      const deleteTimeStatus = dispatch(deleteTimeEntry(timeEntry));
-      if (deleteTimeStatus != 200){
-        throw new Error ('error occurred while dispatching delete time entry action');
-      }
-    } catch (err) {
-      toast.error(`Sorry an error occured: ${err.message}`)
+      dispatch(deleteTimeEntry(timeEntry));
+    } catch (error) {
+      toast.error(`An error occurred while dispatching delete time entry action: ${error.message}`)
     }
   };
 
