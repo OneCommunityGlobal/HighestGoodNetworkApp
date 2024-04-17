@@ -196,6 +196,7 @@ const UserTableData = React.memo(props => {
                 props.onDeleteClick(props.user, 'archive');
               }}
               style={boxStyle}
+              disabled={props.auth?.user.userid === props.user._id}
             >
               {DELETE}
             </button>
@@ -209,4 +210,8 @@ const UserTableData = React.memo(props => {
   );
 });
 
-export default connect(null, { hasPermission })(UserTableData);
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, { hasPermission })(UserTableData);

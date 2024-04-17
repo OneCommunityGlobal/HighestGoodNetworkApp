@@ -1,0 +1,19 @@
+/* Dark mode button styles */
+.dark-mode-button {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 25%;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dark-mode-button .icon {
+  font-size: 34px;
+}
+
+@media (min-width: 1200px) {
+  .dark-mode-button {
+    margin-right: 10px;
+  }
+}
