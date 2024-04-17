@@ -207,7 +207,7 @@ const TimeEntryForm = props => {
 
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required';
     if (!isDateValid) errorObj.dateOfWork = 'Invalid date';
-    if (!canUserEditDate) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
+    if (from !== 'Timer' && !canChangeTime) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
     if (!formValues.hours && !formValues.minutes)
       errorObj.time = 'Time should be greater than 0 minutes';
     if (!formValues.projectId) errorObj.projectId = 'Project/Task is required';
