@@ -113,14 +113,8 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   useEffect(() => {
-    const updateWindowWidth = () => {
-      setInnerWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', updateWindowWidth);
-
-    return () => window.removeEventListener('resize', updateWindowWidth);
-  }, []);
+    setInnerWidth(window.innerWidth);
+  }, [window.innerWidth]);
 
   const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
 
