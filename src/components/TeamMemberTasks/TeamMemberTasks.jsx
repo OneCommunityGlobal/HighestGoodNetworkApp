@@ -304,7 +304,7 @@ const TeamMemberTasks = React.memo(props => {
     setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
 
   const dropdownName = (name, maxLength) => {
-    if (innerWidth >= 455) {
+    if (innerWidth >= 457) {
       return maxLength > 50 ? `${name.substring(0, 50)}...` : name;
     } else {
       return maxLength > 15 ? `${name.substring(0, 15)}...` : name;
@@ -312,15 +312,23 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   return (
-    <div className={"container " + (darkMode ? "team-member-tasks bg-oxford-blue" : "team-member-tasks")}>
+    <div
+      className={
+        'container ' + (darkMode ? 'team-member-tasks bg-oxford-blue' : 'team-member-tasks')
+      }
+    >
       <header className="header-box">
         <section className="d-flex flex-column">
-          <h1 className={darkMode ? "text-light" : ""}>Team Member Tasks</h1>
+          <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
 
           {/* Dropdown for selecting a team */}
           {isLoading && (userRole === 'Administrator' || userRole === 'Owner') ? (
             <>
-              <span className="d-flex justify-content-start align-items-center">
+              <span
+                className={`d-flex justify-content-start align-items-center ${
+                  darkMode ? 'text-light' : 'text-black'
+                }`}
+              >
                 {' '}
                 Loading teams: &nbsp;
                 <Spinner color="primary"></Spinner>
@@ -369,15 +377,17 @@ const TeamMemberTasks = React.memo(props => {
           ) : !isLoading && userRole !== 'Administrator' && userRole !== 'Owner' ? null : null}
         </section>
         {finishLoading ? (
-          <section className=" hours-btn-container   flex-wrap ml-3 ">
-            <div className="mb-2">
-               <button
-              type="button"
-              className={`show-time-off-btn ${
-                showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
-              }` + (darkMode ? " box-shadow-dark" : "")}
-              onClick={handleshowWhoHasTimeOff}
-            >
+          <section className=" hours-btn-container flex-wrap ml-2">
+            <div className="mb-2 ">
+              <button
+                type="button"
+                className={
+                  ` mr-1 show-time-off-btn ${
+                    showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
+                  }` + (darkMode ? ' box-shadow-dark' : '')
+                }
+                onClick={handleshowWhoHasTimeOff}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="22"
@@ -409,7 +419,9 @@ const TeamMemberTasks = React.memo(props => {
                 <button
                   key={idx}
                   type="button"
-                  className={`circle-border ${days} days ` + (darkMode ? "box-shadow-dark" : "")}
+                  className={
+                    `m-1 circle-border ${days} days ` + (darkMode ? 'box-shadow-dark' : '')
+                  }
                   title={`Timelogs submitted in the past ${days} days`}
                   style={{
                     color: selectedPeriod === days && isTimeFilterActive ? 'white' : color,
@@ -468,17 +480,21 @@ const TeamMemberTasks = React.memo(props => {
               {/* Empty column header for hours completed icon */}
               <th colSpan={1} />
               <th colSpan={2} className="team-member-tasks-headers">
-                <Table borderless className={"team-member-tasks-subtable " + (darkMode ? "text-light" : "")}>
+                <Table
+                  borderless
+                  className={'team-member-tasks-subtable ' + (darkMode ? 'text-light' : '')}
+                >
                   <thead>
                     <tr>
                       <th className="team-member-tasks-headers team-member-tasks-user-name">
                         Team Member
                       </th>
                       <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                        <FontAwesomeIcon 
-                          style={{color: darkMode ? 'grey' : ''}} 
-                          icon={faClock} 
-                          title="Weekly Committed Hours" />
+                        <FontAwesomeIcon
+                          style={{ color: darkMode ? 'grey' : '' }}
+                          icon={faClock}
+                          title="Weekly Committed Hours"
+                        />
                         /
                         <FontAwesomeIcon
                           style={{ color: 'green' }}
@@ -497,7 +513,10 @@ const TeamMemberTasks = React.memo(props => {
                 </Table>
               </th>
               <th colSpan={3} className="team-member-tasks-headers">
-                <Table borderless className={"team-member-tasks-subtable " + (darkMode ? "text-light" : "")}>
+                <Table
+                  borderless
+                  className={'team-member-tasks-subtable ' + (darkMode ? 'text-light' : '')}
+                >
                   <thead>
                     <tr>
                       <th>Tasks(s)</th>
