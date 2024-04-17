@@ -145,8 +145,7 @@ function LeaderBoard({
     if (textButton === 'View All') {
       setTextButton('My Team');
       renderTeamsList(null);
-      setSelectedTeamName('Select a Team');
-    } else if (usersSelectedTeam.length === 0 || selectedTeamName === 'Select a Team') {
+    } else if (usersSelectedTeam.length === 0) {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
     } else {
       setTextButton('View All');

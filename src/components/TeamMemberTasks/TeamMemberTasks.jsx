@@ -62,17 +62,19 @@ const TeamMemberTasks = React.memo(props => {
   const [loading, setLoading] = useState(false);
   const [textButton, setTextButton] = useState('My Team');
   const [innerWidth, setInnerWidth] = useState();
+  const [controlUseEfffect, setControlUseEfffect] = useState(false);
 
   const handleToggleButtonClick = () => {
     if (textButton === 'View All') {
       renderTeamsList(null);
       setTextButton('My Team');
-      setSelectedTeamName('Select a Team');
-    } else if (usersSelectedTeam.length === 0 || selectedTeamName === 'Select a Team') {
+      setControlUseEfffect(false);
+    } else if (usersSelectedTeam.length === 0) {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
     } else {
       renderTeamsList(usersSelectedTeam);
       setTextButton('View All');
+      setControlUseEfffect(true);
     }
   };
 
@@ -278,9 +280,7 @@ const TeamMemberTasks = React.memo(props => {
   useEffect(() => {
     if (!isLoading) {
       renderTeamsList(
-        selectedTeamName === 'Select a Team' || usersSelectedTeam.length === 0
-          ? null
-          : usersSelectedTeam,
+        !controlUseEfffect || usersSelectedTeam.length === 0 ? null : usersSelectedTeam,
       );
       closeMarkAsDone();
     }
