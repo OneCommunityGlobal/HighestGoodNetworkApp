@@ -44,13 +44,19 @@ const mockPersonalBestMaxHrs = 10;
 // Test cases
 describe('NewBadges component', () => {
   it('renders empty message when no new badges earned', () => {
-    render(<NewBadges badges={[]} personalBestMaxHrs={mockPersonalBestMaxHrs} />);
+    render(<NewBadges badges={[]} personalBestMaxHrs={mockPersonalBestMaxHrs} darkMode={false} />);
     expect(screen.getByText(/Get yourself a herd of new badges!/)).toBeInTheDocument();
     expect(screen.queryByRole('BadgeImage')).toBeNull();
   });
 
   it('renders new badges correctly', () => {
-    render(<NewBadges badges={mockBadges} personalBestMaxHrs={mockPersonalBestMaxHrs} />);
+    render(
+      <NewBadges
+        badges={mockBadges}
+        personalBestMaxHrs={mockPersonalBestMaxHrs}
+        darkMode={false}
+      />,
+    );
     const badgeImages = screen.getAllByRole('img');
 
     expect(badgeImages).toHaveLength(mockBadges.length);
@@ -75,7 +81,13 @@ describe('NewBadges component', () => {
       },
     ];
 
-    render(<NewBadges badges={oldMockBadges} personalBestMaxHrs={mockPersonalBestMaxHrs} />);
+    render(
+      <NewBadges
+        badges={oldMockBadges}
+        personalBestMaxHrs={mockPersonalBestMaxHrs}
+        darkMode={false}
+      />,
+    );
     expect(screen.getByText(/Get yourself a herd of new badges!/)).toBeInTheDocument();
     expect(screen.queryByTestId('badge-image')).toBeNull();
   });
@@ -95,7 +107,13 @@ describe('NewBadges component', () => {
       },
     ];
 
-    render(<NewBadges badges={presentBadges} personalBestMaxHrs={mockPersonalBestMaxHrs} />);
+    render(
+      <NewBadges
+        badges={presentBadges}
+        personalBestMaxHrs={mockPersonalBestMaxHrs}
+        darkMode={false}
+      />,
+    );
 
     expect(screen.queryByText(/Get yourself a herd of new badges!/)).toBeNull();
   });
@@ -106,7 +124,13 @@ describe('NewBadges component', () => {
     const errorSpy = jest.spyOn(console, 'error');
     errorSpy.mockImplementation(() => {});
 
-    render(<NewBadges badges={invalidMockBadges} personalBestMaxHrs={mockPersonalBestMaxHrs} />);
+    render(
+      <NewBadges
+        badges={invalidMockBadges}
+        personalBestMaxHrs={mockPersonalBestMaxHrs}
+        darkMode={false}
+      />,
+    );
 
     expect(screen.getByText(/Get yourself a herd of new badges!/)).toBeInTheDocument();
     expect(screen.queryByTestId('badge-image')).toBeNull();
@@ -115,7 +139,13 @@ describe('NewBadges component', () => {
   });
 
   it('filters new badges correctly', async () => {
-    render(<NewBadges badges={mockBadges} personalBestMaxHrs={mockPersonalBestMaxHrs} />);
+    render(
+      <NewBadges
+        badges={mockBadges}
+        personalBestMaxHrs={mockPersonalBestMaxHrs}
+        darkMode={false}
+      />,
+    );
     const badgeImages = screen.getAllByRole('img');
 
     expect(badgeImages).toHaveLength(3);
@@ -149,7 +179,13 @@ describe('NewBadges component', () => {
       },
     ];
 
-    render(<NewBadges badges={filterBadges} personalBestMaxHrs={mockPersonalBestMaxHrs} />);
+    render(
+      <NewBadges
+        badges={filterBadges}
+        personalBestMaxHrs={mockPersonalBestMaxHrs}
+        darkMode={false}
+      />,
+    );
     const badgeImages = screen.getAllByRole('img');
 
     expect(badgeImages).toHaveLength(2);
@@ -192,7 +228,13 @@ describe('NewBadges component', () => {
       },
     ];
 
-    render(<NewBadges badges={sortBadges} personalBestMaxHrs={mockPersonalBestMaxHrs} />);
+    render(
+      <NewBadges
+        badges={sortBadges}
+        personalBestMaxHrs={mockPersonalBestMaxHrs}
+        darkMode={false}
+      />,
+    );
 
     const badgeImages = screen.getAllByRole('img');
 
@@ -230,7 +272,13 @@ describe('NewBadges component', () => {
         },
       },
     ];
-    render(<NewBadges badges={largeBadges} personalBestMaxHrs={mockPersonalBestMaxHrs} />);
+    render(
+      <NewBadges
+        badges={largeBadges}
+        personalBestMaxHrs={mockPersonalBestMaxHrs}
+        darkMode={false}
+      />,
+    );
 
     expect(screen.getByText('150')).toBeInTheDocument();
   });

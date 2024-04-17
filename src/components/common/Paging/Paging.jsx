@@ -3,12 +3,14 @@ import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import classnames from 'classnames';
 import './Paging.css';
 
-export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => {
+// eslint-disable-next-line react/function-component-definition
+const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const pagesCount = Math.ceil(totalElementsCount / maxElemPerPage);
 
   const renderPageNumberButton = pageNumber => (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
       onClick={() => setCurrentPage(pageNumber)}
       className={classnames('page-index-button', { 'active-button': pageNumber === currentPage })}
@@ -22,7 +24,7 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     const indexesButtons = [];
 
     if (pagesCount <= 6) {
-      for (let i = 1; i <= pagesCount; i++) {
+      for (let i = 1; i <= pagesCount; i += 1) {
         indexesButtons.push(renderPageNumberButton(i));
       }
 
@@ -30,7 +32,7 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     }
 
     if (currentPage <= 5) {
-      for (let i = 1; i <= 5; i++) {
+      for (let i = 1; i <= 5; i += 1) {
         indexesButtons.push(renderPageNumberButton(i));
       }
 
@@ -44,7 +46,7 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     }
 
     if (currentPage > pagesCount - 5) {
-      for (let i = pagesCount - 4; i <= pagesCount; i++) {
+      for (let i = pagesCount - 4; i <= pagesCount; i += 1) {
         indexesButtons.push(renderPageNumberButton(i));
       }
       return (
@@ -56,7 +58,7 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
       );
     }
 
-    for (let i = currentPage - 1; i <= currentPage + 2; i++) {
+    for (let i = currentPage - 1; i <= currentPage + 2; i += 1) {
       indexesButtons.push(renderPageNumberButton(i));
     }
 
@@ -106,3 +108,4 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     </div>
   );
 };
+export default Paging;
