@@ -10,17 +10,20 @@ class TextSearchBox extends React.PureComponent {
 
   render() {
     return (
-      <input
-        type="text"
-        value={this.props.value}
-        id={'search_' + this.props.id}
-        style={this.props.style}
-        onChange={this.onTextChange}
-        placeholder={this.props.placeholder}
-        className={this.props.className}
-      ></input>
+      <div style={{ textAlign: 'center' }}>
+        <input
+          type="text"
+          value={this.props.value}
+          id={'search_' + this.props.id}
+          style={{ ...this.props.style, width: '100%', display: 'inline-block' }}
+          onChange={this.onTextChange}
+          placeholder={this.props.placeholder}
+          className={this.props.className}
+        />
+      </div>
     );
   }
+  
 
   onTextChange = event => {
     this.props.searchCallback(event.target.value);

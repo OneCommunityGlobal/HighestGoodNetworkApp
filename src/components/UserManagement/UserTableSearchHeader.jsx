@@ -42,7 +42,7 @@ const UserTableSearchHeader = React.memo(props => {
       <td id="user_email">
         <TextSearchBox id={'email_search'} searchCallback={onEmailSearch} />
       </td>
-      <td id="user_hrs">
+      <td id="user_hrs" >
         <TextSearchBox
           id={'hrs_search'}
           style={{ maxWidth: '75px' }}
