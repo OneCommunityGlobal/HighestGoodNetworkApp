@@ -4,15 +4,14 @@ import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
 
 const BlueSquare = props => {
-
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare} = props;
+  const { blueSquares, handleBlueSquare } = props;
 
   return (
     <div className="blueSquareContainer">
-      <div className="blueSquares">
-        {blueSquares
+      <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
+        {blueSquares?.length > 0
           ? blueSquares
               .sort((a, b) => (a.date > b.date ? 1 : -1))
               .map((blueSquare, index) => (
@@ -45,28 +44,29 @@ const BlueSquare = props => {
                     {blueSquare.description !== undefined && (
                       <div className="summary">
                         {blueSquare.createdDate !== undefined && blueSquare.createdDate !== null
-                          ? `${formatCreatedDate(blueSquare.createdDate)}: ${blueSquare.description}`
+                          ? `${formatCreatedDate(blueSquare.createdDate)}: ${
+                              blueSquare.description
+                            }`
                           : blueSquare.description}
                       </div>
                     )}
                   </div>
                 </div>
               ))
-          : null}
+          : <div>No blue squares.</div>}
+        {isInfringementAuthorizer && (
+          <div
+            onClick={() => {
+              handleBlueSquare(true, 'addBlueSquare', '');
+            }}
+            className="blueSquareButton"
+            color="primary"
+            data-testid="addBlueSquare"
+          >
+            +
+          </div>
+        )}
       </div>
-      {isInfringementAuthorizer && (
-        <div
-          onClick={() => {
-            handleBlueSquare(true, 'addBlueSquare', '');
-          }}
-          className="blueSquareButton"
-          color="primary"
-          data-testid="addBlueSquare"
-        >
-          +
-        </div>
-      )}
-      <br />
     </div>
   );
 };

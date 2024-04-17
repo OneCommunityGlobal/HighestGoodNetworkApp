@@ -34,6 +34,7 @@ import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { toast } from 'react-toastify';
 
 const SummaryBar = props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
@@ -238,6 +239,8 @@ const SummaryBar = props => {
       : '';
   };
 
+  const canEditData = () => !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') && canPutUserProfileImportantInfo;
+
   useEffect(() => {
     setUserProfile(userProfile);
   }, [userProfile]);
@@ -264,12 +267,12 @@ const SummaryBar = props => {
 
   return (
     displayUserProfile !== undefined && summaryBarData !== undefined 
-      ? <Container
+    ? <Container
           fluid
-          className={
-            isAuthUser || canPutUserProfileImportantInfo
-              ? 'px-lg-0 bg--bar'
-              : 'px-lg-0 bg--bar disabled-bar'
+          className={"px-lg-0 rounded " + (
+            isAuthUser || canEditData()
+              ? (darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'bg--bar text--black box-shadow-light')
+              : (darkMode ? 'bg-space-cadet disabled-bar text-light box-shadow-dark' : 'bg--bar disabled-bar text--black box-shadow-light'))
           }
         >
           <Row className="no-gutters row-eq-height">
@@ -278,11 +281,11 @@ const SummaryBar = props => {
               align="center"
             >
               <div>
-                <font className="text--black  align-middle" size="3">
+                <font className="align-middle" size="3">
                   {' '}
                   Activity for{' '}
                 </font>
-                <CardTitle className="text--black align-middle" tag="h3">
+                <CardTitle className="align-middle" tag="h3">
                   <div>
                     {displayUserProfile.firstName + ' '}
                     {displayUserProfile.lastName}
@@ -293,19 +296,19 @@ const SummaryBar = props => {
             <Col className="d-flex col-lg-3 col-12 no-gutters">
               <Row className="no-gutters w-100">
                 {totalEffort < weeklyCommittedHours && (
-                  <div className="border-red col-4 bg--white-smoke">
+                  <div className={"border border-danger col-4 " + (darkMode ? "bg-space-cadet" : "")}>
                     <div className="py-1"> </div>
-                    <p className="text-center large_text_summary text--black text-danger">!</p>
-                    <font className="text-center text--black" size="3">
+                    <p className="text-center large_text_summary text-danger">!</p>
+                    <font className="text-center" size="3">
                       HOURS
                     </font>
                     <div className="py-2"> </div>
                   </div>
                 )}
                 {totalEffort >= weeklyCommittedHours && (
-                  <div className="border-green col-4 bg--dark-green">
+                  <div className={"border-green col-4 " + (darkMode ? "bg-dark-green" : "bg--dark-green")}>
                     <div className="py-1"> </div>
-                    <p className="text-center large_text_summary text--black">✓</p>
+                    <p className="text-center large_text_summary">✓</p>
                     <font className="text-center" size="3">
                       HOURS
                     </font>
@@ -313,9 +316,9 @@ const SummaryBar = props => {
                   </div>
                 )}
 
-                <div className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center">
+                <div className="col-8 d-flex justify-content-center align-items-center">
                   <div className="align-items-center" id="timelogweeklychart">
-                    <div className="text--black align-items-center med_text_summary">
+                    <div className="align-items-center med_text_summary">
                       Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                       <Progress
                         value={getProgressValue(totalEffort, weeklyCommittedHours)}
@@ -331,12 +334,12 @@ const SummaryBar = props => {
             <Col className="d-flex col-lg-3 col-12 no-gutters">
               <Row className="no-gutters w-100">
                 {!weeklySummary ? (
-                  <div className="border-red col-4 bg--white-smoke no-gutters">
+                  <div className="border border-danger col-4 no-gutters">
                     <div className="py-1"> </div>
-                    {isAuthUser || canPutUserProfileImportantInfo ? (
+                    { isAuthUser || canEditData()  ? (
                       <p
                         className={
-                          'text-center summary-toggle large_text_summary text--black text-danger'
+                          'text-center summary-toggle large_text_summary text-danger'
                         }
                         onClick={props.toggleSubmitForm}
                       >
@@ -345,25 +348,25 @@ const SummaryBar = props => {
                     ) : (
                       <p
                         className={
-                          'text-center summary-toggle large_text_summary text--black text-danger'
+                          'text-center summary-toggle large_text_summary text-danger'
                         }
                       >
                         !
                       </p>
                     )}
 
-                    <font className="text-center text--black" size="3">
+                    <font className="text-center" size="3">
                       SUMMARY
                     </font>
                     <div className="py-2"> </div>
                   </div>
                 ) : (
-                  <div className="border-green col-4 bg--dark-green">
+                  <div className={"border-green col-4 " + (darkMode ? "bg-dark-green" : "bg--dark-green")}>
                     <div className="py-1"> </div>
-                    <p onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
+                    <p onClick={props.toggleSubmitForm} className="text-center large_text_summary summary-toggle" >
                       ✓
                     </p>
-                    <font className="text-center text--black" size="3">
+                    <font className="text-center" size="3">
                       SUMMARY
                     </font>
                     <div className="py-2"> </div>
@@ -371,11 +374,11 @@ const SummaryBar = props => {
                 )}
 
                 <div
-                  className="col-8 border-black bg--white-smoke d-flex align-items-center"
+                  className="col-8 d-flex align-items-center"
 
                 >
                   <div className="m-auto p-2 text-center">
-                    <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
+                    <font onClick={props.toggleSubmitForm} className="med_text_summary align-middle summary-toggle" size="3">
                       {weeklySummary || props.submittedSummary ? (
                         'You have submitted your weekly summary.'
                       ) : isAuthUser ? (
@@ -393,14 +396,14 @@ const SummaryBar = props => {
               </Row>
             </Col>
 
-            <Col className="m-auto mt-2 col-lg-4 col-12 badge-list">
-              <div className="d-flex justify-content-around no-gutters">
+            <Col className={"m-auto mt-2 col-lg-4 col-12 badge-list " + (darkMode ? "bg-space-cadet" : "")}>
+              <div className={"d-flex justify-content-around no-gutters"}>
                 &nbsp;&nbsp;
                 <div className="image_frame">
                   <div className="redBackgroup">
                     <span>{tasks}</span>
                   </div>
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
                   ) : (
                     <img className="sum_img" src={task_icon} alt=""></img>
@@ -408,7 +411,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
                   ) : (
                     <img className="sum_img" src={badges_icon} alt="" />
@@ -419,7 +422,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
                       <img className="sum_img" src={bluesquare_icon} alt="" />
                       <div className="redBackgroup">
@@ -437,7 +440,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
                   ) : (
                     <img className="sum_img" src={report_icon} alt="" />
@@ -445,7 +448,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img
                       className="sum_img"
                       src={suggestions_icon}

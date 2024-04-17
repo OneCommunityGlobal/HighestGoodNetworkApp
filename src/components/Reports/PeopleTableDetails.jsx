@@ -166,26 +166,28 @@ function PeopleTableDetails(props) {
 
   return (
     <Container fluid className="wrapper">
-      <TableFilter
-        onTaskNameSearch={onTaskNameSearch}
-        searchPriority={searchPriority}
-        searchResources={searchResources}
-        searchStatus={searchStatus}
-        searchActive={searchActive}
-        searchAssign={searchAssign}
-        searchEstimatedHours={searchEstimatedHours}
-        resetFilters={resetFilters}
-        name={name}
-        order={order}
-        priority={priority}
-        status={status}
-        resources={resources}
-        active={active}
-        assign={assign}
-        estimatedHours={estimatedHours}
-        startDate={startDate}
-        EndDate={endDate}
-      />
+      {props.showFilter && (
+        <TableFilter
+          onTaskNameSearch={onTaskNameSearch}
+          searchPriority={searchPriority}
+          searchResources={searchResources}
+          searchStatus={searchStatus}
+          searchActive={searchActive}
+          searchAssign={searchAssign}
+          searchEstimatedHours={searchEstimatedHours}
+          resetFilters={resetFilters}
+          name={name}
+          order={order}
+          priority={priority}
+          status={status}
+          resources={resources}
+          active={active}
+          assign={assign}
+          estimatedHours={estimatedHours}
+          startDate={startDate}
+          EndDate={endDate}
+        />
+      )}
       <div className="people-table-row reports-table-head">
         <div>Task</div>
         <div>Priority</div>
