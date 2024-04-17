@@ -48,7 +48,7 @@ export default function VolunteeringHoursStats(props) {
   }, [startDate, endDate]);
 
   console.log(data);
-
+  let totalOverMinHours = 0;
   // format data for donut chart
   const donutData = [];
   if (data) {
@@ -60,6 +60,10 @@ export default function VolunteeringHoursStats(props) {
       dataObj.label = `${group} to ${group + 9} hours - ${data.volunteerHoursStats[groupString]}`;
       dataObj.value = data.volunteerHoursStats[groupString];
       donutData.push(dataObj);
+
+      if (i !== 0) {
+        totalOverMinHours += data.volunteerHoursStats[groupString];
+      }
     }
     // there is one outlier case in which a volunteer has worked 60+ hours.
     // handle this case after the loop
@@ -67,6 +71,7 @@ export default function VolunteeringHoursStats(props) {
       label: `60+ hours - ${data.volunteerHoursStats['60+']}`,
       value: data.volunteerHoursStats['60+'],
     });
+    totalOverMinHours += data.volunteerHoursStats['60+'];
   }
 
   // format data for multi horizontal bar chart
@@ -126,7 +131,15 @@ export default function VolunteeringHoursStats(props) {
         <Row>
           <Col>
             {data && (
-              <DonutChart data={donutData} width={800} height={400} total={data.numberOfUsers} />
+              <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                <DonutChart data={donutData} width={800} height={400} total={data.numberOfUsers} />
+                <p style={{ textAlign: 'center' }}>
+                  About{' '}
+                  {Math.ceil((totalOverMinHours / data.volunteerHoursStats.numberOfUsers) * 100)}%{' '}
+                  of people worked over <br /> the minimum hours. That&apos;s {totalOverMinHours}{' '}
+                  people!
+                </p>
+              </div>
             )}
           </Col>
           <Col>
