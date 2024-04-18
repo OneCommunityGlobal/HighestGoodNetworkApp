@@ -76,11 +76,51 @@ describe('TimeEntriesViz component', () => {
     expect(screen.getByText(`Total Hours: ${totalHours}`)).toBeInTheDocument();
   });
   it('check if Labels Off button works as expected', () => {
+    const { container } = render(
+      <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />,
+    );
+    const buttonElement = screen.getByText('Show Time Entries Graph');
+    fireEvent.click(buttonElement);
+    const labelsOnButton = container.querySelector('.entCountLabelsOn');
+    fireEvent.click(labelsOnButton);
+    //const labelsButton = container.querySelector('.entLabelsOff');
+    //fireEvent.click(labelsButton);
+  });
+  it('check Show Daily Hours labels', () => {
+    const { container } = render(
+      <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />,
+    );
+    const buttonElement = screen.getByText('Show Time Entries Graph');
+    fireEvent.click(buttonElement);
+    expect(screen.getByText('Show Daily Hours')).toBeInTheDocument();
+    const labelsButton = container.querySelector('.entLabelsOff');
+    fireEvent.click(labelsButton);
+  });
+  it('check Show Dates labels', () => {
+    const { container } = render(
+      <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />,
+    );
+    const buttonElement = screen.getByText('Show Time Entries Graph');
+    fireEvent.click(buttonElement);
+    expect(screen.getByText('Show Dates')).toBeInTheDocument();
+    const dateLabelsButton = container.querySelector('.entDateLabelsOn');
+    fireEvent.click(dateLabelsButton);
+    screen.debug();
+  });
+  it('check label values', () => {
     render(<TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />);
     const buttonElement = screen.getByText('Show Time Entries Graph');
     fireEvent.click(buttonElement);
-    const labelsButton = screen.getByText('Labels Off');
-    fireEvent.click(labelsButton);
-    screen.debug();
+    expect(screen.getByText('0.0')).toBeInTheDocument();
+    expect(screen.getByText('0.2')).toBeInTheDocument();
+    expect(screen.getByText('0.4')).toBeInTheDocument();
+    expect(screen.getByText('0.6')).toBeInTheDocument();
+    expect(screen.getByText('0.8')).toBeInTheDocument();
+    expect(screen.getByText('1.0')).toBeInTheDocument();
+    expect(screen.getByText('1.2')).toBeInTheDocument();
+    expect(screen.getByText('1.4')).toBeInTheDocument();
+    expect(screen.getByText('1.6')).toBeInTheDocument();
+    expect(screen.getByText('1.8')).toBeInTheDocument();
+    expect(screen.getByText('2.0')).toBeInTheDocument();
   });
 });
