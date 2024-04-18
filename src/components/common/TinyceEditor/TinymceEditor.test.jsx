@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import TinyMCEEditor from './TinyMCEEditor';
+import TinyMCEEditor from './tinymceEditor';
 
 describe('TinyMCEEditor Component', () => {
   const mockProps = {
