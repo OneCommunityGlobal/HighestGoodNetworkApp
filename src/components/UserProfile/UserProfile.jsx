@@ -119,22 +119,23 @@ function UserProfile(props) {
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
-    const fetchInitial = async () => {
-      const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
-      try {
-        const response = await axios.get(url);
-        const test = response.data.map(item => item.teamCode).filter(Boolean);
-        const test2 = test
-          .map(item => item)
-          .filter((item, index, array) => array.indexOf(item) === index);
-        setInputAutoComplete(test2);
-        setInputAutoStatus(response.status);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchInitial();
+    fetchTeamCodeAllUsers();
   }, []);
+
+  const fetchTeamCodeAllUsers = async () => {
+    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+    try {
+      const response = await axios.get(url);
+      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
+      const stringNoRepeat = stringWithValue
+        .map(item => item)
+        .filter((item, index, array) => array.indexOf(item) === index);
+      setInputAutoComplete(stringNoRepeat);
+      setInputAutoStatus(response.status);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     userProfileRef.current = userProfile;
@@ -555,6 +556,8 @@ function UserProfile(props) {
       }
       await loadUserProfile();
       await loadUserTasks();
+      setInputAutoStatus();
+      fetchTeamCodeAllUsers();
       setSaved(false);
     } catch (err) {
       alert('An error occurred while attempting to save this profile.');

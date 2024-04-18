@@ -1,22 +1,23 @@
-import { React, useState, useEffect, Fragment, useRef } from 'react';
-import { Button, Input, Col, Tooltip, ListGroup, ListGroupItem, Spinner } from 'reactstrap';
+import { React, useState, useEffect, useRef } from 'react';
+import { Button, Col, Tooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 const UserTeamsTable = props => {
   const [tooltipOpen, setTooltip] = useState(false);
 
-  const [showDropdown, setShowDropdown] = useState(true);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const [innerWidth, setInnerWidth] = useState();
 
   const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState([]);
 
-  const [testNew, setTestNew] = useState('');
+  const [filterAutocomplete, setFilterAutocomplete] = useState('');
 
   const [teamCode, setTeamCode] = useState(
     props.userProfile ? props.userProfile.teamCode : props.teamCode,
@@ -24,50 +25,39 @@ const UserTeamsTable = props => {
 
   const refDropdown = useRef();
 
-  useEffect(() => {
-    const handleClickOutside = event =>
-      refDropdown.current && !refDropdown.current.contains(event.target)
-        ? setShowDropdown(false)
-        : null;
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [refDropdown]);
-
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
-  let test = false;
-
-  const handleCodeChange = e => {
-    !test ? setTestNew(e.target.value) : null;
-    const regexTest = fullCodeRegex.test(test ? e : e.target.value);
+  const handleCodeChange = (e, autoComplete) => {
+    !autoComplete ? setFilterAutocomplete(e.target.value) : null;
+    const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
     if (regexTest) {
       props.setCodeValid(true);
-      setTeamCode(test ? e : e.target.value);
+      setTeamCode(autoComplete ? e : e.target.value);
       if (props.userProfile) {
-        props.setUserProfile({ ...props.userProfile, teamCode: test ? e : e.target.value });
+        props.setUserProfile({ ...props.userProfile, teamCode: autoComplete ? e : e.target.value });
       } else {
-        props.onAssignTeamCode(test ? e : e.target.value);
+        props.onAssignTeamCode(autoComplete ? e : e.target.value);
       }
     } else {
-      setTeamCode(test ? e : e.target.value);
+      setTeamCode(autoComplete ? e : e.target.value);
       props.setCodeValid(false);
     }
-    test ? setShowDropdown(false) : null;
-    test = false;
+    autoComplete ? setShowDropdown(false) : null;
+    autoComplete = false;
   };
 
   useEffect(() => {
-    if (testNew !== '') {
+    if (filterAutocomplete !== '') {
       const isMatchingSearch = props.inputAutoComplete.filter(item =>
-        item.toLowerCase().includes(testNew.toLowerCase()),
+        item.toLowerCase().includes(filterAutocomplete.toLowerCase()),
       );
       setArrayInputAutoComplete(isMatchingSearch);
     } else {
       setArrayInputAutoComplete(props.inputAutoComplete);
     }
-  }, [testNew, props.inputAutoComplete]);
+  }, [filterAutocomplete, props.inputAutoComplete]);
 
   useEffect(() => {
     setInnerWidth(window.innerWidth);
@@ -142,70 +132,15 @@ const UserTeamsTable = props => {
               )}
               <Col md="2" style={{ padding: '0' }}>
                 {props.canEditTeamCode ? (
-                  <section ref={refDropdown}>
-                    <Input
-                      id="teamCode"
-                      value={teamCode}
-                      onChange={handleCodeChange}
-                      placeholder="X-XXX"
-                      onFocus={() => setShowDropdown(true)}
-                    />
-
-                    {showDropdown ? (
-                      <div
-                        style={
-                          arrayInputAutoComplete.length <= 3 && props.inputAutoStatus === 200
-                            ? { height: 'auto', width: 'auto' }
-                            : { height: '6rem', width: 'auto' }
-                        }
-                        className=" overflow-auto mb-2"
-                      >
-                        {props.inputAutoStatus === 200 ? (
-                          arrayInputAutoComplete.length === 0 ? (
-                            <p
-                              className="m-0 pb-1 pt-1 d-flex justify-content-center  align-items-center  list-group-item-action"
-                              style={{
-                                border: '1px solid #ccc',
-                                backgroundColor: '#fff',
-                              }}
-                            >
-                              No options
-                            </p>
-                          ) : (
-                            arrayInputAutoComplete.map(item => {
-                              return (
-                                <div key={item}>
-                                  <p
-                                    className="m-0 pb-1 pt-1 d-flex justify-content-center  align-items-center  list-group-item-action"
-                                    style={{
-                                      cursor: 'pointer',
-                                      border: '1px solid #ccc',
-                                      backgroundColor: '#fff',
-                                    }}
-                                    onClick={() => handleCodeChange(item, (test = true))}
-                                  >
-                                    {item}
-                                  </p>
-                                </div>
-                              );
-                            })
-                          )
-                        ) : (
-                          <section
-                            className="h-100 d-flex justify-content-center align-items-center "
-                            style={{
-                              border: '1px solid #ccc',
-                              backgroundColor: '#fff',
-                              borderBottomRightRadius: '10px',
-                              borderBottomLeftRadius: '10px',
-                            }}
-                          >
-                            <Spinner color="primary"></Spinner>
-                          </section>
-                        )}
-                      </div>
-                    ) : null}
-                  </section>
+                  <AutoCompleteTeamCode
+                    refDropdown={refDropdown}
+                    teamCode={teamCode}
+                    showDropdown={showDropdown}
+                    handleCodeChange={handleCodeChange}
+                    setShowDropdown={setShowDropdown}
+                    arrayInputAutoComplete={arrayInputAutoComplete}
+                    inputAutoStatus={props.inputAutoStatus}
+                  />
                 ) : (
                   <div style={{ paddingTop: '6px', textAlign: 'center' }}>
                     {teamCode == '' ? 'No assigned team code' : teamCode}
@@ -295,70 +230,15 @@ const UserTeamsTable = props => {
               </Col>
               <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
                 {props.canEditTeamCode ? (
-                  <section ref={refDropdown}>
-                    <Input
-                      id="teamCode"
-                      value={teamCode}
-                      onChange={handleCodeChange}
-                      placeholder="X-XXX"
-                      onFocus={() => setShowDropdown(true)}
-                    />
-
-                    {showDropdown ? (
-                      <div
-                        style={
-                          arrayInputAutoComplete.length <= 3 && props.inputAutoStatus === 200
-                            ? { height: 'auto', width: 'auto' }
-                            : { height: '8rem', width: 'auto' }
-                        }
-                        className=" overflow-auto mb-2 "
-                      >
-                        {props.inputAutoStatus === 200 ? (
-                          arrayInputAutoComplete.length === 0 ? (
-                            <p
-                              className="m-0 pb-1 pt-1 d-flex justify-content-center  align-items-center  list-group-item-action"
-                              style={{
-                                border: '1px solid #ccc',
-                                backgroundColor: '#fff',
-                              }}
-                            >
-                              No options
-                            </p>
-                          ) : (
-                            arrayInputAutoComplete.map(item => {
-                              return (
-                                <div key={item}>
-                                  <p
-                                    className="m-0 pb-1 pt-1 d-flex justify-content-center  align-items-center  list-group-item-action"
-                                    style={{
-                                      cursor: 'pointer',
-                                      border: '1px solid #ccc',
-                                      backgroundColor: '#fff',
-                                    }}
-                                    onClick={() => handleCodeChange(item, (test = true))}
-                                  >
-                                    {item}
-                                  </p>
-                                </div>
-                              );
-                            })
-                          )
-                        ) : (
-                          <section
-                            className="h-100 d-flex justify-content-center align-items-center "
-                            style={{
-                              border: '1px solid #ccc',
-                              backgroundColor: '#fff',
-                              borderBottomRightRadius: '10px',
-                              borderBottomLeftRadius: '10px',
-                            }}
-                          >
-                            <Spinner color="primary"></Spinner>
-                          </section>
-                        )}
-                      </div>
-                    ) : null}
-                  </section>
+                  <AutoCompleteTeamCode
+                    refDropdown={refDropdown}
+                    teamCode={teamCode}
+                    showDropdown={showDropdown}
+                    handleCodeChange={handleCodeChange}
+                    setShowDropdown={setShowDropdown}
+                    arrayInputAutoComplete={arrayInputAutoComplete}
+                    inputAutoStatus={props.inputAutoStatus}
+                  />
                 ) : (
                   <div style={{ paddingTop: '6px', textAlign: 'center' }}>
                     {teamCode == '' ? 'No assigned team code' : teamCode}
