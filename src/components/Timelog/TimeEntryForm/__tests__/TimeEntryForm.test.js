@@ -8,7 +8,6 @@ import { authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock } 
 import { renderWithProvider, renderWithRouterMatch } from '../../../../__tests__/utils';
 import TimeEntryForm from '../TimeEntryForm';
 import * as actions from '../../../../actions/timeEntries';
-import { icon } from '@fortawesome/fontawesome-svg-core';
 
 const mockStore = configureStore([thunk]);
 
