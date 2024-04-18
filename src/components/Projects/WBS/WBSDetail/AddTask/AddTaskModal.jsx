@@ -322,14 +322,14 @@ function AddTaskModal(props) {
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="table table-bordered responsive">
             <div>
-              <div className="m-0 border d-flex">
-                <span className="border p-2 " data-tip="WBS ID" style={{width: "30%"}}>
+              <div className="m-0 border d-flex align-items-center">
+                <span className="p-1 " data-tip="WBS ID" style={{width: "30%"}}>
                   WBS #
                 </span>
 
                 <span className="border-left flex-grow-1 p-2">{newTaskNum}</span>
               </div>
-              <div className="m-0 border d-flex" >
+              <div className="m-0 border d-flex align-items-center" >
                 <span className="p-1" style={{width: "30%"}}>Task Name</span>
                 <span className="border-left p-1 flex-grow-1">
                   {/* Fix Task-name formatting - by Sucheta */}
@@ -343,7 +343,7 @@ function AddTaskModal(props) {
                   />
                 </span>
               </div >
-              <div className='m-0 border d-flex'>
+              <div className='m-0 border d-flex align-items-center'>
                 <span className="p-1" style={{width: "30%"}} >Priority</span>
                 <span className='border-left p-1 flex-grow-1'>
                   <select id="priority" onChange={e => setPriority(e.target.value)} ref={priorityRef}>
@@ -367,7 +367,7 @@ function AddTaskModal(props) {
                   
                 </span>
               </div>
-              <div className="m-0 border d-flex">
+              <div className="m-0 border d-flex align-items-center">
                 <span className="p-1" style={{width: "30%"}}>Assigned</span>
                 <span className="border-left p-1">
                   <div className="flex-row d-inline align-items-center" >
@@ -402,10 +402,10 @@ function AddTaskModal(props) {
                   </div>
                 </span>
               </div>
-              <div className="m-0 d-flex border">
+              <div className="m-0 d-flex border align-items-center">
                 <span className= "p-1" style={{width: "30%"}}>Status</span>
                 <span className="p-1 border-left" style={{width: "70%"}}>
-                 <div className="d-flex align-items-center"> 
+                 <div className="d-flex align-items-center flex-wrap"> 
                   <span className="form-check form-check-inline mr-5">
                       <input
                         className="form-check-input"
@@ -435,7 +435,7 @@ function AddTaskModal(props) {
                       </label>
                   </span>
                  </div>
-                 <div className="d-flex align-items-center">
+                 <div className="d-flex align-items-center flex-wrap">
                   <span className="form-check form-check-inline mr-5">
                         <input
                           className="form-check-input"
@@ -469,7 +469,7 @@ function AddTaskModal(props) {
                  </div>
                 </span>
               </div>
-              <div className="d-flex">
+              <div className="d-flex align-items-center">
                 <span className="p-1" style={{width: "30%"}}>
                   Hours
                 </span>
@@ -547,7 +547,7 @@ function AddTaskModal(props) {
                   </div>
                 </span>
               </div>
-              <div className="d-flex border" >
+              <div className="d-flex border align-items-center" >
                 <span className="p-1" style={{width: "30%"}}>Links</span>
                 <span className="p-1 border-left" style={{width: "70%"}}>
                   <div className="d-flex flex-row">
@@ -583,7 +583,7 @@ function AddTaskModal(props) {
                   </div>
                 </span>
               </div>
-              <div className="d-flex border">
+              <div className="d-flex border align-items-center">
                 <span  className= "p-1" style={{width: "30%"}}>Category</span>
                 <span  className="p-1 border-left" style={{width: "70%"}}>
                   <select value={category} onChange={e => setCategory(e.target.value)}>
@@ -595,8 +595,8 @@ function AddTaskModal(props) {
                   </select>
                 </span>
               </div>
-              <tr className='w-100'>
-                <td scope="col" colSpan="3">
+              <div >
+                <div scope="col" colSpan="2" className='border p-1' >
                   Why this Task is Important
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -607,10 +607,10 @@ function AddTaskModal(props) {
                     value={whyInfo}
                     onEditorChange={content => setWhyInfo(content)}
                   />
-                </td>
-              </tr>
-              <tr>
-                <td scope="col" colSpan="2">
+                </div>
+              </div>
+              <div>
+                <div scope="col" colSpan="2" className="border p-1">
                   Design Intent
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -621,10 +621,10 @@ function AddTaskModal(props) {
                     value={intentInfo}
                     onEditorChange={content => setIntentInfo(content)}
                   />
-                </td>
-              </tr>
-              <tr>
-                <td scope="col" colSpan="2">
+                </div>
+              </div>
+              <div>
+                <div scope="col" colSpan="2" className="border p-1"> 
                   Endstate
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -635,11 +635,11 @@ function AddTaskModal(props) {
                     value={endstateInfo}
                     onEditorChange={content => setEndstateInfo(content)}
                   />
-                </td>
-              </tr>
-              <tr>
-                <td scope="col">Start Date</td>
-                <td scope="col">
+                </div>
+              </div>
+              <div className="d-flex border">
+                <span scope="col" style={{width: "30%"}} className="p-1">Start Date</span>
+                <span scope="col" className="border-left p-1">
                   <div>
                     <DayPickerInput
                       format={FORMAT}
@@ -652,11 +652,11 @@ function AddTaskModal(props) {
                       {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
                     </div>
                   </div>
-                </td>
-              </tr>
-              <tr>
-                <td scope="col">End Date</td>
-                <td scope="col">
+                </span>
+              </div>
+              <div className="d-flex border align-items-center">
+                <span scope="col" style={{width: "30%"}} className="p-1">End Date</span>
+                <span scope="col" className='border-left p-1'>
                   <DayPickerInput
                     format={FORMAT}
                     formatDate={formatDate}
@@ -667,8 +667,8 @@ function AddTaskModal(props) {
                   <div className="warning">
                     {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
                   </div>
-                </td>
-              </tr>
+                </span>
+              </div>
             </div>
           </div>
         </ModalBody>
