@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, Dro
 import { useSelector } from 'react-redux';
 import './style.css';
 import './reviewButton.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
@@ -13,11 +13,9 @@ const ReviewButton = ({
   user,
   task,
   updateTask,
-  userPermission
+  userPermission, 
 }) => {
- 
-
-
+  const darkMode = useSelector(state => state.theme.darkMode)
 
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
@@ -87,14 +85,14 @@ const ReviewButton = ({
 
   const buttonFormat = () => {
     if (user.personId == myUserId && reviewStatus == "Unsubmitted") {
-      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={boxStyle}>
+      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={darkMode ? boxStyleDark : boxStyle}>
         Submit for Review
       </Button>;
      } else if (reviewStatus == "Submitted")  {
       if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || userPermission) {
         return (
           <UncontrolledDropdown>
-            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={boxStyle}>
+            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
               Ready for Review
             </DropdownToggle>
             <DropdownMenu>

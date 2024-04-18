@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Button,
@@ -13,15 +13,15 @@ import {
   UncontrolledPopover,
 } from 'reactstrap';
 import { connect } from 'react-redux';
+import { boxStyle } from 'styles';
 import { updateBadge, deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
-import { boxStyle } from 'styles';
 import './Badge.css';
 
-const BadgeDevelopmentTable = props => {
+function BadgeDevelopmentTable(props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('');
@@ -68,6 +68,10 @@ const BadgeDevelopmentTable = props => {
             returnText = `${badegValue.totalHrs} Hours Total In ${badegValue.category} Category`;
           }
           break;
+        default:
+          // Handle the default case when the badge type doesn't match any specific cases
+          returnText = '';
+          break;
       }
     }
     return returnText;
@@ -96,8 +100,8 @@ const BadgeDevelopmentTable = props => {
     setType(text);
   };
 
-  const onBadgeRankingSort = order => {
-    setOrder(order);
+  const onBadgeRankingSort = rankingOrder => {
+    setOrder(rankingOrder);
   };
 
   const resetFilters = () => {
@@ -108,7 +112,7 @@ const BadgeDevelopmentTable = props => {
   };
 
   const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
+    const filteredList = allBadges.filter(badge => {
       if (
         badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
         badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 &&
@@ -116,6 +120,7 @@ const BadgeDevelopmentTable = props => {
       ) {
         return badge;
       }
+      return 0;
     });
 
     if (order === 'Ascending') {
@@ -126,6 +131,7 @@ const BadgeDevelopmentTable = props => {
         if (a.ranking < b.ranking) return -1;
         if (a.badgeName > b.badgeName) return 1;
         if (a.badgeName < b.badgeName) return -1;
+        return 0;
       });
     } else if (order === 'Descending') {
       filteredList.sort((a, b) => {
@@ -135,39 +141,40 @@ const BadgeDevelopmentTable = props => {
         if (a.ranking < b.ranking) return 1;
         if (a.badgeName > b.badgeName) return 1;
         if (a.badgeName < b.badgeName) return -1;
+        return 0;
       });
     }
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(props.allBadgeData);
+  const filteredBadges = filterBadges(props.allBadgeData);
 
   // Badge Development checkbox
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
-    const checkValue = badgeValue.showReport ? true : false;
+    const checkValue = !!badgeValue.showReport;
     return (
       <div className="badge_check">
-      <input
-        type="checkbox"
-        id={badgeValue._id}
-        name="reportable"
-        checked={badgeValue.showReport || false}
-        onChange={e => {
-          const updatedValue = { ...badgeValue, showReport: !checkValue };
-          props.updateBadge(badgeValue._id, updatedValue);
-        }}
-            style={{
-        display: 'inline-block',
-        width: '20px',
-        height: '20px',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-        backgroundColor: checkValue ? '#007bff' : 'transparent',
-        cursor: 'pointer',
-      }}
-      />
-    </div>
+        <input
+          type="checkbox"
+          id={badgeValue._id}
+          name="reportable"
+          checked={badgeValue.showReport || false}
+          onChange={() => {
+            const updatedValue = { ...badgeValue, showReport: !checkValue };
+            props.updateBadge(badgeValue._id, updatedValue);
+          }}
+          style={{
+            display: 'inline-block',
+            width: '20px',
+            height: '20px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            backgroundColor: checkValue ? '#007bff' : 'transparent',
+            cursor: 'pointer',
+          }}
+        />
+      </div>
     );
   };
 
@@ -193,8 +200,8 @@ const BadgeDevelopmentTable = props => {
             <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
-                <img src={value.imageUrl} id={'popover_' + value._id} />
-                <UncontrolledPopover trigger="hover" target={'popover_' + value._id}>
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className="text-center">
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />
                     <CardBody>
@@ -216,7 +223,7 @@ const BadgeDevelopmentTable = props => {
               <td>{value.badgeName}</td>
               <td className="d-xl-table-cell d-none">{value.description || ''}</td>
               <td>{value.type || ''}</td>
-              <td className='d-xl-table-cell d-none'>{detailsText(value)}</td>
+              <td className="d-xl-table-cell d-none">{detailsText(value)}</td>
               <td>{value.ranking || 0}</td>
               <td>
                 <span className="badgemanagement-actions-cell">
@@ -240,7 +247,7 @@ const BadgeDevelopmentTable = props => {
                   </Button>
                 </span>
               </td>
-              <td style={{textAlign:"center"}}>{reportBadge(value)}</td>
+              <td style={{ textAlign: 'center' }}>{reportBadge(value)}</td>
             </tr>
           ))}
         </tbody>
@@ -254,10 +261,10 @@ const BadgeDevelopmentTable = props => {
         badgeName={deleteName}
       />
       <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()}>
-        <ModalBody className={'badge-message-background-' + props.color}>
-          <p className={'badge-message-text-' + props.color}>{props.message}</p>
+        <ModalBody className={`badge-message-background-${props.color}`}>
+          <p className={`badge-message-text-${props.color}`}>{props.message}</p>
         </ModalBody>
-        <ModalFooter className={'badge-message-background-' + props.color}>
+        <ModalFooter className={`badge-message-background-${props.color}`}>
           <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK
           </Button>
@@ -265,7 +272,7 @@ const BadgeDevelopmentTable = props => {
       </Modal>
     </Container>
   );
-};
+}
 
 const mapStateToProps = state => ({
   message: state.badge.message,
