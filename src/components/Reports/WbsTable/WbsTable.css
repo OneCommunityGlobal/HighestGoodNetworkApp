@@ -19,6 +19,7 @@
   align-items: center;
   padding: 0 16px;
   border-bottom: 3px solid #f8f7f8;
+  text-align: left;
 }
 .wbs-table-cell {
   flex: 1 !important;
@@ -32,6 +33,10 @@
 
 .wbs-table-name-column {
   overflow-wrap: anywhere;
+}
+
+.wbs-table-active-column {
+  text-align: center;
 }
 
 .wbs-table {

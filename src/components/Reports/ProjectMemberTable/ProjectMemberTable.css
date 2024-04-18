@@ -17,6 +17,10 @@
   overflow-wrap: anywhere;
 }
 
+.project-member-table-active-column {
+  text-align: center;
+}
+
 .reports-table-head-members {
   background-color: #eee7f8;  
   display: grid;
@@ -27,6 +31,7 @@
   padding: 0 16px;
   border-bottom: 3px solid #f8f7f8;
   border-radius: 4px;
+  text-align: left;
 }
 
 .project-member-table-row {
@@ -37,6 +42,7 @@
   align-items: center;
   padding: 0 16px;
   border-bottom: 3px solid #f8f7f8;
+  text-align: left;
 }
 
 
