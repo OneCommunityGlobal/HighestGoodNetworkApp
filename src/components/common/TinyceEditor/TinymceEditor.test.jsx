@@ -42,4 +42,52 @@ describe('TinyMCEEditor Component', () => {
       expect(wrapper).toBeInTheDocument();
     });
   });
+
+  it('should render the component with empty props', () => {
+    const mockProps = {
+      label: '',
+      name: '',
+      className: '',
+      error: '',
+      value: '',
+    };
+    render(<TinyMCEEditor {...mockProps} />);
+  });
+
+  it('should render the component with long label or name props', () => {
+    const mockProps = {
+      label: 'This is a long label that might be longer than expected',
+      name: 'ThisIsALongNameThatMightBeLongerThanExpected',
+      className: 'custom-class',
+      error: '',
+      value: '',
+    };
+  
+    render(<TinyMCEEditor {...mockProps} />);
+  
+    expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();
+    expect(screen.getByLabelText(mockProps.label)).toHaveAttribute('id', mockProps.name);
+  });
+
+  it('should render the component with different config props', () => {
+    const mockProps = {
+      label: 'Test Label',
+      name: 'testName',
+      className: 'custom-class',
+      error: '',
+      value: '',
+    };
+  
+    const config = {
+      plugins: 'autolink link image lists print preview',
+      toolbar: 'undo redo | bold italic | alignleft aligncenter alignright',
+    };
+  
+    render(<TinyMCEEditor {...mockProps} config={config} />);
+    
+    const editorTextarea = document.getElementById(mockProps.name);
+    expect(editorTextarea).toBeInTheDocument();
+    expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();
+    expect(editorTextarea).toBeInTheDocument();
+  });
 });
