@@ -315,7 +315,8 @@ const SummaryBar = props => {
                   </div>
                 )}
 
-                <div className={`col-8 d-flex justify-content-center align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}>
+                <div className={`col-8 d-flex justify-content-center align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`} 
+                     style={{border: "1px solid black"}}>
                   <div className="align-items-center" id="timelogweeklychart">
                     <div className="align-items-center med_text_summary">
                       Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
@@ -374,6 +375,7 @@ const SummaryBar = props => {
 
                 <div
                   className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                  style={{border: "1px solid black"}}
                 >
                   <div className="m-auto p-2 text-center">
                     <font onClick={props.toggleSubmitForm} className="med_text_summary align-middle summary-toggle" size="3">
