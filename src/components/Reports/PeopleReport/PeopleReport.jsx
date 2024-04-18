@@ -28,6 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
+import {updateRehireableStatus} from '../../../actions/userManagement'
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -121,6 +122,7 @@ class PeopleReport extends Component {
           ...timeEntries,
         },
       });
+
     }
   }
 
@@ -162,7 +164,7 @@ class PeopleReport extends Component {
     });
 
     try {
-      await updateUserProfileProperty(userProfile, 'isRehireable', rehireValue);
+      await updateRehireableStatus(userProfile, rehireValue);
       toast.success(`You have changed the rehireable status of this user to ${rehireValue}`);
     } catch (err) {
       // eslint-disable-next-line no-alert
@@ -290,6 +292,7 @@ class PeopleReport extends Component {
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
     const { tangibleHoursReportedThisWeek, auth, match } = this.props;
 
+
     let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
       const hours = hoursByCategory
@@ -416,7 +419,12 @@ class PeopleReport extends Component {
         peopleData.taskData.push(task);
       }
 
-      return <PeopleTableDetails taskData={peopleData.taskData} />;
+      return (
+        <PeopleTableDetails
+          taskData={peopleData.taskData}
+          showFilter={tangibleHoursReportedThisWeek !== 0}
+        />
+      );
     };
 
     const renderProfileInfo = () => {
@@ -438,7 +446,7 @@ class PeopleReport extends Component {
             <p>Role: {role}</p>
             <p>Title: {jobTitle}</p>
 
-            {endDate ? (
+            {/* {endDate ? ( */}
               <div className="rehireable">
                 <Checkbox
                   value={isRehireable}
@@ -446,9 +454,9 @@ class PeopleReport extends Component {
                   label="Rehireable"
                 />
               </div>
-            ) : (
+            {/* ) : (
               ''
-            )}
+            )} */}
 
             <div className="stats">
               <div>
@@ -499,7 +507,7 @@ class PeopleReport extends Component {
     return (
       <div className="container-people-wrapper">
         <ReportPage renderProfile={renderProfileInfo}>
-          <div className="people-report-time-logs-wrapper">
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper": ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -559,14 +567,14 @@ class PeopleReport extends Component {
                     timeEntries={timeEntries}
                   />
                   <div className="visualizationDiv">
+                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                  </div>
+                  <div className="visualizationDiv">
                     <InfringementsViz
                       infringements={infringements}
                       fromDate={fromDate}
                       toDate={toDate}
                     />
-                  </div>
-                  <div className="visualizationDiv">
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
                   </div>
                   <div className="visualizationDivRow">
                     <div className="BadgeSummaryDiv">
@@ -584,6 +592,53 @@ class PeopleReport extends Component {
               </div>
             </ReportPage.ReportBlock>
           </div>
+          {/* {tangibleHoursReportedThisWeek === 0 ? (
+            <div className="report-no-log-message">No task has been logged this week...</div>
+          ) : (
+            <div className="mobile-people-table">
+              <ReportPage.ReportBlock>
+                <div className="intro_date">
+                  <h4>Tasks contributed</h4>
+                </div>
+
+                <PeopleDataTable />
+
+                <div className="Infringementcontainer">
+                  <div className="InfringementcontainerInner">
+                    <UserProject userProjects={userProjects} />
+                    <Infringements
+                      infringements={infringements}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                      timeEntries={timeEntries}
+                    />
+                    <div className="visualizationDiv">
+                      <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                    </div>
+                    <div className="visualizationDiv">
+                      <InfringementsViz
+                        infringements={infringements}
+                        fromDate={fromDate}
+                        toDate={toDate}
+                      />
+                    </div>
+                    <div className="visualizationDivRow">
+                      <div className="BadgeSummaryDiv">
+                        <BadgeSummaryViz
+                          authId={auth.user.userid}
+                          userId={match.params.userId}
+                          badges={userProfile.badgeCollection}
+                        />
+                      </div>
+                      <div className="BadgeSummaryPreviewDiv">
+                        <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ReportPage.ReportBlock>
+            </div>
+          )} */}
         </ReportPage>
       </div>
     );
