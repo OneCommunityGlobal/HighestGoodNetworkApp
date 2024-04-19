@@ -383,8 +383,8 @@ function LeaderBoard({
                             moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                           ) &&
                           currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
-                          ? 'rgba(128, 128, 128, 0.5)'
-                          : undefined,
+                            ? 'rgba(128, 128, 128, 0.5)'
+                            : undefined,
                       }}
                     >
                       {item.name}
@@ -397,15 +397,15 @@ function LeaderBoard({
                           .subtract(1, 'day')
                           .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
                       ) > 0 ? (
-                      <sup>
-                        {' '}
-                        +
-                        {Math.floor(
-                          moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
-                            .subtract(1, 'day')
-                            .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
-                        )}
-                      </sup>
+                        <sup>
+                          {' '}
+                          +
+                          {Math.floor(
+                            moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+                              .subtract(1, 'day')
+                              .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+                          )}
+                        </sup>
                       ) : null}
                     </Link>
                     &nbsp;&nbsp;&nbsp;
