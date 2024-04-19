@@ -145,7 +145,6 @@ const Timelog = props => {
   useEffect(() => {
     if (dataLoaded) {
       const userHaveTask = doesUserHaveTaskWithWBS(disPlayUserTasks, authUser.userid);
-      console.log("userTask", userHaveTask);
       const role = authUser.role;
       let tab = 0;
       if (!userHaveTask) {
