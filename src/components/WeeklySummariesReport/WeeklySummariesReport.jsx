@@ -86,7 +86,7 @@ export class WeeklySummariesReport extends Component {
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner';
+    this.codeEditPermission = hasPermission('editTeamCode') || auth.user.role === 'Owner' || auth.user.role === 'Administrator';
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -232,52 +232,56 @@ export class WeeklySummariesReport extends Component {
   }
 
   teamCodeChange = (oldTeamCode, newTeamCode, userId) => {
-    this.setState((state) => {
-      const { selectedCodes, teamCodes, summaries } = state;
-      const regExp = /\(([^)]+)\)/;
+    this.setState((prevState) => {
+      let { teamCodes, summaries, selectedCodes } = prevState;
 
-      // find summary within summaries that matches _id & change that summary's teamCode
-      const foundSummary = summaries.find(obj => obj._id === userId);
-      foundSummary.teamCode = newTeamCode;
+      // Find and update the user's team code in summaries
+      summaries = summaries.map((summary) => {
+        if (summary._id === userId) {
+          return { ...summary, teamCode: newTeamCode };
+        }
+        return summary;
+      });
 
-      // within teamCodes, decrease num on label for oldTeamCode 
-      const foundOldTeam = teamCodes.find(obj => obj.value === oldTeamCode);
-      let foundOldTeamLabelNum = Number(regExp.exec(foundOldTeam.label)[1]);
-      // if that num of label is 1 (and will become 0), remove that teamCode entirely from teamCode
-      if (foundOldTeamLabelNum === 1) {
-        console.log(`this is the oldTeamCode w/ 1 person and will be removed - ${oldTeamCode}`);
-        const foundOldTeamIndex = teamCodes.findIndex(obj => obj.value === oldTeamCode);
-        teamCodes.splice(foundOldTeamIndex, 1);
-        // remove non-existent oldTeamCode from selection
-        const foundSelectedOldTeamIndex = selectedCodes.findIndex(obj => obj.value === oldTeamCode);
-        selectedCodes.splice(foundSelectedOldTeamIndex, 1);
-      }
-      // otherwise, subtract 1 from the oldTeam label number
-      else {
-        foundOldTeamLabelNum -= 1;
-        foundOldTeam.label = `${oldTeamCode} (${foundOldTeamLabelNum})`;
+      // Count the occurrences of each team code
+      const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
+        acc[teamCode] = (acc[teamCode] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Update teamCodes and selectedCodes
+      teamCodes = Object.entries(teamCodeCounts).map(([code, count]) => ({
+        label: `${code} (${count})`,
+        value: code,
+      }));
+
+      selectedCodes = selectedCodes.map((selected) => {
+        if (selected.value === oldTeamCode || selected.value === newTeamCode) {
+          const count = teamCodeCounts[selected.value];
+          return count ? { ...selected, label: `${selected.value} (${count})` } : null;
+        }
+        return selected;
+      }).filter(Boolean); // Remove any null entries
+
+      // If newTeamCode is not already selected, add it to selectedCodes
+      if (!selectedCodes.find((code) => code.value === newTeamCode)) {
+        selectedCodes.push({
+          label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
+          value: newTeamCode,
+        });
       }
 
-      const foundNewTeam = teamCodes.find(obj => obj.value === newTeamCode);
-      // if newTeam code already exists, find that and add 1 to its value
-      if (foundNewTeam) {
-        let foundNewTeamLabelNum = Number(regExp.exec(foundNewTeam.label)[1]);
-        foundNewTeamLabelNum += 1;
-        foundNewTeam.label = `${newTeamCode} (${foundNewTeamLabelNum})`;
-      }
-      // else newTeam code does not exist, create a team code with value of newTeamCode & label of newTeamCode (1)
-      else {
-        teamCodes.push({ label: `${newTeamCode} (1)`, value: newTeamCode });
-      }
-      teamCodes.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+      // Sort teamCodes by label
+      teamCodes.sort((a, b) => a.label.localeCompare(b.label));
 
-      return {
-        selectedCodes: [...selectedCodes],
-        teamCodes: [...teamCodes],
-        summaries: [...summaries],
-      }
+      return { summaries, teamCodes, selectedCodes };
     });
-  }
+  };
+
+
+
+
+
 
   // componentDidUpdate(preProps) {
   //   const {summaries} = preProps
