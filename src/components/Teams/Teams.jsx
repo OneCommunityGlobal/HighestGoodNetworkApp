@@ -49,7 +49,6 @@ class Teams extends React.PureComponent {
     // Initiating the teams fetch action.
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();
-    // console.log('teams: props', this.props);
     this.sortTeamsByModifiedDate();
   }
 
@@ -59,8 +58,14 @@ class Teams extends React.PureComponent {
       const teamsTable = this.state.sortedTeams.map(team => {
         return team;
       });
-
+  
       this.setState({ teamsTable });
+    }
+  
+    if (prevProps.state.allTeamsData.allTeams !== this.props.state.allTeamsData.allTeams) {
+      // Teams have changed, update or re-fetch them
+      this.props.getAllUserTeams();
+      this.props.getAllUserProfile();
     }
   }
 
@@ -71,10 +76,9 @@ class Teams extends React.PureComponent {
     this.state.teams = this.teamTableElements(allTeams);
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
-    // console.log(this.state.teams[0].props.index);
 
     return (
-      <Container fluid>
+      <Container fluid className="teams-container">
         {fetching ? (
           <Loading />
         ) : (
@@ -89,7 +93,8 @@ class Teams extends React.PureComponent {
                 onSearch={this.onWildCardSearch}
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
               />
-              <table className="table table-bordered table-responsive-sm">
+
+              < table className="table table-bordered table-responsive-sm">
                 <thead>
                   <TeamTableHeader 
                     onTeamNameSort={this.toggleTeamNameSort} 
@@ -106,7 +111,7 @@ class Teams extends React.PureComponent {
                   )
                 }
               </table>
-            </div>
+              </div>
           </React.Fragment>
         )}
       </Container>
@@ -352,7 +357,7 @@ class Teams extends React.PureComponent {
         toast.error(updateTeamResponse)
       }
     } else {
-      const postResponse = await this.props.postNewTeam(name);
+      const postResponse = await this.props.postNewTeam(name, true);
       if (postResponse.status === 200) {
         toast.success('Team added successfully');
       } else {

@@ -5,42 +5,58 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { deleteTimeEntry } from '../../actions/timeEntries';
 import { updateUserProfile } from '../../actions/userProfile';
+import fixDiscrepancy from 'utils/fixDiscrepancy';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
+import {toast} from 'react-toastify';
 
-const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassification }) => {
+const DeleteModal = ({ timeEntry, projectCategory, taskClassification }) => {
   const [isOpen, setOpen] = useState(false);
   const dispatch = useDispatch();
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
   const deleteEntry = async event => {
+    const { isTangible, personId, hours, minutes } = timeEntry;
+    const url = ENDPOINTS.USER_PROFILE(personId);
+
     if (event) {
       event.preventDefault();
     }
 
-    dispatch(deleteTimeEntry(timeEntry));
-    //update hours
-    const formattedHours = parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
-    if (!timeEntry.isTangible) {
-      userProfile.totalIntangibleHrs -= formattedHours;
-    } else {
-      const category = projectCategory ? projectCategory : taskClassification;
-      const { hoursByCategory } = userProfile;
-      hoursByCategory[category] -= formattedHours;
+    try {
+      const { data: userProfile } = await axios.get(url);
+
+      fixDiscrepancy(userProfile);
+
+      const deleteTimeStatus = await dispatch(deleteTimeEntry(timeEntry));
+      if (deleteTimeStatus != 200){
+        throw new Error ('error occurred while dispatching delete time entry action');
+      }
+
+      const formattedHours = Number((parseInt(hours) + parseInt(minutes) / 60).toFixed(2));
+      if (!isTangible) {
+        const totalIntangibleHours = Number(
+          (userProfile.totalIntangibleHrs - formattedHours).toFixed(2),
+          );
+          userProfile.totalIntangibleHrs = totalIntangibleHours;
+        } else {
+          const category = projectCategory ? projectCategory : taskClassification;
+          const { hoursByCategory } = userProfile;
+          hoursByCategory[category] -= formattedHours;
+        }
+        
+        const updatedUserProfile = {
+          ...userProfile,
+        };
+
+      await dispatch(updateUserProfile(updatedUserProfile));
+
+    } catch (err) {
+      toast.error(`Sorry an error occured: ${err.message}`)
     }
-
-    const newHour = (
-      userProfile.totalcommittedHours -
-      timeEntry.hours -
-      timeEntry.minutes / 60
-    ).toFixed(2);
-
-    const updatedUserProfile = {
-      ...userProfile,
-      totalcommittedHours: parseInt(newHour, 10),
-    };
-
-    dispatch(updateUserProfile(userProfile._id, updatedUserProfile));
   };
+
   return (
     <span>
       <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary" onClick={toggle} />

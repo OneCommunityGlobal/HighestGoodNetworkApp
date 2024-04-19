@@ -3,7 +3,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reacts
 
 const RequirementModal = ({ isOpen, toggle, handleCheckbox, isChecked }) => {
   return (
-    <Modal isOpen={isOpen} toggle={toggle}>
+    <Modal isOpen={isOpen} toggle={toggle} id='requirement-modal'>
       <ModalHeader toggle={toggle}>Requirements</ModalHeader>
       <ModalBody>
         Please only choose this option if you were born and lived for a fair amount of time (10+

@@ -78,3 +78,82 @@ export const updateEmailSubscription = (subscription=true) => {
     }
   };
 };
+
+export const addNonHgnUserEmailSubscription = (email='') => {
+  const url = ENDPOINTS.NON_HGN_EMAIL_SUBSCRIPTION;
+
+  return async () => {
+    try {
+      const response = await axios.post(url, { email});
+      console.log('Email sent successfully:', response);
+
+      // Display a success toast
+      toast.success('Send confirmation to email', {
+        position: 'top-center', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    } catch (error) {
+      console.error('Error sending email:', error);
+
+      // Display an error toast
+      toast.error('Email already exists or invalid', {
+        position: 'top-center', // You can adjust the position as needed
+        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      });
+    }
+  };
+};
+
+
+export const confirmNonHgnUserEmailSubscription = async (token = '') => {
+  const url = ENDPOINTS.CONFIRM_EMAIL_SUBSCRIPTION;
+
+  try {
+    const response = await axios.post(url, { token });
+
+    // Display a success toast
+    // toast.success('Successfully confirmed email subscription', {
+    //   position: 'top-center',
+    //   autoClose: 3000,
+    // });
+
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Error sending email:', error);
+
+    // Display an error toast
+    // toast.error('Error sending request', {
+    //   position: 'top-center',
+    //   autoClose: 3000,
+    // });
+
+    return { success: false, error: error };
+  }
+};
+
+
+export const removeNonHgnUserEmailSubscription = async (email = '') => {
+  const url = ENDPOINTS.REMOVE_EMAIL_SUBSCRIPTION;
+
+  try {
+    const response = await axios.post(url, { email });
+
+    // Display a success toast
+    // toast.success('Successfully confirmed email subscription', {
+    //   position: 'top-center',
+    //   autoClose: 3000,
+    // });
+
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Error sending email:', error);
+
+    // Display an error toast
+    // toast.error('Error sending request', {
+    //   position: 'top-center',
+    //   autoClose: 3000,
+    // });
+
+    return { success: false, error: error };
+  }
+};

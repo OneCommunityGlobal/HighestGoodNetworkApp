@@ -2,7 +2,7 @@ import { useState } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
 import './PeopleTableDetails.css';
-import { NewModal } from '../common/NewModal';
+import NewModal from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 
 function PeopleTableDetails(props) {
@@ -119,9 +119,10 @@ function PeopleTableDetails(props) {
             return null;
           }),
         )}
-        {value.resources?.map(res =>
+        {value.resources?.map((res, index) =>
           res.length > 2 ? (
             <button
+              key={index}
               type="button"
               className="name resourceMoreToggle"
               onClick={() => toggleMoreResources(value._id)}
@@ -165,26 +166,28 @@ function PeopleTableDetails(props) {
 
   return (
     <Container fluid className="wrapper">
-      <TableFilter
-        onTaskNameSearch={onTaskNameSearch}
-        searchPriority={searchPriority}
-        searchResources={searchResources}
-        searchStatus={searchStatus}
-        searchActive={searchActive}
-        searchAssign={searchAssign}
-        searchEstimatedHours={searchEstimatedHours}
-        resetFilters={resetFilters}
-        name={name}
-        order={order}
-        priority={priority}
-        status={status}
-        resources={resources}
-        active={active}
-        assign={assign}
-        estimatedHours={estimatedHours}
-        startDate={startDate}
-        EndDate={endDate}
-      />
+      {props.showFilter && (
+        <TableFilter
+          onTaskNameSearch={onTaskNameSearch}
+          searchPriority={searchPriority}
+          searchResources={searchResources}
+          searchStatus={searchStatus}
+          searchActive={searchActive}
+          searchAssign={searchAssign}
+          searchEstimatedHours={searchEstimatedHours}
+          resetFilters={resetFilters}
+          name={name}
+          order={order}
+          priority={priority}
+          status={status}
+          resources={resources}
+          active={active}
+          assign={assign}
+          estimatedHours={estimatedHours}
+          startDate={startDate}
+          EndDate={endDate}
+        />
+      )}
       <div className="people-table-row reports-table-head">
         <div>Task</div>
         <div>Priority</div>

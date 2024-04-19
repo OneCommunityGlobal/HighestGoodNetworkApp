@@ -7,6 +7,7 @@
   background-color: #faf7fd;
   padding: 40px 0 0 24px;
   align-items: start;
+  padding: 2vh 7vw;
 }
 
 .report-page-content {
@@ -46,5 +47,32 @@
   .report-page-content {
     justify-content: center;
     align-items: center;
+  }
+}
+
+
+@media (max-width: 435px) {
+
+  .report-page-content {
+    padding: 0px;
+  }
+
+  .report-page-wrapper {
+    padding: 20px;
+  }
+}
+
+.project-header{
+  font-size: 32px;
+  padding: 10px 10px;
+  text-align: center;
+  background-color:white;
+  border-radius: 20px;
+  box-shadow: 0 0 12px #eae1f6;
+}
+
+@media (max-width: 450px){
+  .project-header{
+    margin-top: 1rem;
   }
 }
