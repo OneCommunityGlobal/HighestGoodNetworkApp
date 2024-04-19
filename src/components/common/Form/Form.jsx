@@ -4,6 +4,7 @@ import { Component } from 'react';
 import Joi from 'joi';
 import { cloneDeep, isEqual, groupBy } from 'lodash';
 import { Link } from 'react-router-dom';
+import { boxStyle, boxStyleDark } from 'styles';
 import Input from '../Input';
 import Dropdown from '../Dropdown';
 import Radio from "../Radio";
@@ -11,7 +12,6 @@ import Image from '../Image';
 import FileUpload from '../FileUpload';
 import TinyMCEEditor from '../TinyceEditor/tinymceEditor';
 import CheckboxCollection from '../CheckboxCollection';
-import { boxStyle, boxStyleDark } from 'styles';
 
 /* const Form = () => {
   const [data, setData] = useState({});
