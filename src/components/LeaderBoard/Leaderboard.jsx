@@ -294,7 +294,9 @@ function LeaderBoard({
                         toggle={dashboardToggle}
                         className="modal-personal-dashboard"
                       >
-                        <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
+                        <ModalHeader toggle={dashboardToggle}>
+                          Jump to personal Dashboard
+                        </ModalHeader>
                         <ModalBody>
                           <p>Are you sure you wish to view this {item.name} dashboard?</p>
                         </ModalBody>
