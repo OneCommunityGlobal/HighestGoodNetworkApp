@@ -8,7 +8,7 @@ import { fetchAllTasks } from 'actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
-import { Paging } from '../../common/Paging';
+import Paging from '../../common/Paging';
 import { TasksTable } from '../TasksTable';
 import { WbsTable } from '../WbsTable';
 import hasPermission from '../../../utils/permissions';
@@ -45,13 +45,13 @@ export function ProjectReport({ match }) {
   }, []);
 
   useEffect(() => {
-    if(wbs.fetching === false){
+    if (wbs.fetching === false) {
       wbs.WBSItems.forEach(wbs => {
         dispatch(fetchAllTasks(wbs._id));
       });
     }
   }, [wbs]);
-  
+
   useEffect(() => {
     if (tasks.taskItems.length > 0) {
       setHoursCommitted(tasks.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
@@ -64,7 +64,7 @@ export function ProjectReport({ match }) {
       const { activeCount, nonActiveCount } = projectMembers.members.reduce((counts, member) => {
         member.isActive ? counts.activeCount++ : counts.nonActiveCount++;
         return counts;
-       }, { activeCount: 0, nonActiveCount: 0 });
+      }, { activeCount: 0, nonActiveCount: 0 });
 
       setActiveMemberCount(activeCount);
       setNonActiveMemberCount(nonActiveCount);
@@ -78,16 +78,16 @@ export function ProjectReport({ match }) {
   return (
     <ReportPage
       renderProfile={() => (
-        <ReportPage.ReportHeader 
-          isActive={isActive} 
-          avatar={<FiBox />} 
-          name={projectName} 
-          counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }} 
+        <ReportPage.ReportHeader
+          isActive={isActive}
+          avatar={<FiBox />}
+          name={projectName}
+          counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
           hoursCommitted={hoursCommitted.toFixed(0)}
         />
       )}
     >
-      <div className='project-header'>{projectName}</div> 
+      <div className='project-header'>{projectName}</div>
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks">
           <Paging totalElementsCount={wbs.WBSItems.length}>

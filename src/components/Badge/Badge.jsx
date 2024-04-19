@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import {
   Container,
   Row,
@@ -23,6 +23,7 @@ function Badge(props) {
   // const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // const toggle = () => {
   //   if (isOpen) {
@@ -77,10 +78,13 @@ function Badge(props) {
   }, [props.userProfile.badgeCollection, totalBadge]);
   return (
     <>
-      <Container className="right-padding-temp-fix bagde-box-shadow">
+      <Container className={`p-0 ${darkMode ? 'badge-box-shadow-dark' : 'bagde-box-shadow'}`}>
         <Row>
           <Col md={12}>
-            <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
+            <Card
+              style={{ backgroundColor: darkMode ? '#1C2541' : '#fafafa', borderRadius: 0 }}
+              id="badgesearned"
+            >
               <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
                 Badges <i className="fa fa-info-circle" id="BadgeInfo" />
               </CardHeader>
@@ -88,16 +92,18 @@ function Badge(props) {
                 <NewBadges
                   personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
                   badges={props.userProfile.badgeCollection || []}
+                  darkMode={darkMode}
                 />
                 <OldBadges
                   personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
                   badges={props.userProfile.badgeCollection || []}
+                  darkMode={darkMode}
                 />
                 <CardText
                   style={{
                     fontWeight: 'bold',
                     fontSize: 18,
-                    color: '#285739',
+                    color: darkMode ? '#007BFF' : '#285739',
                   }}
                 >
                   {generateBadgeText(
