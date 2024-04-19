@@ -7,6 +7,10 @@ import DatePicker from 'react-datepicker';
 import { FiUsers } from 'react-icons/fi';
 import Dropdown from 'react-bootstrap/Dropdown';
 import axios from 'axios';
+import { persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import { compressToUTF16, decompressFromUTF16 } from 'lz-string';
+import { rootReducers } from '../../../store.js';
 import { ENDPOINTS } from 'utils/URL';
 import { getTeamDetail } from '../../../actions/team';
 import {
@@ -23,6 +27,15 @@ import { getTeamReportData } from './selectors';
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  serialize: (outboundState) => compressToUTF16(JSON.stringify(outboundState)),
+  deserialize: (inboundState) => JSON.parse(decompressFromUTF16(inboundState))
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducers);
 
 export function TeamReport({ match }) {
   const dispatch = useDispatch();
