@@ -17,13 +17,7 @@ function DueDateTime({ dueDate, isShow, darkMode }) {
       ) : (
         <div className="mb-1">Weekly Summary Due Date (click to add)</div>
       )}
-      <div
-        className="mx-auto due-section"
-        style={{
-          ...(darkMode && boxStyleDark),
-          ...(!darkMode && boxStyle),
-        }}
-      >
+      <div className="mx-auto due-section" style={darkMode ? boxStyleDark : boxStyle}>
         <div className="text-light due-section__date">
           <FontAwesomeIcon icon={faCalendarCheck} className="mr-1" />{' '}
           {displayTime.format('MMM-DD-YY')} at {displayTime.format('HH:mm')} PST
