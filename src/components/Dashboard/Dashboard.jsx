@@ -14,7 +14,7 @@ export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
-  
+
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
