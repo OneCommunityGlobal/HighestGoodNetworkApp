@@ -183,23 +183,38 @@ export function TeamReport({ match }) {
   }
 
   useEffect(() => {
+    let isMounted = true; // flag to check component mount status
+  
     if (match) {
       dispatch(getTeamDetail(match.params.teamId));
-      dispatch(getTeamMembers(match.params.teamId)).then(result => setTeamMembers([...result]));
+  
+      dispatch(getTeamMembers(match.params.teamId)).then(result => {
+        if (isMounted) { // Only update state if component is still mounted
+          setTeamMembers([...result]);
+        }
+      });
+  
       dispatch(getAllUserTeams())
         .then(result => {
-          setAllTeams([...result]);
+          if (isMounted) {
+            setAllTeams([...result]);
+          }
           return result;
         })
         .then(result => {
-          // eslint-disable-next-line no-shadow
           const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
           Promise.all(allTeamMembersPromises).then(results => {
-            setAllTeamsMembers([...results]);
+            if (isMounted) { // Only update state if component is still mounted
+              setAllTeamsMembers([...results]);
+            }
           });
         });
     }
-  }, []);
+  
+    return () => {
+      isMounted = false; // Set the flag as false when the component unmounts
+    };
+  }, [dispatch, match]); // include all dependencies in the dependency array  
 
   // Get Total Tangible Hours this week [main TEAM]
   const [teamMembersWeeklyEffort, setTeamMembersWeeklyEffort] = useState([]);
