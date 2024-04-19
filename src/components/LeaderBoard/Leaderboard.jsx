@@ -328,7 +328,7 @@ function LeaderBoard({
                         }}
                       >
                         {hasLeaderboardPermissions(loggedInUser.role) &&
-                        showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                          showStar(item.tangibletime, item.weeklycommittedHours) ? (
                           <i
                             className="fa fa-star"
                             title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
@@ -380,7 +380,7 @@ function LeaderBoard({
                           currentDate.isSameOrAfter(
                             moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                           ) &&
-                          currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                            currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                             ? 'rgba(128, 128, 128, 0.5)'
                             : undefined,
                       }}
@@ -389,12 +389,12 @@ function LeaderBoard({
                       {currentDate.isSameOrAfter(
                         moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                       ) &&
-                      currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-                      Math.floor(
-                        moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
-                          .subtract(1, 'day')
-                          .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
-                      ) > 0 ? (
+                        currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+                        Math.floor(
+                          moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+                            .subtract(1, 'day')
+                            .diff(moment(item.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+                        ) > 0 ? (
                         <sup>
                           {' '}
                           +
@@ -512,7 +512,7 @@ function LeaderBoard({
                   </td>
                 </tr>
               );
-          })}
+            })}
           </tbody>
         </Table>
       </div>
