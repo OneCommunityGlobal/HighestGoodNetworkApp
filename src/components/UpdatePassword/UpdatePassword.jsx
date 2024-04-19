@@ -104,26 +104,26 @@ class UpdatePassword extends Form {
         }`}
       >
         <h2 className="text-2xl font-bold mb-5">Change Password</h2>
-        <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
+        <form className="col-md-4 xs-12" onSubmit={e => this.handleSubmit(e)}>
           <div className="mb-4">
             <div className="flex justify-between items-center">
               <label htmlFor="currentpassword" className={`text-sm font-medium mr-2 ${darkMode ? "text-azure" : "text-gray-700"}`}>Current Password:</label>
             </div>
-            {this.renderInput({ name: 'currentpassword', type: this.state.showPassword.currentpassword ? 'text' : 'password', label: 'Current Password' })}
+            {this.renderInput({ name: 'currentpassword', type: this.state.showPassword.currentpassword ? 'text' : 'password'})}
           </div>
 
           <div className="mb-4">
             <div className="flex justify-between items-center">
               <label htmlFor="newpassword" className={`text-sm font-medium mr-2 ${darkMode ? "text-azure" : "text-gray-700"}`}>New Password:</label>
             </div>
-            {this.renderInput({ name: 'newpassword', type: this.state.showPassword.newpassword ? 'text' : 'password', label: 'New Password' })}
+            {this.renderInput({ name: 'newpassword', type: this.state.showPassword.newpassword ? 'text' : 'password'})}
           </div>
 
           <div className="mb-4">
             <div className="flex justify-between items-center">
               <label htmlFor="confirmnewpassword" className={`text-sm font-medium mr-2 ${darkMode ? "text-azure" : "text-gray-700"}`}>Confirm Password:</label>
             </div>
-            {this.renderInput({ name: 'confirmnewpassword', type: this.state.showPassword.confirmnewpassword ? 'text' : 'password', label: 'Confirm Password' })}
+            {this.renderInput({ name: 'confirmnewpassword', type: this.state.showPassword.confirmnewpassword ? 'text' : 'password' })}
           </div>
 
           {this.renderButton({label: 'Submit', darkMode: darkMode})}
