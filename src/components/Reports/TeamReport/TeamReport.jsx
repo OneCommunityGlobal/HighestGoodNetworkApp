@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState, useMemo } from 'react';
+import { debounce } from 'lodash';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
@@ -102,14 +103,17 @@ export function TeamReport({ match }) {
     }
   }
 
-  function handleSearchByName(event) {
-    event.persist();
-
+  const debounceSearchByName = debounce((value) => {
     setSearchParams(prevParams => ({
       ...prevParams,
-      teamName: event.target.value,
+      teamName: value,
     }));
-  }
+   }, 300);
+   
+   function handleSearchByName(event) {
+     event.persist();
+     debounceSearchByName(event.target.value);
+   }
 
   function handleCheckboxChange(event) {
     const { id, checked } = event.target;
@@ -137,12 +141,9 @@ export function TeamReport({ match }) {
     }
   }
 
-  function handleSearch() {
-    // eslint-disable-next-line no-shadow
-    const searchResults = allTeams.filter(team => {
-      const isMatchedName = team.teamName
-        .toLowerCase()
-        .includes(searchParams.teamName.toLowerCase());
+  const memoizedSearchResults = useMemo(() => {
+    return allTeams.filter(team => {
+      const isMatchedName = team.teamName.toLowerCase().includes(searchParams.teamName.toLowerCase());
       const isMatchedCreatedDate = moment(team.createdDatetime).isSameOrAfter(
         moment(searchParams.createdAt).startOf('day'),
       );
@@ -151,12 +152,9 @@ export function TeamReport({ match }) {
       );
       const isActive = team.isActive === searchParams.isActive;
       const isInactive = team.isActive !== searchParams.isInactive;
-      return (
-        isMatchedName && isMatchedCreatedDate && isMatchedModifiedDate && (isActive || isInactive)
-      );
-    });
-    return searchResults;
-  }
+      return isMatchedName && isMatchedCreatedDate && isMatchedModifiedDate && (isActive || isInactive);
+    }).slice(0, 5);
+  }, [allTeams, searchParams]);
 
   function handleDate(date) {
     const formattedDates = {};
@@ -452,7 +450,7 @@ export function TeamReport({ match }) {
             {allTeamsMembers.length > 1 ? (
               <tbody className="table">
                 {/* eslint-disable-next-line no-shadow */}
-                {handleSearch().map((team, index) => (
+                {memoizedSearchResults.map((team, index) => (
                   <tr className="table-row" key={team._id}>
                     <td>
                       <input
