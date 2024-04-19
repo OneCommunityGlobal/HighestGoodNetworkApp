@@ -122,6 +122,7 @@ class PeopleReport extends Component {
           ...timeEntries,
         },
       });
+
     }
   }
 
@@ -291,6 +292,7 @@ class PeopleReport extends Component {
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
+
     let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
       const hours = hoursByCategory
@@ -417,7 +419,13 @@ class PeopleReport extends Component {
         peopleData.taskData.push(task);
       }
 
-      return <PeopleTableDetails taskData={peopleData.taskData} darkMode={darkMode}/>;
+      return (
+        <PeopleTableDetails
+          taskData={peopleData.taskData}
+          showFilter={tangibleHoursReportedThisWeek !== 0}
+          darkMode={darkMode}
+        />
+      );
     };
 
     const renderProfileInfo = () => {
@@ -508,7 +516,7 @@ class PeopleReport extends Component {
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
-          <div className="people-report-time-logs-wrapper">
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper": ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -572,15 +580,15 @@ class PeopleReport extends Component {
                     timeEntries={timeEntries}
                   />
                   <div className="visualizationDiv">
+                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                  </div>
+                  <div className="visualizationDiv">
                     <InfringementsViz
                       infringements={infringements}
                       fromDate={fromDate}
                       toDate={toDate}
                       darkMode={darkMode}
                     />
-                  </div>
-                  <div className="visualizationDiv">
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode}/>
                   </div>
                   <div className="visualizationDivRow">
                     <div className="BadgeSummaryDiv">
@@ -598,6 +606,53 @@ class PeopleReport extends Component {
               </div>
             </ReportPage.ReportBlock>
           </div>
+          {/* {tangibleHoursReportedThisWeek === 0 ? (
+            <div className="report-no-log-message">No task has been logged this week...</div>
+          ) : (
+            <div className="mobile-people-table">
+              <ReportPage.ReportBlock>
+                <div className="intro_date">
+                  <h4>Tasks contributed</h4>
+                </div>
+
+                <PeopleDataTable />
+
+                <div className="Infringementcontainer">
+                  <div className="InfringementcontainerInner">
+                    <UserProject userProjects={userProjects} />
+                    <Infringements
+                      infringements={infringements}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                      timeEntries={timeEntries}
+                    />
+                    <div className="visualizationDiv">
+                      <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                    </div>
+                    <div className="visualizationDiv">
+                      <InfringementsViz
+                        infringements={infringements}
+                        fromDate={fromDate}
+                        toDate={toDate}
+                      />
+                    </div>
+                    <div className="visualizationDivRow">
+                      <div className="BadgeSummaryDiv">
+                        <BadgeSummaryViz
+                          authId={auth.user.userid}
+                          userId={match.params.userId}
+                          badges={userProfile.badgeCollection}
+                        />
+                      </div>
+                      <div className="BadgeSummaryPreviewDiv">
+                        <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ReportPage.ReportBlock>
+            </div>
+          )} */}
         </ReportPage>
       </div>
     );

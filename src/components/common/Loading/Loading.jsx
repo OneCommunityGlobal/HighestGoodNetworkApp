@@ -1,5 +1,4 @@
-import React from 'react';
-
+// eslint-disable-next-line react/function-component-definition
 const Loading = ({align, darkMode}) => {
   let alignClassName = "";
   if(align == "center"){
@@ -9,11 +8,10 @@ const Loading = ({align, darkMode}) => {
   } else if (align == "left"){
     alignClassName = "d-flex justify-content-start align-items-center"
   }
-
   return (
     <div className={`container-fluid ${alignClassName}`} data-testid="loading">
       <div className="fa-5x">
-        <i className={`fa fa-spinner fa-pulse ${darkMode ? "text-azure" : ""}`} data-testid="loading-spinner"></i>
+        <i className={`fa fa-spinner fa-pulse ${darkMode ? "text-azure" : ""}`} data-testid="loading-spinner"/>
       </div>
     </div>
   );
