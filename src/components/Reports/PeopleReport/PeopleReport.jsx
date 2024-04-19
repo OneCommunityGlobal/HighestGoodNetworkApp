@@ -436,7 +436,7 @@ class PeopleReport extends Component {
               <Link to={`/userProfile/${_id}`} 
                     title="View Profile" 
                     className={darkMode ? 'text-light font-weight-bold' : ''}
-                    style={darkMode ? {fontSize: "24px"} : ''}>
+                    style={{fontSize: "24px"}}>
                 {firstName} {lastName}
               </Link>
             </p>
@@ -449,6 +449,9 @@ class PeopleReport extends Component {
                   value={isRehireable}
                   onChange={() => this.setRehireable(!isRehireable)}
                   label="Rehireable"
+                  darkMode={darkMode}
+                  backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
+                  textColorCN={darkMode ? "text-light" : ""}
                 />
               </div>
             {/* ) : (

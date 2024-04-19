@@ -428,8 +428,8 @@ export function TeamReport({ match }) {
             </div>
           </div>
           <table className="table tableHeader">
-            <thead className={`table table-hover ${darkMode ? 'bg-space-cadet text-light table-hover-dark' : ''}`}>
-              <tr>
+            <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}`}>
+              <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <td>
                   <strong>All</strong>
                 </td>
@@ -509,12 +509,12 @@ export function TeamReport({ match }) {
               </tbody>
             ) : (
               <tbody>
-                <tr style={{ backgroundColor: 'white' }}>
+                <tr style={{ backgroundColor: darkMode ? '#3A506B' : 'white' }}>
                   <td />
                   <td />
                   <td />
                   <td>
-                    <strong>Loading...</strong>
+                    <strong className={darkMode ? 'text-light' : ''}>Loading...</strong>
                   </td>
                   <td />
                   <td />
