@@ -22,7 +22,6 @@ function HorizontalBarChart({ data, width, height }) {
       .range([0, innerHeight])
       .padding(0.1);
 
-    // const xAxis = d3.axisTop(xScale);
     const xAxis = d3
       .axisTop(xScale)
       .ticks(10) // Adjust number of ticks as needed
@@ -33,18 +32,21 @@ function HorizontalBarChart({ data, width, height }) {
     const svg = d3
       .select(svgRef.current)
       .attr('width', width)
-      .attr('height', height);
+      .attr('height', height)
+      .append('g')
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-    const chart = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
+    svg.append('g').call(xAxis);
+    svg.append('g').call(yAxis);
 
-    chart.append('g').call(xAxis);
-
-    chart.append('g').call(yAxis);
-
-    chart
+    const bars = svg
       .selectAll('.bar')
       .data(data)
       .enter()
+      .append('g')
+      .attr('class', 'bar-group');
+
+    bars
       .append('rect')
       .attr('class', 'bar')
       .attr('x', 0)
@@ -52,6 +54,15 @@ function HorizontalBarChart({ data, width, height }) {
       .attr('width', d => xScale(d.value))
       .attr('height', yScale.bandwidth())
       .attr('fill', d => (d.label === 'In Teams' ? 'green' : 'red'));
+
+    // Adding text labels at the end of each bar
+    bars
+      .append('text')
+      .attr('class', 'bar-value')
+      .attr('x', d => xScale(d.value) + 5) // Offset text a little right of the bar end
+      .attr('y', d => yScale(d.label) + yScale.bandwidth() / 2) // Vertically center text
+      .attr('dy', '.35em') // Adjust vertical alignment here
+      .text(d => `${d.value}`); // Display the value
   }, [data, width, height]);
 
   return <svg ref={svgRef} />;

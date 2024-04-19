@@ -1,9 +1,29 @@
+/* eslint-disable no-unused-vars */
 import { Col, Row } from 'reactstrap';
+import { toast } from 'react-toastify';
+import './VolunteerStats.css';
+import { useCallback, useEffect, useState } from 'react';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
+import moment from 'moment';
 import HorizontalBarChart from './HorizontalBarChart';
 import DonutChart from './DonutChart';
-import './VolunteerStats.css';
 
-export default function VolunteerStats() {
+export default function VolunteerStats(props) {
+  const { startDate, endDate } = props;
+  const lastWeekStartDate = moment(startDate)
+    .subtract(1, 'week')
+    .startOf('week')
+    .format('YYYY-MM-DD');
+  const lastWeekEndDate = moment(endDate)
+    .subtract(1, 'week')
+    .endOf('week')
+    .format('YYYY-MM-DD');
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // test data - delete while api integration
   const barChartdata = [
     { label: 'In Teams', value: 42 },
     { label: 'Not In Teams', value: 31 },
@@ -18,6 +38,27 @@ export default function VolunteerStats() {
       { label: 'Active Volunteers', value: 85 },
     ],
   };
+
+  // api call
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(ENDPOINTS.GET_VOLUNTEER_STATS(startDate, endDate));
+      setData(res.data);
+      setLoading(false);
+    } catch (_) {
+      setError(true);
+      setLoading(false);
+      toast('Oops! Something went wrong.');
+    }
+  }, []);
+
+  // we want to fetch the data on page load
+  // also whenever the start/end date changes.
+  // i.e the user has switched the weeks tab.
+  useEffect(() => {
+    fetchData();
+  }, [startDate, endDate]);
 
   return (
     <Row>

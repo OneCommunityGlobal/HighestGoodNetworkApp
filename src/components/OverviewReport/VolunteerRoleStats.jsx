@@ -1,8 +1,28 @@
+/* eslint-disable no-unused-vars */
 import { Col, Row } from 'reactstrap';
-import DonutChart from './DonutChart';
 import './VolunteerStats.css';
+import { useCallback, useEffect, useState } from 'react';
+import moment from 'moment';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
+import DonutChart from './DonutChart';
 
-export default function VolunteerRoleStats() {
+export default function VolunteerRoleStats(props) {
+  const { startDate, endDate } = props;
+  const lastWeekStartDate = moment(startDate)
+    .subtract(1, 'week')
+    .startOf('week')
+    .format('YYYY-MM-DD');
+  const lastWeekEndDate = moment(endDate)
+    .subtract(1, 'week')
+    .endOf('week')
+    .format('YYYY-MM-DD');
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // test data - delete while api integration
   const pieData = {
     legend: 'Roles',
     data: [
@@ -13,6 +33,24 @@ export default function VolunteerRoleStats() {
       { label: 'Engineer', value: 1 },
     ],
   };
+
+  // api call
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(ENDPOINTS.GET_VOLUNTEER_ROLE_STATS(startDate, endDate));
+      setData(res.data);
+      setLoading(false);
+    } catch (_) {
+      setError(true);
+      setLoading(false);
+      toast('Oops! Something went wrong.');
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [startDate, endDate]);
 
   return (
     <Row>

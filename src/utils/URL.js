@@ -58,11 +58,21 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
-  SAVE_SUMMARY_RECEPIENTS: (userid) => `${APIEndpoint}/reports/recepients/${userid}`,
-  GET_SUMMARY_RECEPIENTS: ()=>`${APIEndpoint}/reports/getrecepients`,
-  GET_VOLUNTEER_HOUR_STATS: (startDate, endDate, lastWeekStartDate, lastWeekEndDate) => `${APIEndpoint}/reports/overviewsummaries/volunteerhoursstats?startDate=${startDate}&endDate=${endDate}&lastWeekStartDate=${lastWeekStartDate}&lastWeekEndDate=${lastWeekEndDate}`,
-  AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () => `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
-  
+  SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
+  GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
+  GET_VOLUNTEER_HOUR_STATS: (startDate, endDate, lastWeekStartDate, lastWeekEndDate) =>
+    `${APIEndpoint}/reports/overviewsummaries/volunteerhoursstats?startDate=${startDate}&endDate=${endDate}&lastWeekStartDate=${lastWeekStartDate}&lastWeekEndDate=${lastWeekEndDate}`,
+  GET_VOLUNTEER_STATS: (startDate, endDate) =>
+    `${APIEndpoint}/reports/overviewsummaries/volunteerstats?startDate=${startDate}&endDate=${endDate}`,
+  GET_VOLUNTEER_ROLE_STATS: (startDate, endDate) =>
+    `${APIEndpoint}/reports/overviewsummaries/volunteerrolestats?startDate=${startDate}&endDate=${endDate}`,
+  GET_TASK_AND_PROJECT_STATS: (startDate, endDate) =>
+    `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
+  GET_BLUE_SQUARE_STATS: (startDate, endDate) =>
+    `${APIEndpoint}/reports/overviewsummaries/bluestats?startDate=${startDate}&endDate=${endDate}`,
+  AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
+    `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
+
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: id => `${APIEndpoint}/backup/popupeditor/${id}`,
@@ -91,7 +101,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
   TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
-  TIMEZONE_LOCATION: (location) => `${APIEndpoint}/timezone/${location}`,
+  TIMEZONE_LOCATION: location => `${APIEndpoint}/timezone/${location}`,
 
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,

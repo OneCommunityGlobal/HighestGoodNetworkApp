@@ -40,9 +40,6 @@ export default function VolunteeringHoursStats(props) {
     }
   }, []);
 
-  // we want to fetch the data on page load
-  // also whenever the start/end date changes.
-  // i.e the user has switched the weeks tab.
   useEffect(() => {
     fetchData();
   }, [startDate, endDate]);
