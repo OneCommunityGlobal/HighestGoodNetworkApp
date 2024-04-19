@@ -121,12 +121,12 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           allMemberTable.length > 0 ? (
             allMemberTable
           ) : (
-            <Stub />
+            <Stub darkMode={darkMode}/>
           )
         ) : activeMemberTable.length > 0 ? (
           activeMemberTable
         ) : (
-          <Stub color={darkMode ? {color: 'white'} : ''}/>
+          <Stub darkMode={darkMode}/>
         )}
       </div>
     </div>
