@@ -14,7 +14,7 @@ import { addTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
 
-function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData,setWarningMessage, setShowMessage }) {
+function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData, setWarningMessage, setShowMessage }) {
   const [titleData, setTitleData] = useState({
     titleName: '',
     mediaFolder: '',
@@ -82,10 +82,10 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   const confirmOnClick = () => {
     addTitle(titleData)
       .then((resp) => {
-        if (resp.status !== 200){
-          setWarningMessage({title:"Error", content:resp.message});
+        if (resp.status !== 200) {
+          setWarningMessage({ title: "Error", content: resp.message });
           setShowMessage(true);
-        }else{
+        } else {
           setIsOpen(false);
           refreshModalTitles();
         };
