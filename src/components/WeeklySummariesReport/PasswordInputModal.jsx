@@ -10,8 +10,6 @@ import {
   Input,
   FormGroup,
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 import { boxStyle } from 'styles';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -36,16 +34,10 @@ export default function PasswordInputModal({
     passwordMatchErr: '',
   });
   const [passwordField, setPasswordField] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   const onChangeFunc = event => {
     setPasswordField(event.target.value);
   };
-
-  const revealPassword = () => {
-    setShowPassword(prev => !prev);
-  };
-
   const authorizeWeeklySummariesButton = async () => {
     const url = ENDPOINTS.AUTHORIZE_WEEKLY_SUMMARY_REPORTS();
     try {
@@ -92,25 +84,12 @@ export default function PasswordInputModal({
           <FormGroup>
             <Input
               autoFocus
-              type={showPassword ? 'text' : 'password'}
+              type="password"
               name="passwordField"
               id="passwordField"
               value={passwordField}
               onChange={onChangeFunc}
             />
-            {showPassword ? (
-              <FontAwesomeIcon
-                icon={faEyeSlash}
-                onClick={revealPassword}
-                style={{ color: '#666a70', position: 'absolute', top: '26px', right: '32px' }}
-              />
-            ) : (
-              <FontAwesomeIcon
-                icon={faEye}
-                onClick={revealPassword}
-                style={{ color: '#666a70', position: 'absolute', top: '26px', right: '32px' }}
-              />
-            )}
           </FormGroup>
         </ModalBody>
         <ModalFooter>
