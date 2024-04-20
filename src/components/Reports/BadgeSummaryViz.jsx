@@ -19,14 +19,11 @@ import {
   DropdownItem,
   UncontrolledTooltip
 } from 'reactstrap';
-import { boxStyle, boxStyleDark } from '../../styles';
+import { boxStyle } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';
-import { useSelector } from 'react-redux';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
-  const darkMode = useSelector(state => state.theme.darkMode);
-
   const [isOpen, setIsOpen] = useState(false);
   const [sortedBadges, setSortedBadges] = useState([]);
 
@@ -51,7 +48,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
     <div>
       <Button
         onClick={toggle}
-        style={darkMode ? boxStyleDark : boxStyle}
+        style={boxStyle}
         className={`${dashboard && 'btn--dark-sea-green float-right'}`}
       >
         {dashboard ? 'Badge Report' : 'Show Badges'}

@@ -1,3 +1,1 @@
-import Paging from './Paging';
-
-export default Paging;
+export { Paging } from './Paging';

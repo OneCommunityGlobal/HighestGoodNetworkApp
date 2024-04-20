@@ -6,7 +6,7 @@ import { ReportPage } from '../../sharedComponents/ReportPage';
 import { NewModal } from '../../../common/NewModal';
 import './PeopleTasksPieChart.css';
 
-export const PeopleTasksPieChart = ({darkMode}) => {
+export const PeopleTasksPieChart = () => {
   const {
     tasksWithLoggedHoursById,
     showTasksPieChart,
@@ -31,21 +31,20 @@ export const PeopleTasksPieChart = ({darkMode}) => {
 
 
   return (
-    <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
+    <div className="people-pie-charts-wrapper">
       {showProjectsPieChart && (
-        <ReportPage.ReportBlock darkMode={darkMode}>
+        <ReportPage.ReportBlock>
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
           <PieChart
             pieChartId={'projectsPieChart'}
             data={projectsWithLoggedHoursById}
             dataLegend={projectsWithLoggedHoursLegend}
             dataLegendHeader="Hours"
-            darkMode={darkMode}
           />
         </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
-        <ReportPage.ReportBlock darkMode={darkMode}>
+        <ReportPage.ReportBlock>
           <h5 className="people-pie-charts-header">{`${
             showViewAllTasksButton ? 'Last ' : ''
           }Tasks With Completed Hours`}</h5>
@@ -54,7 +53,6 @@ export const PeopleTasksPieChart = ({darkMode}) => {
             data={displayedTasksWithLoggedHoursById}
             dataLegend={displayedTasksLegend}
             dataLegendHeader="Hours"
-            darkMode={darkMode}
           />}
           {showViewAllTasksButton && (
          <div>               
@@ -63,7 +61,6 @@ export const PeopleTasksPieChart = ({darkMode}) => {
                 data={tasksWithLoggedHoursById}
                 dataLegend={tasksLegend}
                 dataLegendHeader="Hours"
-                darkMode={darkMode}
               />}
                <div onClick={handleViewAll} className="show-all-tasks-button">
                   {showAllTasks ? "Collapse":  "View all"}

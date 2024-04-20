@@ -4,14 +4,11 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Button, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
 import Joi from 'joi';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle } from 'styles';
 import forgotPassword from '../../services/authorizationService';
 
 const ForgotPassword = React.memo(() => {
-  const darkMode = useSelector(state => state.theme.darkMode);
-
   const [message, setMessage] = useState({});
   const history = useHistory();
   const [user, setUser] = useState({
@@ -136,15 +133,9 @@ const ForgotPassword = React.memo(() => {
   };
 
   return (
-    <div
-      className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
-        darkMode ? 'bg-oxford-blue' : ''
-      }`}
-    >
-      <form className="col-md-4 xs-12">
-        <label htmlFor="email" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
-          Email
-        </label>
+    <div className="container mt-5">
+      <form className="col-md-6 xs-12">
+        <label htmlFor="email">Email</label>
         <Input
           id="email"
           type="text"
@@ -155,9 +146,7 @@ const ForgotPassword = React.memo(() => {
         />
         {message.email && <div className="alert alert-danger">{message.email}</div>}
 
-        <label htmlFor="firstName" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
-          First Name
-        </label>
+        <label htmlFor="firstName">First Name</label>
         <Input
           id="firstName"
           type="text"
@@ -168,9 +157,7 @@ const ForgotPassword = React.memo(() => {
         />
         {message.firstName && <div className="alert alert-danger">{message.firstName}</div>}
 
-        <label htmlFor="lastName" className={`mt-3 ${darkMode ? 'text-azure' : ''}`}>
-          Last Name
-        </label>
+        <label htmlFor="lastName">Last Name</label>
         <Input
           id="lastName"
           type="text"
@@ -182,22 +169,12 @@ const ForgotPassword = React.memo(() => {
         {message.lastName && <div className="alert alert-danger">{message.lastName}</div>}
 
         <div style={{ marginTop: '40px' }}>
-          <Button
-            color="primary"
-            onClick={onForgotPassword}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
+          <Button color="primary" onClick={onForgotPassword} style={boxStyle}>
             Submit
           </Button>
           <Link to="login">
             {' '}
-            <Button
-              style={
-                darkMode ? { ...boxStyleDark, float: 'right' } : { ...boxStyle, float: 'right' }
-              }
-            >
-              Cancel
-            </Button>
+            <Button style={{ ...boxStyle, float: 'right' }}>Cancel</Button>
           </Link>
         </div>
       </form>

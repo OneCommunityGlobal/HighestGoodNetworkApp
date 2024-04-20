@@ -39,7 +39,7 @@
   padding-bottom: 1rem;
 }
 #add-profile-picture-btn {
-  align-self: center;
+  align-self: flex-end;
 }
 .profile-setup-user-entry-container {
   display: grid;
@@ -111,8 +111,6 @@
   background-color: white;
   margin-right: 10px;
 }
-
-
 @media (max-width: 768px) {
   #password-input-group {
     margin-bottom: 1rem;

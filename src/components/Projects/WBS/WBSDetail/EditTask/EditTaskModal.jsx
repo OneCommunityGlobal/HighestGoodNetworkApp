@@ -13,7 +13,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
@@ -23,7 +23,7 @@ function EditTaskModal(props) {
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { allMembers, error, darkMode } = props;
+  const { allMembers, error } = props;
 
   // permissions
   const canUpdateTask = props.hasPermission('updateTask');
@@ -690,7 +690,7 @@ function EditTaskModal(props) {
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
         {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
       </Button>
     </div>
@@ -700,6 +700,5 @@ function EditTaskModal(props) {
 const mapStateToProps = state => ({
   allMembers: state.projectMembers.members,
   error: state.tasks.error,
-  darkMode: state.theme.darkMode,
 });
 export default connect(mapStateToProps, { updateTask, hasPermission, })(EditTaskModal);

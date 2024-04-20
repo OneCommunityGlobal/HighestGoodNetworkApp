@@ -1,0 +1,51 @@
+.purchase-material-form {
+  margin-top: 2rem;
+}
+
+.purchase-material-form input,
+.purchase-material-form select {
+  background-color: rgb(249, 249, 249);
+}
+
+.purchase-material-flex-group {
+  display: flex;
+  gap: 2rem;
+}
+
+.purchase-material-flex-group input {
+  width: 100px;
+}
+
+.flex-group-qty {
+  width: 50%;
+}
+
+.flex-group-qty-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.purchase-material-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 0 auto 2rem;
+}
+
+.purchase-material-buttons button {
+  width: 50%;
+}
+
+.purchase-material-error {
+  height: 2.5rem;
+  color: red;
+}
+
+@media screen and (max-width: 640px) {
+  .purchase-material-flex-group {
+    display: block;
+  }
+  .flex-group-qty {
+    width: auto;
+  }
+}

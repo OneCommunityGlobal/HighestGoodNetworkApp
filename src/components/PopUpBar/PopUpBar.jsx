@@ -2,14 +2,11 @@
 import './PopUpBar.css';
 
 function PopUpBar(props) {
-  const { viewingUser, onClickClose } = props;
-  const { firstName, lastName } = viewingUser;
+  const { userProfile, component } = props;
+  const { firstName, lastName } = userProfile;
   return (
     <div className="popup_container" data-testid="test-popup">
-      {`You are currently viewing the header for ${firstName} ${lastName}`}
-      <button type="button" className="close_button" onClick={onClickClose}>
-        X
-      </button>
+      {`You are currently viewing the ${component} for ${firstName} ${lastName}`}.
     </div>
   );
 }

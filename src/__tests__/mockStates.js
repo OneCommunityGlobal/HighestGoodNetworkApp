@@ -1,5 +1,3 @@
-import { getAllPermissionKeys } from '../components/PermissionsManagement/PermissionsConst.js';
-
 export const allTeamsMock = {
   fetching: false,
   fetched: true,
@@ -1062,10 +1060,6 @@ export const timeZoneAPIMock = {
   userAPIKey: '4ef937173ce546ad8ad6133c3d93321d',
 };
 
-export const themeMock = {
-  darkMode: true,
-}
-
 export const rolesMock = {
   fetching: false,
   fetched: true,
@@ -1281,10 +1275,6 @@ export const rolesMock = {
           'editTeamCode',
         ],
       },
-      {
-        roleName: 'Fake Test Role',
-        permissions: [],
-      },
     ]
   }
 }
@@ -1292,29 +1282,3 @@ export const rolesMock = {
 describe('Stop Error', () => {
   it('should not error out due to no tests (mockStates.js)', () => { });
 });
-
-// takes a list of permissions and returns a list of all other permissions
-const allPermissionsExcept = (permissions) => {
-  return getAllPermissionKeys().filter(perm => !permissions.includes(perm))
-}
-
-// takes a list of relevant permissions and returns two auth objects, one with the permissions and the other with all permissions not listed
-export const createAuthMocks = (permissions) => {
-  var authTemplate = {
-    // isAdmin: true,
-    user: {
-      userid: '5edf141c78f1380017b829a6',
-      role: 'Fake Test Role',
-      expiryTimestamp: '2020-08-22T22:51:06.544Z',
-      iat: 1597272666,
-    },
-    permissions: {
-      frontPermissions: []
-    },
-    firstName: 'Dev',
-    profilePic:''
-  };
-  const onlyPermissions = {...authTemplate, permissions: {frontPermissions: permissions}};
-  const allOtherPermissions = {...authTemplate, permissions: {frontPermissions: allPermissionsExcept(permissions)}};
-  return [onlyPermissions, allOtherPermissions];
-};

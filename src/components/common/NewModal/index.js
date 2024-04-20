@@ -1,3 +1,1 @@
-import NewModal from './NewModal';
-
-export default NewModal;
+export { NewModal } from './NewModal';

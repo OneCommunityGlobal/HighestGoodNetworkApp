@@ -1,3 +1,9 @@
+import { connect } from 'react-redux';
 import PopUpBar from './PopUpBar';
 
-export default PopUpBar;
+const mapStateToProps = state => ({
+  auth: state.auth.user,
+  userProfile: state.userProfile,
+});
+
+export default connect(mapStateToProps)(PopUpBar);

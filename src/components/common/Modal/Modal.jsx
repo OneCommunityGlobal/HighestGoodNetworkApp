@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Modal,
@@ -13,7 +13,6 @@ import {
 import ReactHtmlParser from 'react-html-parser';
 import { boxStyle } from 'styles';
 
-// eslint-disable-next-line react/function-component-definition
 const ModalExample = props => {
   const {
     isOpen,
@@ -26,9 +25,11 @@ const ModalExample = props => {
     linkType,
   } = props;
 
-
+  const [modal, setModal] = useState(false);
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
+
+  const toggle = () => setModal(!modal);
 
   const handleChange = event => {
     event.preventDefault();
@@ -43,7 +44,7 @@ const ModalExample = props => {
   const buttonDisabled = !(linkName && linkURL);
 
   if (type) {
-    // console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled);
+    console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled);
   }
 
   return (

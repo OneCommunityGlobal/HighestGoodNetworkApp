@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
-import { boxStyle } from 'styles';
 import AssignTableRow from './AssignTableRow';
+import { boxStyle } from 'styles';
 
-function AssignBadgePopup(props) {
+const AssignBadgePopup = props => {
   const [searchedName, setSearchedName] = useState('');
 
   const onSearch = text => {
@@ -11,16 +11,15 @@ function AssignBadgePopup(props) {
   };
 
   const filterBadges = allBadges => {
-    const filteredList = allBadges.filter(badge => {
+    let filteredList = allBadges.filter(badge => {
       if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
         return badge;
       }
-      return 0;
     });
     return filteredList;
   };
 
-  const filteredBadges = filterBadges(props.allBadgeData);
+  let filteredBadges = filterBadges(props.allBadgeData);
 
   return (
     <div>
@@ -59,12 +58,7 @@ function AssignBadgePopup(props) {
         </thead>
         <tbody>
           {filteredBadges.map((value, index) => (
-            <AssignTableRow
-              badge={value}
-              index={index}
-              key={index}
-              selectedBadges={props.selectedBadges}
-            />
+            <AssignTableRow badge={value} index={index} key={index} selectedBadges={props.selectedBadges}/>
           ))}
         </tbody>
       </Table>
@@ -77,6 +71,6 @@ function AssignBadgePopup(props) {
       </Button>
     </div>
   );
-}
+};
 
 export default AssignBadgePopup;

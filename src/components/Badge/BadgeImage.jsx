@@ -1,41 +1,39 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
 
-function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count }) {
+const BadgeImage = props => {
   const [isOpen, setOpen] = useState(false);
 
-  const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
+  const toggle = () => setOpen(isOpen => !isOpen);
 
   return (
     <>
       <div className="badge_image_container">
         <div className="badge_image_sm">
           <img
-            src={badgeData?.imageUrl}
-            id={`popover_${time}${index.toString()}`}
+            src={props?.badgeData?.imageUrl}
+            id={'popover_' + props.time + props.index.toString()}
             alt=""
             loading="lazy"
           />
         </div>
 
-        {badgeData.type === 'Personal Max' && (
-          <span className="badge_count_personalmax">{Math.floor(personalBestMaxHrs)}</span>
-        )}
-        {badgeData.type !== 'Personal Max' && count < 100 && (
-          <span className="badge_count">{Math.round(count)}</span>
-        )}
-        {badgeData.type !== 'Personal Max' && count >= 100 && (
-          <span className="badge_count_3_digit">{Math.round(count)}</span>
+        {props.badgeData.type == 'Personal Max' ? (
+          <span className={'badge_count_personalmax'}>{Math.floor(props.personalBestMaxHrs)}</span>
+        ) : props.count < 100 ? (
+          <span className={'badge_count'}>{Math.round(props.count)}</span>
+        ) : (
+          <span className="badge_count_3_digit">{Math.round(props.count)}</span>
         )}
       </div>
       <Popover
         trigger="hover"
         isOpen={isOpen}
         toggle={toggle}
-        target={`popover_${time}${index.toString()}`}
+        target={'popover_' + props.time + props.index.toString()}
       >
         <Card className="text-center">
-          <CardImg className="badge_image_lg" src={badgeData?.imageUrl} />
+          <CardImg className="badge_image_lg" src={props?.badgeData?.imageUrl} />
           <CardBody>
             <CardTitle
               style={{
@@ -45,14 +43,14 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count }) {
                 marginBottom: 15,
               }}
             >
-              {badgeData?.badgeName}
+              {props.badgeData?.badgeName}
             </CardTitle>
-            <CardText>{badgeData?.description}</CardText>
+            <CardText>{props.badgeData?.description}</CardText>
           </CardBody>
         </Card>
       </Popover>
     </>
   );
-}
+};
 
 export default BadgeImage;

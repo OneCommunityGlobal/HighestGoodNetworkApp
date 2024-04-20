@@ -2,9 +2,9 @@ import React from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { Button, Modal } from 'react-bootstrap';
 import './PeopleReport/PeopleReport.css';
-import { boxStyle, boxStyleDark } from '../../styles';
+import { boxStyle } from '../../styles';
 
-function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
+function InfringementsViz({ infringements, fromDate, toDate }) {
   const [graphVisible, setGraphVisible] = React.useState(false);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [focusedInf, setFocusedInf] = React.useState({});
@@ -272,10 +272,10 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
 
   return (
     <div>
-      <Button onClick={handleModalShow} aria-expanded={graphVisible} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button onClick={handleModalShow} aria-expanded={graphVisible} style={boxStyle}>
         {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div className={`kaitest ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" />
+      <div className="kaitest" id="infplot" />
 
       <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>

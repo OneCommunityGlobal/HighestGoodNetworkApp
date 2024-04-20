@@ -1,4 +1,1 @@
-import SkeletonLoading from './SkeletonLoading';
-
-export default SkeletonLoading;
-
+export { default } from './SkeletonLoading';

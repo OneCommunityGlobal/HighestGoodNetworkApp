@@ -21,7 +21,6 @@ To test this backend PR you need to checkout the #XXX frontend PR.
 4. log as admin user
 5. go to dashboard→ Tasks→ task→…
 6. verify function “A” (feel free to include screenshot here)
-7. verify this new feature works in [dark mode](https://docs.google.com/document/d/11OXJfBBedK6vV-XvqWR8A9lOH0BsfnaHx01h1NZZXfI)
 
 ## Screenshots or videos of changes:
 

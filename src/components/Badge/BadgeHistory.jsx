@@ -1,9 +1,10 @@
+import React from 'react';
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
 
-function BadgeHistory({ badges, personalBestMaxHrs }) {
+const BadgeHistory = props => {
   const filterBadges = allBadges => {
-    const filteredList = allBadges.filter(
+    let filteredList = allBadges.filter(
       value => Date.now() - new Date(value.lastModified).getTime() > WEEK_DIFF,
     );
 
@@ -14,20 +15,17 @@ function BadgeHistory({ badges, personalBestMaxHrs }) {
       if (a.badge.ranking < b.badge.ranking) return -1;
       if (a.badge.badgeName > b.badge.badgeName) return 1;
       if (a.badge.badgeName < b.badge.badgeName) return -1;
-
-      // If all conditions fail, return 0 to indicate that elements are equal
-      return 0;
     });
     return filteredList;
   };
 
-  const filteredBadges = filterBadges(badges);
+  let filteredBadges = filterBadges(props.badges);
 
   return (
     <div className="badge_history_container">
       {filteredBadges.map((value, index) => (
         <BadgeImage
-          personalBestMaxHrs={personalBestMaxHrs}
+          personalBestMaxHrs={props.personalBestMaxHrs}
           time="old"
           count={value.count}
           badgeData={value.badge}
@@ -37,6 +35,6 @@ function BadgeHistory({ badges, personalBestMaxHrs }) {
       ))}
     </div>
   );
-}
+};
 
 export default BadgeHistory;

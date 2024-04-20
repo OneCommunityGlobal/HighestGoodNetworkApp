@@ -10,15 +10,3 @@
   z-index: 2;
   opacity: 0.8;
 }
-
-.close_button {
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: #000000;
-  cursor: pointer;
-  position: absolute;
-  top: 50%;
-  right: 30px;
-  transform: translateY(-50%);
-}

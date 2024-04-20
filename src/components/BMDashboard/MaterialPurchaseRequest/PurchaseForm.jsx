@@ -1,28 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
 
 import { boxStyle } from 'styles';
-import { purchaseConsumable } from 'actions/bmdashboard/consumableActions';
-
+import { purchaseMaterial } from 'actions/bmdashboard/materialsActions';
 import './PurchaseForm.css';
 
 export default function PurchaseForm() {
   const bmProjects = useSelector(state => state.bmProjects);
-  const consumables = useSelector(state => state.bmInvTypes.list);
+  const matTypes = useSelector(state => state.bmInvTypes.list);
+  const history = useHistory();
 
   const [projectId, setProjectId] = useState('');
-  const [consumableId, setConsumableId] = useState('');
+  const [matTypeId, setMatTypeId] = useState('');
   const [quantity, setQty] = useState('');
+  const [unit, setUnit] = useState('');
   const [priority, setPriority] = useState('Low');
   const [brand, setBrand] = useState('');
   const [validationError, setValidationError] = useState('');
 
+  // change displayed unit of measurement based on selected material
+  useEffect(() => {
+    if (matTypeId) {
+      const matType = matTypes.find(type => type._id === matTypeId);
+      setUnit(matType.unit);
+    } else setUnit('');
+  }, [matTypeId]);
+
   const schema = Joi.object({
     projectId: Joi.string().required(),
-    consumableId: Joi.string().required(),
+    matTypeId: Joi.string().required(),
     quantity: Joi.number()
       .min(1)
       .max(999)
@@ -32,15 +42,11 @@ export default function PurchaseForm() {
     brand: Joi.string().allow(''),
   });
 
-  const sortedProjects = bmProjects.slice().sort((a, b) => {
-    return a.name.localeCompare(b.name); // Sort alphabetically by name
-  });
-
   const handleSubmit = async e => {
     e.preventDefault();
     const validate = schema.validate({
       projectId,
-      consumableId,
+      matTypeId,
       quantity,
       priority,
       brand,
@@ -50,14 +56,14 @@ export default function PurchaseForm() {
     }
     const body = {
       projectId,
-      consumableId,
+      matTypeId,
       quantity,
       priority,
       brand,
     };
-    const response = await purchaseConsumable(body);
+    const response = await purchaseMaterial(body);
     setProjectId('');
-    setConsumableId('');
+    setMatTypeId('');
     setQty('');
     setPriority('Low');
     setBrand('');
@@ -69,15 +75,13 @@ export default function PurchaseForm() {
 
   const handleCancel = e => {
     e.preventDefault();
-    window.location.href = '/bmdashboard/consumables';
+    history.goBack();
   };
 
   return (
-    <Form className="purchase-consumable-form" onSubmit={handleSubmit}>
+    <Form className="purchase-material-form" onSubmit={handleSubmit}>
       <FormGroup>
-        <Label for="select-project">
-          Project <span className="mandatory">*</span>
-        </Label>
+        <Label for="select-project">Project</Label>
         <Input
           id="select-project"
           type="select"
@@ -86,12 +90,12 @@ export default function PurchaseForm() {
             setValidationError('');
             setProjectId(currentTarget.value);
           }}
-          disabled={!sortedProjects.length}
+          disabled={!bmProjects.length}
         >
           <option disabled hidden value="">
             {' '}
           </option>
-          {sortedProjects.map(({ _id, name }) => (
+          {bmProjects.map(({ _id, name }) => (
             <option value={_id} key={_id}>
               {name}
             </option>
@@ -99,33 +103,29 @@ export default function PurchaseForm() {
         </Input>
       </FormGroup>
       <FormGroup>
-        <Label for="select-consumable">
-          Consumable <span className="mandatory">*</span>
-        </Label>
+        <Label for="select-material">Material</Label>
         <Input
-          id="select-consumable"
+          id="select-material"
           type="select"
-          value={consumableId}
+          value={matTypeId}
           onChange={({ currentTarget }) => {
             setValidationError('');
-            setConsumableId(currentTarget.value);
+            setMatTypeId(currentTarget.value);
           }}
         >
           <option disabled hidden value="">
             {' '}
           </option>
-          {consumables.map(({ _id, name }) => (
+          {matTypes.map(({ _id, name }) => (
             <option value={_id} key={_id}>
               {name}
             </option>
           ))}
         </Input>
       </FormGroup>
-      <div className="purchase-consumable-flex-group">
+      <div className="purchase-material-flex-group">
         <FormGroup className="flex-group-qty">
-          <Label for="input-quantity">
-            Quantity<span className="mandatory">*</span>
-          </Label>
+          <Label for="input-quantity">Quantity</Label>
           <div className="flex-group-qty-container">
             <Input
               id="input-quantity"
@@ -137,12 +137,11 @@ export default function PurchaseForm() {
                 setQty(currentTarget.value);
               }}
             />
+            <span>{unit}</span>
           </div>
         </FormGroup>
         <FormGroup>
-          <Label for="input-priority">
-            Priority<span className="mandatory">*</span>
-          </Label>
+          <Label for="input-priority">Priority</Label>
           <Input
             id="input-priority"
             type="select"
@@ -169,8 +168,8 @@ export default function PurchaseForm() {
           }}
         />
       </FormGroup>
-      <div className="purchase-consumable-error">{validationError && <p>{validationError}</p>}</div>
-      <div className="purchase-consumable-buttons">
+      <div className="purchase-material-error">{validationError && <p>{validationError}</p>}</div>
+      <div className="purchase-material-buttons">
         <Button
           type="button"
           id="cancel-button"
@@ -184,7 +183,7 @@ export default function PurchaseForm() {
           id="submit-button"
           color="primary"
           style={boxStyle}
-          disabled={!projectId || !consumableId || !quantity || !priority || !!validationError}
+          disabled={!projectId || !matTypeId || !quantity || !priority || !!validationError}
         >
           Submit
         </Button>

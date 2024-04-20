@@ -14,6 +14,8 @@ jest.mock('axios');
 const mockStore = configureStore([thunk]);
 describe('<DeleteModal />', () => {
   let store;
+  let fixDiscrepancy = jest.fn();
+  fixDiscrepancy(userProfileMock);
   beforeEach(() => {
     // need to mock the http requests
     axios.get.mockResolvedValue({ data: userProfileMock });

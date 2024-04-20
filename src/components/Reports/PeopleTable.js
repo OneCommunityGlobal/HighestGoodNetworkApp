@@ -2,20 +2,19 @@ import '../Teams/Team.css';
 import { Link } from 'react-router-dom';
 import './reports.css';
 import moment from 'moment';
-import { boxStyle, boxStyleDark } from 'styles';
 
-function PeopleTable({ userProfiles, darkMode }) {
+function PeopleTable({ userProfiles }) {
   let PeopleList = [];
   if (userProfiles.length > 0) {
     PeopleList = userProfiles
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
       .map((person, index) => (
-        <tr className={`teams__tr ${darkMode ? 'hover-effect-reports-page-dark-mode' : ''}`} id={`tr_${person._id}`} key={person._id}>
-          <th className={`teams__order--input ${darkMode ? 'text-light' : ''}`} scope="row">
+        <tr className="teams__tr" id={`tr_${person._id}`} key={person._id}>
+          <th className="teams__order--input" scope="row">
             <div>{index + 1}</div>
           </th>
           <td>
-            <Link to={`/peoplereport/${person._id}`} className={darkMode ? 'text-light' : ''}>
+            <Link to={`/peoplereport/${person._id}`}>
               {person.firstName}{' '}
               {person.lastName.length > 15 ? `${person.lastName.slice(0, 15)}...` : person.lastName}
             </Link>
@@ -44,10 +43,10 @@ function PeopleTable({ userProfiles, darkMode }) {
               )}
             </div>
           </td>
-          <td className={`hide-mobile-start-end ${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
+          <td className="hide-mobile-start-end" style={{ width: '110px' }}>
             {moment(person.createdDate).format('MM-DD-YY')}
           </td>
-          <td className={`hide-mobile-start-end ${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
+          <td className="hide-mobile-start-end" style={{ width: '110px' }}>
             {moment(person.endDate).format('MM-DD-YY') || 'N/A'}
           </td>
         </tr>
@@ -55,9 +54,9 @@ function PeopleTable({ userProfiles, darkMode }) {
   }
 
   return (
-    <table className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`} style={darkMode ? boxStyleDark : boxStyle}>
-      <thead className={darkMode ? "bg-space-cadet text-light" : ""}>
-        <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+    <table className="table table-bordered">
+      <thead>
+        <tr>
           <th scope="col" id="projects__order">
             #
           </th>
