@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import SummaryBar from './SummaryBar';
+import SummaryBar from '../SummaryBar';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios'; 
 
