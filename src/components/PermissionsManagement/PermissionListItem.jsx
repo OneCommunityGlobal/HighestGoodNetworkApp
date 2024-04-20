@@ -129,8 +129,6 @@ const PermissionListItem = (props) => {
                 style={boxStyle}
               >
                 {hasThisPermission ? 'Delete' : 'Add'}
-                {permission}
-
               </Button>
           }
         </div>

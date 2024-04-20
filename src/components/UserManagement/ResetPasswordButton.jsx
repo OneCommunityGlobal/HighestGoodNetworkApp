@@ -26,8 +26,9 @@ class ResetPasswordButton extends React.PureComponent {
           outline
           color="primary"
           className={'btn  btn-outline-success mr-1' + (this.props.isSmallButton ? ' btn-sm' : '')}
-          style={{ ...boxStyle, minWidth: '115px' }}
+          style={{ ...boxStyle, minWidth: '115px', ...(this.props.putUserProfile ? {} : { backgroundColor: '#ccc', color: '#555', border: `1px solid #ccc`, cursor: 'default' }), }}
           onClick={this.onResetClick}
+          disabled={!this.props.putUserProfile}
         >
           {'Reset Password'}
         </Button>
@@ -39,8 +40,8 @@ class ResetPasswordButton extends React.PureComponent {
     if (cantUpdateDevAdminDetails(this.props.user.email, this.props.authEmail)) {
       alert(
         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-          'You shouldn’t even be using this account except to create your own accounts to use. ' +
-          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+        'You shouldn’t even be using this account except to create your own accounts to use. ' +
+        'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
       );
       this.setState({
         resetPopupOpen: false,

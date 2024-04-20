@@ -36,9 +36,7 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { toast } from 'react-toastify';
-import RolePermissions from 'components/PermissionsManagement/RolePermissions';
 
-import { useDispatch, useSelector } from 'react-redux';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -79,7 +77,7 @@ class UserManagement extends React.PureComponent {
     const { requests: timeOffRequests } = this.props.state.timeOffRequests;
     let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests);
     let roles = [...new Set(userProfiles.map(item => item.role))];
-    const canPostNewUser = this.props.hasPermission('postUserProfile');
+
     return (
       <Container fluid>
         {fetching ? (
@@ -94,8 +92,6 @@ class UserManagement extends React.PureComponent {
               onNewUserClick={this.onNewUserClick}
               handleNewUserSetupPopup={this.handleNewUserSetupPopup}
               state={this.props.state}
-              canPostNewUser={canPostNewUser}
-              // getState={this.props.getState}
             />
 
             <div className="table-responsive" id="user-management-table">

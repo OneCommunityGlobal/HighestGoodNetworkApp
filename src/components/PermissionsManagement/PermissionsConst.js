@@ -43,6 +43,11 @@ export const permissionLabels = [
           'Make the "Other Links" -> "User Management" button appear/accessible and be able to ONLY create users. No editing or deleting access. ',
       },
       {
+        label: 'Delete User Profile',
+        key: 'deleteUserProfile',
+        description: 'Make the "Other Links" -> "User Management" button appear/accessible and be able to ONLY delete users. No editing or creating access.'
+      },
+      {
         label: 'Edit User Profile',
         key: 'putUserProfile',
         description:

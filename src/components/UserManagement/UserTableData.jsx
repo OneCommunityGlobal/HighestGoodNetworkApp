@@ -17,6 +17,9 @@ import { cantUpdateDevAdminDetails } from 'utils/permissions';
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const putUserProfile = props.hasPermission('putUserProfile');
+  const deleteUserProfile = props.hasPermission('deleteUserProfile');
+
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -35,8 +38,8 @@ const UserTableData = React.memo(props => {
   const checkPermissionsOnOwner = () => {
     const recordEmail = props.user.email;
     const loginUserEmail = props.authEmail;
-    
-    return (props.user.role === 'Owner' && !canAddDeleteEditOwners) 
+
+    return (props.user.role === 'Owner' && !canAddDeleteEditOwners)
       || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
 
@@ -52,7 +55,7 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td className="email_cell">
-      <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
+        <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -62,8 +65,8 @@ const UserTableData = React.memo(props => {
           }}
         />
       </td>
-       <td className="email_cell">
-       <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+      <td className="email_cell">
+        <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -86,12 +89,17 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td>{props.user.weeklycommittedHours}</td>
+
+
+
+
+
       <td>
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
-            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
+            if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
             }
@@ -101,19 +109,20 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={boxStyle}
+          style={{ boxStyle, ...(putUserProfile ? {} : { backgroundColor: '#ccc', color: '#555', border: `1px solid #ccc`, cursor: 'default' }) }}
+          disabled={!putUserProfile}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
       </td>
       <td className="centered-td">
         <button
-          className={`btn btn-outline-primary btn-sm${
-            props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
-          }`}
+          className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
+            }`}
           onClick={e => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={boxStyle}
+          style={{ boxStyle, ...(putUserProfile ? {} : { backgroundColor: '#ccc', color: '#555', border: `1px solid #ccc`, cursor: 'default' }) }}
+          disabled={!putUserProfile}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +131,7 @@ const UserTableData = React.memo(props => {
             viewBox="0 0 448 512"
             className="requested-time-off-calender-svg"
           >
-            <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
+            <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" style={{ fill: putUserProfile ? '' : '#999' }} />
           </svg>
         </button>
         {props.timeOffRequests?.length > 0 && (
@@ -144,7 +153,7 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
-            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
+            if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
             }
@@ -153,7 +162,8 @@ const UserTableData = React.memo(props => {
               props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
             );
           }}
-          style={boxStyle}
+          style={{ boxStyle, ...(putUserProfile ? {} : { backgroundColor: '#ccc', color: '#555', border: `1px solid #ccc`, cursor: 'default' }) }}
+          disabled={!putUserProfile}
         >
           {props.isSet ? CANCEL : SET_FINAL_DAY}
         </button>
@@ -164,9 +174,9 @@ const UserTableData = React.memo(props => {
           : ''}
       </td>
       <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
-      
-       <td className="email_cell">
-      {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
+
+      <td className="email_cell">
+        {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -179,19 +189,22 @@ const UserTableData = React.memo(props => {
       {checkPermissionsOnOwner() ? null : (
         <td>
           <span className="usermanagement-actions-cell">
+
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={boxStyle}
+              style={{ ...boxStyle, ...(deleteUserProfile ? {} : { backgroundColor: '#ccc', color: '#555', border: `1px solid #ccc`, cursor: 'default' }) }}
+              disabled={!deleteUserProfile}
             >
               {DELETE}
             </button>
+
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton />
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} isSmallButton putUserProfile={putUserProfile} />
           </span>
         </td>
       )}
