@@ -44,7 +44,7 @@ import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus } from '../../actions/userManagement';
+import { updateUserStatus, updateRehireableStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
@@ -56,7 +56,8 @@ import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
-import { setCurrentUser } from '../../actions/authActions';
+import { GiConsoleController } from 'react-icons/gi';
+import { setCurrentUser } from '../../actions/authActions'
 
 function UserProfile(props) {
   /* Constant values */
@@ -101,6 +102,9 @@ function UserProfile(props) {
   const [saved, setSaved] = useState(false);
   const [isTeamSaved, setIsTeamSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
+  const [isRehireable, setIsRehireable] = useState(null); 
 
   const userProfileRef = useRef();
 
@@ -304,6 +308,8 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
+      // Assuming newUserProfile contains isRehireable attribute
+      setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
 
 
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
@@ -456,6 +462,10 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+    if (targetIsDevAdminUneditable){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     setType(type);
     setShowModal(status);
 
@@ -576,7 +586,28 @@ function UserProfile(props) {
     setActiveInactivePopupOpen(false);
   };
 
-  /* useEffect functions */
+  const handleRehireableChange = () => {
+    const newRehireableStatus = !isRehireable;
+    setPendingRehireableStatus(newRehireableStatus);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmChange = () => {
+    setShowConfirmDialog(false);
+    const updatedUserProfile = {
+      ...userProfile,
+      isRehireable: pendingRehireableStatus,
+    };
+    updateRehireableStatus(updatedUserProfile, pendingRehireableStatus)
+    setIsRehireable(pendingRehireableStatus);
+    setUserProfile(updatedUserProfile);
+    setOriginalUserProfile(updatedUserProfile);
+  };
+
+  const handleCancelChange = () => {
+    setShowConfirmDialog(false);
+  };
+
   useEffect(() => {
     getTeamMembersWeeklySummary(); 
     loadUserProfile();
@@ -667,6 +698,8 @@ function UserProfile(props) {
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canSeeQSC = props.hasPermission('seeQSC');
+  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus')
+
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
  
@@ -821,6 +854,17 @@ function UserProfile(props) {
                     }
                   }}
                 />
+                </span>
+              )}
+              {canChangeRehireableStatus && (
+                <span className='mr-2'>
+                  <i 
+                    className={isRehireable ? "fa fa-check-square-o": "fa fa-square-o"}
+                    aria-hidden="true"
+                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }} 
+                    title="Click to change rehirable status" 
+                    onClick={handleRehireableChange}
+                  />
                 </span>
               )}
               <Button
@@ -1014,7 +1058,7 @@ function UserProfile(props) {
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(userProfile.role)}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
@@ -1072,6 +1116,16 @@ function UserProfile(props) {
               >
                 Basic Information
               </Button>
+              <Modal isOpen={showConfirmDialog} toggle={handleCancelChange}>
+                <ModalHeader toggle={handleCancelChange}>Confirm Status Change</ModalHeader>
+                <ModalBody>
+                  {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'}?`}
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="primary" onClick={handleConfirmChange}>Confirm</Button>{' '}
+                  <Button color="secondary" onClick={handleCancelChange}>Cancel</Button>
+                </ModalFooter>
+              </Modal>
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
