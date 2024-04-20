@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { debounce } from 'lodash';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
@@ -103,18 +103,17 @@ export function TeamReport({ match }) {
     [],
   );
 
-  function handleSelectTeam(event, selectedTeam, index) {
+  const handleSelectTeam = useCallback((event, selectedTeam, index) => {
     if (event.target.checked) {
       if (selectedTeams.length < 4) {
         setSelectedTeams([...selectedTeams, { selectedTeam, index }]);
       }
     } else {
       setSelectedTeams(prevSelectedTeams =>
-        // eslint-disable-next-line no-shadow
         prevSelectedTeams.filter(team => team.selectedTeam._id !== selectedTeam._id),
       );
     }
-  }
+  }, [selectedTeams]);
 
   const debounceSearchByName = debounce((value) => {
     setSearchParams(prevParams => ({
@@ -484,11 +483,10 @@ export function TeamReport({ match }) {
                       <input
                         type="checkbox"
                         onChange={event => handleSelectTeam(event, team, index)}
+                        checked={selectedTeams.some(st => st.selectedTeam._id === team._id)}
                         disabled={
                           selectedTeams.length === 4 &&
-                          !selectedTeams.some(
-                            selectedTeam => selectedTeam.selectedTeam.teamName === team.teamName,
-                          )
+                          !selectedTeams.some(st => st.selectedTeam._id === team._id)
                         }
                       />
                     </td>
