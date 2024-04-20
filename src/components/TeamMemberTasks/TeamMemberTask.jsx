@@ -14,10 +14,9 @@ import { Table, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
 import './style.css';
-import { boxStyle } from 'styles';
 
 import Warning from 'components/Warnings/Warnings';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
 
 import ReviewButton from './ReviewButton';
@@ -45,6 +44,7 @@ const TeamMemberTask = React.memo(
     onTimeOff,
     goingOnTimeOff,
   }) => {
+    const darkMode = useSelector(state => state.theme.darkMode);
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
@@ -138,7 +138,7 @@ const TeamMemberTask = React.memo(
                 <i
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', color: 'black' }}
+                  style={{ fontSize: 24, cursor: 'pointer', color: darkMode ? 'white' : 'black' }}
                   title="Click to see user's timelog"
                 />
               </Link>
@@ -172,8 +172,8 @@ const TeamMemberTask = React.memo(
                       personId={user.personId}
                     />
                   </td>
-                  <td data-label="Time" className="team-clocks">
-                    <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
+                  <td data-label="Time" className={"team-clocks " + (darkMode ? "text-light" : "")}>
+                    <u className={darkMode ? "text-azure" : ""}>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                     <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                   </td>
@@ -260,7 +260,6 @@ const TeamMemberTask = React.memo(
                               userId={userId}
                               task={task}
                               updateTask={updateTaskStatus}
-                              style={boxStyle}
                             />
                           </div>
                         </td>
@@ -277,8 +276,8 @@ const TeamMemberTask = React.memo(
                             )}
                             <div className="team-task-progress-container">
                               <span
-                                data-testid={`times-${task.taskName}`}
-                                className={canSeeFollowUpCheckButton ? "team-task-progress-time" : "team-task-progress-time-volunteers" }
+                                data-testid={`times-${task.taskName}`} 
+                                className={darkMode ? 'text-light ' : '' + (canSeeFollowUpCheckButton ? "team-task-progress-time" : "team-task-progress-time-volunteers")}
                               >
                                 {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
                                   task.estimatedHours.toFixed(2),
