@@ -42,7 +42,7 @@ export default function PasswordInputModal({
     setPasswordField(event.target.value);
   };
 
-  const revealPassword = e => {
+  const revealPassword = () => {
     setShowPassword(prev => !prev);
   };
 
