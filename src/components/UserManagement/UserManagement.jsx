@@ -74,7 +74,7 @@ class UserManagement extends React.PureComponent {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
     const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests);
+    let userTable = this.userTableElements(userProfiles,  `1`, timeOffRequests);
     let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
       <Container fluid>
@@ -190,6 +190,7 @@ class UserManagement extends React.PureComponent {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
+      const canChangeUserStatus = this.props.hasPermission('changeUserStatus');
       let that = this;
       /* Builiding the table body for users based on the page size and selected page number and returns
        * the rows for currently selected page .
@@ -229,6 +230,7 @@ class UserManagement extends React.PureComponent {
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
+              canChangeUserStatus={canChangeUserStatus}
             />
           );
         });
