@@ -280,13 +280,11 @@ const TimeEntryForm = props => {
     // Construct the timeEntry object
     const timeEntry = { ...formValues };
 
-    let timeEntryStatus;
     try {
       if (edit) {
-        props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
+        await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
-        props.postTimeEntry(timeEntry);
-
+        await props.postTimeEntry(timeEntry);
       }
   
       setFormValues(initialFormValues);
@@ -481,6 +479,7 @@ const TimeEntryForm = props => {
               title="timeEntryTip"
               onClick={aboutModalToggle}
             />
+            { !isAsyncDataLoaded && <span> Loading Data...</span> }
           </div>
           <ReactTooltip id="registerTip" place="bottom" effect="solid">
             Click this icon to learn about this time entry form

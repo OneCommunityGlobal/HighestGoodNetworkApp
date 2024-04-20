@@ -8,16 +8,20 @@ import {toast} from 'react-toastify';
 
 const DeleteModal = ({ timeEntry }) => {
   const [isOpen, setOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
   const deleteEntry = async () => {
+    setIsProcessing(true);
     try {
-      dispatch(deleteTimeEntry(timeEntry));
+      await dispatch(deleteTimeEntry(timeEntry));
     } catch (error) {
       toast.error(`An error occurred while dispatching delete time entry action: ${error.message}`)
     }
+    setIsProcessing(false);
+    toggle();
   };
 
   return (
@@ -27,12 +31,10 @@ const DeleteModal = ({ timeEntry }) => {
         <ModalBody>Are you sure you want to delete this entry?</ModalBody>
         <ModalFooter>
           <Button onClick={toggle} color="secondary" className="float-left">
-            {' '}
-            Cancel{' '}
+            Cancel
           </Button>
-          <Button onClick={deleteEntry} color="danger">
-            {' '}
-            Delete{' '}
+          <Button onClick={deleteEntry} color="danger" disabled={isProcessing}>
+            {isProcessing ? 'Processing...' : 'Delete'}
           </Button>
         </ModalFooter>
       </Modal>

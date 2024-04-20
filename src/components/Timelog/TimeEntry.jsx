@@ -39,6 +39,7 @@ const TimeEntry = (props) => {
   const { _id: timeEntryId } = data;
 
   const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();
 
   const { 
@@ -88,21 +89,23 @@ const TimeEntry = (props) => {
     //default permission: delete own sameday tangible entry
     isAuthUserAndSameDayEntry;
 
-  const toggleTangibility = () => {
+  const toggleTangibility = async () => {
+    setIsProcessing(true);
     const newData = {
       ...data,
       isTangible: !isTangible,
     };
     try {
       if (from === 'TaskTab') {
-        dispatch(editTeamMemberTimeEntry(newData));
+        await dispatch(editTeamMemberTimeEntry(newData));
       } else if (from === 'WeeklyTab') {
-        dispatch(editTimeEntry(timeEntryId, newData));
-        dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
+        await dispatch(editTimeEntry(timeEntryId, newData));
+        await dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
       }
     } catch (error) {
       toast.error(`Error: ${error.message}`);
     }
+    setIsProcessing(false);
   };
   let filteredColor;
   const daysPast = moment().diff(dateOfWork, 'days');
@@ -164,9 +167,10 @@ const TimeEntry = (props) => {
                           type="checkbox"
                           name="isTangible"
                           checked={isTangible}
-                          disabled={!canEdit}
+                          disabled={!canEdit || isProcessing}
                           onChange={toggleTangibility}
                       />
+                      { isProcessing ? <span> Processing... </span> : null }
                     </>
                   )
                 : <span className="font-italic">{isTangible ? 'Tangible' : 'Intangible'}</span> 
