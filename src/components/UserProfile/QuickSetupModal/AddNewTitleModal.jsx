@@ -20,7 +20,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     mediaFolder: '',
     teamCode: '',
     projectAssigned: '',
-    teamAssiged: '',
+    // teamAssiged: {},
   });
 
   const [selectedTeam, onSelectTeam] = useState(undefined);
@@ -62,10 +62,9 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
   const cleanTeamAssigned = () => {
     // if clean all input field -> no team selected
-    setTitleData(prev => ({
-      ...prev,
-      teamAssiged: "",
-    }));
+    const updatedTitleData = { ...titleData };
+    delete updatedTitleData.teamAssiged;
+    setTitleData(updatedTitleData);
   };
 
   const undoTeamAssigned = () => {

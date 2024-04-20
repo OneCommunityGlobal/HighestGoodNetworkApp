@@ -12,26 +12,20 @@ const initialState = {};
 const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
   ? window.__REDUX_DEVTOOLS_EXTENSION__()
   : f => f;
+  
+const localPersistReducer = persistReducer({
+  key: 'root',
+  storage,
+  blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)]
+}, combineReducers(localReducers));
 
-const localPersistReducer = persistReducer(
-  {
-    key: 'root',
-    storage,
-    blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)],
-  },
-  combineReducers(localReducers),
-);
+const sessionPersistReducer = persistReducer({
+  key: 'root',
+  storage: storageSession,
+  blacklist: [...Object.keys(localReducers)]
+}, combineReducers(sessionReducers));
 
-const sessionPersistReducer = persistReducer(
-  {
-    key: 'root',
-    storage: storageSession,
-    blacklist: [...Object.keys(localReducers)],
-  },
-  combineReducers(sessionReducers),
-);
-
-const filteredReducer = reducer => {
+const filteredReducer = (reducer) => {
   return (state, action) => {
     let knownKeys = Object.keys(reducer(undefined, { type: '@@FILTER/INIT' }));
 
@@ -59,13 +53,12 @@ export const rootReducers = concatenateReducers([
   filteredReducer(sessionPersistReducer),
   filteredReducer(localPersistReducer),
 ]);
-// export const rootReducers = concatenateReducers([filteredReducer(sessionPersistReducer)]);
 
 export default () => {
   const store = createStore(
     rootReducers,
     initialState,
-    compose(applyMiddleware(...middleware), devTools),
+    compose(applyMiddleware(...middleware), devTools)
   );
   const persistor = persistStore(store);
   return { store, persistor };
