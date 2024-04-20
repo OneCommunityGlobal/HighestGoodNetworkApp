@@ -630,9 +630,9 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
-  role: state.userProfile.role,
+  role: state.auth.user.role,
   auth: state.auth,
-  authEmailWeeklySummaryRecipient: state.userProfile.email, // capturing the user email through Redux store - Sucheta
+  authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
 });
 
 const mapDispatchToProps = dispatch => ({
