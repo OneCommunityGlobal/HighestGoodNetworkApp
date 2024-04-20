@@ -1,11 +1,12 @@
 import { React, useState } from 'react';
 import { Button, Input, Col, Tooltip } from 'reactstrap';
-import './TeamsAndProjects.css';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
-import styles from './UserTeamsTable.css';
-import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
+import { boxStyle } from 'styles';
+import Switch from './Switch';
+import './TeamsAndProjects.css';
+import './UserTeamsTable.css';
+
 
 const UserTeamsTable = props => {
   const [tooltipOpen, setTooltip] = useState(false);
@@ -37,17 +38,17 @@ const UserTeamsTable = props => {
     <div>
       <div className="teamtable-container desktop">
         <div className="container" style={{paddingLeft: '4px', paddingRight: '4px'}}>
-          {props.canEditVisibility || ['Owner', 'Administrator'].includes(props.role) && (
+          {props.canEditVisibility && (
             <div className="row" >
               <Col md="7">
                 <span className="teams-span">Visibility</span>
               </Col>
               <Col md='5'>
-                <ToggleSwitch
-                  switchType="visible"
-                  state={props.isVisible}
-                  handleUserProfile={props.onUserVisibilitySwitch}
-                />
+              <Switch
+                isOn={props.isVisible}
+                handleToggle={props.onUserVisibilitySwitch }
+               
+              />
               </Col>
             </div>
           )}
@@ -157,11 +158,11 @@ const UserTeamsTable = props => {
               <span className="teams-span">Visibility</span>
               </Col>
               <Col md='12' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <ToggleSwitch
-                  switchType="visible"
-                  state={props.isVisible}
-                  handleUserProfile={props.onUserVisibilitySwitch}
-                />
+              <Switch
+                isOn={props.isVisible}
+                handleToggle={props.onUserVisibilitySwitch }
+               
+              />
               </Col>
             </>
           )}
