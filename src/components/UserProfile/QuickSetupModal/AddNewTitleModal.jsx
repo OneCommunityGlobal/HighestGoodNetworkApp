@@ -14,13 +14,13 @@ import { addTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
 
-function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData,setWarningMessage, setShowMessage }) {
+function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData, setWarningMessage, setShowMessage }) {
   const [titleData, setTitleData] = useState({
     titleName: '',
     mediaFolder: '',
     teamCode: '',
     projectAssigned: '',
-    teamAssiged: '',
+    // teamAssiged: '',
   });
 
   const [selectedTeam, onSelectTeam] = useState(undefined);
@@ -62,10 +62,15 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
   const cleanTeamAssigned = () => {
     // if clean all input field -> no team selected
-    setTitleData(prev => ({
-      ...prev,
-      teamAssiged: "",
-    }));
+    // setTitleData(prev => ({
+    //   ...prev,
+    //   teamAssiged: "",
+    // }));
+    const updatedTitleData = { ...titleData };
+    // Delete the 'teamAssiged' key from the new object
+    delete updatedTitleData.teamAssiged;
+    // Update the state with the new object
+    setTitleData(updatedTitleData);
   };
 
   const undoTeamAssigned = () => {
@@ -83,10 +88,10 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   const confirmOnClick = () => {
     addTitle(titleData)
       .then((resp) => {
-        if (resp.status !== 200){
-          setWarningMessage({title:"Error", content:resp.message});
+        if (resp.status !== 200) {
+          setWarningMessage({ title: "Error", content: resp.message });
           setShowMessage(true);
-        }else{
+        } else {
           setIsOpen(false);
           refreshModalTitles();
         };
