@@ -20,56 +20,56 @@ const mockStore = configureStore([thunk]);
 
 const userTaskMock = [
   {
-    "priority": "Primary",
-    "isAssigned": true,
-    "status": "Complete",
-    "_id": "6470477897eefd0a38475112",
-    "resources": [
+    priority: "Primary",
+    isAssigned: true,
+    status: "Complete",
+    _id: "6470477897eefd0a38475112",
+    resources: [
         {
-            "completedTask": true,
-            "reviewStatus": "Unsubmitted",
-            "_id": "6470477897eefd0a38475113",
-            "userID": "645325bea0067106d4423119",
+            completedTask: true,
+            reviewStatus: "Unsubmitted",
+            _id: "6470477897eefd0a38475113",
+            userID: "645325bea0067106d4423119",
         },
         {
-            "completedTask": true,
-            "reviewStatus": "Unsubmitted",
-            "_id": "64751f5009107205627746fb",
-            "userID": "6453268aa0067106d4423160",
+            completedTask: true,
+            reviewStatus: "Unsubmitted",
+            _id: "64751f5009107205627746fb",
+            userID: "6453268aa0067106d4423160",
         }
     ],
-    "wbsId": "6470473f97eefd0a38475104",
-    "taskName": "Task 1",
-    "num": "1",
-    "category": "Food",
-    "projectId": "1"
+    wbsId: "6470473f97eefd0a38475104",
+    taskName: "Task 1",
+    num: "1",
+    category: "Food",
+    projectId: "1"
 },
 {
-    "priority": "Primary",
-    "isAssigned": false,
-    "status": "Active",
-    "isActive": true,
-    "_id": "64b6f347d34321075b7734fe",
-    "resources": [
+    priority: "Primary",
+    isAssigned: false,
+    status: "Active",
+    isActive: true,
+    _id: "64b6f347d34321075b7734fe",
+    resources: [
         {
-            "completedTask": false,
-            "reviewStatus": "Unsubmitted",
-            "_id": "64b6f347d34321075b773531",
-            "name": "User 1",
-            "userID": "6453266da0067106d4423158"
+            completedTask: false,
+            reviewStatus: "Unsubmitted",
+            _id: "64b6f347d34321075b773531",
+            name: "User 1",
+            userID: "6453266da0067106d4423158"
         },
         {
-            "completedTask": false,
-            "reviewStatus": "Unsubmitted",
-            "_id": "64b6f347d34321075b773532",
-            "name": "User 2",
-            "userID": "6453268aa0067106d4423160"
+            completedTask: false,
+            reviewStatus: "Unsubmitted",
+            _id: "64b6f347d34321075b773532",
+            name: "User 2",
+            userID: "6453268aa0067106d4423160"
         }
     ],
-    "wbsId": "64b6f33cd34321075b7734de",
-    "taskName": "Task 2",
-    "num": "2.1.1.0",
-    "projectId": "2"
+    wbsId: "64b6f33cd34321075b7734de",
+    taskName: "Task 2",
+    num: "2.1.1.0",
+    projectId: "2"
 },
 ]
 
