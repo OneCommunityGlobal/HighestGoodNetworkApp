@@ -3,7 +3,7 @@ import { Stub } from "components/common/Stub";
 import "./WbsTable.css";
 
 // eslint-disable-next-line import/prefer-default-export
-export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
+export function WbsTable({ wbs, skip, take, match, canViewWBS }) {
   let WbsList = [];
   const projectId = match?.params?.projectId;
 
@@ -13,7 +13,7 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
         <div>{skip + index + 1}</div>
         <div>
           {canViewWBS ? (
-            <a href={`/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`} className={darkMode ? "text-light" : ""}>
+            <a href={`/wbs/tasks/${item._id}/${projectId}/${item.wbsName}`}>
               {item.wbsName}
             </a>
           ) : (
@@ -22,9 +22,9 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
         </div>
         <div className="projects__active--input">
           {item.isActive ? (
-            <div className="isActive">
+            <tasks className="isActive">
               <i className="fa fa-circle" aria-hidden="true"></i>
-            </div>
+            </tasks>
           ) : (
             <div className="isNotActive">
               <i className="fa fa-circle-o" aria-hidden="true" />
@@ -39,20 +39,20 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
   }
 
   return (
-    <div className={`wbs-table ${darkMode ? 'text-light' : ''}`}>
+    <div className="wbs-table">
       <h5 style={{ marginBottom: "2.125rem" }} className="wbs-table-title">
         WBS
       </h5>
       <div
         style={{ marginBottom: "0px" }}
-        className={`reports-table-head wbs-table-row ${darkMode ? 'bg-space-cadet' : ''}`}
+        className="reports-table-head wbs-table-row"
       >
         <div className="wbs-table-cell">#</div>
         <div className="wbs-table-cell">Name</div>
         <div className="wbs-table-cell">Active</div>
         <div className="wbs-table-cell">ID</div>
       </div>
-      <div>{WbsList.length > 0 ? WbsList : <Stub color={darkMode ? "white" : ""}/>}</div>
+      <div>{WbsList.length > 0 ? WbsList : <Stub />}</div>
     </div>
   );
 }

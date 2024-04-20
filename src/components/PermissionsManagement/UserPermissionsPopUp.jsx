@@ -9,9 +9,8 @@ import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle } from 'styles';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
-const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, authUser }) => {
+const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles }) => {
 
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
@@ -46,11 +45,6 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
-    const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
-    if (shouldPreventEdit) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
-      return;
-    }
     const userId = actualUserProfile?._id;
 
     const url = ENDPOINTS.USER_PROFILE(userId);
@@ -193,7 +187,6 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
 };
 
 const mapStateToProps = state => ({
-  authUser: state.auth.user,
   roles: state.role.roles,
   allUserProfiles: state.allUserProfiles.userProfiles,
   permissionsUser: state.auth.permissions,

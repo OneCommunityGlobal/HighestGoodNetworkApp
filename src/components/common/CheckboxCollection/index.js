@@ -1,3 +1,1 @@
-import CheckboxCollection from './CheckboxCollection';
-
-export default CheckboxCollection;
+export { default } from './CheckboxCollection';

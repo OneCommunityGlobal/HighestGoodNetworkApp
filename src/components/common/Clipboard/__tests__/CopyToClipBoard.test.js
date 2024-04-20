@@ -1,12 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import CopyToClipboard from '../CopyToClipboard';
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import { themeMock } from '__tests__/mockStates';
-
-// Create a mock Redux store
-const mockStore = configureMockStore();
 
 // Mock the navigator.clipboard.writeText method
 const mockWriteText = jest.fn();
@@ -34,14 +28,8 @@ describe('CopyToClipboard', () => {
     const writeText = 'Text to be copied';
     const message = 'Copy successful';
 
-    const store = mockStore({
-      theme: themeMock,
-    });
-
     render(
-      <Provider store={store}>
-        <CopyToClipboard writeText={writeText} message={message} />
-      </Provider>
+      <CopyToClipboard writeText={writeText} message={message} />
     );
 
     // Select the element using its class

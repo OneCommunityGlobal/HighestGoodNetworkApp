@@ -20,13 +20,13 @@ import { toast } from 'react-toastify';
 
 
 const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
   const { firstName, lastName } = userProfile;
 
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '3' : ''}>
+        <Col md="3">
           <FormGroup>
             <Input
               type="text"
@@ -44,7 +44,7 @@ const Name = props => {
             <FormFeedback>First Name Can&apos;t be empty</FormFeedback>
           </FormGroup>
         </Col>
-        <Col md={desktopDisplay ? '3' : ''}>
+        <Col md="3">
           <FormGroup>
             <Input
               type="text"
@@ -69,20 +69,20 @@ const Name = props => {
   return (
     <>
       <Col>
-        <p className="text-right">{`${firstName} ${lastName}`}</p>
+        <p>{`${firstName} ${lastName}`}</p>
       </Col>
     </>
   );
 };
 
 const Title = props => {
-  const { userProfile, setUserProfile, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, canEdit } = props;
   const { jobTitle } = userProfile;
 
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '6' : ''}>
+        <Col md="6">
           <FormGroup>
             <Input
               type="text"
@@ -102,14 +102,14 @@ const Title = props => {
   return (
     <>
       <Col>
-        <p className='text-right'>{`${jobTitle}`}</p>
+        <p>{`${jobTitle}`}</p>
       </Col>
     </>
   );
 };
 
 const Email = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit } = props;
   const { email, privacySettings, emailSubscriptions } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
@@ -117,7 +117,7 @@ const Email = props => {
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '6' : ''}>
+        <Col md="6">
           <FormGroup>
             <ToggleSwitch
               switchType="email"
@@ -153,7 +153,7 @@ const Email = props => {
     <>
       {privacySettings?.email && (
         <Col>
-          <p className='text-right'>{email}</p>
+          <p>{email}</p>
         </Col>
       )}
     </>
@@ -191,12 +191,12 @@ const formatPhoneNumber = str => {
   return str;
 };
 const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, handleUserProfile, canEdit } = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '6' : ''}>
+        <Col md="6">
           <FormGroup>
             <ToggleSwitch
               switchType="phone"
@@ -220,7 +220,7 @@ const Phone = props => {
     <>
       {privacySettings?.phoneNumber && (
         <Col>
-          <p className='text-right'>{formatPhoneNumber(phoneNumber)}</p>
+          <p>{formatPhoneNumber(phoneNumber)}</p>
         </Col>
       )}
     </>
@@ -228,7 +228,7 @@ const Phone = props => {
 };
 
 const TimeZoneDifference = props => {
-  const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay } = props;
+  const { isUserSelf, errorOccurred, setErrorOccurred } = props;
   const [signedOffset, setSignedOffset] = useState('');
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -268,8 +268,8 @@ const TimeZoneDifference = props => {
   if (!isUserSelf) {
     return (
       <>
-        <Col md="6">
-          <p className='text-right'>{signedOffset} hours</p>
+        <Col md="7">
+          <p>{signedOffset} hours</p>
         </Col>
       </>
     );
@@ -277,8 +277,8 @@ const TimeZoneDifference = props => {
 
   return (
     <>
-      <Col md={desktopDisplay ? '6' : ''}>
-        <p className={desktopDisplay ? 'text-right' : 'text-left'}>This is your own profile page</p>
+      <Col md="7">
+        <p>This is your own profile page</p>
       </Col>
     </>
   );
@@ -377,7 +377,6 @@ const BasicInformationTab = props => {
         formValid={formValid}
         role={props.role}
         canEdit={canEdit}
-        desktopDisplay={desktopDisplay}
       />
     </>
   );
@@ -404,7 +403,6 @@ const BasicInformationTab = props => {
         formValid={formValid}
         role={props.role}
         canEdit={canEdit}
-        desktopDisplay={desktopDisplay}
       />
     </>
   );
@@ -432,7 +430,6 @@ const BasicInformationTab = props => {
         setFormValid={setFormValid}
         role={props.role}
         canEdit={canEdit}
-        desktopDisplay={desktopDisplay}
       />
     </>
   );
@@ -459,7 +456,6 @@ const BasicInformationTab = props => {
         formValid={formValid}
         role={props.role}
         canEdit={canEdit}
-        desktopDisplay={desktopDisplay}
       />
     </>
   );
@@ -575,7 +571,7 @@ const BasicInformationTab = props => {
             <Col className="cols">
               <Input onChange={handleLocation} value={userProfile.location.userProvided || ''} />
               <div>
-                <Button color="secondary" block size="sm" onClick={onClickGetTimeZone} className="mt-2">
+                <Button color="secondary" block size="sm" onClick={onClickGetTimeZone}>
                   Get Time Zone
                 </Button>
               </div>
@@ -608,7 +604,7 @@ const BasicInformationTab = props => {
 
   const timeZoneDifferenceComponent = (
     <>
-      <Col md={desktopDisplay ? '5' : ''}>
+      <Col md={desktopDisplay ? '5' : null}>
         <label>Difference in this Time Zone from Your Local</label>
       </Col>
       <TimeZoneDifference
@@ -619,15 +615,14 @@ const BasicInformationTab = props => {
         formValid={formValid}
         errorOccurred={errorOccurred}
         setErrorOccurred={setErrorOccurred}
-        desktopDisplay={desktopDisplay}
       />
     </>
   );
 
   const endDateComponent = (
     <>
-      <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
-        <Label className='mr-1'>
+      <Col>
+        <Label>
           {userProfile.endDate
             ? 'End Date ' + formatDate(userProfile.endDate)
             : 'End Date ' + 'N/A'}
@@ -642,7 +637,7 @@ const BasicInformationTab = props => {
         )}
       </Col>
       {desktopDisplay && canEdit && (
-        <Col>
+        <Col md="6">
           <SetUpFinalDayButton
             loadUserProfile={loadUserProfile}
             setUserProfile={setUserProfile}
@@ -658,10 +653,10 @@ const BasicInformationTab = props => {
     <>
       {desktopDisplay ? (
         <>
-          <Col md="8" className="mr-5">
+          <Col>
             <Label>Status</Label>
           </Col>
-          <Col>
+          <Col md="6">
             <Label>
               {userProfile.isActive
                 ? 'Active'
@@ -682,7 +677,7 @@ const BasicInformationTab = props => {
         </>
       ) : (
         <>
-          <Col>
+          <Col style={{ alignItems: 'center', justifyContent: 'center' }}>
             <Label>Status</Label>
             <div>
               <Label style={{ fontWeight: 'normal' }}>

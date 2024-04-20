@@ -155,23 +155,6 @@
   padding-right: 5px;
 }
 
-.flex-responsive {
-  display: flex;
-  flex-direction: row;
-  margin-right: 10px;
-  min-width: 100px;
-}
-
-@media (max-width: 250px) {
-  .flex-responsive{
-    flex-direction: column;
-  }
-
-  .text-nowrap{
-    text-wrap: wrap !important;
-  }
-}
-
 @media only screen and (max-width: 600px) {
   .desktop-view {
     display: none;
@@ -190,6 +173,6 @@
   .flex-responsive {
     display: flex;
     flex-direction: row;
-
+    column-gap: 2vw;
   }
 }

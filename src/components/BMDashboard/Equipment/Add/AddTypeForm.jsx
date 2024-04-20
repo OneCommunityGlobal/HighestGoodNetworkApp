@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, FormGroup, FormFeedback, Label, Input, Button } from 'reactstrap';
+import { Form, FormGroup, FormFeedback, FormText, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
@@ -13,8 +13,6 @@ const FuelTypes = {
   natg: 'Natural Gas',
   etha: 'Ethanol',
 };
-
-// const [inputText, setInputText] = useState('');
 
 const schema = Joi.object({
   name: Joi.string().required(),
@@ -31,16 +29,16 @@ export default function AddTypeForm() {
   const [errInput, setErrInput] = useState('');
   const [errType, setErrType] = useState('');
 
-  const handleChange = event => {
+  const handleChange = ({ target }) => {
     setErrInput('');
-    if (event.target.name === 'name') {
-      setName(event.target.value);
+    if (target.name === 'name') {
+      setName(target.value);
     }
-    if (event.target.name === 'desc') {
-      setDesc(event.target.value);
+    if (target.name === 'desc') {
+      setDesc(target.value);
     }
-    if (event.target.name === 'fuel') {
-      setFuel(event.target.value);
+    if (target.name === 'fuel') {
+      setFuel(target.value);
     }
   };
 
@@ -96,10 +94,7 @@ export default function AddTypeForm() {
           invalid={errInput === 'desc'}
           onChange={handleChange}
         />
-        <div class="form-footer" style={{ color: desc.length > 150 ? '#dc3545' : 'black' }}>
-          Character {desc.length}/150
-        </div>
-        {/* {!errInput && <FormText>Max 150 characters</FormText>} */}
+        {!errInput && <FormText>Max 150 characters</FormText>}
         <FormFeedback>
           {errType === 'string.max'
             ? 'Exceeds maximum character limit (150).'
@@ -126,7 +121,7 @@ export default function AddTypeForm() {
         <Button color="secondary" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button color="primary" disabled={!name && !desc}>
+        <Button color="primary" disabled={!name}>
           Submit
         </Button>
       </div>

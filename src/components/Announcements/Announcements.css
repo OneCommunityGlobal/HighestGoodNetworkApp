@@ -13,7 +13,7 @@ label {
   color: #333;
 }
 
-.input-text-for-announcement,
+input[type="text"],
 textarea {
   width: 100%;
   padding: 10px;

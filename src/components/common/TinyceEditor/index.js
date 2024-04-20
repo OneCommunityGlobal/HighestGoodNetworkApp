@@ -1,3 +1,1 @@
-import tinymceEditor from './tinymceEditor';
-
-export default tinymceEditor;
+export { default } from './tinymceEditor';

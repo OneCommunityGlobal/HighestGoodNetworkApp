@@ -75,13 +75,11 @@ const HomeCountryModal = ({ isOpen, toggle, setLocation,token}) => {
     setLocationAdded(true);
     setLocation(locationInput);
     setLocationInput(locationInitialState);
-    setTimeout(()=>{toggle()},1000)
   };
 
   const handleNoClick = () => {
     setLocationRefused(true);
     setLocationInput(locationInitialState);
-    setTimeout(()=>{toggle()},1000)
   };
 
   const reset = () =>{

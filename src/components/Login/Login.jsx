@@ -54,30 +54,23 @@ export class Login extends Form {
   };
 
   render() {
-    const { darkMode } = this.props;
-
     return (
-      <div
-        className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
-          darkMode ? 'bg-oxford-blue' : ''
-        }`}
-      >
+      <div className="container mt-5">
         <h2>Please Sign in</h2>
 
-        <form className="col-md-4 xs-12" onSubmit={e => this.handleSubmit(e)}>
-          {this.renderInput({ name: 'email', label: 'Email:', darkMode })}
+        <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
+          {this.renderInput({ name: 'email', label: 'Email:' })}
           {this.renderInput({
             name: 'password',
             label: 'Password:',
             type: 'password',
-            darkMode,
           })}
           <div>
-            {this.renderButton({ label: 'Submit', darkMode })}
+            {this.renderButton('Submit')}
             <Link to="forgotpassword">
               <span
                 style={{
-                  color: darkMode ? 'red' : 'blue',
+                  color: 'blue',
                   textDecorationLine: 'underline',
                   lineHeight: '50px',
                   float: 'right',
@@ -97,7 +90,6 @@ export class Login extends Form {
 const mapStateToProps = state => ({
   auth: state.auth,
   errors: state.errors,
-  darkMode: state.theme.darkMode,
 });
 
 export default withRouter(

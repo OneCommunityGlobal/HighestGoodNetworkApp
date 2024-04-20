@@ -5,11 +5,11 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Input,
   Label,
   Alert,
   Form,
 } from 'reactstrap';
-import Input from 'components/common/Input';
 import { boxStyle } from 'styles';
 /**
  * Modal popup to show the reset password action
@@ -33,7 +33,7 @@ const ResetPasswordPopup = React.memo(props => {
     setError('');
   }, [props.open]);
 
-  const togglePasswordVisibility = (field) => {
+    const togglePasswordVisibility = (field) => {
     setShowPassword(prevState => ({
       ...prevState,
       [field]: !prevState[field]
@@ -63,14 +63,17 @@ const ResetPasswordPopup = React.memo(props => {
       <ModalBody>
         <Form>
           <div className="flex justify-between items-center mb-2">
-            <Label className="mr-2" for="newpassword">New Password</Label>
+              <Label className="mr-2" for="newpassword">New Password</Label>
+              <span 
+                className={`fa ${showPassword.newPassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} 
+                onClick={() => togglePasswordVisibility('newPassword')} 
+              ></span>
           </div>
           <Input
             autoFocus
             type={showPassword.newPassword ? 'text' : 'password'}
             name="newpassword"
             id="newpassword"
-            label="New Password"
             value={newPassword.password}
             onChange={event => {
               const value = event.target.value;
@@ -85,15 +88,18 @@ const ResetPasswordPopup = React.memo(props => {
               }
             }}
           />
-
+          
           <div className="flex justify-between items-center mt-4 mb-2">
-            <Label className="mr-2" for="confirmpassword">Confirm Password</Label>
+              <Label className="mr-2" for="confirmpassword">Confirm Password</Label>
+              <span 
+                className={`fa ${showPassword.confirmPassword ? 'fa-eye-slash' : 'fa-eye'} cursor-pointer`} 
+                onClick={() => togglePasswordVisibility('confirmPassword')} 
+              ></span>
           </div>
           <Input
             type={showPassword.confirmPassword ? 'text' : 'password'}
             name="confirmpassword"
             id="confirmpassword"
-            label="Confirm Password"
             value={confirmPassword.password}
             onChange={event => {
               onConfirmPasswordChange({
@@ -119,7 +125,7 @@ const ResetPasswordPopup = React.memo(props => {
         </Button>
       </ModalFooter>
     </Modal>
-  );
+);
 });
 
 export default ResetPasswordPopup;

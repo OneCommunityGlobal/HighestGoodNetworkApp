@@ -6,9 +6,8 @@ import { Input, FormGroup, FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { updateTeam } from 'actions/allTeamsAction';
-import { boxStyle, boxStyleDark } from 'styles';
 
-function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
+function TeamTable({ allTeams, auth, hasPermission }) {
   // Display project lists
   let TeamsList = [];
   const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role == 'Owner';
@@ -67,12 +66,12 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
 
   if (allTeams.length > 0) {
     TeamsList = allTeams.map((team, index) => (
-      <tr id={`tr_${team._id}`} key={team._id} className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <tr id={`tr_${team._id}`} key={team._id}>
         <th scope="row">
-          <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
+          <div>{index + 1}</div>
         </th>
         <td>
-          <Link to={`/teamreport/${team._id}`} className={darkMode ? 'text-light' : ''}>{team.teamName}</Link>
+          <Link to={`/teamreport/${team._id}`}>{team.teamName}</Link>
         </td>
         <td className="projects__active--input">
           {team.isActive ? (
@@ -92,11 +91,9 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
     ));
   }
   return (
-    <table 
-      className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
-      style={darkMode ? boxStyleDark : boxStyle}>
-      <thead className={darkMode ? "bg-space-cadet text-light" : ""}>
-        <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+    <table className="table table-bordered">
+      <thead>
+        <tr>
           <th scope="col" id="projects__order">
             #
           </th>
