@@ -4,7 +4,7 @@ import { Component } from 'react';
 import Joi from 'joi';
 import { cloneDeep, isEqual, groupBy } from 'lodash';
 import { Link } from 'react-router-dom';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import Input from '../Input';
 import Dropdown from '../Dropdown';
 import Radio from "../Radio";
@@ -337,10 +337,10 @@ class Form extends Component {
     };
   }
 
-  renderButton(label) {
+  renderButton({label, darkMode}) {
     return (
       // eslint-disable-next-line react/button-has-type
-      <button disabled={this.validateForm()} className="btn btn-primary" style={boxStyle}>
+      <button disabled={this.validateForm()} className="btn btn-primary" style={darkMode ? boxStyleDark: boxStyle}>
         {label}
       </button>
     );
