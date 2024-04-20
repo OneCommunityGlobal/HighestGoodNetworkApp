@@ -9,12 +9,12 @@ import configureStore from 'redux-mock-store';
 
 const mockStore = configureStore([thunk]);
 const jaeAccountMock = {
-  _id: '5edf141c78f1380017b829a6',
+  _id: '1',
   isAdmin: true,
   user: {
     expiryTimestamp: '2023-08-22T22:51:06.544Z',
     iat: 1597272666,
-    userid: '5edf141c78f1380017b829a6',
+    userid: '1',
     role: 'Administrator',
     email: 'devadmin@hgn.net'
   },
@@ -25,12 +25,12 @@ const jaeAccountMock = {
   weeklycommittedHours: 10,
 }
 const nonJaeAccountMock = {
-  _id: '5edf141c78f1380017b829a6',
+  _id: '2',
   isAdmin: true,
   user: {
     expiryTimestamp: '2023-08-22T22:51:06.544Z',
     iat: 1597272666,
-    userid: '5edf141c78f1380017b829a6',
+    userid: '2',
     role: 'Administrator',
     email: 'non_jae@hgn.net'
   },
@@ -42,12 +42,12 @@ const nonJaeAccountMock = {
 }
 
 const ownerAccountMock = {
-  _id: '5edf141c78f1380017b829a6',
+  _id: '3',
   isAdmin: true,
   user: {
     expiryTimestamp: '2023-08-22T22:51:06.544Z',
     iat: 1597272666,
-    userid: '5edf141c78f1380017b829a6',
+    userid: '3',
     role: 'Owner',
     email: 'devadmin@hgn.net'
   },
@@ -82,7 +82,6 @@ describe('User Table Data: Non-Jae related Account', () => {
             onActiveInactiveClick={onActiveInactiveClick}
             onPauseResumeClick={onPauseResumeClick}
             onDeleteClick={onDeleteClick}
-            userId={nonJaeAccountMock._id}
           />
         </tbody>
       </table>,
@@ -175,7 +174,6 @@ describe('User Table Data: Jae protected account record and login as Jae related
             onActiveInactiveClick={onActiveInactiveClick}
             onPauseResumeClick={onPauseResumeClick}
             onDeleteClick={onDeleteClick}
-            userId={jaeAccountMock._id}
           />
         </tbody>
       </table>,

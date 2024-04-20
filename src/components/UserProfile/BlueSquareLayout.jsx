@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button , Modal } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import { boxStyle } from 'styles';
-import BlueSquare from './BlueSquares';
-import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
 import ScheduleExplanationModal from './ScheduleExplanationModal/ScheduleExplanationModal';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
+import TimeOffRequestsTable from './TimeOffRequestsTable/TimeOffRequestsTable';
 import hasPermission from '../../utils/permissions';
+import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
@@ -53,20 +53,16 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
   // ===============================================================
   if (canEdit) {
     return (
-      <div data-testid="blueSqaure-field">
-        <div className="blueSquare-toggle">
-          <div style={{ display: 'inline-block' }}>BLUE SQUARES</div>
-          {canEdit ? (
-            <ToggleSwitch
-              style={{ display: 'inline-block' }}
-              switchType="bluesquares"
-              state={privacySettings?.blueSquares}
-              handleUserProfile={handleUserProfile}
-            />
-          ) : null}
-        </div>
+      <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">
+        <BlueSquaresTable
+          userProfile={userProfile}
+          canEdit={canEdit}
+          isPrivate={privacySettings?.blueSquares}
+          handleUserProfile={handleUserProfile}
+          handleBlueSquare={handleBlueSquare}
+        />
+        <TimeOffRequestsTable requests={allRequests[userProfile._id]} openModal={handleOpen} />
 
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
           {!checkIfUserCanScheduleTimeOff() ? (
@@ -80,7 +76,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
               >
                 <span>{`Can't Schedule Time Off`}</span>
                 <br />
-                <span className="mt-0" style={{ fontSize: ".8em" }}>
+                <span className="mt-0" style={{ fontSize: '.8em' }}>
                   Click to learn why
                 </span>
               </Button>
@@ -133,20 +129,17 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
     );
   }
   return (
-    <div>
-      {!privacySettings?.blueSquares ? (
-        <p>Blue Square Info is Private</p>
-      ) : (
-        <div>
-          <p>BLUE SQUARES</p>
-          <BlueSquare
-            blueSquares={userProfile?.infringements}
-            handleBlueSquare={handleBlueSquare}
-          />
-        </div>
-      )}
+    <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">
+       <BlueSquaresTable
+          userProfile={userProfile}
+          canEdit={canEdit}
+          isPrivate={privacySettings?.blueSquares}
+          handleUserProfile={handleUserProfile}
+          handleBlueSquare={handleBlueSquare}
+        />
+      <TimeOffRequestsTable requests={allRequests[userProfile._id]} />
     </div>
-  );
+  ) 
 };
 
 export default BlueSquareLayout;
