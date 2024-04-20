@@ -21,11 +21,15 @@ const ReviewButton = ({
   const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
   const [link, setLink] = useState("");
+  const [linkError, setLinkError] = useState(null);
   const [verifyModal, setVerifyModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
 
   const toggleModal = () => {
     setModal(!modal);
+    if (!modal) {
+      setLinkError(null);
+    }
   };
 
   const toggleVerify = () => {
@@ -33,7 +37,15 @@ const ReviewButton = ({
   }
 
   const handleLink = (e) => {
-    setLink(e.target.value);
+    const url = e.target.value;
+    setLink(url);
+    if (!url) { 
+      setLinkError("A valid URL is required for review"); 
+    } else if (!validURL(url)) { 
+      setLinkError("Please enter a valid URL starting with 'https://'.");
+    } else {
+      setLinkError(null);
+    }
   };
 
   const validURL = (url) => {
@@ -186,16 +198,23 @@ const ReviewButton = ({
             : `Are you sure you have completed the review?`}
         </ModalBody>
         <ModalBody>
-          Please add link to related work:
+          Please add link to related work: (required)
           <Input 
           type='text' 
+          required
           value={link}
           onChange={handleLink}
           />
+          {linkError && <div className="text-danger">{linkError}</div>}
         </ModalBody>
         <ModalFooter>
           <Button
             onClick={(e) => {
+              e.preventDefault();
+              if (!link || !validURL(link)) {
+                setLinkError("Please enter a valid URL starting with 'https://'.");
+                return;
+              }
               reviewStatus == "Unsubmitted"
               ? (updReviewStat("Submitted"),
                 sendReviewReq(e))
