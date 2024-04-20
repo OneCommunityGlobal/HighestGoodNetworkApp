@@ -632,7 +632,7 @@ const mapStateToProps = state => ({
   infoCollections: state.infoCollections.infos,
   role: state.auth.user.role,
   auth: state.auth,
-  authEmailWeeklySummaryRecipient: state.userProfile.email, // capturing the user email through Redux store - Sucheta
+  authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
 });
 
 const mapDispatchToProps = dispatch => ({
