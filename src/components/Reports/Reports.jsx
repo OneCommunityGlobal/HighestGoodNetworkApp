@@ -395,6 +395,7 @@ class ReportsPage extends Component {
     }
     return (
       <Container fluid className="mb-5 container-component-wrapper">
+        <div className={`category-data-container ${this.state.showPeople || this.state.showProjects || this.state.showTeams || this.state.showTotalProject || this.state.showTotalPeople || this.state.showTotalTeam || this.state.showAddTimeForm || this.state.showAddPersonHistory || this.state.showAddTeamHistory || this.state.showAddProjHistory ? '' : 'no-active-selection'}`}>
         <div className="container-component-category">
         <h2 className="mt-3 mb-5">
           <div className="d-flex align-items-center">
@@ -706,6 +707,7 @@ class ReportsPage extends Component {
                 </div>
               </div>
             )}
+        </div>
         </div>
         <div className="table-data-container mt-5">
           {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} />}
