@@ -773,9 +773,9 @@ function UserProfile(props) {
         />
       )}
       <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
-        <ModalHeader toggle={handleCloseConfirmVisibilityModal}>Confirm Status Change</ModalHeader>
+        <ModalHeader toggle={handleCloseConfirmVisibilityModal}>Confirm Visibility Change</ModalHeader>
         <ModalBody>
-          {`Are you sure you want to change the user status to ${userProfile.isVisible ? 'Invisible' : 'Visible'}?`}
+          {`Are you sure you want to change the user visibility to ${userProfile.isVisible ? 'Invisible' : 'Visible'}?`}
         </ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={handleVisibilityChange}>Confirm</Button>{' '}
