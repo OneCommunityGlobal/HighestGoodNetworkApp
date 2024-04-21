@@ -196,15 +196,25 @@ function PeopleTableDetails(props) {
         />
       )}
       <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
-        <div>Task</div>
-        <div>Priority</div>
-        <div>Status</div>
-        <div>Resources</div>
-        <div className="people-table-center-cell">Active</div>
-        <div className="people-table-center-cell">Assign</div>
-        <div className="people-table-end-cell">Estimated Hours</div>
-        <div className="people-table-end-cell">Start Date</div>
-        <div className="people-table-end-cell">End Date</div>
+        <div data-testid="task">Task</div>
+        <div data-testid="priority">Priority</div>
+        <div data-testid="status">Status</div>
+        <div data-testid="resources">Resources</div>
+        <div data-testid="active" className="people-table-center-cell">
+          Active
+        </div>
+        <div data-testod="assign" className="people-table-center-cell">
+          Assign
+        </div>
+        <div data-testid="eh" className="people-table-end-cell">
+          Estimated Hours
+        </div>
+        <div data-testid="sd" className="people-table-end-cell">
+          Start Date
+        </div>
+        <div data-testid="ed" className="people-table-end-cell">
+          End Date
+        </div>
       </div>
       <div className="people-table">
         {filteredTasks.map(value => (
