@@ -2,8 +2,8 @@ import { useState } from 'react';
 import './TeamLocations.css';
 
 function TeamLocationsTable({ visible, mapMarkers, setCurrentUser }) {
-  const [sortOrder, setSortOrder] = useState({ field: null, direction: 'dsc' });
 
+  const [sortOrder, setSortOrder] = useState({ field: null, direction: 'dsc' });
   const [nameSortOrder, setNameSortOrder] = useState('dsc');
   const [locationSortOrder, setLocationSortOrder] = useState('dsc');
   const [showSearchBar, setShowSearchBar] = useState(false);
@@ -65,7 +65,8 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser }) {
 
   const filteredMapMarkers = sortedMapMarkers.filter((user) => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-    const location = user.location.city ? `${user.location.city}, ${user.location.country}`.toLowerCase() : user.location.country.toLowerCase();
+    const location = user.location.city ? 
+    `${user.location.city}, ${user.location.country}`.toLowerCase() : user.location.country.toLowerCase();
     return fullName.includes(searchTerm) || location.includes(searchTerm);
   });
 

@@ -64,8 +64,8 @@
   padding: 1px;
   padding-top: 0px;
   max-height: 65vh; 
-  width: 90%; /* Set width to 90% */
-  max-width: 350px; /* Set max-width to 300px */
+  width: 90%; 
+  max-width: 350px; 
   min-width: 300px;
   overflow-y: scroll; 
   overflow-x: hidden; 
@@ -97,8 +97,8 @@
 }
 
 table {
-  border-collapse: collapse; /* Change to collapse for better spacing */
-  width: 100%; /* Table takes full width */
+  border-collapse: collapse; 
+  width: 100%; 
   font-size: 0.8rem;
 }
 
