@@ -31,7 +31,6 @@ const SkeletonLoading = ({ template }) => {
           </div>
         );
       case 'TeamMemberTasks':
-
         for (let i = 0; i < 15; i++) {
           rows.push(
             <tr key={i}>
@@ -47,8 +46,6 @@ const SkeletonLoading = ({ template }) => {
           </Container>
         );
       case 'WeeklySummariesReport':
-
-
         for (let i = 0; i < 10; i++) {
           reportItems.push(
             <div key={i}>
@@ -89,10 +86,7 @@ const SkeletonLoading = ({ template }) => {
               <div className="skeleton-loading-user-profile-item" />
               <div className="skeleton-loading-user-profile-item mt-5" />
               <div className="skeleton-loading-user-profile-item" style={{ height: '16rem' }} />
-              <div
-                className="skeleton-loading-user-profile-item"
-                style={{ marginTop: '4rem' }}
-              />
+              <div className="skeleton-loading-user-profile-item" style={{ marginTop: '4rem' }} />
               <div className="skeleton-loading-user-profile-item mt-3" />
               <div className="skeleton-loading-user-profile-item mt-3" />
               <div className="skeleton-loading-user-profile-item mt-3" />
@@ -108,7 +102,6 @@ const SkeletonLoading = ({ template }) => {
           </Container>
         );
       case 'UserManagement':
-
         for (let i = 0; i < 17; i++) {
           userManagementItems.push(
             <div key={i} className="skeleton-loading-user-management-item" />,
