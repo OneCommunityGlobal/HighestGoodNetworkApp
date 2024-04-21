@@ -1,24 +1,17 @@
-import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
-import {
-  formatDateFromDescriptionString,
-  formatTimeOffRequests,
-} from 'utils/formatDateFromDescriptionString';
 
 const BlueSquare = props => {
-  const authRole = useSelector(state => state.auth.user.role);
-
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare, numberOfReasons, infringementsNum } = props;
+  const { blueSquares, handleBlueSquare } = props;
 
   return (
     <div className="blueSquareContainer">
-      <div className="blueSquares">
-        {blueSquares
+      <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
+        {blueSquares?.length > 0
           ? blueSquares
               .sort((a, b) => (a.date > b.date ? 1 : -1))
               .map((blueSquare, index) => (
@@ -50,66 +43,18 @@ const BlueSquare = props => {
                     <div className="title">{formatDate(blueSquare.date)}</div>
                     {blueSquare.description !== undefined && (
                       <div className="summary">
-                        {(() => {
-                          const dateFormattedDescription = formatDateFromDescriptionString(
-                            blueSquare.description,
-                          );
-                          const formattedDescription = formatTimeOffRequests(
-                            dateFormattedDescription,
-                          );
-
-                          if (formattedDescription.length > 0) {
-                            return (
-                              <>
-                                <span>
-                                  {blueSquare.createdDate !== undefined
-                                    ? formatCreatedDate(BlueSquare.createdDate) + ':'
-                                    : null}
-                                </span>
-                                <span>
-                                  {formattedDescription[0]}
-                                  <br />
-                                  <span style={{ fontWeight: 'bold' }}>Notice :</span>
-                                  <span
-                                    style={{ fontStyle: 'italic', textDecoration: 'underline' }}
-                                  >{`${formattedDescription[1]}`}</span>
-                                </span>
-                              </>
-                            );
-                          } else {
-                            return blueSquare.createdDate !== undefined
-                              ? formatCreatedDate(BlueSquare.createdDate) +
-                                  ': ' +
-                                  dateFormattedDescription
-                              : dateFormattedDescription;
-                          }
-                        })()}
+                        {blueSquare.createdDate !== undefined && blueSquare.createdDate !== null
+                          ? `${formatCreatedDate(blueSquare.createdDate)}: ${
+                              blueSquare.description
+                            }`
+                          : blueSquare.description}
                       </div>
                     )}
                   </div>
                 </div>
               ))
-          : null}
-      </div>
-      {/* Check for userRole, infringements and scheduled reasons to render + button - Sucheta*/}
-      {authRole === 'Owner' || authRole === 'Administrator' ? (
-        <div
-          onClick={() => {
-            handleBlueSquare(true, 'addBlueSquare', '');
-          }}
-          className="blueSquareButton"
-          color="primary"
-          data-testid="addBlueSquare"
-        >
-          +
-        </div>
-      ) : (
-        isInfringementAuthorizer &&
-        !(
-          infringementsNum >= 5 ||
-          numberOfReasons >= 5 ||
-          numberOfReasons + infringementsNum >= 5
-        ) && (
+          : <div>No blue squares.</div>}
+        {isInfringementAuthorizer && (
           <div
             onClick={() => {
               handleBlueSquare(true, 'addBlueSquare', '');
@@ -120,9 +65,8 @@ const BlueSquare = props => {
           >
             +
           </div>
-        )
-      )}
-      <br />
+        )}
+      </div>
     </div>
   );
 };

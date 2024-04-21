@@ -58,6 +58,7 @@ export class EditableInfoModal extends Component {
 
   _isMounted = false;
 
+  
   async componentDidMount() {
     this._isMounted = true;
     await this.props.getInfoCollections();
@@ -65,6 +66,8 @@ export class EditableInfoModal extends Component {
 
     let content = '';
     let visible = '0';
+
+
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
         if (info.infoName === areaName) {
@@ -72,14 +75,15 @@ export class EditableInfoModal extends Component {
           visible = info.visibility;
         }
       });
-    }
+    } 
 
     content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
     let CanRead = (visible === '0') ||
       (visible === '1' && (role === 'Owner' || role === 'Administrator')) ||
       (visible === '2' && (role !== 'Volunteer'));
     let CanEdit = role === 'Owner';
-    if (this._isMounted) {
+
+    if(this._isMounted){
       this.setState({
         infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
         fetchError: this.props.fetchError,
@@ -93,7 +97,6 @@ export class EditableInfoModal extends Component {
         isPermissionPage,
       });
     }
-
   };
 
   componentWillUnmount() {
@@ -204,7 +207,7 @@ export class EditableInfoModal extends Component {
     this.handleEdit(false);
 
   }
-
+   
 
   handleSave = async event => {
     this.handleEdit(false);
