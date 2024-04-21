@@ -8,8 +8,7 @@ const taskData = [
     taskName: 'Task 1',
     priority: 'High',
     status: 'Completed',
-    // Wrapping the single resource object in an array
-    resources: [[{ name: 'Resource 1' }]],
+    resources: [[{ name: 'Resource 1', index: 1, profilepic: '' }]],
     active: 'Yes',
     assign: 'No',
     estimatedHours: '5h',
@@ -21,8 +20,10 @@ const taskData = [
     taskName: 'Task 2',
     priority: 'Low',
     status: 'In Progress',
-    // Wrapping each resource object in a separate array
-    resources: [[{ name: 'Resource 2' }], [{ name: 'Resource 3' }]],
+    resources: [
+      [{ name: 'Resource 2', index: 2, profilepic: '' }],
+      [{ name: 'Resource 3', index: 3, profilepic: '' }],
+    ],
     active: 'Yes',
     assign: 'Yes',
     estimatedHours: '10h',
@@ -34,8 +35,7 @@ const taskData = [
     taskName: 'Task 3',
     priority: 'Medium',
     status: 'Not Started',
-    // Wrapping the single resource object in an array
-    resources: [[{ name: 'Resource 4' }]],
+    resources: [[{ name: 'Resource 4', index: 1, profilepic: '' }]],
     active: 'No',
     assign: 'Yes',
     estimatedHours: '8h',
@@ -45,8 +45,8 @@ const taskData = [
 ];
 describe(' Unit Test case for PeopleTableDetails component', () => {
   it('Test 1 : Basic render without crashing', () => {
-    const { container } = render(<PeopleTableDetails taskData={taskData} />);
-    expect(container).toBeInTheDocument();
+    render(<PeopleTableDetails taskData={taskData} />);
+    expect(screen.getByTestId('eh'));
   });
 
   it('Test 2 : Verify if the table header renders as expected ', () => {
@@ -86,7 +86,7 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         taskName: 'Project 1',
         // Missed priority attribute
         status: 'Completed',
-        resources: [[{ name: 'Resource 1' }]],
+        resources: [[{ name: 'Resource 1', index: 1, profilepic: '' }]],
         active: 'Yes',
         assign: 'No',
         estimatedHours: '5h',
@@ -98,7 +98,12 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         taskName: 'Project 2',
         priority: 'Low',
         // Missed status attribute
-        resources: [[{ name: 'Resource 2' }, { name: 'Resource 3' }]],
+        resources: [
+          [
+            { name: 'Resource 2', index: 1, profilepic: '' },
+            { name: 'Resource 3', index: 2, profilepic: '' },
+          ],
+        ],
         active: 'Yes',
         assign: 'Yes',
         estimatedHours: '10h',
@@ -120,7 +125,7 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         taskName: 'Project 1',
         priority: 'High',
         status: 'Completed',
-        resources: [[{ name: 'Resource 1' }]],
+        resources: [[{ name: 'Resource 1', index: 1, profilepic: '' }]],
         active: 'Yes',
         assign: 'No',
         estimatedHours: '5h',
@@ -142,7 +147,13 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         taskName: 'Project 2',
         priority: 'High',
         status: 'Completed',
-        resources: [[{ name: 'Resource 2' }, { name: 'Resource 3' }, { name: 'Resource 1' }]],
+        resources: [
+          [
+            { name: 'Resource 2', index: 2, profilepic: '' },
+            { name: 'Resource 3', index: 3, profilepic: '' },
+            { name: 'Resource 1', index: 1, profilepic: '' },
+          ],
+        ],
         active: 'Yes',
         assign: 'No',
         estimatedHours: '5h',
@@ -164,7 +175,13 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         taskName: 'Project 2',
         priority: 'High',
         status: 'Completed',
-        resources: [[{ name: 'Resource 2' }, { name: 'Resource 3' }, { name: 'Resource 1' }]],
+        resources: [
+          [
+            { name: 'Resource 2', index: 2, profilepic: '' },
+            { name: 'Resource 3', index: 3, profilepic: '' },
+            { name: 'Resource 1', index: 1, profilepic: '' },
+          ],
+        ],
         active: 'Yes',
         assign: 'No',
         estimatedHours: '5h',
@@ -195,10 +212,10 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         status: 'Completed',
         resources: [
           [
-            { name: 'Resource 2' },
-            { name: 'Resource 3' },
-            { name: 'Resource 1' },
-            { name: 'Resource 2' },
+            { name: 'Resource 2', index: 2, profilepic: '' },
+            { name: 'Resource 3', index: 3, profilepic: '' },
+            { name: 'Resource 1', index: 1, profilepic: '' },
+            { name: 'Resource 4', index: 4, profilepic: '' },
           ],
         ],
         active: 'Yes',
@@ -210,8 +227,10 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
     ];
 
     render(<PeopleTableDetails taskData={tasks} />);
-    const extraResources = screen.getByText('2+');
+    expect(screen.getByText('2+')).toBeInTheDocument();
 
-    expect(extraResources).toBeInTheDocument();
+    // const extraResources = screen.getByText('2+');
+
+    // expect(extraResources).toBeInTheDocument();
   });
 });
