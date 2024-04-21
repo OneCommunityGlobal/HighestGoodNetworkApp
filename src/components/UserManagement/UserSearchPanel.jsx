@@ -5,7 +5,7 @@ import { boxStyle } from 'styles';
  * The search panel stateless component for user management grid
  */
 const UserSearchPanel = props => {
-  console.log('UserSearchPanel props', props);
+  // console.log('UserSearchPanel props', props);
 
   return (
     <div className="input-group mt-3" id="new_usermanagement">

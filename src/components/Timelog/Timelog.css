@@ -4,6 +4,21 @@
   justify-content: center;
   text-align: center;
 }
+.card-body-shadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+.card-header-shadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+  margin-bottom:1px;
+}
+
+.card-body-shadow-dark {
+  box-shadow: 2px 2px 4px 1px black;
+}
+.card-header-shadow-dark {
+  box-shadow: 2px 2px 4px 1px black;
+  margin-bottom:1px;
+}
 
 .buttons {
   right: 0;
@@ -116,4 +131,8 @@
   .custom-text-alignment {
       text-align: right;
   }
+}
+
+.container-timelog-wrapper{
+  min-height: 100%;
 }

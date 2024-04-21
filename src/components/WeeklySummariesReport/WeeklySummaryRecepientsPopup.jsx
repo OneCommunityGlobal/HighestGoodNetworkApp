@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import MembersAutoComplete from '../Teams/MembersAutoComplete';
 import {
   getSummaryRecipients,
@@ -17,12 +19,13 @@ import {
 
 const WeeklySummaryRecipientsPopup = React.memo(props => {
   const dispatch = useDispatch();
-
-  const { open, onClose, summaries } = props;
+  const { open, onClose, summaries, password, authEmailWeeklySummaryRecipient } = props;
 
   const [searchText, setSearchText] = useState('');
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   // The below states keeps a track of the list of Weekly Summary Report Recipients - sucheta
   const [recipients, setRecipients] = useState([]);
   const [updatedRecipients, setUpdatedRecipients] = useState(false);
@@ -38,7 +41,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
       }
     };
     getRecipients();
-  }, [updatedRecipients]);
+  }, [open, updatedRecipients]);
 
   const closePopup = () => {
     onClose();
@@ -60,6 +63,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
         }
         toast.success('Added new recipient.');
         setRecipients(prevState => [...prevState, selectedUser]);
+        setUpdatedRecipients(prevState => !prevState);
         setSearchText('');
       } catch (error) {
         toast.error('Could not add recipient');
@@ -82,10 +86,47 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
       toast.error('Could not delete recipient at this time! Please try again');
     }
   };
+
+  // Function open info modal
+  const openInfo = () => {
+    setInfoModalOpen(prev => !prev);
+    setShowPassword(false);
+  };
+
   return (
     <Container fluid>
       <Modal isOpen={open} toggle={closePopup} autoFocus={false} size="lg">
-        <ModalHeader toggle={closePopup}>Recipients of Weekly summaries</ModalHeader>
+        <ModalHeader toggle={closePopup}>
+          Recipients of Weekly summaries
+          <FontAwesomeIcon
+            icon={faInfoCircle}
+            className="ml-2"
+            style={{ color: '#74C0FC', cursor: 'pointer' }}
+            onClick={openInfo}
+          />
+          {infoModalOpen && (
+            <div className="mt-3">
+              <span style={{ fontSize: '.8em' }}>
+                Authoried User: {authEmailWeeklySummaryRecipient}
+              </span>
+              <section>
+                <span className="mr-3" style={{ fontSize: '.8em' }}>
+                  Password: {showPassword ? password : ''}
+                </span>
+                {!showPassword && (
+                  <Button onClick={() => setShowPassword(true)} style={boxStyle}>
+                    Reveal{' '}
+                  </Button>
+                )}
+                {showPassword && (
+                  <Button onClick={() => setShowPassword(false)} style={boxStyle}>
+                    Hide
+                  </Button>
+                )}
+              </section>
+            </div>
+          )}
+        </ModalHeader>
         <ModalBody style={{ textAlign: 'center' }}>
           <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
             <MembersAutoComplete
@@ -115,7 +156,9 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
                   <tr key={`recipient_name_${index}`}>
                     <td>{index + 1}</td>
                     <td>{`${user.firstName} ${user.lastName}`}</td>
-                    <td>{moment(user.createdDate).format('MMM-DD-YY')}</td>
+                    <td>
+                      {moment(user.permissionGrantedToGetWeeklySummaryReport).format('MMM-DD-YY')}
+                    </td>
                     <td>
                       <Button
                         color="danger"
