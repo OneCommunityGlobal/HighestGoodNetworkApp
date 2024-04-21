@@ -33,6 +33,7 @@ import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import { Table } from 'react-bootstrap';
 import SetupNewUserPopup from './setupNewUserPopup';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { toast } from 'react-toastify';
 
@@ -50,6 +51,7 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: '',
       selectedPage: 1,
       pageSize: 10,
+      allSelected:undefined,
       isActive: undefined,
       isSet: undefined,
       activationDateOpen: false,
@@ -180,6 +182,7 @@ class UserManagement extends React.PureComponent {
     );
   };
 
+
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
@@ -233,33 +236,38 @@ class UserManagement extends React.PureComponent {
   };
 
   filteredUserList = userProfiles => {
-    let filteredList = userProfiles.filter(user => {
-      //Applying the search filters before creating each table data element
-      if (
-        (user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
+    return userProfiles.filter(user => {
+      // console.log('user', user);
+      // Applying the search filters before creating each table data element
+      return (
+        // Check if the user matches the search criteria
+        (
+          // Regular search criteria
+          user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
           user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
           user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
           user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
-          (this.state.weeklyHrsSearchText === '' ||
-            user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
-          (this.state.isActive === undefined || user.isActive === this.state.isActive) &&
-          (this.state.isPaused === false || user.reactivationDate) &&
-          this.state.wildCardSearchText === '') ||
-        //the wild card serach, the search text can be match with any item
-        (this.state.wildCardSearchText !== '' &&
-          (searchWithAccent(user.firstName,this.state.wildCardSearchText) ||
-          searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
+          (this.state.weeklyHrsSearchText === '' || user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
+
+          // Check the isActive state only if 'all' is not selected
+          ((this.state.allSelected && true) || (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
+
+          // Check the isPaused state only if 'all' is not selected
+          ((this.state.allSelected && true) || (this.state.isPaused === false || (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
+        ) &&
+
+          (
+            searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
+            searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
             user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
             user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.weeklycommittedHours === Number(this.state.wildCardSearchText)))
-      ) {
-        return user;
-      }
-      return false;
+            user.weeklycommittedHours === Number(this.state.wildCardSearchText)
+          )
+        )
+      );
     });
-
-    return filteredList;
   };
+
 
   /**
    * reload user list and close user creation popup
@@ -291,8 +299,15 @@ class UserManagement extends React.PureComponent {
    * Call back on log time off button click
    */
   onLogTimeOffClick = user => {
+    // Check if target user is Jae's related user and authroized to manage time off requests
+    if(cantUpdateDevAdminDetails(user.email , this.authEmail)){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
-    if(canManageTimeOffRequests){
+    
+    const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
+    if(canManageTimeOffRequests || hasRolePermission){
       this.setState({
         logTimeOffPopUpOpen: true,
         userForTimeOff: user,
@@ -300,7 +315,7 @@ class UserManagement extends React.PureComponent {
     }else{
       toast.warn(`You do not have permission to manage time-off requests.`)
     }
-  
+
   };
 
   /**
@@ -308,6 +323,10 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
+    if(cantUpdateDevAdminDetails(user.email , this.authEmail)) {
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     if (status === FinalDay.NotSetFinalDay) {
       this.props.updateUserFinalDayStatusIsSet(user, 'Active', undefined, FinalDay.NotSetFinalDay);
     } else {
@@ -377,12 +396,6 @@ class UserManagement extends React.PureComponent {
   onActiveInactiveClick = user => {
     const authRole = this?.props?.state?.auth?.user.role || user.role;
     const canChangeUserStatus = hasPermission('changeUserStatus');
-    if (!canChangeUserStatus) {
-      //permission to change the status of any user on the user profile page or User Management Page.
-      //By default only Admin and Owner can access the user management page and they have this permission.
-      alert('You are not authorized to change the active status.');
-      return;
-    }
     if (cantDeactivateOwner(user, authRole)) {
       //Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');
@@ -537,23 +550,36 @@ class UserManagement extends React.PureComponent {
   onActiveFiter = value => {
     let active = undefined;
     let paused = false;
+    let allSelected = false;
+
 
     switch (value) {
       case 'active':
         active = true;
+        paused = false;
+        allSelected = false;
         break;
       case 'inactive':
         active = false;
+        paused = false;
+        allSelected = false;
+        break;
+      case 'all':
+        allSelected = true;
+        active = false;
+        paused = false;
         break;
       case 'paused':
         active = false;
         paused = true;
+        allSelected = false;
     }
 
     this.setState({
       isActive: active,
       selectedPage: 1,
       isPaused: paused,
+      allSelected: allSelected,
     });
   };
 

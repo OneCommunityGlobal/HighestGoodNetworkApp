@@ -22,7 +22,7 @@ import { Button } from 'reactstrap';
 
 const ProjectTableHeader = props => {
   const { role } = props; // Access the 'role' prop
-  const canDeleteProject = props.hasPermission('deleteProject') || props.hasPermission('seeProjectManagement');
+  const canDeleteProject = props.hasPermission('deleteProject');
 
   return (
     <tr>

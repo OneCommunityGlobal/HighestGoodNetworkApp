@@ -43,7 +43,7 @@ const Preset = (props) => {
       permissions: props.preset.permissions
     };
 
-    const status = await props.updateRole(props.roleId, updatedRole);
+    const status = await props.updateRole(props.roleId, { ...props.userProfile, ...updatedRole});
     if (status === 0) {
       props.onApply(props.preset.permissions);
       toast.success(`Preset applied successfully.`)
@@ -124,7 +124,10 @@ const Preset = (props) => {
 
 
 
-const mapStateToProps = state => ({ roles: state.role.roles });
+const mapStateToProps = state => ({
+  roles: state.role.roles,
+  userProfile: state.userProfile
+});
 
 const mapDispatchToProps = dispatch => ({
   updateRole: (roleId, updatedRole) => dispatch(updateRole(roleId, updatedRole)),
