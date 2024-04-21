@@ -3,15 +3,17 @@ import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import classnames from 'classnames';
 import './Paging.css';
 
-export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => {
+// eslint-disable-next-line react/function-component-definition
+const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const pagesCount = Math.ceil(totalElementsCount / maxElemPerPage);
 
   const renderPageNumberButton = pageNumber => (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
       onClick={() => setCurrentPage(pageNumber)}
-      className={classnames('page-index-button', { 'active-button': pageNumber === currentPage })}
+      className={classnames(`${darkMode ? 'page-index-button-dark' : 'page-index-button'}`, darkMode ? { 'active-button-dark': pageNumber === currentPage } : { 'active-button': pageNumber === currentPage })}
       key={pageNumber}
     >
       {pageNumber}
@@ -22,20 +24,20 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     const indexesButtons = [];
 
     if (pagesCount <= 6) {
-      for (let i = 1; i <= pagesCount; i++) {
+      for (let i = 1; i <= pagesCount; i += 1) {
         indexesButtons.push(renderPageNumberButton(i));
       }
 
-      return <div className="pagination-buttons">{indexesButtons}</div>;
+      return <div className={darkMode ? "pagination-buttons-dark" : "pagination-buttons"}>{indexesButtons}</div>;
     }
 
     if (currentPage <= 5) {
-      for (let i = 1; i <= 5; i++) {
+      for (let i = 1; i <= 5; i += 1) {
         indexesButtons.push(renderPageNumberButton(i));
       }
 
       return (
-        <div className="pagination-buttons">
+        <div className={darkMode ? "pagination-buttons-dark" : "pagination-buttons"}>
           {indexesButtons}
           ...
           <div>{renderPageNumberButton(pagesCount)}</div>
@@ -44,11 +46,11 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     }
 
     if (currentPage > pagesCount - 5) {
-      for (let i = pagesCount - 4; i <= pagesCount; i++) {
+      for (let i = pagesCount - 4; i <= pagesCount; i += 1) {
         indexesButtons.push(renderPageNumberButton(i));
       }
       return (
-        <div className="pagination-buttons">
+        <div className={darkMode ? "pagination-buttons-dark" : "pagination-buttons"}>
           {renderPageNumberButton(1)}
           ...
           {indexesButtons}
@@ -56,12 +58,12 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
       );
     }
 
-    for (let i = currentPage - 1; i <= currentPage + 2; i++) {
+    for (let i = currentPage - 1; i <= currentPage + 2; i += 1) {
       indexesButtons.push(renderPageNumberButton(i));
     }
 
     return (
-      <div className="pagination-buttons">
+      <div className={darkMode ? "pagination-buttons-dark" : "pagination-buttons"}>
         {renderPageNumberButton(1)}
         ...
         {indexesButtons}
@@ -93,12 +95,12 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
       {totalElementsCount > maxElemPerPage && (
         <div className="pagination-buttons-wrapper">
           <FiChevronLeft
-            className={classnames('page-index-button', { disabled: currentPage === 1 })}
+            className={classnames(`${darkMode ? 'page-index-button-dark' : 'page-index-button'}`, { disabled: currentPage === 1 })}
             onClick={handlePrevArrowClick}
           />
           {renderPageIndexes()}
           <FiChevronRight
-            className={classnames('page-index-button', { disabled: currentPage === pagesCount })}
+            className={classnames(`${darkMode ? 'page-index-button-dark' : 'page-index-button'}`, { disabled: currentPage === pagesCount })}
             onClick={handleNextArrowClick}
           />
         </div>
@@ -106,3 +108,4 @@ export const Paging = ({ maxElemPerPage = 6, totalElementsCount, children }) => 
     </div>
   );
 };
+export default Paging;
