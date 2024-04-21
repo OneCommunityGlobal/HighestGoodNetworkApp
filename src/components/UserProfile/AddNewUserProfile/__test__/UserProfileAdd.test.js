@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import  AddUserProfile  from '../UserprofileAdd';
+import  AddUserProfile  from '../UserProfileAdd';
 import configureMockStore from 'redux-mock-store'
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
