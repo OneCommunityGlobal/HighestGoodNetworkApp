@@ -13,6 +13,7 @@ import {
 } from '../../../actions/timeOffRequestAction';
 import 'react-datepicker/dist/react-datepicker.css';
 import './ScheduleReasonModal.css';
+import FaqButtonModal from 'components/UserProfile/ScheduleReasonModal/FaqButtonModal.jsx';
 
 const ScheduleReasonModal = ({
   handleClose,
@@ -58,6 +59,12 @@ const ScheduleReasonModal = ({
   const [requestTodelete, setRequestTodelete] = useState('');
 
   const ContainerMaxHeight = checkIfUserCanScheduleTimeOff() ? '160px' : '600px';
+
+  const [isFaqButtonModalOpen, setIsFaqButtonModalOpen] = useState(false);
+
+  const toggleFaqButtonModal = () => {
+    setIsFaqButtonModalOpen(!isFaqButtonModalOpen);
+  }; 
 
   const checkIfUserIsAllowedToscheduleForTheDuration = data => {
     if (!data) return false;
@@ -391,6 +398,15 @@ const ScheduleReasonModal = ({
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
+              <Button variant="success" title="FAQ" onClick={toggleFaqButtonModal} style={boxStyle}>
+                <FaqButtonModal
+                  areaName="blueSquares_FAQ"
+                  areaTitle="Blue Squares FAQ"
+                  fontSize={24}
+                  isPermissionPage={true}
+                  role={user.role}
+                />
+              </Button>
               <Button variant="secondary" onClick={handleClose} style={boxStyle}>
                 Close
               </Button>

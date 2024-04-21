@@ -9,6 +9,7 @@ import hasPermission from '../../utils/permissions';
 import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 
 const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user }) => {
   const dispatch = useDispatch();
@@ -65,6 +66,15 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
 
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
+        <div align = "right">
+            <EditableInfoModal
+                  areaName="blueSquares_info"
+                  areaTitle="Blue Squares"
+                  fontSize={24}
+                  isPermissionPage
+                  role={userProfile.role}
+                  />
+          </div> 
           {!checkIfUserCanScheduleTimeOff() ? (
             <>
               <Button
