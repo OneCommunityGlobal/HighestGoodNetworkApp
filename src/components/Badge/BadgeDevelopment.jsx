@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { boxStyle } from 'styles';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
-import { boxStyle } from 'styles';
 
-const BadgeDevelopment = props => {
+function BadgeDevelopment(props) {
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
 
-  const toggle = () =>
-    setCreateNewBadgePopupOpen(isCreateNewBadgePopupOpen => !isCreateNewBadgePopupOpen);
+  const toggle = () => setCreateNewBadgePopupOpen(prevIsOpen => !prevIsOpen);
 
   return (
     <div>
@@ -24,6 +23,6 @@ const BadgeDevelopment = props => {
       <BadgeDevelopmentTable allBadgeData={props.allBadgeData} />
     </div>
   );
-};
+}
 
 export default BadgeDevelopment;
