@@ -233,39 +233,30 @@ function ReportDetails({
             </ListGroupItem>
 
             <ListGroupItem>
-              <b
-                style={{
-                  color: getTextColorForHoursLogged(
-                    hoursLogged,
-                    summary.promisedHoursByWeek[weekIndex],
-                  ),
-                }}
-              >
-                Hours logged:
-              </b>
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
-                <span
+              {hoursLogged < summary.promisedHoursByWeek[weekIndex] ? (
+                <p
                   style={{
                     color: getTextColorForHoursLogged(
                       hoursLogged,
                       summary.promisedHoursByWeek[weekIndex],
                     ),
+                    fontWeight: 'bold',
                   }}
                 >
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
+                  Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                </p>
               ) : (
-                <span
-                  className="ml-2"
+                <p
                   style={{
                     color: getTextColorForHoursLogged(
                       hoursLogged,
                       summary.promisedHoursByWeek[weekIndex],
                     ),
+                    fontWeight: 'bold',
                   }}
                 >
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
+                  Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                </p>
               )}
             </ListGroupItem>
 
