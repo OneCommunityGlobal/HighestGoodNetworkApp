@@ -65,44 +65,36 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
         <TimeOffRequestsTable requests={allRequests[userProfile._id]} openModal={handleOpen} />
 
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
-        <div className="mt-4 w-100">
-        <div align = "right">
-            <EditableInfoModal
-                  areaName="blueSquares_info"
-                  areaTitle="Blue Squares"
-                  fontSize={24}
-                  isPermissionPage
-                  role={userProfile.role}
-                  />
-          </div> 
-          {!checkIfUserCanScheduleTimeOff() ? (
-            <>
+        <div className="mt-4 w-100" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+        {!checkIfUserCanScheduleTimeOff() ? (
+          <>
+            <Button
+              onClick={openExplanationModal}
+              className="w-100 text-success-emphasis"
+              size="md"
+              style={boxStyle}
+              id="stopSchedulerButton"
+            >
+              <span>{`Can't Schedule Time Off`}</span>
+              <br />
+              <span className="mt-0" style={{ fontSize: '.8em' }}>
+                Click to learn why
+              </span>
+            </Button>
+            {allRequests[userProfile._id]?.length > 0 && (
               <Button
-                onClick={openExplanationModal}
-                className="w-100 text-success-emphasis"
+                variant="primary"
+                onClick={handleOpen}
+                className="w-100 mt-3"
                 size="md"
                 style={boxStyle}
-                id="stopSchedulerButton"
               >
-                <span>{`Can't Schedule Time Off`}</span>
-                <br />
-                <span className="mt-0" style={{ fontSize: '.8em' }}>
-                  Click to learn why
-                </span>
+                View scheduled Blue Square Reasons
               </Button>
-              {allRequests[userProfile._id]?.length > 0 && (
-                <Button
-                  variant="primary"
-                  onClick={handleOpen}
-                  className="w-100 mt-3"
-                  size="md"
-                  style={boxStyle}
-                >
-                  View scheduled Blue Square Reasons
-                </Button>
-              )}
-            </>
-          ) : (
+            )}
+          </>
+        ) : (
+          <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
             <Button
               variant="primary"
               onClick={handleOpen}
@@ -112,8 +104,23 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
             >
               Schedule Blue Square Reason
             </Button>
-          )}
-        </div>
+            {/* EditableInfoModal added to the right side 
+            <div style={{ marginLeft: '20px', flexShrink: 0 }}>
+              <EditableInfoModal
+                areaName="blueSquares_info"
+                areaTitle="Blue Squares"
+                fontSize={24}
+                isPermissionPage
+                role={userProfile.role}
+              />
+            </div>
+            */}
+          </div>
+        )}
+      </div>
+
+
+
         <Modal show={showExplanation} onHide={closeExplanationModal}>
           <ScheduleExplanationModal
             onHide={closeExplanationModal}
@@ -137,6 +144,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
         )}
       </div>
     );
+
   }
   return (
     <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">

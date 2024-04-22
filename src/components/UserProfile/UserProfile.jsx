@@ -923,28 +923,41 @@ function UserProfile(props) {
           </Col>
         </Row>
         <Row>
-          <Col md="4">
-            <div className="profile-work">
-              <UserLinkLayout
-                isUserSelf={isUserSelf}
-                userProfile={userProfile}
-                updateLink={updateLink}
-                handleLinkModel={props.handleLinkModel}
-                handleSubmit={handleSubmit}
-                role={requestorRole}
-                canEdit={canEdit}
-              />
-              <BlueSquareLayout
-                userProfile={userProfile}
-                handleUserProfile={handleUserProfile}
-                handleSaveError={props.handleSaveError}
-                handleBlueSquare={handleBlueSquare}
-                user={props.auth.user}
-                isUserSelf={isUserSelf}
-                canEdit={canEdit}
-              />
-            </div>
-          </Col>
+        <Col md="4">
+        <div className="profile-work" style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ flex: 1 }}>
+            <UserLinkLayout
+              isUserSelf={isUserSelf}
+              userProfile={userProfile}
+              updateLink={updateLink}
+              handleLinkModel={props.handleLinkModel}
+              handleSubmit={handleSubmit}
+              role={requestorRole}
+              canEdit={canEdit}
+            />
+            <BlueSquareLayout
+              userProfile={userProfile}
+              handleUserProfile={handleUserProfile}
+              handleSaveError={props.handleSaveError}
+              handleBlueSquare={handleBlueSquare}
+              user={props.auth.user}
+              isUserSelf={isUserSelf}
+              canEdit={canEdit}
+            />
+          </div>
+          {/* EditableInfoModal added to the right side           */}
+          <div style={{marginLeft: '5px', marginTop: '370px' }}>
+            <EditableInfoModal
+              areaName="blueSquares_info"
+              areaTitle="Blue Squares"
+              fontSize={20}
+              isPermissionPage
+              role={userProfile.role}
+            />
+          </div>
+
+        </div>
+      </Col>
           <Col md="8" className="profile-functions-desktop">
             <div className="profile-tabs">
               <Nav tabs>
