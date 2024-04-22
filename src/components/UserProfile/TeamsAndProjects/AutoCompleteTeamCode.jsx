@@ -10,17 +10,18 @@ export const AutoCompleteTeamCode = props => {
     showDropdown,
     arrayInputAutoComplete,
     inputAutoStatus,
-    refInput,
   } = props;
 
   useEffect(() => {
-    const handleClickOutside = event =>
-      refDropdown.current && !refDropdown.current.contains(event.target)
-        ? setShowDropdown(false)
-        : null;
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [refDropdown]);
+    if (showDropdown) {
+      const handleClickOutside = event =>
+        refDropdown.current && !refDropdown.current.contains(event.target)
+          ? (setShowDropdown(false), document.getElementById('teamCode').blur())
+          : null;
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [refDropdown, showDropdown]);
 
   const classNameStyleP = `m-0 pb-1 pt-1 d-flex justify-content-center  align-items-center  list-group-item-action`;
   const styleP = { border: '1px solid #ccc', backgroundColor: '#fff' };
@@ -37,7 +38,6 @@ export const AutoCompleteTeamCode = props => {
         onChange={handleCodeChange}
         placeholder="X-XXX"
         onFocus={() => setShowDropdown(true)}
-        ref={refInput}
       />
 
       {showDropdown ? (
