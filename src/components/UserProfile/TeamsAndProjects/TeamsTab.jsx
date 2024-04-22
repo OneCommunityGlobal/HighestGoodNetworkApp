@@ -26,6 +26,8 @@ const TeamsTab = props => {
     isTeamSaved,
     inputAutoComplete,
     inputAutoStatus,
+    isLoading,
+    fetchTeamCodeAllUsers,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -91,6 +93,8 @@ const TeamsTab = props => {
         onAssignTeamCode={onAssignTeamCode}
         inputAutoComplete={inputAutoComplete}
         inputAutoStatus={inputAutoStatus}
+        isLoading={isLoading}
+        fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
       />
     </React.Fragment>
   );

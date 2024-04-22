@@ -112,6 +112,7 @@ function UserProfile(props) {
 
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   /* useEffect functions */
   useEffect(() => {
@@ -125,6 +126,7 @@ function UserProfile(props) {
   const fetchTeamCodeAllUsers = async () => {
     const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
     try {
+      setIsLoading(true);
       const response = await axios.get(url);
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
@@ -132,8 +134,12 @@ function UserProfile(props) {
         .filter((item, index, array) => array.indexOf(item) === index);
       setInputAutoComplete(stringNoRepeat);
       setInputAutoStatus(response.status);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
+      toast.error(`It was not possible to retrieve the team codes. 
+      Please try again by clicking the icon inside the input auto complete.`);
     }
   };
 
@@ -1056,6 +1062,8 @@ function UserProfile(props) {
                   isTeamSaved={isSaved => setIsTeamSaved(isSaved)}
                   inputAutoComplete={inputAutoComplete}
                   inputAutoStatus={inputAutoStatus}
+                  isLoading={isLoading}
+                  fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -1278,6 +1286,8 @@ function UserProfile(props) {
                     setCodeValid={setCodeValid}
                     inputAutoComplete={inputAutoComplete}
                     inputAutoStatus={inputAutoStatus}
+                    isLoading={isLoading}
+                    fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
                   />
                 </ModalBody>
                 <ModalFooter>

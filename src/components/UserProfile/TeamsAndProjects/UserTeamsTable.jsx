@@ -140,6 +140,8 @@ const UserTeamsTable = props => {
                     setShowDropdown={setShowDropdown}
                     arrayInputAutoComplete={arrayInputAutoComplete}
                     inputAutoStatus={props.inputAutoStatus}
+                    isLoading={props.isLoading}
+                    fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
                   />
                 ) : (
                   <div style={{ paddingTop: '6px', textAlign: 'center' }}>
@@ -238,6 +240,8 @@ const UserTeamsTable = props => {
                     setShowDropdown={setShowDropdown}
                     arrayInputAutoComplete={arrayInputAutoComplete}
                     inputAutoStatus={props.inputAutoStatus}
+                    isLoading={props.isLoading}
+                    fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
                   />
                 ) : (
                   <div style={{ paddingTop: '6px', textAlign: 'center' }}>

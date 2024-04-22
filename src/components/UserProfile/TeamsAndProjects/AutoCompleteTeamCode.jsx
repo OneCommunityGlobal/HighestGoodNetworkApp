@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Spinner, Input } from 'reactstrap';
+import { Spinner, Input, ListGroup, ListGroupItem } from 'reactstrap';
+import { IoReload } from 'react-icons/io5';
 
 export const AutoCompleteTeamCode = props => {
   const {
@@ -10,6 +11,8 @@ export const AutoCompleteTeamCode = props => {
     showDropdown,
     arrayInputAutoComplete,
     inputAutoStatus,
+    isLoading,
+    fetchTeamCodeAllUsers,
   } = props;
 
   useEffect(() => {
@@ -49,11 +52,20 @@ export const AutoCompleteTeamCode = props => {
           }
           className=" overflow-auto mb-2"
         >
-          {inputAutoStatus === 200 ? (
+          {!isLoading ? (
             arrayInputAutoComplete.length === 0 ? (
               <p className={classNameStyleP} style={styleP}>
                 No options
               </p>
+            ) : inputAutoStatus != 200 ? (
+              <ListGroup>
+                <ListGroupItem
+                  className="d-flex justify-content-center  align-items-center  "
+                  onClick={fetchTeamCodeAllUsers}
+                >
+                  <IoReload style={{ fontSize: '1.5rem', color: '#0780eb', cursor: 'pointer' }} />
+                </ListGroupItem>
+              </ListGroup>
             ) : (
               arrayInputAutoComplete.map(item => {
                 return (
