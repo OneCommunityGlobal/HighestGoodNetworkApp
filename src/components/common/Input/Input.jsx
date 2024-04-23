@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import './input.css'
 
 // eslint-disable-next-line react/function-component-definition
-const Input = ({ label, name, error, className, type, invalid, ...rest }) => {
+const Input = ({ label, name, error, className, type, invalid, darkMode, ...rest }) => {
   const [eye, setEye] = useState(true);
   const [password, setPassword] = useState("password");
 
@@ -22,7 +22,7 @@ const Input = ({ label, name, error, className, type, invalid, ...rest }) => {
 
   return (
     <div className={`form-group ${className || ''}`}>
-      <label htmlFor={name}>{label}</label>
+      <label htmlFor={name} className={darkMode ? "text-azure" : ""}>{label}</label>
       {type === 'password' ? (
         <div className='input-text w-100'>
           <input {...rest} type={password} id={name} name={name} className="form-control" />
