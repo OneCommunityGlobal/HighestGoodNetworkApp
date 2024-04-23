@@ -52,6 +52,7 @@ const EditTaskModal = props => {
   const [startedDate, setStartedDate] = useState();
   const [dueDate, setDueDate] = useState();
   const [dateWarning, setDateWarning] = useState(false);
+  const [currentMode, setCurrentMode] = useState("");
 
   const res = [...(resourceItems ? resourceItems : [])];
   const categoryOptions = [
@@ -71,6 +72,12 @@ const EditTaskModal = props => {
   * -------------------------------- functions --------------------------------
   */
   const toggle = () => setModal(!modal);
+  
+  // set different mode while show modal through different button
+  const handleModalShow = (mode) => {
+    setCurrentMode(mode);
+    toggle();
+  }
 
   const removeResource = userID => {
     const newResource = resourceItems.filter(item => item.userID !== userID);
@@ -179,11 +186,15 @@ const EditTaskModal = props => {
       endstateInfo,
       category,
     };
+
+    const updateTaskDirectly = (currentMode === "Edit");
+    console.log({canSuggestTask, canUpdateTask, updateTaskDirectly});
+
     props.setIsLoading?.(true);
     await props.updateTask(
       props.taskId,
       updatedTask,
-      canUpdateTask,
+      updateTaskDirectly,
       oldTask,
     );
     props.setTask?.(updatedTask);
@@ -247,7 +258,7 @@ const EditTaskModal = props => {
       <Modal isOpen={modal} toggle={toggle}>
         <ReactTooltip delayShow={300}/>
         <ModalHeader toggle={toggle}>
-          {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
+          {currentMode}
         </ModalHeader>
         <ModalBody>
           <table
@@ -646,9 +657,24 @@ const EditTaskModal = props => {
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
-        {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
-      </Button>
+      {
+        canUpdateTask &&
+        <Button color="primary" size="sm" onClick={e => handleModalShow("Edit")} style={boxStyle}>
+        Edit
+        </Button>
+      }
+      {
+        canSuggestTask &&
+        <Button color="primary" size="sm" onClick={e => handleModalShow("Suggest")} style={boxStyle}>
+        Suggest
+        </Button>
+      }
+      {
+        !canUpdateTask && !canSuggestTask &&
+        <Button color="primary" size="sm" onClick={e => handleModalShow("View")} style={boxStyle}>
+        View
+        </Button>
+      }
     </div>
   );
 };
