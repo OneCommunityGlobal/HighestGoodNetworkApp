@@ -16,7 +16,7 @@ class UpdatePassword extends Form {
     errors: {},
     showPassword: { currentpassword: false, newpassword: false, confirmnewpassword: false }
   };
-  
+
   togglePasswordVisibility = (field) => {
     this.setState(prevState => ({
       showPassword: {
@@ -25,9 +25,9 @@ class UpdatePassword extends Form {
       }
     }));
   }
-  
 
-  componentDidMount() {}
+
+  componentDidMount() { }
 
   componentDidUpdate(prevProps) {
     if (prevProps.errors.error !== this.props.errors.error) {
@@ -96,41 +96,47 @@ class UpdatePassword extends Form {
   };
 
   render() {
+    const {darkMode} = this.props;
     return (
-        <div className="container mt-5">
-            <h2 className="text-2xl font-bold mb-5">Change Password</h2>
-            <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
-                <div className="mb-4">
-                    <div className="flex justify-between items-center">
-                        <label htmlFor="currentpassword" className="text-sm font-medium text-gray-700 mr-2">Current Password:</label>
-                    </div>
-                    {this.renderInput({ name: 'currentpassword', type: this.state.showPassword.currentpassword ? 'text' : 'password' })}
-                </div>
+      <div
+        className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
+          darkMode ? 'bg-oxford-blue' : ''
+        }`}
+      >
+        <h2 className="text-2xl font-bold mb-5">Change Password</h2>
+        <form className="col-md-4 xs-12" onSubmit={e => this.handleSubmit(e)}>
+          <div className="mb-4">
+            <div className="flex justify-between items-center">
+              <label htmlFor="currentpassword" className={`text-sm font-medium mr-2 ${darkMode ? "text-azure" : "text-gray-700"}`}>Current Password:</label>
+            </div>
+            {this.renderInput({ name: 'currentpassword', type: this.state.showPassword.currentpassword ? 'text' : 'password'})}
+          </div>
 
-                <div className="mb-4">
-                    <div className="flex justify-between items-center">
-                        <label htmlFor="newpassword" className="text-sm font-medium text-gray-700 mr-2">New Password:</label>
-                    </div>
-                    {this.renderInput({ name: 'newpassword', type: this.state.showPassword.newpassword ? 'text' : 'password' })}
-                </div>
+          <div className="mb-4">
+            <div className="flex justify-between items-center">
+              <label htmlFor="newpassword" className={`text-sm font-medium mr-2 ${darkMode ? "text-azure" : "text-gray-700"}`}>New Password:</label>
+            </div>
+            {this.renderInput({ name: 'newpassword', type: this.state.showPassword.newpassword ? 'text' : 'password'})}
+          </div>
 
-                <div className="mb-4">
-                    <div className="flex justify-between items-center">
-                        <label htmlFor="confirmnewpassword" className="text-sm font-medium text-gray-700 mr-2">Confirm Password:</label>
-                    </div>
-                    {this.renderInput({ name: 'confirmnewpassword', type: this.state.showPassword.confirmnewpassword ? 'text' : 'password' })}
-                </div>
+          <div className="mb-4">
+            <div className="flex justify-between items-center">
+              <label htmlFor="confirmnewpassword" className={`text-sm font-medium mr-2 ${darkMode ? "text-azure" : "text-gray-700"}`}>Confirm Password:</label>
+            </div>
+            {this.renderInput({ name: 'confirmnewpassword', type: this.state.showPassword.confirmnewpassword ? 'text' : 'password' })}
+          </div>
 
-                {this.renderButton('Submit')}
-            </form>
-        </div>
+          {this.renderButton({label: 'Submit', darkMode: darkMode})}
+        </form>
+      </div>
     );
-}
+  }
 
 }
 
 const mapStateToProps = state => ({
   errors: state.errors,
+  darkMode: state.theme.darkMode,
 });
 
 export default withRouter(
