@@ -28,7 +28,11 @@ describe('PeopleTable component', () => {
     userProfiles.forEach(people => {
       expect(screen.getByText(people.firstName + " " + people.lastName)).toBeInTheDocument();
       expect(screen.getByText(moment(people.createdDate).format('MM-DD-YY'))).toBeInTheDocument();
-      expect(screen.getByText(moment(people.endDate).format('MM-DD-YY') || 'N/A')).toBeInTheDocument();
+      if (people.endDate) {
+        expect(screen.getByText(moment(people.endDate).format('MM-DD-YY'))).toBeInTheDocument();
+      }else {
+        expect(screen.getByText('N/A')).toBeInTheDocument();
+      }
     });
   });
 
