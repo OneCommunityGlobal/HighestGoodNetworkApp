@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import { toast } from 'react-toastify';
 
 // Use named export in order for automated tests to work properly.
-export default function CountdownTimer({ date }) {
+export default function CountdownTimer({ date, darkMode }) {
   const calcTimeLeft = () => {
     const difference = +date - +new Date();
 
@@ -62,7 +62,7 @@ export default function CountdownTimer({ date }) {
   };
 
   return (
-    <div className="countdown">
+    <div className={`countdown ${darkMode ? 'text-light' : ''}`}>
       {!isEmpty(timeLeft)
         ? Object.keys(timeLeft).map(interval => (
             // eslint-disable-next-line react/jsx-indent

@@ -1,8 +1,9 @@
 import './Checkbox.css';
 
-export const Checkbox = ({ onChange, value, label, id, wrapperClassname }) => {
+// eslint-disable-next-line import/prefer-default-export, react/function-component-definition
+export const Checkbox = ({ onChange, value, label, id, wrapperClassname, backgroundColorCN, textColorCN }) => {
   return (
-    <div className={`checkbox-wrapper ${wrapperClassname}`}>
+    <div className={`checkbox-wrapper ${wrapperClassname} ${backgroundColorCN}`}>
       <input
         className="checkbox-input"
         type="checkbox"
@@ -11,7 +12,7 @@ export const Checkbox = ({ onChange, value, label, id, wrapperClassname }) => {
         checked={value}
         onChange={onChange}
       />
-      <label className="checkbox-label" htmlFor={id}>
+      <label className={`checkbox-label ${textColorCN}`} htmlFor={id} >
         {label}
       </label>
     </div>
