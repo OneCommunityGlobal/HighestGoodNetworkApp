@@ -36,7 +36,8 @@ function MaterialListView() {
     { label: 'Bought', key: 'purchaseStatus' },
     { label: 'Using', key: 'stockUsed' },
     { label: 'Available', key: 'stockAvailable' },
-    { label: 'Waste', key: 'stockWasted' },
+    { label: 'Lost/Broken', key: 'stockWasted' },
+    { label: 'Condition', key: 'condition' },
     { label: 'Code', key: 'code' },
     
   ];

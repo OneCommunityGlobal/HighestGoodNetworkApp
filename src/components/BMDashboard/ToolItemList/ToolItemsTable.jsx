@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { faSortDown, faSort, faSortUp, faCheck, faCheckCircle, faCheckSquare, faStop, faStopCircle, faSlash, faSignOutAlt, faMinus} from '@fortawesome/free-solid-svg-icons';
 import ToolRecordsModal from './ToolRecordsModal';
 
 export default function ToolItemsTable({
@@ -27,7 +27,9 @@ export default function ToolItemsTable({
     sortOrder: 'default',
   });
 
-// 
+
+
+  // 
   // useEffect(() => {
   //   console.log("ItemsTable. selectedProject: ", selectedProject, ", selectedItem: ", selectedItem, ", filteredItems: ", filteredItems, ", dynamicColumns: ", dynamicColumns)
   // }, []);
@@ -161,10 +163,28 @@ export default function ToolItemsTable({
                     {/* {dynamicColumns.map(({ label, key }) => (
                       <td key={label}>{getNestedValue(el, key)}</td>
                     ))} */}
-                    <td>{el.purchaseStatus}</td>
-                    <td>{el.itemType.using.includes(el._id) ? 'YES' : 'NO'}</td>
-                    <td>{el.itemType.available.includes(el._id) ? 'YES' : 'NO'}</td>
-                    <td>n/a</td>
+                    <td>{el.purchaseStatus === 'Purchase' ? 'Yes' : 'No'}</td>
+                  
+                    {/* <td>{el.itemType.using.includes(el._id) ? 'Yes' : 'No'}</td> */}
+                    <td>{el.itemType.using.includes(el._id) ? (
+                      <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
+                    ) : (
+                      <FontAwesomeIcon icon={faMinus} size="lg" color="red" />
+                    )}</td>
+                     {/* <td>{el.itemType.available.includes(el._id) ? 'Yes' : 'No'}</td> */}
+                    <td>{el.itemType.available.includes(el._id) ? (
+                      <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
+                      ) : (
+                        <FontAwesomeIcon icon={faMinus} size="lg" color="red" />)
+                        
+                    }</td>
+                      
+                    
+                    <td>
+                      <FontAwesomeIcon icon={faMinus} size="lg" color="red" />
+                      {/* No */}
+                    </td>
+                    <td>Like New</td>
                     <td>{el.code}</td>
                     <td className="items_cell">
                       <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>
