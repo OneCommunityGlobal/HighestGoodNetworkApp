@@ -22,12 +22,6 @@ export const setErrors = payload => {
   };
 };
 
-export const consumableUpdateStart = () => {
-  return {
-    type: POST_UPDATE_CONSUMABLE_START,
-  };
-};
-
 export const purchaseConsumable = async body => {
   return axios
     .post(ENDPOINTS.BM_CONSUMABLES_PURCHASE, body)
@@ -37,6 +31,12 @@ export const purchaseConsumable = async body => {
       if (err.request) return err.request;
       return err.message;
     });
+};
+
+export const consumableUpdateStart = () => {
+  return {
+    type: POST_UPDATE_CONSUMABLE_START,
+  };
 };
 
 export const consumableUpdateEnd = payload => {

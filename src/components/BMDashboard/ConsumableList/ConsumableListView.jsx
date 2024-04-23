@@ -37,7 +37,7 @@ function ConsumableListView() {
       UpdateItemModal={UpdateConsumableModal}
       dynamicColumns={dynamicColumns}
     />
-  );
+    );
 }
 
 export default ConsumableListView;
