@@ -22,6 +22,7 @@ const AddProjectsAutoComplete = React.memo(props => {
       <Input
         type="text"
         value={searchText}
+        autoFocus={true}
         onChange={e => {
           onInputChange(e.target.value);
           toggle(true);

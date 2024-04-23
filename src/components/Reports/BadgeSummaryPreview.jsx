@@ -14,11 +14,11 @@ import {
   ModalFooter,
   UncontrolledPopover,
 } from 'reactstrap';
-import { boxStyle } from '../../styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryPreview.css';
 
-function BadgeSummaryPreview({ badges }) {
+function BadgeSummaryPreview({ badges, darkMode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [sortedBadges, setSortedBadges] = useState([]);
 
@@ -41,7 +41,7 @@ function BadgeSummaryPreview({ badges }) {
 
   return (
     <div>
-      <Button onClick={toggle} style={boxStyle}>
+      <Button onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
         <MdPreview style={{ fontSize: '23px' }} />
       </Button>
       <Modal size="lg" isOpen={isOpen} toggle={toggle}>
@@ -54,7 +54,7 @@ function BadgeSummaryPreview({ badges }) {
                 {sortedBadges?.length === 0 && <div>No badges to show</div>}
                 {sortedBadges &&
                   sortedBadges.map((value, index) => (
-                    <div className="badge_image_md">
+                    <div key={value._id} className="badge_image_md">
                       <img
                         src={value.badge.imageUrl}
                         id={`popover_${index.toString()}`}
@@ -87,7 +87,7 @@ function BadgeSummaryPreview({ badges }) {
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {sortedBadges &&
                   sortedBadges.map((value, index) => (
-                    <div className="badge_image_sm">
+                    <div key={value._id} className="badge_image_sm">
                       <img
                         src={value.badge.imageUrl}
                         id={`popover1_${index.toString()}`}
