@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllConsumables } from 'actions/bmdashboard/consumableActions';
+import { fetchAllConsumables } from '../../../actions/bmdashboard/consumableActions';
 import ItemListView from '../ItemList/ItemListView';
 import UpdateConsumableModal from '../UpdateConsumables/UpdateConsumableModal';
 
@@ -37,7 +37,7 @@ function ConsumableListView() {
       UpdateItemModal={UpdateConsumableModal}
       dynamicColumns={dynamicColumns}
     />
-    );
+  );
 }
 
 export default ConsumableListView;
