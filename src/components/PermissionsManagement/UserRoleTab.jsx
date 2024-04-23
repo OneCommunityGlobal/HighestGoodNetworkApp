@@ -6,6 +6,7 @@ import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
 import { boxStyle } from 'styles';
 
+
 const UserRoleTab = props => {
   useEffect(() => {
     props.getUserRole(props.auth?.user.userid);

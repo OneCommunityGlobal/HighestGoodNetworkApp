@@ -24,6 +24,16 @@ body {
   margin-bottom: 30px;
 }
 
+
+.people-report-time-log-block h3{
+  color: #fff;
+}
+
+.auto-width-report-time-logs-wrapper{
+  gap:40px
+}
+
+
 /*profile style changes ends*/
 
 .btn--dark-sea-green {
@@ -149,13 +159,14 @@ body {
 /*Badge changes ends here*/
 
 .visualizationDiv {
-  display: inline-flex;
   /* margin-bottom: 10px; */
   margin-top: 20px;
 }
-
-.visualizationDiv > * {
-  margin-left: 10px;
+.BadgeSummaryPreviewDiv{
+  padding-left: 1%;
+}
+.BadgeSummaryDiv{
+  padding-right: 1%;
 }
 
 #inf td,
@@ -174,7 +185,17 @@ body {
   margin: 16px 0px 16px 0px;
   display: flex;
 }
-
+.kaitest{
+  width: 100%;
+}
+@media (max-width: 850px) {
+  .intro_date {
+    margin: 16px 0px 16px 0px;
+    display: flex;
+    justify-content: center;
+  }
+  
+}
 .intro_date div {
   display: inline-flex;
   vertical-align: top;
@@ -203,13 +224,23 @@ body {
     color: white;
   }
 }
-
-.container-people-wrapper {
-  min-height: 100%;
-  max-width: 100vw;
+.Infringementcontainer{
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+}
+.InfringementcontainerInner{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.visualizationDivRow{
+  padding-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container-people-wrapper {
+  min-height: 100%;
   background-color: #faf7fc;
   margin: 0;
 }
@@ -229,7 +260,5 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;    
-    width: 1000px;
-    margin-left: 732px;
   }
 }

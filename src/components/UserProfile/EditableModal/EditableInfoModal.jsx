@@ -57,13 +57,18 @@ export class EditableInfoModal extends Component {
     fontSize: 24,
   };
   
+  _isMounted = false;
+
   
   async componentDidMount() {
+    this._isMounted = true;
     await this.props.getInfoCollections();
     const {infoCollections, role, areaTitle, areaName, fontSize, isPermissionPage} = this.props;
 
     let content = '';
     let visible = '0';
+
+
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
         if (info.infoName === areaName) {
@@ -72,25 +77,32 @@ export class EditableInfoModal extends Component {
         }
       });
     } 
-    
+
     content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
     let CanRead = (visible === '0') || 
                     (visible === '1' && (role ==='Owner' || role ==='Administrator')) ||
                     (visible === '2' && (role !== 'Volunteer'));
     let CanEdit = role === 'Owner';
-    this.setState({
-      infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
-      fetchError: this.props.fetchError,
-      loading: this.props.loading,
-      infoName: areaName,
-      infoContent: content || 'Please input information!',
-      visibility: visible,
-      CanRead,
-      CanEdit,
-      fontSize: fontSize,
-      isPermissionPage,
-    });
+
+    if(this._isMounted){
+      this.setState({
+        infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
+        fetchError: this.props.fetchError,
+        loading: this.props.loading,
+        infoName: areaName,
+        infoContent: content || 'Please input information!',
+        visibility: visible,
+        CanRead,
+        CanEdit,
+        fontSize: fontSize,
+        isPermissionPage,
+      });
+    }
   };
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.infoCollections !== prevState.infoElements) {
@@ -196,7 +208,7 @@ export class EditableInfoModal extends Component {
     this.handleEdit(false);
 
   }
-  
+   
 
   handleSave = async event => {
     this.handleEdit(false);
@@ -222,7 +234,7 @@ export class EditableInfoModal extends Component {
           data-toggle="tooltip"
           data-placement="right"
           title="Click for user class information"
-          style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '10px'}}
+          style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '8px'}}
           aria-hidden="true"
           className="fa fa-info-circle"
           onClick={()=>this.setState({editableModalOpen: true})}
@@ -252,32 +264,33 @@ export class EditableInfoModal extends Component {
           }
           </ModalBody>
           <ModalFooter>
-          <Row>
-            <Col md={{ size: 5, offset:4}}>
-            {(this.state.editing)&&
+          <Row className='no-gutters'>
+          {(this.state.editing)&&
             (
-                <Select 
+              <Col md={6} style={{paddingRight: '2px'}}>
+               <Select 
                   options={options} 
                   onChange={this.handleSelectChange}
                   value={options.find(option => option.value === this.state.visibility)} 
                   />
-            )
+              </Col>)
             }
-             </Col>
+
             {(CanEdit&&this.state.editing)&&
             (
-              <Col md={{ size: 1}} style={{paddingLeft:'5px'}}>
+              <Col md={3} style={{paddingLeft: '4px'}}
+              >
                 <Button
                   className='saveBtn' 
                   onClick={this.handleSave}
                   style={boxStyle}>Save</Button>
               </Col>)
             }
-          <Col 
-            md={{ size: 1}}
-            >
-            <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
-          </Col>
+            <Col 
+              md={3}
+              >
+              <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
+            </Col>
           </Row>
           </ModalFooter>
           </Modal>

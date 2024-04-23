@@ -37,13 +37,13 @@ const UserTeamsTable = props => {
     <div>
       <div className="teamtable-container desktop">
         <div className="container" style={{paddingLeft: '4px', paddingRight: '4px'}}>
-          {props.canEditVisibility && (
+          {props.canEditVisibility || ['Owner', 'Administrator'].includes(props.role) && (
             <div className="row" >
               <Col md="7">
                 <span className="teams-span">Visibility</span>
               </Col>
               <Col md='5'>
-              <ToggleSwitch
+                <ToggleSwitch
                   switchType="visible"
                   state={props.isVisible}
                   handleUserProfile={props.onUserVisibilitySwitch}
