@@ -13,11 +13,11 @@ const UserTeamsTable = props => {
 
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const [autoComplete, setAutoComplete] = useState(false);
+
   const [innerWidth, setInnerWidth] = useState();
 
   const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState([]);
-
-  const [filterAutocomplete, setFilterAutocomplete] = useState('');
 
   const [teamCode, setTeamCode] = useState(
     props.userProfile ? props.userProfile.teamCode : props.teamCode,
@@ -30,7 +30,7 @@ const UserTeamsTable = props => {
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = (e, autoComplete) => {
-    !autoComplete ? setFilterAutocomplete(e.target.value) : null;
+    setAutoComplete(autoComplete);
     const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
     if (regexTest) {
       props.setCodeValid(true);
@@ -49,15 +49,15 @@ const UserTeamsTable = props => {
   };
 
   useEffect(() => {
-    if (filterAutocomplete !== '') {
+    if (teamCode !== '' && !props.isLoading && autoComplete === undefined) {
       const isMatchingSearch = props.inputAutoComplete.filter(item =>
-        item.toLowerCase().includes(filterAutocomplete.toLowerCase()),
+        item.toLowerCase().includes(teamCode.toLowerCase()),
       );
       setArrayInputAutoComplete(isMatchingSearch);
     } else {
       setArrayInputAutoComplete(props.inputAutoComplete);
     }
-  }, [filterAutocomplete, props.inputAutoComplete]);
+  }, [teamCode, props.inputAutoComplete, autoComplete]);
 
   useEffect(() => {
     setInnerWidth(window.innerWidth);
