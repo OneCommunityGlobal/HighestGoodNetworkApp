@@ -254,7 +254,7 @@ const EditTaskModal = props => {
   }, [links]);
 
   return (
-    <div className="controlBtn">
+    <>
       <Modal isOpen={modal} toggle={toggle}>
         <ReactTooltip delayShow={300}/>
         <ModalHeader toggle={toggle}>
@@ -659,23 +659,23 @@ const EditTaskModal = props => {
       </Modal>
       {
         canUpdateTask &&
-        <Button color="primary" size="sm" onClick={e => handleModalShow("Edit")} style={boxStyle}>
+        <Button className='mr-1' color="primary" size="sm" onClick={e => handleModalShow("Edit")} style={boxStyle}>
         Edit
         </Button>
       }
       {
         canSuggestTask &&
-        <Button color="primary" size="sm" onClick={e => handleModalShow("Suggest")} style={boxStyle}>
+        <Button className='mr-1' color="primary" size="sm" onClick={e => handleModalShow("Suggest")} style={boxStyle}>
         Suggest
         </Button>
       }
       {
         !canUpdateTask && !canSuggestTask &&
-        <Button color="primary" size="sm" onClick={e => handleModalShow("View")} style={boxStyle}>
+        <Button className='mr-1' color="primary" size="sm" onClick={e => handleModalShow("View")} style={boxStyle}>
         View
         </Button>
       }
-    </div>
+    </>
   );
 };
 
