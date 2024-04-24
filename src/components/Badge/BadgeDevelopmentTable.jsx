@@ -200,7 +200,7 @@ function BadgeDevelopmentTable(props) {
         </thead>
         <tbody>
           {filteredBadges.map(value => (
-            <tr key={value._id}>
+            <tr key={value._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td className="badge_image_sm">
                 {' '}
                 <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
